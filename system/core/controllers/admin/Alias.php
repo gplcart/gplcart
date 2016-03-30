@@ -50,7 +50,7 @@ class Alias extends Controller
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action);
         }
 
@@ -105,7 +105,7 @@ class Alias extends Controller
 
             $alias = $this->alias->get($id);
 
-            if (!$alias) {
+            if (empty($alias)) {
                 continue;
             }
 
@@ -120,7 +120,7 @@ class Alias extends Controller
             }
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num aliases', array('%num' => $deleted)), 'success');
             return true;
         }

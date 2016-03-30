@@ -11,14 +11,13 @@
 namespace core;
 
 use PDO;
-use Exception;
 use core\Container;
 use core\classes\Tool;
 use core\classes\Cache;
+use code\exceptions\SystemLogical;
 
 class Config
 {
-
     /**
      * PDO instance
      * @var \core\classes\Database $db
@@ -45,36 +44,45 @@ class Config
 
     /**
      * Constructor
-     * @return null
-     * @throws Exception
      */
     public function __construct()
     {
+        $this->init();
+    }
+
+    /**
+     * Initializes system config
+     * @return boolean
+     * @throws SystemLogical
+     */
+    protected function init()
+    {
         if (!is_readable(GC_CONFIG_COMMON)) {
-            return;
+            return false;
         }
 
         $this->config = include GC_CONFIG_COMMON;
 
         if (empty($this->config['database'])) {
-            throw new Exception('Missing database settings');
+            throw new SystemLogical('Missing database settings');
         }
 
         $this->exists = true;
 
         if (isset($this->db)) {
-            return;
+            return true;
         }
 
         $this->db = Container::instance('core\\classes\\Database', array($this->config['database']));
         $this->config = array_merge($this->config, $this->select());
-
         $this->key = $this->get('private_key', '');
 
-        if (!$this->key) {
+        if (empty($this->key)) {
             $this->key = Tool::randomString();
             $this->set('private_key', $this->key);
         }
+
+        return true;
     }
 
     /**
@@ -154,7 +162,6 @@ class Config
         }
 
         $this->reset($key);
-
         $serialized = false;
 
         if (is_array($value)) {
@@ -251,7 +258,7 @@ class Config
 
             $instance = Container::instance($module_namespace);
 
-            if (!$instance || !is_callable(array($instance, 'info'))) {
+            if (empty($instance) || !is_callable(array($instance, 'info'))) {
                 continue;
             }
 

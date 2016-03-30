@@ -23,14 +23,14 @@ class Controller
     protected $theme;
 
     /**
-     *
-     * @var type 
+     * Frontend theme module name
+     * @var string
      */
     protected $theme_frontend;
 
     /**
-     *
-     * @var type 
+     * Backend theme module name
+     * @var string
      */
     protected $theme_backend;
 
@@ -77,10 +77,10 @@ class Controller
     protected $query = array();
 
     /**
-     * Access flag for the current route
-     * @var boolean
+     * Access for the current route
+     * @var string
      */
-    protected $access = false;
+    protected $access = '';
 
     /**
      * Whether the site in maintenance mode
@@ -258,8 +258,20 @@ class Controller
     protected $logger;
 
     /**
-     *
-     * @var type 
+     * Document class instance
+     * @var \core\Document $document
+     */
+    protected $document;
+
+    /**
+     * Filter class instance
+     * @var \core\Filter $filter
+     */
+    protected $filter;
+
+    /**
+     * Device class instance
+     * @var \core\Device $device
      */
     protected $device;
 
@@ -369,7 +381,6 @@ class Controller
         $this->uri = $this->request->scheme() . $this->request->host() . $this->request->urn();
         $this->urn = $this->request->urn();
         $this->query = $this->request->get();
-
         $this->langcode = $this->route->getLangcode();
     }
 
@@ -393,6 +404,7 @@ class Controller
         }
 
         $this->session->set('device', null, $this->current_device);
+        return;
     }
 
     /**
@@ -508,7 +520,7 @@ class Controller
         }
 
         // Check access only on restricted areas
-        if (!$this->url->isBackend() && !$this->url->isAccount()) {
+        if (!$this->url->isBackend() && $this->url->isAccount() === false) {
             return true;
         }
 
@@ -558,7 +570,7 @@ class Controller
     {
         $time = GC_TIME;
 
-        $this->last_activity = $this->session->get('last_activity');
+        $this->last_activity = (int) $this->session->get('last_activity');
 
         if ($this->last_activity && ($time - $this->last_activity > GC_SESSION_TIMEOUT)) {
             $this->session->delete();
@@ -616,9 +628,9 @@ class Controller
      */
     protected function outputError($code = 403)
     {
-        $title = $this->response->statuses($code);
+        $title = (string) $this->response->statuses($code);
 
-        if (!empty($title)) {
+        if ($title !== '') {
             $this->setTitle($title, false);
         }
 
@@ -627,7 +639,7 @@ class Controller
 
     /**
      * Sets page <title> tag
-     * @param staring $title
+     * @param string $title
      * @param boolean $both
      * @return string
      */
@@ -826,7 +838,8 @@ class Controller
      * @param array $options
      * @return string
      */
-    protected function renderTwig($template_path, array $data, array $options = array())
+    protected function renderTwig($template_path, array $data,
+                                  array $options = array())
     {
         $parts = explode('/', $template_path);
         $template_file = array_pop($parts);
@@ -967,11 +980,11 @@ class Controller
     {
         $json = json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
-        
-        if(!isset($weight)){
+
+        if (!isset($weight)) {
             $weight = -75;
         }
-        
+
         $this->document->js("$var = $json;", 'top', $weight);
     }
 
@@ -1214,7 +1227,8 @@ class Controller
      * @param array $allowed_protocols
      * @return string
      */
-    protected function xss($string, $allowed_tags = null, $allowed_protocols = null)
+    protected function xss($string, $allowed_tags = null,
+                           $allowed_protocols = null)
     {
         if (isset($allowed_tags)) {
             $this->filter->addAllowedTags((array) $allowed_tags);
@@ -1230,9 +1244,9 @@ class Controller
     /**
      * Displays 403 access denied to unwanted users
      * @param string $permission
-     * @param boolean $redirect
+     * @param string $redirect
      */
-    protected function controlAccess($permission, $redirect = false)
+    protected function controlAccess($permission, $redirect = '')
     {
         if (!$this->access($permission)) {
             $this->redirect($redirect, $this->text('You are not permitted to perform this operation'), 'danger');
@@ -1284,7 +1298,7 @@ class Controller
 
     /**
      * Sets an array of messages
-     * @param array $messages
+     * @param array|string $messages
      * @param string $severity
      */
     protected function setMessage($messages, $severity = 'info')
@@ -1376,7 +1390,8 @@ class Controller
      * @param array|null $allowed_protocols
      * @return string
      */
-    protected function summary($text, $filter_xss = false, $allowed_tags = null, $allowed_protocols = null)
+    protected function summary($text, $filter_xss = false, $allowed_tags = null,
+                               $allowed_protocols = null)
     {
         $summary = '';
 
@@ -1415,7 +1430,7 @@ class Controller
                 $this->data['filtering'] = true;
             }
 
-            $this->data["sort_$filter"] = $this->url(false, array(
+            $this->data["sort_$filter"] = $this->url('', array(
                 'sort' => $filter,
                 'order' => ($order == 'desc') ? 'asc' : 'desc') + $query);
         }

@@ -49,7 +49,8 @@ class Tool
      * @param bool $filter
      * @return mixed
      */
-    public static function getCookie($name = null, $default = null, $filter = true)
+    public static function getCookie($name = null, $default = null,
+                                     $filter = true)
     {
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
 
@@ -149,13 +150,14 @@ class Tool
      * Allows to read a large file. Replacement of readfile()
      * @param string $filename
      * @param bool $retbytes
-     * @param type $chunksize Max size of each chunk in bytes
+     * @param type $chunksize
      * @return boolean
      */
-    public static function readfile($filename, $retbytes = true, $chunksize = 1048576)
+    public static function readfile($filename, $retbytes = true,
+                                    $chunksize = 1048576)
     {
-        $buffer = '';
         $cnt = 0;
+        $buffer = '';
 
         $handle = fopen($filename, 'rb');
 
@@ -413,7 +415,8 @@ class Tool
      * @param integer $limit Max file size
      * @return boolean Returns true on success, false otherwise
      */
-    public static function writeCsv($file, $data, $delimiter = ',', $enclosure = '"', $limit = 0)
+    public static function writeCsv($file, $data, $delimiter = ',',
+                                    $enclosure = '"', $limit = 0)
     {
         $handle = fopen($file, 'a+');
 

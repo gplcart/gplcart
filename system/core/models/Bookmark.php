@@ -197,7 +197,7 @@ class Bookmark
     /**
      * Returns an array of bookmarks
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -279,7 +279,7 @@ class Bookmark
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $bookmark) {

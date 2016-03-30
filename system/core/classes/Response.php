@@ -115,7 +115,7 @@ class Response
 
     /**
      * Returns an array of standard HTTP statuses
-     * @return array
+     * @return array|boolean
      */
     public function statuses($status = null)
     {

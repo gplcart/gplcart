@@ -82,7 +82,6 @@ class Image
      */
     public function load($filename)
     {
-
         // Require GD library
         if (!extension_loaded('gd')) {
             throw new \RuntimeException('Required extension GD is not loaded.');

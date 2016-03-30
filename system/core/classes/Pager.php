@@ -34,13 +34,13 @@ class Pager
 
     /**
      * Current page number
-     * @var type 
+     * @var integer
      */
     protected $current;
 
     /**
      * URL pattern to extract page id
-     * @var integer
+     * @var string
      */
     protected $pattern = '';
 
@@ -61,11 +61,6 @@ class Pager
      * @var string 
      */
     protected $next_text = 'Next';
-    
-    /**
-     * Constructor
-     */
-    public function __construct(){}
 
     /**
      * Updates the current number of pages
@@ -199,7 +194,7 @@ class Pager
 
     /**
      * Returns the next page number
-     * @return integer|null
+     * @return integer
      */
     public function getNextPage()
     {
@@ -207,12 +202,12 @@ class Pager
             return $this->current + 1;
         }
 
-        return null;
+        return 0;
     }
 
     /**
      * Returns the previous page number
-     * @return integer|null
+     * @return integer
      */
     public function getPrevPage()
     {
@@ -220,17 +215,17 @@ class Pager
             return $this->current - 1;
         }
 
-        return null;
+        return 0;
     }
 
     /**
      * Returns the next pager URL
-     * @return string|null
+     * @return string
      */
     public function getNextUrl()
     {
-        if (!$this->getNextPage()) {
-            return null;
+        if ($this->getNextPage() === 0) {
+            return '';
         }
 
         return $this->getPageUrl($this->getNextPage());
@@ -238,12 +233,12 @@ class Pager
 
     /**
      * Returns the previous pager URL
-     * @return string|null
+     * @return string
      */
     public function getPrevUrl()
     {
-        if (!$this->getPrevPage()) {
-            return null;
+        if ($this->getPrevPage() === 0) {
+            return '';
         }
 
         return $this->getPageUrl($this->getPrevPage());
@@ -330,7 +325,7 @@ class Pager
     {
         return array(
             'num' => '...',
-            'url' => null,
+            'url' => '',
             'is_current' => false,
         );
     }
@@ -346,7 +341,7 @@ class Pager
         }
 
         $html = '<ul class="pagination">';
-        if ($this->getPrevUrl()) {
+        if ($this->getPrevUrl() !== '') {
             $html .= '<li><a rel="prev" href="' . $this->getPrevUrl() . '">&laquo; ' . $this->previous_text . '</a></li>';
         }
 
@@ -358,7 +353,7 @@ class Pager
             }
         }
 
-        if ($this->getNextUrl()) {
+        if ($this->getNextUrl() !== '') {
             $html .= '<li><a rel="next" href="' . $this->getNextUrl() . '">' . $this->next_text . ' &raquo;</a></li>';
         }
         $html .= '</ul>';
@@ -368,14 +363,14 @@ class Pager
 
     /**
      * Returns the first item for the current page
-     * @return type
+     * @return integer
      */
     public function getCurrentPageFirstItem()
     {
         $first = ($this->current - 1) * $this->limit;
 
         if ($first > $this->total) {
-            return null;
+            return 0;
         }
 
         return $first;
@@ -383,14 +378,14 @@ class Pager
 
     /**
      * Returns the last item for the current page
-     * @return null|integer
+     * @return integer
      */
     public function getCurrentPageLastItem()
     {
         $first = $this->getCurrentPageFirstItem();
 
-        if ($first === null) {
-            return null;
+        if (empty($first)) {
+            return 0;
         }
 
         $last = $first + $this->limit - 1;

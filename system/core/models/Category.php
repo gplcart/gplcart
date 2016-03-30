@@ -73,7 +73,14 @@ class Category
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Image $image, Alias $alias, Language $language, CategoryGroup $category_group, Hook $hook, Config $config)
+    public function __construct(
+    Image $image,
+    Alias $alias,
+    Language $language,
+    CategoryGroup $category_group,
+    Hook $hook,
+    Config $config
+    )
     {
         $this->hook = $hook;
         $this->image = $image;
@@ -90,7 +97,8 @@ class Category
      * @param string $language
      * @return array
      */
-    public function get($category_id, $language = null)
+    public function get($category_id,
+                        $language = null)
     {
         $this->hook->fire('get.category.before', $category_id);
 
@@ -143,7 +151,8 @@ class Category
      * @param string $usage
      * @return array
      */
-    public function getOptionListByStore($store_id, $usage = null)
+    public function getOptionListByStore($store_id,
+                                         $usage = null)
     {
         $list = array();
         foreach ($this->category_group->getList(array('store_id' => $store_id, 'type' => $usage)) as $group) {
@@ -159,7 +168,9 @@ class Category
      * @param boolean $hierarchy
      * @return array
      */
-    public function getOptionList($group_id = null, $parent_id = 0, $hierarchy = true)
+    public function getOptionList($group_id = null,
+                                  $parent_id = 0,
+                                  $hierarchy = true)
     {
         $categories = $this->getTree(array('category_group_id' => $group_id, 'parent_id' => $parent_id, 'status' => 1));
 
@@ -306,7 +317,8 @@ class Category
      * @param array $tree
      * @return integer
      */
-    public function countChildren($category_id, $tree)
+    public function countChildren($category_id,
+                                  $tree)
     {
         $children = 0;
         foreach ($tree as $item) {
@@ -324,7 +336,8 @@ class Category
      * @param array $tree
      * @return array
      */
-    public function getChildren($category_id, $tree)
+    public function getChildren($category_id,
+                                $tree)
     {
         $children = array();
         foreach ($tree as $item) {
@@ -454,7 +467,9 @@ class Category
      * @param boolean $delete
      * @return boolean
      */
-    protected function setTranslations($category_id, array $data, $delete = true)
+    protected function setTranslations($category_id,
+                                       array $data,
+                                       $delete = true)
     {
         if ($delete) {
             $this->deleteTranslation($category_id);
@@ -474,7 +489,9 @@ class Category
      * @param boolean $delete
      * @return integer
      */
-    protected function setAlias($category_id, array $data, $delete = true)
+    protected function setAlias($category_id,
+                                array $data,
+                                $delete = true)
     {
         if ($delete) {
             $this->alias->delete('category_id', (int) $category_id);
@@ -489,7 +506,8 @@ class Category
      * @param array $data
      * @return array
      */
-    protected function setImages($category_id, array $data)
+    protected function setImages($category_id,
+                                 array $data)
     {
         return $this->image->setMultiple('category_id', $category_id, $data['images']);
     }
@@ -500,7 +518,8 @@ class Category
      * @param null|string $language
      * @return boolean
      */
-    public function deleteTranslation($category_id, $language = null)
+    public function deleteTranslation($category_id,
+                                      $language = null)
     {
         $where = array('category_id' => (int) $category_id);
 
@@ -518,7 +537,9 @@ class Category
      * @param array $translation
      * @return integer
      */
-    public function addTranslation($category_id, $language, array $translation)
+    public function addTranslation($category_id,
+                                   $language,
+                                   array $translation)
     {
         $values = array(
             'category_id' => (int) $category_id,
@@ -551,7 +572,8 @@ class Category
      * @param array $data
      * @return boolean
      */
-    public function update($category_id, array $data)
+    public function update($category_id,
+                           array $data)
     {
 
         $this->hook->fire('update.category.before', $category_id, $data);

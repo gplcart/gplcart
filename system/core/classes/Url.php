@@ -38,7 +38,7 @@ class Url
      */
     public function redirect($url = '', $options = array(), $full = false)
     {
-        if ($url !== '' && ($full || $this->isAbsolute($url))) {
+        if (!empty($url) && ($full || $this->isAbsolute($url))) {
             header("Location: $url");
             exit;
         }
@@ -62,7 +62,8 @@ class Url
      * @param boolean $exclude_langcode
      * @return string
      */
-    public function get($path = '', $options = array(), $absolute = false, $exclude_langcode = false)
+    public function get($path = '', $options = array(), $absolute = false,
+                        $exclude_langcode = false)
     {
         if (!empty($path)) {
             $url = $this->request->base($exclude_langcode) . trim($path, '/');
@@ -92,11 +93,12 @@ class Url
 
     /**
      * Returns an array containing all the components of the current path
+     * @param string $path
      * @return array
      */
-    public function segments($path = null)
+    public function segments($path = '')
     {
-        if (!isset($path)) {
+        if (empty($path)) {
             $path = $this->path();
         }
 
@@ -105,12 +107,12 @@ class Url
 
     /**
      * Returns an internal path without query
-     * @param mixed $path
+     * @param string $path
      * @return string
      */
-    public function path($path = null)
+    public function path($path = '')
     {
-        if (!isset($path)) {
+        if (empty($path)) {
             $path = $this->request->urn();
         }
 

@@ -50,13 +50,14 @@ class Category extends Controller
      * @param Image $image
      * @param CategoryGroup $category_group
      */
-    public function __construct(C $category, Alias $alias, Image $image, CategoryGroup $category_group)
+    public function __construct(C $category, Alias $alias, Image $image,
+                                CategoryGroup $category_group)
     {
         parent::__construct();
 
-        $this->category = $category;
         $this->alias = $alias;
         $this->image = $image;
+        $this->category = $category;
         $this->category_group = $category_group;
     }
 
@@ -98,7 +99,7 @@ class Category extends Controller
 
         $aliases = $this->alias->getMultiple('category_id', $category_ids);
 
-        if (!$aliases) {
+        if (empty($aliases)) {
             return $categories;
         }
 
@@ -174,7 +175,7 @@ class Category extends Controller
         $this->setImages();
 
         $this->setTitleCategory($category_group, $category);
-        $this->setBreadcrumbCategory($category_group, $category);
+        $this->setBreadcrumbCategory($category_group);
         $this->outputCategory();
     }
 
@@ -251,7 +252,7 @@ class Category extends Controller
      * @param array $category_group
      * @param array $category
      */
-    protected function setBreadcrumbCategory($category_group, $category)
+    protected function setBreadcrumbCategory($category_group)
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -273,14 +274,13 @@ class Category extends Controller
      */
     protected function get($category_id)
     {
-
         if (!is_numeric($category_id)) {
             return array();
         }
 
         $category = $this->category->get($category_id);
 
-        if ($category) {
+        if (!empty($category)) {
             $category['alias'] = $this->alias->get('category_id', $category['category_id']);
             return $category;
         }
@@ -313,7 +313,7 @@ class Category extends Controller
     {
         $category_group = $this->category_group->get($category_group_id);
 
-        if ($category_group) {
+        if (!empty($category_group)) {
             return $category_group;
         }
 

@@ -36,13 +36,13 @@ class Action extends Controller
      * @var \core\models\Product $product
      */
     protected $product;
-    
+
     /**
      * Hook class instance
      * @var \core\Hook $hook
      */
     protected $hook;
-    
+
     /**
      * Constructor
      * @param Cart $cart
@@ -50,7 +50,8 @@ class Action extends Controller
      * @param Product $product
      * @param Hook $hook
      */
-    public function __construct(Cart $cart, Bookmark $bookmark, Product $product, Hook $hook)
+    public function __construct(Cart $cart, Bookmark $bookmark,
+                                Product $product, Hook $hook)
     {
         parent::__construct();
 
@@ -70,9 +71,7 @@ class Action extends Controller
 
         // Catch spam submits
         $this->controlSpam('action');
-
         $action = $this->request->get('action');
-        
         $this->hook->fire('action.before', $action);
 
         // Action name = method name
@@ -81,9 +80,7 @@ class Action extends Controller
         }
 
         $result = $this->{$action}();
-        
         $this->hook->fire('action.after', $action, $result);
-        
         $this->finishAction((array) $result);
     }
 
@@ -192,7 +189,9 @@ class Action extends Controller
             return array();
         }
 
-        $this->bookmark->delete(array_keys($result));
+        foreach (array_keys($result) as $bookmark_id) {
+            $this->bookmark->delete($bookmark_id);
+        }
 
         return array(
             'message_type' => 'success',

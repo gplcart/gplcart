@@ -34,7 +34,6 @@ class Po
         }
 
         $count = 0;
-        $previous = null;
         $state = null;
         $first = true;
         $new = false;
@@ -64,7 +63,6 @@ class Po
                     $hash[] = $entry;
                 }
 
-                $previous = null;
                 $state = null;
                 $new = true;
                 $entry = array();
@@ -139,7 +137,6 @@ class Po
         
         foreach ($temp as $entry) {
             foreach ($entry as &$v) {
-                $or = $v;
                 $v = $this->clean($v);
                 if ($v === false) {
                     return false;
