@@ -1,0 +1,75 @@
+<?php
+
+namespace core\classes;
+
+class Unit
+{
+	
+    const MILLIMETRE        = 'mm';
+    const CENTIMETRE        = 'cm';
+    const METRE             = 'm';
+    const INCH              = 'in';
+	
+    const MILLILITRE        = 'ml';
+    const LITRE             = 'l';
+    const OUNCE             = 'oz';
+	const CUBIC_METRE       = 'm^3';
+    const CUBIC_INCH        = 'in^3';
+	
+    private static $native;
+	private $value, $unit;
+	
+	private static $conversion = array(
+        
+		self::MILLILITRE    => 1e-6,
+        self::LITRE         => 0.001,
+        self::CUBIC_METRE   => 1,
+        self::OUNCE         => 2.8413e-5,
+        self::CUBIC_INCH    => 1.6387e-5,
+		
+		self::MILLIMETRE    => 0.001,
+        self::CENTIMETRE    => 0.01,
+        self::METRE         => 1,
+        self::INCH          => 0.0254,
+    );
+	
+	public function __construct($quantity, $unit)
+	{
+        $this->unit = $unit;
+        $this->value = $quantity;
+	}
+	
+    public function convert($from, $to, $value)
+    {
+        return ($value * $this->getConversionRate($from)) / $this->getConversionRate($to);
+    }
+	
+    private function getConversionRate($unit)
+    {
+        if (!isset(self::$conversion[$unit])) {
+            throw new \Exception("Conversion rate between {self::$native} and $unit is not defined");
+        }
+        
+		return self::$conversion[$unit];
+    }
+	
+    public function format($decimals = 2, $dec_point = '.', $thousand_separator = ',')
+    {
+        return number_format($this->value, $decimals, $dec_point, $thousand_separator);
+    }
+	
+    public function render($decimals = 2, $dec_point = '.', $thousand_separator = ',')
+    {
+        return $this->format($decimals, $dec_point, $thousand_separator) . ' ' . $this->unit;
+    }
+	
+    public function getUnit()
+    {
+        return $this->unit;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+}

@@ -1,0 +1,9 @@
+*
+!.gitignore
+!.htaccess
+!stopwords
+!import
+!export
+!download
+!examples
+!logs

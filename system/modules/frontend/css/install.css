@@ -1,0 +1,39 @@
+body {
+	background-color: #eaebec;
+	margin-top:0;
+}
+
+.header,.footer {
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.container {
+	background-color: #fff;
+}
+
+.header {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.footer {
+	margin-top: 20px;
+	padding-top: 19px;
+	color: #777;
+	border-top: 1px solid #e5e5e5;
+}
+
+@media (min-width: 768px) {
+	.container {
+		max-width: 730px;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.header,.footer {
+		padding-right: 0;
+		padding-left: 0;
+	}
+}

@@ -1,0 +1,152 @@
+<?php
+
+/**
+ * @package GPL Cart core
+ * @version $Id$
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ */
+
+namespace core\classes;
+
+use PDO;
+use PDOException;
+
+class Database extends PDO
+{
+
+    /**
+     * Sets up the database connection
+     * @param array $config
+     * @return boolean
+     */
+    public function __construct($config = array())
+    {
+        if (empty($config)) {
+            return false;
+        }
+
+        $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
+
+        try {
+            parent::__construct($dns, $config['user'], $config['password']);
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $exception) {
+            throw $exception;
+        }
+
+        return true;
+    }
+
+    /**
+     * Performs an INSERT query
+     * @param string $table
+     * @param array $data
+     * @return integer
+     */
+    public function insert($table, $data)
+    {
+        ksort($data);
+
+        $names = implode(',', array_keys($data));
+        $values = ':' . implode(', :', array_keys($data));
+
+        $sth = $this->prepare("INSERT INTO $table ($names) VALUES ($values)");
+
+        foreach ($data as $key => $value) {
+            $sth->bindValue(":$key", $value);
+        }
+
+        $sth->execute();
+
+        return $this->lastInsertId();
+    }
+
+    /**
+     * Performs a UPDATE query
+     * @param string $table
+     * @param array $data
+     * @param array $conditions
+     * @return integer
+     */
+    public function update($table, $data, $conditions)
+    {
+        ksort($data);
+
+        $fields = '';
+        foreach ($data as $key => $value) {
+            $fields .= "$key = :field_$key,";
+        }
+
+        $fields = rtrim($fields, ',');
+
+        $where = '';
+
+        $i = 0;
+        foreach ($conditions as $key => $value) {
+            if ($i == 0) {
+                $where .= "$key = :where_$key";
+            } else {
+                $where .= " AND $key = :where_$key";
+            }
+            $i++;
+        }
+
+        $where = ltrim($where, ' AND ');
+        $stmt = $this->prepare("UPDATE $table SET $fields WHERE $where");
+
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":field_$key", $value);
+        }
+
+        foreach ($conditions as $key => $value) {
+            $stmt->bindValue(":where_$key", $value);
+        }
+
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+
+    /**
+     * Performs a DELETE query
+     * @param string $table
+     * @param array $conditions
+     * @return integer
+     */
+    public function delete($table, $conditions)
+    {
+        if ($conditions === 'all') {
+            return $this->query("DELETE FROM $table");
+        }
+
+        if (!$conditions) {
+            return false;
+        }
+
+        ksort($conditions);
+
+        $where = '';
+
+        $i = 0;
+        foreach ($conditions as $key => $value) {
+            if ($i == 0) {
+                $where .= "$key = :$key";
+            } else {
+                $where .= " AND $key = :$key";
+            }
+            $i++;
+        }
+
+        $where = ltrim($where, ' AND ');
+
+        $stmt = $this->prepare("DELETE FROM $table WHERE $where");
+        foreach ($conditions as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+
+}

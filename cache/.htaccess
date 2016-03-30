@@ -1,0 +1,5 @@
+Deny from all
+Options None
+Options +FollowSymLinks
+SetHandler Gplcart_Dont_Touch
+php_flag engine off

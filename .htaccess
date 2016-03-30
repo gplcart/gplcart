@@ -1,0 +1,83 @@
+# Block access to directories without a default document.
+Options -Indexes
+
+# Set the default handler.
+DirectoryIndex index.php index.html index.htm
+
+# Prevent Apache from adding a trailing footer line containing
+# information about the server to the server-generated documents
+ServerSignature Off
+
+# Add correct encoding for SVGZ.
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz
+
+<IfModule mod_rewrite.c>
+    # Enable rewrite
+    RewriteEngine On
+
+    # Set "protossl" to "s" if we were accessed via https://. 
+    # It makes sure that you don't bounce between http and https.
+    RewriteRule ^ - [E=protossl]
+    RewriteCond %{HTTPS} on
+    RewriteRule ^ - [E=protossl:s]
+
+    # Make sure Authorization HTTP header is available to PHP
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect from http://.www to http://
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
+    
+    # Pass all requests (except files in the public files directory) to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+
+    # Restrict php files direct access
+    RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
+    RewriteRule \.php$ - [F]
+
+    # Rules to correctly serve gzip compressed CSS and JS files
+    <IfModule mod_headers.c>
+        # Serve gzip compressed CSS files if they exist and the client accepts gzip.
+        RewriteCond %{HTTP:Accept-encoding} gzip
+        RewriteCond %{REQUEST_FILENAME}\.gz -s
+        RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
+
+        # Serve gzip compressed JS files if they exist and the client accepts gzip.
+        RewriteCond %{HTTP:Accept-encoding} gzip
+        RewriteCond %{REQUEST_FILENAME}\.gz -s
+        RewriteRule ^(.*)\.js $1\.js\.gz [QSA]
+
+        # Serve correct content types, and prevent mod_deflate double gzip.
+        RewriteRule \.css\.gz$ - [T=text/css,E=no-gzip:1]
+        RewriteRule \.js\.gz$ - [T=text/javascript,E=no-gzip:1]
+
+        <FilesMatch "(\.js\.gz|\.css\.gz)$">
+          # Serve correct encoding type.
+          Header set Content-Encoding gzip
+          # Force proxies to cache gzipped & non-gzipped css/js files separately.
+          Header append Vary Accept-Encoding
+        </FilesMatch>
+    </IfModule>
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Prevent some browsers from MIME-sniffing the response
+    Header set X-Content-Type-Options "nosniff"
+
+    # Remove the X-Powered-By response header that is set by some frameworks and server-side languages
+    # and its value contains information about them
+    Header unset X-Powered-By
+    
+    # Remove ETag header
+    Header unset ETag
+    
+    # Cache static files for 1 year
+    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+</IfModule>
+
+FileETag None
