@@ -100,11 +100,12 @@ class Csv
             fclose($this->handle);
         }
     }
-
+    
     /**
      * Sets file to parse
-     * @param string $file. Absolute path to CSV file
-     * @return \Csv
+     * @param string $file
+     * @param integer $filesize
+     * @return \core\classes\Csv
      */
     public function setFile($file, $filesize = null)
     {
@@ -146,11 +147,11 @@ class Csv
         $header = $this->read();
         return $header ? reset($header) : array();
     }
-
+    
     /**
      * Sets header (first line)
-     * @param array $header. Array of names
-     * @return \Csv
+     * @param type $header
+     * @return \core\classes\Csv
      */
     public function setHeader($header)
     {
@@ -246,7 +247,7 @@ class Csv
                 }
             }
 
-            if ($this->header) {
+            if (!empty($this->header)) {
                 $row = array();
                 foreach ($this->header as $key => $name) {
                     $field = array_shift($fields);

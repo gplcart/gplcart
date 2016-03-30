@@ -36,7 +36,7 @@ class Document
      * @param string $script
      * @param string $position
      * @param integer $weight
-     * @return array
+     * @return mixed
      */
     public function js($script = null, $position = 'top', $weight = null)
     {
@@ -51,31 +51,39 @@ class Document
             return $scripts;
         }
 
-        if (pathinfo($script, PATHINFO_EXTENSION) === 'js') {
-
-            $file = GC_ROOT_DIR . '/' . $script;
-
-            if (!file_exists($file)) {
-                return false;
-            }
-
-            $key = $this->request->base(true) . $script . '?v=' . filemtime($file);
-        } else {
-            $key = md5($script);
-            $text = true;
-        }
+        $key = $this->getAssetKey($script, 'js');
 
         if (!isset($weight)) {
             $weight = empty($scripts[$position]) ? 0 : count($scripts[$position]) + 1;
         }
 
+        $is_text = (0 === strpos($key, 'text.'));
+
         $scripts[$position][$key] = array(
             'weight' => (int) $weight,
-            'text' => isset($text) ? $script : false,
-            'path' => isset($text) ? false : $script
+            'text' => $is_text ? $script : false,
+            'path' => $is_text ? false : $script
         );
 
         return $scripts;
+    }
+
+    /**
+     * Returns a string containing either asset URL or MD5 hash of its content
+     * @param string $string
+     * @return string
+     */
+    protected function getAssetKey($string, $type)
+    {
+        if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
+            $file = GC_ROOT_DIR . '/' . $string;
+            if (!file_exists($file)) {
+                return false;
+            }
+            return $this->request->base(true) . $string . '?v=' . filemtime($file);
+        }
+
+        return 'text.' . md5($string);
     }
 
     /**
@@ -93,29 +101,19 @@ class Document
             return $styles;
         }
 
-        if (pathinfo($css, PATHINFO_EXTENSION) == 'css') {
-
-            $file = GC_ROOT_DIR . '/' . $css;
-
-            if (!file_exists($file)) {
-                return false;
-            }
-
-            $key = $this->request->base(true) . $css . '?v=' . filemtime($file);
-        } else {
-            $key = md5($css);
-            $text = true;
-        }
+        $key = $this->getAssetKey($css, 'css');
 
         if (!isset($weight)) {
             $weight = !empty($styles) ? count($styles) : 0;
             $weight++;
         }
 
+        $is_text = (0 === strpos($key, 'text.'));
+
         $styles[$key] = array(
             'weight' => (int) $weight,
-            'text' => isset($text) ? $css : false,
-            'path' => isset($text) ? false : $css
+            'text' => $is_text ? $css : false,
+            'path' => $is_text ? false : $css
         );
 
         return $styles;
@@ -164,11 +162,11 @@ class Document
      * @param bool $both
      * @return string
      */
-    public function title($string = null, $both = true)
+    public function title($string = '', $both = true)
     {
         static $title = '';
 
-        if (!isset($string)) {
+        if ($string === '') {
             return $title;
         }
 
@@ -184,14 +182,14 @@ class Document
     /**
      * Adds a page title
      * @staticvar string $title
-     * @param type $string
+     * @param string $string
      * @return string
      */
-    public function ptitle($string = null)
+    public function ptitle($string = '')
     {
         static $title = '';
 
-        if (!isset($string)) {
+        if ($string === '') {
             return $title;
         }
 
@@ -202,14 +200,14 @@ class Document
     /**
      * Adds a page description
      * @staticvar string $description
-     * @param type $string
+     * @param string $string
      * @return string
      */
-    public function pdescription($string = null)
+    public function pdescription($string = '')
     {
         static $description = '';
 
-        if (!isset($string)) {
+        if ($string === '') {
             return $description;
         }
 

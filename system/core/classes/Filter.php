@@ -40,7 +40,7 @@ class Filter
 
     /**
      * Sets allowed protocols
-     * @param type $protocols
+     * @param array $protocols
      */
     public function addAllowedProtocols($protocols)
     {
@@ -49,7 +49,7 @@ class Filter
 
     /**
      * Sets allowed tags
-     * @param type $tags
+     * @param array $tags
      */
     public function addAllowedTags($tags)
     {
@@ -58,8 +58,8 @@ class Filter
 
     /**
      * Filters a string
-     * @param string $string An input string
-     * @return string A filtered string
+     * @param string $string
+     * @return string
      */
     public function xss($string)
     {
@@ -102,7 +102,7 @@ class Filter
 
     /**
      * Determines if the string is UTF-8
-     * @param string $string A string
+     * @param string $string
      * @return boolean
      */
     protected function isUtf8($string)
@@ -179,10 +179,10 @@ class Filter
      */
     protected function attributes($attr)
     {
-
-        $attrarr = array();
         $mode = 0;
+        $skip = true;
         $attrname = '';
+        $attrarr = array();
 
         while (strlen($attr) != 0) {
             // Was the last operation successful?
@@ -288,23 +288,22 @@ class Filter
 
     /**
      * Sanitizes a protocol
-     * @param type $string
-     * @return type
+     * @param string $string
+     * @return string
      */
     protected function badProtocol($string)
     {
-        $string = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
-        return htmlspecialchars($this->stripDangerousProtocols($string), ENT_QUOTES, 'UTF-8');
+        $decoded = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars($this->stripDangerousProtocols($decoded), ENT_QUOTES, 'UTF-8');
     }
 
     /**
      * Removes dangerous protocols from a string
-     * @param type $uri
-     * @return type
+     * @param string $uri
+     * @return string
      */
     protected function stripDangerousProtocols($uri)
     {
-
         // Iteratively remove any invalid protocol found.
         do {
             $before = $uri;

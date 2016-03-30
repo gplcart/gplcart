@@ -19,24 +19,20 @@ class Database extends PDO
     /**
      * Sets up the database connection
      * @param array $config
-     * @return boolean
      */
     public function __construct($config = array())
     {
-        if (empty($config)) {
-            return false;
+        if (!empty($config)) {
+
+            $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
+
+            try {
+                parent::__construct($dns, $config['user'], $config['password']);
+                $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (PDOException $exception) {
+                throw $exception;
+            }
         }
-
-        $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
-
-        try {
-            parent::__construct($dns, $config['user'], $config['password']);
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exception) {
-            throw $exception;
-        }
-
-        return true;
     }
 
     /**
@@ -111,18 +107,20 @@ class Database extends PDO
     /**
      * Performs a DELETE query
      * @param string $table
-     * @param array $conditions
+     * @param mixed $conditions
      * @return integer
      */
     public function delete($table, $conditions)
     {
+        if (empty($conditions)) {
+            return false;
+        }
+
         if ($conditions === 'all') {
             return $this->query("DELETE FROM $table");
         }
 
-        if (!$conditions) {
-            return false;
-        }
+        $conditions = (array) $conditions;
 
         ksort($conditions);
 
@@ -139,7 +137,6 @@ class Database extends PDO
         }
 
         $where = ltrim($where, ' AND ');
-
         $stmt = $this->prepare("DELETE FROM $table WHERE $where");
         foreach ($conditions as $key => $value) {
             $stmt->bindValue(":$key", $value);

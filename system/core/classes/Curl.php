@@ -21,12 +21,7 @@ class Curl
      */
     public function get($url, $options = array())
     {
-        $options += array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_SSL_VERIFYPEER => false
-        );
+        $options += $this->defaultOptions($url);
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
@@ -43,15 +38,8 @@ class Curl
      */
     public function post($url, $options = array())
     {
-        $options += array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_POSTFIELDS => '',
-            CURLOPT_POST => true,
-            CURLOPT_USERAGENT => 'GPL Cart Agent',
-        );
+        $options += $this->defaultOptions($url);
+        $options += array(CURLOPT_POSTFIELDS => '', CURLOPT_POST => true);
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
@@ -68,16 +56,8 @@ class Curl
      */
     public function header($url, $options = array())
     {
-
-        $options += array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_HEADER => true,
-            CURLOPT_NOBODY => true,
-            CURLOPT_USERAGENT => 'GPL Cart Agent',
-        );
+        $options += $this->defaultOptions($url);
+        $options += array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
@@ -85,6 +65,23 @@ class Curl
         $info = curl_getinfo($ch);
         curl_close($ch);
         return $info;
+    }
+
+    /**
+     * Returns an array of default curl options
+     * @param string $url
+     * @return array
+     */
+    protected function defaultOptions($url)
+    {
+        $options = array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_USERAGENT => 'GPL Cart Agent');
+
+        return $options;
     }
 
 }
