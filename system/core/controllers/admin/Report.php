@@ -63,9 +63,9 @@ class Report extends Controller
 
         if ($this->request->get('report') && $errors) {
             if ($this->report->reportErrors($errors)) {
-                $this->redirect(false, $this->text('Error raport has been sent'), 'success');
+                $this->redirect('', $this->text('Error raport has been sent'), 'success');
             }
-            $this->redirect(false, $this->text('Failed to send error report'), 'warning');
+            $this->redirect('', $this->text('Failed to send error report'), 'warning');
         }
 
         $query = $this->getFilterQuery();

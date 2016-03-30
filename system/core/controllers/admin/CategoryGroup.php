@@ -193,7 +193,7 @@ class CategoryGroup extends Controller
             $this->redirect('admin/content/category/group', $this->text('Category group has been deleted'), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete this category group'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this category group'), 'danger');
     }
 
     /**

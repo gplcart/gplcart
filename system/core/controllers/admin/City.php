@@ -269,7 +269,7 @@ class City extends Controller
                         '%name' => $city['name'])), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete city %name. The most probable reason - it is already used in addresses', array(
+        $this->redirect('', $this->text('Unable to delete city %name. The most probable reason - it is already used in addresses', array(
                     '%name' => $city['name'])), 'warning');
     }
 

@@ -163,7 +163,7 @@ class Currency extends Controller
                         '%code' => $currency['code'])), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete this currency. The most probable reason - it is default currency or used by modules'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this currency. The most probable reason - it is default currency or used by modules'), 'danger');
     }
 
     /**

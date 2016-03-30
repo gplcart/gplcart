@@ -294,7 +294,7 @@ class FieldValue extends Controller
                         '%name' => $field_value['title'])), 'success');
         }
 
-        $this->redirect(false, $this->text('Failed to delete field value %name. The most probable reason - it is used somewhere', array(
+        $this->redirect('', $this->text('Failed to delete field value %name. The most probable reason - it is used somewhere', array(
                     '%name' => $field_value['title'])), 'warning');
     }
 

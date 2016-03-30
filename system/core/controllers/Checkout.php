@@ -460,7 +460,7 @@ class Checkout extends Controller
         $this->cart_content = $this->cart->getByUser($this->cart_user_id, false); // false - disable cart cache
 
         if (!$this->request->ajax()) {
-            $this->redirect(false, $this->text('Your cart has been updated'), 'success');
+            $this->redirect('', $this->text('Your cart has been updated'), 'success');
         }
     }
 

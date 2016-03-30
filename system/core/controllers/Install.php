@@ -80,17 +80,17 @@ class Install extends Controller
                 $this->session->set('install', 'settings', $submitted);
 
                 if (!$this->install->tables()) {
-                    $this->redirect(false, $this->text('Failed to create all necessary tables in the database'), 'danger');
+                    $this->redirect('', $this->text('Failed to create all necessary tables in the database'), 'danger');
                 }
 
                 if (!$this->install->config($submitted)) {
-                    $this->redirect(false, $this->text('Failed to create config.php'), 'danger');
+                    $this->redirect('', $this->text('Failed to create config.php'), 'danger');
                 }
 
                 $result = $this->install->store($submitted);
 
                 if ($result !== true) {
-                    $this->redirect(false, $result, 'danger');
+                    $this->redirect('', $result, 'danger');
                 }
 
                 $this->session->delete();

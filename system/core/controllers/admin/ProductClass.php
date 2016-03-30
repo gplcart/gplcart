@@ -169,7 +169,7 @@ class ProductClass extends Controller
             $this->redirect('admin/content/product/class', $this->text('Product class has been deleted'), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete this product class. The most probable reason - it is used by one or more products'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this product class. The most probable reason - it is used by one or more products'), 'danger');
     }
     
     /**
@@ -346,7 +346,7 @@ class ProductClass extends Controller
             $this->product_class->addField($field);
         }
 
-        $this->redirect(false, $this->text('Product class %name has been updated', array(
+        $this->redirect('', $this->text('Product class %name has been updated', array(
                     '%name' => $product_class['title'])), 'success');
     }
 

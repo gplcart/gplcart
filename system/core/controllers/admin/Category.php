@@ -301,7 +301,7 @@ class Category extends Controller
             $this->redirect("admin/content/category/{$category_group['category_group_id']}", $this->text('Category has been deleted'), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete this category. The most probable reason - it is used by one or more products'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this category. The most probable reason - it is used by one or more products'), 'danger');
     }
 
     /**

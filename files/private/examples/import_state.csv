@@ -1,0 +1,51 @@
+State ID,State name,State code,Country code,Enabled
+,Alabama,AL,US,yes
+,Alaska,AK,US,yes
+,Arizona,AZ,US,no
+,Arkansas,AR,US,yes
+,California,CA,US,yes
+,Colorado,CO,US,yes
+,Connecticut,CT,US,no
+,Delaware,DE,US,yes
+,Florida,FL,US,yes
+,Georgia,GA,US,yes
+,Hawaii,HI,US,no
+,Idaho,ID,US,yes
+,Illinois,IL,US,yes
+,Indiana,IN,US,yes
+,Iowa,IA,US,yes
+,Kansas,KS,US,no
+,Kentucky,KY,US,yes
+,Louisiana,LA,US,yes
+,Maine,ME,US,yes
+,Maryland,MD,US,yes
+,Massachusetts,MA,US,yes
+,Michigan,MI,US,yes
+,Minnesota,MN,US,yes
+,Mississippi,MS,US,yes
+,Missouri,MO,US,yes
+,Montana,MT,US,yes
+,Nebraska,NE,US,yes
+,Nevada,NV,US,yes
+,New Hampshire,NH,US,yes
+,New Jersey,NJ,US,yes
+,New Mexico,NM,US,yes
+,New York,NY,US,yes
+,North Carolina,NC,US,yes
+,North Dakota,ND,US,yes
+,Ohio,OH,US,yes
+,Oklahoma,OK,US,yes
+,Oregon,OR,US,yes
+,Pennsylvania,PA,US,yes
+,Rhode Island,RI,US,yes
+,South Carolina,SC,US,yes
+,South Dakota,SD,US,yes
+,Tennessee,TN,US,yes
+,Texas,TX,US,yes
+,Utah,UT,US,yes
+,Vermont,VT,US,yes
+,Virginia,VA,US,yes
+,Washington,WA,US,yes
+,West Virginia,WV,US,yes
+,Wisconsin,WI,US,yes
+,Wyoming,WY,US,yes

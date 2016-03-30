@@ -130,7 +130,7 @@ class UserRole extends Controller
             $this->redirect('admin/user/role', $this->text('Role has been deleted'), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete this role. The most probable reason - it is used by users'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this role. The most probable reason - it is used by users'), 'danger');
     }
 
     /**

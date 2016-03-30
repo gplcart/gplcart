@@ -53,7 +53,7 @@ class Image extends Controller
         $style_id = $this->request->get('clear');
 
         if ($style_id && $this->image->clearCache($style_id)) {
-            $this->redirect(false, $this->text('Cache has been cleared'), 'success');
+            $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }
 
         $this->setTitleStyles();

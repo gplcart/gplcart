@@ -66,7 +66,7 @@ class Reset extends Controller
 
         if (!$this->formErrors()) {
             $this->reset->reset();
-            $this->redirect(false, $this->text('The system has been reset to its original state'), 'success');
+            $this->redirect('', $this->text('The system has been reset to its original state'), 'success');
         }
     }
 

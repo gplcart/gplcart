@@ -281,7 +281,7 @@ class State extends Controller
 
         $this->controlAccess('state_add');
         $this->state->add($this->submitted);
-        $this->redirect(false, $this->text('Country state has been added'), 'success');
+        $this->redirect('', $this->text('Country state has been added'), 'success');
     }
 
     /**

@@ -348,7 +348,7 @@ class Product extends Controller
             if ($ajax) {
                 $this->response->json(array('errors' => $errors));
             }
-            $this->redirect(false, $errors, 'danger');
+            $this->redirect('', $errors, 'danger');
         }
 
         $add_result = $this->cart->addProduct($submitted);
@@ -356,7 +356,7 @@ class Product extends Controller
         if ($add_result === true) {
 
             if (!$ajax) {
-                $this->redirect(false, $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
+                $this->redirect('', $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
             }
 
             $cart = $this->cart->getByUser();

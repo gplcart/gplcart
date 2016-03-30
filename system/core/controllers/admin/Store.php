@@ -308,7 +308,7 @@ class Store extends Controller
                         '%s' => $store['name'])), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete store %name. The most probable reason - it is used in products, users, orders etc.', array('%name' => $store['name'])), 'danger');
+        $this->redirect('', $this->text('Unable to delete store %name. The most probable reason - it is used in products, users, orders etc.', array('%name' => $store['name'])), 'danger');
     }
 
     /**

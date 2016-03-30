@@ -183,7 +183,7 @@ class Field extends Controller
             $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
         
-        $this->redirect(false, $this->text('Unable to delete this field. The most probable reason - it is used by one or more products'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this field. The most probable reason - it is used by one or more products'), 'danger');
     }
 
     /**

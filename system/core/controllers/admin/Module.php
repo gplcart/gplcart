@@ -75,12 +75,12 @@ class Module extends Controller
         $result = $this->module->{$action}($module_id);
 
         if ($result === true) {
-            $this->redirect(false, $this->text('Modules have been updated'), 'success');
+            $this->redirect('', $this->text('Modules have been updated'), 'success');
         }
 
         if (is_string($result)) {
             $message = $result ? $result : $this->text('Operation unavailable');
-            $this->redirect(false, $message, 'danger');
+            $this->redirect('', $message, 'danger');
         }
 
         foreach ((array) $result as $error) {

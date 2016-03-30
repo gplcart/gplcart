@@ -1,0 +1,8 @@
+Field ID,Title,Type,Widget,Weight
+,Color,option,color,
+,Certifications,attribute,select,
+,Condition,attribute,radio,
+,Model Year,attribute,select,
+,Size,option,radio,
+,Age,attribute,select,
+,Gender,attribute,image,

@@ -174,7 +174,7 @@ class Account extends Controller
                             '%name' => $user['name'])), 'success');
             }
 
-            $this->redirect(false, $this->text('Unable to delete user %name. The most probable reason - it is used by one or more orders', array(
+            $this->redirect('', $this->text('Unable to delete user %name. The most probable reason - it is used by one or more orders', array(
                         '%name' => $user['name'])), 'danger');
         }
 
@@ -187,7 +187,7 @@ class Account extends Controller
                 $this->data['user'] = $submitted + array('user_id' => $user_id);
             } else {
                 $this->user->update($user_id, $submitted);
-                $this->redirect(false, $this->text('Account has been updated'), 'success');
+                $this->redirect('', $this->text('Account has been updated'), 'success');
             }
         }
 

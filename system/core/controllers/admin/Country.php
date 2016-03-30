@@ -193,7 +193,7 @@ class Country extends Controller
 
         $this->controlAccess('country_delete');
         if ($country['default']) {
-            $this->redirect(false, $this->text('You cannot delete default country'), 'danger');
+            $this->redirect('', $this->text('You cannot delete default country'), 'danger');
         }
 
         $this->country->delete($country['code']);

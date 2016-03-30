@@ -206,7 +206,7 @@ class Language extends Controller
             $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
         }
 
-        $this->redirect(false, $this->text('Unable to delete this language. The most probable reason - it is default language or blocked by modules'), 'danger');
+        $this->redirect('', $this->text('Unable to delete this language. The most probable reason - it is default language or blocked by modules'), 'danger');
     }
 
     /**

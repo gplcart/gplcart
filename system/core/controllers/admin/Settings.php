@@ -120,7 +120,7 @@ class Settings extends Controller
             $this->config->set($key, $value);
         }
 
-        $this->redirect(false, $this->text('Settings have been updated'), 'success');
+        $this->redirect('', $this->text('Settings have been updated'), 'success');
     }
 
     /**
