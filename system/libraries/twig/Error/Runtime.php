@@ -15,6 +15,6 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Error_Runtime extends Twig_Error
+class twig_Error_Runtime extends Twig_Error
 {
 }

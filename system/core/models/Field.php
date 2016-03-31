@@ -70,6 +70,7 @@ class Field
 
 
         $this->hook->fire('widget.types', $types);
+
         return $types;
     }
 
@@ -116,7 +117,6 @@ class Field
      */
     public function addTranslation(array $translation, $language, $field_id)
     {
-
         $values = array(
             'field_id' => (int) $field_id,
             'title' => $translation['title'],
@@ -172,7 +172,6 @@ class Field
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -206,6 +205,7 @@ class Field
         }
 
         $this->hook->fire('get.field.list', $list);
+
         return $list;
     }
 
@@ -225,7 +225,6 @@ class Field
         $field = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($field) {
-
             $field['data'] = unserialize($field['data']);
             $field['language'] = 'und';
 
@@ -242,6 +241,7 @@ class Field
         }
 
         $this->hook->fire('get.field.after', $field_id, $language, $field);
+
         return $field;
     }
 
@@ -269,6 +269,7 @@ class Field
         $this->db->delete('field_value_translation', array('field_id' => (int) $field_id));
 
         $this->hook->fire('delete.field.after', $field_id);
+
         return true;
     }
 
@@ -281,6 +282,7 @@ class Field
     {
         $sth = $this->db->prepare('SELECT field_id FROM product_field WHERE field_id=:field_id');
         $sth->execute(array(':field_id' => (int) $field_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -332,7 +334,7 @@ class Field
         }
 
         $this->hook->fire('update.field.after', $field_id, $data, $result);
+
         return $result;
     }
-
 }

@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-interface Twig_ExtensionInterface
+interface twig_ExtensionInterface
 {
     /**
      * Initializes the runtime environment.

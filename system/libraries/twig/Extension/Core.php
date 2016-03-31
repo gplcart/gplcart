@@ -13,7 +13,7 @@ if (!defined('ENT_SUBSTITUTE')) {
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-class Twig_Extension_Core extends Twig_Extension
+class twig_Extension_Core extends Twig_Extension
 {
     protected $dateFormats = array('F j, Y H:i', '%d days');
     protected $numberFormat = array(0, '.', ',');
@@ -540,7 +540,7 @@ function twig_replace_filter($str, $from, $to = null)
 
         return strtr($str, $from, $to);
     } elseif (!is_array($from)) {
-        throw new Twig_Error_Runtime(sprintf('The "replace" filter expects an array or "Traversable" as replace values, got "%s".',is_object($from) ? get_class($from) : gettype($from)));
+        throw new Twig_Error_Runtime(sprintf('The "replace" filter expects an array or "Traversable" as replace values, got "%s".', is_object($from) ? get_class($from) : gettype($from)));
     }
 
     return strtr($str, $from);

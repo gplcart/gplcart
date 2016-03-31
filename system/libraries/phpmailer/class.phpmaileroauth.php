@@ -70,6 +70,7 @@ class PHPMailerOAuth extends PHPMailer
                 $this->oauthRefreshToken
             );
         }
+
         return $this->oauth;
     }
 
@@ -176,6 +177,7 @@ class PHPMailerOAuth extends PHPMailer
                             throw new phpmailerException($this->lang('authenticate'));
                         }
                     }
+
                     return true;
                 } catch (phpmailerException $exc) {
                     $lastexception = $exc;
@@ -191,6 +193,7 @@ class PHPMailerOAuth extends PHPMailer
         if ($this->exceptions and !is_null($lastexception)) {
             throw $lastexception;
         }
+
         return false;
     }
 }

@@ -71,6 +71,7 @@ class Review
 
         $review_id = $this->db->insert('review', $values);
         $this->hook->fire('add.review.after', $data, $review_id);
+
         return $review_id;
     }
 
@@ -93,6 +94,7 @@ class Review
         }
 
         $this->hook->fire('get.review.after', $review_id, $review);
+
         return $review;
     }
 
@@ -145,6 +147,7 @@ class Review
         }
 
         $this->hook->fire('update.review.after', $review_id, $data, $result);
+
         return (bool) $result;
     }
 
@@ -164,6 +167,7 @@ class Review
         $sth = $this->db->prepare("DELETE FROM review WHERE FIND_IN_SET(review_id, :review_id)");
         $sth->execute(array(':review_id' => implode(',', (array) $review_id)));
         $this->hook->fire('delete.review.after', $review_id);
+
         return true;
     }
 
@@ -174,7 +178,6 @@ class Review
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT r.*, u.name, u.email ';
 
         if (!empty($data['count'])) {
@@ -224,7 +227,6 @@ class Review
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
 
             if (in_array($data['sort'], $allowed_sort)) {
@@ -251,7 +253,7 @@ class Review
         }
 
         $this->hook->fire('reviews', $list);
+
         return $list;
     }
-
 }

@@ -18,7 +18,7 @@
  *
  * @deprecated Use Composer instead. Will be removed in Twig 2.0.
  */
-class Twig_Autoloader
+class twig_Autoloader
 {
     /**
      * Registers Twig_Autoloader as an SPL autoloader.

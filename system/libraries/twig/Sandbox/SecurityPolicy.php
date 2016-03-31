@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Sandbox_SecurityPolicy implements Twig_Sandbox_SecurityPolicyInterface
+class twig_Sandbox_SecurityPolicy implements Twig_Sandbox_SecurityPolicyInterface
 {
     protected $allowedTags;
     protected $allowedFilters;

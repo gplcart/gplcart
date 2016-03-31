@@ -20,7 +20,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-class Twig_Filter_Method extends Twig_Filter
+class twig_Filter_Method extends Twig_Filter
 {
     protected $extension;
     protected $method;

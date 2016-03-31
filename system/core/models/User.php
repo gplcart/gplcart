@@ -120,6 +120,7 @@ class User
         }
 
         $this->hook->fire('add.user.after', $data, $user_id);
+
         return $user_id;
     }
 
@@ -153,7 +154,7 @@ class User
 
         return array();
     }
-     * 
+     *
      */
 
     /**
@@ -166,7 +167,7 @@ class User
         //TODO: cache??
         return $this->address->getList(array('user_id' => $user_id));
     }
-     * 
+     *
      */
 
     /**
@@ -243,6 +244,7 @@ class User
     {
         if (empty($address['address_id'])) {
             $address['user_id'] = $user_id;
+
             return (bool) $this->address->add($address);
         }
 
@@ -274,6 +276,7 @@ class User
         $this->db->delete('rating_user', array('user_id' => $user_id));
 
         $this->hook->fire('delete.user.after', $user_id);
+
         return true;
     }
 
@@ -340,6 +343,7 @@ class User
         }
 
         $permissions = $this->permissions($user);
+
         return in_array($permission, $permissions);
     }
 
@@ -415,6 +419,7 @@ class User
         }
 
         $this->hook->fire('get.user.after', $user_id, $user);
+
         return $user;
     }
     
@@ -443,7 +448,7 @@ class User
             return false;
         }
 
-        if(!$this->session->regenerate(true)) {
+        if (!$this->session->regenerate(true)) {
             throw new SystemLogicalUserAccess('Failed to regenerate the current session');
         }
 
@@ -460,6 +465,7 @@ class User
         );
 
         $this->hook->fire('login.after', $email, $password, $result);
+
         return $result;
     }
     
@@ -490,6 +496,7 @@ class User
 
         $user['data'] = unserialize($user['data']);
         $this->hook->fire('get.user.after', $email, $user);
+
         return $user;
     }
 
@@ -516,11 +523,12 @@ class User
             return false;
         }
 
-        if(!$this->session->delete()) {
+        if (!$this->session->delete()) {
             throw new SystemLogicalUserAccess('Failed to delete old session on logout');
         }
 
         $this->hook->fire('logout.after', $uid);
+
         return $uid;
     }
 
@@ -531,6 +539,7 @@ class User
     public function generatePassword()
     {
         $hash = crypt(Tool::randomString(), Tool::randomString());
+
         return str_replace(array('+', '/', '='), '', base64_encode($hash));
     }
 
@@ -589,7 +598,6 @@ class User
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -633,6 +641,7 @@ class User
         }
 
         $this->hook->fire('users', $list);
+
         return $list;
     }
 
@@ -649,5 +658,4 @@ class User
         
         return $this->config->get("user_login_redirect_{$user['role_id']}", "account/{$user['user_id']}");
     }
-
 }

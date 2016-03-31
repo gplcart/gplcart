@@ -60,7 +60,7 @@ class Twig
         }
 
         $template = $this->twig->loadTemplate($file);
+
         return $template->render($data);
     }
-
 }

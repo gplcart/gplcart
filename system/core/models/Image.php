@@ -156,7 +156,6 @@ class Image
     {
         $result = array();
         foreach ((array) $images as $image) {
-
             if (empty($image['file_id'])) {
                 $image['id_key'] = $id_key;
                 $image['id_value'] = (int) $id_value;
@@ -180,6 +179,7 @@ class Image
     public function add(array $data)
     {
         $data['file_type'] = 'image';
+
         return $this->file->add($data);
     }
 
@@ -287,6 +287,7 @@ class Image
         }
 
         $this->hook->fire('imagestyles', $imagestyles);
+
         return $imagestyles;
     }
 
@@ -406,6 +407,7 @@ class Image
     public function getImageStyle($imagestyle_id)
     {
         $imagestyles = $this->getImageStyleList();
+
         return isset($imagestyles[$imagestyle_id]) ? $imagestyles[$imagestyle_id] : array();
     }
 
@@ -425,6 +427,7 @@ class Image
         $imagestyles[$imagestyle_id] = $data;
         $this->config->set('imagestyles', $imagestyles);
         $this->hook->fire('add.imagestyle.after', $data, $imagestyle_id);
+
         return $imagestyle_id;
     }
 
@@ -447,6 +450,7 @@ class Image
         $imagestyles[$imagestyle_id] = $data;
         $this->config->set('imagestyles', $imagestyles);
         $this->hook->fire('update.imagestyle.after', $imagestyle_id, $data);
+
         return true;
     }
 
@@ -469,6 +473,7 @@ class Image
 
         $this->config->set('imagestyles', $imagestyles);
         $this->hook->fire('delete.imagestyle.after', $imagestyle_id);
+
         return true;
     }
 
@@ -489,6 +494,7 @@ class Image
 
         $result = $this->file->deleteDirecoryRecursive($directory);
         $this->hook->fire('clear.imagestyle.cache.after', $imagestyle_id, $result);
+
         return $result;
     }
 
@@ -523,6 +529,7 @@ class Image
         $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $image);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
         $path = "files/image/cache/$imagestyle_id/$image";
+
         return $this->url->get($path, $options, $absolute);
     }
 
@@ -535,7 +542,7 @@ class Image
     {
         $fullpath = GC_FILE_DIR . "/$path";
         $path = 'files/' . trim(str_replace(GC_ROOT_DIR, '', $path), "/");
+
         return $this->url->get($path, array('v' => filemtime($fullpath)));
     }
-
 }

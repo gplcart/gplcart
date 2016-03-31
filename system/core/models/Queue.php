@@ -73,6 +73,7 @@ class Queue
         if ($replace) {
             $this->delete($queue['queue_id']);
             $this->add($queue);
+
             return $this->addItem($queue['queue_id'], $items);
         }
 
@@ -105,6 +106,7 @@ class Queue
         $this->db->delete('queue_item', array('queue_id' => $queue_id));
 
         $this->hook->fire('delete.queue.after', $queue_id);
+
         return true;
     }
 
@@ -131,6 +133,7 @@ class Queue
 
         $this->db->insert('queue', $values);
         $this->hook->fire('after.queue.after', $data);
+
         return true;
     }
 
@@ -163,6 +166,7 @@ class Queue
         }
 
         $this->hook->fire('add.queue.item.after', $queue_id, $items, $result);
+
         return $result;
     }
 
@@ -191,6 +195,7 @@ class Queue
         $queue = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->hook->fire('add.queue.after', $queue_id, $queue);
+
         return $queue;
     }
 
@@ -230,6 +235,7 @@ class Queue
         }
 
         $this->hook->fire('update.queue.after', $queue_id, $data, $result);
+
         return $result;
     }
 
@@ -273,6 +279,7 @@ class Queue
         $item = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->hook->fire('get.queue.item.after', $queue_id, $value, $item);
+
         return $item;
     }
 
@@ -298,6 +305,7 @@ class Queue
 
         $this->db->delete('queue_item', $where);
         $this->hook->fire('delete.queue.item.after', $queue_id, $value);
+
         return true;
     }
 
@@ -341,7 +349,7 @@ class Queue
         }
 
         $this->hook->fire('queues', $list);
+
         return $list;
     }
-
 }

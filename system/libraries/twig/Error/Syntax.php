@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Error_Syntax extends Twig_Error
+class twig_Error_Syntax extends Twig_Error
 {
     /**
      * Tweaks the error message to include suggestions.

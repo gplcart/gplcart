@@ -12,7 +12,7 @@
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Profiler_Dumper_Blackfire
+class twig_Profiler_Dumper_Blackfire
 {
     public function dump(Twig_Profiler_Profile $profile)
     {

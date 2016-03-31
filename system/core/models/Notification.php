@@ -163,6 +163,7 @@ class Notification
         );
 
         $this->hook->fire('notification.handlers', $handlers);
+
         return $handlers;
     }
 
@@ -211,7 +212,7 @@ class Notification
      */
     public function save($notification_id, $data)
     {
-        if(empty($data)){
+        if (empty($data)) {
             return false;
         }
         
@@ -227,5 +228,4 @@ class Notification
     {
         return $this->config->reset("notification_$notification_id");
     }
-
 }

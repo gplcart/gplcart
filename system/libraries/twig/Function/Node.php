@@ -20,7 +20,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-class Twig_Function_Node extends Twig_Function
+class twig_Function_Node extends Twig_Function
 {
     protected $class;
 

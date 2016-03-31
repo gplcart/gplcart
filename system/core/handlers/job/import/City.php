@@ -82,7 +82,7 @@ class City
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -132,7 +132,7 @@ class City
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -145,7 +145,6 @@ class City
         $errors = array();
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
 
@@ -235,5 +234,4 @@ class City
 
         return false;
     }
-
 }

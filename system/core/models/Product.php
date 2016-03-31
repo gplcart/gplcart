@@ -214,6 +214,7 @@ class Product
         $this->search->index('product_id', $product_id);
 
         $this->hook->fire('add.product.after', $data);
+
         return $product_id;
     }
 
@@ -364,6 +365,7 @@ class Product
         }
 
         $this->hook->fire('update.product.after', $product_id, $data, $result);
+
         return $result;
     }
 
@@ -450,7 +452,6 @@ class Product
 
         $i = 1;
         foreach ($data['combination'] as $combination) {
-
             $combination['product_id'] = $product_id;
             $combination['currency'] = $data['currency'];
 
@@ -571,6 +572,7 @@ class Product
     {
         $pattern = $this->config->get('product_sku_pattern', 'PRODUCT-%i');
         $placeholders = $this->config->get('product_sku_placeholder', array('%i' => 'product_id'));
+
         return $this->sku->generate($pattern, $placeholders, $data);
     }
 
@@ -602,6 +604,7 @@ class Product
         $id = $this->db->insert('product_field', $values);
 
         $this->hook->fire('add.product.field.after', $arguments, $id);
+
         return $id;
     }
 
@@ -615,7 +618,7 @@ class Product
     {
         if (is_numeric($field_id)) {
             $where['field_id'] = (int) $field_id;
-        } else if (is_string($field_id)) {
+        } elseif (is_string($field_id)) {
             $where = array('type' => $field_id, 'product_id' => (int) $product_id);
         } else {
             $where = array('product_id' => (int) $product_id);
@@ -656,6 +659,7 @@ class Product
 
         $id = $this->db->insert('option_combination', $values);
         $this->hook->fire('add.option.combination.after', $data, $data['combination_id'], $id);
+
         return $data['combination_id'];
     }
 
@@ -686,6 +690,7 @@ class Product
     {
         $pattern = $this->config->get('product_alias_pattern', '%t.html');
         $placeholders = $this->config->get('product_alias_placeholder', array('%t' => 'title'));
+
         return $this->alias->generate($pattern, $placeholders, $data, $translit_alias);
     }
 
@@ -705,7 +710,6 @@ class Product
         $product = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($product) {
-
             $product['data'] = unserialize($product['data']);
             $product['language'] = 'und';
 
@@ -732,6 +736,7 @@ class Product
         }
 
         $this->hook->fire('get.product.after', $product_id, $product);
+
         return $product;
     }
 
@@ -801,6 +806,7 @@ class Product
     {
         $field_value_ids = explode('_', substr($combination_id, strpos($combination_id, '-') + 1));
         sort($field_value_ids);
+
         return $field_value_ids;
     }
 
@@ -877,6 +883,7 @@ class Product
         $this->db->delete('search_index', array('id_key' => 'product_id', 'id_value' => $product_id));
 
         $this->hook->fire('delete.product.after', $product_id);
+
         return true;
     }
 
@@ -889,6 +896,7 @@ class Product
     {
         $sth = $this->db->prepare('SELECT cart_id FROM cart WHERE product_id=:product_id AND order_id > 0');
         $sth->execute(array(':product_id' => (int) $product_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -921,6 +929,7 @@ class Product
 
         $result = $this->db->update('option_combination', $values, array('combination_id' => $combination_id));
         $this->hook->fire('update.option.combination.after', $combination_id, $data, $result);
+
         return (bool) $result;
     }
 
@@ -939,6 +948,7 @@ class Product
         }
 
         $this->db->delete('option_combination', $where);
+
         return true;
     }
 
@@ -971,6 +981,7 @@ class Product
 
         $result = $this->setCompared($product_ids);
         $this->hook->fire('add.product.compare.after', $product_id, $result);
+
         return $result;
     }
 
@@ -982,7 +993,7 @@ class Product
     {
         $product_ids = &Cache::memory(__FUNCTION__);
         
-        if(isset($product_ids)){
+        if (isset($product_ids)) {
             return $product_ids;
         }
         
@@ -1004,6 +1015,7 @@ class Product
     public function isCompared($product_id)
     {
         $compared = $this->getCompared();
+
         return in_array($product_id, $compared);
     }
 
@@ -1015,6 +1027,7 @@ class Product
     public function setCompared(array $product_ids)
     {
         $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
+
         return Tool::setCookie('comparison', implode(',', (array) $product_ids), $lifespan);
     }
     
@@ -1035,6 +1048,7 @@ class Product
         unset($product_ids[$product_id]);
         $rest = array_keys($product_ids);
         $this->setCompared($rest);
+
         return $rest;
     }
 
@@ -1060,7 +1074,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param type $product
      * @param type $round
      * @param type $convert_to
@@ -1189,12 +1203,11 @@ class Product
             $where[] = (int) $data['store_id'];
         }
 
-        if(empty($data['count'])) {
+        if (empty($data['count'])) {
             $sql .= ' GROUP BY p.product_id';
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -1243,11 +1256,12 @@ class Product
         }
 
         $this->hook->fire('get.product.list.after', $list);
+
         return $list;
     }
 
     /**
-     * 
+     *
      * @param type $product_id
      * @param type $limit
      * @param type $lifespan
@@ -1263,6 +1277,7 @@ class Product
 
         $product_ids[] = (int) $product_id;
         Tool::setCookie('viewed_products', implode('|', array_unique($product_ids)), $lifespan);
+
         return $product_ids;
     }
     
@@ -1276,11 +1291,10 @@ class Product
         $cookie = Tool::getCookie('viewed_products', '');
         $product_ids = array_filter(explode('|', $cookie), 'is_numeric');
         
-        if(isset($limit)){
+        if (isset($limit)) {
             $product_ids = array_slice($product_ids, -$limit);
         }
         
         return $product_ids;
     }
-
 }

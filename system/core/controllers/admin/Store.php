@@ -217,7 +217,6 @@ class Store extends Controller
         }
 
         if (!empty($this->data['store']['data']['hours'])) {
-
             $opening_hours = '';
             foreach ((array) $this->data['store']['data']['hours'] as $hours) {
                 if (is_array($hours)) {
@@ -240,6 +239,7 @@ class Store extends Controller
         $themes = $this->module->getByType('theme', true);
         $backend_theme = $this->config->get('theme_backend', 'backend');
         unset($themes[$backend_theme]);
+
         return $themes;
     }
 
@@ -256,6 +256,7 @@ class Store extends Controller
 
         if ($this->formErrors()) {
             $this->data['store'] = $this->submitted;
+
             return;
         }
 
@@ -322,7 +323,6 @@ class Store extends Controller
     {
         $updated = $deleted = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('store_edit')) {
                 $updated += (int) $this->store->update($id, array('status' => (int) $value));
             }
@@ -334,11 +334,13 @@ class Store extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Stores have been updated'), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Stores have been deleted'), 'success');
+
             return true;
         }
 
@@ -380,17 +382,19 @@ class Store extends Controller
     {
         if (empty($this->submitted['data']['email'])) {
             $this->data['form_errors']['email'] = $this->text('Required field');
+
             return false;
         }
 
         $this->submitted['data']['email'] = Tool::stringToArray($this->submitted['data']['email']);
 
-        $emails = array_filter($this->submitted['data']['email'], function($email) {
+        $emails = array_filter($this->submitted['data']['email'], function ($email) {
             return filter_var($email, FILTER_VALIDATE_EMAIL);
         });
 
         if (count($emails) != count($this->submitted['data']['email'])) {
             $this->data['form_errors']['email'] = $this->text('Invalid E-mail');
+
             return false;
         }
 
@@ -413,6 +417,7 @@ class Store extends Controller
 
         if (($count != count($this->submitted['data']['map'])) || $count != 2) {
             $this->data['form_errors']['data']['map'] = $this->text('Invalid map coordinates');
+
             return false;
         }
 
@@ -433,19 +438,19 @@ class Store extends Controller
 
         if (count($days) != 7) {
             $this->data['form_errors']['data']['hours'] = $this->text('Must be 7 lines, one line per day');
+
             return false;
         }
 
         $i = 0;
         foreach ($days as &$hours) {
-
             $hours = array_filter(str_replace(' ', '', explode('-', $hours)));
 
             if (!$hours) {
                 continue;
             }
 
-            $timestamps = array_filter($hours, function($hour) {
+            $timestamps = array_filter($hours, function ($hour) {
                 return strtotime($hour);
             });
 
@@ -460,6 +465,7 @@ class Store extends Controller
 
         if (empty($this->data['form_errors']['data']['hours'])) {
             $this->submitted['data']['hours'] = $days;
+
             return true;
         }
 
@@ -482,6 +488,7 @@ class Store extends Controller
         foreach ($this->submitted['data']['social'] as $url) {
             if (!filter_var($url, FILTER_VALIDATE_URL)) {
                 $this->data['form_errors']['data']['social'] = $this->text('Invalid URL');
+
                 return false;
             }
 
@@ -491,6 +498,7 @@ class Store extends Controller
         }
 
         $this->submitted['data']['social'] = $reindexed;
+
         return true;
     }
 
@@ -506,6 +514,7 @@ class Store extends Controller
 
         if (!preg_match('/^[a-z0-9.:-]+$/i', $this->submitted['domain'])) {
             $this->data['form_errors']['domain'] = $this->text('Invalid domain. Example: domain.com or domain.com:8080');
+
             return false;
         }
 
@@ -520,6 +529,7 @@ class Store extends Controller
     {
         if (isset($this->submitted['basepath']) && mb_strlen($this->submitted['basepath']) > 50) {
             $this->data['form_errors']['basepath'] = $this->text('Content must not exceed %s characters', array('%s' => 50));
+
             return false;
         }
 
@@ -529,7 +539,6 @@ class Store extends Controller
 
         $existing = false;
         foreach ($stores as $store_id => $data) {
-
             if (isset($store['store_id']) && $store['store_id'] == $store_id) {
                 continue;
             }
@@ -541,10 +550,12 @@ class Store extends Controller
 
         if ($existing) {
             $this->data['form_errors']['basepath'] = $this->text('Basepath %basepath already taken for this domain', array('%basepath' => $basepath));
+
             return false;
         }
 
         $this->submitted['basepath'] = trim($this->submitted['basepath'], '/');
+
         return true;
     }
 
@@ -556,6 +567,7 @@ class Store extends Controller
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -571,6 +583,7 @@ class Store extends Controller
     {
         if (isset($this->submitted['data'][$key]) && !is_numeric($this->submitted['data'][$key])) {
             $this->data['form_errors']['data'][$key] = $this->text('Only numeric values allowed');
+
             return false;
         }
 
@@ -585,6 +598,7 @@ class Store extends Controller
     {
         if (empty($this->submitted['data']['title']) || mb_strlen($this->submitted['data']['title']) > 255) {
             $this->data['form_errors']['data']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -634,9 +648,9 @@ class Store extends Controller
         $favicon = $this->request->file('favicon');
 
         if ($logo) {
-
             if ($this->file->upload($logo) !== true) {
                 $this->data['form_errors']['logo'] = $this->text('Unable to upload the file');
+
                 return false;
             }
 
@@ -644,9 +658,9 @@ class Store extends Controller
         }
 
         if ($favicon) {
-
             if ($this->file->upload($favicon) !== true) {
                 $this->data['form_errors']['favicon'] = $this->text('Unable to upload the file');
+
                 return false;
             }
 
@@ -655,5 +669,4 @@ class Store extends Controller
 
         return true;
     }
-
 }

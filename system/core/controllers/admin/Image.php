@@ -190,6 +190,7 @@ class Image extends Controller
 
         if ($this->formErrors()) {
             $this->data['imagestyle'] = $this->submitted;
+
             return;
         }
 
@@ -222,6 +223,7 @@ class Image extends Controller
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -234,9 +236,9 @@ class Image extends Controller
      */
     protected function validateActions()
     {
-
         if (empty($this->submitted['actions'])) {
             $this->data['form_errors']['actions'] = $this->text('Required field');
+
             return false;
         }
 
@@ -244,7 +246,6 @@ class Image extends Controller
         $actions = Tool::stringToArray($this->submitted['actions']);
 
         foreach ($actions as $line => $action) {
-
             $valid = false;
 
             $parts = array_map('trim', explode(' ', trim($action)));
@@ -316,6 +317,7 @@ class Image extends Controller
         if ($error_lines) {
             $this->data['form_errors']['actions'] = $this->text('Something wrong on lines %num', array(
                 '%num' => implode(',', $error_lines)));
+
             return false;
         }
 
@@ -465,5 +467,4 @@ class Image extends Controller
 
         $this->data['imagestyle']['actions'] = implode("\n", $actions);
     }
-
 }

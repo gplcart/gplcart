@@ -109,7 +109,6 @@ class Bookmark extends Controller
         $bookmarks = $this->bookmark->getList(array('limit' => $limit) + $query);
 
         foreach ($bookmarks as &$bookmark) {
-
             if ($bookmark['id_key'] !== 'product_id' || empty($bookmark['id_value'])) {
                 continue;
             }
@@ -186,10 +185,10 @@ class Bookmark extends Controller
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num bookmarks', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
         return false;
     }
-
 }

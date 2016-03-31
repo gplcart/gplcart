@@ -142,7 +142,6 @@ class FieldValue
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['field_value_id']) && is_numeric($data['field_value_id']));
@@ -202,6 +201,7 @@ class FieldValue
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -237,6 +237,7 @@ class FieldValue
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Field value name already exists')));
+
             return false;
         }
 
@@ -284,10 +285,12 @@ class FieldValue
                 '@num' => $line,
                 '@error' => $this->language->text('Field @id neither exists or unique', array(
                     '@id' => $data['field_id']))));
+
             return false;
         }
 
         $data['field_id'] = $field['field_id'];
+
         return true;
     }
 
@@ -325,6 +328,7 @@ class FieldValue
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Color @code in not a valid HEX code', array('@code' => $data['color']))));
+
             return false;
         }
 
@@ -379,11 +383,11 @@ class FieldValue
      */
     protected function add(&$data, &$errors, $line)
     {
-
         if (empty($data['title'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Empty field value title, skipped')));
+
             return 0;
         }
 
@@ -391,6 +395,7 @@ class FieldValue
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Empty field, skipped')));
+
             return 0;
         }
 
@@ -400,5 +405,4 @@ class FieldValue
 
         return $this->field_value->add($data) ? 1 : 0;
     }
-
 }

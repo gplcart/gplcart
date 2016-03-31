@@ -114,19 +114,19 @@ class Controller
 
     /**
      * Current route data
-     * @var array 
+     * @var array
      */
     protected $current_route = array();
 
     /**
      * Current user data
-     * @var array 
+     * @var array
      */
     protected $current_user = array();
 
     /**
      * Array of the current store
-     * @var array 
+     * @var array
      */
     protected $current_store = array();
 
@@ -138,7 +138,7 @@ class Controller
 
     /**
      * Current job
-     * @var array 
+     * @var array
      */
     protected $current_job = array();
 
@@ -394,6 +394,7 @@ class Controller
 
         if (!empty($device)) {
             $this->current_device = $device;
+
             return;
         }
 
@@ -404,6 +405,7 @@ class Controller
         }
 
         $this->session->set('device', null, $this->current_device);
+
         return;
     }
 
@@ -432,10 +434,9 @@ class Controller
         } else {
             if ($this->url->isBackend()) {
                 $this->theme = $this->theme_backend;
-            } else if ($this->url->isInstall()) {
+            } elseif ($this->url->isInstall()) {
                 $this->theme = $this->theme_frontend;
-            } else if (!empty($this->current_store)) {
-
+            } elseif (!empty($this->current_store)) {
                 $this->theme_frontend = $this->theme = $this->store->config('theme');
 
                 if ($this->current_device === 'mobile') {
@@ -579,6 +580,7 @@ class Controller
 
         $this->last_activity = $time;
         $this->session->set('last_activity', null, $time);
+
         return $time;
     }
 
@@ -748,7 +750,6 @@ class Controller
      */
     protected function prepareOutput()
     {
-
         $this->data['head_title'] = $this->document->title();
         $this->data['page_title'] = $this->document->ptitle();
         $this->data['page_description'] = $this->document->pdescription();
@@ -846,6 +847,7 @@ class Controller
         $template_dir = implode('/', $parts);
 
         $this->twig->set($template_dir, $this, $options);
+
         return $this->twig->render($template_file, $data);
     }
 
@@ -860,6 +862,7 @@ class Controller
         extract($data, EXTR_SKIP);
         ob_start();
         include $template;
+
         return ob_get_clean();
     }
 
@@ -915,7 +918,7 @@ class Controller
     }
 
     /**
-     * Sets a batch job from the current URL 
+     * Sets a batch job from the current URL
      * @return null
      */
     protected function setJob()
@@ -1032,7 +1035,6 @@ class Controller
         $notifications = $this->notification->getList($this->config->get('notification_summary_limit', 10));
 
         foreach ($notifications as $notification_id => $notification) {
-
             if (!$this->access($notification['access'])) {
                 continue;
             }
@@ -1107,6 +1109,7 @@ class Controller
         }
 
         $format = $this->config->get('date_format', 'd.m.Y H:i');
+
         return date($format, (int) $timestamp);
     }
 
@@ -1305,7 +1308,6 @@ class Controller
      */
     protected function getJob()
     {
-
         if (empty($this->current_job['status'])) {
             return '';
         }
@@ -1414,7 +1416,6 @@ class Controller
         $this->data['filtering'] = false;
 
         foreach ($allowed_filters as $filter) {
-
             $this->data["filter_$filter"] = $this->request->get($filter);
 
             if (isset($this->data["filter_$filter"])) {
@@ -1481,7 +1482,7 @@ class Controller
         $this->pager->setNextText($this->text('Next'));
 
         $this->data['pager'] = $this->pager->render();
+
         return $this->pager->getLimit();
     }
-
 }

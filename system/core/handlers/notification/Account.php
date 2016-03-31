@@ -124,6 +124,7 @@ class Account
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
         $to = array($user['email']);
+
         return $this->mail->send($to, array($subject => $message), $options);
     }
 
@@ -166,6 +167,7 @@ class Account
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
         $to = array($user['email']);
+
         return $this->mail->send($to, array($subject => $message), $options);
     }
 
@@ -195,7 +197,7 @@ class Account
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
         $to = array($user['email']);
+
         return $this->mail->send($to, array($subject => $message), $options);
     }
-
 }

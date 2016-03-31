@@ -90,6 +90,7 @@ class Response
         }
 
         $this->headers = array();
+
         return false;
     }
 
@@ -106,7 +107,7 @@ class Response
             if (!empty($status)) {
                 $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
             }
-        } else if (isset($value)) {
+        } elseif (isset($value)) {
             $this->headers[] = "$name: $value";
         }
 
@@ -263,5 +264,4 @@ class Response
         readfile($file);
         exit;
     }
-
 }

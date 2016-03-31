@@ -18,7 +18,7 @@
  *
  * @author Andrew Tch <andrew@noop.lv>
  */
-interface Twig_CacheInterface
+interface twig_CacheInterface
 {
     /**
      * Generates a cache key for the given template class name.

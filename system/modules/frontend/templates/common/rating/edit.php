@@ -1,9 +1,12 @@
 <div id="star-rating-<?php echo $product['product_id']; ?>" class="star-rating dinamic">
   <div class="star-rating-wrap">
-    <?php if(!empty($unvote)) { ?>
+    <?php if (!empty($unvote)) {
+    ?>
     <input class="star-rating-input unvote" id="star-rating-0" name="review[rating]" type="radio" value="0">
-    <label class="star-rating-ico fa fa-times-circle unvote" for="star-rating-0" title="<?php echo $this->text('Unvote'); ?>"></label>
-    <?php } ?>
+    <label class="star-rating-ico fa fa-times-circle unvote" for="star-rating-0" title="<?php echo $this->text('Unvote');
+    ?>"></label>
+    <?php 
+} ?>
     <input class="star-rating-input" id="star-rating-5" type="radio" name="review[rating]" value="5"<?php echo (isset($review['rating']) && $review['rating'] == 5) ? ' checked' : ''; ?>>
     <label class="star-rating-ico fa fa-star-o" for="star-rating-5" title="<?php echo $this->text('@num out of @total stars', array('@num' => 5, '@total' => 5)); ?>"></label>
     <input class="star-rating-input" id="star-rating-4" type="radio" name="review[rating]" value="4"<?php echo (isset($review['rating']) && $review['rating'] == 4) ? ' checked' : ''; ?>>

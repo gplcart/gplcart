@@ -62,6 +62,7 @@ class State
         ));
 
         $this->hook->fire('add.state.after', $data, $state_id);
+
         return $state_id;
     }
 
@@ -74,6 +75,7 @@ class State
     {
         $sth = $this->db->prepare('SELECT * FROM state WHERE state_id=:state_id');
         $sth->execute(array(':state_id' => $state_id));
+
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -86,6 +88,7 @@ class State
     public function getByCode($code, $country = null)
     {
         $state = $this->getList(array('code' => $code, 'country' => $country));
+
         return $state ? reset($state) : array();
     }
 
@@ -96,7 +99,6 @@ class State
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT * ';
 
         if (!empty($data['count'])) {
@@ -127,7 +129,6 @@ class State
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'country':
                     $sql .= " ORDER BY country {$data['order']}";
@@ -166,6 +167,7 @@ class State
         }
 
         $this->hook->fire('states', $states);
+
         return $states;
     }
 
@@ -191,6 +193,7 @@ class State
         $this->db->delete('city', array('state_id' => (int) $state_id));
 
         $this->hook->fire('delete.state.after', $state_id);
+
         return true;
     }
 
@@ -203,6 +206,7 @@ class State
     {
         $sth = $this->db->prepare('SELECT address_id FROM address WHERE state_id=:state_id');
         $sth->execute(array(':state_id' => (int) $state_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -247,5 +251,4 @@ class State
 
         return (bool) $result;
     }
-
 }

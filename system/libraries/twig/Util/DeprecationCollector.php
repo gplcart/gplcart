@@ -12,7 +12,7 @@
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Util_DeprecationCollector
+class twig_Util_DeprecationCollector
 {
     private $twig;
     private $deprecations;

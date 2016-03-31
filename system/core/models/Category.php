@@ -48,7 +48,7 @@ class Category
 
     /**
      * Hook model instance
-     * @var \core\Hook $hook 
+     * @var \core\Hook $hook
      */
     protected $hook;
 
@@ -80,8 +80,7 @@ class Category
     CategoryGroup $category_group,
     Hook $hook,
     Config $config
-    )
-    {
+    ) {
         $this->hook = $hook;
         $this->image = $image;
         $this->alias = $alias;
@@ -113,7 +112,6 @@ class Category
         $category = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($category) {
-
             $category['data'] = unserialize($category['data']);
             $category['language'] = 'und';
 
@@ -129,6 +127,7 @@ class Category
         $category['images'] = $this->image->getList('category_id', $category_id);
 
         $this->hook->fire('get.category.after', $category);
+
         return $category;
     }
 
@@ -158,6 +157,7 @@ class Category
         foreach ($this->category_group->getList(array('store_id' => $store_id, 'type' => $usage)) as $group) {
             $list[$group['title']] = $this->getOptionList($group['category_group_id']);
         }
+
         return $list;
     }
 
@@ -194,7 +194,6 @@ class Category
      */
     public function getTree(array $data)
     {
-
         $tree = &Cache::memory('category.tree.' . implode('.', $data));
 
         if (isset($tree)) {
@@ -268,7 +267,6 @@ class Category
         $process_parents[] = $parent;
 
         while (count($process_parents)) {
-
             $parent = array_pop($process_parents);
             $depth = count($process_parents);
 
@@ -408,6 +406,7 @@ class Category
         }
 
         $this->hook->fire('categories', $list);
+
         return $list;
     }
 
@@ -563,6 +562,7 @@ class Category
     {
         $pattern = $this->config->get('category_alias_pattern', '%t.html');
         $placeholders = $this->config->get('category_alias_placeholder', array('%t' => 'title'));
+
         return $this->alias->generate($pattern, $placeholders, $data);
     }
 
@@ -575,7 +575,6 @@ class Category
     public function update($category_id,
                            array $data)
     {
-
         $this->hook->fire('update.category.before', $category_id, $data);
 
         if (empty($category_id)) {
@@ -646,6 +645,7 @@ class Category
         }
 
         $this->hook->fire('update.category.after', $category_id, $data, $result);
+
         return $result;
     }
 
@@ -672,6 +672,7 @@ class Category
         $this->db->delete('file', array('id_key' => 'category_id', 'id_value' => (int) $category_id));
 
         $this->hook->fire('delete.category.after', $category_id);
+
         return true;
     }
 
@@ -694,5 +695,4 @@ class Category
 
         return (bool) $sth->fetchColumn();
     }
-
 }

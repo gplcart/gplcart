@@ -13,19 +13,19 @@ class Csv
 
     /**
      *
-     * @var resource File handler 
+     * @var resource File handler
      */
     protected $handle;
 
     /**
      *
-     * @var string Current CSV line 
+     * @var string Current CSV line
      */
     protected $current_line;
 
     /**
      *
-     * @var integer Current offset in bytes 
+     * @var integer Current offset in bytes
      */
     protected $current_position;
 
@@ -112,6 +112,7 @@ class Csv
         $this->file = $file;
         $this->total = isset($filesize) ? (int) $filesize : filesize($file);
         $this->handle = fopen($file, 'r');
+
         return $this;
     }
 
@@ -123,6 +124,7 @@ class Csv
     public function setLimit($limit)
     {
         $this->limit = (int) $limit;
+
         return $this;
     }
 
@@ -134,6 +136,7 @@ class Csv
     public function setDelimiter($character)
     {
         $this->delimiter = $character;
+
         return $this;
     }
 
@@ -145,6 +148,7 @@ class Csv
     {
         $this->limit = 1;
         $header = $this->read();
+
         return $header ? reset($header) : array();
     }
     
@@ -156,6 +160,7 @@ class Csv
     public function setHeader($header)
     {
         $this->header = $header;
+
         return $this;
     }
 
@@ -172,7 +177,6 @@ class Csv
 
         $parsed = 0;
         for ($this->rewind($start); $this->valid(); $this->next()) {
-
             $line = trim($this->current(), "\r\n");
 
             if (empty($line)) {
@@ -292,6 +296,7 @@ class Csv
         if (isset($this->handle)) {
             $this->current_line = feof($this->handle) ? null : fgets($this->handle);
             $this->current_position = ftell($this->handle);
+
             return $this->current_line;
         }
 
@@ -342,6 +347,7 @@ class Csv
     public function setOffset($offset)
     {
         $this->offset = $offset;
+
         return $this;
     }
 
@@ -352,6 +358,7 @@ class Csv
     public function skipHeader()
     {
         $this->skip_header = true;
+
         return $this;
     }
 
@@ -367,5 +374,4 @@ class Csv
 
         return array();
     }
-
 }

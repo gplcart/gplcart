@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_Macro extends Twig_Node
+class twig_Node_Macro extends Twig_Node
 {
     const VARARGS_NAME = 'varargs';
 

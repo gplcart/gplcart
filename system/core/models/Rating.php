@@ -56,6 +56,7 @@ class Rating
         $result = $load ? $sth->fetch(PDO::FETCH_ASSOC) : $sth->fetchColumn();
 
         $this->hook->fire('get.rating.after', $product_id, $user_id, $result);
+
         return $result;
     }
 
@@ -86,6 +87,7 @@ class Rating
         }
 
         $this->hook->fire('get.rating.after', $product_id, $user_id, $ratings);
+
         return $ratings;
     }
 
@@ -103,6 +105,7 @@ class Rating
         $this->db->delete('rating_user', array('product_id' => $product_id, 'user_id' => $user_id));
 
         $this->addUser($product_id, $user_id, $rating);
+
         return $this->setBayesian($product_id);
     }
 
@@ -169,5 +172,4 @@ class Rating
 
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
-
 }

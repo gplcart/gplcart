@@ -31,12 +31,12 @@
  */
 class Google_Service_Container extends Google_Service
 {
-  /** View and manage your data across Google Cloud Platform services. */
+    /** View and manage your data across Google Cloud Platform services. */
   const CLOUD_PLATFORM =
       "https://www.googleapis.com/auth/cloud-platform";
 
-  public $projects_zones_clusters;
-  public $projects_zones_operations;
+    public $projects_zones_clusters;
+    public $projects_zones_operations;
   
 
   /**
@@ -46,13 +46,13 @@ class Google_Service_Container extends Google_Service
    */
   public function __construct(Google_Client $client)
   {
-    parent::__construct($client);
-    $this->rootUrl = 'https://container.googleapis.com/';
-    $this->servicePath = '';
-    $this->version = 'v1';
-    $this->serviceName = 'container';
+      parent::__construct($client);
+      $this->rootUrl = 'https://container.googleapis.com/';
+      $this->servicePath = '';
+      $this->version = 'v1';
+      $this->serviceName = 'container';
 
-    $this->projects_zones_clusters = new Google_Service_Container_ProjectsZonesClusters_Resource(
+      $this->projects_zones_clusters = new Google_Service_Container_ProjectsZonesClusters_Resource(
         $this,
         $this->serviceName,
         'clusters',
@@ -152,7 +152,7 @@ class Google_Service_Container extends Google_Service
           )
         )
     );
-    $this->projects_zones_operations = new Google_Service_Container_ProjectsZonesOperations_Resource(
+      $this->projects_zones_operations = new Google_Service_Container_ProjectsZonesOperations_Resource(
         $this,
         $this->serviceName,
         'operations',
@@ -236,7 +236,7 @@ class Google_Service_Container_ProjectsZones_Resource extends Google_Service_Res
 class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Service_Resource
 {
 
-  /**
+    /**
    * Creates a cluster, consisting of the specified number and type of Google
    * Compute Engine instances, plus a Kubernetes master endpoint. By default, the
    * cluster is created in the project's [default
@@ -257,9 +257,10 @@ class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Ser
    */
   public function create($projectId, $zone, Google_Service_Container_CreateClusterRequest $postBody, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('create', array($params), "Google_Service_Container_Operation");
+      $params = array('projectId' => $projectId, 'zone' => $zone, 'postBody' => $postBody);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('create', array($params), "Google_Service_Container_Operation");
   }
 
   /**
@@ -278,9 +279,10 @@ class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Ser
    */
   public function delete($projectId, $zone, $clusterId, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone, 'clusterId' => $clusterId);
-    $params = array_merge($params, $optParams);
-    return $this->call('delete', array($params), "Google_Service_Container_Operation");
+      $params = array('projectId' => $projectId, 'zone' => $zone, 'clusterId' => $clusterId);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('delete', array($params), "Google_Service_Container_Operation");
   }
 
   /**
@@ -297,9 +299,10 @@ class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Ser
    */
   public function get($projectId, $zone, $clusterId, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone, 'clusterId' => $clusterId);
-    $params = array_merge($params, $optParams);
-    return $this->call('get', array($params), "Google_Service_Container_Cluster");
+      $params = array('projectId' => $projectId, 'zone' => $zone, 'clusterId' => $clusterId);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('get', array($params), "Google_Service_Container_Cluster");
   }
 
   /**
@@ -317,9 +320,10 @@ class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Ser
    */
   public function listProjectsZonesClusters($projectId, $zone, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone);
-    $params = array_merge($params, $optParams);
-    return $this->call('list', array($params), "Google_Service_Container_ListClustersResponse");
+      $params = array('projectId' => $projectId, 'zone' => $zone);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('list', array($params), "Google_Service_Container_ListClustersResponse");
   }
 
   /**
@@ -337,9 +341,10 @@ class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Ser
    */
   public function update($projectId, $zone, $clusterId, Google_Service_Container_UpdateClusterRequest $postBody, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone, 'clusterId' => $clusterId, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('update', array($params), "Google_Service_Container_Operation");
+      $params = array('projectId' => $projectId, 'zone' => $zone, 'clusterId' => $clusterId, 'postBody' => $postBody);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('update', array($params), "Google_Service_Container_Operation");
   }
 }
 /**
@@ -353,7 +358,7 @@ class Google_Service_Container_ProjectsZonesClusters_Resource extends Google_Ser
 class Google_Service_Container_ProjectsZonesOperations_Resource extends Google_Service_Resource
 {
 
-  /**
+    /**
    * Gets the specified operation. (operations.get)
    *
    * @param string $projectId The Google Developers Console [project
@@ -367,9 +372,10 @@ class Google_Service_Container_ProjectsZonesOperations_Resource extends Google_S
    */
   public function get($projectId, $zone, $operationId, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone, 'operationId' => $operationId);
-    $params = array_merge($params, $optParams);
-    return $this->call('get', array($params), "Google_Service_Container_Operation");
+      $params = array('projectId' => $projectId, 'zone' => $zone, 'operationId' => $operationId);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('get', array($params), "Google_Service_Container_Operation");
   }
 
   /**
@@ -387,9 +393,10 @@ class Google_Service_Container_ProjectsZonesOperations_Resource extends Google_S
    */
   public function listProjectsZonesOperations($projectId, $zone, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'zone' => $zone);
-    $params = array_merge($params, $optParams);
-    return $this->call('list', array($params), "Google_Service_Container_ListOperationsResponse");
+      $params = array('projectId' => $projectId, 'zone' => $zone);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('list', array($params), "Google_Service_Container_ListOperationsResponse");
   }
 }
 
@@ -398,451 +405,451 @@ class Google_Service_Container_ProjectsZonesOperations_Resource extends Google_S
 
 class Google_Service_Container_Cluster extends Google_Collection
 {
-  protected $collection_key = 'instanceGroupUrls';
-  protected $internal_gapi_mappings = array(
+    protected $collection_key = 'instanceGroupUrls';
+    protected $internal_gapi_mappings = array(
   );
-  public $clusterIpv4Cidr;
-  public $createTime;
-  public $currentMasterVersion;
-  public $currentNodeVersion;
-  public $description;
-  public $endpoint;
-  public $initialClusterVersion;
-  public $initialNodeCount;
-  public $instanceGroupUrls;
-  public $loggingService;
-  protected $masterAuthType = 'Google_Service_Container_MasterAuth';
-  protected $masterAuthDataType = '';
-  public $monitoringService;
-  public $name;
-  public $network;
-  protected $nodeConfigType = 'Google_Service_Container_NodeConfig';
-  protected $nodeConfigDataType = '';
-  public $nodeIpv4CidrSize;
-  public $selfLink;
-  public $servicesIpv4Cidr;
-  public $status;
-  public $statusMessage;
-  public $zone;
+    public $clusterIpv4Cidr;
+    public $createTime;
+    public $currentMasterVersion;
+    public $currentNodeVersion;
+    public $description;
+    public $endpoint;
+    public $initialClusterVersion;
+    public $initialNodeCount;
+    public $instanceGroupUrls;
+    public $loggingService;
+    protected $masterAuthType = 'Google_Service_Container_MasterAuth';
+    protected $masterAuthDataType = '';
+    public $monitoringService;
+    public $name;
+    public $network;
+    protected $nodeConfigType = 'Google_Service_Container_NodeConfig';
+    protected $nodeConfigDataType = '';
+    public $nodeIpv4CidrSize;
+    public $selfLink;
+    public $servicesIpv4Cidr;
+    public $status;
+    public $statusMessage;
+    public $zone;
 
 
-  public function setClusterIpv4Cidr($clusterIpv4Cidr)
-  {
-    $this->clusterIpv4Cidr = $clusterIpv4Cidr;
-  }
-  public function getClusterIpv4Cidr()
-  {
-    return $this->clusterIpv4Cidr;
-  }
-  public function setCreateTime($createTime)
-  {
-    $this->createTime = $createTime;
-  }
-  public function getCreateTime()
-  {
-    return $this->createTime;
-  }
-  public function setCurrentMasterVersion($currentMasterVersion)
-  {
-    $this->currentMasterVersion = $currentMasterVersion;
-  }
-  public function getCurrentMasterVersion()
-  {
-    return $this->currentMasterVersion;
-  }
-  public function setCurrentNodeVersion($currentNodeVersion)
-  {
-    $this->currentNodeVersion = $currentNodeVersion;
-  }
-  public function getCurrentNodeVersion()
-  {
-    return $this->currentNodeVersion;
-  }
-  public function setDescription($description)
-  {
-    $this->description = $description;
-  }
-  public function getDescription()
-  {
-    return $this->description;
-  }
-  public function setEndpoint($endpoint)
-  {
-    $this->endpoint = $endpoint;
-  }
-  public function getEndpoint()
-  {
-    return $this->endpoint;
-  }
-  public function setInitialClusterVersion($initialClusterVersion)
-  {
-    $this->initialClusterVersion = $initialClusterVersion;
-  }
-  public function getInitialClusterVersion()
-  {
-    return $this->initialClusterVersion;
-  }
-  public function setInitialNodeCount($initialNodeCount)
-  {
-    $this->initialNodeCount = $initialNodeCount;
-  }
-  public function getInitialNodeCount()
-  {
-    return $this->initialNodeCount;
-  }
-  public function setInstanceGroupUrls($instanceGroupUrls)
-  {
-    $this->instanceGroupUrls = $instanceGroupUrls;
-  }
-  public function getInstanceGroupUrls()
-  {
-    return $this->instanceGroupUrls;
-  }
-  public function setLoggingService($loggingService)
-  {
-    $this->loggingService = $loggingService;
-  }
-  public function getLoggingService()
-  {
-    return $this->loggingService;
-  }
-  public function setMasterAuth(Google_Service_Container_MasterAuth $masterAuth)
-  {
-    $this->masterAuth = $masterAuth;
-  }
-  public function getMasterAuth()
-  {
-    return $this->masterAuth;
-  }
-  public function setMonitoringService($monitoringService)
-  {
-    $this->monitoringService = $monitoringService;
-  }
-  public function getMonitoringService()
-  {
-    return $this->monitoringService;
-  }
-  public function setName($name)
-  {
-    $this->name = $name;
-  }
-  public function getName()
-  {
-    return $this->name;
-  }
-  public function setNetwork($network)
-  {
-    $this->network = $network;
-  }
-  public function getNetwork()
-  {
-    return $this->network;
-  }
-  public function setNodeConfig(Google_Service_Container_NodeConfig $nodeConfig)
-  {
-    $this->nodeConfig = $nodeConfig;
-  }
-  public function getNodeConfig()
-  {
-    return $this->nodeConfig;
-  }
-  public function setNodeIpv4CidrSize($nodeIpv4CidrSize)
-  {
-    $this->nodeIpv4CidrSize = $nodeIpv4CidrSize;
-  }
-  public function getNodeIpv4CidrSize()
-  {
-    return $this->nodeIpv4CidrSize;
-  }
-  public function setSelfLink($selfLink)
-  {
-    $this->selfLink = $selfLink;
-  }
-  public function getSelfLink()
-  {
-    return $this->selfLink;
-  }
-  public function setServicesIpv4Cidr($servicesIpv4Cidr)
-  {
-    $this->servicesIpv4Cidr = $servicesIpv4Cidr;
-  }
-  public function getServicesIpv4Cidr()
-  {
-    return $this->servicesIpv4Cidr;
-  }
-  public function setStatus($status)
-  {
-    $this->status = $status;
-  }
-  public function getStatus()
-  {
-    return $this->status;
-  }
-  public function setStatusMessage($statusMessage)
-  {
-    $this->statusMessage = $statusMessage;
-  }
-  public function getStatusMessage()
-  {
-    return $this->statusMessage;
-  }
-  public function setZone($zone)
-  {
-    $this->zone = $zone;
-  }
-  public function getZone()
-  {
-    return $this->zone;
-  }
+    public function setClusterIpv4Cidr($clusterIpv4Cidr)
+    {
+        $this->clusterIpv4Cidr = $clusterIpv4Cidr;
+    }
+    public function getClusterIpv4Cidr()
+    {
+        return $this->clusterIpv4Cidr;
+    }
+    public function setCreateTime($createTime)
+    {
+        $this->createTime = $createTime;
+    }
+    public function getCreateTime()
+    {
+        return $this->createTime;
+    }
+    public function setCurrentMasterVersion($currentMasterVersion)
+    {
+        $this->currentMasterVersion = $currentMasterVersion;
+    }
+    public function getCurrentMasterVersion()
+    {
+        return $this->currentMasterVersion;
+    }
+    public function setCurrentNodeVersion($currentNodeVersion)
+    {
+        $this->currentNodeVersion = $currentNodeVersion;
+    }
+    public function getCurrentNodeVersion()
+    {
+        return $this->currentNodeVersion;
+    }
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    public function setEndpoint($endpoint)
+    {
+        $this->endpoint = $endpoint;
+    }
+    public function getEndpoint()
+    {
+        return $this->endpoint;
+    }
+    public function setInitialClusterVersion($initialClusterVersion)
+    {
+        $this->initialClusterVersion = $initialClusterVersion;
+    }
+    public function getInitialClusterVersion()
+    {
+        return $this->initialClusterVersion;
+    }
+    public function setInitialNodeCount($initialNodeCount)
+    {
+        $this->initialNodeCount = $initialNodeCount;
+    }
+    public function getInitialNodeCount()
+    {
+        return $this->initialNodeCount;
+    }
+    public function setInstanceGroupUrls($instanceGroupUrls)
+    {
+        $this->instanceGroupUrls = $instanceGroupUrls;
+    }
+    public function getInstanceGroupUrls()
+    {
+        return $this->instanceGroupUrls;
+    }
+    public function setLoggingService($loggingService)
+    {
+        $this->loggingService = $loggingService;
+    }
+    public function getLoggingService()
+    {
+        return $this->loggingService;
+    }
+    public function setMasterAuth(Google_Service_Container_MasterAuth $masterAuth)
+    {
+        $this->masterAuth = $masterAuth;
+    }
+    public function getMasterAuth()
+    {
+        return $this->masterAuth;
+    }
+    public function setMonitoringService($monitoringService)
+    {
+        $this->monitoringService = $monitoringService;
+    }
+    public function getMonitoringService()
+    {
+        return $this->monitoringService;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setNetwork($network)
+    {
+        $this->network = $network;
+    }
+    public function getNetwork()
+    {
+        return $this->network;
+    }
+    public function setNodeConfig(Google_Service_Container_NodeConfig $nodeConfig)
+    {
+        $this->nodeConfig = $nodeConfig;
+    }
+    public function getNodeConfig()
+    {
+        return $this->nodeConfig;
+    }
+    public function setNodeIpv4CidrSize($nodeIpv4CidrSize)
+    {
+        $this->nodeIpv4CidrSize = $nodeIpv4CidrSize;
+    }
+    public function getNodeIpv4CidrSize()
+    {
+        return $this->nodeIpv4CidrSize;
+    }
+    public function setSelfLink($selfLink)
+    {
+        $this->selfLink = $selfLink;
+    }
+    public function getSelfLink()
+    {
+        return $this->selfLink;
+    }
+    public function setServicesIpv4Cidr($servicesIpv4Cidr)
+    {
+        $this->servicesIpv4Cidr = $servicesIpv4Cidr;
+    }
+    public function getServicesIpv4Cidr()
+    {
+        return $this->servicesIpv4Cidr;
+    }
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+    public function getStatus()
+    {
+        return $this->status;
+    }
+    public function setStatusMessage($statusMessage)
+    {
+        $this->statusMessage = $statusMessage;
+    }
+    public function getStatusMessage()
+    {
+        return $this->statusMessage;
+    }
+    public function setZone($zone)
+    {
+        $this->zone = $zone;
+    }
+    public function getZone()
+    {
+        return $this->zone;
+    }
 }
 
 class Google_Service_Container_ClusterUpdate extends Google_Model
 {
-  protected $internal_gapi_mappings = array(
+    protected $internal_gapi_mappings = array(
   );
-  public $desiredNodeVersion;
+    public $desiredNodeVersion;
 
 
-  public function setDesiredNodeVersion($desiredNodeVersion)
-  {
-    $this->desiredNodeVersion = $desiredNodeVersion;
-  }
-  public function getDesiredNodeVersion()
-  {
-    return $this->desiredNodeVersion;
-  }
+    public function setDesiredNodeVersion($desiredNodeVersion)
+    {
+        $this->desiredNodeVersion = $desiredNodeVersion;
+    }
+    public function getDesiredNodeVersion()
+    {
+        return $this->desiredNodeVersion;
+    }
 }
 
 class Google_Service_Container_CreateClusterRequest extends Google_Model
 {
-  protected $internal_gapi_mappings = array(
+    protected $internal_gapi_mappings = array(
   );
-  protected $clusterType = 'Google_Service_Container_Cluster';
-  protected $clusterDataType = '';
+    protected $clusterType = 'Google_Service_Container_Cluster';
+    protected $clusterDataType = '';
 
 
-  public function setCluster(Google_Service_Container_Cluster $cluster)
-  {
-    $this->cluster = $cluster;
-  }
-  public function getCluster()
-  {
-    return $this->cluster;
-  }
+    public function setCluster(Google_Service_Container_Cluster $cluster)
+    {
+        $this->cluster = $cluster;
+    }
+    public function getCluster()
+    {
+        return $this->cluster;
+    }
 }
 
 class Google_Service_Container_ListClustersResponse extends Google_Collection
 {
-  protected $collection_key = 'clusters';
-  protected $internal_gapi_mappings = array(
+    protected $collection_key = 'clusters';
+    protected $internal_gapi_mappings = array(
   );
-  protected $clustersType = 'Google_Service_Container_Cluster';
-  protected $clustersDataType = 'array';
+    protected $clustersType = 'Google_Service_Container_Cluster';
+    protected $clustersDataType = 'array';
 
 
-  public function setClusters($clusters)
-  {
-    $this->clusters = $clusters;
-  }
-  public function getClusters()
-  {
-    return $this->clusters;
-  }
+    public function setClusters($clusters)
+    {
+        $this->clusters = $clusters;
+    }
+    public function getClusters()
+    {
+        return $this->clusters;
+    }
 }
 
 class Google_Service_Container_ListOperationsResponse extends Google_Collection
 {
-  protected $collection_key = 'operations';
-  protected $internal_gapi_mappings = array(
+    protected $collection_key = 'operations';
+    protected $internal_gapi_mappings = array(
   );
-  protected $operationsType = 'Google_Service_Container_Operation';
-  protected $operationsDataType = 'array';
+    protected $operationsType = 'Google_Service_Container_Operation';
+    protected $operationsDataType = 'array';
 
 
-  public function setOperations($operations)
-  {
-    $this->operations = $operations;
-  }
-  public function getOperations()
-  {
-    return $this->operations;
-  }
+    public function setOperations($operations)
+    {
+        $this->operations = $operations;
+    }
+    public function getOperations()
+    {
+        return $this->operations;
+    }
 }
 
 class Google_Service_Container_MasterAuth extends Google_Model
 {
-  protected $internal_gapi_mappings = array(
+    protected $internal_gapi_mappings = array(
   );
-  public $clientCertificate;
-  public $clientKey;
-  public $clusterCaCertificate;
-  public $password;
-  public $username;
+    public $clientCertificate;
+    public $clientKey;
+    public $clusterCaCertificate;
+    public $password;
+    public $username;
 
 
-  public function setClientCertificate($clientCertificate)
-  {
-    $this->clientCertificate = $clientCertificate;
-  }
-  public function getClientCertificate()
-  {
-    return $this->clientCertificate;
-  }
-  public function setClientKey($clientKey)
-  {
-    $this->clientKey = $clientKey;
-  }
-  public function getClientKey()
-  {
-    return $this->clientKey;
-  }
-  public function setClusterCaCertificate($clusterCaCertificate)
-  {
-    $this->clusterCaCertificate = $clusterCaCertificate;
-  }
-  public function getClusterCaCertificate()
-  {
-    return $this->clusterCaCertificate;
-  }
-  public function setPassword($password)
-  {
-    $this->password = $password;
-  }
-  public function getPassword()
-  {
-    return $this->password;
-  }
-  public function setUsername($username)
-  {
-    $this->username = $username;
-  }
-  public function getUsername()
-  {
-    return $this->username;
-  }
+    public function setClientCertificate($clientCertificate)
+    {
+        $this->clientCertificate = $clientCertificate;
+    }
+    public function getClientCertificate()
+    {
+        return $this->clientCertificate;
+    }
+    public function setClientKey($clientKey)
+    {
+        $this->clientKey = $clientKey;
+    }
+    public function getClientKey()
+    {
+        return $this->clientKey;
+    }
+    public function setClusterCaCertificate($clusterCaCertificate)
+    {
+        $this->clusterCaCertificate = $clusterCaCertificate;
+    }
+    public function getClusterCaCertificate()
+    {
+        return $this->clusterCaCertificate;
+    }
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+    public function getPassword()
+    {
+        return $this->password;
+    }
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+    public function getUsername()
+    {
+        return $this->username;
+    }
 }
 
 class Google_Service_Container_NodeConfig extends Google_Collection
 {
-  protected $collection_key = 'oauthScopes';
-  protected $internal_gapi_mappings = array(
+    protected $collection_key = 'oauthScopes';
+    protected $internal_gapi_mappings = array(
   );
-  public $diskSizeGb;
-  public $machineType;
-  public $oauthScopes;
+    public $diskSizeGb;
+    public $machineType;
+    public $oauthScopes;
 
 
-  public function setDiskSizeGb($diskSizeGb)
-  {
-    $this->diskSizeGb = $diskSizeGb;
-  }
-  public function getDiskSizeGb()
-  {
-    return $this->diskSizeGb;
-  }
-  public function setMachineType($machineType)
-  {
-    $this->machineType = $machineType;
-  }
-  public function getMachineType()
-  {
-    return $this->machineType;
-  }
-  public function setOauthScopes($oauthScopes)
-  {
-    $this->oauthScopes = $oauthScopes;
-  }
-  public function getOauthScopes()
-  {
-    return $this->oauthScopes;
-  }
+    public function setDiskSizeGb($diskSizeGb)
+    {
+        $this->diskSizeGb = $diskSizeGb;
+    }
+    public function getDiskSizeGb()
+    {
+        return $this->diskSizeGb;
+    }
+    public function setMachineType($machineType)
+    {
+        $this->machineType = $machineType;
+    }
+    public function getMachineType()
+    {
+        return $this->machineType;
+    }
+    public function setOauthScopes($oauthScopes)
+    {
+        $this->oauthScopes = $oauthScopes;
+    }
+    public function getOauthScopes()
+    {
+        return $this->oauthScopes;
+    }
 }
 
 class Google_Service_Container_Operation extends Google_Model
 {
-  protected $internal_gapi_mappings = array(
+    protected $internal_gapi_mappings = array(
   );
-  public $name;
-  public $operationType;
-  public $selfLink;
-  public $status;
-  public $statusMessage;
-  public $targetLink;
-  public $zone;
+    public $name;
+    public $operationType;
+    public $selfLink;
+    public $status;
+    public $statusMessage;
+    public $targetLink;
+    public $zone;
 
 
-  public function setName($name)
-  {
-    $this->name = $name;
-  }
-  public function getName()
-  {
-    return $this->name;
-  }
-  public function setOperationType($operationType)
-  {
-    $this->operationType = $operationType;
-  }
-  public function getOperationType()
-  {
-    return $this->operationType;
-  }
-  public function setSelfLink($selfLink)
-  {
-    $this->selfLink = $selfLink;
-  }
-  public function getSelfLink()
-  {
-    return $this->selfLink;
-  }
-  public function setStatus($status)
-  {
-    $this->status = $status;
-  }
-  public function getStatus()
-  {
-    return $this->status;
-  }
-  public function setStatusMessage($statusMessage)
-  {
-    $this->statusMessage = $statusMessage;
-  }
-  public function getStatusMessage()
-  {
-    return $this->statusMessage;
-  }
-  public function setTargetLink($targetLink)
-  {
-    $this->targetLink = $targetLink;
-  }
-  public function getTargetLink()
-  {
-    return $this->targetLink;
-  }
-  public function setZone($zone)
-  {
-    $this->zone = $zone;
-  }
-  public function getZone()
-  {
-    return $this->zone;
-  }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setOperationType($operationType)
+    {
+        $this->operationType = $operationType;
+    }
+    public function getOperationType()
+    {
+        return $this->operationType;
+    }
+    public function setSelfLink($selfLink)
+    {
+        $this->selfLink = $selfLink;
+    }
+    public function getSelfLink()
+    {
+        return $this->selfLink;
+    }
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+    public function getStatus()
+    {
+        return $this->status;
+    }
+    public function setStatusMessage($statusMessage)
+    {
+        $this->statusMessage = $statusMessage;
+    }
+    public function getStatusMessage()
+    {
+        return $this->statusMessage;
+    }
+    public function setTargetLink($targetLink)
+    {
+        $this->targetLink = $targetLink;
+    }
+    public function getTargetLink()
+    {
+        return $this->targetLink;
+    }
+    public function setZone($zone)
+    {
+        $this->zone = $zone;
+    }
+    public function getZone()
+    {
+        return $this->zone;
+    }
 }
 
 class Google_Service_Container_UpdateClusterRequest extends Google_Model
 {
-  protected $internal_gapi_mappings = array(
+    protected $internal_gapi_mappings = array(
   );
-  protected $updateType = 'Google_Service_Container_ClusterUpdate';
-  protected $updateDataType = '';
+    protected $updateType = 'Google_Service_Container_ClusterUpdate';
+    protected $updateDataType = '';
 
 
-  public function setUpdate(Google_Service_Container_ClusterUpdate $update)
-  {
-    $this->update = $update;
-  }
-  public function getUpdate()
-  {
-    return $this->update;
-  }
+    public function setUpdate(Google_Service_Container_ClusterUpdate $update)
+    {
+        $this->update = $update;
+    }
+    public function getUpdate()
+    {
+        return $this->update;
+    }
 }

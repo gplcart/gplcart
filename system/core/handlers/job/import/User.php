@@ -141,7 +141,6 @@ class User
         $errors = array();
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['user_id']) && is_numeric($data['user_id']));
@@ -202,6 +201,7 @@ class User
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -218,7 +218,6 @@ class User
      */
     protected function validateEmail(&$data, &$errors, $line, $update)
     {
-
         if (!isset($data['email'])) {
             return true;
         }
@@ -238,6 +237,7 @@ class User
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('E-mail already exists')));
+
             return false;
         }
 
@@ -245,6 +245,7 @@ class User
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Invalid E-mail')));
+
             return false;
         }
 
@@ -266,6 +267,7 @@ class User
 
         if ($data['password'] === $this->import->getCsvAutoTag()) {
             $data['password'] = $this->user->generatePassword();
+
             return true;
         }
         
@@ -306,10 +308,12 @@ class User
                 '@num' => $line,
                 '@error' => $this->language->text('Role @id neither exists or unique', array(
                     '@id' => $data['role_id']))));
+
             return false;
         }
 
         $data['role_id'] = $role['role_id'];
+
         return true;
     }
 
@@ -343,7 +347,6 @@ class User
      */
     protected function validateStore(&$data, &$errors, $line)
     {
-
         if (!isset($data['store_id'])) {
             return true;
         }
@@ -355,10 +358,12 @@ class User
                 '@num' => $line,
                 '@error' => $this->language->text('Store @id neither exists or unique', array(
                     '@id' => $data['store_id']))));
+
             return false;
         }
 
         $data['store_id'] = $store['store_id'];
+
         return true;
     }
 
@@ -392,7 +397,6 @@ class User
      */
     protected function validateCreate(&$data, &$errors, $line)
     {
-
         if (!isset($data['created'])) {
             return true;
         }
@@ -404,10 +408,12 @@ class User
                 '@num' => $line,
                 '@error' => $this->language->text('Invalid date @date', array(
                     '@date' => $data['created']))));
+
             return false;
         }
 
         $data['created'] = $timestamp;
+
         return true;
     }
 
@@ -431,11 +437,11 @@ class User
      */
     protected function add(&$data, &$errors, $line)
     {
-
         if (empty($data['name'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Name cannot be empty, skipped')));
+
             return 0;
         }
 
@@ -443,6 +449,7 @@ class User
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('E-mail cannot be empty, skipped')));
+
             return 0;
         }
 
@@ -450,10 +457,10 @@ class User
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Password cannot be empty, skipped')));
+
             return 0;
         }
 
         return $this->user->add($data) ? 1 : 0;
     }
-
 }

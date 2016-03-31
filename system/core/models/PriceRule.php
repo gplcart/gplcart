@@ -96,6 +96,7 @@ class PriceRule
     public function getConditionHandler($condition_id, $method)
     {
         $handlers = $this->getConditionHandlers();
+
         return Handler::get($handlers, $condition_id, $method);
     }
 
@@ -206,6 +207,7 @@ class PriceRule
         );
 
         $this->hook->fire('pricerule.condition.handlers', $conditions);
+
         return $conditions;
     }
 
@@ -283,7 +285,6 @@ class PriceRule
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -344,6 +345,7 @@ class PriceRule
         }
 
         $this->hook->fire('price.rules', $data, $price_rules);
+
         return $price_rules;
     }
 
@@ -365,7 +367,6 @@ class PriceRule
 
         $results = 0;
         foreach ($rule['data']['conditions'] as $condition) {
-
             $result = Handler::call($handlers, $condition['id'], 'condition', array($rule, $condition, $data));
 
             if ($result === true) {
@@ -395,6 +396,7 @@ class PriceRule
         }
 
         $this->hook->fire('get.price.rule.after', $price_rule_id, $price_rule);
+
         return $price_rule;
     }
 
@@ -455,6 +457,7 @@ class PriceRule
 
         $price_rule_id = $this->db->insert('price_rule', $values);
         $this->hook->fire('add.price.rule.after', $data, $price_rule_id);
+
         return $price_rule_id;
     }
 
@@ -534,6 +537,7 @@ class PriceRule
     {
         $sth = $this->db->prepare('UPDATE price_rule SET used=used + 1 WHERE price_rule_id=:price_rule_id');
         $sth->execute(array(':price_rule_id' => (int) $price_rule_id));
+
         return (bool) $sth->rowCount();
     }
 
@@ -551,6 +555,7 @@ class PriceRule
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':code' => $code, ':price_rule_id' => $price_rule_id, ':status' => 1));
+
         return (bool) $sth->fetchColumn();
     }
 
@@ -570,6 +575,7 @@ class PriceRule
         $result = $this->db->delete('price_rule', array('price_rule_id' => (int) $price_rule_id));
 
         $this->hook->fire('delete.price.rule.after', $price_rule_id, $result);
+
         return (bool) $result;
     }
 
@@ -609,6 +615,7 @@ class PriceRule
         if ($rule['type'] === 'order' && !empty($rule['code'])) {
             if (empty($data['order']['code']) || !$this->codeMatches($rule_id, $data['order']['code'])) {
                 $components[$rule_id] = array('rule' => $rule, 'price' => 0);
+
                 return $amount;
             }
         }
@@ -617,6 +624,7 @@ class PriceRule
             $value = $amount * ((float) $rule['value'] / 100);
             $components[$rule_id] = array('rule' => $rule, 'price' => $value);
             $amount += $value;
+
             return $amount;
         }
 
@@ -629,6 +637,7 @@ class PriceRule
 
         $components[$rule_id] = array('rule' => $rule, 'price' => $value);
         $amount += $value;
+
         return $amount;
     }
 
@@ -658,13 +667,11 @@ class PriceRule
         $results = array();
 
         foreach ($rules as $id => $rule) {
-
             if (!$this->conditionsMet($rule, $data)) {
                 continue;
             }
 
             if ($type === 'order' && !empty($rule['code'])) {
-
                 $coupons++;
 
                 if ($coupons > 1) {
@@ -675,11 +682,12 @@ class PriceRule
             $results[$id] = $rule;
         }
 
-        uasort($results, function($a, $b) {
+        uasort($results, function ($a, $b) {
             return empty($a['code']) ? -1 : 1; // Coupons always bottom
         });
 
         $this->hook->fire('suited.price.rules.after', $results, $data);
+
         return $results;
     }
 
@@ -764,5 +772,4 @@ class PriceRule
 
         return false;
     }
-
 }

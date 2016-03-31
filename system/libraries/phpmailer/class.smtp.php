@@ -207,6 +207,7 @@ class SMTP
         //Avoid clash with built-in function names
         if (!in_array($this->Debugoutput, array('error_log', 'html', 'echo')) and is_callable($this->Debugoutput)) {
             call_user_func($this->Debugoutput, $str, $this->do_debug);
+
             return;
         }
         switch ($this->Debugoutput) {
@@ -258,6 +259,7 @@ class SMTP
         if ($this->connected()) {
             // Already connected, generate error
             $this->setError('Already connected to a server');
+
             return false;
         }
         if (empty($port)) {
@@ -307,6 +309,7 @@ class SMTP
                 . ": $errstr ($errno)",
                 self::DEBUG_CLIENT
             );
+
             return false;
         }
         $this->edebug('Connection: opened', self::DEBUG_CONNECTION);
@@ -323,6 +326,7 @@ class SMTP
         // Get any announcement
         $announce = $this->get_lines();
         $this->edebug('SERVER -> CLIENT: ' . $announce, self::DEBUG_SERVER);
+
         return true;
     }
 
@@ -344,6 +348,7 @@ class SMTP
         )) {
             return false;
         }
+
         return true;
     }
 
@@ -369,11 +374,12 @@ class SMTP
     ) {
         if (!$this->server_caps) {
             $this->setError('Authentication is not allowed before HELO/EHLO');
+
             return false;
         }
 
         if (array_key_exists('EHLO', $this->server_caps)) {
-        // SMTP extensions are available. Let's try to find a proper authentication method
+            // SMTP extensions are available. Let's try to find a proper authentication method
 
             if (!array_key_exists('AUTH', $this->server_caps)) {
                 $this->setError('Authentication is not allowed at this stage');
@@ -397,6 +403,7 @@ class SMTP
                 }
                 if (empty($authtype)) {
                     $this->setError('No supported authentication methods found');
+
                     return false;
                 }
                 self::edebug('Auth method selected: '.$authtype, self::DEBUG_LOWLEVEL);
@@ -404,6 +411,7 @@ class SMTP
 
             if (!in_array($authtype, $this->server_caps['AUTH'])) {
                 $this->setError("The requested authentication method \"$authtype\" is not supported by the server");
+
                 return false;
             }
         } elseif (empty($authtype)) {
@@ -470,6 +478,7 @@ class SMTP
                         . $this->error['error'],
                         self::DEBUG_CLIENT
                     );
+
                     return false;
                 }
                 //msg1
@@ -515,8 +524,10 @@ class SMTP
                 return $this->sendCommand('Username', base64_encode($response), 235);
             default:
                 $this->setError("Authentication method \"$authtype\" is not supported");
+
                 return false;
         }
+
         return true;
     }
 
@@ -572,10 +583,13 @@ class SMTP
                     self::DEBUG_CLIENT
                 );
                 $this->close();
+
                 return false;
             }
+
             return true; // everything looks good
         }
+
         return false;
     }
 
@@ -687,6 +701,7 @@ class SMTP
         $result = $this->sendCommand('DATA END', '.', 250);
         //Restore timelimit
         $this->Timelimit = $savetimelimit;
+
         return $result;
     }
 
@@ -724,6 +739,7 @@ class SMTP
         } else {
             $this->server_caps = null;
         }
+
         return $noerror;
     }
 
@@ -783,6 +799,7 @@ class SMTP
     public function mail($from)
     {
         $useVerp = ($this->do_verp ? ' XVERP' : '');
+
         return $this->sendCommand(
             'MAIL FROM',
             'MAIL FROM:<' . $from . '>' . $useVerp,
@@ -806,6 +823,7 @@ class SMTP
             $this->close();
             $this->error = $err; //Restore any error from the quit command
         }
+
         return $noerror;
     }
 
@@ -851,11 +869,13 @@ class SMTP
     {
         if (!$this->connected()) {
             $this->setError("Called $command without being connected");
+
             return false;
         }
         //Reject line breaks in all commands
         if (strpos($commandstring, "\n") !== false or strpos($commandstring, "\r") !== false) {
             $this->setError("Command '$command' contained line breaks");
+
             return false;
         }
         $this->client_send($commandstring . self::CRLF);
@@ -892,10 +912,12 @@ class SMTP
                 'SMTP ERROR: ' . $this->error['error'] . ': ' . $this->last_reply,
                 self::DEBUG_CLIENT
             );
+
             return false;
         }
 
         $this->setError('');
+
         return true;
     }
 
@@ -952,6 +974,7 @@ class SMTP
     {
         $this->setError('The SMTP TURN command is not implemented');
         $this->edebug('SMTP NOTICE: ' . $this->error['error'], self::DEBUG_CLIENT);
+
         return false;
     }
 
@@ -964,6 +987,7 @@ class SMTP
     public function client_send($data)
     {
         $this->edebug("CLIENT -> SERVER: $data", self::DEBUG_CLIENT);
+
         return fwrite($this->smtp_conn, $data);
     }
 
@@ -1010,6 +1034,7 @@ class SMTP
     {
         if (!$this->server_caps) {
             $this->setError('No HELO/EHLO was sent');
+
             return null;
         }
 
@@ -1022,6 +1047,7 @@ class SMTP
                 return false;
             }
             $this->setError('HELO handshake was used. Client knows nothing about server extensions');
+
             return null;
         }
 
@@ -1087,6 +1113,7 @@ class SMTP
                 break;
             }
         }
+
         return $data;
     }
 

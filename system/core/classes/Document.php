@@ -43,7 +43,6 @@ class Document
         static $scripts = array();
 
         if (empty($script)) {
-
             if (!empty($position)) {
                 return empty($scripts[$position]) ? array() : $scripts[$position];
             }
@@ -84,6 +83,7 @@ class Document
             if (!file_exists($file)) {
                 return false;
             }
+
             return $this->request->base(true) . $string . '?v=' . filemtime($file);
         }
 
@@ -142,6 +142,7 @@ class Document
         }
 
         $meta[] = $data;
+
         return $meta;
     }
 
@@ -160,6 +161,7 @@ class Document
         }
 
         $breadcrumbs[] = $breadcrumb;
+
         return $breadcrumbs;
     }
 
@@ -202,6 +204,7 @@ class Document
         }
 
         $title = $string;
+
         return $title;
     }
 
@@ -220,7 +223,7 @@ class Document
         }
 
         $description = $string;
+
         return $description;
     }
-
 }

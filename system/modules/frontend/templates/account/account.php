@@ -23,30 +23,45 @@
     </a>
   </div>
   <div class="col-md-9">
-    <?php if($orders) { ?>
+    <?php if ($orders) {
+    ?>
     <table class="table table-condensed">
         <thead>
             <tr>
                 <th>#</th>
-                <th><?php echo $this->text('Created'); ?></th>
-                <th><?php echo $this->text('Amount'); ?></th>
-                <th><?php echo $this->text('Status'); ?></th>
+                <th><?php echo $this->text('Created');
+    ?></th>
+                <th><?php echo $this->text('Amount');
+    ?></th>
+                <th><?php echo $this->text('Status');
+    ?></th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach($orders as $order) { ?>
+            <?php foreach ($orders as $order) {
+    ?>
             <tr>
-                <td><?php echo $order['order_id']; ?></td>
-                <td><?php echo $order['created']; ?></td>
-                <td><?php echo $order['amount']; ?></td>
-                <td><?php echo $order['status']; ?></td>
+                <td><?php echo $order['order_id'];
+    ?></td>
+                <td><?php echo $order['created'];
+    ?></td>
+                <td><?php echo $order['amount'];
+    ?></td>
+                <td><?php echo $order['status'];
+    ?></td>
             </tr>
-            <?php } ?>
+            <?php 
+}
+    ?>
         </tbody>
     </table>
-    <?php } else { ?>
-    <?php echo $this->text('You have no orders yet. <a href="!href">Shop now</a>', array('!href' => $this->url('/'))); ?>
-    <?php } ?>
+    <?php 
+} else {
+    ?>
+    <?php echo $this->text('You have no orders yet. <a href="!href">Shop now</a>', array('!href' => $this->url('/')));
+    ?>
+    <?php 
+} ?>
   </div>
 </div>
 

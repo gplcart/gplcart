@@ -1,8 +1,8 @@
 <?php
 
     /*
-     * 
-     * 
+     *
+     *
 
             $combinations = $this->product->getCombinations($product_id);
 
@@ -32,8 +32,8 @@
 
                 Tool::writeCsv($options['file'], $fields);
             }
-     * 
-     * 
-     * 
-     * 
+     *
+     *
+     *
+     *
      */

@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_SimpleTest
+class twig_SimpleTest
 {
     protected $name;
     protected $callable;

@@ -209,6 +209,7 @@ class CategoryGroup extends Controller
 
         if ($this->formErrors()) {
             $this->data['category_group'] = $this->submitted + $category_group;
+
             return;
         }
 
@@ -243,8 +244,10 @@ class CategoryGroup extends Controller
     {
         if (isset($this->submitted['category_group_id']) && $this->category_group->exists($this->submitted['type'], $this->submitted['store_id'], $this->submitted['category_group_id'])) {
             $this->data['form_errors']['type'] = $this->text('Wrong category group type');
+
             return false;
         }
+
         return true;
     }
 
@@ -257,8 +260,10 @@ class CategoryGroup extends Controller
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
+
         return true;
     }
 
@@ -283,5 +288,4 @@ class CategoryGroup extends Controller
 
         return !$has_errors;
     }
-
 }

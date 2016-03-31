@@ -93,7 +93,6 @@ class Report
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'type':
                     $sql .= " ORDER BY type {$data['order']}";
@@ -155,6 +154,7 @@ class Report
         FROM log";
 
         $result = $this->db->query($sql)->fetchAll();
+
         return reset($result);
     }
 
@@ -172,6 +172,7 @@ class Report
         $placeholders = rtrim(str_repeat('?, ', count($error_types)), ', ');
         $sth = $this->db->prepare('DELETE FROM log WHERE log_id IN(' . $placeholders . ')');
         $sth->execute($error_types);
+
         return true;
     }
 
@@ -323,5 +324,4 @@ class Report
 
         return $result;
     }
-
 }

@@ -20,19 +20,19 @@
  */
 
 if (!class_exists('Google_Client')) {
-  require_once dirname(__FILE__) . '/../autoload.php';
+    require_once dirname(__FILE__) . '/../autoload.php';
 }
 
 abstract class Google_IO_Abstract
 {
-  const UNKNOWN_CODE = 0;
-  const FORM_URLENCODED = 'application/x-www-form-urlencoded';
-  private static $CONNECTION_ESTABLISHED_HEADERS = array(
+    const UNKNOWN_CODE = 0;
+    const FORM_URLENCODED = 'application/x-www-form-urlencoded';
+    private static $CONNECTION_ESTABLISHED_HEADERS = array(
     "HTTP/1.0 200 Connection established\r\n\r\n",
     "HTTP/1.1 200 Connection established\r\n\r\n",
   );
-  private static $ENTITY_HTTP_METHODS = array("POST" => null, "PUT" => null);
-  private static $HOP_BY_HOP = array(
+    private static $ENTITY_HTTP_METHODS = array("POST" => null, "PUT" => null);
+    private static $HOP_BY_HOP = array(
     'connection' => true,
     'keep-alive' => true,
     'proxy-authenticate' => true,
@@ -47,14 +47,14 @@ abstract class Google_IO_Abstract
   /** @var Google_Client */
   protected $client;
 
-  public function __construct(Google_Client $client)
-  {
-    $this->client = $client;
-    $timeout = $client->getClassConfig('Google_IO_Abstract', 'request_timeout_seconds');
-    if ($timeout > 0) {
-      $this->setTimeout($timeout);
+    public function __construct(Google_Client $client)
+    {
+        $this->client = $client;
+        $timeout = $client->getClassConfig('Google_IO_Abstract', 'request_timeout_seconds');
+        if ($timeout > 0) {
+            $this->setTimeout($timeout);
+        }
     }
-  }
 
   /**
    * Executes a Google_Http_Request
@@ -102,13 +102,14 @@ abstract class Google_IO_Abstract
    */
   public function setCachedRequest(Google_Http_Request $request)
   {
-    // Determine if the request is cacheable.
+      // Determine if the request is cacheable.
     if (Google_Http_CacheParser::isResponseCacheable($request)) {
-      $this->client->getCache()->set($request->getCacheKey(), $request);
-      return true;
+        $this->client->getCache()->set($request->getCacheKey(), $request);
+
+        return true;
     }
 
-    return false;
+      return false;
   }
 
   /**
@@ -121,37 +122,39 @@ abstract class Google_IO_Abstract
    */
   public function makeRequest(Google_Http_Request $request)
   {
-    // First, check to see if we have a valid cached version.
+      // First, check to see if we have a valid cached version.
     $cached = $this->getCachedRequest($request);
-    if ($cached !== false && $cached instanceof Google_Http_Request) {
-      if (!$this->checkMustRevalidateCachedRequest($cached, $request)) {
-        return $cached;
+      if ($cached !== false && $cached instanceof Google_Http_Request) {
+          if (!$this->checkMustRevalidateCachedRequest($cached, $request)) {
+              return $cached;
+          }
       }
-    }
 
-    if (array_key_exists($request->getRequestMethod(), self::$ENTITY_HTTP_METHODS)) {
-      $request = $this->processEntityRequest($request);
-    }
+      if (array_key_exists($request->getRequestMethod(), self::$ENTITY_HTTP_METHODS)) {
+          $request = $this->processEntityRequest($request);
+      }
 
-    list($responseData, $responseHeaders, $respHttpCode) = $this->executeRequest($request);
+      list($responseData, $responseHeaders, $respHttpCode) = $this->executeRequest($request);
 
-    if ($respHttpCode == 304 && $cached) {
-      // If the server responded NOT_MODIFIED, return the cached request.
+      if ($respHttpCode == 304 && $cached) {
+          // If the server responded NOT_MODIFIED, return the cached request.
       $this->updateCachedRequest($cached, $responseHeaders);
-      return $cached;
-    }
 
-    if (!isset($responseHeaders['Date']) && !isset($responseHeaders['date'])) {
-      $responseHeaders['date'] = date("r");
-    }
+          return $cached;
+      }
 
-    $request->setResponseHttpCode($respHttpCode);
-    $request->setResponseHeaders($responseHeaders);
-    $request->setResponseBody($responseData);
+      if (!isset($responseHeaders['Date']) && !isset($responseHeaders['date'])) {
+          $responseHeaders['date'] = date("r");
+      }
+
+      $request->setResponseHttpCode($respHttpCode);
+      $request->setResponseHeaders($responseHeaders);
+      $request->setResponseBody($responseData);
     // Store the request in cache (the function checks to see if the request
     // can actually be cached)
     $this->setCachedRequest($request);
-    return $request;
+
+      return $request;
   }
 
   /**
@@ -162,11 +165,11 @@ abstract class Google_IO_Abstract
    */
   public function getCachedRequest(Google_Http_Request $request)
   {
-    if (false === Google_Http_CacheParser::isRequestCacheable($request)) {
-      return false;
-    }
+      if (false === Google_Http_CacheParser::isRequestCacheable($request)) {
+          return false;
+      }
 
-    return $this->client->getCache()->get($request->getCacheKey());
+      return $this->client->getCache()->get($request->getCacheKey());
   }
 
   /**
@@ -177,28 +180,28 @@ abstract class Google_IO_Abstract
    */
   public function processEntityRequest(Google_Http_Request $request)
   {
-    $postBody = $request->getPostBody();
-    $contentType = $request->getRequestHeader("content-type");
+      $postBody = $request->getPostBody();
+      $contentType = $request->getRequestHeader("content-type");
 
     // Set the default content-type as application/x-www-form-urlencoded.
     if (false == $contentType) {
-      $contentType = self::FORM_URLENCODED;
-      $request->setRequestHeaders(array('content-type' => $contentType));
+        $contentType = self::FORM_URLENCODED;
+        $request->setRequestHeaders(array('content-type' => $contentType));
     }
 
     // Force the payload to match the content-type asserted in the header.
     if ($contentType == self::FORM_URLENCODED && is_array($postBody)) {
-      $postBody = http_build_query($postBody, '', '&');
-      $request->setPostBody($postBody);
+        $postBody = http_build_query($postBody, '', '&');
+        $request->setPostBody($postBody);
     }
 
     // Make sure the content-length header is set.
     if (!$postBody || is_string($postBody)) {
-      $postsLength = strlen($postBody);
-      $request->setRequestHeaders(array('content-length' => $postsLength));
+        $postsLength = strlen($postBody);
+        $request->setRequestHeaders(array('content-length' => $postsLength));
     }
 
-    return $request;
+      return $request;
   }
 
   /**
@@ -211,21 +214,22 @@ abstract class Google_IO_Abstract
    */
   protected function checkMustRevalidateCachedRequest($cached, $request)
   {
-    if (Google_Http_CacheParser::mustRevalidate($cached)) {
-      $addHeaders = array();
-      if ($cached->getResponseHeader('etag')) {
-        // [13.3.4] If an entity tag has been provided by the origin server,
+      if (Google_Http_CacheParser::mustRevalidate($cached)) {
+          $addHeaders = array();
+          if ($cached->getResponseHeader('etag')) {
+              // [13.3.4] If an entity tag has been provided by the origin server,
         // we must use that entity tag in any cache-conditional request.
         $addHeaders['If-None-Match'] = $cached->getResponseHeader('etag');
-      } elseif ($cached->getResponseHeader('date')) {
-        $addHeaders['If-Modified-Since'] = $cached->getResponseHeader('date');
-      }
+          } elseif ($cached->getResponseHeader('date')) {
+              $addHeaders['If-Modified-Since'] = $cached->getResponseHeader('date');
+          }
 
-      $request->setRequestHeaders($addHeaders);
-      return true;
-    } else {
-      return false;
-    }
+          $request->setRequestHeaders($addHeaders);
+
+          return true;
+      } else {
+          return false;
+      }
   }
 
   /**
@@ -235,19 +239,19 @@ abstract class Google_IO_Abstract
    */
   protected function updateCachedRequest($cached, $responseHeaders)
   {
-    $hopByHop = self::$HOP_BY_HOP;
-    if (!empty($responseHeaders['connection'])) {
-      $connectionHeaders = array_map(
+      $hopByHop = self::$HOP_BY_HOP;
+      if (!empty($responseHeaders['connection'])) {
+          $connectionHeaders = array_map(
           'strtolower',
           array_filter(
               array_map('trim', explode(',', $responseHeaders['connection']))
           )
       );
-      $hopByHop += array_fill_keys($connectionHeaders, true);
-    }
+          $hopByHop += array_fill_keys($connectionHeaders, true);
+      }
 
-    $endToEnd = array_diff_key($responseHeaders, $hopByHop);
-    $cached->setResponseHeaders($endToEnd);
+      $endToEnd = array_diff_key($responseHeaders, $hopByHop);
+      $cached->setResponseHeaders($endToEnd);
   }
 
   /**
@@ -259,33 +263,34 @@ abstract class Google_IO_Abstract
    */
   public function parseHttpResponse($respData, $headerSize)
   {
-    // check proxy header
+      // check proxy header
     foreach (self::$CONNECTION_ESTABLISHED_HEADERS as $established_header) {
-      if (stripos($respData, $established_header) !== false) {
-        // existed, remove it
+        if (stripos($respData, $established_header) !== false) {
+            // existed, remove it
         $respData = str_ireplace($established_header, '', $respData);
         // Subtract the proxy header size unless the cURL bug prior to 7.30.0
         // is present which prevented the proxy header size from being taken into
         // account.
         if (!$this->needsQuirk()) {
-          $headerSize -= strlen($established_header);
+            $headerSize -= strlen($established_header);
         }
-        break;
-      }
+            break;
+        }
     }
 
-    if ($headerSize) {
-      $responseBody = substr($respData, $headerSize);
-      $responseHeaders = substr($respData, 0, $headerSize);
-    } else {
-      $responseSegments = explode("\r\n\r\n", $respData, 2);
-      $responseHeaders = $responseSegments[0];
-      $responseBody = isset($responseSegments[1]) ? $responseSegments[1] :
+      if ($headerSize) {
+          $responseBody = substr($respData, $headerSize);
+          $responseHeaders = substr($respData, 0, $headerSize);
+      } else {
+          $responseSegments = explode("\r\n\r\n", $respData, 2);
+          $responseHeaders = $responseSegments[0];
+          $responseBody = isset($responseSegments[1]) ? $responseSegments[1] :
                                                     null;
-    }
+      }
 
-    $responseHeaders = $this->getHttpResponseHeaders($responseHeaders);
-    return array($responseHeaders, $responseBody);
+      $responseHeaders = $this->getHttpResponseHeaders($responseHeaders);
+
+      return array($responseHeaders, $responseBody);
   }
 
   /**
@@ -295,45 +300,46 @@ abstract class Google_IO_Abstract
    */
   public function getHttpResponseHeaders($rawHeaders)
   {
-    if (is_array($rawHeaders)) {
-      return $this->parseArrayHeaders($rawHeaders);
-    } else {
-      return $this->parseStringHeaders($rawHeaders);
-    }
-  }
-
-  private function parseStringHeaders($rawHeaders)
-  {
-    $headers = array();
-    $responseHeaderLines = explode("\r\n", $rawHeaders);
-    foreach ($responseHeaderLines as $headerLine) {
-      if ($headerLine && strpos($headerLine, ':') !== false) {
-        list($header, $value) = explode(': ', $headerLine, 2);
-        $header = strtolower($header);
-        if (isset($headers[$header])) {
-          $headers[$header] .= "\n" . $value;
-        } else {
-          $headers[$header] = $value;
-        }
+      if (is_array($rawHeaders)) {
+          return $this->parseArrayHeaders($rawHeaders);
+      } else {
+          return $this->parseStringHeaders($rawHeaders);
       }
-    }
-    return $headers;
   }
 
-  private function parseArrayHeaders($rawHeaders)
-  {
-    $header_count = count($rawHeaders);
-    $headers = array();
+    private function parseStringHeaders($rawHeaders)
+    {
+        $headers = array();
+        $responseHeaderLines = explode("\r\n", $rawHeaders);
+        foreach ($responseHeaderLines as $headerLine) {
+            if ($headerLine && strpos($headerLine, ':') !== false) {
+                list($header, $value) = explode(': ', $headerLine, 2);
+                $header = strtolower($header);
+                if (isset($headers[$header])) {
+                    $headers[$header] .= "\n" . $value;
+                } else {
+                    $headers[$header] = $value;
+                }
+            }
+        }
 
-    for ($i = 0; $i < $header_count; $i++) {
-      $header = $rawHeaders[$i];
+        return $headers;
+    }
+
+    private function parseArrayHeaders($rawHeaders)
+    {
+        $header_count = count($rawHeaders);
+        $headers = array();
+
+        for ($i = 0; $i < $header_count; $i++) {
+            $header = $rawHeaders[$i];
       // Times will have colons in - so we just want the first match.
       $header_parts = explode(': ', $header, 2);
-      if (count($header_parts) == 2) {
-        $headers[strtolower($header_parts[0])] = $header_parts[1];
-      }
-    }
+            if (count($header_parts) == 2) {
+                $headers[strtolower($header_parts[0])] = $header_parts[1];
+            }
+        }
 
-    return $headers;
-  }
+        return $headers;
+    }
 }

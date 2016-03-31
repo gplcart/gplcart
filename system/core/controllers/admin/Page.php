@@ -65,7 +65,6 @@ class Page extends Controller
      */
     public function pages()
     {
-
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
         $value = $this->request->post('value');
@@ -137,7 +136,6 @@ class Page extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $page_id) {
-
             if ($action == 'status' && $this->access('page_edit')) {
                 $updated += (int) $this->page->update($page_id, array('status' => $value));
             }
@@ -153,11 +151,13 @@ class Page extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Pages have been updated'), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Pages have been deleted'), 'success');
+
             return true;
         }
 
@@ -339,6 +339,7 @@ class Page extends Controller
 
         if ($this->formErrors()) {
             $this->data['page'] = $this->submitted;
+
             return;
         }
 
@@ -382,8 +383,10 @@ class Page extends Controller
         if (empty($this->submitted['alias'])) {
             if (isset($page['page_id'])) {
                 $this->submitted['alias'] = $this->page->generateAlias($page);
+
                 return true;
             }
+
             return true;
         }
 
@@ -394,6 +397,7 @@ class Page extends Controller
 
         if ($check_alias && $this->alias->exists($this->submitted['alias'])) {
             $this->data['form_errors']['alias'] = $this->text('URL alias already exists');
+
             return false;
         }
 
@@ -412,6 +416,7 @@ class Page extends Controller
 
         if (!$this->submitted['title'] || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -426,8 +431,10 @@ class Page extends Controller
     {
         if (isset($this->submitted['description']) && !$this->submitted['description']) {
             $this->data['form_errors']['description'] = $this->text('Required field');
+
             return false;
         }
+
         return true;
     }
 
@@ -439,6 +446,7 @@ class Page extends Controller
     {
         if (isset($this->submitted['meta_title']) && mb_strlen($this->submitted['meta_title']) > 255) {
             $this->data['form_errors']['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
             return false;
         }
 
@@ -453,6 +461,7 @@ class Page extends Controller
     {
         if (isset($this->submitted['meta_description']) && mb_strlen($this->submitted['meta_description']) > 255) {
             $this->data['form_errors']['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
             return false;
         }
 
@@ -471,7 +480,6 @@ class Page extends Controller
 
         $has_errors = false;
         foreach ((array) $this->submitted['translation'] as $lang => &$translation) {
-
             if (mb_strlen($translation['title']) > 255) {
                 $this->data['form_errors']['translation'][$lang]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
@@ -502,7 +510,6 @@ class Page extends Controller
         }
 
         foreach ($this->submitted['images'] as &$image) {
-
             if (empty($image['title']) && isset($this->submitted['title'])) {
                 $image['title'] = $this->submitted['title'];
             }
@@ -524,5 +531,4 @@ class Page extends Controller
 
         return true;
     }
-
 }

@@ -88,6 +88,7 @@ class Image
         }
 
         $this->filename = $filename;
+
         return $this->get_meta_data();
     }
 
@@ -204,18 +205,15 @@ class Image
     protected function normalize_color($color)
     {
         if (is_string($color)) {
-
             $color = trim($color, '#');
 
             if (strlen($color) == 6) {
-
                 list($r, $g, $b) = array(
                     $color[0] . $color[1],
                     $color[2] . $color[3],
                     $color[4] . $color[5]
                 );
             } elseif (strlen($color) == 3) {
-
                 list($r, $g, $b) = array(
                     $color[0] . $color[0],
                     $color[1] . $color[1],
@@ -227,9 +225,7 @@ class Image
 
             return array('r' => hexdec($r), 'g' => hexdec($g), 'b' => hexdec($b), 'a' => 0);
         } elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {
-
             if (isset($color['r'], $color['g'], $color['b'])) {
-
                 return array(
                     'r' => $this->keep_within($color['r'], 0, 255),
                     'g' => $this->keep_within($color['g'], 0, 255),
@@ -237,7 +233,6 @@ class Image
                     'a' => $this->keep_within(isset($color['a']) ? $color['a'] : 0, 0, 127)
                 );
             } elseif (isset($color[0], $color[1], $color[2])) {
-
                 return array(
                     'r' => $this->keep_within($color[0], 0, 255),
                     'g' => $this->keep_within($color[1], 0, 255),
@@ -474,6 +469,7 @@ class Image
         for ($i = 0; $i < $passes; $i++) {
             imagefilter($this->image, $type);
         }
+
         return $this;
     }
 
@@ -485,6 +481,7 @@ class Image
     public function brightness($level)
     {
         imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $this->keep_within($level, -255, 255));
+
         return $this;
     }
 
@@ -496,6 +493,7 @@ class Image
     public function contrast($level)
     {
         imagefilter($this->image, IMG_FILTER_CONTRAST, $this->keep_within($level, -100, 100));
+
         return $this;
     }
 
@@ -510,6 +508,7 @@ class Image
         $rgba = $this->normalize_color($color);
         $alpha = $this->keep_within(127 - (127 * $opacity), 0, 127);
         imagefilter($this->image, IMG_FILTER_COLORIZE, $this->keep_within($rgba['r'], 0, 255), $this->keep_within($rgba['g'], 0, 255), $this->keep_within($rgba['b'], 0, 255), $alpha);
+
         return $this;
     }
 
@@ -605,6 +604,7 @@ class Image
         imagesavealpha($src_im, true);
         imagealphablending($src_im, true);
         imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
+
         return;
     }
 
@@ -615,6 +615,7 @@ class Image
     public function edges()
     {
         imagefilter($this->image, IMG_FILTER_EDGEDETECT);
+
         return $this;
     }
 
@@ -625,6 +626,7 @@ class Image
     public function emboss()
     {
         imagefilter($this->image, IMG_FILTER_EMBOSS);
+
         return $this;
     }
 
@@ -662,6 +664,7 @@ class Image
     public function invert()
     {
         imagefilter($this->image, IMG_FILTER_NEGATE);
+
         return $this;
     }
 
@@ -672,6 +675,7 @@ class Image
     public function mean_remove()
     {
         imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
+
         return $this;
     }
 
@@ -777,6 +781,7 @@ class Image
     public function pixelate($block_size = 10)
     {
         imagefilter($this->image, IMG_FILTER_PIXELATE, $block_size, true);
+
         return $this;
     }
 
@@ -845,6 +850,7 @@ class Image
     {
         imagefilter($this->image, IMG_FILTER_GRAYSCALE);
         imagefilter($this->image, IMG_FILTER_COLORIZE, 100, 50, 0);
+
         return $this;
     }
 
@@ -855,6 +861,7 @@ class Image
     public function sketch()
     {
         imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
+
         return $this;
     }
 
@@ -863,9 +870,10 @@ class Image
      * @param integer $level
      * @return \core\classes\Image
      */
-    function smooth($level)
+    public function smooth($level)
     {
         imagefilter($this->image, IMG_FILTER_SMOOTH, $this->keep_within($level, -10, 10));
+
         return $this;
     }
 
@@ -931,7 +939,7 @@ class Image
                 $x = 0 + $x_offset;
                 $y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
                 break;
-            case 'right';
+            case 'right':
                 $x = $this->width - $box_width + $x_offset;
                 $y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
                 break;
@@ -946,6 +954,7 @@ class Image
         imagesavealpha($this->image, true);
         imagealphablending($this->image, true);
         imagettftext($this->image, $font_size, $angle, $x, $y, $color, $font_file, $text);
+
         return $this;
     }
 
@@ -987,6 +996,7 @@ class Image
     {
         $aspect_ratio = $this->height / $this->width;
         $width = $height / $aspect_ratio;
+
         return $this->resize($width, $height);
     }
 
@@ -999,6 +1009,7 @@ class Image
     {
         $aspect_ratio = $this->height / $this->width;
         $height = $width * $aspect_ratio;
+
         return $this->resize($width, $height);
     }
 
@@ -1036,5 +1047,4 @@ class Image
 
         return $this;
     }
-
 }

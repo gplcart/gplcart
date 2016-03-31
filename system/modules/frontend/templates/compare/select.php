@@ -1,26 +1,46 @@
-<?php if($products) { ?>
-<?php foreach($products as $product_class_id => $items) { ?>
+<?php if ($products) {
+    ?>
+<?php foreach ($products as $product_class_id => $items) {
+    ?>
 <div class="row products">
-  <?php foreach($items as $product_id => $product) { ?>
-    <?php echo $product['rendered']; ?>
-  <?php } ?>
+  <?php foreach ($items as $product_id => $product) {
+    ?>
+    <?php echo $product['rendered'];
+    ?>
+  <?php 
+}
+    ?>
 </div>
 <div class="row">
   <div class="col-md-12">
-    <?php if(count($items) > 1) { ?>
-    <a href="<?php echo $this->url('compare/' . implode(',', array_keys($items))); ?>" class="btn btn-default">
-    <i class="fa fa-balance-scale"></i> <?php echo $this->text('Compare'); ?>
+    <?php if (count($items) > 1) {
+    ?>
+    <a href="<?php echo $this->url('compare/' . implode(',', array_keys($items)));
+    ?>" class="btn btn-default">
+    <i class="fa fa-balance-scale"></i> <?php echo $this->text('Compare');
+    ?>
     </a>
-    <?php } else { ?>
+    <?php 
+} else {
+    ?>
     <span class="btn btn-default disabled">
-      <i class="fa fa-balance-scale"></i> <?php echo $this->text('Add more similar products to compare'); ?>
+      <i class="fa fa-balance-scale"></i> <?php echo $this->text('Add more similar products to compare');
+    ?>
     </span>
-    <?php } ?>
+    <?php 
+}
+    ?>
   </div>
 </div>
-<?php } ?>
-<?php } else { ?>
+<?php 
+}
+    ?>
+<?php 
+} else {
+    ?>
 <div class="row margin-top-20">
-  <div class="col-md-12"><?php echo $this->text('Nothing to compare'); ?></div>
+  <div class="col-md-12"><?php echo $this->text('Nothing to compare');
+    ?></div>
 </div>
-<?php } ?>
+<?php 
+} ?>

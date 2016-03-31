@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-abstract class Twig_Template implements Twig_TemplateInterface
+abstract class twig_Template implements Twig_TemplateInterface
 {
     protected static $cache = array();
 

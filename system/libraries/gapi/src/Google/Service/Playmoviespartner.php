@@ -36,18 +36,17 @@ class Google_Service_Playmoviespartner extends Google_Service
 
   
 
-  /**
+    /**
    * Constructs the internal representation of the Playmoviespartner service.
    *
    * @param Google_Client $client
    */
   public function __construct(Google_Client $client)
   {
-    parent::__construct($client);
-    $this->rootUrl = 'https://playmoviespartner.googleapis.com/';
-    $this->servicePath = '';
-    $this->version = 'v1';
-    $this->serviceName = 'playmoviespartner';
-
+      parent::__construct($client);
+      $this->rootUrl = 'https://playmoviespartner.googleapis.com/';
+      $this->servicePath = '';
+      $this->version = 'v1';
+      $this->serviceName = 'playmoviespartner';
   }
 }

@@ -26,7 +26,7 @@ class CategoryGroup
 
     /**
      * Hook model instance
-     * @var \core\Hook $hook 
+     * @var \core\Hook $hook
      */
     protected $hook;
 
@@ -72,7 +72,6 @@ class CategoryGroup
         $category_group = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($category_group) {
-
             $category_group['data'] = unserialize($category_group['data']);
             $category_group['language'] = 'und';
 
@@ -89,6 +88,7 @@ class CategoryGroup
         }
 
         $this->hook->fire('get.category.group.after', $category_group);
+
         return $category_group;
     }
     
@@ -132,7 +132,6 @@ class CategoryGroup
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'type':
                     $sql .= " ORDER BY cg.type {$data['order']}";
@@ -164,6 +163,7 @@ class CategoryGroup
         }
 
         $this->hook->fire('category.groups', $list);
+
         return $list;
     }
 
@@ -194,6 +194,7 @@ class CategoryGroup
         }
 
         $this->hook->fire('add.category.group.after', $data, $category_group_id);
+
         return $category_group_id;
     }
 
@@ -236,6 +237,7 @@ class CategoryGroup
         $this->db->delete('category_group_translation', array('category_group_id' => (int) $category_group_id));
 
         $this->hook->fire('delete.category.group.after', $category_group_id);
+
         return true;
     }
 
@@ -248,6 +250,7 @@ class CategoryGroup
     {
         $sth = $this->db->prepare('SELECT category_id FROM category WHERE category_group_id=:category_group_id');
         $sth->execute(array(':category_group_id' => (int) $category_group_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -294,6 +297,7 @@ class CategoryGroup
         }
 
         $this->hook->fire('update.category.group.after', $category_group_id, $data);
+
         return true;
     }
 
@@ -321,5 +325,4 @@ class CategoryGroup
 
         return (bool) $sth->fetchColumn();
     }
-
 }

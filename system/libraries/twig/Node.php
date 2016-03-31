@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node implements Twig_NodeInterface
+class twig_Node implements Twig_NodeInterface
 {
     protected $nodes;
     protected $attributes;

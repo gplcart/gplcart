@@ -70,6 +70,7 @@ class Product
 
         $result = $this->indexProduct($product);
         $this->indexProductTranslations($product);
+
         return $result;
     }
 
@@ -97,13 +98,11 @@ class Product
      */
     protected function indexProductTranslations($product)
     {
-
         if (empty($product['translation'])) {
             return false;
         }
 
         foreach ($product['translation'] as $language => $translation) {
-
             $text = "{$translation['title']}{$translation['title']}{$translation['description']}";
             $filtered_text = $this->search->filterStopwords(strip_tags($text), $language);
 
@@ -169,7 +168,6 @@ class Product
         }
         
         if (isset($options['sort']) && (isset($options['order']) && in_array($options['order'], array('asc', 'desc')))) {
-
             $allowed_sort = array('title', 'price', 'created');
 
             if (in_array($options['sort'], $allowed_sort, true)) {
@@ -224,5 +222,4 @@ class Product
 
         return $results;
     }
-
 }

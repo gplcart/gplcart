@@ -27,7 +27,7 @@ class Store
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request 
+     * @var \core\classes\Request $request
      */
     protected $request;
 
@@ -124,7 +124,6 @@ class Store
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY name {$data['order']}";
@@ -164,6 +163,7 @@ class Store
         }
 
         $this->hook->fire('stores', $stores);
+
         return $stores;
     }
 
@@ -174,6 +174,7 @@ class Store
     public function id()
     {
         $current = $this->current();
+
         return isset($current['store_id']) ? (int) $current['store_id'] : null;
     }
 
@@ -197,6 +198,7 @@ class Store
         }
 
         $store = $this->get($domain);
+
         return $store;
     }
 
@@ -223,7 +225,6 @@ class Store
             $sql = 'SELECT * FROM store WHERE store_id=:store_id';
             $where = array(':store_id' => $store_id);
         } else {
-
             $sql = 'SELECT * FROM store WHERE domain=:domain';
             $where = array(':domain' => $store_id);
 
@@ -246,6 +247,7 @@ class Store
         }
 
         $this->hook->fire('get.store.after', $store_id, $store);
+
         return $store;
     }
 
@@ -308,6 +310,7 @@ class Store
         $store_id = $this->db->insert('store', $values);
 
         $this->hook->fire('add.store.after', $data, $store_id);
+
         return $store_id;
     }
 
@@ -406,6 +409,7 @@ class Store
 
         $result = $this->db->delete('store', array('store_id' => (int) $store_id));
         $this->hook->fire('delete.store.after', $store_id, $result);
+
         return (bool) $result;
     }
 
@@ -430,6 +434,7 @@ class Store
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':store_id' => $store_id));
+
         return (bool) $sth->fetchColumn();
     }
 
@@ -505,14 +510,14 @@ class Store
                 return reset($emails);
             case false:
                 array_shift($emails);
+
                 return $emails;
         }
         
-        if(is_numeric($type)){
+        if (is_numeric($type)) {
             return isset($emails[$type]) ? $emails[$type] : '';
         }
 
         return $emails;
     }
-
 }

@@ -47,7 +47,6 @@ class ProductClass extends Controller
      */
     public function classes()
     {
-
         $action = $this->request->post('action');
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
@@ -173,7 +172,7 @@ class ProductClass extends Controller
     }
     
     /**
-     * Applies an action to the selected product classes 
+     * Applies an action to the selected product classes
      * @param array $selected
      * @param string $action
      * @param string $value
@@ -183,7 +182,6 @@ class ProductClass extends Controller
     {
         $updated = $deleted = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('product_class_edit')) {
                 $updated += (int) $this->product_class->update($id, array('status' => (int) $value));
             }
@@ -195,11 +193,13 @@ class ProductClass extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Updated %num product classes', array('%num' => $updated)), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num product classes', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
@@ -217,6 +217,7 @@ class ProductClass extends Controller
 
         if ($this->formErrors()) {
             $this->data['product_class'] = $this->submitted;
+
             return;
         }
 
@@ -239,6 +240,7 @@ class ProductClass extends Controller
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -251,7 +253,6 @@ class ProductClass extends Controller
      */
     protected function setTitleEdit($product_class)
     {
-
         if (isset($product_class['product_class_id'])) {
             $title = $this->text('Edit product class %name', array('%name' => $product_class['title']));
         } else {
@@ -410,7 +411,6 @@ class ProductClass extends Controller
         $this->controlAccess('product_class_edit');
 
         foreach ($this->request->post('fields') as $field_id) {
-
             $field = array(
                 'product_class_id' => $product_class['product_class_id'],
                 'field_id' => $field_id
@@ -458,5 +458,4 @@ class ProductClass extends Controller
     {
         $this->output('content/product/class/field');
     }
-
 }

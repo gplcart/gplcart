@@ -75,6 +75,7 @@ class UserRole
         asort($permissions);
 
         $this->hook->fire('permissions', $permissions);
+
         return $permissions;
     }
 
@@ -227,7 +228,6 @@ class UserRole
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY name {$data['order']}";
@@ -260,6 +260,7 @@ class UserRole
         }
 
         $this->hook->fire('roles', $roles);
+
         return $roles;
     }
 
@@ -282,6 +283,7 @@ class UserRole
 
         $result = $this->db->delete('role', array('role_id' => (int) $role_id));
         $this->hook->fire('delete.role.after', $role_id, $result);
+
         return (bool) $result;
     }
 
@@ -294,6 +296,7 @@ class UserRole
     {
         $sth = $this->db->prepare('SELECT user_id FROM user WHERE role_id=:role_id');
         $sth->execute(array(':role_id' => (int) $role_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -319,6 +322,7 @@ class UserRole
         $role_id = $this->db->insert('role', $values);
 
         $this->hook->fire('add.role.after', $data, $role_id);
+
         return $role_id;
     }
 
@@ -385,7 +389,7 @@ class UserRole
         }
 
         $this->hook->fire('get.role.after', $role_id, $role);
+
         return $role;
     }
-
 }

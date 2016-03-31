@@ -16,7 +16,7 @@
  *
  * @deprecated since 1.12 (to be removed in 3.0)
  */
-interface Twig_CompilerInterface
+interface twig_CompilerInterface
 {
     /**
      * Compiles a node.

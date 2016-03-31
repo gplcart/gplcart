@@ -284,7 +284,6 @@ class City extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('city_edit')) {
                 $updated += (int) $this->city->update($id, array('status' => $value));
             }
@@ -296,11 +295,13 @@ class City extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Cities have been updated'), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Cities have been deleted'), 'success');
+
             return true;
         }
 
@@ -321,6 +322,7 @@ class City extends Controller
 
         if ($this->formErrors()) {
             $this->data['city'] = $this->submitted;
+
             return;
         }
 
@@ -355,5 +357,4 @@ class City extends Controller
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
         }
     }
-
 }

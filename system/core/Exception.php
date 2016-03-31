@@ -61,6 +61,7 @@ class Exception extends Base
     public function getFormattedMessage($message = '')
     {
         $error = $this->getMessageArray($message);
+
         return $this->logger->errorMessage($error, 'PHP Exception');
     }
 
@@ -84,5 +85,4 @@ class Exception extends Base
 
         return $data;
     }
-
 }

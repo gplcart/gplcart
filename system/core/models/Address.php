@@ -89,6 +89,7 @@ class Address
         }
 
         $this->hook->fire('get.address.after', $address_id, $address);
+
         return $address;
     }
 
@@ -126,11 +127,12 @@ class Address
 
         $address_id = $this->db->insert('address', $values);
         $this->hook->fire('add.address.after', $values, $address_id);
+
         return $address_id;
     }
 
     /**
-     * 
+     *
      * @param type $user_id
      * @param type $status
      * @return type
@@ -148,7 +150,7 @@ class Address
     }
     
     /**
-     * 
+     *
      * @param type $address
      * @param type $both
      * @return type
@@ -160,7 +162,6 @@ class Address
 
         $results = array();
         foreach ($address as $key => $value) {
-
             if (empty($format[$key]) || empty($value)) {
                 continue;
             }
@@ -232,6 +233,7 @@ class Address
         }
 
         $this->hook->fire('address.list', $data, $list);
+
         return $list;
     }
 
@@ -245,7 +247,7 @@ class Address
     }
 
     /**
-     * 
+     *
      * @param type $data
      * @return string
      */
@@ -261,6 +263,7 @@ class Address
         }
 
         $this->hook->fire('geocode.query', $data, $fields, $components);
+
         return implode(',', $components);
     }
 
@@ -396,7 +399,7 @@ class Address
 
         $result = $this->db->update('address', $values, array('address_id' => (int) $address_id));
         $this->hook->fire('update.address.after', $address_id, $data, $result);
+
         return (bool) $result;
     }
-
 }

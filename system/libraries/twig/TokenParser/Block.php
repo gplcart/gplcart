@@ -20,7 +20,7 @@
  *  {% endblock %}
  * </pre>
  */
-class Twig_TokenParser_Block extends Twig_TokenParser
+class twig_TokenParser_Block extends Twig_TokenParser
 {
     public function parse(Twig_Token $token)
     {

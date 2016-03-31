@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Environment
+class twig_Environment
 {
     const VERSION = '1.23.2-DEV';
 

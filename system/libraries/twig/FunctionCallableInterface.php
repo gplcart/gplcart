@@ -18,7 +18,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-interface Twig_FunctionCallableInterface
+interface twig_FunctionCallableInterface
 {
     public function getCallable();
 }

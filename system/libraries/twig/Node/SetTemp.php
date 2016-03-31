@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-class Twig_Node_SetTemp extends Twig_Node
+class twig_Node_SetTemp extends Twig_Node
 {
     public function __construct($name, $lineno)
     {

@@ -16,7 +16,7 @@
  */
 
 if (!class_exists('Google_Client')) {
-  require_once dirname(__FILE__) . '/../autoload.php';
+    require_once dirname(__FILE__) . '/../autoload.php';
 }
 
 /**
@@ -25,7 +25,7 @@ if (!class_exists('Google_Client')) {
  */
 interface Google_Task_Retryable
 {
-  /**
+    /**
    * Gets the number of times the associated task can be retried.
    *
    * NOTE: -1 is returned if the task can be retried indefinitely

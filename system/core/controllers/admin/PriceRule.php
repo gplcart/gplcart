@@ -100,7 +100,6 @@ class PriceRule extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {
-
             if ($action == 'status' && $this->access('price_rule_edit')) {
                 $updated += (int) $this->rule->update($rule_id, array('status' => $value));
             }
@@ -112,11 +111,13 @@ class PriceRule extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Updated %num price rules', array('%num' => $updated)), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num price rules', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
@@ -274,6 +275,7 @@ class PriceRule extends Controller
 
         if ($this->formErrors()) {
             $this->data['price_rule'] = $this->submitted;
+
             return;
         }
 
@@ -328,6 +330,7 @@ class PriceRule extends Controller
 
         if (!$this->submitted['name'] || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -346,6 +349,7 @@ class PriceRule extends Controller
 
         if (mb_strlen($this->submitted['code']) > 255) {
             $this->data['form_errors']['code'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
             return false;
         }
 
@@ -353,6 +357,7 @@ class PriceRule extends Controller
 
         if ($this->rule->codeExists($this->submitted['code'], $this->submitted['store_id'], $price_rule_id)) {
             $this->data['form_errors']['code'] = $this->text('This price rule code already exists');
+
             return false;
         }
 
@@ -365,22 +370,25 @@ class PriceRule extends Controller
      */
     protected function validateValue()
     {
-
         if (!is_numeric($this->submitted['value'])) {
             $this->data['form_errors']['value'] = $this->text('Only numeric values allowed');
+
             return false;
         }
 
         if ($this->submitted['value_type'] == 'percent') {
             if (abs($this->submitted['value']) > 100) {
                 $this->data['form_errors']['value'] = $this->text('Percent value must not be greater than 100');
+
                 return false;
             }
+
             return true;
         }
 
         if (strlen($this->submitted['value']) > 10) {
             $this->data['form_errors']['value'] = $this->text('Content must not exceed %s characters', array('%s' => 10));
+
             return false;
         }
 
@@ -396,12 +404,15 @@ class PriceRule extends Controller
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
                 $this->data['form_errors']['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+
                 return false;
             }
+
             return true;
         }
 
         $this->submitted['weight'] = 0;
+
         return true;
     }
 
@@ -420,7 +431,6 @@ class PriceRule extends Controller
         $conditions = Tool::stringToArray($this->submitted['data']['conditions']);
 
         foreach ($conditions as $line => $condition) {
-
             $line++;
 
             $condition = trim($condition);
@@ -429,7 +439,7 @@ class PriceRule extends Controller
             $condition_id = array_shift($parts);
             $operator = array_shift($parts);
 
-            $parameters = array_filter(explode(',', implode('', $parts)), function($value) {
+            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
                 return ($value !== "");
             });
 
@@ -466,10 +476,12 @@ class PriceRule extends Controller
 
         if (!empty($error_lines)) {
             $this->data['form_errors']['conditions'] = $this->text('Something wrong on lines %num', array('%num' => implode(',', $error_lines)));
+
             return false;
         }
 
         $this->submitted['data']['conditions'] = $modified_conditions;
+
         return true;
     }
 
@@ -496,5 +508,4 @@ class PriceRule extends Controller
 
         $this->data['price_rule']['data']['conditions'] = implode("\n", $conditions);
     }
-
 }

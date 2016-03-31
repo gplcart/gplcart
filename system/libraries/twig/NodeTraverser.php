@@ -16,7 +16,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_NodeTraverser
+class twig_NodeTraverser
 {
     protected $env;
     protected $visitors = array();

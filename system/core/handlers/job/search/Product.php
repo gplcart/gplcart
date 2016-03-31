@@ -75,5 +75,4 @@ class Product
             $this->search->index('product_id', $product['product_id']);
         }
     }
-
 }

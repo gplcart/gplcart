@@ -90,7 +90,6 @@ class Page
         $page = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($page) {
-
             $page['data'] = unserialize($page['data']);
             $page['language'] = 'und';
 
@@ -109,6 +108,7 @@ class Page
         }
 
         $this->hook->fire('get.page.after', $page_id, $page);
+
         return $page;
     }
 
@@ -160,6 +160,7 @@ class Page
         }
 
         $this->hook->fire('add.page.after', $data, $page_id);
+
         return $page_id;
     }
 
@@ -270,6 +271,7 @@ class Page
     {
         $pattern = $this->config->get('page_alias_pattern', '%t.html');
         $placeholders = $this->config->get('page_alias_placeholder', array('%t' => 'title'));
+
         return $this->alias->generate($pattern, $placeholders, $data);
     }
 
@@ -281,7 +283,6 @@ class Page
      */
     public function update($page_id, array $data)
     {
-
         $this->hook->fire('update.page.before', $page_id, $data);
 
         if (empty($page_id)) {
@@ -355,6 +356,7 @@ class Page
         Cache::clear("page.$page_id");
 
         $this->hook->fire('update.page.after', $page_id, $data);
+
         return true;
     }
 
@@ -365,7 +367,6 @@ class Page
      */
     public function delete($page_id)
     {
-
         $this->hook->fire('delete.page.before', $page_id);
 
         if (empty($page_id)) {
@@ -378,6 +379,7 @@ class Page
         $this->db->delete('file', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
 
         $this->hook->fire('delete.page.after', $page_id);
+
         return true;
     }
 
@@ -388,7 +390,6 @@ class Page
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title, u.email';
 
         if (!empty($data['count'])) {
@@ -439,7 +440,6 @@ class Page
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $sql .= " ORDER BY p.title {$data['order']}";
@@ -480,7 +480,7 @@ class Page
         }
 
         $this->hook->fire('pages', $list);
+
         return $list;
     }
-
 }

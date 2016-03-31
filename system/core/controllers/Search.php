@@ -178,6 +178,7 @@ class Search extends Controller
             'limit' => $limit) + $query;
 
         $results = $this->search->search('product_id', $term, $options);
+
         return $this->prepareProducts($results, $query);
     }
 
@@ -196,7 +197,6 @@ class Search extends Controller
         $imagestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
 
         foreach ($products as $product_id => &$product) {
-
             $product['in_comparison'] = $this->product->isCompared($product_id);
             $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
@@ -212,6 +212,7 @@ class Search extends Controller
                 'product' => $product,
                 'buttons' => array('cart_add', 'wishlist_add', 'compare_add')));
         }
+
         return $products;
     }
 
@@ -265,6 +266,7 @@ class Search extends Controller
         );
 
         $tree = $this->category->getTree($options);
+
         return $this->prepareCategoryTree($tree);
     }
 
@@ -307,7 +309,7 @@ class Search extends Controller
         }
 
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
+
         return $this->prepareProducts($products, array('view' => 'grid'));
     }
-
 }

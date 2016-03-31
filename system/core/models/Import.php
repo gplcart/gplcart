@@ -89,6 +89,7 @@ class Import
             $operation = $operations[$id];
             $operation['id'] = $id;
         }
+
         return $operation;
     }
 
@@ -266,6 +267,7 @@ class Import
         );
 
         $this->hook->fire('import.operations', $operations);
+
         return $operations;
     }
 
@@ -357,7 +359,6 @@ class Import
         $this->file->setUploadPath($destination)->setHandler('image');
 
         foreach ($images as $image) {
-
             if (0 === strpos($image, 'http')) {
                 $result = $this->file->download($image);
                 if ($result === true) {
@@ -409,6 +410,7 @@ class Import
         if (($header_id !== $real_header_id) || array_diff($header, $real_header)) {
             $error = $this->language->text('Missing some header columns. Required format: %format', array(
                 '%format' => implode(' | ', $header)));
+
             return $error;
         }
 
@@ -423,5 +425,4 @@ class Import
     {
         return $this->config->get('csv_delimiter', ",");
     }
-
 }

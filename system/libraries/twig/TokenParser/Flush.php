@@ -14,7 +14,7 @@
  *
  * @see flush()
  */
-class Twig_TokenParser_Flush extends Twig_TokenParser
+class twig_TokenParser_Flush extends Twig_TokenParser
 {
     public function parse(Twig_Token $token)
     {

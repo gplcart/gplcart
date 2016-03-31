@@ -163,7 +163,7 @@ class State extends Controller
     }
 
     /**
-     * Renders the state edit page 
+     * Renders the state edit page
      */
     protected function outputEdit()
     {
@@ -233,7 +233,6 @@ class State extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('state_edit')) {
                 $updated += (int) $this->state->update($id, array('status' => $value));
             }
@@ -245,11 +244,13 @@ class State extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Updated %num country states', array('%num' => $updated)), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num country states', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
@@ -270,6 +271,7 @@ class State extends Controller
 
         if ($this->formErrors()) {
             $this->data['state'] = $this->submitted;
+
             return;
         }
 
@@ -326,6 +328,7 @@ class State extends Controller
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -347,10 +350,10 @@ class State extends Controller
 
         if ($check && $this->state->getByCode($this->submitted['code'], $country['code'])) {
             $this->data['form_errors']['code'] = $this->text('This state code already exists for this country');
+
             return false;
         }
 
         return true;
     }
-
 }

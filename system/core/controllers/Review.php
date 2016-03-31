@@ -105,7 +105,6 @@ class Review extends Controller
         $this->data['review'] = $review;
 
         if ($this->request->post('save')) {
-
             $this->controlSpam('review');
 
             $submitted = $this->request->post('review');
@@ -171,6 +170,7 @@ class Review extends Controller
     {
         if (empty($submitted['text'])) {
             $this->data['form_errors']['text'] = $this->text('Please write a review');
+
             return;
         }
 
@@ -181,5 +181,4 @@ class Review extends Controller
             $this->session->setMessage($this->text('Your review will be visible after approval'));
         }
     }
-
 }

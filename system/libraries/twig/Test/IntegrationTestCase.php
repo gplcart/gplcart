@@ -15,7 +15,7 @@
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Karma Dordrak <drak@zikula.org>
  */
-abstract class Twig_Test_IntegrationTestCase extends PHPUnit_Framework_TestCase
+abstract class twig_Test_IntegrationTestCase extends PHPUnit_Framework_TestCase
 {
     /**
      * @return string

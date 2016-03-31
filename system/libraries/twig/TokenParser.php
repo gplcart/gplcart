@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-abstract class Twig_TokenParser implements Twig_TokenParserInterface
+abstract class twig_TokenParser implements Twig_TokenParserInterface
 {
     /**
      * @var Twig_Parser

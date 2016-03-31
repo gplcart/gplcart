@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-class Twig_Node_Expression_AssignName extends Twig_Node_Expression_Name
+class twig_Node_Expression_AssignName extends Twig_Node_Expression_Name
 {
     public function compile(Twig_Compiler $compiler)
     {

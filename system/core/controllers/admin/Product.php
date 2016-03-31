@@ -128,7 +128,6 @@ class Product extends Controller
      */
     public function products()
     {
-
         $selected = $this->request->post('selected', array());
         $value = $this->request->post('value');
         $action = $this->request->post('action');
@@ -203,7 +202,6 @@ class Product extends Controller
     protected function action($selected, $action, $value)
     {
         if ($action == 'get_options') {
-
             $product_id = $this->request->post('product_id');
             $product = $this->product->get($product_id);
 
@@ -221,7 +219,6 @@ class Product extends Controller
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('product_edit')) {
                 $updated += (int) $this->product->update($id, array('status' => $value));
             }
@@ -237,11 +234,13 @@ class Product extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Updated %num products', array('%num' => $updated)), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num products', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
@@ -395,6 +394,7 @@ class Product extends Controller
     {
         $catalog = $this->category->getOptionListByStore($store_id, 'catalog');
         $brand = $this->category->getOptionListByStore($store_id, 'brand');
+
         return array('catalog' => reset($catalog), 'brand' => reset($brand));
     }
 
@@ -526,7 +526,6 @@ class Product extends Controller
         $this->validate($product);
 
         if ($this->formErrors()) {
-
             if ($this->request->ajax()) {
                 $this->response->json(array('error' => $this->data['form_errors']));
             }
@@ -536,16 +535,16 @@ class Product extends Controller
             if (!empty($this->submitted['related'])) {
                 $this->data['related'] = $this->getProducts(null, array('product_id' => $this->submitted['related']));
             }
+
             return;
         }
 
         if ($this->request->ajax()) {
-
             if (!$this->access('product_edit')) {
                 $this->response->json(array('error' => $this->text('You are not permitted to perform this operation')));
             }
             
-            if(!empty($this->submitted['update_combinations'])){
+            if (!empty($this->submitted['update_combinations'])) {
                 $this->updateCombination($this->submitted);
                 $this->response->json(array('success' => $this->text('Product has been updated')));
             }
@@ -614,13 +613,15 @@ class Product extends Controller
             return true;
         }
         
-        if(!$this->submitted['price']) {
+        if (!$this->submitted['price']) {
             $this->submitted['price'] = 0;
+
             return true;
         }
 
         if (!is_numeric($this->submitted['price']) || strlen($this->submitted['price']) > 10) {
             $this->data['form_errors']['price'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 10));
+
             return false;
         }
 
@@ -637,13 +638,15 @@ class Product extends Controller
             return true;
         }
         
-        if(!$this->submitted['price']) {
+        if (!$this->submitted['price']) {
             $this->submitted['price'] = 0;
+
             return true;
         }
 
         if (!is_numeric($this->submitted['stock']) || strlen($this->submitted['stock']) > 10) {
             $this->data['form_errors']['stock'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 10));
+
             return false;
         }
 
@@ -665,8 +668,10 @@ class Product extends Controller
             $check_alias = (isset($product['alias']) && ($product['alias'] !== $this->submitted['alias']));
             if ($check_alias && $this->alias->exists($this->submitted['alias'])) {
                 $this->data['form_errors']['alias'] = $this->text('URL alias already exists');
+
                 return false;
             }
+
             return true;
         }
 
@@ -692,14 +697,15 @@ class Product extends Controller
         $store_id = isset($this->submitted['store_id']) ? $this->submitted['store_id'] : $this->store->getDefault();
 
         if ($this->submitted['sku']) {
-
             if ($this->sku->get($this->submitted['sku'], $store_id, $product_id)) {
                 $this->data['form_errors']['sku'] = $this->text('SKU must be unique per store');
+
                 return false;
             }
 
             if (mb_strlen($this->submitted['sku']) > 255) {
                 $this->data['form_errors']['sku'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
                 return false;
             }
 
@@ -729,6 +735,7 @@ class Product extends Controller
 
         if (!$this->submitted['title'] || (mb_strlen($this->submitted['title']) > 255)) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -747,6 +754,7 @@ class Product extends Controller
 
         if (mb_strlen($this->submitted['meta_title']) > 255) {
             $this->data['form_errors']['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
             return false;
         }
 
@@ -765,6 +773,7 @@ class Product extends Controller
 
         if (mb_strlen($this->submitted['meta_description']) > 255) {
             $this->data['form_errors']['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
             return false;
         }
 
@@ -783,7 +792,6 @@ class Product extends Controller
 
         $has_errors = false;
         foreach ($this->submitted['translation'] as $langcode => $translation) {
-
             if (mb_strlen($translation['title']) > 255) {
                 $this->data['form_errors']['translation'][$langcode]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
@@ -873,7 +881,6 @@ class Product extends Controller
         }
 
         foreach ($this->submitted['images'] as &$image) {
-
             if (empty($image['title']) && isset($this->submitted['title'])) {
                 $image['title'] = $this->submitted['title'];
             }
@@ -905,7 +912,6 @@ class Product extends Controller
         }
 
         foreach ($this->submitted['combination'] as $index => &$combination) {
-
             if (empty($combination['fields'])) {
                 unset($this->submitted['combination'][$index]);
                 continue;
@@ -979,28 +985,31 @@ class Product extends Controller
         $store_id = $this->submitted['store_id'];
         $product_id = isset($product['product_id']) ? $product['product_id'] : null;
         
-        if(isset($this->submitted['product_id'])) {
+        if (isset($this->submitted['product_id'])) {
             $product_id = $this->submitted['product_id'];
         }
 
         if ($combination['sku']) {
-
             if (mb_strlen($combination['sku']) > 255) {
                 $this->data['form_errors']['combination'][$index]['sku'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
                 return false;
             }
 
             if (isset(static::$processed_skus[$combination['sku']])) {
                 $this->data['form_errors']['combination'][$index]['sku'] = $this->text('SKU must be unique per store');
+
                 return false;
             }
 
             if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
                 $this->data['form_errors']['combination'][$index]['sku'] = $this->text('SKU must be unique per store');
+
                 return false;
             }
 
             static::$processed_skus[$combination['sku']] = true;
+
             return true;
         }
 
@@ -1029,6 +1038,7 @@ class Product extends Controller
         }
 
         $this->data['form_errors']['combination'][$index]['price'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 10));
+
         return false;
     }
 
@@ -1049,6 +1059,7 @@ class Product extends Controller
         }
 
         $this->data['form_errors']['combination'][$index]['stock'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 10));
+
         return false;
     }
 
@@ -1076,5 +1087,4 @@ class Product extends Controller
 
         return true;
     }
-
 }

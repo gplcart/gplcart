@@ -113,6 +113,7 @@ class Settings extends Controller
 
         if ($this->formErrors()) {
             $this->data['settings'] = $this->submitted;
+
             return;
         }
 
@@ -174,5 +175,4 @@ class Settings extends Controller
     {
         $this->output('settings/settings');
     }
-
 }

@@ -20,7 +20,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_FileExtensionEscapingStrategy
+class twig_FileExtensionEscapingStrategy
 {
     /**
      * Guesses the best autoescaping strategy based on the file name.

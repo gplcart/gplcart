@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_TokenStream
+class twig_TokenStream
 {
     protected $tokens;
     protected $current = 0;

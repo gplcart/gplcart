@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_NodeVisitor_Sandbox extends Twig_BaseNodeVisitor
+class twig_NodeVisitor_Sandbox extends Twig_BaseNodeVisitor
 {
     protected $inAModule = false;
     protected $tags;

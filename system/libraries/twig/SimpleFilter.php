@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_SimpleFilter
+class twig_SimpleFilter
 {
     protected $name;
     protected $callable;

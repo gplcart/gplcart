@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_Flush extends Twig_Node
+class twig_Node_Flush extends Twig_Node
 {
     public function __construct($lineno, $tag)
     {

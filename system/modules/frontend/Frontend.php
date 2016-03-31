@@ -16,43 +16,43 @@ class Frontend
 
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $url;
 
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $cart;
 
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $product;
 
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $bookmark;
 
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $category;
 
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $alias;
 
     /**
      * Config class instance
-     * @var type 
+     * @var type
      */
     protected $config;
 
@@ -138,7 +138,6 @@ class Frontend
         $category_aliases = $this->alias->getMultiple('category_id', array_keys($tree));
 
         foreach ($tree as &$item) {
-
             $path = "category/{$item['category_id']}";
 
             if (!empty($category_aliases[$item['category_id']])) {
@@ -191,7 +190,7 @@ class Frontend
     }
 
     /**
-     * Returns an array of default module settings 
+     * Returns an array of default module settings
      * @return array
      */
     protected function getDefaultSettings()
@@ -214,5 +213,4 @@ class Frontend
             'image_style_page_banner' => 7,
         );
     }
-
 }

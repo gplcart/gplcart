@@ -21,7 +21,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-class Twig_Function_Method extends Twig_Function
+class twig_Function_Method extends Twig_Function
 {
     protected $extension;
     protected $method;

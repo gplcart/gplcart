@@ -34,11 +34,11 @@
  */
 class Google_Service_Cloudresourcemanager extends Google_Service
 {
-  /** View and manage your data across Google Cloud Platform services. */
+    /** View and manage your data across Google Cloud Platform services. */
   const CLOUD_PLATFORM =
       "https://www.googleapis.com/auth/cloud-platform";
 
-  public $projects;
+    public $projects;
   
 
   /**
@@ -48,13 +48,13 @@ class Google_Service_Cloudresourcemanager extends Google_Service
    */
   public function __construct(Google_Client $client)
   {
-    parent::__construct($client);
-    $this->rootUrl = 'https://cloudresourcemanager.googleapis.com/';
-    $this->servicePath = '';
-    $this->version = 'v1beta1';
-    $this->serviceName = 'cloudresourcemanager';
+      parent::__construct($client);
+      $this->rootUrl = 'https://cloudresourcemanager.googleapis.com/';
+      $this->servicePath = '';
+      $this->version = 'v1beta1';
+      $this->serviceName = 'cloudresourcemanager';
 
-    $this->projects = new Google_Service_Cloudresourcemanager_Projects_Resource(
+      $this->projects = new Google_Service_Cloudresourcemanager_Projects_Resource(
         $this,
         $this->serviceName,
         'projects',
@@ -140,7 +140,7 @@ class Google_Service_Cloudresourcemanager extends Google_Service
 class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Service_Resource
 {
 
-  /**
+    /**
    * Creates a project resource. Initially, the project resource is owned by its
    * creator exclusively. The creator can later grant permission to others to read
    * or update the project. Several APIs are activated automatically for the
@@ -152,9 +152,10 @@ class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Servi
    */
   public function create(Google_Service_Cloudresourcemanager_Project $postBody, $optParams = array())
   {
-    $params = array('postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('create', array($params), "Google_Service_Cloudresourcemanager_Project");
+      $params = array('postBody' => $postBody);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('create', array($params), "Google_Service_Cloudresourcemanager_Project");
   }
 
   /**
@@ -190,9 +191,10 @@ class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Servi
    */
   public function delete($projectId, $optParams = array())
   {
-    $params = array('projectId' => $projectId);
-    $params = array_merge($params, $optParams);
-    return $this->call('delete', array($params), "Google_Service_Cloudresourcemanager_Empty");
+      $params = array('projectId' => $projectId);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('delete', array($params), "Google_Service_Cloudresourcemanager_Empty");
   }
 
   /**
@@ -207,9 +209,10 @@ class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Servi
    */
   public function get($projectId, $optParams = array())
   {
-    $params = array('projectId' => $projectId);
-    $params = array_merge($params, $optParams);
-    return $this->call('get', array($params), "Google_Service_Cloudresourcemanager_Project");
+      $params = array('projectId' => $projectId);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('get', array($params), "Google_Service_Cloudresourcemanager_Project");
   }
 
   /**
@@ -239,9 +242,10 @@ class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Servi
    */
   public function listProjects($optParams = array())
   {
-    $params = array();
-    $params = array_merge($params, $optParams);
-    return $this->call('list', array($params), "Google_Service_Cloudresourcemanager_ListProjectsResponse");
+      $params = array();
+      $params = array_merge($params, $optParams);
+
+      return $this->call('list', array($params), "Google_Service_Cloudresourcemanager_ListProjectsResponse");
   }
 
   /**
@@ -262,9 +266,10 @@ class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Servi
    */
   public function undelete($projectId, $optParams = array())
   {
-    $params = array('projectId' => $projectId);
-    $params = array_merge($params, $optParams);
-    return $this->call('undelete', array($params), "Google_Service_Cloudresourcemanager_Empty");
+      $params = array('projectId' => $projectId);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('undelete', array($params), "Google_Service_Cloudresourcemanager_Empty");
   }
 
   /**
@@ -280,9 +285,10 @@ class Google_Service_Cloudresourcemanager_Projects_Resource extends Google_Servi
    */
   public function update($projectId, Google_Service_Cloudresourcemanager_Project $postBody, $optParams = array())
   {
-    $params = array('projectId' => $projectId, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('update', array($params), "Google_Service_Cloudresourcemanager_Project");
+      $params = array('projectId' => $projectId, 'postBody' => $postBody);
+      $params = array_merge($params, $optParams);
+
+      return $this->call('update', array($params), "Google_Service_Cloudresourcemanager_Project");
   }
 }
 
@@ -295,92 +301,92 @@ class Google_Service_Cloudresourcemanager_Empty extends Google_Model
 
 class Google_Service_Cloudresourcemanager_ListProjectsResponse extends Google_Collection
 {
-  protected $collection_key = 'projects';
-  protected $internal_gapi_mappings = array(
+    protected $collection_key = 'projects';
+    protected $internal_gapi_mappings = array(
   );
-  public $nextPageToken;
-  protected $projectsType = 'Google_Service_Cloudresourcemanager_Project';
-  protected $projectsDataType = 'array';
+    public $nextPageToken;
+    protected $projectsType = 'Google_Service_Cloudresourcemanager_Project';
+    protected $projectsDataType = 'array';
 
 
-  public function setNextPageToken($nextPageToken)
-  {
-    $this->nextPageToken = $nextPageToken;
-  }
-  public function getNextPageToken()
-  {
-    return $this->nextPageToken;
-  }
-  public function setProjects($projects)
-  {
-    $this->projects = $projects;
-  }
-  public function getProjects()
-  {
-    return $this->projects;
-  }
+    public function setNextPageToken($nextPageToken)
+    {
+        $this->nextPageToken = $nextPageToken;
+    }
+    public function getNextPageToken()
+    {
+        return $this->nextPageToken;
+    }
+    public function setProjects($projects)
+    {
+        $this->projects = $projects;
+    }
+    public function getProjects()
+    {
+        return $this->projects;
+    }
 }
 
 class Google_Service_Cloudresourcemanager_Project extends Google_Model
 {
-  protected $internal_gapi_mappings = array(
+    protected $internal_gapi_mappings = array(
   );
-  public $createTime;
-  public $labels;
-  public $lifecycleState;
-  public $name;
-  public $projectId;
-  public $projectNumber;
+    public $createTime;
+    public $labels;
+    public $lifecycleState;
+    public $name;
+    public $projectId;
+    public $projectNumber;
 
 
-  public function setCreateTime($createTime)
-  {
-    $this->createTime = $createTime;
-  }
-  public function getCreateTime()
-  {
-    return $this->createTime;
-  }
-  public function setLabels($labels)
-  {
-    $this->labels = $labels;
-  }
-  public function getLabels()
-  {
-    return $this->labels;
-  }
-  public function setLifecycleState($lifecycleState)
-  {
-    $this->lifecycleState = $lifecycleState;
-  }
-  public function getLifecycleState()
-  {
-    return $this->lifecycleState;
-  }
-  public function setName($name)
-  {
-    $this->name = $name;
-  }
-  public function getName()
-  {
-    return $this->name;
-  }
-  public function setProjectId($projectId)
-  {
-    $this->projectId = $projectId;
-  }
-  public function getProjectId()
-  {
-    return $this->projectId;
-  }
-  public function setProjectNumber($projectNumber)
-  {
-    $this->projectNumber = $projectNumber;
-  }
-  public function getProjectNumber()
-  {
-    return $this->projectNumber;
-  }
+    public function setCreateTime($createTime)
+    {
+        $this->createTime = $createTime;
+    }
+    public function getCreateTime()
+    {
+        return $this->createTime;
+    }
+    public function setLabels($labels)
+    {
+        $this->labels = $labels;
+    }
+    public function getLabels()
+    {
+        return $this->labels;
+    }
+    public function setLifecycleState($lifecycleState)
+    {
+        $this->lifecycleState = $lifecycleState;
+    }
+    public function getLifecycleState()
+    {
+        return $this->lifecycleState;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setProjectId($projectId)
+    {
+        $this->projectId = $projectId;
+    }
+    public function getProjectId()
+    {
+        return $this->projectId;
+    }
+    public function setProjectNumber($projectNumber)
+    {
+        $this->projectNumber = $projectNumber;
+    }
+    public function getProjectNumber()
+    {
+        return $this->projectNumber;
+    }
 }
 
 class Google_Service_Cloudresourcemanager_ProjectLabels extends Google_Model

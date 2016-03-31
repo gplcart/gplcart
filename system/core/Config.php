@@ -171,6 +171,7 @@ class Config
 
         $values = array('id' => $key, 'value' => $value, 'created' => GC_TIME, 'serialized' => $serialized);
         $this->db->insert('settings', $values);
+
         return true;
     }
 
@@ -182,6 +183,7 @@ class Config
     public function reset($key)
     {
         $result = $this->db->delete('settings', array('id' => $key));
+
         return (bool) $result;
     }
 
@@ -247,7 +249,6 @@ class Config
         $saved_modules = $this->getInstalledModules();
 
         foreach (scandir(GC_MODULE_DIR) as $module_dir) {
-
             if (!$this->validModuleName($module_dir)) {
                 continue;
             }
@@ -317,7 +318,7 @@ class Config
      */
     protected function getHooks($class)
     {
-        return array_filter(get_class_methods($class), function($method) {
+        return array_filter(get_class_methods($class), function ($method) {
             return (0 === strpos($method, 'hook'));
         });
     }
@@ -333,7 +334,7 @@ class Config
             return preg_match('/^[a-z0-9]+$/', $name);
         }
 
-        return array_filter((array) $name, function($module_id) {
+        return array_filter((array) $name, function ($module_id) {
             return $this->validModuleName($module_id);
         });
     }
@@ -361,9 +362,8 @@ class Config
      */
     public function getEnabledModules()
     {
-        return array_filter($this->getModules(), function($module) {
+        return array_filter($this->getModules(), function ($module) {
             return !empty($module['status']);
         });
     }
-
 }

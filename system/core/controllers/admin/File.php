@@ -120,7 +120,6 @@ class File extends Controller
         $deleted_disk = $deleted_database = 0;
 
         foreach ($selected as $file_id) {
-
             if (!in_array($action, array('delete', 'delete_both'))) {
                 continue;
             }
@@ -145,6 +144,7 @@ class File extends Controller
             '%db' => $deleted_database, '%disk' => $deleted_disk));
 
         $this->session->setMessage($message, 'success');
+
         return true;
     }
 
@@ -229,6 +229,7 @@ class File extends Controller
 
         if ($file) {
             $file['file_url'] = file_exists(GC_FILE_DIR . '/' . $file['path']) ? $this->file->url($file['path']) : '';
+
             return $file;
         }
 
@@ -267,6 +268,7 @@ class File extends Controller
 
         if ($this->formErrors()) {
             $this->data['file'] = $this->submitted + $file;
+
             return;
         }
 
@@ -310,15 +312,18 @@ class File extends Controller
             $result = $this->file->upload($upload);
             if ($result !== true) {
                 $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
+
                 return false;
             }
 
             $this->submitted['path'] = $this->file->path($this->file->getUploadedFile());
+
             return true;
         }
 
         if (empty($file['file_id']) || (isset($file['file_id']) && $this->request->post('delete_disk'))) {
             $this->data['form_errors']['file'] = $this->text('Required field');
+
             return false;
         }
 
@@ -335,6 +340,7 @@ class File extends Controller
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array(
                 '%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -362,5 +368,4 @@ class File extends Controller
 
         return !$has_errors;
     }
-
 }

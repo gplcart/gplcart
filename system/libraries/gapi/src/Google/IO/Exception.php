@@ -16,12 +16,12 @@
  */
 
 if (!class_exists('Google_Client')) {
-  require_once dirname(__FILE__) . '/../autoload.php';
+    require_once dirname(__FILE__) . '/../autoload.php';
 }
 
 class Google_IO_Exception extends Google_Exception implements Google_Task_Retryable
 {
-  /**
+    /**
    * @var array $retryMap Map of errors with retry counts.
    */
   private $retryMap = array();
@@ -40,15 +40,15 @@ class Google_IO_Exception extends Google_Exception implements Google_Task_Retrya
       Exception $previous = null,
       array $retryMap = null
   ) {
-    if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-      parent::__construct($message, $code, $previous);
-    } else {
-      parent::__construct($message, $code);
-    }
+      if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+          parent::__construct($message, $code, $previous);
+      } else {
+          parent::__construct($message, $code);
+      }
 
-    if (is_array($retryMap)) {
-      $this->retryMap = $retryMap;
-    }
+      if (is_array($retryMap)) {
+          $this->retryMap = $retryMap;
+      }
   }
 
   /**
@@ -60,10 +60,10 @@ class Google_IO_Exception extends Google_Exception implements Google_Task_Retrya
    */
   public function allowedRetries()
   {
-    if (isset($this->retryMap[$this->code])) {
-      return $this->retryMap[$this->code];
-    }
+      if (isset($this->retryMap[$this->code])) {
+          return $this->retryMap[$this->code];
+      }
 
-    return 0;
+      return 0;
   }
 }

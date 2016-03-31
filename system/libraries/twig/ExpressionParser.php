@@ -20,7 +20,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_ExpressionParser
+class twig_ExpressionParser
 {
     const OPERATOR_LEFT = 1;
     const OPERATOR_RIGHT = 2;

@@ -213,7 +213,6 @@ class Account extends Controller
         $check_old_password = false;
 
         if (isset($data['email']) && filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-
             $check_email_exists = true;
             if (isset($user['email']) && ($data['email'] === $user['email'])) {
                 $check_email_exists = false;
@@ -221,12 +220,14 @@ class Account extends Controller
 
             if ($check_email_exists && $this->user->getByEmail($data['email'])) {
                 $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
+
                 return;
             }
 
             $check_old_password = $check_email_exists;
         } else {
             $this->data['form_errors']['email'] = $this->text('Invalid E-mail');
+
             return;
         }
 
@@ -241,6 +242,7 @@ class Account extends Controller
 
         if (empty($user['user_id']) && empty($data['password'])) {
             $this->data['form_errors']['password'] = $this->text('Required field');
+
             return;
         }
 
@@ -259,6 +261,7 @@ class Account extends Controller
 
         if (empty($data['password_old']) || empty($user['hash'])) {
             $this->data['form_errors']['password_old'] = $this->text('The specified old password does not match the current password');
+
             return;
         }
 
@@ -282,6 +285,7 @@ class Account extends Controller
 
         $this->data['form_errors']['password'] = $this->language->text('Password must be %min - %max characters long', array(
                     '%min' => $limits['min'], '%max' => $limits['max']));
+
         return false;
     }
 
@@ -317,7 +321,6 @@ class Account extends Controller
      */
     public function editAddress($user_id, $address_id = null)
     {
-
         $user = $this->user->get($user_id);
 
         if (empty($user['status'])) {
@@ -337,7 +340,6 @@ class Account extends Controller
                 $this->data['address'] = $submitted;
                 $country_code = $submitted['country'];
             } else {
-
                 $this->address->add($submitted + array('user_id' => $user_id));
 
                 // Control address limit for the user
@@ -411,7 +413,6 @@ class Account extends Controller
      */
     public function register()
     {
-
         if ($this->uid && !$this->access('user_add')) {
             $this->url->redirect("account/{$this->uid}");
         }
@@ -569,15 +570,16 @@ class Account extends Controller
      */
     protected function validateForgot(&$submitted, $recoverable_user)
     {
-
         if (isset($submitted['email'])) {
             $user = $this->user->getByEmail($submitted['email']);
             if (empty($user['status'])) {
                 $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
+
                 return;
             }
 
             $submitted['user'] = $user;
+
             return;
         }
 
@@ -598,6 +600,7 @@ class Account extends Controller
     {
         if (isset($submitted['email'])) {
             $this->resetLink($submitted);
+
             return;
         }
 
@@ -661,5 +664,4 @@ class Account extends Controller
         $this->logger->log('logout', $log);
         $this->url->redirect('login');
     }
-
 }

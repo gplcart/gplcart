@@ -76,10 +76,11 @@ class Country
         }
 
         if ($only_enabled) {
-            $format = array_filter($format, function($item) {
+            $format = array_filter($format, function ($item) {
                 return !empty($item['status']);
             });
         }
+
         return $format;
     }
 
@@ -92,7 +93,7 @@ class Country
     {
         $country = &Cache::memory("country.$country_code");
         
-        if(isset($country)){
+        if (isset($country)) {
             return $country;
         }
         
@@ -112,6 +113,7 @@ class Country
         }
 
         $this->hook->fire('get.country.after', $country_code, $country);
+
         return $country;
     }
 
@@ -242,6 +244,7 @@ class Country
 
         $country_id = $this->db->insert('country', $values);
         $this->hook->fire('add.country.after', $data, $country_id);
+
         return $country_id;
     }
 
@@ -274,8 +277,7 @@ class Country
         }
 
         if (isset($data['status'])) {
-            
-            if($this->isDefault($code)) {
+            if ($this->isDefault($code)) {
                 $data['status'] = 1;
             }
             
@@ -336,6 +338,7 @@ class Country
     {
         $sth = $this->db->prepare('SELECT address_id FROM address WHERE country=:country');
         $sth->execute(array(':country' => $code));
+
         return !$sth->fetchColumn();
     }
 
@@ -361,10 +364,9 @@ class Country
      */
     public function getList(array $data = array())
     {
-        
         $list = &Cache::memory('countries.' . md5(serialize($data)));
         
-        if(isset($list)){
+        if (isset($list)) {
             return $list;
         }
         
@@ -401,7 +403,6 @@ class Country
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY name {$data['order']}";
@@ -441,6 +442,7 @@ class Country
         }
 
         $this->hook->fire('countries', $list);
+
         return $list;
     }
 
@@ -711,7 +713,7 @@ class Country
         );
 
         if ($sort_name) {
-            uasort($countries, function($a, $b) {
+            uasort($countries, function ($a, $b) {
                 return strcmp($a['name'], $b['name']);
             });
         } else {
@@ -720,5 +722,4 @@ class Country
 
         return $countries;
     }
-
 }

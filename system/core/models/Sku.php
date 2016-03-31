@@ -58,6 +58,7 @@ class Sku
             }
             $results['combinations'][$sku['combination_id']] = $sku['sku'];
         }
+
         return $results;
     }
 
@@ -117,6 +118,7 @@ class Sku
         }
 
         $this->hook->fire('skus', $list);
+
         return $list;
     }
 
@@ -148,6 +150,7 @@ class Sku
         $id = $this->db->insert('product_sku', $values);
 
         $this->hook->fire('add.sku.after', $arguments, $id);
+
         return $id;
     }
 
@@ -171,6 +174,7 @@ class Sku
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':product_id' => (int) $product_id));
+
         return $sth->rowCount();
     }
 
@@ -194,7 +198,6 @@ class Sku
         $store_id = isset($data['store_id']) ? $data['store_id'] : null;
 
         if ($this->get($sku, $store_id)) {
-
             $counter = 0;
             do {
                 $sku = $sku . '-' . $counter++;
@@ -227,5 +230,4 @@ class Sku
 
         return array();
     }
-
 }

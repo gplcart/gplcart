@@ -58,6 +58,7 @@ class Module
     public function enabled($module_id)
     {
         $modules = $this->getList();
+
         return !empty($modules[$module_id]['status']);
     }
 
@@ -118,7 +119,6 @@ class Module
 
         $module = $this->get($module_id);
         if (is_callable(array($module['class'], 'beforeEnable'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeEnable();
@@ -131,6 +131,7 @@ class Module
             $this->update($module_id, array('status' => 1));
             $this->setOverrideConfig();
             $this->setTranslations($module_id);
+
             return true;
         }
 
@@ -217,6 +218,7 @@ class Module
     public function get($module_id)
     {
         $modules = $this->getList();
+
         return isset($modules[$module_id]) ? $modules[$module_id] : array();
     }
 
@@ -272,11 +274,13 @@ class Module
 
         if (!empty($existing['installed'])) {
             $this->update($module_id, array('settings' => $settings));
+
             return true;
         }
 
         if ($this->isActiveTheme($module_id)) {
             $this->add(array('module_id' => $module_id, 'status' => 1, 'settings' => $settings));
+
             return true;
         }
 
@@ -312,7 +316,6 @@ class Module
 
         $map = array();
         foreach ($this->getEnabled() as $module_id => $module) {
-
             $directory = GC_MODULE_DIR . "/$module_id/override";
 
             if (!is_readable($directory)) {
@@ -343,7 +346,7 @@ class Module
                 if ((substr($path, -4) === '.php')) {
                     $results[] = rtrim($path, '.php');
                 }
-            } else if ($value != '.' && $value != '..') {
+            } elseif ($value != '.' && $value != '..') {
                 $this->scanOverrideFiles($path, $results);
             }
         }
@@ -365,7 +368,6 @@ class Module
         }
 
         foreach ($files as $file) {
-
             $filename = basename($file);
             $langcode = strtok($filename, '.');
 
@@ -412,7 +414,6 @@ class Module
 
         $module = $this->get($module_id);
         if (is_callable(array($module['class'], 'beforeDisable'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeDisable();
@@ -424,8 +425,10 @@ class Module
         if ($result === true) {
             $this->update($module_id, array('status' => 0));
             $this->setOverrideConfig();
+
             return true;
         }
+
         return $result;
     }
 
@@ -512,7 +515,6 @@ class Module
         $required_by = array();
 
         foreach ($modules as $info) {
-
             if (empty($info['dependencies'])) {
                 continue;
             }
@@ -542,7 +544,6 @@ class Module
         $module = $this->get($module_id);
 
         if (is_callable(array($module['class'], 'beforeInstall'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeInstall();
@@ -557,6 +558,7 @@ class Module
             $this->add(array('module_id' => $module_id, 'status' => 1));
             $this->setOverrideConfig();
             $this->setTranslations($module_id);
+
             return true;
         }
 
@@ -570,6 +572,7 @@ class Module
     public function getMaxWeight()
     {
         $sth = $this->db->query('SELECT MAX(weight) FROM module');
+
         return (int) $sth->fetchColumn();
     }
 
@@ -593,7 +596,6 @@ class Module
         $module = $this->get($module_id);
 
         if (is_callable(array($module['class'], 'beforeUninstall'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeUninstall();
@@ -605,10 +607,10 @@ class Module
         if ($result === true) {
             $this->db->delete('module', array('module_id' => $module_id));
             $this->setOverrideConfig();
+
             return true;
         }
 
         return $result;
     }
-
 }
