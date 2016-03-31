@@ -335,7 +335,7 @@ class Category extends Controller
      * Returns total number of products for the category ID
      * @param integer $category_id
      * @param array $query
-     * @return array
+     * @return integer
      */
     protected function getTotalProducts($category_id, $query)
     {

@@ -11,9 +11,11 @@
 namespace core\handlers\notification;
 
 use core\Config;
+use core\classes\Url;
 use core\models\Mail;
 use core\models\Store;
 use core\models\Language;
+use core\models\Order as O;
 
 class Order
 {
@@ -35,19 +37,42 @@ class Order
      * @var \core\models\Language $language
      */
     protected $language;
+    
+    /**
+     * Order model instance
+     * @var \core\models\Order $order
+     */
+    protected $order;
+    
+    /**
+     * Url class instance
+     * @var \core\classes\Url $url
+     */
+    protected $url;
 
     /**
      * Config class instance
      * @var \core\Config $config
      */
     protected $config;
-
-    public function __construct(Store $store, Mail $mail, Language $language, Config $config)
+    
+    /**
+     * Constructor
+     * @param Store $store
+     * @param Mail $mail
+     * @param Language $language
+     * @param O $order
+     * @param Url $url
+     * @param Config $config
+     */
+    public function __construct(Store $store, Mail $mail, Language $language, O $order, Url $url, Config $config)
     {
-        $this->store = $store;
+        $this->url = $url;
         $this->mail = $mail;
-        $this->language = $language;
+        $this->store = $store;
+        $this->order = $order;
         $this->config = $config;
+        $this->language = $language;
     }
 
     public function status($order)
@@ -106,14 +131,43 @@ class Order
         return $this->mail->send($to, array($subject => $message), $options);
     }
     
-    public function completeCustomer($order){
+    /**
+     * Returns a text to be shown on the order complete page for a logged in customer
+     * @param array $order
+     * @return string
+     */
+    public function completeCustomer($order)
+    {
+        $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
+        $message = $this->config->get('order_complete_message', $default);
+
+        $variables = array(
+            '!order_id' => $order['order_id'],
+            '!url' => $this->url->get("account/{$order['user_id']}"),
+            '!status' => $this->order->getStatusName($order['status'])
+        );
         
+        return $this->language->text($message, $variables);
     }
-    
-    public function completeAnonymous($order){
+
+    /**
+     * Returns a text to be shown on the order complete page for an anonymous
+     * @param array $order
+     * @return string
+     */
+    public function completeAnonymous($order)
+    {
+        $default = 'Thank you for your order! Order ID: !order_id, status: !status';
+        $message = $this->config->get('order_complete_message_anonymous', $default);
         
+        $variables = array(
+            '!order_id' => $order['order_id'],
+            '!status' => $this->order->getStatusName($order['status'])
+        );
+        
+        return $this->language->text($message, $variables);
     }
-    
+
     public function createdAnonymous($order){
         
     }

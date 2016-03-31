@@ -143,6 +143,17 @@ class Order
         $this->hook->fire('order.statuses', $statuses);
         return $statuses;
     }
+    
+    /**
+     * Returns status name
+     * @param string $id
+     * @return string
+     */
+    public function getStatusName($id)
+    {
+        $statuses = $this->getStatuses();
+        return isset($statuses[$id]) ? $statuses[$id] : '';
+    }
 
     /**
      * Returns an array of default order status
@@ -527,7 +538,7 @@ class Order
         $this->setNotification($order);
 
         $result = array(
-            'order_id' => $order_id,
+            'order' => $order,
             'redirect' => "checkout/complete/$order_id");
 
         $this->hook->fire('submit.order.after', $order, $cart, $result);

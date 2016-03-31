@@ -250,7 +250,7 @@ class Country extends Controller
      */
     protected function submit($country)
     {
-        $this->submitted = $this->request->post('country');
+        $this->submitted = $this->request->post('country', array());
 
         $this->validate($country);
 

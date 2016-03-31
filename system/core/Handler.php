@@ -59,7 +59,7 @@ class Handler
 
         $instance = Container::instance($handler);
 
-        if (!$instance) {
+        if (empty($instance)) {
             return false;
         }
 

@@ -334,6 +334,7 @@ class Checkout extends Controller
     {
         $order = $this->getOrder($order_id);
         $this->data['text'] = $this->order->getCompleteMessage($order);
+        
         $this->setTitleComplete($order);
         $this->setBreadcrumbComplete($order);
         $this->outputComplete();
@@ -596,9 +597,10 @@ class Checkout extends Controller
 
         return $components;
     }
-
+    
     /**
      * Saves an order to the database
+     * @return null
      */
     protected function submit()
     {
@@ -608,16 +610,22 @@ class Checkout extends Controller
 
         $this->validate();
 
-        if (empty($this->form_data['form_errors'])) {
-
-            $result = $this->order->submit($this->form_data['order'], $this->cart_content);
-
-            $redirect = empty($result['redirect']) ? "checkout/complete/{$result['order_id']}" : $result['redirect'];
-            $message = empty($result['message']) ? null : $result['message'];
-            $message_type = empty($result['message_type']) ? 'info' : $result['message_type'];
-
-            $this->redirect($redirect, $message, $message_type);
+        if (!empty($this->form_data['form_errors'])) {
+            return;
         }
+        
+        $result = $this->order->submit($this->form_data['order'], $this->cart_content);
+        
+        if(empty($result['order']['order_id'])){
+            return;
+        }
+        
+        $order_id = $result['order']['order_id'];
+        
+        $redirect = empty($result['redirect']) ? "checkout/complete/$order_id" : $result['redirect'];
+        $message = empty($result['message']) ? '' : $result['message'];
+        $message_type = empty($result['message_type']) ? 'info' : $result['message_type'];
+        $this->redirect($redirect, $message, $message_type);
     }
 
     /**

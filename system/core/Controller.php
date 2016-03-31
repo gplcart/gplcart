@@ -613,9 +613,9 @@ class Controller
      * @param string $message
      * @param string $severity
      */
-    protected function redirect($url = '', $message = null, $severity = 'info')
+    protected function redirect($url = '', $message = '', $severity = 'info')
     {
-        if (isset($message)) {
+        if (!empty($message)) {
             $this->session->setMessage($message, $severity);
         }
 

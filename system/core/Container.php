@@ -33,14 +33,14 @@ class Container
      * @param string $class
      * @param array $arguments
      * @param boolean $share
-     * @return boolean|object
+     * @return object
      */
     public static function instance($class, $arguments = array(), $share = true)
     {
         if (is_array($class)) {
 
             if (!is_callable($class)) {
-                return false;
+                return (object) array();
             }
 
             $class = reset($class);
@@ -67,7 +67,7 @@ class Container
         }
 
         if (!class_exists($class)) {
-            return false;
+            return (object) array();
         }
 
         $reflection = new ReflectionClass($class);

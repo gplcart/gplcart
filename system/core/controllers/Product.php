@@ -150,16 +150,9 @@ class Product extends Controller
             'url' => $this->url(false, array(), true),
             'title' => $product['title']));
 
-        $total_reviews = $this->review->getList(array(
-            'count' => true,
-            'product_id' => $product_id,
-            'status' => 1,
-            'user_status' => 1
-        ));
-
-        $query = $this->request->get();
+        $total_reviews = $this->getTotalReviews($product_id);
         
-        $limit = $this->setPager($total_reviews, $query, $this->config->get('review_limit', 5));
+        $limit = $this->setPager($total_reviews, $this->query, $this->config->get('review_limit', 5));
 
         if ($total_reviews) {
 
@@ -167,7 +160,7 @@ class Product extends Controller
                 'limit' => $limit,
                 'product_id' => $product_id,
                 'status' => 1,
-                'user_status' => 1) + $query);
+                'user_status' => 1) + $this->query);
 
             $users = array();
             foreach ($reviews as $review) {
@@ -232,6 +225,23 @@ class Product extends Controller
         $this->output('product/product');
     }
     
+    /**
+     * Returns a total number of reviews for this product
+     * @param integer $product_id
+     * @return integer
+     */
+    protected function getTotalReviews($product_id)
+    {
+        $total = $this->review->getList(array(
+            'count' => true,
+            'product_id' => $product_id,
+            'status' => 1,
+            'user_status' => 1
+        ));
+
+        return $total;
+    }
+
     protected function getShippingQuotes($product)
     {
         

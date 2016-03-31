@@ -46,7 +46,7 @@ class Notification
      * Sets a notification
      * @param string $notification_id
      * @param array $arguments
-     * @return boolean
+     * @return mixed
      */
     public function set($notification_id, array $arguments = array())
     {
@@ -65,15 +65,11 @@ class Notification
 
         $result = Handler::call($handlers, $notification_id, 'process', $arguments);
 
-        if (empty($result['messages'])) {
-            return false;
-        }
-
         if (isset($database)) {
             $this->save($notification_id, $result);
         }
 
-        return true;
+        return $result;
     }
 
     /**
@@ -217,11 +213,15 @@ class Notification
     /**
      * Saves a notification to the database
      * @param string $notification_id
-     * @param array $data
+     * @param mixed $data
      * @return boolean
      */
-    public function save($notification_id, array $data)
+    public function save($notification_id, $data)
     {
+        if(empty($data)){
+            return false;
+        }
+        
         return $this->config->set("notification_$notification_id", $data);
     }
 

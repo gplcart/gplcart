@@ -32,7 +32,7 @@ class City extends Controller
 
     /**
      * City model instance
-     * @var \core\model\City $city
+     * @var \core\models\City $city
      */
     protected $city;
 
@@ -316,7 +316,7 @@ class City extends Controller
      */
     protected function submit($country, $state, $city)
     {
-        $this->submitted = $this->request->post('city');
+        $this->submitted = $this->request->post('city', array());
         $this->validate();
 
         if ($this->formErrors()) {

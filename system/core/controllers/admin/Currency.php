@@ -172,10 +172,11 @@ class Currency extends Controller
      */
     protected function submit($currency)
     {
-        $this->submitted = $this->request->post('currency');
+        $this->submitted = $this->request->post('currency', array());
         $this->validate($currency);
+        $errors = $this->formErrors();
 
-        if ($this->formErrors()) {
+        if (!empty($errors)) {
             $this->data['currency'] = $this->submitted;
             return;
         }
