@@ -72,6 +72,7 @@ class Session
         }
 
         $messages[] = $message;
+
         return $this->set('messages', $type, $messages);
     }
 
@@ -110,15 +111,18 @@ class Session
             foreach ($key as $k => $v) {
                 $_SESSION[GC_SESSION_PREFIX . $k] = $v;
             }
+
             return true;
         }
 
         if (isset($secondkey)) {
             $_SESSION[GC_SESSION_PREFIX . $key][$secondkey] = $value;
+
             return true;
         }
 
         $_SESSION[GC_SESSION_PREFIX . $key] = $value;
+
         return true;
     }
 
@@ -131,6 +135,7 @@ class Session
     {
         $message = $this->get('messages', $type, array());
         $this->delete('messages', $type);
+
         return $message;
     }
 
@@ -148,15 +153,18 @@ class Session
 
         if (!isset($key)) {
             session_unset();
+
             return session_destroy();
         }
 
         if (isset($secondkey)) {
             unset($_SESSION[GC_SESSION_PREFIX . $key][$secondkey]);
+
             return true;
         }
 
         unset($_SESSION[GC_SESSION_PREFIX . $key]);
+
         return true;
     }
 
@@ -173,5 +181,4 @@ class Session
 
         return $this->get('token');
     }
-
 }

@@ -72,7 +72,7 @@ class Cart
 
     /**
      * Request model instance
-     * @var \core\classes\Request $request 
+     * @var \core\classes\Request $request
      */
     protected $request;
 
@@ -137,7 +137,6 @@ class Cart
         }
 
         if ($cached) {
-
             $cart = &Cache::memory("cart.$user_id");
 
             if (isset($cart)) {
@@ -148,6 +147,7 @@ class Cart
 
             if (isset($cache)) {
                 $cart = $cache;
+
                 return $cart;
             }
         }
@@ -164,7 +164,6 @@ class Cart
 
         $cart = array();
         foreach ($products as $cart_id => $item) {
-
             $item['product'] = $this->product->getBySku($item['sku'], $item['store_id']);
 
             // Invalid / disabled product
@@ -182,7 +181,7 @@ class Cart
 
             if (empty($item['product']['combination_id'])) {
                 $price = $this->currency->convert($price, $currency, $current_currency);
-            } else if (!empty($item['product']['option_file_id'])) {
+            } elseif (!empty($item['product']['option_file_id'])) {
                 $price = $this->currency->convert($item['product']['option_price'], $currency, $current_currency);
             }
 
@@ -227,6 +226,7 @@ class Cart
 
         $user_id = Tool::randomString(6);
         Tool::setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
+
         return (string) $user_id;
     }
 
@@ -246,12 +246,12 @@ class Cart
         
         $where = array();
         
-        if(isset($data['user_id'])){
+        if (isset($data['user_id'])) {
             $sql .= ' AND user_id=?';
             $where[] = $data['user_id'];
         }
         
-        if(isset($data['order_id'])){
+        if (isset($data['order_id'])) {
             $sql .= ' AND order_id=?';
             $where[] = $data['order_id'];
         }
@@ -301,6 +301,7 @@ class Cart
         }
 
         $error = is_array($result) ? end($result) : $result;
+
         return $error;
     }
 
@@ -333,6 +334,7 @@ class Cart
 
         $this->logAddToCart($data, $product, $user_id);
         $this->deleteCache($user_id);
+
         return true;
     }
 
@@ -374,7 +376,6 @@ class Cart
             $data['sku'] = $product['sku'];
             $data['stock'] = $product['stock'];
         } else {
-
             $data['combination_id'] = $this->product->getCombinationId($data['options'], $product['product_id']);
 
             if (!empty($product['combination'][$data['combination_id']]['sku'])) {
@@ -406,6 +407,7 @@ class Cart
         }
 
         $this->errors[] = $this->language->text('Invalid product');
+
         return false;
     }
 
@@ -418,6 +420,7 @@ class Cart
     {
         if (empty($data['sku'])) {
             $this->errors[] = $this->language->text('SKU not found');
+
             return false;
         }
 
@@ -478,6 +481,7 @@ class Cart
         if (isset($existing['cart_id'])) {
             $cart_id = $existing['cart_id'];
             $this->update($cart_id, array('quantity' => $existing['quantity'] ++));
+
             return $cart_id;
         }
 
@@ -550,6 +554,7 @@ class Cart
 
         $sth = $this->db->prepare($sql);
         $sth->execute($where);
+
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -588,6 +593,7 @@ class Cart
         ));
 
         $this->hook->fire('add.cart.after', $data, $cart_id);
+
         return $cart_id;
     }
 
@@ -672,6 +678,7 @@ class Cart
 
         $result = $this->db->delete('cart', $where);
         $this->hook->fire('delete.cart.after', $arguments, $result);
+
         return (bool) $result;
     }
 
@@ -682,6 +689,7 @@ class Cart
     public function deleteCookie()
     {
         $cookie_name = $this->config->get('user_cookie_name', 'user_id');
+
         return Tool::deleteCookie($cookie_name);
     }
 
@@ -716,7 +724,7 @@ class Cart
         $this->deleteCookie();
 
         $this->hook->fire('cart.login.after', $user, $cart);
+
         return true;
     }
-
 }

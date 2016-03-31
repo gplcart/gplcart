@@ -56,6 +56,7 @@ function tln_tagprint($tagname, $attary, $tagtype)
         }
         $fulltag .= '>';
     }
+
     return $fulltag;
 }
 
@@ -88,6 +89,7 @@ function tln_skipspace($body, $offset)
         $count = strlen($matches[1]);
         $offset += $count;
     }
+
     return $offset;
 }
 
@@ -108,6 +110,7 @@ function tln_findnxstr($body, $offset, $needle)
     if ($pos === false) {
         $pos = strlen($body);
     }
+
     return $pos;
 }
 
@@ -137,6 +140,7 @@ function tln_findnxreg($body, $offset, $reg)
         $retarr[1] = $matches[1];
         $retarr[2] = $matches[2];
     }
+
     return $retarr;
 }
 
@@ -191,17 +195,19 @@ function tln_getnxtag($body, $offset)
          * A comment or an SGML declaration.
          */
             if (substr($body, $pos + 1, 2) == '--') {
-            $gt = strpos($body, '-->', $pos);
-            if ($gt === false) {
-                $gt = strlen($body);
+                $gt = strpos($body, '-->', $pos);
+                if ($gt === false) {
+                    $gt = strlen($body);
+                } else {
+                    $gt += 2;
+                }
+
+                return array(false, false, false, $lt, $gt);
             } else {
-                $gt += 2;
+                $gt = tln_findnxstr($body, $pos, '>');
+
+                return array(false, false, false, $lt, $gt);
             }
-            return array(false, false, false, $lt, $gt);
-        } else {
-            $gt = tln_findnxstr($body, $pos, '>');
-            return array(false, false, false, $lt, $gt);
-        }
         break;
     default:
         /**
@@ -243,6 +249,7 @@ function tln_getnxtag($body, $offset)
         } else {
             $gt = tln_findnxstr($body, $pos, '>');
             $retary = array(false, false, false, $lt, $gt);
+
             return $retary;
         }
             //intentional fall-through
@@ -258,6 +265,7 @@ function tln_getnxtag($body, $offset)
              * This is an invalid tag! Look for the next closing ">".
              */
             $gt = tln_findnxstr($body, $lt, '>');
+
             return array(false, false, false, $lt, $gt);
         }
         break;
@@ -294,6 +302,7 @@ function tln_getnxtag($body, $offset)
                 $tagtype = 3;
                 $pos++;
             }
+
             return array($tagname, $attary, $tagtype, $lt, $pos);
         }
 
@@ -344,11 +353,13 @@ function tln_getnxtag($body, $offset)
             } else {
                 $gt = tln_findnxstr($body, $pos, '>');
                 $retary = array(false, false, false, $lt, $gt);
+
                 return $retary;
             }
                 //intentional fall-through
         case '>':
             $attary{$attname} = '"yes"';
+
             return array($tagname, $attary, $tagtype, $lt, $pos);
             break;
         default:
@@ -376,13 +387,14 @@ function tln_getnxtag($body, $offset)
                  */
                 $quot = substr($body, $pos, 1);
                 if ($quot == '\'') {
-                        $regary = tln_findnxreg($body, $pos + 1, '\'');
+                    $regary = tln_findnxreg($body, $pos + 1, '\'');
                     if ($regary == false) {
                         return array(false, false, false, $lt, strlen($body));
                     }
                     list($pos, $attval, $match) = $regary;
                     $pos++;
-                    $attary{$attname} = '\'' . $attval . '\'';
+                    $attary{$attname}
+                    = '\'' . $attval . '\'';
                 } elseif ($quot == '"') {
                     $regary = tln_findnxreg($body, $pos + 1, '\"');
                     if ($regary == false) {
@@ -390,7 +402,8 @@ function tln_getnxtag($body, $offset)
                     }
                     list($pos, $attval, $match) = $regary;
                     $pos++;
-                            $attary{$attname} = '"' . $attval . '"';
+                    $attary{$attname}
+                    = '"' . $attval . '"';
                 } else {
                     /**
                      * These are hateful. Look for \s, or >.
@@ -404,18 +417,21 @@ function tln_getnxtag($body, $offset)
                      * If it's ">" it will be caught at the top.
                      */
                     $attval = preg_replace('/\"/s', '&quot;', $attval);
-                    $attary{$attname} = '"' . $attval . '"';
+                    $attary{$attname}
+                    = '"' . $attval . '"';
                 }
             } elseif (preg_match('|[\w/>]|', $char)) {
                 /**
                  * That was attribute type 4.
                  */
-                $attary{$attname} = '"yes"';
+                $attary{$attname}
+                = '"yes"';
             } else {
                 /**
                  * An illegal character. Find next '>' and return.
                  */
                 $gt = tln_findnxstr($body, $pos, '>');
+
                 return array(false, false, false, $lt, $gt);
             }
             break;
@@ -446,9 +462,11 @@ function tln_deent(&$attvalue, $regex, $hex = false)
             if ($hex) {
                 $numval = hexdec($numval);
             }
-            $repl{$matches[0][$i]} = chr($numval);
+            $repl{$matches[0][$i]}
+            = chr($numval);
         }
         $attvalue = strtr($attvalue, $repl);
+
         return true;
     } else {
         return false;
@@ -543,7 +561,8 @@ function tln_fixatts(
         tln_defang($attvalue);
         if ($attname == 'style' && $attvalue !== $oldattvalue) {
             $attvalue = "idiocy";
-            $attary{$attname} = $attvalue;
+            $attary{$attname}
+            = $attvalue;
         }
         tln_unspace($attvalue);
 
@@ -565,7 +584,8 @@ function tln_fixatts(
                         list($valmatch, $valrepl) = $valary;
                         $newvalue = preg_replace($valmatch, $valrepl, $attvalue);
                         if ($newvalue != $attvalue) {
-                            $attary{$attname} = $newvalue;
+                            $attary{$attname}
+                            = $newvalue;
                             $attvalue = $newvalue;
                         }
                     }
@@ -574,18 +594,20 @@ function tln_fixatts(
         }
         if ($attname == 'style') {
             if (preg_match('/[\0-\37\200-\377]+/', $attvalue)) {
-                $attary{$attname} = '"disallowed character"';
+                $attary{$attname}
+                = '"disallowed character"';
             }
             preg_match_all("/url\s*\((.+)\)/si", $attvalue, $aMatch);
             if (count($aMatch)) {
-                foreach($aMatch[1] as $sMatch) {
+                foreach ($aMatch[1] as $sMatch) {
                     $urlvalue = $sMatch;
                     tln_fixurl($attname, $urlvalue, $trans_image_path, $block_external_images);
-                    $attary{$attname} = str_replace($sMatch, $urlvalue, $attvalue);
+                    $attary{$attname}
+                    = str_replace($sMatch, $urlvalue, $attvalue);
                 }
             }
         }
-     }
+    }
     /**
      * See if we need to append any attributes to this tag.
      */
@@ -594,6 +616,7 @@ function tln_fixatts(
             $attary = array_merge($attary, $addattary);
         }
     }
+
     return $attary;
 }
 
@@ -604,7 +627,7 @@ function tln_fixurl($attname, &$attvalue, $trans_image_path, $block_external_ima
     if ($attvalue && ($attvalue[0] =='"'|| $attvalue[0] == "'")) {
         // remove the double quotes
         $sQuote = $attvalue[0];
-        $attvalue = trim(substr($attvalue,1,-1));
+        $attvalue = trim(substr($attvalue, 1, -1));
     }
 
     /**
@@ -617,7 +640,7 @@ function tln_fixurl($attname, &$attvalue, $trans_image_path, $block_external_ima
         $attvalue = $sQuote . $trans_image_path . $sQuote;
     } else {
         // first, disallow 8 bit characters and control characters
-        if (preg_match('/[\0-\37\200-\377]+/',$attvalue)) {
+        if (preg_match('/[\0-\37\200-\377]+/', $attvalue)) {
             switch ($attname) {
                 case 'href':
                     $attvalue = $sQuote . 'http://invalid-stuff-detected.example.com' . $sQuote;
@@ -629,7 +652,7 @@ function tln_fixurl($attname, &$attvalue, $trans_image_path, $block_external_ima
         } else {
             $aUrl = parse_url($attvalue);
             if (isset($aUrl['scheme'])) {
-                switch(strtolower($aUrl['scheme'])) {
+                switch (strtolower($aUrl['scheme'])) {
                     case 'mailto':
                     case 'http':
                     case 'https':
@@ -674,7 +697,7 @@ function tln_fixstyle($body, $pos, $trans_image_path, $block_external_images)
     $sToken = '';
     $bSucces = false;
     $bEndTag = false;
-    for ($i=$pos,$iCount=strlen($body);$i<$iCount;++$i) {
+    for ($i=$pos, $iCount=strlen($body);$i<$iCount;++$i) {
         $char = $body{$i};
         switch ($char) {
             case '<':
@@ -682,32 +705,32 @@ function tln_fixstyle($body, $pos, $trans_image_path, $block_external_images)
                 break;
             case '/':
                  if ($sToken == '<') {
-                    $sToken .= $char;
-                    $bEndTag = true;
+                     $sToken .= $char;
+                     $bEndTag = true;
                  } else {
-                    $content .= $char;
+                     $content .= $char;
                  }
                  break;
             case '>':
                  if ($bEndTag) {
-                    $sToken .= $char;
-                    if (preg_match('/\<\/\s*style\s*\>/i',$sToken,$aMatch)) {
-                        $newpos = $i + 1;
-                        $bSucces = true;
-                        break 2;
-                    } else {
-                        $content .= $sToken;
-                    }
-                    $bEndTag = false;
+                     $sToken .= $char;
+                     if (preg_match('/\<\/\s*style\s*\>/i', $sToken, $aMatch)) {
+                         $newpos = $i + 1;
+                         $bSucces = true;
+                         break 2;
+                     } else {
+                         $content .= $sToken;
+                     }
+                     $bEndTag = false;
                  } else {
-                    $content .= $char;
+                     $content .= $char;
                  }
                  break;
             case '!':
                 if ($sToken == '<') {
                     // possible comment
-                    if (isset($body{$i+2}) && substr($body,$i,3) == '!--') {
-                        $i = strpos($body,'-->',$i+3);
+                    if (isset($body{$i+2}) && substr($body, $i, 3) == '!--') {
+                        $i = strpos($body, '-->', $i+3);
                         if ($i === false) { // no end comment
                             $i = strlen($body);
                         }
@@ -726,8 +749,8 @@ function tln_fixstyle($body, $pos, $trans_image_path, $block_external_images)
                 break;
         }
     }
-    if ($bSucces == FALSE){
-        return array(FALSE, strlen($body));
+    if ($bSucces == false) {
+        return array(false, strlen($body));
     }
 
 
@@ -749,26 +772,27 @@ function tln_fixstyle($body, $pos, $trans_image_path, $block_external_images)
     //                           "url(\\1$trans_image_path\\2)", $content);
 
     // first check for 8bit sequences and disallowed control characters
-    if (preg_match('/[\16-\37\200-\377]+/',$content)) {
+    if (preg_match('/[\16-\37\200-\377]+/', $content)) {
         $content = '<!-- style block removed by html filter due to presence of 8bit characters -->';
+
         return array($content, $newpos);
     }
 
     // remove @import line
-    $content = preg_replace("/^\s*(@import.*)$/mi","\n<!-- @import rules forbidden -->\n",$content);
+    $content = preg_replace("/^\s*(@import.*)$/mi", "\n<!-- @import rules forbidden -->\n", $content);
 
     $content = preg_replace("/(\\\\)?u(\\\\)?r(\\\\)?l(\\\\)?/i", 'url', $content);
-    preg_match_all("/url\s*\((.+)\)/si",$content,$aMatch);
+    preg_match_all("/url\s*\((.+)\)/si", $content, $aMatch);
     if (count($aMatch)) {
         $aValue = $aReplace = array();
-        foreach($aMatch[1] as $sMatch) {
+        foreach ($aMatch[1] as $sMatch) {
             // url value
             $urlvalue = $sMatch;
-            tln_fixurl('style',$urlvalue, $trans_image_path, $block_external_images);
+            tln_fixurl('style', $urlvalue, $trans_image_path, $block_external_images);
             $aValue[] = $sMatch;
             $aReplace[] = $urlvalue;
         }
-        $content = str_replace($aValue,$aReplace,$content);
+        $content = str_replace($aValue, $aReplace, $content);
     }
 
     /**
@@ -778,7 +802,7 @@ function tln_fixstyle($body, $pos, $trans_image_path, $block_external_images)
     tln_defang($contentTemp);
     tln_unspace($contentTemp);
 
-    $match   = Array('/\/\*.*\*\//',
+    $match   = array('/\/\*.*\*\//',
                     '/expression/i',
                     '/behaviou*r/i',
                     '/binding/i',
@@ -786,11 +810,12 @@ function tln_fixstyle($body, $pos, $trans_image_path, $block_external_images)
                     '/javascript/i',
                     '/script/i',
                     '/position/i');
-    $replace = Array('','idiocy', 'idiocy', 'idiocy', 'idiocy', 'idiocy', 'idiocy', '');
+    $replace = array('','idiocy', 'idiocy', 'idiocy', 'idiocy', 'idiocy', 'idiocy', '');
     $contentNew = preg_replace($match, $replace, $contentTemp);
     if ($contentNew !== $contentTemp) {
         $content = $contentNew;
     }
+
     return array($content, $newpos);
 }
 
@@ -801,11 +826,11 @@ function tln_body2div($attary, $trans_image_path)
     $text = '#000000';
     $has_bgc_stl = $has_txt_stl = false;
     $styledef = '';
-    if (is_array($attary) && sizeof($attary) > 0){
-        foreach ($attary as $attname=>$attvalue){
+    if (is_array($attary) && sizeof($attary) > 0) {
+        foreach ($attary as $attname=>$attvalue) {
             $quotchar = substr($attvalue, 0, 1);
             $attvalue = str_replace($quotchar, "", $attvalue);
-            switch ($attname){
+            switch ($attname) {
                 case 'background':
                     $styledef .= "background-image: url('$trans_image_path'); ";
                     break;
@@ -824,10 +849,11 @@ function tln_body2div($attary, $trans_image_path)
         if ($has_bgc_stl && !$has_txt_stl) {
             $styledef .= "color: $text; ";
         }
-        if (strlen($styledef) > 0){
+        if (strlen($styledef) > 0) {
             $divattary{"style"} = "\"$styledef\"";
         }
     }
+
     return $divattary;
 }
 
@@ -885,11 +911,11 @@ function tln_sanitize(
         /**
          * Take care of <style>
          */
-        if ($tagname == "style" && $tagtype == 1){
+        if ($tagname == "style" && $tagtype == 1) {
             list($free_content, $curpos) =
                 tln_fixstyle($body, $gt+1, $trans_image_path, $block_external_images);
-            if ($free_content != FALSE){
-                if ( !empty($attary) ) {
+            if ($free_content != false) {
+                if (!empty($attary)) {
                     $attary = tln_fixatts($tagname,
                                          $attary,
                                          $rm_attnames,
@@ -905,7 +931,7 @@ function tln_sanitize(
             }
             continue;
         }
-        if ($skip_content == false){
+        if ($skip_content == false) {
             $trusted .= $free_content;
         }
         if ($tagname != false) {
@@ -924,7 +950,8 @@ function tln_sanitize(
                         if (isset($open_tags{$tagname}) &&
                             $open_tags{$tagname} > 0
                         ) {
-                            $open_tags{$tagname}--;
+                            $open_tags{$tagname}
+                            --;
                         } else {
                             $tagname = false;
                         }
@@ -963,15 +990,17 @@ function tln_sanitize(
                             /**
                              * Convert body into div.
                              */
-                            if ($tagname == "body"){
+                            if ($tagname == "body") {
                                 $tagname = "div";
                                 $attary = tln_body2div($attary, $trans_image_path);
                             }
                             if ($tagtype == 1) {
                                 if (isset($open_tags{$tagname})) {
-                                    $open_tags{$tagname}++;
+                                    $open_tags{$tagname}
+                                    ++;
                                 } else {
-                                    $open_tags{$tagname} = 1;
+                                    $open_tags{$tagname}
+                                    = 1;
                                 }
                             }
                             /**
@@ -1009,6 +1038,7 @@ function tln_sanitize(
         $trusted .= "\n";
     }
     $trusted .= "<!-- end tln_sanitized html -->\n";
+
     return $trusted;
 }
 
@@ -1019,7 +1049,6 @@ function tln_sanitize(
 
 function HTMLFilter($body, $trans_image_path, $block_external_images = false)
 {
-
     $tag_list = array(
         false,
         "object",
@@ -1162,5 +1191,6 @@ function HTMLFilter($body, $trans_image_path, $block_external_images = false)
         $trans_image_path,
         $block_external_images
     );
+
     return $trusted;
 }

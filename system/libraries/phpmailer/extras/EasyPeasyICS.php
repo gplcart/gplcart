@@ -63,6 +63,7 @@ class EasyPeasyICS
             'uid' => $uid
         );
         $this->events[] = $event;
+
         return $event;
     }
 
@@ -143,6 +144,7 @@ END:VCALENDAR';
             header('Content-Disposition: inline; filename=' . $filename . '.ics');
             echo $ics;
         }
+
         return $ics;
     }
 }

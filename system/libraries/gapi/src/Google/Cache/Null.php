@@ -16,7 +16,7 @@
  */
 
 if (!class_exists('Google_Client')) {
-  require_once dirname(__FILE__) . '/../autoload.php';
+    require_once dirname(__FILE__) . '/../autoload.php';
 }
 
 /**
@@ -25,17 +25,16 @@ if (!class_exists('Google_Client')) {
  */
 class Google_Cache_Null extends Google_Cache_Abstract
 {
-  public function __construct(Google_Client $client)
-  {
-
-  }
+    public function __construct(Google_Client $client)
+    {
+    }
 
    /**
    * @inheritDoc
    */
   public function get($key, $expiration = false)
   {
-    return false;
+      return false;
   }
 
   /**
@@ -43,7 +42,7 @@ class Google_Cache_Null extends Google_Cache_Abstract
    */
   public function set($key, $value)
   {
-    // Nop.
+      // Nop.
   }
 
   /**
@@ -52,6 +51,6 @@ class Google_Cache_Null extends Google_Cache_Abstract
    */
   public function delete($key)
   {
-    // Nop.
+      // Nop.
   }
 }

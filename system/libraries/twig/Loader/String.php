@@ -27,7 +27,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Loader_String implements Twig_LoaderInterface, Twig_ExistsLoaderInterface
+class twig_Loader_String implements Twig_LoaderInterface, Twig_ExistsLoaderInterface
 {
     /**
      * {@inheritdoc}

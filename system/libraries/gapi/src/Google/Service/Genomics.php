@@ -36,18 +36,17 @@ class Google_Service_Genomics extends Google_Service
 
   
 
-  /**
+    /**
    * Constructs the internal representation of the Genomics service.
    *
    * @param Google_Client $client
    */
   public function __construct(Google_Client $client)
   {
-    parent::__construct($client);
-    $this->rootUrl = 'https://genomics.googleapis.com/';
-    $this->servicePath = '';
-    $this->version = 'v1';
-    $this->serviceName = 'genomics';
-
+      parent::__construct($client);
+      $this->rootUrl = 'https://genomics.googleapis.com/';
+      $this->servicePath = '';
+      $this->version = 'v1';
+      $this->serviceName = 'genomics';
   }
 }

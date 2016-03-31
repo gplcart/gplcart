@@ -3,19 +3,25 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($city['city_id']) && $this->access('city_delete')) { ?>
+        <?php if (isset($city['city_id']) && $this->access('city_delete')) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url("admin/settings/cities/{$country['code']}/{$state['state_id']}"); ?>" class="btn btn-default">
           <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
         </a>
-        <?php if ($this->access('city_edit') || $this->access('city_add')) { ?>
+        <?php if ($this->access('city_edit') || $this->access('city_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -48,9 +54,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="city[name]" class="form-control" value="<?php echo isset($city['name']) ? $this->escape($city['name']) : ''; ?>" autofocus>
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['name'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['name'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>

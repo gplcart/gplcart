@@ -65,7 +65,6 @@ class FieldValue
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT fv.*, COALESCE(NULLIF(fvt.title, ""), fv.title) AS title, f.path';
 
         if (!empty($data['count'])) {
@@ -95,7 +94,6 @@ class FieldValue
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $sql .= " ORDER BY fv.title {$data['order']}";
@@ -131,6 +129,7 @@ class FieldValue
         }
 
         $this->hook->fire('get.field.value.list', $field_id, $list);
+
         return $list;
     }
 
@@ -156,7 +155,6 @@ class FieldValue
 
 
         if ($field_value) {
-
             $field_value['language'] = 'und';
 
             $sth = $this->db->prepare('SELECT * FROM field_value_translation WHERE field_value_id=:field_value_id');
@@ -172,6 +170,7 @@ class FieldValue
         }
 
         $this->hook->fire('get.field.value.after', $field_value_id, $language, $field_value);
+
         return $field_value;
     }
 
@@ -213,6 +212,7 @@ class FieldValue
         }
 
         $this->hook->fire('add.field.value.after', $data, $field_value_id);
+
         return $field_value_id;
     }
 
@@ -286,6 +286,7 @@ class FieldValue
         }
 
         $this->hook->fire('update.field.value.after', $field_value_id, $data, $result);
+
         return $result;
     }
 
@@ -312,6 +313,7 @@ class FieldValue
         $this->db->delete('file', array('id_key' => 'field_value_id', 'id_value' => (int) $field_value_id));
 
         $this->hook->fire('delete.field.value.after', $field_value_id);
+
         return true;
     }
 
@@ -332,5 +334,4 @@ class FieldValue
 
         return !$sth->fetchColumn();
     }
-
 }

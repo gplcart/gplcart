@@ -121,7 +121,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -173,7 +173,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -187,7 +187,6 @@ class Product
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['product_id']) && is_numeric($data['product_id']));
@@ -281,11 +280,11 @@ class Product
      */
     protected function validateTitle(&$data, &$errors, $line)
     {
-
         if (isset($data['title']) && mb_strlen($data['title']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -293,6 +292,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Meta title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -300,6 +300,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Meta description must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -368,7 +369,6 @@ class Product
      */
     protected function validateStore(&$data, &$errors, $line)
     {
-
         if (!isset($data['store_id'])) {
             if (isset($data['update_product']['store_id'])) {
                 $data['store_id'] = $data['update_product']['store_id']; // Needs to regenerate sku
@@ -384,10 +384,12 @@ class Product
                 '@num' => $line,
                 '@error' => $this->language->text('Store @id neither exists or unique', array(
                     '@id' => $data['store_id']))));
+
             return false;
         }
 
         $data['store_id'] = $store['store_id'];
+
         return true;
     }
 
@@ -445,7 +447,6 @@ class Product
      */
     protected function validatePrice(&$data, &$errors, $line)
     {
-
         if (!isset($data['price'])) {
             return true;
         }
@@ -462,7 +463,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param array $data
      * @param type $errors
      * @param type $line
@@ -470,7 +471,6 @@ class Product
      */
     protected function validateStock(&$data, &$errors, $line)
     {
-
         if (!isset($data['stock'])) {
             return true;
         }
@@ -479,10 +479,12 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Stock must be numeric')));
+
             return false;
         }
 
         $data['stock'] = (int) $data['stock'];
+
         return true;
     }
 
@@ -495,7 +497,6 @@ class Product
      */
     protected function validateClass(&$data, &$errors, $line)
     {
-
         if (!isset($data['product_class_id'])) {
             return true;
         }
@@ -507,10 +508,12 @@ class Product
                 '@num' => $line,
                 '@error' => $this->language->text('Product class @id neither exists or unique', array(
                     '@id' => $data['product_class_id']))));
+
             return false;
         }
 
         $data['product_class_id'] = $class['product_class_id'];
+
         return true;
     }
 
@@ -536,7 +539,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param array $data
      * @param type $errors
      * @param type $line
@@ -544,7 +547,6 @@ class Product
      */
     protected function validateCategory(&$data, &$errors, $line)
     {
-
         if (!isset($data['category_id'])) {
             return true;
         }
@@ -561,6 +563,7 @@ class Product
         }
 
         $data['category_id'] = $category['category_id'];
+
         return true;
     }
 
@@ -597,7 +600,6 @@ class Product
      */
     protected function validateBrand(&$data, &$errors, $line)
     {
-
         if (!isset($data['brand_category_id'])) {
             return true;
         }
@@ -614,6 +616,7 @@ class Product
         }
 
         $data['brand_category_id'] = $category['category_id'];
+
         return true;
     }
 
@@ -626,13 +629,13 @@ class Product
      */
     protected function validateSku(&$data, &$errors, $line)
     {
-
         if (!isset($data['sku'])) {
             return true;
         }
 
         if ($data['sku'] === $this->import->getCsvAutoTag()) {
             $data['sku'] = $this->product->createSku($data);
+
             return true;
         }
 
@@ -640,6 +643,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('SKU must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -683,6 +687,7 @@ class Product
 
         if ($data['alias'] === $this->import->getCsvAutoTag()) {
             $data['alias'] = $this->product->createAlias($data);
+
             return true;
         }
 
@@ -690,6 +695,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Alias must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -735,6 +741,7 @@ class Product
                 '@error' => implode(',', $download['errors'])));
         }
         $data['images'] = $download['images'];
+
         return true;
     }
 
@@ -781,16 +788,17 @@ class Product
         }
 
         $data['related'] = $product_ids;
+
         return true;
     }
 
     protected function validateDimension(&$data, &$errors, $line)
     {
-
         if (isset($data['width']) && (!is_numeric($data['width']) || strlen($data['width']) > 10)) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Dimension values must be numeric')));
+
             return false;
         }
 
@@ -798,6 +806,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Dimension values must be numeric')));
+
             return false;
         }
 
@@ -805,6 +814,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Dimension values must be numeric')));
+
             return false;
         }
 
@@ -812,6 +822,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Weight must be numeric')));
+
             return false;
         }
 
@@ -821,6 +832,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Allowed weight units: ' . implode(',', $allowed))));
+
             return false;
         }
 
@@ -830,6 +842,7 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Allowed dimension units: ' . implode(',', $allowed))));
+
             return false;
         }
 
@@ -884,10 +897,10 @@ class Product
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Title cannot be empty')));
+
             return 0;
         }
 
         return $this->product->add($data) ? 1 : 0;
     }
-
 }

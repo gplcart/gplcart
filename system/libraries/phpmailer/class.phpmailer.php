@@ -676,6 +676,7 @@ class PHPMailer
         } else {
             $result = @mail($to, $subject, $body, $header, $params);
         }
+
         return $result;
     }
 
@@ -694,6 +695,7 @@ class PHPMailer
         //Avoid clash with built-in function names
         if (!in_array($this->Debugoutput, array('error_log', 'html', 'echo')) and is_callable($this->Debugoutput)) {
             call_user_func($this->Debugoutput, $str, $this->SMTPDebug);
+
             return;
         }
         switch ($this->Debugoutput) {
@@ -856,6 +858,7 @@ class PHPMailer
             if ($this->exceptions) {
                 throw new phpmailerException($error_message);
             }
+
             return false;
         }
         $params = array($kind, $address, $name);
@@ -864,14 +867,17 @@ class PHPMailer
             if ($kind != 'Reply-To') {
                 if (!array_key_exists($address, $this->RecipientsQueue)) {
                     $this->RecipientsQueue[$address] = $params;
+
                     return true;
                 }
             } else {
                 if (!array_key_exists($address, $this->ReplyToQueue)) {
                     $this->ReplyToQueue[$address] = $params;
+
                     return true;
                 }
             }
+
             return false;
         }
         // Immediately add standard addresses without IDN.
@@ -897,6 +903,7 @@ class PHPMailer
             if ($this->exceptions) {
                 throw new phpmailerException($error_message);
             }
+
             return false;
         }
         if (!$this->validateAddress($address)) {
@@ -906,20 +913,24 @@ class PHPMailer
             if ($this->exceptions) {
                 throw new phpmailerException($error_message);
             }
+
             return false;
         }
         if ($kind != 'Reply-To') {
             if (!array_key_exists(strtolower($address), $this->all_recipients)) {
                 array_push($this->$kind, array($address, $name));
                 $this->all_recipients[strtolower($address)] = true;
+
                 return true;
             }
         } else {
             if (!array_key_exists(strtolower($address), $this->ReplyTo)) {
                 $this->ReplyTo[strtolower($address)] = array($address, $name);
+
                 return true;
             }
         }
+
         return false;
     }
 
@@ -975,6 +986,7 @@ class PHPMailer
                 }
             }
         }
+
         return $addresses;
     }
 
@@ -1000,6 +1012,7 @@ class PHPMailer
             if ($this->exceptions) {
                 throw new phpmailerException($error_message);
             }
+
             return false;
         }
         $this->From = $address;
@@ -1009,6 +1022,7 @@ class PHPMailer
                 $this->Sender = $address;
             }
         }
+
         return true;
     }
 
@@ -1162,6 +1176,7 @@ class PHPMailer
                 }
             }
         }
+
         return $address;
     }
 
@@ -1177,6 +1192,7 @@ class PHPMailer
             if (!$this->preSend()) {
                 return false;
             }
+
             return $this->postSend();
         } catch (phpmailerException $exc) {
             $this->mailHeader = '';
@@ -1184,6 +1200,7 @@ class PHPMailer
             if ($this->exceptions) {
                 throw $exc;
             }
+
             return false;
         }
     }
@@ -1222,6 +1239,7 @@ class PHPMailer
                     if ($this->exceptions) {
                         throw new phpmailerException($error_message);
                     }
+
                     return false;
                 }
             }
@@ -1272,12 +1290,14 @@ class PHPMailer
                 $this->MIMEHeader = rtrim($this->MIMEHeader, "\r\n ") . self::CRLF .
                     str_replace("\r\n", "\n", $header_dkim) . self::CRLF;
             }
+
             return true;
         } catch (phpmailerException $exc) {
             $this->setError($exc->getMessage());
             if ($this->exceptions) {
                 throw $exc;
             }
+
             return false;
         }
     }
@@ -1315,6 +1335,7 @@ class PHPMailer
                 throw $exc;
             }
         }
+
         return false;
     }
 
@@ -1384,6 +1405,7 @@ class PHPMailer
                 throw new phpmailerException($this->lang('execute') . $this->Sendmail, self::STOP_CRITICAL);
             }
         }
+
         return true;
     }
 
@@ -1429,6 +1451,7 @@ class PHPMailer
         if (!$result) {
             throw new phpmailerException($this->lang('instantiate'), self::STOP_CRITICAL);
         }
+
         return true;
     }
 
@@ -1442,6 +1465,7 @@ class PHPMailer
         if (!is_object($this->smtp)) {
             $this->smtp = new SMTP;
         }
+
         return $this->smtp;
     }
 
@@ -1508,6 +1532,7 @@ class PHPMailer
                 self::STOP_CONTINUE
             );
         }
+
         return true;
     }
 
@@ -1610,6 +1635,7 @@ class PHPMailer
                             throw new phpmailerException($this->lang('authenticate'));
                         }
                     }
+
                     return true;
                 } catch (phpmailerException $exc) {
                     $lastexception = $exc;
@@ -1625,6 +1651,7 @@ class PHPMailer
         if ($this->exceptions and !is_null($lastexception)) {
             throw $lastexception;
         }
+
         return false;
     }
 
@@ -1693,6 +1720,7 @@ class PHPMailer
             }
         }
         $this->language = $PHPMAILER_LANG;
+
         return (boolean)$foundlang; // Returns false if language not found
     }
 
@@ -1721,6 +1749,7 @@ class PHPMailer
         foreach ($addr as $address) {
             $addresses[] = $this->addrFormat($address);
         }
+
         return $type . ': ' . implode(', ', $addresses) . $this->LE;
     }
 
@@ -1886,6 +1915,7 @@ class PHPMailer
                 $foundSplitPos = true;
             }
         }
+
         return $maxLength;
     }
 
@@ -2282,6 +2312,7 @@ class PHPMailer
                 }
             }
         }
+
         return $body;
     }
 
@@ -2415,15 +2446,16 @@ class PHPMailer
                 6 => $disposition,
                 7 => 0
             );
-
         } catch (phpmailerException $exc) {
             $this->setError($exc->getMessage());
             $this->edebug($exc->getMessage());
             if ($this->exceptions) {
                 throw $exc;
             }
+
             return false;
         }
+
         return true;
     }
 
@@ -2595,9 +2627,11 @@ class PHPMailer
                     ini_set('magic_quotes_runtime', $magic_quotes);
                 }
             }
+
             return $file_buffer;
         } catch (Exception $exc) {
             $this->setError($exc->getMessage());
+
             return '';
         }
     }
@@ -2635,6 +2669,7 @@ class PHPMailer
                 $this->setError($this->lang('encoding') . $encoding);
                 break;
         }
+
         return $encoded;
     }
 
@@ -2769,6 +2804,7 @@ class PHPMailer
 
         // Chomp the last linefeed
         $encoded = substr($encoded, 0, -strlen($linebreak));
+
         return $encoded;
     }
 
@@ -2793,6 +2829,7 @@ class PHPMailer
             array(' ', "\r\n=2E", "\r\n", '='),
             rawurlencode($string)
         );
+
         return preg_replace('/[^\r\n]{' . ($line_max - 3) . '}[^=\r\n]{2}/', "$0=\r\n", $string);
     }
 
@@ -2917,6 +2954,7 @@ class PHPMailer
     {
         if (!@is_file($path)) {
             $this->setError($this->lang('file_access') . $path);
+
             return false;
         }
 
@@ -2941,6 +2979,7 @@ class PHPMailer
             6 => $disposition,
             7 => $cid
         );
+
         return true;
     }
 
@@ -2982,6 +3021,7 @@ class PHPMailer
             6 => $disposition,
             7 => $cid
         );
+
         return true;
     }
 
@@ -2997,6 +3037,7 @@ class PHPMailer
                 return true;
             }
         }
+
         return false;
     }
 
@@ -3011,6 +3052,7 @@ class PHPMailer
                 return true;
             }
         }
+
         return false;
     }
 
@@ -3157,6 +3199,7 @@ class PHPMailer
         // Set the time zone to whatever the default is to avoid 500 errors
         // Will default to UTC if it's not set properly in php.ini
         date_default_timezone_set(@date_default_timezone_get());
+
         return date('D, j M Y H:i:s O');
     }
 
@@ -3178,6 +3221,7 @@ class PHPMailer
         } elseif (php_uname('n') !== false) {
             $result = php_uname('n');
         }
+
         return $result;
     }
 
@@ -3200,6 +3244,7 @@ class PHPMailer
                 //but it's usually not PHPMailer's fault.
                 return $this->language[$key] . ' https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting';
             }
+
             return $this->language[$key];
         } else {
             //Return the key as a fallback
@@ -3232,6 +3277,7 @@ class PHPMailer
         if ($this->LE !== "\n") {
             $nstr = str_replace("\n", $this->LE, $nstr);
         }
+
         return $nstr;
     }
 
@@ -3336,6 +3382,7 @@ class PHPMailer
             $this->AltBody = 'To view this email message, open it in a program that understands HTML!' .
                 self::CRLF . self::CRLF;
         }
+
         return $this->Body;
     }
 
@@ -3364,6 +3411,7 @@ class PHPMailer
         if (is_callable($advanced)) {
             return call_user_func($advanced, $html);
         }
+
         return html_entity_decode(
             trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/si', '', $html))),
             ENT_QUOTES,
@@ -3483,6 +3531,7 @@ class PHPMailer
         if (array_key_exists(strtolower($ext), $mimes)) {
             return $mimes[strtolower($ext)];
         }
+
         return 'application/octet-stream';
     }
 
@@ -3501,6 +3550,7 @@ class PHPMailer
             $filename = substr($filename, 0, $qpos);
         }
         $pathinfo = self::mb_pathinfo($filename);
+
         return self::_mime_types($pathinfo['extension']);
     }
 
@@ -3569,9 +3619,11 @@ class PHPMailer
     {
         if (property_exists($this, $name)) {
             $this->$name = $value;
+
             return true;
         } else {
             $this->setError($this->lang('variable_set') . $name);
+
             return false;
         }
     }
@@ -3635,6 +3687,7 @@ class PHPMailer
                 $line .= '=' . sprintf('%02X', $ord);
             }
         }
+
         return $line;
     }
 
@@ -3651,6 +3704,7 @@ class PHPMailer
             if ($this->exceptions) {
                 throw new phpmailerException($this->lang('extension_missing') . 'openssl');
             }
+
             return '';
         }
         $privKeyStr = file_get_contents($this->DKIM_private);
@@ -3662,6 +3716,7 @@ class PHPMailer
         if (openssl_sign($signHeader, $signature, $privKey)) {
             return base64_encode($signature);
         }
+
         return '';
     }
 
@@ -3682,6 +3737,7 @@ class PHPMailer
             $lines[$key] = $heading . ':' . trim($value); // Don't forget to remove WSP around the value
         }
         $signHeader = implode("\r\n", $lines);
+
         return $signHeader;
     }
 
@@ -3703,6 +3759,7 @@ class PHPMailer
         while (substr($body, strlen($body) - 4, 4) == "\r\n\r\n") {
             $body = substr($body, 0, strlen($body) - 2);
         }
+
         return $body;
     }
 
@@ -3776,6 +3833,7 @@ class PHPMailer
             $dkimhdrs
         );
         $signed = $this->DKIM_Sign($toSign);
+
         return $dkimhdrs . $signed . "\r\n";
     }
 
@@ -3878,6 +3936,7 @@ class phpmailerException extends Exception
     public function errorMessage()
     {
         $errorMsg = '<strong>' . $this->getMessage() . "</strong><br />\n";
+
         return $errorMsg;
     }
 }

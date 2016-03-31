@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-interface Twig_TokenParserInterface
+interface twig_TokenParserInterface
 {
     /**
      * Sets the parser associated with this token parser.

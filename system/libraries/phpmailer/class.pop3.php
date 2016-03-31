@@ -146,6 +146,7 @@ class POP3
         $debug_level = 0
     ) {
         $pop = new POP3;
+
         return $pop->authorise($host, $port, $timeout, $username, $password, $debug_level);
     }
 
@@ -188,11 +189,13 @@ class POP3
             $login_result = $this->login($this->username, $this->password);
             if ($login_result) {
                 $this->disconnect();
+
                 return true;
             }
         }
         // We need to disconnect regardless of whether the login succeeded
         $this->disconnect();
+
         return false;
     }
 
@@ -238,6 +241,7 @@ class POP3
                 'errno' => $errno,
                 'errstr' => $errstr
             ));
+
             return false;
         }
 
@@ -250,8 +254,10 @@ class POP3
         if ($this->checkResponse($pop3_response)) {
             //  The connection is established and the POP3 server is talking
             $this->connected = true;
+
             return true;
         }
+
         return false;
     }
 
@@ -286,6 +292,7 @@ class POP3
                 return true;
             }
         }
+
         return false;
     }
 
@@ -318,6 +325,7 @@ class POP3
         if ($this->do_debug >= 1) {
             echo "Server -> Client: $response";
         }
+
         return $response;
     }
 
@@ -333,8 +341,10 @@ class POP3
             if ($this->do_debug >= 2) { //Show client messages when debug >= 2
                 echo "Client -> Server: $string";
             }
+
             return fwrite($this->pop_conn, $string, strlen($string));
         }
+
         return 0;
     }
 
@@ -353,6 +363,7 @@ class POP3
                 'errno' => 0,
                 'errstr' => ''
             ));
+
             return false;
         } else {
             return true;

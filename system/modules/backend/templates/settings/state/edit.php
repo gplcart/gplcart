@@ -3,17 +3,23 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($state['state_id']) && $this->access('state_delete')) { ?>
+        <?php if (isset($state['state_id']) && $this->access('state_delete')) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url("admin/settings/states/{$country['code']}"); ?>" class="btn btn-default cancel"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
-        <?php if ($this->access('state_edit') || $this->access('state_add')) { ?>
+        <?php if ($this->access('state_edit') || $this->access('state_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -44,9 +50,12 @@
         </label>
         <div class="col-md-4">
           <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->escape($state['name']) : ''; ?>" required>
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['name'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['name'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
@@ -57,9 +66,12 @@
         </label>
         <div class="col-md-4">
           <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->escape($state['code']) : ''; ?>" required>
-          <?php if (isset($form_errors['code'])) { ?>
-          <div class="help-block"><?php echo $form_errors['code']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['code'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['code'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>

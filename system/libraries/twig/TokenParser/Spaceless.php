@@ -22,7 +22,7 @@
  * {# output will be <div><strong>foo</strong></div> #}
  * </pre>
  */
-class Twig_TokenParser_Spaceless extends Twig_TokenParser
+class twig_TokenParser_Spaceless extends Twig_TokenParser
 {
     public function parse(Twig_Token $token)
     {

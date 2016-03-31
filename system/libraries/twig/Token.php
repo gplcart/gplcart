@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Token
+class twig_Token
 {
     protected $value;
     protected $type;

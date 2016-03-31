@@ -16,7 +16,7 @@
  */
 
 if (!class_exists('Google_Client')) {
-  require_once dirname(__FILE__) . '/autoload.php';
+    require_once dirname(__FILE__) . '/autoload.php';
 }
 
 /**
@@ -25,8 +25,8 @@ if (!class_exists('Google_Client')) {
  */
 class Google_Client
 {
-  const LIBVER = "1.1.5";
-  const USER_AGENT_SUFFIX = "google-api-php-client/";
+    const LIBVER = "1.1.5";
+    const USER_AGENT_SUFFIX = "google-api-php-client/";
   /**
    * @var Google_Auth_Abstract $auth
    */
@@ -74,32 +74,32 @@ class Google_Client
    */
   public function __construct($config = null)
   {
-    if (is_string($config) && strlen($config)) {
-      $config = new Google_Config($config);
-    } else if ( !($config instanceof Google_Config)) {
-      $config = new Google_Config();
+      if (is_string($config) && strlen($config)) {
+          $config = new Google_Config($config);
+      } elseif (!($config instanceof Google_Config)) {
+          $config = new Google_Config();
 
-      if ($this->isAppEngine()) {
-        // Automatically use Memcache if we're in AppEngine.
+          if ($this->isAppEngine()) {
+              // Automatically use Memcache if we're in AppEngine.
         $config->setCacheClass('Google_Cache_Memcache');
-      }
+          }
 
-      if (version_compare(phpversion(), "5.3.4", "<=") || $this->isAppEngine()) {
-        // Automatically disable compress.zlib, as currently unsupported.
+          if (version_compare(phpversion(), "5.3.4", "<=") || $this->isAppEngine()) {
+              // Automatically disable compress.zlib, as currently unsupported.
         $config->setClassConfig('Google_Http_Request', 'disable_gzip', true);
+          }
       }
-    }
 
-    if ($config->getIoClass() == Google_Config::USE_AUTO_IO_SELECTION) {
-      if (function_exists('curl_version') && function_exists('curl_exec')
+      if ($config->getIoClass() == Google_Config::USE_AUTO_IO_SELECTION) {
+          if (function_exists('curl_version') && function_exists('curl_exec')
           && !$this->isAppEngine()) {
-        $config->setIoClass("Google_IO_Curl");
-      } else {
-        $config->setIoClass("Google_IO_Stream");
+              $config->setIoClass("Google_IO_Curl");
+          } else {
+              $config->setIoClass("Google_IO_Stream");
+          }
       }
-    }
 
-    $this->config = $config;
+      $this->config = $config;
   }
 
   /**
@@ -109,7 +109,7 @@ class Google_Client
    */
   public function getLibraryVersion()
   {
-    return self::LIBVER;
+      return self::LIBVER;
   }
 
   /**
@@ -124,8 +124,9 @@ class Google_Client
    */
   public function authenticate($code, $crossClient = false)
   {
-    $this->authenticated = true;
-    return $this->getAuth()->authenticate($code, $crossClient);
+      $this->authenticated = true;
+
+      return $this->getAuth()->authenticate($code, $crossClient);
   }
   
   /**
@@ -141,18 +142,19 @@ class Google_Client
    */
   public function loadServiceAccountJson($jsonLocation, $scopes)
   {
-    $data = json_decode(file_get_contents($jsonLocation));
-    if (isset($data->type) && $data->type == 'service_account') {
-      // Service Account format.
+      $data = json_decode(file_get_contents($jsonLocation));
+      if (isset($data->type) && $data->type == 'service_account') {
+          // Service Account format.
       $cred = new Google_Auth_AssertionCredentials(
           $data->client_email,
           $scopes,
           $data->private_key
       );
-      return $cred;
-    } else {
-      throw new Google_Exception("Invalid service account JSON file.");
-    }
+
+          return $cred;
+      } else {
+          throw new Google_Exception("Invalid service account JSON file.");
+      }
   }
 
   /**
@@ -165,16 +167,16 @@ class Google_Client
    */
   public function setAuthConfig($json)
   {
-    $data = json_decode($json);
-    $key = isset($data->installed) ? 'installed' : 'web';
-    if (!isset($data->$key)) {
-      throw new Google_Exception("Invalid client secret JSON file.");
-    }
-    $this->setClientId($data->$key->client_id);
-    $this->setClientSecret($data->$key->client_secret);
-    if (isset($data->$key->redirect_uris)) {
-      $this->setRedirectUri($data->$key->redirect_uris[0]);
-    }
+      $data = json_decode($json);
+      $key = isset($data->installed) ? 'installed' : 'web';
+      if (!isset($data->$key)) {
+          throw new Google_Exception("Invalid client secret JSON file.");
+      }
+      $this->setClientId($data->$key->client_id);
+      $this->setClientSecret($data->$key->client_secret);
+      if (isset($data->$key->redirect_uris)) {
+          $this->setRedirectUri($data->$key->redirect_uris[0]);
+      }
   }
 
   /**
@@ -186,7 +188,7 @@ class Google_Client
    */
   public function setAuthConfigFile($file)
   {
-    $this->setAuthConfig(file_get_contents($file));
+      $this->setAuthConfig(file_get_contents($file));
   }
 
   /**
@@ -196,11 +198,12 @@ class Google_Client
    */
   public function prepareScopes()
   {
-    if (empty($this->requestedScopes)) {
-      throw new Google_Auth_Exception("No scopes specified");
-    }
-    $scopes = implode(' ', $this->requestedScopes);
-    return $scopes;
+      if (empty($this->requestedScopes)) {
+          throw new Google_Auth_Exception("No scopes specified");
+      }
+      $scopes = implode(' ', $this->requestedScopes);
+
+      return $scopes;
   }
 
   /**
@@ -212,10 +215,10 @@ class Google_Client
    */
   public function setAccessToken($accessToken)
   {
-    if ($accessToken == 'null') {
-      $accessToken = null;
-    }
-    $this->getAuth()->setAccessToken($accessToken);
+      if ($accessToken == 'null') {
+          $accessToken = null;
+      }
+      $this->getAuth()->setAccessToken($accessToken);
   }
 
 
@@ -226,8 +229,8 @@ class Google_Client
    */
   public function setAuth(Google_Auth_Abstract $auth)
   {
-    $this->config->setAuthClass(get_class($auth));
-    $this->auth = $auth;
+      $this->config->setAuthClass(get_class($auth));
+      $this->auth = $auth;
   }
 
   /**
@@ -236,8 +239,8 @@ class Google_Client
    */
   public function setIo(Google_IO_Abstract $io)
   {
-    $this->config->setIoClass(get_class($io));
-    $this->io = $io;
+      $this->config->setIoClass(get_class($io));
+      $this->io = $io;
   }
 
   /**
@@ -246,8 +249,8 @@ class Google_Client
    */
   public function setCache(Google_Cache_Abstract $cache)
   {
-    $this->config->setCacheClass(get_class($cache));
-    $this->cache = $cache;
+      $this->config->setCacheClass(get_class($cache));
+      $this->cache = $cache;
   }
 
   /**
@@ -256,8 +259,8 @@ class Google_Client
    */
   public function setLogger(Google_Logger_Abstract $logger)
   {
-    $this->config->setLoggerClass(get_class($logger));
-    $this->logger = $logger;
+      $this->config->setLoggerClass(get_class($logger));
+      $this->logger = $logger;
   }
 
   /**
@@ -266,8 +269,9 @@ class Google_Client
    */
   public function createAuthUrl()
   {
-    $scopes = $this->prepareScopes();
-    return $this->getAuth()->createAuthUrl($scopes);
+      $scopes = $this->prepareScopes();
+
+      return $this->getAuth()->createAuthUrl($scopes);
   }
 
   /**
@@ -278,7 +282,7 @@ class Google_Client
    */
   public function getAccessToken()
   {
-    $token = $this->getAuth()->getAccessToken();
+      $token = $this->getAuth()->getAccessToken();
     // The response is json encoded, so could be the string null.
     // It is arguable whether this check should be here or lower
     // in the library.
@@ -291,7 +295,7 @@ class Google_Client
    */
   public function getRefreshToken()
   {
-    return $this->getAuth()->getRefreshToken();
+      return $this->getAuth()->getRefreshToken();
   }
 
   /**
@@ -300,7 +304,7 @@ class Google_Client
    */
   public function isAccessTokenExpired()
   {
-    return $this->getAuth()->isAccessTokenExpired();
+      return $this->getAuth()->isAccessTokenExpired();
   }
 
   /**
@@ -310,7 +314,7 @@ class Google_Client
    */
   public function setState($state)
   {
-    $this->getAuth()->setState($state);
+      $this->getAuth()->setState($state);
   }
 
   /**
@@ -320,7 +324,7 @@ class Google_Client
    */
   public function setAccessType($accessType)
   {
-    $this->config->setAccessType($accessType);
+      $this->config->setAccessType($accessType);
   }
 
   /**
@@ -330,7 +334,7 @@ class Google_Client
    */
   public function setApprovalPrompt($approvalPrompt)
   {
-    $this->config->setApprovalPrompt($approvalPrompt);
+      $this->config->setApprovalPrompt($approvalPrompt);
   }
 
   /**
@@ -348,7 +352,7 @@ class Google_Client
    */
   public function setApplicationName($applicationName)
   {
-    $this->config->setApplicationName($applicationName);
+      $this->config->setApplicationName($applicationName);
   }
 
   /**
@@ -357,7 +361,7 @@ class Google_Client
    */
   public function setClientId($clientId)
   {
-    $this->config->setClientId($clientId);
+      $this->config->setClientId($clientId);
   }
 
   /**
@@ -366,7 +370,7 @@ class Google_Client
    */
   public function setClientSecret($clientSecret)
   {
-    $this->config->setClientSecret($clientSecret);
+      $this->config->setClientSecret($clientSecret);
   }
 
   /**
@@ -375,7 +379,7 @@ class Google_Client
    */
   public function setRedirectUri($redirectUri)
   {
-    $this->config->setRedirectUri($redirectUri);
+      $this->config->setRedirectUri($redirectUri);
   }
 
   /**
@@ -388,10 +392,10 @@ class Google_Client
    */
   public function setRequestVisibleActions($requestVisibleActions)
   {
-    if (is_array($requestVisibleActions)) {
-      $requestVisibleActions = join(" ", $requestVisibleActions);
-    }
-    $this->config->setRequestVisibleActions($requestVisibleActions);
+      if (is_array($requestVisibleActions)) {
+          $requestVisibleActions = join(" ", $requestVisibleActions);
+      }
+      $this->config->setRequestVisibleActions($requestVisibleActions);
   }
 
   /**
@@ -401,7 +405,7 @@ class Google_Client
    */
   public function setDeveloperKey($developerKey)
   {
-    $this->config->setDeveloperKey($developerKey);
+      $this->config->setDeveloperKey($developerKey);
   }
 
   /**
@@ -412,7 +416,7 @@ class Google_Client
    */
   public function setHostedDomain($hd)
   {
-    $this->config->setHostedDomain($hd);
+      $this->config->setHostedDomain($hd);
   }
 
   /**
@@ -423,7 +427,7 @@ class Google_Client
    */
   public function setPrompt($prompt)
   {
-    $this->config->setPrompt($prompt);
+      $this->config->setPrompt($prompt);
   }
 
   /**
@@ -434,7 +438,7 @@ class Google_Client
    */
   public function setOpenidRealm($realm)
   {
-    $this->config->setOpenidRealm($realm);
+      $this->config->setOpenidRealm($realm);
   }
 
   /**
@@ -445,7 +449,7 @@ class Google_Client
    */
   public function setIncludeGrantedScopes($include)
   {
-    $this->config->setIncludeGrantedScopes($include);
+      $this->config->setIncludeGrantedScopes($include);
   }
 
   /**
@@ -454,7 +458,7 @@ class Google_Client
    */
   public function refreshToken($refreshToken)
   {
-    $this->getAuth()->refreshToken($refreshToken);
+      $this->getAuth()->refreshToken($refreshToken);
   }
 
   /**
@@ -466,7 +470,7 @@ class Google_Client
    */
   public function revokeToken($token = null)
   {
-    return $this->getAuth()->revokeToken($token);
+      return $this->getAuth()->revokeToken($token);
   }
 
   /**
@@ -479,7 +483,7 @@ class Google_Client
    */
   public function verifyIdToken($token = null)
   {
-    return $this->getAuth()->verifyIdToken($token);
+      return $this->getAuth()->verifyIdToken($token);
   }
 
   /**
@@ -494,9 +498,10 @@ class Google_Client
    */
   public function verifySignedJwt($id_token, $cert_location, $audience, $issuer, $max_expiry = null)
   {
-    $auth = new Google_Auth_OAuth2($this);
-    $certs = $auth->retrieveCertsFromLocation($cert_location);
-    return $auth->verifySignedJwtWithCerts($id_token, $certs, $audience, $issuer, $max_expiry);
+      $auth = new Google_Auth_OAuth2($this);
+      $certs = $auth->retrieveCertsFromLocation($cert_location);
+
+      return $auth->verifySignedJwtWithCerts($id_token, $certs, $audience, $issuer, $max_expiry);
   }
 
   /**
@@ -504,7 +509,7 @@ class Google_Client
    */
   public function setAssertionCredentials(Google_Auth_AssertionCredentials $creds)
   {
-    $this->getAuth()->setAssertionCredentials($creds);
+      $this->getAuth()->setAssertionCredentials($creds);
   }
 
   /**
@@ -515,8 +520,8 @@ class Google_Client
    */
   public function setScopes($scopes)
   {
-    $this->requestedScopes = array();
-    $this->addScope($scopes);
+      $this->requestedScopes = array();
+      $this->addScope($scopes);
   }
 
   /**
@@ -528,13 +533,13 @@ class Google_Client
    */
   public function addScope($scope_or_scopes)
   {
-    if (is_string($scope_or_scopes) && !in_array($scope_or_scopes, $this->requestedScopes)) {
-      $this->requestedScopes[] = $scope_or_scopes;
-    } else if (is_array($scope_or_scopes)) {
-      foreach ($scope_or_scopes as $scope) {
-        $this->addScope($scope);
+      if (is_string($scope_or_scopes) && !in_array($scope_or_scopes, $this->requestedScopes)) {
+          $this->requestedScopes[] = $scope_or_scopes;
+      } elseif (is_array($scope_or_scopes)) {
+          foreach ($scope_or_scopes as $scope) {
+              $this->addScope($scope);
+          }
       }
-    }
   }
 
   /**
@@ -544,7 +549,7 @@ class Google_Client
    */
   public function getScopes()
   {
-     return $this->requestedScopes;
+      return $this->requestedScopes;
   }
 
   /**
@@ -556,7 +561,7 @@ class Google_Client
    */
   public function setUseBatch($useBatch)
   {
-    // This is actually an alias for setDefer.
+      // This is actually an alias for setDefer.
     $this->setDefer($useBatch);
   }
 
@@ -568,7 +573,7 @@ class Google_Client
    */
   public function setDefer($defer)
   {
-    $this->deferExecution = $defer;
+      $this->deferExecution = $defer;
   }
 
   /**
@@ -580,22 +585,23 @@ class Google_Client
    */
   public function execute($request)
   {
-    if ($request instanceof Google_Http_Request) {
-      $request->setUserAgent(
+      if ($request instanceof Google_Http_Request) {
+          $request->setUserAgent(
           $this->getApplicationName()
           . " " . self::USER_AGENT_SUFFIX
           . $this->getLibraryVersion()
       );
-      if (!$this->getClassConfig("Google_Http_Request", "disable_gzip")) {
-        $request->enableGzip();
+          if (!$this->getClassConfig("Google_Http_Request", "disable_gzip")) {
+              $request->enableGzip();
+          }
+          $request->maybeMoveParametersToBody();
+
+          return Google_Http_REST::execute($this, $request);
+      } elseif ($request instanceof Google_Http_Batch) {
+          return $request->execute();
+      } else {
+          throw new Google_Exception("Do not know how to execute this type of object.");
       }
-      $request->maybeMoveParametersToBody();
-      return Google_Http_REST::execute($this, $request);
-    } else if ($request instanceof Google_Http_Batch) {
-      return $request->execute();
-    } else {
-      throw new Google_Exception("Do not know how to execute this type of object.");
-    }
   }
 
   /**
@@ -604,7 +610,7 @@ class Google_Client
    */
   public function shouldDefer()
   {
-    return $this->deferExecution;
+      return $this->deferExecution;
   }
 
   /**
@@ -612,11 +618,12 @@ class Google_Client
    */
   public function getAuth()
   {
-    if (!isset($this->auth)) {
-      $class = $this->config->getAuthClass();
-      $this->auth = new $class($this);
-    }
-    return $this->auth;
+      if (!isset($this->auth)) {
+          $class = $this->config->getAuthClass();
+          $this->auth = new $class($this);
+      }
+
+      return $this->auth;
   }
 
   /**
@@ -624,11 +631,12 @@ class Google_Client
    */
   public function getIo()
   {
-    if (!isset($this->io)) {
-      $class = $this->config->getIoClass();
-      $this->io = new $class($this);
-    }
-    return $this->io;
+      if (!isset($this->io)) {
+          $class = $this->config->getIoClass();
+          $this->io = new $class($this);
+      }
+
+      return $this->io;
   }
 
   /**
@@ -636,11 +644,12 @@ class Google_Client
    */
   public function getCache()
   {
-    if (!isset($this->cache)) {
-      $class = $this->config->getCacheClass();
-      $this->cache = new $class($this);
-    }
-    return $this->cache;
+      if (!isset($this->cache)) {
+          $class = $this->config->getCacheClass();
+          $this->cache = new $class($this);
+      }
+
+      return $this->cache;
   }
 
   /**
@@ -648,11 +657,12 @@ class Google_Client
    */
   public function getLogger()
   {
-    if (!isset($this->logger)) {
-      $class = $this->config->getLoggerClass();
-      $this->logger = new $class($this);
-    }
-    return $this->logger;
+      if (!isset($this->logger)) {
+          $class = $this->config->getLoggerClass();
+          $this->logger = new $class($this);
+      }
+
+      return $this->logger;
   }
 
   /**
@@ -663,10 +673,11 @@ class Google_Client
    */
   public function getClassConfig($class, $key = null)
   {
-    if (!is_string($class)) {
-      $class = get_class($class);
-    }
-    return $this->config->getClassConfig($class, $key);
+      if (!is_string($class)) {
+          $class = get_class($class);
+      }
+
+      return $this->config->getClassConfig($class, $key);
   }
 
   /**
@@ -680,11 +691,10 @@ class Google_Client
    */
   public function setClassConfig($class, $config, $value = null)
   {
-    if (!is_string($class)) {
-      $class = get_class($class);
-    }
-    $this->config->setClassConfig($class, $config, $value);
-
+      if (!is_string($class)) {
+          $class = get_class($class);
+      }
+      $this->config->setClassConfig($class, $config, $value);
   }
 
   /**
@@ -692,7 +702,7 @@ class Google_Client
    */
   public function getBasePath()
   {
-    return $this->config->getBasePath();
+      return $this->config->getBasePath();
   }
 
   /**
@@ -700,7 +710,7 @@ class Google_Client
    */
   public function getApplicationName()
   {
-    return $this->config->getApplicationName();
+      return $this->config->getApplicationName();
   }
 
   /**
@@ -709,7 +719,7 @@ class Google_Client
    */
   public function isAppEngine()
   {
-    return (isset($_SERVER['SERVER_SOFTWARE']) &&
+      return (isset($_SERVER['SERVER_SOFTWARE']) &&
         strpos($_SERVER['SERVER_SOFTWARE'], 'Google App Engine') !== false);
   }
 }

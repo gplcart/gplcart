@@ -153,6 +153,7 @@ class Install
             }
         } catch (PDOException $e) {
             $this->db = null;
+
             return $e->getMessage();
         }
 
@@ -169,7 +170,6 @@ class Install
         $tables = $this->dump();
 
         foreach ($tables as $table => $data) {
-
             $fields = '';
             foreach ($data['fields'] as $name => $info) {
                 $fields .= "$name $info,";
@@ -750,6 +750,7 @@ class Install
         }
 
         chmod(GC_CONFIG_COMMON, 0444);
+
         return true;
     }
 
@@ -821,7 +822,6 @@ class Install
 
         // Default language
         if (!empty($settings['store']['language'])) {
-
             $langcode = $settings['store']['language'];
             $this->config->set('language', $langcode);
 
@@ -918,5 +918,4 @@ class Install
 
         return true;
     }
-
 }

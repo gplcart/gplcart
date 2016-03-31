@@ -14,7 +14,7 @@
  *
  * @author Andrew Tch <andrew@noop.lv>
  */
-class Twig_Cache_Filesystem implements Twig_CacheInterface
+class twig_Cache_Filesystem implements Twig_CacheInterface
 {
     const FORCE_BYTECODE_INVALIDATION = 1;
 

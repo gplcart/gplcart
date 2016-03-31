@@ -36,7 +36,7 @@ class Zone
     protected $config;
 
     /**
-     * 
+     *
      * @param Hook $hook
      * @param Config $config
      */
@@ -62,6 +62,7 @@ class Zone
         $zone = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->hook->fire('get.zone.after', $zone_id, $zone);
+
         return $zone;
     }
 
@@ -75,6 +76,7 @@ class Zone
         $this->hook->fire('add.zone.before', $data);
         $zone_id = $this->db->insert('zone', $data);
         $this->hook->fire('add.zone.after', $data, $zone_id);
+
         return $zone_id;
     }
 
@@ -100,6 +102,7 @@ class Zone
         $this->hook->fire('delete.zone.before', $zone_id);
         $this->db->delete('zone', array('zone_id' => $zone_id));
         $this->hook->fire('delete.zone.after', $zone_id);
+
         return true;
     }
 
@@ -123,7 +126,7 @@ class Zone
 
         $list = $sth->fetchAll(PDO::FETCH_ASSOC);
         $this->hook->fire('zone.list', $list);
+
         return $list;
     }
-
 }

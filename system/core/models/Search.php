@@ -98,6 +98,7 @@ class Search
     public function setIndex($text, $id_key, $id_value, $language)
     {
         $this->deleteIndex($id_key, $id_value, $language);
+
         return $this->addIndex($text, $id_key, $id_value, $language);
     }
 
@@ -179,6 +180,7 @@ class Search
         );
 
         $this->hook->fire('search.handlers', $handlers);
+
         return $handlers;
     }
 
@@ -205,5 +207,4 @@ class Search
 
         return implode(' ', array_diff(explode(' ', $string), $stopwords));
     }
-
 }

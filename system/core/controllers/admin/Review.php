@@ -47,7 +47,6 @@ class Review extends Controller
      */
     public function reviews()
     {
-
         $selected = $this->request->post('selected', array());
         $action = $this->request->post('action');
         $value = $this->request->post('value');
@@ -113,7 +112,6 @@ class Review extends Controller
     {
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
-
             if ($action == 'status' && $this->access('review_edit')) {
                 $updated += (int) $this->review->update($review_id, array('status' => $value));
             }
@@ -126,11 +124,13 @@ class Review extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Updated %num reviews', array('%num' => $updated)), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num reviews', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
@@ -263,6 +263,7 @@ class Review extends Controller
 
         if ($this->formErrors()) {
             $this->data['review'] = $this->submitted;
+
             return;
         }
 
@@ -294,9 +295,9 @@ class Review extends Controller
      */
     protected function validateText()
     {
-
         if (empty($this->submitted['text'])) {
             $this->data['form_errors']['text'] = $this->text('Required field');
+
             return false;
         }
 
@@ -317,6 +318,7 @@ class Review extends Controller
     {
         if (empty($this->submitted['created'])) {
             $this->submitted['created'] = GC_TIME;
+
             return true;
         }
 
@@ -324,6 +326,7 @@ class Review extends Controller
 
         if (!$this->submitted['created']) {
             $this->data['form_errors']['created'] = $this->text('Only valid English textual datetime allowed');
+
             return false;
         }
 
@@ -338,6 +341,7 @@ class Review extends Controller
     {
         if (isset($this->submitted['product_id']) && !$this->product->get($this->submitted['product_id'])) {
             $this->data['form_errors']['product'] = $this->text('Product does not exist');
+
             return false;
         }
 
@@ -352,6 +356,7 @@ class Review extends Controller
     {
         if (empty($this->submitted['email'])) {
             $this->data['form_errors']['email'] = $this->text('Required field');
+
             return false;
         }
 
@@ -359,10 +364,12 @@ class Review extends Controller
 
         if (isset($user['user_id'])) {
             $this->submitted['user_id'] = $user['user_id'];
+
             return true;
         }
 
         $this->data['form_errors']['email'] = $this->text('User does not exist');
+
         return false;
     }
 
@@ -397,5 +404,4 @@ class Review extends Controller
     {
         $this->output('content/review/edit');
     }
-
 }

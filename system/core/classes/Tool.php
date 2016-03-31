@@ -19,13 +19,14 @@ class Tool
      */
     public static function sortWeight(&$array)
     {
-        uasort($array, function($a, $b) {
+        uasort($array, function ($a, $b) {
             $a_weight = (is_array($a) && isset($a['weight'])) ? $a['weight'] : 0;
             $b_weight = (is_array($b) && isset($b['weight'])) ? $b['weight'] : 0;
 
             if ($a_weight == $b_weight) {
                 return 0;
             }
+
             return ($a_weight < $b_weight) ? -1 : 1;
         });
     }
@@ -72,14 +73,14 @@ class Tool
     public static function trimArray(&$array, $filter = false)
     {
         if ($filter) {
-            array_walk_recursive($array, function(&$v) {
+            array_walk_recursive($array, function (&$v) {
                 $v = filter_var(trim($v), FILTER_SANITIZE_STRING);
             });
 
             return $array;
         }
 
-        array_walk_recursive($array, function(&$v) {
+        array_walk_recursive($array, function (&$v) {
             $v = trim($v);
         });
 
@@ -105,6 +106,7 @@ class Tool
 
         if (isset($_COOKIE[GC_COOKIE_PREFIX . $name])) {
             unset($_COOKIE[GC_COOKIE_PREFIX . $name]);
+
             return setcookie(GC_COOKIE_PREFIX . $name, '', GC_TIME - 3600, '/');
         }
 
@@ -140,6 +142,7 @@ class Tool
     {
         if (is_array($pattern)) {
             $extensions = implode(',', $pattern);
+
             return glob("$path/*.{{$extensions}}", GLOB_BRACE);
         }
 
@@ -166,7 +169,6 @@ class Tool
         }
 
         while (!feof($handle)) {
-
             $buffer = fread($handle, $chunksize);
             echo $buffer;
 
@@ -204,6 +206,7 @@ class Tool
                 $merged [$key] = $value;
             }
         }
+
         return $merged;
     }
 
@@ -308,6 +311,7 @@ class Tool
 
         if (file_put_contents($file, $content) !== false) {
             chmod($file, 0444);
+
             return true;
         }
 
@@ -331,6 +335,7 @@ class Tool
         }
 
         date_default_timezone_set($default_timezone);
+
         return $zones;
     }
 
@@ -351,7 +356,6 @@ class Tool
         $current = date_timestamp_set($date, $timestamp);
 
         foreach ($ranges[date('D', $timestamp)] as $start => $end) {
-
             $start = date_create_from_format('h:i A', $start);
             $end = date_create_from_format('h:i A', $end);
 
@@ -434,5 +438,4 @@ class Tool
 
         return true;
     }
-
 }

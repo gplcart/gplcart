@@ -237,7 +237,6 @@ class Order extends Controller
 
         $components = array();
         foreach ($order['data']['components'] as $type => $component) {
-
             if ($type === 'cart') {
                 $components[$type] = $this->renderComponentCart($type, $component, $cart, $order);
                 continue;
@@ -310,6 +309,7 @@ class Order extends Controller
     protected function renderComponentRule($rule_id, $price, array $cart, array $order)
     {
         $rule = $this->pricerule->get($rule_id);
+
         return $this->render('sale/order/panes/components/rule', array('rule' => $rule, 'price' => $price));
     }
 
@@ -365,7 +365,6 @@ class Order extends Controller
         $order['creator_formatted'] = $this->text('Customer');
 
         if (!empty($order['creator'])) {
-
             $order['creator_formatted'] = $this->text('Unknown');
 
             $user = $this->user->get($order['user_id']);
@@ -387,6 +386,7 @@ class Order extends Controller
     protected function getAddress($address_id)
     {
         $address = $this->address->get($address_id);
+
         return $address;
     }
 
@@ -416,7 +416,7 @@ class Order extends Controller
         $this->data['statuses'] = $this->order->getStatuses();
         $this->data['stores'] = $this->store->getNames();
 
-        array_walk($this->data['orders'], function(&$order) {
+        array_walk($this->data['orders'], function (&$order) {
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         });
 
@@ -445,6 +445,7 @@ class Order extends Controller
     protected function getOrders($limit, $query)
     {
         $orders = $this->order->getList(array('limit' => $limit) + $query);
+
         return $this->prepareOrders($orders);
     }
 
@@ -453,6 +454,7 @@ class Order extends Controller
         foreach ($orders as &$order) {
             $order['is_new'] = $this->order->isNew($order);
         }
+
         return $orders;
     }
 
@@ -465,5 +467,4 @@ class Order extends Controller
     {
         return $this->order->getList(array('count' => true) + $query);
     }
-
 }

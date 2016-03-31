@@ -122,6 +122,7 @@ class Order
         );
 
         $message = $this->language->text($message_text, $message_arguments);
+
         return $this->mail->send(array($admin_email), array($subject => $message), $options);
     }
 
@@ -162,6 +163,7 @@ class Order
 
         $message_arguments = array_merge($message_arguments, $this->mail->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
+
         return $this->mail->send(array($order['user_email']), array($subject => $message), $options);
     }
 
@@ -203,7 +205,7 @@ class Order
     }
 
     /**
-     * 
+     *
      * @param type $order
      */
     public function updatedCustomer($order)
@@ -212,12 +214,11 @@ class Order
     }
 
     /**
-     * 
+     *
      * @param type $order
      */
     public function status($order)
     {
         // TODO: complete
     }
-
 }

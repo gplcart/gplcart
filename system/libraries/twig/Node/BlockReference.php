@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_BlockReference extends Twig_Node implements Twig_NodeOutputInterface
+class twig_Node_BlockReference extends Twig_Node implements Twig_NodeOutputInterface
 {
     public function __construct($name, $lineno, $tag = null)
     {

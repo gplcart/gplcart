@@ -198,6 +198,7 @@ class Field extends Controller
 
         if ($this->formErrors()) {
             $this->data['field'] = $this->submitted + $field;
+
             return;
         }
 
@@ -229,8 +230,10 @@ class Field extends Controller
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
+
         return true;
     }
 
@@ -246,7 +249,6 @@ class Field extends Controller
 
         $has_errors = false;
         foreach ($this->submitted['translation'] as $code => $translation) {
-
             if (empty($translation['title'])) {
                 continue;
             }
@@ -259,5 +261,4 @@ class Field extends Controller
 
         return !$has_errors;
     }
-
 }

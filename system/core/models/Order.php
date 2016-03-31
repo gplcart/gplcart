@@ -123,6 +123,7 @@ class Order
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':user_id' => $user_id));
+
         return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -141,6 +142,7 @@ class Order
         $statuses = $this->getDefaultStatuses();
 
         $this->hook->fire('order.statuses', $statuses);
+
         return $statuses;
     }
     
@@ -152,6 +154,7 @@ class Order
     public function getStatusName($id)
     {
         $statuses = $this->getStatuses();
+
         return isset($statuses[$id]) ? $statuses[$id] : '';
     }
 
@@ -235,7 +238,6 @@ class Order
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'store_id':
                     $field = 'o.store_id';
@@ -311,6 +313,7 @@ class Order
         }
 
         $this->hook->fire('get.order.after', $order_id, $order);
+
         return $order;
     }
 
@@ -416,6 +419,7 @@ class Order
 
         $result = $this->db->update('orders', $values, array('order_id' => (int) $order_id));
         $this->hook->fire('update.order.after', $order_id, $data, $result);
+
         return (bool) $result;
     }
 
@@ -437,6 +441,7 @@ class Order
         $this->db->delete('history', array('id_key' => 'order_id', 'id_value' => (int) $order_id));
 
         $this->hook->fire('delete.order.after', $order_id);
+
         return true;
     }
 
@@ -493,6 +498,7 @@ class Order
 
         $sth = $this->db->prepare($sql);
         $sth->execute($where);
+
         return (bool) $sth->fetchColumn();
     }
 
@@ -548,6 +554,7 @@ class Order
             'redirect' => "checkout/complete/$order_id");
 
         $this->hook->fire('submit.order.after', $order, $cart, $result);
+
         return $result;
     }
 
@@ -558,7 +565,6 @@ class Order
     protected function setPriceRule($order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
-
             if (!is_numeric($component_id)) {
                 continue; // We need only rules
             }
@@ -686,11 +692,12 @@ class Order
 
         $order_id = $this->db->insert('orders', $values);
         $this->hook->fire('add.order.after', $values, $order_id);
+
         return $order_id;
     }
 
     /**
-     * 
+     *
      * @return type
      */
     protected function getUserData()
@@ -725,6 +732,7 @@ class Order
         }
 
         $this->pricerule->calculate($total, $cart, $data, $components);
+
         return array('total' => $total, 'currency' => $cart['currency'], 'components' => $components);
     }
 
@@ -738,5 +746,4 @@ class Order
     {
         return $this->pricerule->codeMatches($price_rule_id, $code);
     }
-
 }

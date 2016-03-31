@@ -16,7 +16,7 @@
  *   {% import 'forms.html' as forms %}
  * </pre>
  */
-class Twig_TokenParser_Import extends Twig_TokenParser
+class twig_TokenParser_Import extends Twig_TokenParser
 {
     public function parse(Twig_Token $token)
     {

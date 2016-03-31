@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Profiler_Node_EnterProfile extends Twig_Node
+class twig_Profiler_Node_EnterProfile extends Twig_Node
 {
     public function __construct($extensionName, $type, $name, $varName)
     {

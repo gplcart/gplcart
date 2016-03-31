@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-interface Twig_LoaderInterface
+interface twig_LoaderInterface
 {
     /**
      * Gets the source code of a template, given its name.

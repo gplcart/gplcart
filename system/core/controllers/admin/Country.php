@@ -38,7 +38,6 @@ class Country extends Controller
      */
     public function countries()
     {
-
         $action = $this->request->post('action');
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
@@ -209,7 +208,6 @@ class Country extends Controller
      */
     protected function action($selected, $action, $value)
     {
-
         if ($action == 'weight' && $this->access('country_edit')) {
             foreach ($selected as $code => $weight) {
                 $this->country->update($code, array('weight' => $weight));
@@ -220,7 +218,6 @@ class Country extends Controller
 
         $updated = $deleted = 0;
         foreach ($selected as $code) {
-
             if ($action == 'status' && $this->access('country_edit')) {
                 $updated += (int) $this->country->update($code, array('status' => (int) $value));
             }
@@ -232,11 +229,13 @@ class Country extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Countries have been updated'), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Countries have been deleted'), 'success');
+
             return true;
         }
 
@@ -256,6 +255,7 @@ class Country extends Controller
 
         if ($this->formErrors()) {
             $this->data['country'] = $this->submitted;
+
             return;
         }
 
@@ -297,17 +297,20 @@ class Country extends Controller
     {
         if (!preg_match('/^[a-zA-Z]{2}$/', $this->submitted['code'])) {
             $this->data['form_errors']['code'] = $this->text('Invalid country code. You must use only 2-digit ISO 3166-2 codes');
+
             return false;
         }
 
         if (empty($country['code']) || $country['code'] !== $this->submitted['code']) {
             if ($this->country->get($this->submitted['code'])) {
                 $this->data['form_errors']['code'] = $this->text('This country code already exists');
+
                 return false;
             }
         }
 
         $this->submitted['code'] = strtoupper($this->submitted['code']);
+
         return true;
     }
 
@@ -335,12 +338,15 @@ class Country extends Controller
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
                 $this->data['form_errors']['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+
                 return false;
             }
+
             return true;
         }
 
         $this->submitted['weight'] = 0;
+
         return true;
     }
 
@@ -410,5 +416,4 @@ class Country extends Controller
         $this->country->update($country['code'], array('format' => $format));
         $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
-
 }

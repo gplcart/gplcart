@@ -157,12 +157,13 @@ class Language
         $languages = $this->getAll();
 
         if ($enabled) {
-            $languages = array_filter($languages, function($language) {
+            $languages = array_filter($languages, function ($language) {
                 return !empty($language['status']);
             });
         }
 
         Tool::sortWeight($languages);
+
         return $languages;
     }
 
@@ -191,6 +192,7 @@ class Language
         }
 
         $this->hook->fire('languages', $languages);
+
         return $languages;
     }
 
@@ -203,7 +205,6 @@ class Language
     {
         $languages = array();
         foreach (glob(GC_LOCALE_DIR . '/*', GLOB_ONLYDIR) as $directory) {
-
             $langcode = basename($directory);
 
             // Skip invalid language codes
@@ -240,6 +241,7 @@ class Language
     public function get($code)
     {
         $languages = $this->getAll();
+
         return isset($languages[$code]) ? $languages[$code] : array();
     }
 
@@ -274,6 +276,7 @@ class Language
         }
 
         $this->hook->fire('add.language.after', $data);
+
         return true;
     }
 
@@ -301,6 +304,7 @@ class Language
         }
 
         $this->hook->fire('update.language.after', $code, $data);
+
         return true;
     }
 
@@ -326,6 +330,7 @@ class Language
         }
 
         $this->hook->fire('delete.language.after', $code, $languages);
+
         return true;
     }
 
@@ -341,10 +346,12 @@ class Language
 
         if (file_exists($this->compiled_file_php)) {
             $this->translation = include $this->compiled_file_php;
+
             return $this->translation;
         }
 
         $this->translation = $this->loadPo($this->langcode);
+
         return $this->translation;
     }
 
@@ -367,6 +374,7 @@ class Language
             $po = $this->po->read($file);
             file_put_contents($compiled_file, '<?php return ' . var_export($po, true) . ';');
             chmod($compiled_file, 0644);
+
             return $po;
         }
 
@@ -383,6 +391,7 @@ class Language
     {
         if (!isset($string)) {
             $this->compile();
+
             return;
         }
 
@@ -405,7 +414,6 @@ class Language
      */
     public function compile()
     {
-
         if (empty($this->langcode) || empty($this->untranslated) || empty($this->translatable)) {
             return false;
         }
@@ -426,6 +434,7 @@ class Language
 
         chmod($this->compiled_file_php, 0644);
         chmod($this->compiled_file_js, 0644);
+
         return true;
     }
 
@@ -487,7 +496,7 @@ class Language
 
         $translit = $this->translit->process($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);
+
         return $translit;
     }
-
 }

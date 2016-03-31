@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-class Twig_Extension_Profiler extends Twig_Extension
+class twig_Extension_Profiler extends Twig_Extension
 {
     private $actives = array();
 

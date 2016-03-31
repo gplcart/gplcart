@@ -104,6 +104,7 @@ class UserRole extends Controller
 
         if ($this->formErrors()) {
             $this->data['role'] = $this->submitted;
+
             return;
         }
 
@@ -171,6 +172,7 @@ class UserRole extends Controller
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -195,7 +197,6 @@ class UserRole extends Controller
      */
     public function roles()
     {
-
         $action = $this->request->post('action');
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
@@ -281,7 +282,6 @@ class UserRole extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $role_id) {
-
             if ($action == 'status' && $this->access('user_role_edit')) {
                 $updated += (int) $this->role->update($role_id, array('status' => $value));
             }
@@ -293,15 +293,16 @@ class UserRole extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Updated %num user roles', array('%num' => $updated)), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Deleted %num user roles', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
         return false;
     }
-
 }

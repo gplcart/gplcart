@@ -20,7 +20,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-abstract class Twig_Filter implements Twig_FilterInterface, Twig_FilterCallableInterface
+abstract class twig_Filter implements Twig_FilterInterface, Twig_FilterCallableInterface
 {
     protected $options;
     protected $arguments = array();

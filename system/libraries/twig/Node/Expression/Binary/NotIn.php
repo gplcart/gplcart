@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-class Twig_Node_Expression_Binary_NotIn extends Twig_Node_Expression_Binary
+class twig_Node_Expression_Binary_NotIn extends Twig_Node_Expression_Binary
 {
     public function compile(Twig_Compiler $compiler)
     {

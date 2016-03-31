@@ -27,6 +27,7 @@ class Curl
         curl_setopt_array($ch, $options);
         $response = curl_exec($ch);
         curl_close($ch);
+
         return $response;
     }
 
@@ -45,6 +46,7 @@ class Curl
         curl_setopt_array($ch, $options);
         $response = curl_exec($ch);
         curl_close($ch);
+
         return $response;
     }
 
@@ -64,6 +66,7 @@ class Curl
         curl_exec($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
+
         return $info;
     }
 
@@ -83,5 +86,4 @@ class Curl
 
         return $options;
     }
-
 }

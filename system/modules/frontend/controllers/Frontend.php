@@ -80,6 +80,7 @@ class Frontend extends Controller
 
         if ($this->formErrors()) {
             $this->data['settings'] = $this->submitted;
+
             return;
         }
 
@@ -104,7 +105,6 @@ class Frontend extends Controller
     {
         $has_errors = false;
         foreach (array('catalog_limit', 'catalog_front_limit') as $name) {
-
             if (empty($this->submitted[$name])) {
                 $this->submitted[$name] = 0;
                 continue;
@@ -137,11 +137,10 @@ class Frontend extends Controller
     }
 
     /**
-     * Sets titles on the module settings page 
+     * Sets titles on the module settings page
      */
     protected function setTitleSettings()
     {
         $this->setTitle($this->text('Edit module settings'));
     }
-
 }

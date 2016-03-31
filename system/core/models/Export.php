@@ -71,6 +71,7 @@ class Export
             $operation = $operations[$id];
             $operation['id'] = $id;
         }
+
         return $operation;
     }
 
@@ -153,6 +154,7 @@ class Export
         }
 
         $this->hook->fire('export.operations', $operations);
+
         return $operations;
     }
 
@@ -187,6 +189,7 @@ class Export
         foreach ($header as $key => $value) {
             $fields[$key] = isset($data[$key]) ? $data[$key] : '';
         }
+
         return $fields;
     }
 
@@ -216,5 +219,4 @@ class Export
     {
         return (int) $this->config->get('export_limit', 50);
     }
-
 }

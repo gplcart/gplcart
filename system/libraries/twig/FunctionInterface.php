@@ -19,7 +19,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-interface Twig_FunctionInterface
+interface twig_FunctionInterface
 {
     /**
      * Compiles a function.

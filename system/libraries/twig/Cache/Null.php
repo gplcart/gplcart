@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Cache_Null implements Twig_CacheInterface
+class twig_Cache_Null implements Twig_CacheInterface
 {
     /**
      * {@inheritdoc}

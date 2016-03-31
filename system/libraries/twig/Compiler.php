@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Compiler implements Twig_CompilerInterface
+class twig_Compiler implements Twig_CompilerInterface
 {
     protected $lastLine;
     protected $source;

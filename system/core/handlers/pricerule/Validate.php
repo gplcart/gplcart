@@ -142,6 +142,7 @@ class Validate
 
         if (!empty($timestamp)) {
             $values = array($timestamp);
+
             return true;
         }
 
@@ -163,6 +164,7 @@ class Validate
 
         if (is_numeric($value)) {
             $values = array((int) $value);
+
             return true;
         }
 
@@ -205,6 +207,7 @@ class Validate
 
         $new_components = array($this->price->amount($price, $currency), $currency);
         $values = array(implode('|', $new_components));
+
         return true;
     }
 
@@ -226,8 +229,9 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($product_id) {
+        $exists = array_filter($values, function ($product_id) {
             $product = $this->product->get($product_id);
+
             return !empty($product['status']);
         });
 
@@ -252,8 +256,9 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($category_id) {
+        $exists = array_filter($values, function ($category_id) {
             $category = $this->category->get($category_id);
+
             return !empty($category['status']);
         });
 
@@ -292,8 +297,9 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($role_id) {
+        $exists = array_filter($values, function ($role_id) {
             $role = $this->role->get($role_id);
+
             return !empty($role['status']);
         });
 
@@ -311,7 +317,7 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($service) {
+        $exists = array_filter($values, function ($service) {
             return (bool) $this->shipping->getService($service);
         });
 
@@ -329,7 +335,7 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($service) {
+        $exists = array_filter($values, function ($service) {
             return (bool) $this->payment->getService($service);
         });
 
@@ -354,8 +360,9 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($address_id) {
+        $exists = array_filter($values, function ($address_id) {
             $address = $this->address->get($address_id);
+
             return (isset($address['type']) && $address['type'] === 'shipping');
         });
 
@@ -373,8 +380,9 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($code) {
+        $exists = array_filter($values, function ($code) {
             $country = $this->country->get($code);
+
             return !empty($country['status']);
         });
 
@@ -399,12 +407,12 @@ class Validate
             return false;
         }
 
-        $exists = array_filter($values, function($state_id) {
+        $exists = array_filter($values, function ($state_id) {
             $state = $this->state->get($state_id);
+
             return !empty($state['status']);
         });
 
         return ($count === count($exists));
     }
-
 }

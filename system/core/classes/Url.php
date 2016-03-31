@@ -126,6 +126,7 @@ class Url
     public function isBackend()
     {
         $segments = $this->segments();
+
         return (isset($segments[0]) && $segments[0] === 'admin');
     }
 
@@ -145,6 +146,7 @@ class Url
     public function isDashboard()
     {
         $segments = $this->segments();
+
         return ((isset($segments[0]) && $segments[0] === 'admin') && empty($segments[1]));
     }
 
@@ -155,6 +157,7 @@ class Url
     public function isInstall()
     {
         $segments = $this->segments();
+
         return (isset($segments[0]) && $segments[0] === 'install');
     }
 
@@ -165,6 +168,7 @@ class Url
     public function isFront()
     {
         $segments = $this->segments();
+
         return empty($segments[0]);
     }
 
@@ -178,6 +182,7 @@ class Url
         if ((reset($segments) === 'account') && (isset($segments[1]) && is_numeric($segments[1]))) {
             return (int) $segments[1];
         }
+
         return false;
     }
 
@@ -202,7 +207,7 @@ class Url
     public function fromPath($server_path)
     {
         $url = $this->request->base() . trim(str_replace(GC_ROOT_DIR, '', $server_path), '/');
+
         return $url;
     }
-
 }

@@ -67,6 +67,7 @@ class Condition
     public function date(array $rule, array $condition, array $data)
     {
         $condition_value = reset($condition['value']);
+
         return $this->pricerule->compareNumeric(GC_TIME, (int) $condition_value, $condition['operator']);
     }
 
@@ -80,6 +81,7 @@ class Condition
     public function used(array $rule, array $condition, array $data)
     {
         $condition_value = reset($condition['value']);
+
         return $this->pricerule->compareNumeric((int) $rule['used'], (int) $condition_value, $condition['operator']);
     }
 
@@ -107,6 +109,7 @@ class Condition
         }
 
         $condition_price = $this->currency->convert((int) $condition_value[0], $condition_currency, $cart_currency);
+
         return $this->pricerule->compareNumeric($cart_subtotal, $condition_price, $condition_operator);
     }
 
@@ -339,6 +342,7 @@ class Condition
 
         if (isset($data['data']['address']['country'])) {
             $country = $data['data']['address']['country'];
+
             return $this->pricerule->compareString($country, $condition_value, $condition['operator']);
         }
 
@@ -373,6 +377,7 @@ class Condition
 
         if (isset($data['data']['address']['state_id'])) {
             $country = $data['data']['address']['state_id'];
+
             return $this->pricerule->compareNumeric($country, $condition_value, $condition['operator']);
         }
 
@@ -389,5 +394,4 @@ class Condition
 
         return $this->pricerule->compareNumeric($address['state_id'], $condition_value, $condition['operator']);
     }
-
 }

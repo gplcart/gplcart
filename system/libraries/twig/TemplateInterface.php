@@ -16,7 +16,7 @@
  *
  * @deprecated since 1.12 (to be removed in 3.0)
  */
-interface Twig_TemplateInterface
+interface twig_TemplateInterface
 {
     const ANY_CALL = 'any';
     const ARRAY_CALL = 'array';

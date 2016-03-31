@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_Expression_BlockReference extends Twig_Node_Expression
+class twig_Node_Expression_BlockReference extends Twig_Node_Expression
 {
     public function __construct(Twig_NodeInterface $name, $asString = false, $lineno, $tag = null)
     {

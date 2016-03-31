@@ -19,7 +19,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_NodeVisitor_Optimizer extends Twig_BaseNodeVisitor
+class twig_NodeVisitor_Optimizer extends Twig_BaseNodeVisitor
 {
     const OPTIMIZE_ALL = -1;
     const OPTIMIZE_NONE = 0;

@@ -88,6 +88,7 @@ class Job
         $job = $this->getSession($job_id);
 
         $this->hook->fire('get.job.after', $job_id, $job);
+
         return $job;
     }
 
@@ -160,7 +161,6 @@ class Job
         }
 
         foreach ($job['operations'] as $operation_id => &$operation) {
-
             if (empty($operation['queue'])) {
                 continue;
             }
@@ -178,6 +178,7 @@ class Job
 
         $this->setSession($job);
         $this->hook->fire('set.job.after', $job, $job['id']);
+
         return $job;
     }
 
@@ -196,6 +197,7 @@ class Job
 
         $this->session->delete(self::JOB_SESSION_KEY, $job_id);
         $this->hook->fire('delete.job.after', $job_id);
+
         return true;
     }
 
@@ -220,6 +222,7 @@ class Job
 
         if (empty($job['operations'])) {
             $job['status'] = false;
+
             return $this->result($job, array('finish' => true, 'progress' => 100));
         }
 
@@ -251,7 +254,6 @@ class Job
         $start_time = microtime(true);
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::JOB_MAX_TIME) {
-
             $args = array_merge(array($job, $operation_id, $done, $context), $arguments);
             $result = Handler::call($handlers, $operation_id, 'process', $args);
 
@@ -335,6 +337,7 @@ class Job
 
         $this->setSession($job);
         $this->hook->fire('result.job', $job, $result);
+
         return $result;
     }
 
@@ -361,6 +364,7 @@ class Job
                     '%updated' => $job['updated']));
             }
             $this->session->setMessage($message, 'success');
+
             return;
         }
 
@@ -381,6 +385,7 @@ class Job
         }
 
         $this->session->setMessage($message, 'danger');
+
         return;
     }
 
@@ -465,6 +470,7 @@ class Job
         );
 
         $this->hook->fire('job.handlers', $handlers);
+
         return $handlers;
     }
 
@@ -479,5 +485,4 @@ class Job
             $this->session->setMessage($this->language->text('An unexpected error has occurred. The job has not been properly completed'), 'danger');
         }
     }
-
 }

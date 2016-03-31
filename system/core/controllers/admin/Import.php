@@ -167,7 +167,6 @@ class Import extends Controller
      */
     protected function submit($operation)
     {
-
         $this->submitted = $this->request->post();
         $this->submitted['operation'] = $operation;
 
@@ -222,6 +221,7 @@ class Import extends Controller
 
         if (!$file) {
             $this->data['form_errors']['file'] = $this->text('Required field');
+
             return false;
         }
 
@@ -229,11 +229,13 @@ class Import extends Controller
 
         if ($this->file->upload($file) !== true) {
             $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
+
             return false;
         }
 
         $this->submitted['filepath'] = $this->file->getUploadedFile();
         $this->submitted['filesize'] = filesize($this->submitted['filepath']);
+
         return true;
     }
 
@@ -247,10 +249,10 @@ class Import extends Controller
 
         if ($header_result !== true) {
             $this->data['form_errors']['file'] = $header_result;
+
             return false;
         }
 
         return true;
     }
-
 }

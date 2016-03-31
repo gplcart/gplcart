@@ -12,7 +12,7 @@
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Profiler_Profile implements IteratorAggregate, Serializable
+class twig_Profiler_Profile implements IteratorAggregate, Serializable
 {
     const ROOT = 'ROOT';
     const BLOCK = 'block';

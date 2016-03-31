@@ -18,7 +18,7 @@
  *
  * @deprecated since 1.12 (to be removed in 2.0)
  */
-class Twig_Test_Node extends Twig_Test
+class twig_Test_Node extends Twig_Test
 {
     protected $class;
 

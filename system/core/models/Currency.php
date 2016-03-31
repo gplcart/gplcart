@@ -99,6 +99,7 @@ class Currency
         }
 
         $this->hook->fire('add.currency.after', $data);
+
         return true;
     }
 
@@ -122,7 +123,7 @@ class Currency
         $this->hook->fire('currencies', $currencies);
 
         if ($enabled) {
-            $currencies = array_filter($currencies, function($currency) {
+            $currencies = array_filter($currencies, function ($currency) {
                 return !empty($currency['status']);
             });
         }
@@ -183,6 +184,7 @@ class Currency
         $this->config->set('currencies', $currencies);
 
         $this->hook->fire('update.currency.after', $data);
+
         return true;
     }
 
@@ -209,6 +211,7 @@ class Currency
         $this->config->set('currencies', $currencies);
 
         $this->hook->fire('delete.currency.after', $code);
+
         return true;
     }
 
@@ -273,6 +276,7 @@ class Currency
 
         if ($currency_code) {
             $currency = isset($list[$currency_code]) ? $list[$currency_code] : array();
+
             return $currency;
         }
 
@@ -293,10 +297,12 @@ class Currency
                 Tool::setCookie('currency', $currency_code, $this->config->get('currency_cookie_lifespan', 31536000));
             }
             $currency = $currency_code;
+
             return $currency_code;
         }
 
         $currency = $this->getDefault();
+
         return $currency;
     }
 
@@ -314,7 +320,7 @@ class Currency
         }
 
         $currencies = $this->getList();
+
         return isset($currencies[$default_currency]) ? $currencies[$default_currency] : array();
     }
-
 }

@@ -18,7 +18,7 @@
  *
  * @internal
  */
-class Twig_Extension_Staging extends Twig_Extension
+class twig_Extension_Staging extends Twig_Extension
 {
     protected $functions = array();
     protected $filters = array();

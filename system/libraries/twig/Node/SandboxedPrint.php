@@ -19,7 +19,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_SandboxedPrint extends Twig_Node_Print
+class twig_Node_SandboxedPrint extends Twig_Node_Print
 {
     public function compile(Twig_Compiler $compiler)
     {

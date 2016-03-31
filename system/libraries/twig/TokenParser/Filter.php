@@ -18,7 +18,7 @@
  * {% endfilter %}
  * </pre>
  */
-class Twig_TokenParser_Filter extends Twig_TokenParser
+class twig_TokenParser_Filter extends Twig_TokenParser
 {
     public function parse(Twig_Token $token)
     {

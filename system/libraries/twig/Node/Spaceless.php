@@ -16,7 +16,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_Spaceless extends Twig_Node
+class twig_Node_Spaceless extends Twig_Node
 {
     public function __construct(Twig_NodeInterface $body, $lineno, $tag = 'spaceless')
     {

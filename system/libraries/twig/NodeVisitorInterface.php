@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-interface Twig_NodeVisitorInterface
+interface twig_NodeVisitorInterface
 {
     /**
      * Called before child nodes are visited.

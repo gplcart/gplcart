@@ -22,7 +22,7 @@ class BasicTest extends PHPUnit_Framework_TestCase
 
     public function testBasicMethods()
     {
-        $this->assertNotEmpty( $this->detect->getScriptVersion() );
+        $this->assertNotEmpty($this->detect->getScriptVersion());
 
         $this->detect->setHttpHeaders(array(
                 'SERVER_SOFTWARE'       => 'Apache/2.2.15 (Linux) Whatever/4.0 PHP/5.2.13',
@@ -44,22 +44,21 @@ class BasicTest extends PHPUnit_Framework_TestCase
             ));
 
         //12 because only 12 start with HTTP_
-        $this->assertCount( 12, $this->detect->getHttpHeaders() );
-        $this->assertTrue( $this->detect->checkHttpHeadersForMobile() );
+        $this->assertCount(12, $this->detect->getHttpHeaders());
+        $this->assertTrue($this->detect->checkHttpHeadersForMobile());
 
         $this->detect->setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 6_0_1 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A523 Safari/8536.25');
-        $this->assertNotEmpty( $this->detect->getUserAgent() );
+        $this->assertNotEmpty($this->detect->getUserAgent());
 
-        $this->assertTrue( $this->detect->isMobile() );
-        $this->assertFalse( $this->detect->isTablet() );
+        $this->assertTrue($this->detect->isMobile());
+        $this->assertFalse($this->detect->isTablet());
 
-        $this->assertTrue( $this->detect->isIphone() );
-        $this->assertTrue( $this->detect->isiphone() );
-        $this->assertTrue( $this->detect->isiOS() );
-        $this->assertTrue( $this->detect->isios() );
-        $this->assertTrue( $this->detect->is('iphone') );
-        $this->assertTrue( $this->detect->is('ios') );
-
+        $this->assertTrue($this->detect->isIphone());
+        $this->assertTrue($this->detect->isiphone());
+        $this->assertTrue($this->detect->isiOS());
+        $this->assertTrue($this->detect->isios());
+        $this->assertTrue($this->detect->is('iphone'));
+        $this->assertTrue($this->detect->is('ios'));
     }
 
     public function headersProvider()
@@ -345,7 +344,6 @@ class BasicTest extends PHPUnit_Framework_TestCase
     // Headers that are not mobile.
     public function quickNonMobileHeadersData()
     {
-
         return array(
             array(array(
                 'HTTP_UA_CPU' => 'AMD64'
@@ -363,7 +361,6 @@ class BasicTest extends PHPUnit_Framework_TestCase
                 'HTTP_VIA' => '1.1 ws-proxy.stuff.co.il C0A800FA'
                 )),
         );
-
     }
 
     /**

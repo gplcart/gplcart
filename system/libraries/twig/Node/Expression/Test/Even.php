@@ -18,7 +18,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_Expression_Test_Even extends Twig_Node_Expression_Test
+class twig_Node_Expression_Test_Even extends Twig_Node_Expression_Test
 {
     public function compile(Twig_Compiler $compiler)
     {

@@ -29,8 +29,10 @@ class ntlm_sasl_client_class
             );
             $client->error = "the extension " . $extensions[$function] .
                 " required by the NTLM SASL client class is not available in this PHP configuration";
+
             return (0);
         }
+
         return (1);
     }
 
@@ -39,6 +41,7 @@ class ntlm_sasl_client_class
         for ($unicode = "", $a = 0; $a < strlen($ascii); $a++) {
             $unicode .= substr($ascii, $a, 1) . chr(0);
         }
+
         return ($unicode);
     }
 
@@ -48,6 +51,7 @@ class ntlm_sasl_client_class
         $workstation_length = strlen($workstation);
         $workstation_offset = 32;
         $domain_offset = $workstation_offset + $workstation_length;
+
         return (
             "NTLMSSP\0" .
             "\x01\x00\x00\x00" .
@@ -82,6 +86,7 @@ class ntlm_sasl_client_class
             $ciphertext = mcrypt_encrypt(MCRYPT_DES, $key, $challenge, MCRYPT_MODE_ECB, $iv);
             $response .= $ciphertext;
         }
+
         return $response;
     }
 
@@ -105,6 +110,7 @@ class ntlm_sasl_client_class
         $session = "";
         $session_length = strlen($session);
         $session_offset = $ntlm_offset + $ntlm_length;
+
         return (
             "NTLMSSP\0" .
             "\x03\x00\x00\x00" .
@@ -139,6 +145,7 @@ class ntlm_sasl_client_class
     {
         if ($this->state != SASL_NTLM_STATE_START) {
             $client->error = "NTLM authentication state is not at the start";
+
             return (SASL_FAIL);
         }
         $this->credentials = array(
@@ -153,6 +160,7 @@ class ntlm_sasl_client_class
             $this->state = SASL_NTLM_STATE_IDENTIFY_DOMAIN;
         }
         unset($message);
+
         return ($status);
     }
 
@@ -175,11 +183,14 @@ class ntlm_sasl_client_class
                 break;
             case SASL_NTLM_STATE_DONE:
                 $client->error = "NTLM authentication was finished without success";
+
                 return (SASL_FAIL);
             default:
                 $client->error = "invalid NTLM authentication step state";
+
                 return (SASL_FAIL);
         }
+
         return (SASL_CONTINUE);
     }
 }

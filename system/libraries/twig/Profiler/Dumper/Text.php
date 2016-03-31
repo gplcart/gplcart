@@ -12,7 +12,7 @@
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Profiler_Dumper_Text
+class twig_Profiler_Dumper_Text
 {
     private $root;
 

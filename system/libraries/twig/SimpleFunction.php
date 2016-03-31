@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_SimpleFunction
+class twig_SimpleFunction
 {
     protected $name;
     protected $callable;

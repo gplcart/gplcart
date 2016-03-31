@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_NodeVisitor_Escaper extends Twig_BaseNodeVisitor
+class twig_NodeVisitor_Escaper extends Twig_BaseNodeVisitor
 {
     protected $statusStack = array();
     protected $blocks = array();

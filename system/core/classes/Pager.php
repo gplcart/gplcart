@@ -52,13 +52,13 @@ class Pager
 
     /**
      * "Previous" label text
-     * @var string 
+     * @var string
      */
     protected $previous_text = 'Previous';
 
     /**
      * "Next" label text
-     * @var string 
+     * @var string
      */
     protected $next_text = 'Next';
 
@@ -69,6 +69,7 @@ class Pager
     protected function updateNumPages()
     {
         $this->pages = ($this->limit == 0 ? 0 : (int) ceil($this->total / $this->limit));
+
         return $this;
     }
 
@@ -79,6 +80,7 @@ class Pager
     public function setMaxPagesToShow($limit_pages)
     {
         $this->limit_pages = $limit_pages;
+
         return $this;
     }
 
@@ -91,6 +93,7 @@ class Pager
     {
         $this->total = $num;
         $this->updateNumPages();
+
         return $this;
     }
 
@@ -103,6 +106,7 @@ class Pager
     {
         $this->limit = $num;
         $this->updateNumPages();
+
         return $this;
     }
 
@@ -115,6 +119,7 @@ class Pager
     {
         $this->current = $current;
         $this->updateNumPages();
+
         return $this;
     }
 
@@ -125,6 +130,7 @@ class Pager
     public function setUrlPattern($pattern)
     {
         $this->pattern = $pattern;
+
         return $this;
     }
 
@@ -420,6 +426,7 @@ class Pager
     public function setPreviousText($text)
     {
         $this->previous_text = $text;
+
         return $this;
     }
 
@@ -431,7 +438,7 @@ class Pager
     public function setNextText($text)
     {
         $this->next_text = $text;
+
         return $this;
     }
-
 }

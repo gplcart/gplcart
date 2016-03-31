@@ -47,7 +47,6 @@ class City
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT c.*, s.code AS state_code ';
 
         if (!empty($data['count'])) {
@@ -84,7 +83,6 @@ class City
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY c.name {$data['order']}";
@@ -118,6 +116,7 @@ class City
         }
 
         $this->hook->fire('cities', $cities);
+
         return $cities;
     }
 
@@ -156,6 +155,7 @@ class City
     {
         $sth = $this->db->prepare('SELECT * FROM city WHERE city_id=:city_id');
         $sth->execute(array(':city_id' => $city_id));
+
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -179,6 +179,7 @@ class City
         $result = $this->db->delete('city', array('city_id' => (int) $city_id));
 
         $this->hook->fire('delete.city.after', $city_id, $result);
+
         return (bool) $result;
     }
 
@@ -191,6 +192,7 @@ class City
     {
         $sth = $this->db->prepare('SELECT address_id FROM address WHERE city_id=:city_id');
         $sth->execute(array(':city_id' => (int) $city_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -237,7 +239,7 @@ class City
         }
 
         $this->hook->fire('update.city.after', $city_id, $data, $result);
+
         return (bool) $result;
     }
-
 }

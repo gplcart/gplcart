@@ -66,7 +66,6 @@ class ProductClass
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
@@ -88,7 +87,6 @@ class ProductClass
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $sql .= " ORDER BY title {$data['order']}";
@@ -118,6 +116,7 @@ class ProductClass
         }
 
         $this->hook->fire('get.product.class.list', $list);
+
         return $list;
     }
 
@@ -135,6 +134,7 @@ class ProductClass
         $product_class = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->hook->fire('get.product.class.after', $product_class_id, $product_class);
+
         return $product_class;
     }
 
@@ -157,6 +157,7 @@ class ProductClass
         ));
 
         $this->hook->fire('add.product.class.after', $data, $class_id);
+
         return $class_id;
     }
 
@@ -179,6 +180,7 @@ class ProductClass
 
         $result = $this->db->delete('product_class', array('product_class_id' => (int) $product_class_id));
         $this->hook->fire('delete.product.class.after', $product_class_id, $result);
+
         return (bool) $result;
     }
 
@@ -191,6 +193,7 @@ class ProductClass
     {
         $sth = $this->db->prepare('SELECT product_id FROM product WHERE product_class_id=:product_class_id');
         $sth->execute(array(':product_class_id' => $product_class_id));
+
         return !$sth->fetchColumn();
     }
 
@@ -222,6 +225,7 @@ class ProductClass
 
         $result = $this->db->update('product_class', $values, array('product_class_id' => (int) $product_class_id));
         $this->hook->fire('update.product.class.after', $product_class_id, $data, $result);
+
         return (bool) $result;
     }
 
@@ -248,6 +252,7 @@ class ProductClass
 
         $id = $this->db->insert('product_class_field', $values);
         $this->hook->fire('add.product.class.field.after', $data, $id);
+
         return $id;
     }
 
@@ -273,6 +278,7 @@ class ProductClass
 
         $result = $this->db->delete('product_class_field', $where);
         $this->hook->fire('delete.product.class.field.after', $product_class_field_id, $product_class_id, $result);
+
         return (bool) $result;
     }
 
@@ -287,7 +293,6 @@ class ProductClass
         $field_list = $this->field->getList();
 
         foreach ($this->getFields($product_class_id) as $class_field) {
-
             if (!isset($field_list[$class_field['field_id']])) {
                 continue;
             }
@@ -332,5 +337,4 @@ class ProductClass
 
         return $list;
     }
-
 }

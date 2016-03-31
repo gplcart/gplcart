@@ -129,6 +129,7 @@ class File
         }
 
         $this->hook->fire('add.file.after', $data, $file_id);
+
         return $file_id;
     }
 
@@ -142,6 +143,7 @@ class File
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimetype = finfo_file($finfo, $file);
         finfo_close($finfo);
+
         return $mimetype;
     }
 
@@ -259,7 +261,6 @@ class File
         $file = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($file) {
-
             $file['language'] = 'und';
             $file['translation'] = $this->getTranslations($file_id);
 
@@ -269,6 +270,7 @@ class File
         }
 
         $this->hook->fire('get.file.after', $file_id, $file);
+
         return $file;
     }
 
@@ -311,6 +313,7 @@ class File
         $this->db->delete('file_translation', array('file_id' => $file_id));
 
         $this->hook->fire('delete.file.after', $file_id);
+
         return true;
     }
 
@@ -369,6 +372,7 @@ class File
         }
 
         $this->hook->fire('file.upload.after', $postfile, $this->uploaded);
+
         return true;
     }
 
@@ -380,7 +384,6 @@ class File
      */
     public function validate($path, $filename = null)
     {
-
         $pathinfo = isset($filename) ? pathinfo($filename) : pathinfo($path);
 
         if (empty($pathinfo['filename'])) {
@@ -398,7 +401,6 @@ class File
         }
 
         if (!isset($this->handler)) {
-
             $supported_extensions = $this->supportedExtensions();
 
             if (!in_array($extension, $supported_extensions)) {
@@ -444,7 +446,7 @@ class File
 
         if ($dot) {
             // Prepend the dot to each extension in the array
-            $extensions = array_map(function($value) {
+            $extensions = array_map(function ($value) {
                 return ".$value";
             }, $extensions);
         }
@@ -491,6 +493,7 @@ class File
         );
 
         $this->hook->fire('file.handlers', $handlers);
+
         return $handlers;
     }
 
@@ -509,7 +512,6 @@ class File
 
         $extension = ltrim($name, '.');
         foreach ($handlers as $handler) {
-
             if (empty($handler['extensions'])) {
                 continue;
             }
@@ -532,6 +534,7 @@ class File
     public function setHandler($id)
     {
         $this->handler = $this->getHandler($id);
+
         return $this;
     }
 
@@ -583,6 +586,7 @@ class File
         }
 
         $this->uploaded = $destination;
+
         return true;
     }
 
@@ -616,6 +620,7 @@ class File
 
         if ($validation_result !== true) {
             unlink($tempname);
+
             return $validation_result;
         }
 
@@ -626,6 +631,7 @@ class File
         }
 
         $this->hook->fire('file.download.after', $url, $this->uploaded);
+
         return true;
     }
 
@@ -636,6 +642,7 @@ class File
     public function setUploadPath($path)
     {
         $this->path = trim($path, '/');
+
         return $this;
     }
 
@@ -757,7 +764,6 @@ class File
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $field = 'title';
@@ -798,6 +804,7 @@ class File
         }
 
         $this->hook->fire('files', $files);
+
         return $files;
     }
 
@@ -821,5 +828,4 @@ class File
     {
         return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
     }
-
 }

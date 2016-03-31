@@ -21,7 +21,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_Expression_Test_Defined extends Twig_Node_Expression_Test
+class twig_Node_Expression_Test_Defined extends Twig_Node_Expression_Test
 {
     public function __construct(Twig_NodeInterface $node, $name, Twig_NodeInterface $arguments = null, $lineno)
     {

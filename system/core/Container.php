@@ -38,7 +38,6 @@ class Container
     public static function instance($class, $arguments = array(), $share = true)
     {
         if (is_array($class)) {
-
             if (!is_callable($class)) {
                 return (object) array();
             }
@@ -76,6 +75,7 @@ class Container
 
         if (empty($constructor)) {
             $instance = new $class;
+
             return $share ? static::register($class, $instance) : $instance;
         }
 
@@ -83,6 +83,7 @@ class Container
 
         if (empty($parameters)) {
             $instance = new $class;
+
             return $share ? static::register($class, $instance) : $instance;
         }
 
@@ -96,6 +97,7 @@ class Container
         }
 
         $instance = $reflection->newInstanceArgs($dependencies + $arguments);
+
         return static::register($class, $instance);
     }
 
@@ -108,6 +110,7 @@ class Container
     public static function register($namespace, $instance)
     {
         static::$registry[strtolower(trim($namespace, '\\'))] = $instance;
+
         return $instance;
     }
 
@@ -119,6 +122,7 @@ class Container
     protected static function registered($class)
     {
         $key = strtolower(trim($class, '\\'));
+
         return isset(static::$registry[$key]) ? static::$registry[$key] : false;
     }
 
@@ -135,7 +139,7 @@ class Container
 
         $key = strtolower(trim($class, '\\'));
         unset(static::$registry[$key]);
+
         return true;
     }
-
 }

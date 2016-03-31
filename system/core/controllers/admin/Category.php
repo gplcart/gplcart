@@ -104,7 +104,6 @@ class Category extends Controller
         }
 
         foreach ($categories as &$category) {
-
             $category['alias'] = '';
             if (!empty($aliases[$category['category_id']])) {
                 $category['alias'] = $aliases[$category['category_id']];
@@ -282,6 +281,7 @@ class Category extends Controller
 
         if (!empty($category)) {
             $category['alias'] = $this->alias->get('category_id', $category['category_id']);
+
             return $category;
         }
 
@@ -339,7 +339,6 @@ class Category extends Controller
 
         $updated = $deleted = 0;
         foreach ($selected as $category_id) {
-
             if ($action == 'status' && $this->access('category_edit')) {
                 $updated += (int) $this->category->update($category_id, array('status' => (int) $value));
             }
@@ -351,11 +350,13 @@ class Category extends Controller
 
         if ($updated) {
             $this->session->setMessage($this->text('Categories have been updated'), 'success');
+
             return true;
         }
 
         if ($deleted) {
             $this->session->setMessage($this->text('Categories have been deleted'), 'success');
+
             return true;
         }
 
@@ -375,6 +376,7 @@ class Category extends Controller
 
         if ($this->formErrors()) {
             $this->data['category'] = $this->submitted;
+
             return;
         }
 
@@ -417,7 +419,6 @@ class Category extends Controller
         }
 
         foreach ($this->submitted['images'] as &$image) {
-
             if (empty($image['title']) && isset($this->submitted['title'])) {
                 $image['title'] = $this->submitted['title'];
             }
@@ -449,12 +450,14 @@ class Category extends Controller
             if (isset($category['category_id'])) {
                 $this->submitted['alias'] = $this->category->createAlias($this->submitted);
             }
+
             return true;
         }
 
         $check_alias = (isset($category['alias']) && ($category['alias'] !== $this->submitted['alias']));
         if ($check_alias && $this->alias->exists($this->submitted['alias'])) {
             $this->data['form_errors']['alias'] = $this->text('URL alias already exists');
+
             return false;
         }
 
@@ -470,6 +473,7 @@ class Category extends Controller
         if (empty($this->submitted['title']) || (mb_strlen($this->submitted['title']) > 255)) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array(
                 '%min' => 1, '%max' => 255));
+
             return false;
         }
 
@@ -484,6 +488,7 @@ class Category extends Controller
     {
         if (mb_strlen($this->submitted['meta_title']) > 255) {
             $this->data['form_errors']['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+
             return false;
         }
 
@@ -499,6 +504,7 @@ class Category extends Controller
         if (mb_strlen($this->submitted['meta_description']) > 255) {
             $this->data['form_errors']['meta_description'] = $this->text('Content must not exceed %s characters', array(
                 '%s' => 255));
+
             return false;
         }
 
@@ -517,7 +523,6 @@ class Category extends Controller
 
         $has_errors = false;
         foreach ($this->submitted['translation'] as $lang => $translation) {
-
             if (empty($translation['title']) || (mb_strlen($translation['title']) > 255)) {
                 $this->data['form_errors']['translation'][$lang]['title'] = $this->text('Content must be %min - %max characters long', array(
                     '%min' => 1, '%max' => 255));
@@ -537,5 +542,4 @@ class Category extends Controller
 
         return !$has_errors;
     }
-
 }

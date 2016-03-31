@@ -15,7 +15,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Parser implements Twig_ParserInterface
+class twig_Parser implements Twig_ParserInterface
 {
     protected $stack = array();
     protected $stream;

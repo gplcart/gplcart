@@ -134,7 +134,6 @@ class Front extends Controller
         $imagestyle = $this->config->module($this->theme, 'image_style_product_grid', 3);
 
         foreach ($products as $product_id => &$product) {
-
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
 
@@ -216,5 +215,4 @@ class Front extends Controller
         $this->addRegionItem('region_top', array('page/block/page', array(
             'pages' => $pages)));
     }
-
 }

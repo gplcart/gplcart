@@ -90,6 +90,7 @@ class Bookmark
 
         $bookmark_id = $this->db->insert('bookmark', $values);
         $this->hook->fire('add.bookmark.after', $data, $bookmark_id);
+
         return $bookmark_id;
     }
 
@@ -127,7 +128,6 @@ class Bookmark
         $limit = $this->config->get('bookmark_limit', 20);
 
         if (is_numeric($user_id)) {
-
             $user = $this->user->get($user_id);
             if (empty($user['status'])) {
                 return $limit; // Missing / blocked user
@@ -148,6 +148,7 @@ class Bookmark
     {
         $sth = $this->db->prepare('SELECT COUNT(bookmark_id) FROM bookmark WHERE user_id=:user_id');
         $sth->execute(array(':user_id' => $user_id));
+
         return (int) $sth->fetchColumn();
     }
 
@@ -167,6 +168,7 @@ class Bookmark
 
         $result = isset($user_id) ? $this->deleteByUser($user_id) : $this->deleteMultiple($bookmark_id);
         $this->hook->fire('delete.bookmark.after', $bookmark_id, $user_id, $result);
+
         return (bool) $result;
     }
 
@@ -191,6 +193,7 @@ class Bookmark
         $placeholders = rtrim(str_repeat('?, ', count($bookmark_ids)), ', ');
         $sth = $this->db->prepare("DELETE FROM bookmark WHERE bookmark_id IN($placeholders)");
         $sth->execute($bookmark_ids);
+
         return $sth->rowCount();
     }
 
@@ -228,7 +231,7 @@ class Bookmark
             if ($data['type'] == 'product') {
                 $sql .= ' AND b.id_key = ? AND b.id_value > 0';
                 $where[] = 'product_id';
-            } else if ($data['type'] === 'url') {
+            } elseif ($data['type'] === 'url') {
                 $sql .= ' AND LENGTH(b.id_key) = 0';
             }
         }
@@ -261,7 +264,6 @@ class Bookmark
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $allowed_sort = array('id_value', 'user_id', 'created', 'title');
 
             if (in_array($data['sort'], $allowed_sort, true)) {
@@ -287,6 +289,7 @@ class Bookmark
         }
 
         $this->hook->fire('bookmarks', $bookmarks);
+
         return $bookmarks;
     }
 
@@ -308,7 +311,6 @@ class Bookmark
         }
 
         if (is_array($condition)) {
-
             $sql = '
             SELECT bookmark_id
             FROM bookmark 
@@ -327,6 +329,7 @@ class Bookmark
         }
 
         $this->hook->fire('get.bookmark.after', $condition, $result);
+
         return $result;
     }
     
@@ -346,5 +349,4 @@ class Bookmark
 
         return false;
     }
-
 }

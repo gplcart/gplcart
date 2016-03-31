@@ -12,7 +12,7 @@
 /**
  * Embeds a template.
  */
-class Twig_TokenParser_Embed extends Twig_TokenParser_Include
+class twig_TokenParser_Embed extends Twig_TokenParser_Include
 {
     public function parse(Twig_Token $token)
     {

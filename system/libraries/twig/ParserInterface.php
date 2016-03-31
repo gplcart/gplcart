@@ -16,7 +16,7 @@
  *
  * @deprecated since 1.12 (to be removed in 3.0)
  */
-interface Twig_ParserInterface
+interface twig_ParserInterface
 {
     /**
      * Converts a token stream to a node tree.

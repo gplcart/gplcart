@@ -43,6 +43,7 @@ class Price
 
         if ($convert && ($currency_code != $current_currency)) {
             $amount = $this->currency->convert($amount, $currency_code, $current_currency);
+
             return $this->format($amount, $current_currency);
         }
 
@@ -58,7 +59,6 @@ class Price
      */
     public function format($amount, $currency_code, $convert = true)
     {
-
         $currency = $this->currency->get($currency_code);
 
         if ($convert) {
@@ -81,6 +81,7 @@ class Price
         );
 
         $string = call_user_func_array('sprintf', $replacement);
+
         return trim($string);
     }
 
@@ -116,6 +117,7 @@ class Price
         }
 
         $modifier = 1 / $currency['rounding_step'];
+
         return round($amount * $modifier) / $modifier;
     }
 
@@ -142,6 +144,7 @@ class Price
 
         if ($round) {
             $decimal = $this->round($decimal, $this->currency->get($currency_code));
+
             return (int) round($decimal * $factors[$currency_code]);
         }
 
@@ -159,5 +162,4 @@ class Price
     {
         return $this->currency->convert($amount, $currency_code, $target_currency_code);
     }
-
 }

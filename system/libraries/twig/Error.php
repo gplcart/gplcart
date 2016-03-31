@@ -31,7 +31,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Error extends Exception
+class twig_Error extends Exception
 {
     protected $lineno;
     protected $filename;

@@ -12,7 +12,7 @@
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Profiler_NodeVisitor_Profiler extends Twig_BaseNodeVisitor
+class twig_Profiler_NodeVisitor_Profiler extends Twig_BaseNodeVisitor
 {
     private $extensionName;
 

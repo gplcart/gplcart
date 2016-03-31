@@ -99,10 +99,8 @@ class Alias extends Controller
      */
     protected function action($selected, $action)
     {
-
         $deleted = 0;
         foreach ($selected as $id) {
-
             $alias = $this->alias->get($id);
 
             if (empty($alias)) {
@@ -122,10 +120,10 @@ class Alias extends Controller
 
         if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num aliases', array('%num' => $deleted)), 'success');
+
             return true;
         }
 
         return false;
     }
-
 }

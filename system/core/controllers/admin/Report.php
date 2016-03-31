@@ -92,7 +92,7 @@ class Report extends Controller
     }
 
     /**
-     * Returns a number of total system events for pager 
+     * Returns a number of total system events for pager
      * @param array $query
      * @return integer
      */
@@ -121,7 +121,6 @@ class Report extends Controller
         $records = $this->report->getList(array('limit' => $limit) + $query);
 
         foreach ($records as &$record) {
-
             $record['summary'] = '';
 
             $message_variables = isset($record['data']['variables']) ? $record['data']['variables'] : array();
@@ -144,6 +143,7 @@ class Report extends Controller
     protected function getSeverityCount()
     {
         $allowed = array_flip(array('danger', 'warning', 'info'));
+
         return array_filter(array_intersect_key($this->report->countSeverity(), $allowed));
     }
 
@@ -356,7 +356,6 @@ class Report extends Controller
         $notifications = array();
 
         foreach ($this->notification->getList() as $notification_id => $notification) {
-
             if (empty($notification['messages'])) {
                 continue;
             }
@@ -366,7 +365,6 @@ class Report extends Controller
             }
 
             foreach ($notification['messages'] as $index => $message) {
-
                 if (empty($message['message'])) {
                     continue;
                 }
@@ -384,5 +382,4 @@ class Report extends Controller
 
         return $notifications;
     }
-
 }

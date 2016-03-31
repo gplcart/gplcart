@@ -18,7 +18,7 @@
  *
  * @deprecated (to be removed in 2.0)
  */
-class Twig_Node_Expression_ExtensionReference extends Twig_Node_Expression
+class twig_Node_Expression_ExtensionReference extends Twig_Node_Expression
 {
     public function __construct($name, $lineno, $tag = null)
     {

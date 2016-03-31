@@ -14,7 +14,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-abstract class Twig_BaseNodeVisitor implements Twig_NodeVisitorInterface
+abstract class twig_BaseNodeVisitor implements Twig_NodeVisitorInterface
 {
     /**
      * {@inheritdoc}

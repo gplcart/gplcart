@@ -27,7 +27,7 @@
  * {% endautoescape %}
  * </pre>
  */
-class Twig_TokenParser_AutoEscape extends Twig_TokenParser
+class twig_TokenParser_AutoEscape extends Twig_TokenParser
 {
     public function parse(Twig_Token $token)
     {

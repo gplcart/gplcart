@@ -12,7 +12,7 @@
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Node_CheckSecurity extends Twig_Node
+class twig_Node_CheckSecurity extends Twig_Node
 {
     protected $usedFilters;
     protected $usedTags;

@@ -59,7 +59,7 @@ class Field
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -111,7 +111,7 @@ class Field
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -124,7 +124,6 @@ class Field
         $errors = array();
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['field_id']) && is_numeric($data['field_id']));
@@ -180,6 +179,7 @@ class Field
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -215,6 +215,7 @@ class Field
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Field name already exists')));
+
             return false;
         }
 
@@ -253,7 +254,6 @@ class Field
      */
     protected function validateWidget(&$data, &$errors, $line)
     {
-
         if (!isset($data['widget'])) {
             return true;
         }
@@ -266,6 +266,7 @@ class Field
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Invalid field widget')));
+
             return false;
         }
 
@@ -281,7 +282,6 @@ class Field
      */
     protected function validateType(&$data, &$errors, $line)
     {
-
         if (!isset($data['type'])) {
             return true;
         }
@@ -292,6 +292,7 @@ class Field
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Invalid field type')));
+
             return false;
         }
 
@@ -307,6 +308,7 @@ class Field
     protected function update($field_id, $data)
     {
         unset($data['type']);
+
         return (int) $this->field->update($field_id, $data);
     }
 
@@ -318,11 +320,11 @@ class Field
      */
     protected function add(&$data, &$errors, $line)
     {
-
         if (empty($data['title'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Field title is required')));
+
             return 0;
         }
 
@@ -330,6 +332,7 @@ class Field
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Widget type is required')));
+
             return 0;
         }
 
@@ -337,6 +340,7 @@ class Field
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Field type is required')));
+
             return 0;
         }
 
@@ -346,5 +350,4 @@ class Field
 
         return $this->field->add($data) ? 1 : 0;
     }
-
 }

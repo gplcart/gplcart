@@ -42,30 +42,46 @@
     </div>
       
     
-    <?php if($shipping_quotes) { ?>
-        <?php echo $shipping_quotes; ?>
-    <?php } ?>
+    <?php if ($shipping_quotes) {
+    ?>
+        <?php echo $shipping_quotes;
+    ?>
+    <?php 
+} ?>
   
   
   </div>
 </div>
-<?php if(!empty($product['description'])) { ?>
+<?php if (!empty($product['description'])) {
+    ?>
 <div class="row">
   <div class="col-md-12">
-      <h2 class="h3"><?php echo $this->text('Description'); ?></h2>
-      <?php echo $this->xss($product['description']); ?>
+      <h2 class="h3"><?php echo $this->text('Description');
+    ?></h2>
+      <?php echo $this->xss($product['description']);
+    ?>
   </div>
 </div>
-<?php } ?>
-<?php if(!empty($related)) { ?>
-<?php echo $related; ?>
-<?php } ?>
-<?php if(!empty($recent)) { ?>
-<?php echo $recent; ?>
-<?php } ?>
-<?php if(!empty($reviews)) { ?>
-<?php echo $reviews; ?>
-<?php } ?>
+<?php 
+} ?>
+<?php if (!empty($related)) {
+    ?>
+<?php echo $related;
+    ?>
+<?php 
+} ?>
+<?php if (!empty($recent)) {
+    ?>
+<?php echo $recent;
+    ?>
+<?php 
+} ?>
+<?php if (!empty($reviews)) {
+    ?>
+<?php echo $reviews;
+    ?>
+<?php 
+} ?>
 
 
 

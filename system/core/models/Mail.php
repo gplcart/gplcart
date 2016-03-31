@@ -144,7 +144,7 @@ class Mail
 
         if (isset($options['debug'])) {
             $this->mailer->SMTPDebug = (int) $options['debug'];
-            $this->mailer->Debugoutput = function($str, $level) {
+            $this->mailer->Debugoutput = function ($str, $level) {
                 $this->debug = $str;
             };
         }
@@ -155,6 +155,7 @@ class Mail
         $this->log(implode(',', $addresses), $options);
 
         $this->hook->fire('mail.after', $to, $message, $options);
+
         return (bool) $options['status'];
     }
 
@@ -284,5 +285,4 @@ class Mail
     {
         return $this->errors;
     }
-
 }

@@ -64,7 +64,7 @@ class Category
     protected $alias;
 
     /**
-     * 
+     *
      * @param Import $import
      * @param Language $language
      * @param User $user
@@ -85,7 +85,7 @@ class Category
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -137,7 +137,7 @@ class Category
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -151,7 +151,6 @@ class Category
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['category_id']) && is_numeric($data['category_id']));
@@ -216,6 +215,7 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -223,6 +223,7 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Meta title must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -230,6 +231,7 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Meta description must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -263,6 +265,7 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Category name already exists')));
+
             return false;
         }
 
@@ -312,6 +315,7 @@ class Category
                 '@num' => $line,
                 '@error' => $this->language->text('Parent category @id neither exists or unique', array(
                     '@id' => $data['parent_id']))));
+
             return false;
         }
 
@@ -323,6 +327,7 @@ class Category
                 '@num' => $line,
                 '@error' => $this->language->text('Category ID @cid must not match the parent ID @pid', array(
                     '@pid' => $data['parent_id'], '@cid' => $data['category_id']))));
+
             return false;
         }
 
@@ -347,9 +352,11 @@ class Category
                 '@num' => $line,
                 '@error' => $this->language->text('Invalid category group @id', array(
                     '@id' => $data['category_group_id']))));
+
             return false;
         }
         $data['category_group_id'] = $group['category_group_id'];
+
         return true;
     }
 
@@ -389,6 +396,7 @@ class Category
 
         if ($data['alias'] === $this->import->getCsvAutoTag()) {
             $data['alias'] = $this->category->createAlias($data);
+
             return true;
         }
         
@@ -396,6 +404,7 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Alias must not be longer than 255 characters')));
+
             return false;
         }
 
@@ -441,6 +450,7 @@ class Category
                 '@error' => implode(',', $download['errors'])));
         }
         $data['image'] = $download['images'];
+
         return true;
     }
 
@@ -469,6 +479,7 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Empty category title')));
+
             return 0;
         }
 
@@ -476,10 +487,10 @@ class Category
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Empty category group')));
+
             return 0;
         }
 
         return $this->category->add($data) ? 1 : 0;
     }
-
 }

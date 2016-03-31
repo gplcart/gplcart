@@ -26,7 +26,7 @@ class Analytics
 
     /**
      * GA profile id
-     * @var type 
+     * @var type
      */
     protected $profile_id;
 
@@ -111,6 +111,7 @@ class Analytics
     public function setView($view)
     {
         $this->profile_id = $view;
+
         return $this;
     }
 
@@ -177,6 +178,7 @@ class Analytics
         }
 
         $this->hook->fire('ga.results.after', $arguments, $return);
+
         return $return;
     }
 
@@ -251,7 +253,7 @@ class Analytics
     {
         $fields = array('ga:sessions', 'ga:pageviews');
         $arguments = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
+
         return $this->getResults($arguments);
     }
-
 }

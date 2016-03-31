@@ -16,7 +16,7 @@
  */
 
 if (!class_exists('Google_Client')) {
-  require_once dirname(__FILE__) . '/../autoload.php';
+    require_once dirname(__FILE__) . '/../autoload.php';
 }
 
 /**
@@ -26,7 +26,7 @@ if (!class_exists('Google_Client')) {
  */
 class Google_Logger_File extends Google_Logger_Abstract
 {
-  /**
+    /**
    * @var string|resource $file Where logs are written
    */
   private $file;
@@ -53,22 +53,22 @@ class Google_Logger_File extends Google_Logger_Abstract
    */
   public function __construct(Google_Client $client)
   {
-    parent::__construct($client);
+      parent::__construct($client);
 
-    $file = $client->getClassConfig('Google_Logger_File', 'file');
-    if (!is_string($file) && !is_resource($file)) {
-      throw new Google_Logger_Exception(
+      $file = $client->getClassConfig('Google_Logger_File', 'file');
+      if (!is_string($file) && !is_resource($file)) {
+          throw new Google_Logger_Exception(
           'File logger requires a filename or a valid file pointer'
       );
-    }
+      }
 
-    $mode = $client->getClassConfig('Google_Logger_File', 'mode');
-    if (!$mode) {
-      $this->mode = $mode;
-    }
+      $mode = $client->getClassConfig('Google_Logger_File', 'mode');
+      if (!$mode) {
+          $this->mode = $mode;
+      }
 
-    $this->lock = (bool) $client->getClassConfig('Google_Logger_File', 'lock');
-    $this->file = $file;
+      $this->lock = (bool) $client->getClassConfig('Google_Logger_File', 'lock');
+      $this->file = $file;
   }
 
   /**
@@ -76,21 +76,21 @@ class Google_Logger_File extends Google_Logger_Abstract
    */
   protected function write($message)
   {
-    if (is_string($this->file)) {
-      $this->open();
-    } elseif (!is_resource($this->file)) {
-      throw new Google_Logger_Exception('File pointer is no longer available');
-    }
+      if (is_string($this->file)) {
+          $this->open();
+      } elseif (!is_resource($this->file)) {
+          throw new Google_Logger_Exception('File pointer is no longer available');
+      }
 
-    if ($this->lock) {
-      flock($this->file, LOCK_EX);
-    }
+      if ($this->lock) {
+          flock($this->file, LOCK_EX);
+      }
 
-    fwrite($this->file, (string) $message);
+      fwrite($this->file, (string) $message);
 
-    if ($this->lock) {
-      flock($this->file, LOCK_UN);
-    }
+      if ($this->lock) {
+          flock($this->file, LOCK_UN);
+      }
   }
 
   /**
@@ -100,20 +100,20 @@ class Google_Logger_File extends Google_Logger_Abstract
    */
   private function open()
   {
-    // Used for trapping `fopen()` errors.
+      // Used for trapping `fopen()` errors.
     $this->trappedErrorNumber = null;
-    $this->trappedErrorString = null;
+      $this->trappedErrorString = null;
 
-    $old = set_error_handler(array($this, 'trapError'));
+      $old = set_error_handler(array($this, 'trapError'));
 
-    $needsChmod = !file_exists($this->file);
-    $fh = fopen($this->file, 'a');
+      $needsChmod = !file_exists($this->file);
+      $fh = fopen($this->file, 'a');
 
-    restore_error_handler();
+      restore_error_handler();
 
     // Handles trapped `fopen()` errors.
     if ($this->trappedErrorNumber) {
-      throw new Google_Logger_Exception(
+        throw new Google_Logger_Exception(
           sprintf(
               "Logger Error: '%s'",
               $this->trappedErrorString
@@ -122,11 +122,11 @@ class Google_Logger_File extends Google_Logger_Abstract
       );
     }
 
-    if ($needsChmod) {
-      @chmod($this->file, $this->mode & ~umask());
-    }
+      if ($needsChmod) {
+          @chmod($this->file, $this->mode & ~umask());
+      }
 
-    return $this->file = $fh;
+      return $this->file = $fh;
   }
 
   /**
@@ -134,9 +134,9 @@ class Google_Logger_File extends Google_Logger_Abstract
    */
   private function close()
   {
-    if (is_resource($this->file)) {
-      fclose($this->file);
-    }
+      if (is_resource($this->file)) {
+          fclose($this->file);
+      }
   }
 
   /**
@@ -147,12 +147,12 @@ class Google_Logger_File extends Google_Logger_Abstract
    */
   private function trapError($errno, $errstr)
   {
-    $this->trappedErrorNumber = $errno;
-    $this->trappedErrorString = $errstr;
+      $this->trappedErrorNumber = $errno;
+      $this->trappedErrorString = $errstr;
   }
 
-  public function __destruct()
-  {
-    $this->close();
-  }
+    public function __destruct()
+    {
+        $this->close();
+    }
 }

@@ -52,6 +52,7 @@ class Cache
             chmod($file, 0600); // Read and write for owner, nothing for everybody else
             return true;
         }
+
         return false;
     }
 
@@ -68,6 +69,7 @@ class Cache
         if ($cid === true) {
             return array_map('unlink', glob(GC_CACHE_DIR . '/*.cache'));
         }
+
         return array_map('unlink', glob(GC_CACHE_DIR . "/$cid$pattern"));
     }
 
@@ -105,6 +107,7 @@ class Cache
             }
 
             $default[$name] = $data[$name] = $default_value;
+
             return $data[$name];
         }
 
@@ -114,5 +117,4 @@ class Cache
 
         return $data;
     }
-
 }

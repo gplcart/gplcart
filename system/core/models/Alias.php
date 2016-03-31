@@ -86,11 +86,13 @@ class Alias
         if (is_numeric($id_key)) {
             $sth = $this->db->prepare('SELECT * FROM alias WHERE alias_id=:id');
             $sth->execute(array(':id' => (int) $id_key));
+
             return $sth->fetchAll(PDO::FETCH_ASSOC);
         }
 
         $sth = $this->db->prepare('SELECT alias FROM alias WHERE id_key=? AND id_value=?');
         $sth->execute(array($id_key, (int) $id_value));
+
         return $sth->fetchColumn();
     }
 
@@ -161,7 +163,6 @@ class Alias
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $allowed_sort = array('id_value', 'id_key', 'alias');
 
             if (in_array($data['sort'], $allowed_sort)) {
@@ -198,6 +199,7 @@ class Alias
     {
         $sth = $this->db->prepare('SELECT id_key FROM alias GROUP BY id_key');
         $sth->execute();
+
         return $sth->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
@@ -263,7 +265,7 @@ class Alias
     {
         $sth = $this->db->prepare('SELECT * FROM alias WHERE alias=:alias');
         $sth->execute(array(':alias' => $alias));
+
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
-
 }

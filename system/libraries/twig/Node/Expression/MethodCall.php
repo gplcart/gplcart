@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-class Twig_Node_Expression_MethodCall extends Twig_Node_Expression
+class twig_Node_Expression_MethodCall extends Twig_Node_Expression
 {
     public function __construct(Twig_Node_Expression $node, $method, Twig_Node_Expression_Array $arguments, $lineno)
     {

@@ -20,15 +20,15 @@
  */
 class Google_Config
 {
-  const GZIP_DISABLED = true;
-  const GZIP_ENABLED = false;
-  const GZIP_UPLOADS_ENABLED = true;
-  const GZIP_UPLOADS_DISABLED = false;
-  const USE_AUTO_IO_SELECTION = "auto";
-  const TASK_RETRY_NEVER = 0;
-  const TASK_RETRY_ONCE = 1;
-  const TASK_RETRY_ALWAYS = -1;
-  protected $configuration;
+    const GZIP_DISABLED = true;
+    const GZIP_ENABLED = false;
+    const GZIP_UPLOADS_ENABLED = true;
+    const GZIP_UPLOADS_DISABLED = false;
+    const USE_AUTO_IO_SELECTION = "auto";
+    const TASK_RETRY_NEVER = 0;
+    const TASK_RETRY_ONCE = 1;
+    const TASK_RETRY_ALWAYS = -1;
+    protected $configuration;
 
   /**
    * Create a new Google_Config. Can accept an ini file location with the
@@ -39,7 +39,7 @@ class Google_Config
    */
   public function __construct($ini_file_location = null)
   {
-    $this->configuration = array(
+      $this->configuration = array(
       // The application_name is included in the User-Agent HTTP header.
       'application_name' => '',
 
@@ -140,16 +140,16 @@ class Google_Config
         )
       ),
     );
-    if ($ini_file_location) {
-      $ini = parse_ini_file($ini_file_location, true);
-      if (is_array($ini) && count($ini)) {
-        $merged_configuration = $ini + $this->configuration;
-        if (isset($ini['classes']) && isset($this->configuration['classes'])) {
-          $merged_configuration['classes'] = $ini['classes'] + $this->configuration['classes'];
-        }
-        $this->configuration = $merged_configuration;
+      if ($ini_file_location) {
+          $ini = parse_ini_file($ini_file_location, true);
+          if (is_array($ini) && count($ini)) {
+              $merged_configuration = $ini + $this->configuration;
+              if (isset($ini['classes']) && isset($this->configuration['classes'])) {
+                  $merged_configuration['classes'] = $ini['classes'] + $this->configuration['classes'];
+              }
+              $this->configuration = $merged_configuration;
+          }
       }
-    }
   }
 
   /**
@@ -162,27 +162,27 @@ class Google_Config
    */
   public function setClassConfig($class, $config, $value = null)
   {
-    if (!is_array($config)) {
-      if (!isset($this->configuration['classes'][$class])) {
-        $this->configuration['classes'][$class] = array();
+      if (!is_array($config)) {
+          if (!isset($this->configuration['classes'][$class])) {
+              $this->configuration['classes'][$class] = array();
+          }
+          $this->configuration['classes'][$class][$config] = $value;
+      } else {
+          $this->configuration['classes'][$class] = $config;
       }
-      $this->configuration['classes'][$class][$config] = $value;
-    } else {
-      $this->configuration['classes'][$class] = $config;
-    }
   }
 
-  public function getClassConfig($class, $key = null)
-  {
-    if (!isset($this->configuration['classes'][$class])) {
-      return null;
+    public function getClassConfig($class, $key = null)
+    {
+        if (!isset($this->configuration['classes'][$class])) {
+            return null;
+        }
+        if ($key === null) {
+            return $this->configuration['classes'][$class];
+        } else {
+            return $this->configuration['classes'][$class][$key];
+        }
     }
-    if ($key === null) {
-      return $this->configuration['classes'][$class];
-    } else {
-      return $this->configuration['classes'][$class][$key];
-    }
-  }
 
   /**
    * Return the configured cache class.
@@ -190,7 +190,7 @@ class Google_Config
    */
   public function getCacheClass()
   {
-    return $this->configuration['cache_class'];
+      return $this->configuration['cache_class'];
   }
 
   /**
@@ -199,7 +199,7 @@ class Google_Config
    */
   public function getLoggerClass()
   {
-    return $this->configuration['logger_class'];
+      return $this->configuration['logger_class'];
   }
 
   /**
@@ -208,7 +208,7 @@ class Google_Config
    */
   public function getAuthClass()
   {
-    return $this->configuration['auth_class'];
+      return $this->configuration['auth_class'];
   }
 
   /**
@@ -218,13 +218,13 @@ class Google_Config
    */
   public function setAuthClass($class)
   {
-    $prev = $this->configuration['auth_class'];
-    if (!isset($this->configuration['classes'][$class]) &&
+      $prev = $this->configuration['auth_class'];
+      if (!isset($this->configuration['classes'][$class]) &&
         isset($this->configuration['classes'][$prev])) {
-      $this->configuration['classes'][$class] =
+          $this->configuration['classes'][$class] =
           $this->configuration['classes'][$prev];
-    }
-    $this->configuration['auth_class'] = $class;
+      }
+      $this->configuration['auth_class'] = $class;
   }
 
   /**
@@ -234,13 +234,13 @@ class Google_Config
    */
   public function setIoClass($class)
   {
-    $prev = $this->configuration['io_class'];
-    if (!isset($this->configuration['classes'][$class]) &&
+      $prev = $this->configuration['io_class'];
+      if (!isset($this->configuration['classes'][$class]) &&
         isset($this->configuration['classes'][$prev])) {
-      $this->configuration['classes'][$class] =
+          $this->configuration['classes'][$class] =
           $this->configuration['classes'][$prev];
-    }
-    $this->configuration['io_class'] = $class;
+      }
+      $this->configuration['io_class'] = $class;
   }
 
   /**
@@ -250,13 +250,13 @@ class Google_Config
    */
   public function setCacheClass($class)
   {
-    $prev = $this->configuration['cache_class'];
-    if (!isset($this->configuration['classes'][$class]) &&
+      $prev = $this->configuration['cache_class'];
+      if (!isset($this->configuration['classes'][$class]) &&
         isset($this->configuration['classes'][$prev])) {
-      $this->configuration['classes'][$class] =
+          $this->configuration['classes'][$class] =
           $this->configuration['classes'][$prev];
-    }
-    $this->configuration['cache_class'] = $class;
+      }
+      $this->configuration['cache_class'] = $class;
   }
 
   /**
@@ -266,13 +266,13 @@ class Google_Config
    */
   public function setLoggerClass($class)
   {
-    $prev = $this->configuration['logger_class'];
-    if (!isset($this->configuration['classes'][$class]) &&
+      $prev = $this->configuration['logger_class'];
+      if (!isset($this->configuration['classes'][$class]) &&
         isset($this->configuration['classes'][$prev])) {
-      $this->configuration['classes'][$class] =
+          $this->configuration['classes'][$class] =
           $this->configuration['classes'][$prev];
-    }
-    $this->configuration['logger_class'] = $class;
+      }
+      $this->configuration['logger_class'] = $class;
   }
 
   /**
@@ -282,7 +282,7 @@ class Google_Config
    */
   public function getIoClass()
   {
-    return $this->configuration['io_class'];
+      return $this->configuration['io_class'];
   }
 
   /**
@@ -291,7 +291,7 @@ class Google_Config
    */
   public function setApplicationName($name)
   {
-    $this->configuration['application_name'] = $name;
+      $this->configuration['application_name'] = $name;
   }
 
   /**
@@ -299,7 +299,7 @@ class Google_Config
    */
   public function getApplicationName()
   {
-    return $this->configuration['application_name'];
+      return $this->configuration['application_name'];
   }
 
   /**
@@ -308,7 +308,7 @@ class Google_Config
    */
   public function setClientId($clientId)
   {
-    $this->setAuthConfig('client_id', $clientId);
+      $this->setAuthConfig('client_id', $clientId);
   }
 
   /**
@@ -317,7 +317,7 @@ class Google_Config
    */
   public function setClientSecret($secret)
   {
-    $this->setAuthConfig('client_secret', $secret);
+      $this->setAuthConfig('client_secret', $secret);
   }
 
   /**
@@ -328,7 +328,7 @@ class Google_Config
    */
   public function setRedirectUri($uri)
   {
-    $this->setAuthConfig('redirect_uri', $uri);
+      $this->setAuthConfig('redirect_uri', $uri);
   }
 
   /**
@@ -337,7 +337,7 @@ class Google_Config
    */
   public function setRequestVisibleActions($rva)
   {
-    $this->setAuthConfig('request_visible_actions', $rva);
+      $this->setAuthConfig('request_visible_actions', $rva);
   }
 
   /**
@@ -346,7 +346,7 @@ class Google_Config
    */
   public function setAccessType($access)
   {
-    $this->setAuthConfig('access_type', $access);
+      $this->setAuthConfig('access_type', $access);
   }
 
   /**
@@ -355,7 +355,7 @@ class Google_Config
    */
   public function setApprovalPrompt($approval)
   {
-    $this->setAuthConfig('approval_prompt', $approval);
+      $this->setAuthConfig('approval_prompt', $approval);
   }
 
   /**
@@ -364,7 +364,7 @@ class Google_Config
    */
   public function setLoginHint($hint)
   {
-    $this->setAuthConfig('login_hint', $hint);
+      $this->setAuthConfig('login_hint', $hint);
   }
 
   /**
@@ -374,7 +374,7 @@ class Google_Config
    */
   public function setDeveloperKey($key)
   {
-    $this->setAuthConfig('developer_key', $key);
+      $this->setAuthConfig('developer_key', $key);
   }
 
   /**
@@ -390,7 +390,7 @@ class Google_Config
    */
   public function setHostedDomain($hd)
   {
-    $this->setAuthConfig('hd', $hd);
+      $this->setAuthConfig('hd', $hd);
   }
 
   /**
@@ -401,7 +401,7 @@ class Google_Config
    */
   public function setPrompt($prompt)
   {
-    $this->setAuthConfig('prompt', $prompt);
+      $this->setAuthConfig('prompt', $prompt);
   }
 
   /**
@@ -412,7 +412,7 @@ class Google_Config
    */
   public function setOpenidRealm($realm)
   {
-    $this->setAuthConfig('openid.realm', $realm);
+      $this->setAuthConfig('openid.realm', $realm);
   }
 
   /**
@@ -423,7 +423,7 @@ class Google_Config
    */
   public function setIncludeGrantedScopes($include)
   {
-    $this->setAuthConfig(
+      $this->setAuthConfig(
         'include_granted_scopes',
         $include ? "true" : "false"
     );
@@ -434,7 +434,7 @@ class Google_Config
    */
   public function getBasePath()
   {
-    return $this->configuration['base_path'];
+      return $this->configuration['base_path'];
   }
 
   /**
@@ -444,9 +444,9 @@ class Google_Config
    */
   private function setAuthConfig($key, $value)
   {
-    if (!isset($this->configuration['classes'][$this->getAuthClass()])) {
-      $this->configuration['classes'][$this->getAuthClass()] = array();
-    }
-    $this->configuration['classes'][$this->getAuthClass()][$key] = $value;
+      if (!isset($this->configuration['classes'][$this->getAuthClass()])) {
+          $this->configuration['classes'][$this->getAuthClass()] = array();
+      }
+      $this->configuration['classes'][$this->getAuthClass()][$key] = $value;
   }
 }
