@@ -11,15 +11,15 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Address;
-use core\models\Country;
 use core\models\State;
 use core\models\Order;
 use core\models\Price;
-use core\models\Bookmark;
-use core\models\Notification;
-use core\models\UserRole;
 use core\classes\Tool;
+use core\models\Address;
+use core\models\Country;
+use core\models\Bookmark;
+use core\models\UserRole;
+use core\models\Notification;
 
 class Account extends Controller
 {
@@ -35,7 +35,7 @@ class Account extends Controller
      * @var \core\models\Country $country
      */
     protected $country;
-    
+
     /**
      * State model instance
      * @var \core\models\State $state
@@ -53,7 +53,7 @@ class Account extends Controller
      * @var \core\models\Order $order
      */
     protected $order;
-    
+
     /**
      * User role model instance
      * @var \core\models\UserRole $role
@@ -77,7 +77,7 @@ class Account extends Controller
      * @var \core\models\Notification $notification
      */
     protected $notification;
-    
+
     /**
      * Constructor
      * @param Address $address
@@ -89,18 +89,21 @@ class Account extends Controller
      * @param Notification $notification
      * @param UserRole $role
      */
-    public function __construct(Address $address, Country $country, State $state, Order $order, Price $price, Bookmark $bookmark, Notification $notification, UserRole $role)
+    public function __construct(Address $address, Country $country,
+                                State $state, Order $order, Price $price,
+                                Bookmark $bookmark, Notification $notification,
+                                UserRole $role)
     {
         parent::__construct();
 
+        $this->role = $role;
+        $this->state = $state;
         $this->order = $order;
         $this->price = $price;
         $this->country = $country;
-        $this->state = $state;
         $this->address = $address;
         $this->bookmark = $bookmark;
         $this->notification = $notification;
-        $this->role = $role;
     }
 
     /**
@@ -109,17 +112,155 @@ class Account extends Controller
      */
     public function account($user_id)
     {
+        $user = $this->getUser($user_id);
+
+        $query = $this->getFilterQuery();
+        $default_limit = $this->config->get('account_order_limit', 10);
+        $limit = $this->setPager($this->getTotalOrders($user_id), $query, $default_limit);
+
+        $filters = array('order_id', 'created', 'total', 'status');
+        $this->setFilter($filters, $query);
+
+        $this->data['user'] = $user;
+        $this->data['orders'] = $this->getOrders($user_id, $limit, $query);
+
+        $this->setTitleAccount();
+        $this->outputAccount();
+    }
+
+    /**
+     * Sets titles on the account page
+     */
+    protected function setTitleAccount()
+    {
+        $this->setTitle($this->text('Orders'), false);
+    }
+
+    /**
+     * Renders the account page templates
+     */
+    protected function outputAccount()
+    {
+        $this->output('account/account');
+    }
+
+    /**
+     * Returns a user
+     * @param integer $user_id
+     * @return array
+     */
+    protected function getUser($user_id)
+    {
         $user = $this->user->get($user_id);
 
         if (empty($user['status'])) {
             $this->outputError(404);
         }
 
-        $this->data['user'] = $user;
-        $this->data['orders'] = $this->order->getByUser($user_id);
+        return $user;
+    }
 
-        $this->setTitle($this->text('Orders'), false);
-        $this->output('account/account');
+    /**
+     * Returns an array of orders for the customer
+     * @param integer $user_id
+     * @return array
+     */
+    protected function getOrders($user_id, $limit, $query)
+    {
+        $query += array('sort' => 'created', 'order' => 'desc', 'limit' => $limit);
+        $query['user_id'] = $user_id;
+        return $this->prepareOrders($this->order->getList($query));
+    }
+
+    /**
+     * Returns a number of total orders for the customer
+     * @param integer $user_id
+     * @param array $query
+     * @return type
+     */
+    protected function getTotalOrders($user_id)
+    {
+        return $this->order->getList(array('count' => true, 'user_id' => $user_id));
+    }
+
+    /**
+     * Modifies an array of orders before rendering
+     * @param array $orders
+     * @return array
+     */
+    protected function prepareOrders($orders)
+    {
+
+        foreach ($orders as &$order) {
+            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+            $order['status_formatted'] = $this->order->getStatusName($order['status']);
+            $order['rendered'] = $this->render('account/order', array('order' => $order));
+        }
+
+        return $orders;
+    }
+
+    /**
+     * 
+     * @param type $order
+     * @return type
+     */
+    protected function renderOrder($order)
+    {
+        $html = $this->render('account/order', array(
+            'order' => $order,
+            'cart' => $this->getCart($order['order_id']),
+            'shipping_address' => $this->getAddress($order['shipping_address'])));
+
+        return $html;
+    }
+
+    /**
+     * 
+     * @param type $order_id
+     * @return type
+     */
+    protected function getCart($order_id)
+    {
+        return $this->prepareCart($this->order->getCart($order_id));
+    }
+
+    /**
+     * 
+     * @param type $cart
+     * @return type
+     */
+    protected function prepareCart($cart)
+    {
+        foreach ($cart as &$item) {
+            //
+        }
+
+        return $cart;
+    }
+
+    /**
+     * 
+     * @param type $address_id
+     * @return type
+     */
+    protected function getAddress($address_id)
+    {
+        return $this->prepareAddress($this->address->get($address_id));
+    }
+
+    /**
+     * 
+     * @param type $address
+     * @return type
+     */
+    protected function prepareAddress($address)
+    {
+        foreach ($address as &$data) {
+            //
+        }
+
+        return $address;
     }
 
     /**
@@ -281,7 +422,7 @@ class Account extends Controller
         }
 
         $this->data['form_errors']['password'] = $this->language->text('Password must be %min - %max characters long', array(
-                    '%min' => $limits['min'], '%max' => $limits['max']));
+            '%min' => $limits['min'], '%max' => $limits['max']));
         return false;
     }
 
@@ -458,9 +599,8 @@ class Account extends Controller
         $log = array(
             'message' => 'User %email has been registered',
             'variables' => array('%email' => $submitted['email']));
-        
-        $this->logger->log('register', $log); // TODO: move to model
 
+        $this->logger->log('register', $log); // TODO: move to model
         // Send an e-mail to the customer
         if ($this->config->get('user_registration_email_customer', 1)) {
             $this->notification->set('user_registered_customer', array($submitted));

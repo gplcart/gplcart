@@ -58,18 +58,18 @@
               <i class="fa fa-user"></i></a>
             <ul class="dropdown-menu dropdown-menu-right">
               <li>
-                <a href="<?php echo $this->url("account/{$this->uid}/order"); ?>">
-                  <i class="fa fa-gift"></i> <?php echo $this->text('Orders'); ?>
+                <a href="<?php echo $this->url("account/{$this->uid}"); ?>">
+                  <?php echo $this->text('Orders'); ?>
                 </a>
               </li>
               <li>
                 <a href="<?php echo $this->url("account/{$this->uid}/wishlist"); ?>">
-                  <i class="fa fa-star"></i> <?php echo $this->text('Wishlist'); ?>
+                  <?php echo $this->text('Wishlist'); ?>
                 </a>
               </li>
               <li>
                 <a href="<?php echo $this->url("account/{$this->uid}/address"); ?>">
-                  <i class="fa fa-truck"></i> <?php echo $this->text('Addresses'); ?>
+                  <?php echo $this->text('Addresses'); ?>
                 </a>
               </li>
               <li class="divider"></li>

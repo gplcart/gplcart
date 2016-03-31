@@ -112,21 +112,6 @@ class Order
     }
 
     /**
-     * Returns an order by a given customer ID
-     * @param string|integer $user_id
-     * @param integer $store_id
-     * @return array
-     */
-    public function getByUser($user_id)
-    {
-        $sql = 'SELECT * FROM orders WHERE user_id=:user_id ORDER BY created ASC';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':user_id' => $user_id));
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
      * Returns an array of order statuses
      * @return array
      */
@@ -237,6 +222,9 @@ class Order
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
 
             switch ($data['sort']) {
+                case 'order_id':
+                    $field = 'o.order_id';
+                    break;
                 case 'store_id':
                     $field = 'o.store_id';
                     break;

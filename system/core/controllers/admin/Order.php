@@ -119,7 +119,6 @@ class Order extends Controller
         $this->address = $address;
         $this->currency = $currency;
         $this->shipping = $shipping;
-        
         $this->pricerule = $pricerule;
     }
 
@@ -386,8 +385,7 @@ class Order extends Controller
      */
     protected function getAddress($address_id)
     {
-        $address = $this->address->get($address_id);
-        return $address;
+        return $this->address->get($address_id);
     }
 
     /**
