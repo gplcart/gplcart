@@ -108,6 +108,8 @@
 # $config['user_registration_status'] = 1; //Default account status upon registration
 # $config['user_reset_password_lifespan'] = 86400;
 # $config['user_superadmin'] = 1; // Superadmin database UID
+# $config['order_complete_message'] = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
+# $config['order_complete_message_anonymous'] = 'Thank you for your order! Order ID: !order_id, status: !status';
 
 /**
  * End of configurable settings. The settings below are appended automatically during installation.

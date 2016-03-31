@@ -22,7 +22,7 @@ class Document
     protected $request;
 
     /**
-     * 
+     * Constructor
      * @param Request $request
      */
     public function __construct(Request $request)
@@ -35,10 +35,10 @@ class Document
      * @staticvar array $scripts
      * @param string $script
      * @param string $position
-     * @param integer $weight
+     * @param integer|null $weight
      * @return mixed
      */
-    public function js($script = null, $position = 'top', $weight = null)
+    public function js($script = '', $position = 'top', $weight = null)
     {
         static $scripts = array();
 
@@ -52,6 +52,10 @@ class Document
         }
 
         $key = $this->getAssetKey($script, 'js');
+
+        if (empty($key)) {
+            return array();
+        }
 
         if (!isset($weight)) {
             $weight = empty($scripts[$position]) ? 0 : count($scripts[$position]) + 1;
@@ -90,18 +94,22 @@ class Document
      * Adds a CSS style to the page
      * @staticvar array $styles
      * @param string $css
-     * @param type $weight
+     * @param integer|null $weight
      * @return array
      */
-    public function css($css = null, $weight = null)
+    public function css($css = '', $weight = null)
     {
         static $styles = array();
 
-        if (!isset($css)) {
+        if (empty($css)) {
             return $styles;
         }
 
         $key = $this->getAssetKey($css, 'css');
+
+        if (empty($key)) {
+            return array();
+        }
 
         if (!isset($weight)) {
             $weight = !empty($styles) ? count($styles) : 0;
@@ -122,7 +130,7 @@ class Document
     /**
      * Adds a meta-tag to the page
      * @staticvar array $meta
-     * @param array $data
+     * @param array|null $data
      * @return array
      */
     public function meta($data = null)
@@ -140,7 +148,7 @@ class Document
     /**
      * Adds a breadcrumb to the page
      * @staticvar array $breadcrumbs
-     * @param array $breadcrumb
+     * @param array|null $breadcrumb
      * @return array
      */
     public function breadcrumb($breadcrumb = null)

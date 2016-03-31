@@ -295,7 +295,13 @@ class Order
     public function get($order_id)
     {
         $this->hook->fire('get.order.before', $order_id);
-        $sth = $this->db->prepare('SELECT * FROM orders WHERE order_id=:order_id');
+        
+        $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email
+                FROM orders o
+                LEFT JOIN user u ON(o.user_id=u.user_id)
+                WHERE o.order_id=:order_id';
+        
+        $sth = $this->db->prepare($sql);
         $sth->execute(array(':order_id' => (int) $order_id));
 
         $order = $sth->fetch(PDO::FETCH_ASSOC);
@@ -602,11 +608,9 @@ class Order
     {
         $this->notification->set('order_created_admin', array($order));
 
-        if (is_numeric($order['user_id'])) {
+        if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->notification->set('order_created_customer', array($order));
         }
-
-        return $this->notification->set('order_created_anonymous', array($order));
     }
 
     /**

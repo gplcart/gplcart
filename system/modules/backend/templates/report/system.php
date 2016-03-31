@@ -74,7 +74,7 @@
         <tr>
           <td>
             <a href="#" onclick="return false;" data-toggle="collapse" data-target="#message-<?php echo $record['log_id']; ?>">
-            <?php echo $this->xss($record['summary']); ?>
+            <?php echo $this->xss($record['summary'], array()); // strip tags ?>
             </a>
           </td>
           <td><?php echo $this->escape($record['type']); ?></td>

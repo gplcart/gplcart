@@ -117,13 +117,6 @@ class Notification
             ),
         );
         
-        // Order submitted and created by an anonymous
-        $handlers['order_created_anonymous'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\notification\\Order', 'createdAnonymous'),
-            ),
-        );
-        
         // Message on the order complete page for a logged in cutomer
         $handlers['order_complete_customer'] = array(
             'handlers' => array(

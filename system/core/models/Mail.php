@@ -88,7 +88,7 @@ class Mail
         // Get fresh instance for each sending
         $this->mailer = new \PHPMailer;
 
-        if (isset($options['email_method']) && $options['email_method'] == 'smtp') {
+        if (isset($options['email_method']) && $options['email_method'] === 'smtp') {
             $this->mailer->isSMTP();
         }
 
@@ -150,15 +150,9 @@ class Mail
         }
 
         $options['status'] = $this->mailer->send();
+        $this->errors = $this->mailer->ErrorInfo;
 
-        if (!$options['status'] || $this->mailer->ErrorInfo) {
-            $this->logErrors(implode(',', $addresses), $this->mailer->ErrorInfo);
-            $this->errors = $this->mailer->ErrorInfo;
-        }
-
-        if ($options['status'] && !$this->mailer->ErrorInfo) {
-            $this->logSuccess(implode(',', $addresses));
-        }
+        $this->log(implode(',', $addresses), $options);
 
         $this->hook->fire('mail.after', $to, $message, $options);
         return (bool) $options['status'];
@@ -173,49 +167,51 @@ class Mail
         return array(
             'cc' => '',
             'bcc' => '',
+            'from' => '',
+            'reply' => '',
+            'debug' => 2,
             'html' => false,
             'attachment' => array(),
-            'reply' => '',
-            'from' => '',
-            'smtp_auth' => true,
-            'smtp_port' => 25,
-            'smtp_username' => '',
-            'smtp_password' => '',
-            'smtp_host' => array('localhost'),
-            'smtp_secure' => 'tls',
+            'smtp_auth' => $this->config->get('smtp_auth', 1),
+            'smtp_port' => $this->config->get('smtp_port', 587),
+            'smtp_secure' => $this->config->get('smtp_secure', 'tls'),
+            'smtp_username' => $this->config->get('smtp_username', ''),
+            'smtp_password' => $this->config->get('smtp_password', ''),
+            'smtp_host' => $this->config->get('smtp_host', array('smtp.gmail.com')),
+            'email_method' => $this->config->get('email_method', 'mail'),
         );
     }
 
     /**
-     * Logs errors when unable to send an e-mail
+     * Logs sending an email
      * @param string $address
-     * @param string $error
+     * @param array $options
      */
-    protected function logErrors($address, $error)
+    protected function log($address, $options)
     {
+        $options['smtp_password'] = '***';
+
+        $severity = 'info';
+        $message = 'E-mail to !address has been sent.';
+
+        if (empty($options['status'])) {
+            $severity = 'warning';
+            $message = 'Failed to send E-mail to !address.';
+        }
+
+        $message .= '<br>Options:<pre>!options</pre>Errors: <pre>!errors</pre>Debugging info:<pre>!debug</pre>';
+
         $log = array(
-            'message' => 'Failed to send E-mail to %address. Error: %error',
+            'message' => $message,
             'variables' => array(
-                '%address' => $address,
-                '%error' => $error
+                '!address' => $address,
+                '!debug' => $this->debug,
+                '!errors' => $this->errors,
+                '!options' => print_r($options, true)
             )
         );
 
-        $this->logger->log('email', $log, 'warning');
-    }
-
-    /**
-     * Logs success sending e-mails
-     * @param string $address
-     */
-    protected function logSuccess($address)
-    {
-        $log = array(
-            'message' => 'E-mail to %address has been sent',
-            'variables' => array('%address' => $address)
-        );
-
-        $this->logger->log('email', $log);
+        $this->logger->log('email', $log, $severity);
     }
 
     /**
@@ -264,7 +260,7 @@ class Mail
         return array(
             '!owner' => $options['owner'],
             '!phone' => implode(',', $options['phone']),
-            '!store_email' => implode(',', $email),
+            '!store_email' => implode(',', $options['email']),
             '!fax' => implode(',', $options['fax']),
             '!address' => $options['address'],
             '!map' => $options['map'] ? 'http://maps.google.com/?q=' . implode(',', $options['map']) : '',

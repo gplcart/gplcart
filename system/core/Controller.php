@@ -1223,22 +1223,13 @@ class Controller
     /**
      * Removes dangerous stuff from a string
      * @param string $string
-     * @param array $allowed_tags
-     * @param array $allowed_protocols
+     * @param array|null $tags
+     * @param array|null $protocols
      * @return string
      */
-    protected function xss($string, $allowed_tags = null,
-                           $allowed_protocols = null)
+    protected function xss($string, $tags = null, $protocols = null)
     {
-        if (isset($allowed_tags)) {
-            $this->filter->addAllowedTags((array) $allowed_tags);
-        }
-
-        if (isset($allowed_protocols)) {
-            $this->filter->addAllowedProtocols((array) $allowed_protocols);
-        }
-
-        return $this->filter->xss($string);
+        return $this->filter->xss($string, $tags, $protocols);
     }
 
     /**

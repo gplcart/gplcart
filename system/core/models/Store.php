@@ -279,14 +279,7 @@ class Store
                 array(),
                 array(),
             ),
-            'social' => array(),
-            'email_method' => 'mail',
-            'smtp_auth' => true,
-            'smtp_host' => array('localhost'),
-            'smtp_password' => '',
-            'smtp_port' => 25,
-            'smtp_secure' => 'tls',
-            'smtp_username' => ''
+            'social' => array()
         );
     }
 
@@ -451,7 +444,7 @@ class Store
     {
         $config = $this->config(null, $store);
 
-        if (isset($config['translation'][$langcode][$item])) {
+        if (!empty($config['translation'][$langcode][$item])) {
             return $config['translation'][$langcode][$item];
         }
 
@@ -485,6 +478,41 @@ class Store
         }
 
         return array_key_exists($item, $store['data']) ? $store['data'][$item] : null;
+    }
+
+    /**
+     * Returns a string containing absolute store URI
+     * @param array $store
+     * @return string
+     */
+    public function url($store)
+    {
+        return rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", '/');
+    }
+
+    /**
+     * Returns stores email(s)
+     * @param array $store
+     * @param mixed $type
+     * @return mixed
+     */
+    public function email($store, $type = true)
+    {
+        $emails = (array) $store['data']['email'];
+
+        switch ($type) {
+            case true:
+                return reset($emails);
+            case false:
+                array_shift($emails);
+                return $emails;
+        }
+        
+        if(is_numeric($type)){
+            return isset($emails[$type]) ? $emails[$type] : '';
+        }
+
+        return $emails;
     }
 
 }

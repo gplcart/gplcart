@@ -39,30 +39,18 @@ class Filter
     }
 
     /**
-     * Sets allowed protocols
-     * @param array $protocols
-     */
-    public function addAllowedProtocols($protocols)
-    {
-        $this->allowed_protocols = (array) $protocols;
-    }
-
-    /**
-     * Sets allowed tags
-     * @param array $tags
-     */
-    public function addAllowedTags($tags)
-    {
-        $this->allowed_tags = (array) $tags;
-    }
-
-    /**
      * Filters a string
      * @param string $string
+     * @param null|array $tags
+     * @param null|array $protocols
      * @return string
      */
-    public function xss($string)
+    public function xss($string, $tags = null, $protocols = null)
     {
+        if (isset($protocols)) {
+            $this->allowed_protocols = (array) $protocols;
+        }
+
         // Only operate on valid UTF-8 strings. This is necessary to prevent cross
         // site scripting issues on Internet Explorer 6.
         if (!$this->isUtf8($string)) {
@@ -97,7 +85,9 @@ class Filter
             <[^>]*(>|$)       # a string that starts with a <, up until the > or the end of the string
             |                 # or
             >                 # just a >
-            )%x', array($this, 'split'), $string);
+            )%x', function($match) use($tags) {
+            return $this->split($match, $tags);
+        }, $string);
     }
 
     /**
@@ -119,8 +109,10 @@ class Filter
      * @param string $m
      * @return string
      */
-    protected function split($m)
+    protected function split($m, $tags)
     {
+        $allowed_tags = isset($tags) ? array_flip((array) $tags) : array_flip($this->allowed_tags);
+
         $string = $m[1];
 
         if (substr($string, 0, 1) != '<') {
@@ -144,8 +136,6 @@ class Filter
         if ($comment) {
             $elem = '!--';
         }
-
-        $allowed_tags = array_flip($this->allowed_tags);
 
         if (!isset($allowed_tags[strtolower($elem)])) {
             // Disallowed HTML element.
