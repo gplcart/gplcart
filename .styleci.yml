@@ -1,16 +1,23 @@
-preset: psr2
+preset: recommended
+
+risky: false
+
+linting: true
 
 enabled:
   - long_array_syntax
-  - return
+  - strict
+  - unalign_double_arrow
+
+disabled:
+  - align_double_arrow
+  - short_array_syntax
 
 finder:
   exclude:
-    - files
-    - cache
-    - system/libraries
-    - system/locale
-    - system/config
-    - system/help
-  name:
-    - "*.php"
+    - "files"
+    - "cache"
+    - "system/libraries"
+    - "system/locale"
+    - "system/config"
+    - "system/help"
