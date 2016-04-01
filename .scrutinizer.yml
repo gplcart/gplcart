@@ -1,0 +1,8 @@
+filter:
+    excluded_paths:
+        - files/*
+        - cache/*
+        - system/libraries/*
+        - system/locale/*
+        - system/config/*
+        - system/help/*

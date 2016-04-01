@@ -190,11 +190,10 @@ class Account extends Controller
      */
     protected function prepareOrders($orders)
     {
-
         foreach ($orders as &$order) {
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
             $order['status_formatted'] = $this->order->getStatusName($order['status']);
-            $order['rendered'] = $this->render('account/order', array('order' => $order));
+            $order['rendered'] = $this->renderOrder($order);
         }
 
         return $orders;
