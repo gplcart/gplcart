@@ -47,7 +47,6 @@ class Review extends Controller
      */
     public function reviews()
     {
-
         $selected = $this->request->post('selected', array());
         $action = $this->request->post('action');
         $value = $this->request->post('value');
@@ -113,7 +112,6 @@ class Review extends Controller
     {
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
-
             if ($action == 'status' && $this->access('review_edit')) {
                 $updated += (int) $this->review->update($review_id, array('status' => $value));
             }
@@ -294,7 +292,6 @@ class Review extends Controller
      */
     protected function validateText()
     {
-
         if (empty($this->submitted['text'])) {
             $this->data['form_errors']['text'] = $this->text('Required field');
             return false;
@@ -397,5 +394,4 @@ class Review extends Controller
     {
         $this->output('content/review/edit');
     }
-
 }

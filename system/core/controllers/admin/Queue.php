@@ -60,7 +60,6 @@ class Queue extends Controller
     {
         $updated = $deleted = 0;
         foreach ($selected as $queue_id) {
-
             if ($action == 'status' && $this->access('queue_edit')) {
                 $updated += (int) $this->queue->update($queue_id, array('status' => (int) $value));
             }
@@ -106,5 +105,4 @@ class Queue extends Controller
     {
         $this->output('report/queue');
     }
-
 }

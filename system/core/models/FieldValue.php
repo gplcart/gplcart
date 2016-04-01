@@ -65,7 +65,6 @@ class FieldValue
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT fv.*, COALESCE(NULLIF(fvt.title, ""), fv.title) AS title, f.path';
 
         if (!empty($data['count'])) {
@@ -95,7 +94,6 @@ class FieldValue
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $sql .= " ORDER BY fv.title {$data['order']}";
@@ -156,7 +154,6 @@ class FieldValue
 
 
         if ($field_value) {
-
             $field_value['language'] = 'und';
 
             $sth = $this->db->prepare('SELECT * FROM field_value_translation WHERE field_value_id=:field_value_id');
@@ -332,5 +329,4 @@ class FieldValue
 
         return !$sth->fetchColumn();
     }
-
 }

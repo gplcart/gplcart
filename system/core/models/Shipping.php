@@ -86,7 +86,6 @@ class Shipping
         $services = $this->defaultServices();
         
         foreach ($this->module->getByType('shipping', true) as $module_id => $info) {
-
             $object = Container::instance($info['class']);
 
             if (!method_exists($object, 'services')) {
@@ -102,7 +101,7 @@ class Shipping
         $this->hook->fire('shipping.services', $cart, $order, $services);
 
         if ($enabled) {
-            return array_filter($services, function($service) {
+            return array_filter($services, function ($service) {
                 return ($service['price'] !== false);
             });
         }
@@ -117,7 +116,8 @@ class Shipping
      * @param array $order
      * @return array
      */
-    public function getService($service_id, array $cart = array(), array $order = array()){
+    public function getService($service_id, array $cart = array(), array $order = array())
+    {
         $services = $this->getServices($cart, $order, false);
         return empty($services[$service_id]) ? array() : $services[$service_id];
     }
@@ -154,5 +154,4 @@ class Shipping
             'currency' => $this->config->get('currency', 'USD')
         );
     }
-
 }

@@ -99,10 +99,8 @@ class Alias extends Controller
      */
     protected function action($selected, $action)
     {
-
         $deleted = 0;
         foreach ($selected as $id) {
-
             $alias = $this->alias->get($id);
 
             if (empty($alias)) {
@@ -127,5 +125,4 @@ class Alias extends Controller
 
         return false;
     }
-
 }

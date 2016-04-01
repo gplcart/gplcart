@@ -38,7 +38,6 @@ class Country extends Controller
      */
     public function countries()
     {
-
         $action = $this->request->post('action');
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
@@ -209,7 +208,6 @@ class Country extends Controller
      */
     protected function action($selected, $action, $value)
     {
-
         if ($action == 'weight' && $this->access('country_edit')) {
             foreach ($selected as $code => $weight) {
                 $this->country->update($code, array('weight' => $weight));
@@ -220,7 +218,6 @@ class Country extends Controller
 
         $updated = $deleted = 0;
         foreach ($selected as $code) {
-
             if ($action == 'status' && $this->access('country_edit')) {
                 $updated += (int) $this->country->update($code, array('status' => (int) $value));
             }
@@ -410,5 +407,4 @@ class Country extends Controller
         $this->country->update($country['code'], array('format' => $format));
         $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
-
 }

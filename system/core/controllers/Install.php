@@ -26,7 +26,7 @@ class Install extends Controller
 
     /**
      * Country model instance
-     * @var \core\models\Country $country 
+     * @var \core\models\Country $country
      */
     protected $country;
 
@@ -64,7 +64,6 @@ class Install extends Controller
 
         // Install
         if ($this->request->post('install')) {
-
             ini_set('max_execution_time', 0);
 
             $submitted = $this->request->post('settings', array());
@@ -74,7 +73,6 @@ class Install extends Controller
             if ($this->formErrors()) {
                 $this->data['settings'] = $submitted;
             } else {
-
                 $this->session->delete('install');
                 $this->session->set('install', 'processing', true);
                 $this->session->set('install', 'settings', $submitted);
@@ -206,5 +204,4 @@ class Install extends Controller
         $submitted['store']['country_name'] = $countries[$code]['name'];
         $submitted['store']['country_native_name'] = $countries[$code]['native_name'];
     }
-
 }

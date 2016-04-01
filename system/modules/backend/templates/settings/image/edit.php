@@ -3,19 +3,25 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($imagestyle['imagestyle_id']) && $this->access('image_style_delete')) { ?>
+        <?php if (isset($imagestyle['imagestyle_id']) && $this->access('image_style_delete')) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url('admin/settings/imagestyle'); ?>" class="btn btn-default cancel">
           <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
         </a>
-        <?php if ($this->access('image_style_edit') || $this->access('image_style_add')) { ?>
+        <?php if ($this->access('image_style_edit') || $this->access('image_style_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-            <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+            <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -36,9 +42,12 @@
               <input name="imagestyle[status]" type="radio" autocomplete="off" value="0"<?php echo empty($imagestyle['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
           </div>
-          <?php if (isset($form_errors['status'])) { ?>
-          <div class="help-block"><?php echo $form_errors['status']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['status'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['status'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group required<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
@@ -49,9 +58,12 @@
         </label>
         <div class="col-md-8">
           <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->escape($imagestyle['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['name'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['name'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group required<?php echo isset($form_errors['actions']) ? ' has-error' : ''; ?>">
@@ -62,9 +74,12 @@
         </label>
         <div class="col-md-8">
           <textarea name="imagestyle[actions]" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->escape($imagestyle['actions']); ?></textarea>
-          <?php if (isset($form_errors['actions'])) { ?>
-          <div class="help-block"><?php echo $form_errors['actions']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['actions'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['actions'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>

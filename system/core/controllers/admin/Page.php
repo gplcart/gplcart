@@ -65,7 +65,6 @@ class Page extends Controller
      */
     public function pages()
     {
-
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
         $value = $this->request->post('value');
@@ -137,7 +136,6 @@ class Page extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $page_id) {
-
             if ($action == 'status' && $this->access('page_edit')) {
                 $updated += (int) $this->page->update($page_id, array('status' => $value));
             }
@@ -471,7 +469,6 @@ class Page extends Controller
 
         $has_errors = false;
         foreach ((array) $this->submitted['translation'] as $lang => &$translation) {
-
             if (mb_strlen($translation['title']) > 255) {
                 $this->data['form_errors']['translation'][$lang]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
@@ -502,7 +499,6 @@ class Page extends Controller
         }
 
         foreach ($this->submitted['images'] as &$image) {
-
             if (empty($image['title']) && isset($this->submitted['title'])) {
                 $image['title'] = $this->submitted['title'];
             }
@@ -524,5 +520,4 @@ class Page extends Controller
 
         return true;
     }
-
 }

@@ -156,7 +156,6 @@ class Image
     {
         $result = array();
         foreach ((array) $images as $image) {
-
             if (empty($image['file_id'])) {
                 $image['id_key'] = $id_key;
                 $image['id_value'] = (int) $id_value;
@@ -537,5 +536,4 @@ class Image
         $path = 'files/' . trim(str_replace(GC_ROOT_DIR, '', $path), "/");
         return $this->url->get($path, array('v' => filemtime($fullpath)));
     }
-
 }
