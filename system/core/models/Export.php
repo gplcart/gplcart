@@ -216,5 +216,4 @@ class Export
     {
         return (int) $this->config->get('export_limit', 50);
     }
-
 }

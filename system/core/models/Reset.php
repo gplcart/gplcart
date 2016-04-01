@@ -18,7 +18,7 @@ class Reset
 
     /**
      * Config class instance
-     * @var \core\Config $config 
+     * @var \core\Config $config
      */
     protected $config;
 
@@ -70,5 +70,4 @@ class Reset
         $this->db->query("ALTER TABLE user AUTO_INCREMENT = $superadmin");
         $this->db->query("ALTER TABLE store AUTO_INCREMENT = $store");
     }
-
 }

@@ -169,5 +169,4 @@ class Backend
         $this->document->js('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
         $this->document->js('files/assets/jquery/countdown/countdown.js', 'bottom');
     }
-
 }

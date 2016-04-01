@@ -104,7 +104,6 @@ class Category extends Controller
         }
 
         foreach ($categories as &$category) {
-
             $category['alias'] = '';
             if (!empty($aliases[$category['category_id']])) {
                 $category['alias'] = $aliases[$category['category_id']];
@@ -339,7 +338,6 @@ class Category extends Controller
 
         $updated = $deleted = 0;
         foreach ($selected as $category_id) {
-
             if ($action == 'status' && $this->access('category_edit')) {
                 $updated += (int) $this->category->update($category_id, array('status' => (int) $value));
             }
@@ -417,7 +415,6 @@ class Category extends Controller
         }
 
         foreach ($this->submitted['images'] as &$image) {
-
             if (empty($image['title']) && isset($this->submitted['title'])) {
                 $image['title'] = $this->submitted['title'];
             }
@@ -517,7 +514,6 @@ class Category extends Controller
 
         $has_errors = false;
         foreach ($this->submitted['translation'] as $lang => $translation) {
-
             if (empty($translation['title']) || (mb_strlen($translation['title']) > 255)) {
                 $this->data['form_errors']['translation'][$lang]['title'] = $this->text('Content must be %min - %max characters long', array(
                     '%min' => 1, '%max' => 255));
@@ -537,5 +533,4 @@ class Category extends Controller
 
         return !$has_errors;
     }
-
 }

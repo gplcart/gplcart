@@ -195,7 +195,6 @@ class UserRole extends Controller
      */
     public function roles()
     {
-
         $action = $this->request->post('action');
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
@@ -281,7 +280,6 @@ class UserRole extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $role_id) {
-
             if ($action == 'status' && $this->access('user_role_edit')) {
                 $updated += (int) $this->role->update($role_id, array('status' => $value));
             }
@@ -303,5 +301,4 @@ class UserRole extends Controller
 
         return false;
     }
-
 }

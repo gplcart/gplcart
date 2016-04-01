@@ -66,7 +66,6 @@ class ProductClass
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
@@ -88,7 +87,6 @@ class ProductClass
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $sql .= " ORDER BY title {$data['order']}";
@@ -287,7 +285,6 @@ class ProductClass
         $field_list = $this->field->getList();
 
         foreach ($this->getFields($product_class_id) as $class_field) {
-
             if (!isset($field_list[$class_field['field_id']])) {
                 continue;
             }
@@ -332,5 +329,4 @@ class ProductClass
 
         return $list;
     }
-
 }

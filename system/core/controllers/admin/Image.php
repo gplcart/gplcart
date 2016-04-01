@@ -234,7 +234,6 @@ class Image extends Controller
      */
     protected function validateActions()
     {
-
         if (empty($this->submitted['actions'])) {
             $this->data['form_errors']['actions'] = $this->text('Required field');
             return false;
@@ -244,7 +243,6 @@ class Image extends Controller
         $actions = Tool::stringToArray($this->submitted['actions']);
 
         foreach ($actions as $line => $action) {
-
             $valid = false;
 
             $parts = array_map('trim', explode(' ', trim($action)));
@@ -465,5 +463,4 @@ class Image extends Controller
 
         $this->data['imagestyle']['actions'] = implode("\n", $actions);
     }
-
 }

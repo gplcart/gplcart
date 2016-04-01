@@ -174,5 +174,4 @@ class Settings extends Controller
     {
         $this->output('settings/settings');
     }
-
 }

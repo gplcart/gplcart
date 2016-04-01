@@ -227,7 +227,6 @@ class UserRole
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY name {$data['order']}";
@@ -387,5 +386,4 @@ class UserRole
         $this->hook->fire('get.role.after', $role_id, $role);
         return $role;
     }
-
 }

@@ -13,12 +13,24 @@
     </div>
   </div>
 </footer>
-<?php if(!empty($js_bottom)) { ?>
-<?php foreach ($js_bottom as $key => $info) { ?>
-<?php if ($info['text']) { ?>
-<script><?php echo $info['text']; ?></script>
-<?php } else { ?>
-<script src="<?php echo $key; ?>"></script>
-<?php } ?>
-<?php } ?>
-<?php } ?>
+<?php if (!empty($js_bottom)) {
+    ?>
+<?php foreach ($js_bottom as $key => $info) {
+    ?>
+<?php if ($info['text']) {
+    ?>
+<script><?php echo $info['text'];
+    ?></script>
+<?php 
+} else {
+    ?>
+<script src="<?php echo $key;
+    ?>"></script>
+<?php 
+}
+    ?>
+<?php 
+}
+    ?>
+<?php 
+} ?>
