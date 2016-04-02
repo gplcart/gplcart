@@ -365,6 +365,119 @@ class Controller
     }
 
     /**
+     * Whether the user has a given access
+     * @param string $permission
+     * @return boolean
+     */
+    public function access($permission)
+    {
+        return $this->user->access($permission);
+    }
+
+    /**
+     * Renders a template
+     * @param string $file
+     * @param array $data
+     * @param boolean $fullpath
+     * @return string
+     */
+    public function render($file, array $data = array(), $fullpath = false)
+    {
+        $module = $this->theme;
+
+        if (strpos($file, ':') !== false) {
+            $fullpath = false;
+            $parts = explode(':', $file, 2);
+            $property = $parts[0];
+            $module = isset($this->{"theme_$property"}) ? $this->{"theme_$property"} : $this->theme;
+            $file = $parts[1];
+        }
+
+        $template = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
+        $extension = isset($this->theme_settings['twig']) ? '.twig' : '.php';
+
+        if ((substr($template, -strlen($extension)) !== $extension)) {
+            $template .= $extension;
+        }
+
+        $this->hook->fire('render', $template, $data);
+
+        $this->setPhpErrors($data);
+
+        if (!file_exists($template)) {
+            return "Could not load template $template";
+        }
+
+        if ($extension === '.twig') {
+            return $this->renderTwig($template, $data, (array) $this->theme_settings['twig']);
+        }
+
+        return $this->renderPhp($template, $data);
+    }
+
+    /**
+     * Returns a formatted URL
+     * @param string $path
+     * @param array $query
+     * @param boolean $absolute
+     * @return string
+     */
+    public function url($path = '', array $query = array(), $absolute = false)
+    {
+        return $this->url->get($path, $query, $absolute);
+    }
+
+    /**
+     * Translates a text
+     * @param string $string
+     * @param array $arguments
+     * @return string
+     */
+    public function text($string = null, array $arguments = array())
+    {
+        return $this->language->text($string, $arguments);
+    }
+
+    /**
+     * Whether the current user is superadmin
+     * @return boolean
+     */
+    public function isSuperadmin()
+    {
+        return $this->user->isSuperadmin();
+    }
+
+    /**
+     * Formats a local time/date
+     * @param integer|null $timestamp
+     * @return string
+     */
+    public function date($timestamp = null)
+    {
+        if (!isset($timestamp)) {
+            $timestamp = GC_TIME;
+        }
+
+        $format = $this->config->get('date_format', 'd.m.Y H:i');
+        return date($format, (int) $timestamp);
+    }
+
+    /**
+     * Formats tag attributes
+     * @param array $attributes
+     * @return string
+     */
+    public function attributes($attributes)
+    {
+        foreach ($attributes as $attribute => &$data) {
+            $data = implode(' ', (array) $data);
+            $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
+        }
+
+        return $attributes ? ' ' . implode(' ', $attributes) : '';
+    }
+
+    /**
      * Sets the current route data
      */
     protected function setRoute()
@@ -532,16 +645,6 @@ class Controller
         $this->controlSessionTimeout();
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
-    }
-
-    /**
-     * Whether the user has a given access
-     * @param string $permission
-     * @return boolean
-     */
-    public function access($permission)
-    {
-        return $this->user->access($permission);
     }
 
     /**
@@ -765,47 +868,6 @@ class Controller
     }
 
     /**
-     * Renders a template
-     * @param string $file
-     * @param array $data
-     * @param boolean $fullpath
-     * @return string
-     */
-    public function render($file, array $data = array(), $fullpath = false)
-    {
-        $module = $this->theme;
-
-        if (strpos($file, ':') !== false) {
-            $fullpath = false;
-            $parts = explode(':', $file, 2);
-            $property = $parts[0];
-            $module = isset($this->{"theme_$property"}) ? $this->{"theme_$property"} : $this->theme;
-            $file = $parts[1];
-        }
-
-        $template = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
-        $extension = isset($this->theme_settings['twig']) ? '.twig' : '.php';
-
-        if ((substr($template, -strlen($extension)) !== $extension)) {
-            $template .= $extension;
-        }
-
-        $this->hook->fire('render', $template, $data);
-
-        $this->setPhpErrors($data);
-
-        if (!file_exists($template)) {
-            return "Could not load template $template";
-        }
-
-        if ($extension === '.twig') {
-            return $this->renderTwig($template, $data, (array) $this->theme_settings['twig']);
-        }
-
-        return $this->renderPhp($template, $data);
-    }
-
-    /**
      * Sets php errors recorded by logger
      * @param array $data
      * @return null
@@ -898,18 +960,6 @@ class Controller
             $this->cron_key = Tool::randomString();
             $this->config->set('cron_key', $this->cron_key);
         }
-    }
-
-    /**
-     * Returns a formatted URL
-     * @param string $path
-     * @param array $query
-     * @param boolean $absolute
-     * @return string
-     */
-    public function url($path = '', array $query = array(), $absolute = false)
-    {
-        return $this->url->get($path, $query, $absolute);
     }
 
     /**
@@ -1053,17 +1103,6 @@ class Controller
     }
 
     /**
-     * Translates a text
-     * @param string $string
-     * @param array $arguments
-     * @return string
-     */
-    public function text($string = null, array $arguments = array())
-    {
-        return $this->language->text($string, $arguments);
-    }
-
-    /**
      * Switches the site to maintenance mode
      */
     protected function setMaintenance()
@@ -1081,45 +1120,6 @@ class Controller
     {
         $this->setTitle('Site maintenance', false);
         $this->output(array('layout' => 'common/maintenance'), array('headers' => 503));
-    }
-
-    /**
-     * Whether the current user is superadmin
-     * @return boolean
-     */
-    public function isSuperadmin()
-    {
-        return $this->user->isSuperadmin();
-    }
-
-    /**
-     * Formats a local time/date
-     * @param integer|null $timestamp
-     * @return string
-     */
-    public function date($timestamp = null)
-    {
-        if (!isset($timestamp)) {
-            $timestamp = GC_TIME;
-        }
-
-        $format = $this->config->get('date_format', 'd.m.Y H:i');
-        return date($format, (int) $timestamp);
-    }
-
-    /**
-     * Formats tag attributes
-     * @param array $attributes
-     * @return string
-     */
-    public function attributes($attributes)
-    {
-        foreach ($attributes as $attribute => &$data) {
-            $data = implode(' ', (array) $data);
-            $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
-        }
-
-        return $attributes ? ' ' . implode(' ', $attributes) : '';
     }
 
     /**

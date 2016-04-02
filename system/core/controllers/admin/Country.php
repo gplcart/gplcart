@@ -60,6 +60,47 @@ class Country extends Controller
     }
 
     /**
+     * Displays the country add/edit form
+     * @param string|null $country_code
+     */
+    public function edit($country_code = null)
+    {
+        $country = $this->get($country_code);
+
+        $this->data['country'] = $country;
+
+        if ($this->request->post('delete')) {
+            $this->delete($country);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($country);
+        }
+
+        $this->setTitleEdit($country);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
+     * Displays the address format items for a given country
+     * @param string $country_code
+     */
+    public function format($country_code)
+    {
+        $country = $this->get($country_code);
+        $this->data['format'] = $country['format'];
+
+        if ($this->request->post('save')) {
+            $this->submitFormat($country);
+        }
+
+        $this->setTitleFormat($country);
+        $this->setBreadcrumbFormat();
+        $this->outputFormat();
+    }
+
+    /**
      * Returns total number of countries
      * @param array $query
      * @return integer
@@ -102,29 +143,6 @@ class Country extends Controller
     protected function setBreadcrumbCountries()
     {
         $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-    }
-
-    /**
-     * Displays the country add/edit form
-     * @param string|null $country_code
-     */
-    public function edit($country_code = null)
-    {
-        $country = $this->get($country_code);
-
-        $this->data['country'] = $country;
-
-        if ($this->request->post('delete')) {
-            $this->delete($country);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($country);
-        }
-
-        $this->setTitleEdit($country);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**
@@ -339,24 +357,6 @@ class Country extends Controller
 
         $this->submitted['weight'] = 0;
         return true;
-    }
-
-    /**
-     * Displays the address format items for a given country
-     * @param string $country_code
-     */
-    public function format($country_code)
-    {
-        $country = $this->get($country_code);
-        $this->data['format'] = $country['format'];
-
-        if ($this->request->post('save')) {
-            $this->submitFormat($country);
-        }
-
-        $this->setTitleFormat($country);
-        $this->setBreadcrumbFormat();
-        $this->outputFormat();
     }
 
     /**

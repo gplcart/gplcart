@@ -58,6 +58,26 @@ class Cron extends Controller
     }
 
     /**
+     * Displays the run cron page
+     */
+    public function run()
+    {
+        $this->data['cron_key'] = $this->cron_key;
+
+        $this->setTitleRun();
+        $this->setBreadcrumbRun();
+        $this->outputRun();
+    }
+
+    /**
+     * Handles PHP shutdown
+     */
+    public function shutdownHandler()
+    {
+        $this->config->set('cron_last_run', GC_TIME);
+    }
+
+    /**
      * Checks the current cron key
      */
     protected function checkKey()
@@ -150,18 +170,6 @@ class Cron extends Controller
     }
 
     /**
-     * Displays the run cron page
-     */
-    public function run()
-    {
-        $this->data['cron_key'] = $this->cron_key;
-
-        $this->setTitleRun();
-        $this->setBreadcrumbRun();
-        $this->outputRun();
-    }
-
-    /**
      * Renders the run cron page
      */
     protected function outputRun()
@@ -183,13 +191,5 @@ class Cron extends Controller
     protected function setBreadcrumbRun()
     {
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-    }
-
-    /**
-     * Handles PHP shutdown
-     */
-    public function shutdownHandler()
-    {
-        $this->config->set('cron_last_run', GC_TIME);
     }
 }

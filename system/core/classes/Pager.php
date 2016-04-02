@@ -63,16 +63,6 @@ class Pager
     protected $next_text = 'Next';
 
     /**
-     * Updates the current number of pages
-     * @return \core\classes\Pager
-     */
-    protected function updateNumPages()
-    {
-        $this->pages = ($this->limit == 0 ? 0 : (int) ceil($this->total / $this->limit));
-        return $this;
-    }
-
-    /**
      * Sets max number of pages to show in the pager links
      * @param int $limit_pages
      */
@@ -303,34 +293,6 @@ class Pager
     }
 
     /**
-     * Creates a page data structure
-     * @param int $num
-     * @param bool $is_current
-     * @return array
-     */
-    protected function createPage($num, $is_current = false)
-    {
-        return array(
-            'num' => $num,
-            'url' => $this->getPageUrl($num),
-            'is_current' => $is_current,
-        );
-    }
-
-    /**
-     * Created pager ellipsis
-     * @return array
-     */
-    protected function createPageEllipsis()
-    {
-        return array(
-            'num' => '...',
-            'url' => '',
-            'is_current' => false,
-        );
-    }
-
-    /**
      * Render an HTML pagination control.
      * @return string
      */
@@ -432,5 +394,43 @@ class Pager
     {
         $this->next_text = $text;
         return $this;
+    }
+
+    /**
+     * Updates the current number of pages
+     * @return \core\classes\Pager
+     */
+    protected function updateNumPages()
+    {
+        $this->pages = ($this->limit == 0 ? 0 : (int) ceil($this->total / $this->limit));
+        return $this;
+    }
+
+    /**
+     * Creates a page data structure
+     * @param int $num
+     * @param bool $is_current
+     * @return array
+     */
+    protected function createPage($num, $is_current = false)
+    {
+        return array(
+            'num' => $num,
+            'url' => $this->getPageUrl($num),
+            'is_current' => $is_current,
+        );
+    }
+
+    /**
+     * Created pager ellipsis
+     * @return array
+     */
+    protected function createPageEllipsis()
+    {
+        return array(
+            'num' => '...',
+            'url' => '',
+            'is_current' => false,
+        );
     }
 }

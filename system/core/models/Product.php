@@ -368,143 +368,6 @@ class Product
     }
 
     /**
-     * Deletes and/or adds a new base SKU
-     * @param integer $product_id
-     * @param array $data
-     * @param boolean $delete
-     * @return integer
-     */
-    protected function setSku($product_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->sku->delete($product_id, array('base' => true));
-        }
-
-        return $this->sku->add($data['sku'], $product_id, $data['store_id']);
-    }
-
-    /**
-     * Deletes and/or adds product translations
-     * @param integer $product_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslations($product_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($product_id);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($product_id, $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Adds product images
-     * @param integer $product_id
-     * @param array $data
-     * @return array
-     */
-    protected function setImages($product_id, array $data)
-    {
-        return $this->image->setMultiple('product_id', $product_id, $data['images']);
-    }
-
-    /**
-     * Deletes and/or adds an alias
-     * @param integer $product_id
-     * @param array $data
-     * @param boolean $delete
-     * @return integer
-     */
-    protected function setAlias($product_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->alias->delete('product_id', (int) $product_id);
-        }
-
-        return $this->alias->add('product_id', $product_id, $data['alias']);
-    }
-
-    /**
-     * Deletes and/or adds product combinations
-     * @param integer $product_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setCombinations($product_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteField('option', $product_id);
-            $this->deleteCombination(false, $product_id);
-        }
-
-        if (isset($data['store_id']) && $delete) {
-            $this->sku->delete($product_id, array('combinations' => true));
-        }
-
-        $i = 1;
-        foreach ($data['combination'] as $combination) {
-            $combination['product_id'] = $product_id;
-            $combination['currency'] = $data['currency'];
-
-            if (isset($combination['path']) && isset($data['images'][$combination['path']])) {
-                $combination['file_id'] = $data['images'][$combination['path']];
-            }
-
-            if (empty($combination['sku'])) {
-                $sku_pattern = $data['sku'] . '-' . $i;
-                $combination['sku'] = $this->sku->generate($sku_pattern, false, array('store_id' => $data['store_id']));
-            }
-
-            $combination_id = $this->addCombination($combination);
-
-            if (isset($data['store_id'])) {
-                $this->sku->add($combination['sku'], $product_id, $data['store_id'], $combination_id);
-            }
-
-            if (empty($combination['fields'])) {
-                continue;
-            }
-
-            foreach ($combination['fields'] as $field_id => $field_value_id) {
-                $this->addField($product_id, $field_id, $field_value_id, 'option');
-            }
-
-            $i++;
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes and/or adds product attribute fields
-     * @param integer $product_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setAttributes($product_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteField('attribute', $product_id);
-        }
-
-        foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
-            foreach ((array) $field_value_ids as $field_value_id) {
-                $this->addField($product_id, $field_id, $field_value_id, 'attribute');
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Deletes and/or adds related products
      * @param integer $product_id
      * @param array $data
@@ -542,23 +405,6 @@ class Product
         );
 
         return (bool) $this->db->insert('product_translation', $values);
-    }
-
-    /**
-     * Deletes product translation(s)
-     * @param integer $product_id
-     * @param null|string $language
-     * @return boolean
-     */
-    protected function deleteTranslation($product_id, $language = null)
-    {
-        $where = array('product_id' => (int) $product_id);
-
-        if (isset($language)) {
-            $where['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('product_translation', $where);
     }
 
     /**
@@ -602,25 +448,6 @@ class Product
 
         $this->hook->fire('add.product.field.after', $arguments, $id);
         return $id;
-    }
-
-    /**
-     * Deletes product field either by an ID or type
-     * @param string|integer $field_id
-     * @param integer $product_id
-     * @return boolean
-     */
-    protected function deleteField($field_id, $product_id)
-    {
-        if (is_numeric($field_id)) {
-            $where['field_id'] = (int) $field_id;
-        } elseif (is_string($field_id)) {
-            $where = array('type' => $field_id, 'product_id' => (int) $product_id);
-        } else {
-            $where = array('product_id' => (int) $product_id);
-        }
-
-        return (bool) $this->db->delete('product_field', $where);
     }
 
     /**
@@ -920,24 +747,6 @@ class Product
         $result = $this->db->update('option_combination', $values, array('combination_id' => $combination_id));
         $this->hook->fire('update.option.combination.after', $combination_id, $data, $result);
         return (bool) $result;
-    }
-
-    /**
-     * Deletes option combination(s) either by combination or product ID
-     * @param string $combination_id
-     * @param integer|null $product_id
-     * @return boolean
-     */
-    protected function deleteCombination($combination_id, $product_id = null)
-    {
-        if (isset($product_id)) {
-            $where = array('product_id' => (int) $product_id);
-        } else {
-            $where = array('combination_id' => $combination_id);
-        }
-
-        $this->db->delete('option_combination', $where);
-        return true;
     }
 
     /**
@@ -1278,5 +1087,196 @@ class Product
         }
         
         return $product_ids;
+    }
+
+    /**
+     * Deletes and/or adds a new base SKU
+     * @param integer $product_id
+     * @param array $data
+     * @param boolean $delete
+     * @return integer
+     */
+    protected function setSku($product_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->sku->delete($product_id, array('base' => true));
+        }
+
+        return $this->sku->add($data['sku'], $product_id, $data['store_id']);
+    }
+
+    /**
+     * Deletes and/or adds product translations
+     * @param integer $product_id
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslations($product_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->deleteTranslation($product_id);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($product_id, $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Adds product images
+     * @param integer $product_id
+     * @param array $data
+     * @return array
+     */
+    protected function setImages($product_id, array $data)
+    {
+        return $this->image->setMultiple('product_id', $product_id, $data['images']);
+    }
+
+    /**
+     * Deletes and/or adds an alias
+     * @param integer $product_id
+     * @param array $data
+     * @param boolean $delete
+     * @return integer
+     */
+    protected function setAlias($product_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->alias->delete('product_id', (int) $product_id);
+        }
+
+        return $this->alias->add('product_id', $product_id, $data['alias']);
+    }
+
+    /**
+     * Deletes and/or adds product combinations
+     * @param integer $product_id
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setCombinations($product_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->deleteField('option', $product_id);
+            $this->deleteCombination(false, $product_id);
+        }
+
+        if (isset($data['store_id']) && $delete) {
+            $this->sku->delete($product_id, array('combinations' => true));
+        }
+
+        $i = 1;
+        foreach ($data['combination'] as $combination) {
+            $combination['product_id'] = $product_id;
+            $combination['currency'] = $data['currency'];
+
+            if (isset($combination['path']) && isset($data['images'][$combination['path']])) {
+                $combination['file_id'] = $data['images'][$combination['path']];
+            }
+
+            if (empty($combination['sku'])) {
+                $sku_pattern = $data['sku'] . '-' . $i;
+                $combination['sku'] = $this->sku->generate($sku_pattern, false, array('store_id' => $data['store_id']));
+            }
+
+            $combination_id = $this->addCombination($combination);
+
+            if (isset($data['store_id'])) {
+                $this->sku->add($combination['sku'], $product_id, $data['store_id'], $combination_id);
+            }
+
+            if (empty($combination['fields'])) {
+                continue;
+            }
+
+            foreach ($combination['fields'] as $field_id => $field_value_id) {
+                $this->addField($product_id, $field_id, $field_value_id, 'option');
+            }
+
+            $i++;
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes and/or adds product attribute fields
+     * @param integer $product_id
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setAttributes($product_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->deleteField('attribute', $product_id);
+        }
+
+        foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
+            foreach ((array) $field_value_ids as $field_value_id) {
+                $this->addField($product_id, $field_id, $field_value_id, 'attribute');
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes product translation(s)
+     * @param integer $product_id
+     * @param null|string $language
+     * @return boolean
+     */
+    protected function deleteTranslation($product_id, $language = null)
+    {
+        $where = array('product_id' => (int) $product_id);
+
+        if (isset($language)) {
+            $where['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('product_translation', $where);
+    }
+
+    /**
+     * Deletes product field either by an ID or type
+     * @param string|integer $field_id
+     * @param integer $product_id
+     * @return boolean
+     */
+    protected function deleteField($field_id, $product_id)
+    {
+        if (is_numeric($field_id)) {
+            $where['field_id'] = (int) $field_id;
+        } elseif (is_string($field_id)) {
+            $where = array('type' => $field_id, 'product_id' => (int) $product_id);
+        } else {
+            $where = array('product_id' => (int) $product_id);
+        }
+
+        return (bool) $this->db->delete('product_field', $where);
+    }
+
+    /**
+     * Deletes option combination(s) either by combination or product ID
+     * @param string $combination_id
+     * @param integer|null $product_id
+     * @return boolean
+     */
+    protected function deleteCombination($combination_id, $product_id = null)
+    {
+        if (isset($product_id)) {
+            $where = array('product_id' => (int) $product_id);
+        } else {
+            $where = array('combination_id' => $combination_id);
+        }
+
+        $this->db->delete('option_combination', $where);
+        return true;
     }
 }

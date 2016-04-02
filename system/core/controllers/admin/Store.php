@@ -79,6 +79,34 @@ class Store extends Controller
     }
 
     /**
+     * Displays the store settings form
+     * @param integer|null $store_id
+     */
+    public function edit($store_id = null)
+    {
+        $store = $this->get($store_id);
+
+        if ($this->request->post('delete')) {
+            $this->delete($store);
+        }
+
+        $this->data['store'] = $store;
+        $this->data['themes'] = $this->getThemes();
+        $this->data['is_default'] = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
+        $this->data['can_delete'] = (isset($store['store_id']) && $this->store->canDelete($store['store_id']));
+
+        if ($this->request->post('save')) {
+            $this->submit($store);
+        }
+
+        $this->prepareStore();
+
+        $this->seTitleEdit($store);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns total number of stores
      * @param array $query
      * @return integer
@@ -121,34 +149,6 @@ class Store extends Controller
     protected function getStores($limit, $query)
     {
         return $this->store->getList(array('limit' => $limit) + $query);
-    }
-
-    /**
-     * Displays the store settings form
-     * @param integer|null $store_id
-     */
-    public function edit($store_id = null)
-    {
-        $store = $this->get($store_id);
-
-        if ($this->request->post('delete')) {
-            $this->delete($store);
-        }
-
-        $this->data['store'] = $store;
-        $this->data['themes'] = $this->getThemes();
-        $this->data['is_default'] = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
-        $this->data['can_delete'] = (isset($store['store_id']) && $this->store->canDelete($store['store_id']));
-
-        if ($this->request->post('save')) {
-            $this->submit($store);
-        }
-
-        $this->prepareStore();
-
-        $this->seTitleEdit($store);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

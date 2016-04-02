@@ -139,18 +139,6 @@ class Bookmark
     }
 
     /**
-     * Returns a number of bookmarks for a given user
-     * @param integer|string $user_id
-     * @return integer
-     */
-    protected function countByUser($user_id)
-    {
-        $sth = $this->db->prepare('SELECT COUNT(bookmark_id) FROM bookmark WHERE user_id=:user_id');
-        $sth->execute(array(':user_id' => $user_id));
-        return (int) $sth->fetchColumn();
-    }
-
-    /**
      * Deletes a bookmark
      * @param integer $bookmark_id
      * @param mixed $user_id
@@ -167,30 +155,6 @@ class Bookmark
         $result = isset($user_id) ? $this->deleteByUser($user_id) : $this->deleteMultiple($bookmark_id);
         $this->hook->fire('delete.bookmark.after', $bookmark_id, $user_id, $result);
         return (bool) $result;
-    }
-
-    /**
-     * Deletes bookmarks by a user
-     * @param mixed $user_id
-     * @return integer
-     */
-    protected function deleteByUser($user_id)
-    {
-        return $this->db->delete('bookmark', array('user_id' => $user_id));
-    }
-
-    /**
-     * Deletes bookmark(s) by one or more bookmark ID
-     * @param integer|array $bookmark_id
-     * @return integer
-     */
-    protected function deleteMultiple($bookmark_id)
-    {
-        $bookmark_ids = (array) $bookmark_id;
-        $placeholders = rtrim(str_repeat('?, ', count($bookmark_ids)), ', ');
-        $sth = $this->db->prepare("DELETE FROM bookmark WHERE bookmark_id IN($placeholders)");
-        $sth->execute($bookmark_ids);
-        return $sth->rowCount();
     }
 
     /**
@@ -342,5 +306,41 @@ class Bookmark
         }
 
         return false;
+    }
+
+    /**
+     * Returns a number of bookmarks for a given user
+     * @param integer|string $user_id
+     * @return integer
+     */
+    protected function countByUser($user_id)
+    {
+        $sth = $this->db->prepare('SELECT COUNT(bookmark_id) FROM bookmark WHERE user_id=:user_id');
+        $sth->execute(array(':user_id' => $user_id));
+        return (int) $sth->fetchColumn();
+    }
+
+    /**
+     * Deletes bookmarks by a user
+     * @param mixed $user_id
+     * @return integer
+     */
+    protected function deleteByUser($user_id)
+    {
+        return $this->db->delete('bookmark', array('user_id' => $user_id));
+    }
+
+    /**
+     * Deletes bookmark(s) by one or more bookmark ID
+     * @param integer|array $bookmark_id
+     * @return integer
+     */
+    protected function deleteMultiple($bookmark_id)
+    {
+        $bookmark_ids = (array) $bookmark_id;
+        $placeholders = rtrim(str_repeat('?, ', count($bookmark_ids)), ', ');
+        $sth = $this->db->prepare("DELETE FROM bookmark WHERE bookmark_id IN($placeholders)");
+        $sth->execute($bookmark_ids);
+        return $sth->rowCount();
     }
 }

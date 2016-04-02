@@ -64,30 +64,6 @@ class Import extends Controller
     }
 
     /**
-     * Sets titles on the import operations overview page
-     */
-    protected function setTitleOperations()
-    {
-        $this->setTitle($this->text('Import'));
-    }
-
-    /**
-     * Sets breadcrumbs on the import operations overview page
-     */
-    protected function setBreadcrumbOperations()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-    }
-
-    /**
-     * Renders the import operations overview page
-     */
-    protected function outputOperations()
-    {
-        $this->output('tool/import/list');
-    }
-
-    /**
      * Displays the import form page
      * @param string $operation_id
      */
@@ -116,6 +92,30 @@ class Import extends Controller
         $this->setTitleImport($operation);
         $this->setBreadcrumbImport();
         $this->outputImport();
+    }
+
+    /**
+     * Sets titles on the import operations overview page
+     */
+    protected function setTitleOperations()
+    {
+        $this->setTitle($this->text('Import'));
+    }
+
+    /**
+     * Sets breadcrumbs on the import operations overview page
+     */
+    protected function setBreadcrumbOperations()
+    {
+        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+    }
+
+    /**
+     * Renders the import operations overview page
+     */
+    protected function outputOperations()
+    {
+        $this->output('tool/import/list');
     }
 
     /**

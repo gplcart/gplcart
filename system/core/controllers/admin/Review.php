@@ -71,6 +71,39 @@ class Review extends Controller
     }
 
     /**
+     * Displays the review add/edit form
+     * @param integer|null $review_id
+     */
+    public function edit($review_id = null)
+    {
+        $review = $this->get($review_id);
+
+        $this->data['review'] = $review;
+
+        if ($this->request->post('delete')) {
+            $this->delete($review);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($review);
+        }
+
+        if (isset($review['user_id'])) {
+            $user = $this->user->get($review['user_id']);
+            $this->data['review']['email'] = $user ? $user['email'] : '';
+        }
+
+        if (isset($review['product_id'])) {
+            $product = $this->product->get($review['product_id']);
+            $this->data['review']['product'] = $product ? $product['title'] : '';
+        }
+
+        $this->setTitleEdit($review);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns a number of total reviews for pager
      * @param array $query
      * @return integer
@@ -177,39 +210,6 @@ class Review extends Controller
     protected function outputReviews()
     {
         $this->output('content/review/list');
-    }
-
-    /**
-     * Displays the review add/edit form
-     * @param integer|null $review_id
-     */
-    public function edit($review_id = null)
-    {
-        $review = $this->get($review_id);
-
-        $this->data['review'] = $review;
-
-        if ($this->request->post('delete')) {
-            $this->delete($review);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($review);
-        }
-
-        if (isset($review['user_id'])) {
-            $user = $this->user->get($review['user_id']);
-            $this->data['review']['email'] = $user ? $user['email'] : '';
-        }
-
-        if (isset($review['product_id'])) {
-            $product = $this->product->get($review['product_id']);
-            $this->data['review']['product'] = $product ? $product['title'] : '';
-        }
-
-        $this->setTitleEdit($review);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

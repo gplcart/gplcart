@@ -59,6 +59,31 @@ class File extends Controller
     }
 
     /**
+     * Displays the edit file form
+     * @param integer|null $file_id
+     */
+    public function edit($file_id = null)
+    {
+        $file = $this->get($file_id);
+
+        $supported_extensions = $this->file->supportedExtensions(true);
+        $this->data['supported_extensions'] = implode(',', $supported_extensions);
+        $this->data['file'] = $file;
+
+        if ($this->request->post('delete')) {
+            $this->delete($file);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($file);
+        }
+
+        $this->setTitleEdit($file);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns total number of files for pager
      * @param array $query
      */
@@ -154,31 +179,6 @@ class File extends Controller
     protected function deleteFromDisk($file)
     {
         return empty($file['path']) ? false : unlink(GC_FILE_DIR . '/' . $file['path']);
-    }
-
-    /**
-     * Displays the edit file form
-     * @param integer|null $file_id
-     */
-    public function edit($file_id = null)
-    {
-        $file = $this->get($file_id);
-
-        $supported_extensions = $this->file->supportedExtensions(true);
-        $this->data['supported_extensions'] = implode(',', $supported_extensions);
-        $this->data['file'] = $file;
-
-        if ($this->request->post('delete')) {
-            $this->delete($file);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($file);
-        }
-
-        $this->setTitleEdit($file);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

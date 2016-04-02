@@ -129,6 +129,45 @@ class Category extends Controller
         $this->setBreadcrumbCategory($category);
         $this->outputCategory();
     }
+    
+    /**
+     * Modifies a product array before rendering
+     * @param array $products
+     * @param array $query
+     * @return array
+     */
+    public function prepareProducts($products, array $query)
+    {
+        if (empty($products)) {
+            return array();
+        }
+        
+        $user_id = $this->cart->uid();
+        $product_ids = array_keys($products);
+        $pricerules = $this->store->config('catalog_pricerule');
+        
+        $view = in_array($query['view'], array('list', 'grid')) ? $query['view'] : 'grid';
+        $imestylestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
+
+        foreach ($products as $product_id => &$product) {
+            $product['in_comparison'] = $this->product->isCompared($product_id);
+            $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
+            $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
+            $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
+
+            if ($pricerules) {
+                $calculated = $this->product->calculate($product, $this->store_id);
+                $product['price'] = $calculated['total'];
+            }
+
+            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
+            $product['rendered'] = $this->render("product/item/$view", array(
+                'product' => $product,
+                'buttons' => array('cart_add', 'wishlist_add', 'compare_add')));
+        }
+
+        return $products;
+    }
 
     /**
      * Sets sidebar menu
@@ -344,44 +383,5 @@ class Category extends Controller
             'language' => $this->langcode);
 
         return $this->product->getList($options + $query);
-    }
-    
-    /**
-     * Modifies a product array before rendering
-     * @param array $products
-     * @param array $query
-     * @return array
-     */
-    public function prepareProducts($products, array $query)
-    {
-        if (empty($products)) {
-            return array();
-        }
-        
-        $user_id = $this->cart->uid();
-        $product_ids = array_keys($products);
-        $pricerules = $this->store->config('catalog_pricerule');
-        
-        $view = in_array($query['view'], array('list', 'grid')) ? $query['view'] : 'grid';
-        $imestylestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
-
-        foreach ($products as $product_id => &$product) {
-            $product['in_comparison'] = $this->product->isCompared($product_id);
-            $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
-            $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
-            $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
-
-            if ($pricerules) {
-                $calculated = $this->product->calculate($product, $this->store_id);
-                $product['price'] = $calculated['total'];
-            }
-
-            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-            $product['rendered'] = $this->render("product/item/$view", array(
-                'product' => $product,
-                'buttons' => array('cart_add', 'wishlist_add', 'compare_add')));
-        }
-
-        return $products;
     }
 }

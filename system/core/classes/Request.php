@@ -37,17 +37,6 @@ class Request
     }
 
     /**
-     * Returns a data from $_SERVER variable
-     * @param string $var
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function server($var, $default = '')
-    {
-        return isset($_SERVER[$var]) ? trim($_SERVER[$var]) : $default;
-    }
-
-    /**
      * Returns the current base path
      * @param type $exclude_langcode
      * @return string
@@ -228,16 +217,6 @@ class Request
     }
 
     /**
-     * Cleans up an array of values
-     * @param array $array
-     * @param bool $filter
-     */
-    protected function sanitize(&$array, $filter = true)
-    {
-        Tool::trimArray($array, $filter);
-    }
-
-    /**
      * Returns a data from COOKIE
      * @param string $name
      * @param mixed $default
@@ -284,5 +263,26 @@ class Request
         }
 
         return $files;
+    }
+
+    /**
+     * Returns a data from $_SERVER variable
+     * @param string $var
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function server($var, $default = '')
+    {
+        return isset($_SERVER[$var]) ? trim($_SERVER[$var]) : $default;
+    }
+
+    /**
+     * Cleans up an array of values
+     * @param array $array
+     * @param bool $filter
+     */
+    protected function sanitize(&$array, $filter = true)
+    {
+        Tool::trimArray($array, $filter);
     }
 }

@@ -72,6 +72,32 @@ class State extends Controller
     }
 
     /**
+     * Displays the state edit page
+     * @param string $country_code
+     * @param integer|null $state_id
+     */
+    public function edit($country_code, $state_id = null)
+    {
+        $country = $this->getCountry($country_code);
+        $state = $this->get($state_id);
+
+        $this->data['state'] = $state;
+        $this->data['country'] = $country;
+
+        if ($this->request->post('save')) {
+            $this->submit($country, $state);
+        }
+
+        if ($this->request->post('delete')) {
+            $this->delete($country, $state);
+        }
+
+        $this->setTitleEdit($country, $state);
+        $this->setBreadcrumbEdit($country);
+        $this->outputEdit();
+    }
+
+    /**
      * Returns a total number of states for a given country
      * @param string $code
      * @param array $query
@@ -134,32 +160,6 @@ class State extends Controller
         }
 
         $this->outputError(404);
-    }
-
-    /**
-     * Displays the state edit page
-     * @param string $country_code
-     * @param integer|null $state_id
-     */
-    public function edit($country_code, $state_id = null)
-    {
-        $country = $this->getCountry($country_code);
-        $state = $this->get($state_id);
-
-        $this->data['state'] = $state;
-        $this->data['country'] = $country;
-
-        if ($this->request->post('save')) {
-            $this->submit($country, $state);
-        }
-
-        if ($this->request->post('delete')) {
-            $this->delete($country, $state);
-        }
-
-        $this->setTitleEdit($country, $state);
-        $this->setBreadcrumbEdit($country);
-        $this->outputEdit();
     }
 
     /**

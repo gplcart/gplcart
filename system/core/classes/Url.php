@@ -182,6 +182,17 @@ class Url
     }
 
     /**
+     * Returns an internal URL from a server path
+     * @param string $server_path
+     * @return string
+     */
+    public function fromPath($server_path)
+    {
+        $url = $this->request->base() . trim(str_replace(GC_ROOT_DIR, '', $server_path), '/');
+        return $url;
+    }
+
+    /**
      * Check if the URL is a valid absolute URL
      * @param string $url
      * @return boolean
@@ -192,16 +203,5 @@ class Url
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi", $url);
-    }
-
-    /**
-     * Returns an internal URL from a server path
-     * @param string $server_path
-     * @return string
-     */
-    public function fromPath($server_path)
-    {
-        $url = $this->request->base() . trim(str_replace(GC_ROOT_DIR, '', $server_path), '/');
-        return $url;
     }
 }

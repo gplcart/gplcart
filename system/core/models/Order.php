@@ -141,24 +141,6 @@ class Order
     }
 
     /**
-     * Returns an array of default order status
-     * @return array
-     */
-    protected function getDefaultStatuses()
-    {
-        $default = array(
-            'pending' => $this->language->text('Pending'),
-            'processing' => $this->language->text('Processing'),
-            'canceled' => $this->language->text('Canceled'),
-            'dispatched' => $this->language->text('Dispatched'),
-            'delivered' => $this->language->text('Delivered'),
-            'completed' => $this->language->text('Completed')
-        );
-
-        return $default;
-    }
-
-    /**
      * Returns an array of orders or total number of orders
      * @param array $data
      * @return mixed
@@ -539,53 +521,6 @@ class Order
     }
 
     /**
-     * Sets price rules after the order was created
-     * @param array $order
-     */
-    protected function setPriceRule($order)
-    {
-        foreach (array_keys($order['data']['components']) as $component_id) {
-            if (!is_numeric($component_id)) {
-                continue; // We need only rules
-            }
-
-            $rule = $this->pricerule->get($component_id);
-
-            // Mark the coupon was used
-            if (isset($rule['type']) && $rule['type'] === 'order' && !empty($rule['code'])) {
-                $this->pricerule->setUsed($rule['price_rule_id']);
-            }
-        }
-    }
-
-    /**
-     * Set cart items after order was created
-     * @param array $order
-     * @param array $cart
-     */
-    protected function setCart($order, $cart)
-    {
-        foreach ($cart['items'] as $item) {
-            $this->cart->update($item['cart_id'], array('order_id' => $order['order_id']));
-        }
-    }
-
-    /**
-     * Prepares order components
-     * @param array $order
-     * @param array $cart
-     * @return array
-     */
-    protected function setComponents(&$order, $cart)
-    {
-        foreach ($cart['items'] as $cart_id => $item) {
-            $order['data']['components']['cart'][$cart_id] = $item['total'];
-        }
-
-        return $order;
-    }
-
-    /**
      * Sets user notifications
      * @param array $order
      * @return mixed
@@ -597,20 +532,6 @@ class Order
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->notification->set('order_created_customer', array($order));
         }
-    }
-
-    /**
-     * Logs the order submit event
-     * @param array $order
-     */
-    protected function logSubmit($order)
-    {
-        $log = array(
-            'message' => 'User %s has submitted order',
-            'variables' => array('%s' => $order['user_id'])
-        );
-
-        $this->logger->log('checkout', $log);
     }
 
     /**
@@ -676,18 +597,6 @@ class Order
     }
 
     /**
-     *
-     * @return type
-     */
-    protected function getUserData()
-    {
-        return array(
-            'ip' => $this->request->ip(),
-            'agent' => $this->request->agent()
-        );
-    }
-
-    /**
      * Calculates order totals
      * @staticvar int $total
      * @param array $cart
@@ -723,5 +632,96 @@ class Order
     public function codeMatches($price_rule_id, $code)
     {
         return $this->pricerule->codeMatches($price_rule_id, $code);
+    }
+
+    /**
+     * Returns an array of default order status
+     * @return array
+     */
+    protected function getDefaultStatuses()
+    {
+        $default = array(
+            'pending' => $this->language->text('Pending'),
+            'processing' => $this->language->text('Processing'),
+            'canceled' => $this->language->text('Canceled'),
+            'dispatched' => $this->language->text('Dispatched'),
+            'delivered' => $this->language->text('Delivered'),
+            'completed' => $this->language->text('Completed')
+        );
+
+        return $default;
+    }
+
+    /**
+     * Sets price rules after the order was created
+     * @param array $order
+     */
+    protected function setPriceRule($order)
+    {
+        foreach (array_keys($order['data']['components']) as $component_id) {
+            if (!is_numeric($component_id)) {
+                continue; // We need only rules
+            }
+
+            $rule = $this->pricerule->get($component_id);
+
+            // Mark the coupon was used
+            if (isset($rule['type']) && $rule['type'] === 'order' && !empty($rule['code'])) {
+                $this->pricerule->setUsed($rule['price_rule_id']);
+            }
+        }
+    }
+
+    /**
+     * Set cart items after order was created
+     * @param array $order
+     * @param array $cart
+     */
+    protected function setCart($order, $cart)
+    {
+        foreach ($cart['items'] as $item) {
+            $this->cart->update($item['cart_id'], array('order_id' => $order['order_id']));
+        }
+    }
+
+    /**
+     * Prepares order components
+     * @param array $order
+     * @param array $cart
+     * @return array
+     */
+    protected function setComponents(&$order, $cart)
+    {
+        foreach ($cart['items'] as $cart_id => $item) {
+            $order['data']['components']['cart'][$cart_id] = $item['total'];
+        }
+
+        return $order;
+    }
+
+    /**
+     * Logs the order submit event
+     * @param array $order
+     */
+    protected function logSubmit($order)
+    {
+        $log = array(
+            'message' => 'User %s has submitted order',
+            'variables' => array('%s' => $order['user_id'])
+        );
+
+        $this->logger->log('checkout', $log);
+    }
+
+    /**
+     *
+     * @return type
+     */
+    protected function getUserData()
+    {
+        return array(
+            'ip' => $this->request->ip(),
+            'agent' => $this->request->agent()
+        );
     }
 }

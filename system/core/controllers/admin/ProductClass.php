@@ -77,6 +77,68 @@ class ProductClass extends Controller
     }
 
     /**
+     * Displays the product class edit page
+     * @param mixed $product_class_id
+     */
+    public function edit($product_class_id = null)
+    {
+        $product_class = $this->get($product_class_id);
+        $this->data['product_class'] = $product_class;
+
+        if ($this->request->post('delete')) {
+            $this->delete($product_class);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($product_class);
+        }
+
+        $this->setTitleEdit($product_class);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
+     * Displays fields for a given product class
+     * @param integer $product_class_id
+     */
+    public function fields($product_class_id)
+    {
+        $product_class = $this->get($product_class_id);
+
+        $this->data['product_class'] = $product_class;
+        $this->data['fields'] = $this->getFields($product_class_id);
+
+        if ($this->request->post('save')) {
+            $this->submitFields($product_class);
+        }
+
+        $this->setTitleFields($product_class);
+        $this->setBreadcrumbFields();
+        $this->outputFields();
+    }
+
+    /**
+     * Displays the field add form
+     * @param integer $product_class_id
+     */
+    public function addField($product_class_id)
+    {
+        $product_class = $this->get($product_class_id);
+
+        $this->data['product_class'] = $product_class;
+        $this->data['fields'] = $this->getFields($product_class_id, true);
+
+        if ($this->request->post('save')) {
+            $this->submitField($product_class);
+        }
+
+        $this->setTitleAddField($product_class);
+        $this->setBreadcrumbAddField($product_class);
+        $this->outputAddField();
+    }
+
+    /**
      * Returns an array of classes
      */
     protected function getClasses($limit, $query)
@@ -108,28 +170,6 @@ class ProductClass extends Controller
     protected function outputClasses()
     {
         $this->output('content/product/class/list');
-    }
-
-    /**
-     * Displays the product class edit page
-     * @param mixed $product_class_id
-     */
-    public function edit($product_class_id = null)
-    {
-        $product_class = $this->get($product_class_id);
-        $this->data['product_class'] = $product_class;
-
-        if ($this->request->post('delete')) {
-            $this->delete($product_class);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($product_class);
-        }
-
-        $this->setTitleEdit($product_class);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**
@@ -281,26 +321,6 @@ class ProductClass extends Controller
     }
 
     /**
-     * Displays fields for a given product class
-     * @param integer $product_class_id
-     */
-    public function fields($product_class_id)
-    {
-        $product_class = $this->get($product_class_id);
-
-        $this->data['product_class'] = $product_class;
-        $this->data['fields'] = $this->getFields($product_class_id);
-
-        if ($this->request->post('save')) {
-            $this->submitFields($product_class);
-        }
-
-        $this->setTitleFields($product_class);
-        $this->setBreadcrumbFields();
-        $this->outputFields();
-    }
-
-    /**
      * Returns an array of fields for the given product class
      * @param integer $product_class_id
      * @param boolean $unique
@@ -376,26 +396,6 @@ class ProductClass extends Controller
     protected function outputFields()
     {
         $this->output('content/product/class/fields');
-    }
-
-    /**
-     * Displays the field add form
-     * @param integer $product_class_id
-     */
-    public function addField($product_class_id)
-    {
-        $product_class = $this->get($product_class_id);
-
-        $this->data['product_class'] = $product_class;
-        $this->data['fields'] = $this->getFields($product_class_id, true);
-
-        if ($this->request->post('save')) {
-            $this->submitField($product_class);
-        }
-
-        $this->setTitleAddField($product_class);
-        $this->setBreadcrumbAddField($product_class);
-        $this->outputAddField();
     }
 
     /**

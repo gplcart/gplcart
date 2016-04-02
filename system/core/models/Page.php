@@ -163,70 +163,6 @@ class Page
     }
 
     /**
-     * Adds/updates page images
-     * @param integer $page_id
-     * @param array $data
-     * @return array
-     */
-    protected function setImages($page_id, array $data)
-    {
-        return $this->image->setMultiple('page_id', $page_id, $data['images']);
-    }
-
-    /**
-     * Deletes and/or adds an alias
-     * @param integer $page_id
-     * @param array $data
-     * @param boolean $delete
-     * @return integer
-     */
-    protected function setAlias($page_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->alias->delete('page_id', (int) $page_id);
-        }
-
-        return $this->alias->add('page_id', $page_id, $data['alias']);
-    }
-
-    /**
-     * Deletes and/or adds page translations
-     * @param integer $page_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslations($page_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($page_id);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($page_id, $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes page translation(s)
-     * @param integer $page_id
-     * @param null|string $language
-     * @return boolean
-     */
-    protected function deleteTranslation($page_id, $language = null)
-    {
-        $where = array('page_id' => (int) $page_id);
-
-        if (isset($language)) {
-            $where['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('page_translation', $where);
-    }
-
-    /**
      * Adds a translation
      * @param integer $page_id
      * @param string $language
@@ -476,5 +412,69 @@ class Page
 
         $this->hook->fire('pages', $list);
         return $list;
+    }
+
+    /**
+     * Adds/updates page images
+     * @param integer $page_id
+     * @param array $data
+     * @return array
+     */
+    protected function setImages($page_id, array $data)
+    {
+        return $this->image->setMultiple('page_id', $page_id, $data['images']);
+    }
+
+    /**
+     * Deletes and/or adds an alias
+     * @param integer $page_id
+     * @param array $data
+     * @param boolean $delete
+     * @return integer
+     */
+    protected function setAlias($page_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->alias->delete('page_id', (int) $page_id);
+        }
+
+        return $this->alias->add('page_id', $page_id, $data['alias']);
+    }
+
+    /**
+     * Deletes and/or adds page translations
+     * @param integer $page_id
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslations($page_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->deleteTranslation($page_id);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($page_id, $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes page translation(s)
+     * @param integer $page_id
+     * @param null|string $language
+     * @return boolean
+     */
+    protected function deleteTranslation($page_id, $language = null)
+    {
+        $where = array('page_id' => (int) $page_id);
+
+        if (isset($language)) {
+            $where['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('page_translation', $where);
     }
 }

@@ -62,30 +62,6 @@ class Image extends Controller
     }
 
     /**
-     * Renders the image styles page
-     */
-    protected function outputStyles()
-    {
-        $this->output('settings/image/list');
-    }
-
-    /**
-     * Sets titles on the image style overview page
-     */
-    protected function setTitleStyles()
-    {
-        $this->setTitle($this->text('Image styles'));
-    }
-
-    /**
-     * Sets breadcrumbs on the image style overview page
-     */
-    protected function setBreadcrumbStyles()
-    {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-    }
-
-    /**
      * Displays the image style edit form
      * @param integer|null $style_id
      */
@@ -107,6 +83,30 @@ class Image extends Controller
         $this->setTitleEdit($imagestyle);
         $this->setBreadcrumbEdit();
         $this->outputEdit();
+    }
+
+    /**
+     * Renders the image styles page
+     */
+    protected function outputStyles()
+    {
+        $this->output('settings/image/list');
+    }
+
+    /**
+     * Sets titles on the image style overview page
+     */
+    protected function setTitleStyles()
+    {
+        $this->setTitle($this->text('Image styles'));
+    }
+
+    /**
+     * Sets breadcrumbs on the image style overview page
+     */
+    protected function setBreadcrumbStyles()
+    {
+        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
     }
 
     /**

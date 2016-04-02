@@ -92,6 +92,67 @@ class Report extends Controller
     }
 
     /**
+     * Displays Google Analytics page
+     */
+    public function ga()
+    {
+        $this->setTitleGa();
+        $this->setBreadcrumbGa();
+
+        $gapi_email = $this->config->get('gapi_email', '');
+        $gapi_certificate = $this->config->get('gapi_certificate', '');
+
+        if (!$gapi_email || !$gapi_certificate) {
+            $this->data['missing_credentials'] = $this->text('<a href="!href">Google API credentials</a> are not properly set', array('!href' => $this->url('admin/settings/common')));
+            $this->outputGa();
+        }
+
+        $default_store = $this->store->getDefault();
+        $store_id = $this->request->get('store_id', $default_store);
+
+        $stores = $this->store->getList();
+        $store = isset($stores[$store_id]) ? $stores[$store_id] : $stores[$default_store];
+
+        $this->data['stores'] = $stores;
+        $this->data['store'] = $store;
+        $this->data['traffic'] = array();
+        $this->data['software'] = array();
+
+        if (empty($store['data']['ga_view'])) {
+            $this->data['missing_settings'] = $this->text('<a href="!href">Google Analytics</a> is not properly set', array('!href' => $this->url("admin/settings/store/$store_id")));
+            $this->outputGa();
+        }
+
+        $view = $this->request->get('ga_view');
+
+        if ($this->request->get('ga_update') && $view) {
+            $this->report->clearGaCache($view);
+            $this->session->setMessage($this->text('Google Analytics has been updated'), 'success');
+            $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
+        }
+
+        $this->setGa($store, $gapi_email, $gapi_certificate);
+        $this->outputGa();
+    }
+
+    /**
+     * Displays the notification overview admin page
+     */
+    public function notifications()
+    {
+        $this->data['notifications_list'] = $this->getNotifications();
+
+        if ($this->request->get('clear')) {
+            $this->clearNotification();
+            $this->redirect();
+        }
+
+        $this->setTitleNotifications();
+        $this->setBreadcrumbNotifications();
+        $this->outputNotifications();
+    }
+
+    /**
      * Returns a number of total system events for pager
      * @param array $query
      * @return integer
@@ -172,50 +233,6 @@ class Report extends Controller
     }
 
     /**
-     * Displays Google Analytics page
-     */
-    public function ga()
-    {
-        $this->setTitleGa();
-        $this->setBreadcrumbGa();
-
-        $gapi_email = $this->config->get('gapi_email', '');
-        $gapi_certificate = $this->config->get('gapi_certificate', '');
-
-        if (!$gapi_email || !$gapi_certificate) {
-            $this->data['missing_credentials'] = $this->text('<a href="!href">Google API credentials</a> are not properly set', array('!href' => $this->url('admin/settings/common')));
-            $this->outputGa();
-        }
-
-        $default_store = $this->store->getDefault();
-        $store_id = $this->request->get('store_id', $default_store);
-
-        $stores = $this->store->getList();
-        $store = isset($stores[$store_id]) ? $stores[$store_id] : $stores[$default_store];
-
-        $this->data['stores'] = $stores;
-        $this->data['store'] = $store;
-        $this->data['traffic'] = array();
-        $this->data['software'] = array();
-
-        if (empty($store['data']['ga_view'])) {
-            $this->data['missing_settings'] = $this->text('<a href="!href">Google Analytics</a> is not properly set', array('!href' => $this->url("admin/settings/store/$store_id")));
-            $this->outputGa();
-        }
-
-        $view = $this->request->get('ga_view');
-
-        if ($this->request->get('ga_update') && $view) {
-            $this->report->clearGaCache($view);
-            $this->session->setMessage($this->text('Google Analytics has been updated'), 'success');
-            $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
-        }
-
-        $this->setGa($store, $gapi_email, $gapi_certificate);
-        $this->outputGa();
-    }
-
-    /**
      * Sets titles on the GA page
      */
     protected function setTitleGa()
@@ -280,23 +297,6 @@ class Report extends Controller
         }
 
         return $results;
-    }
-
-    /**
-     * Displays the notification overview admin page
-     */
-    public function notifications()
-    {
-        $this->data['notifications_list'] = $this->getNotifications();
-
-        if ($this->request->get('clear')) {
-            $this->clearNotification();
-            $this->redirect();
-        }
-
-        $this->setTitleNotifications();
-        $this->setBreadcrumbNotifications();
-        $this->outputNotifications();
     }
 
     /**

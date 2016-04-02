@@ -92,26 +92,6 @@ class Job
     }
 
     /**
-     * Returns a job from the session
-     * @param string $job_id
-     * @return array
-     */
-    protected function getSession($job_id)
-    {
-        return $this->session->get(self::JOB_SESSION_KEY, $job_id, array());
-    }
-
-    /**
-     * Sets a job to the session
-     * @param array $job
-     * @return boolean
-     */
-    protected function setSession(array $job)
-    {
-        return $this->session->set(self::JOB_SESSION_KEY, $job['id'], $job);
-    }
-
-    /**
      * Sets a job to the session
      * @param array $job
      * @return array
@@ -312,6 +292,38 @@ class Job
     }
 
     /**
+     * Shutdown handler
+     * @param array $job
+     */
+    public function shutdownHandler(array $job)
+    {
+        $error = error_get_last();
+        if (isset($error['type']) && $error['type'] === E_ERROR) {
+            $this->session->setMessage($this->language->text('An unexpected error has occurred. The job has not been properly completed'), 'danger');
+        }
+    }
+
+    /**
+     * Returns a job from the session
+     * @param string $job_id
+     * @return array
+     */
+    protected function getSession($job_id)
+    {
+        return $this->session->get(self::JOB_SESSION_KEY, $job_id, array());
+    }
+
+    /**
+     * Sets a job to the session
+     * @param array $job
+     * @return boolean
+     */
+    protected function setSession(array $job)
+    {
+        return $this->session->set(self::JOB_SESSION_KEY, $job['id'], $job);
+    }
+
+    /**
      * Returns an array of data to be send to the user
      * @param array $job
      * @param array $result
@@ -464,17 +476,5 @@ class Job
 
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
-    }
-
-    /**
-     * Shutdown handler
-     * @param array $job
-     */
-    public function shutdownHandler(array $job)
-    {
-        $error = error_get_last();
-        if (isset($error['type']) && $error['type'] === E_ERROR) {
-            $this->session->setMessage($this->language->text('An unexpected error has occurred. The job has not been properly completed'), 'danger');
-        }
     }
 }

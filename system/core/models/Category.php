@@ -457,58 +457,6 @@ class Category
     }
 
     /**
-     * Deletes and/or adds category translations
-     * @param integer $category_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslations($category_id,
-                                       array $data,
-                                       $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($category_id);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($category_id, $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes and/or adds an alias
-     * @param integer $category_id
-     * @param array $data
-     * @param boolean $delete
-     * @return integer
-     */
-    protected function setAlias($category_id,
-                                array $data,
-                                $delete = true)
-    {
-        if ($delete) {
-            $this->alias->delete('category_id', (int) $category_id);
-        }
-
-        return $this->alias->add('category_id', $category_id, $data['alias']);
-    }
-
-    /**
-     * Adds category images
-     * @param integer $category_id
-     * @param array $data
-     * @return array
-     */
-    protected function setImages($category_id,
-                                 array $data)
-    {
-        return $this->image->setMultiple('category_id', $category_id, $data['images']);
-    }
-
-    /**
      * Deletes category translation(s)
      * @param integer $category_id
      * @param null|string $language
@@ -688,5 +636,57 @@ class Category
         $sth->execute(array(':category_id' => $category_id));
 
         return (bool) $sth->fetchColumn();
+    }
+
+    /**
+     * Deletes and/or adds category translations
+     * @param integer $category_id
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslations($category_id,
+                                       array $data,
+                                       $delete = true)
+    {
+        if ($delete) {
+            $this->deleteTranslation($category_id);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($category_id, $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes and/or adds an alias
+     * @param integer $category_id
+     * @param array $data
+     * @param boolean $delete
+     * @return integer
+     */
+    protected function setAlias($category_id,
+                                array $data,
+                                $delete = true)
+    {
+        if ($delete) {
+            $this->alias->delete('category_id', (int) $category_id);
+        }
+
+        return $this->alias->add('category_id', $category_id, $data['alias']);
+    }
+
+    /**
+     * Adds category images
+     * @param integer $category_id
+     * @param array $data
+     * @return array
+     */
+    protected function setImages($category_id,
+                                 array $data)
+    {
+        return $this->image->setMultiple('category_id', $category_id, $data['images']);
     }
 }

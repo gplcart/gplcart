@@ -129,6 +129,271 @@ class Account extends Controller
     }
 
     /**
+     * Displays the customer wishlist page
+     * @param integer $user_id
+     */
+    public function wishlist($user_id)
+    {
+        $user = $this->user->get($user_id);
+
+        if (empty($user['status'])) {
+            $this->outputError(404);
+        }
+
+        $this->data['user'] = $user;
+        $this->data['wishlist'] = $this->bookmark->getList(array('user_id' => $user_id));
+
+        $this->setTitle($this->text('Wishlist'), false);
+        $this->output('account/wishlist');
+    }
+
+    /**
+     * Displays the customer edit account page
+     * @param integer $user_id
+     */
+    public function edit($user_id)
+    {
+        $user = $this->user->get($user_id);
+
+        if (!$user) {
+            $this->outputError(404);
+        }
+
+        // No access for blocked customers, allow only admins
+        if (empty($user['status']) && !$this->access('user_edit')) {
+            $this->outputError(404);
+        }
+
+        // Only superadmin can edit its own account
+        if ($this->user->isSuperadmin($user_id) && !$this->user->isSuperadmin()) {
+            $this->outputError(403);
+        }
+
+        $this->data['user'] = $user;
+        $this->data['roles'] = $this->role->getList();
+        $this->data['stores'] = $this->store->getNames();
+
+        if ($this->request->post('delete')) {
+            $this->controlAccess('user_delete');
+            if ($this->user->delete($user_id)) {
+                $this->redirect('admin/user', $this->text('User %name has been deleted', array(
+                            '%name' => $user['name'])), 'success');
+            }
+
+            $this->redirect('', $this->text('Unable to delete user %name. The most probable reason - it is used by one or more orders', array(
+                        '%name' => $user['name'])), 'danger');
+        }
+
+        if ($this->request->post('save')) {
+            //$this->controlAccess('user_edit');
+            $submitted = $this->request->post('user', array(), 'raw');
+            $this->validateUser($submitted, $user);
+
+            if ($this->formErrors()) {
+                $this->data['user'] = $submitted + array('user_id' => $user_id);
+            } else {
+                $this->user->update($user_id, $submitted);
+                $this->redirect('', $this->text('Account has been updated'), 'success');
+            }
+        }
+
+        $this->setTitle($this->text('Edit account'), false);
+
+        $this->output('account/edit');
+    }
+
+    /**
+     * Displays the customer addresses account page
+     * @param integer $user_id
+     */
+    public function addresses($user_id)
+    {
+        $user = $this->user->get($user_id);
+
+        if (empty($user['status'])) {
+            $this->outputError(404);
+        }
+
+        $delete = $this->request->get('delete');
+
+        if ($delete && $this->address->delete($delete)) {
+            $this->redirect();
+        }
+
+        $this->data['user'] = $user;
+
+        $this->data['addresses'] = $this->address->getNamedList($user_id);
+        $this->setTitle($this->text('Addresses'), false);
+        $this->output('account/address/list');
+    }
+
+    /**
+     * Displays edit address form
+     * @param integer $user_id
+     * @param integer $address_id
+     */
+    public function editAddress($user_id, $address_id = null)
+    {
+        $user = $this->user->get($user_id);
+
+        if (empty($user['status'])) {
+            $this->outputError(404);
+        }
+
+        $this->data['user'] = $user;
+
+        $country_code = $this->country->getDefault();
+        $this->data['countries'] = $this->country->getNames(true);
+
+        if ($this->request->post('save')) {
+            $submitted = $this->request->post('address');
+            $this->validateAddress($submitted);
+
+            if ($this->formErrors()) {
+                $this->data['address'] = $submitted;
+                $country_code = $submitted['country'];
+            } else {
+                $this->address->add($submitted + array('user_id' => $user_id));
+
+                // Control address limit for the user
+                $limit = (int) $this->config->get('user_address_limit', 6);
+                $existing_addresses = $this->address->getList(array('user_id' => $user_id));
+                $existing_count = count($existing_addresses);
+
+                if ($limit && $existing_count > $limit) {
+                    $delete_count = ($existing_count - $limit);
+                    // Delete older addresses
+                    foreach (array_slice($existing_addresses, 0, $delete_count) as $address) {
+                        $this->address->delete($address['address_id']);
+                    }
+                }
+
+                $this->redirect("account/{$user['user_id']}/address", $this->text('New address has been added'), 'success');
+            }
+        }
+
+        $this->data['format'] = $this->country->getFormat($country_code);
+        $this->data['states'] = $this->state->getList(array('country' => $country_code, 'status' => 1));
+
+        $this->setTitle($this->text('Add new address'), false);
+        $this->output('account/address/edit');
+    }
+
+    /**
+     * Displays the login page
+     */
+    public function login()
+    {
+        if ($this->uid) {
+            $this->url->redirect("account/{$this->uid}");
+        }
+
+        if ($this->request->post('login')) {
+            $this->controlSpam('login');
+            $submitted = $this->request->post('user', array(), 'raw');
+            $result = $this->user->login($submitted['email'], $submitted['password']);
+
+            if (!empty($result)) {
+                $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+            }
+
+            $this->data['user'] = $submitted;
+            $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
+        }
+
+        $this->setTitle($this->text('Login'));
+        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+        $this->output('login');
+    }
+
+    /**
+     * Displays the user registration page
+     */
+    public function register()
+    {
+        if ($this->uid && !$this->access('user_add')) {
+            $this->url->redirect("account/{$this->uid}");
+        }
+
+        if ($this->request->post('register')) {
+            $this->controlSpam('register');
+            $submitted = $this->request->post('user', array(), 'raw');
+            $this->validateUser($submitted, array());
+
+            if ($this->formErrors()) {
+                $this->data['user'] = $submitted;
+            } else {
+                $this->registerUser($submitted);
+            }
+        }
+
+        $this->data['roles'] = $this->role->getList();
+        $this->data['stores'] = $this->store->getNames();
+        $this->data['min_password_length'] = $this->config->get('user_password_min_length', 8);
+        $this->data['max_password_length'] = $this->config->get('user_password_max_length', 255);
+
+        $this->setTitle($this->text('Register'));
+        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+        $this->output('register');
+    }
+
+    /**
+     * Displays the user forgotten password page
+     */
+    public function forgot()
+    {
+        if ($this->uid) {
+            $this->url->redirect("account/{$this->uid}");
+        }
+
+        // Check password reset URL
+        $recoverable_user = $this->getRecoverableUser();
+        $this->data['recoverable_user'] = $recoverable_user;
+
+        if ($recoverable_user === false) {
+            // Reset password link expired or invalid
+            $this->redirect('forgot');
+        }
+
+        $submitted = $this->request->post('user', array(), 'raw');
+
+        if ($submitted) {
+            $this->controlSpam('forgot');
+            $this->validateForgot($submitted, $recoverable_user);
+
+            if ($this->formErrors()) {
+                $this->data['user'] = $submitted;
+            } else {
+                $this->restorePassword($submitted);
+            }
+        }
+
+        $this->data['min_password_length'] = $this->config->get('user_password_min_length', 8);
+        $this->data['max_password_length'] = $this->config->get('user_password_max_length', 255);
+
+        $this->setTitle($this->text('Reset password'));
+        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+        $this->output('forgot');
+    }
+
+    /**
+     * Displays the user logout page
+     */
+    public function logout()
+    {
+        $user_id = $this->user->logout();
+        $user = $this->user->get($user_id);
+
+        $log = array(
+            'message' => 'User %email has logged out',
+            'variables' => array('%email' => $user['email'])
+        );
+
+        $this->logger->log('logout', $log);
+        $this->url->redirect('login');
+    }
+
+    /**
      * Sets titles on the account page
      */
     protected function setTitleAccount()
@@ -259,80 +524,6 @@ class Account extends Controller
     }
 
     /**
-     * Displays the customer wishlist page
-     * @param integer $user_id
-     */
-    public function wishlist($user_id)
-    {
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            $this->outputError(404);
-        }
-
-        $this->data['user'] = $user;
-        $this->data['wishlist'] = $this->bookmark->getList(array('user_id' => $user_id));
-
-        $this->setTitle($this->text('Wishlist'), false);
-        $this->output('account/wishlist');
-    }
-
-    /**
-     * Displays the customer edit account page
-     * @param integer $user_id
-     */
-    public function edit($user_id)
-    {
-        $user = $this->user->get($user_id);
-
-        if (!$user) {
-            $this->outputError(404);
-        }
-
-        // No access for blocked customers, allow only admins
-        if (empty($user['status']) && !$this->access('user_edit')) {
-            $this->outputError(404);
-        }
-
-        // Only superadmin can edit its own account
-        if ($this->user->isSuperadmin($user_id) && !$this->user->isSuperadmin()) {
-            $this->outputError(403);
-        }
-
-        $this->data['user'] = $user;
-        $this->data['roles'] = $this->role->getList();
-        $this->data['stores'] = $this->store->getNames();
-
-        if ($this->request->post('delete')) {
-            $this->controlAccess('user_delete');
-            if ($this->user->delete($user_id)) {
-                $this->redirect('admin/user', $this->text('User %name has been deleted', array(
-                            '%name' => $user['name'])), 'success');
-            }
-
-            $this->redirect('', $this->text('Unable to delete user %name. The most probable reason - it is used by one or more orders', array(
-                        '%name' => $user['name'])), 'danger');
-        }
-
-        if ($this->request->post('save')) {
-            //$this->controlAccess('user_edit');
-            $submitted = $this->request->post('user', array(), 'raw');
-            $this->validateUser($submitted, $user);
-
-            if ($this->formErrors()) {
-                $this->data['user'] = $submitted + array('user_id' => $user_id);
-            } else {
-                $this->user->update($user_id, $submitted);
-                $this->redirect('', $this->text('Account has been updated'), 'success');
-            }
-        }
-
-        $this->setTitle($this->text('Edit account'), false);
-
-        $this->output('account/edit');
-    }
-
-    /**
      * Validates user data
      * @param array $data
      * @param array $user
@@ -421,83 +612,6 @@ class Account extends Controller
     }
 
     /**
-     * Displays the customer addresses account page
-     * @param integer $user_id
-     */
-    public function addresses($user_id)
-    {
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            $this->outputError(404);
-        }
-
-        $delete = $this->request->get('delete');
-
-        if ($delete && $this->address->delete($delete)) {
-            $this->redirect();
-        }
-
-        $this->data['user'] = $user;
-
-        $this->data['addresses'] = $this->address->getNamedList($user_id);
-        $this->setTitle($this->text('Addresses'), false);
-        $this->output('account/address/list');
-    }
-
-    /**
-     * Displays edit address form
-     * @param integer $user_id
-     * @param integer $address_id
-     */
-    public function editAddress($user_id, $address_id = null)
-    {
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            $this->outputError(404);
-        }
-
-        $this->data['user'] = $user;
-
-        $country_code = $this->country->getDefault();
-        $this->data['countries'] = $this->country->getNames(true);
-
-        if ($this->request->post('save')) {
-            $submitted = $this->request->post('address');
-            $this->validateAddress($submitted);
-
-            if ($this->formErrors()) {
-                $this->data['address'] = $submitted;
-                $country_code = $submitted['country'];
-            } else {
-                $this->address->add($submitted + array('user_id' => $user_id));
-
-                // Control address limit for the user
-                $limit = (int) $this->config->get('user_address_limit', 6);
-                $existing_addresses = $this->address->getList(array('user_id' => $user_id));
-                $existing_count = count($existing_addresses);
-
-                if ($limit && $existing_count > $limit) {
-                    $delete_count = ($existing_count - $limit);
-                    // Delete older addresses
-                    foreach (array_slice($existing_addresses, 0, $delete_count) as $address) {
-                        $this->address->delete($address['address_id']);
-                    }
-                }
-
-                $this->redirect("account/{$user['user_id']}/address", $this->text('New address has been added'), 'success');
-            }
-        }
-
-        $this->data['format'] = $this->country->getFormat($country_code);
-        $this->data['states'] = $this->state->getList(array('country' => $country_code, 'status' => 1));
-
-        $this->setTitle($this->text('Add new address'), false);
-        $this->output('account/address/edit');
-    }
-
-    /**
      * Validates a submitted address
      * @param array $submitted
      */
@@ -510,64 +624,6 @@ class Account extends Controller
                     '%min' => 1, '%max' => 255));
             }
         }
-    }
-
-    /**
-     * Displays the login page
-     */
-    public function login()
-    {
-        if ($this->uid) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        if ($this->request->post('login')) {
-            $this->controlSpam('login');
-            $submitted = $this->request->post('user', array(), 'raw');
-            $result = $this->user->login($submitted['email'], $submitted['password']);
-
-            if (!empty($result)) {
-                $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-            }
-
-            $this->data['user'] = $submitted;
-            $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
-        }
-
-        $this->setTitle($this->text('Login'));
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-        $this->output('login');
-    }
-
-    /**
-     * Displays the user registration page
-     */
-    public function register()
-    {
-        if ($this->uid && !$this->access('user_add')) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        if ($this->request->post('register')) {
-            $this->controlSpam('register');
-            $submitted = $this->request->post('user', array(), 'raw');
-            $this->validateUser($submitted, array());
-
-            if ($this->formErrors()) {
-                $this->data['user'] = $submitted;
-            } else {
-                $this->registerUser($submitted);
-            }
-        }
-
-        $this->data['roles'] = $this->role->getList();
-        $this->data['stores'] = $this->store->getNames();
-        $this->data['min_password_length'] = $this->config->get('user_password_min_length', 8);
-        $this->data['max_password_length'] = $this->config->get('user_password_max_length', 255);
-
-        $this->setTitle($this->text('Register'));
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-        $this->output('register');
     }
 
     /**
@@ -610,45 +666,6 @@ class Account extends Controller
 
         $result = $this->user->login($submitted['email'], $submitted['password']);
         $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-    }
-
-    /**
-     * Displays the user forgotten password page
-     */
-    public function forgot()
-    {
-        if ($this->uid) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        // Check password reset URL
-        $recoverable_user = $this->getRecoverableUser();
-        $this->data['recoverable_user'] = $recoverable_user;
-
-        if ($recoverable_user === false) {
-            // Reset password link expired or invalid
-            $this->redirect('forgot');
-        }
-
-        $submitted = $this->request->post('user', array(), 'raw');
-
-        if ($submitted) {
-            $this->controlSpam('forgot');
-            $this->validateForgot($submitted, $recoverable_user);
-
-            if ($this->formErrors()) {
-                $this->data['user'] = $submitted;
-            } else {
-                $this->restorePassword($submitted);
-            }
-        }
-
-        $this->data['min_password_length'] = $this->config->get('user_password_min_length', 8);
-        $this->data['max_password_length'] = $this->config->get('user_password_max_length', 255);
-
-        $this->setTitle($this->text('Reset password'));
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-        $this->output('forgot');
     }
 
     /**
@@ -773,22 +790,5 @@ class Account extends Controller
         $this->user->update($user['user_id'], $user);
         $this->notification->set('user_changed_password', array($user));
         $this->redirect('login', $this->text('Your password has been successfully changed'), 'success');
-    }
-
-    /**
-     * Displays the user logout page
-     */
-    public function logout()
-    {
-        $user_id = $this->user->logout();
-        $user = $this->user->get($user_id);
-
-        $log = array(
-            'message' => 'User %email has logged out',
-            'variables' => array('%email' => $user['email'])
-        );
-
-        $this->logger->log('logout', $log);
-        $this->url->redirect('login');
     }
 }

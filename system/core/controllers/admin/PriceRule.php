@@ -80,6 +80,35 @@ class PriceRule extends Controller
     }
 
     /**
+     * Displays the price rule edit form
+     * @param type $rule_id
+     */
+    public function edit($rule_id = null)
+    {
+        $rule = $this->get($rule_id);
+
+        $this->data['price_rule'] = $rule;
+        $this->data['stores'] = $this->store->getList();
+        $this->data['operators'] = $this->rule->getConditionOperators();
+        $this->data['currencies'] = $this->currency->getList(true);
+        $this->data['conditions'] = $this->rule->getConditionHandlers();
+
+        if ($this->request->post('delete')) {
+            $this->delete($rule);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($rule);
+        }
+
+        $this->prepareConditions();
+
+        $this->setTitleEdit($rule);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns total number of price rules for pager
      * @param array $query
      * @return integer
@@ -163,35 +192,6 @@ class PriceRule extends Controller
         }
 
         return $rules;
-    }
-
-    /**
-     * Displays the price rule edit form
-     * @param type $rule_id
-     */
-    public function edit($rule_id = null)
-    {
-        $rule = $this->get($rule_id);
-
-        $this->data['price_rule'] = $rule;
-        $this->data['stores'] = $this->store->getList();
-        $this->data['operators'] = $this->rule->getConditionOperators();
-        $this->data['currencies'] = $this->currency->getList(true);
-        $this->data['conditions'] = $this->rule->getConditionHandlers();
-
-        if ($this->request->post('delete')) {
-            $this->delete($rule);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($rule);
-        }
-
-        $this->prepareConditions();
-
-        $this->setTitleEdit($rule);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

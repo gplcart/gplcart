@@ -72,24 +72,6 @@ class Document
     }
 
     /**
-     * Returns a string containing either asset URL or MD5 hash of its content
-     * @param string $string
-     * @return string
-     */
-    protected function getAssetKey($string, $type)
-    {
-        if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
-            $file = GC_ROOT_DIR . '/' . $string;
-            if (!file_exists($file)) {
-                return false;
-            }
-            return $this->request->base(true) . $string . '?v=' . filemtime($file);
-        }
-
-        return 'text.' . md5($string);
-    }
-
-    /**
      * Adds a CSS style to the page
      * @staticvar array $styles
      * @param string $css
@@ -220,5 +202,23 @@ class Document
 
         $description = $string;
         return $description;
+    }
+
+    /**
+     * Returns a string containing either asset URL or MD5 hash of its content
+     * @param string $string
+     * @return string
+     */
+    protected function getAssetKey($string, $type)
+    {
+        if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
+            $file = GC_ROOT_DIR . '/' . $string;
+            if (!file_exists($file)) {
+                return false;
+            }
+            return $this->request->base(true) . $string . '?v=' . filemtime($file);
+        }
+
+        return 'text.' . md5($string);
     }
 }

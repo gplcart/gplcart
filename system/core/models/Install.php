@@ -194,6 +194,195 @@ class Install
     }
 
     /**
+     * Creates config.php
+     * @param array $settings
+     * @return boolean
+     */
+    public function config(array $settings)
+    {
+        $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
+
+        if (!$config) {
+            return false;
+        }
+
+        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . PHP_EOL;
+        $config .= 'return $config;' . PHP_EOL;
+
+        if (!file_put_contents(GC_CONFIG_COMMON, $config)) {
+            return false;
+        }
+
+        chmod(GC_CONFIG_COMMON, 0444);
+        return true;
+    }
+
+    /**
+     * Installs the store
+     * @param array $settings
+     * @return boolean|string
+     */
+    public function store(array $settings)
+    {
+        Container::unregister();
+        $config = Container::instance('core\\Config');
+
+        $this->db = $config->db();
+
+        if (empty($this->db)) {
+            return $this->language->text('Unable to connect to the database');
+        }
+
+        // Default store
+        $data = $this->store->defaultConfig();
+        $data['title'] = $settings['store']['title'];
+        $data['email'] = array($settings['user']['email']);
+
+        $store = array(
+            'name' => $settings['store']['title'],
+            'domain' => $this->request->host(),
+            'scheme' => $this->request->scheme(),
+            'basepath' => trim($this->request->base(true), '/'),
+            'status' => 1,
+            'data' => serialize($data),
+        );
+
+        $store_id = $this->db->insert('store', $store);
+        $config->set('store', $store_id);
+
+        // Default user
+        $user = array(
+            'modified' => 0,
+            'status' => 1,
+            'role_id' => 0,
+            'store_id' => $store_id,
+            'created' => GC_TIME,
+            'email' => $settings['user']['email'],
+            'name' => 'Superadmin',
+            'hash' => Tool::hash($settings['user']['password']),
+            'data' => serialize(array())
+        );
+
+        $user_id = $this->db->insert('user', $user);
+        $config->set('user_superadmin', $user_id);
+
+        // Default roles
+        $this->db->insert('role', array('name' => 'General manager', 'permissions' => serialize(array())));
+        $this->db->insert('role', array('name' => 'Order manager', 'permissions' => serialize(array())));
+        $this->db->insert('role', array('name' => 'Content manager', 'permissions' => serialize(array())));
+
+        // Default country
+        $country = array(
+            'format' => serialize(array()),
+            'status' => 1,
+            'name' => $settings['store']['country_name'],
+            'native_name' => $settings['store']['country_native_name'],
+            'code' => $settings['store']['country'],
+        );
+
+        $this->db->insert('country', $country);
+        $config->set('country', $settings['store']['country']);
+
+        // Default language
+        if (!empty($settings['store']['language'])) {
+            $langcode = $settings['store']['language'];
+            $this->config->set('language', $langcode);
+
+            $languages[$langcode] = array(
+                'code' => $langcode,
+                'name' => $langcode,
+                'native_name' => $langcode,
+                'status' => 1,
+                'default' => 1
+            );
+
+            $languages = $this->config->set('languages', $languages);
+        }
+
+        // Default category groups
+        $this->db->insert('category_group', array(
+            'store_id' => $store_id,
+            'data' => serialize(array()),
+            'type' => 'catalog',
+            'title' => 'Catalog'
+        ));
+
+        $this->db->insert('category_group', array(
+            'store_id' => $store_id,
+            'data' => serialize(array()),
+            'type' => 'brand',
+            'title' => 'Brand'
+        ));
+
+        // Default pages and their aliases
+        $page_id = $this->db->insert('page', array(
+            'status' => 1,
+            'user_id' => $user_id,
+            'store_id' => $store_id,
+            'created' => GC_TIME,
+            'data' => serialize(array()),
+            'title' => 'About us',
+            'description' => 'Company information',
+        ));
+
+        $this->db->insert('alias', array(
+            'id_key' => 'page_id',
+            'id_value' => $page_id,
+            'alias' => 'about'
+        ));
+
+        $page_id = $this->db->insert('page', array(
+            'status' => 1,
+            'user_id' => $user_id,
+            'store_id' => $store_id,
+            'created' => GC_TIME,
+            'data' => serialize(array()),
+            'title' => 'Contact us',
+            'description' => 'Contact information',
+        ));
+
+        $this->db->insert('alias', array(
+            'id_key' => 'page_id',
+            'id_value' => $page_id,
+            'alias' => 'contact'
+        ));
+
+        $page_id = $this->db->insert('page', array(
+            'status' => 1,
+            'user_id' => $user_id,
+            'store_id' => $store_id,
+            'created' => GC_TIME,
+            'data' => serialize(array()),
+            'title' => 'Terms and conditions',
+            'description' => 'Terms and conditions',
+        ));
+
+        $this->db->insert('alias', array(
+            'id_key' => 'page_id',
+            'id_value' => $page_id,
+            'alias' => 'terms'
+        ));
+
+        $page_id = $this->db->insert('page', array(
+            'status' => 1,
+            'user_id' => $user_id,
+            'store_id' => $store_id,
+            'created' => GC_TIME,
+            'data' => serialize(array()),
+            'title' => 'FAQ',
+            'description' => 'Questions and answers',
+        ));
+
+        $this->db->insert('alias', array(
+            'id_key' => 'page_id',
+            'id_value' => $page_id,
+            'alias' => 'faq'
+        ));
+
+        return true;
+    }
+
+    /**
      * Returns an array of data used to create tables in the database
      * @return array
      */
@@ -726,194 +915,5 @@ class Install
         );
 
         return $tables;
-    }
-
-    /**
-     * Creates config.php
-     * @param array $settings
-     * @return boolean
-     */
-    public function config(array $settings)
-    {
-        $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
-
-        if (!$config) {
-            return false;
-        }
-
-        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . PHP_EOL;
-        $config .= 'return $config;' . PHP_EOL;
-
-        if (!file_put_contents(GC_CONFIG_COMMON, $config)) {
-            return false;
-        }
-
-        chmod(GC_CONFIG_COMMON, 0444);
-        return true;
-    }
-
-    /**
-     * Installs the store
-     * @param array $settings
-     * @return boolean|string
-     */
-    public function store(array $settings)
-    {
-        Container::unregister();
-        $config = Container::instance('core\\Config');
-
-        $this->db = $config->db();
-
-        if (empty($this->db)) {
-            return $this->language->text('Unable to connect to the database');
-        }
-
-        // Default store
-        $data = $this->store->defaultConfig();
-        $data['title'] = $settings['store']['title'];
-        $data['email'] = array($settings['user']['email']);
-
-        $store = array(
-            'name' => $settings['store']['title'],
-            'domain' => $this->request->host(),
-            'scheme' => $this->request->scheme(),
-            'basepath' => trim($this->request->base(true), '/'),
-            'status' => 1,
-            'data' => serialize($data),
-        );
-
-        $store_id = $this->db->insert('store', $store);
-        $config->set('store', $store_id);
-
-        // Default user
-        $user = array(
-            'modified' => 0,
-            'status' => 1,
-            'role_id' => 0,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'email' => $settings['user']['email'],
-            'name' => 'Superadmin',
-            'hash' => Tool::hash($settings['user']['password']),
-            'data' => serialize(array())
-        );
-
-        $user_id = $this->db->insert('user', $user);
-        $config->set('user_superadmin', $user_id);
-
-        // Default roles
-        $this->db->insert('role', array('name' => 'General manager', 'permissions' => serialize(array())));
-        $this->db->insert('role', array('name' => 'Order manager', 'permissions' => serialize(array())));
-        $this->db->insert('role', array('name' => 'Content manager', 'permissions' => serialize(array())));
-
-        // Default country
-        $country = array(
-            'format' => serialize(array()),
-            'status' => 1,
-            'name' => $settings['store']['country_name'],
-            'native_name' => $settings['store']['country_native_name'],
-            'code' => $settings['store']['country'],
-        );
-
-        $this->db->insert('country', $country);
-        $config->set('country', $settings['store']['country']);
-
-        // Default language
-        if (!empty($settings['store']['language'])) {
-            $langcode = $settings['store']['language'];
-            $this->config->set('language', $langcode);
-
-            $languages[$langcode] = array(
-                'code' => $langcode,
-                'name' => $langcode,
-                'native_name' => $langcode,
-                'status' => 1,
-                'default' => 1
-            );
-
-            $languages = $this->config->set('languages', $languages);
-        }
-
-        // Default category groups
-        $this->db->insert('category_group', array(
-            'store_id' => $store_id,
-            'data' => serialize(array()),
-            'type' => 'catalog',
-            'title' => 'Catalog'
-        ));
-
-        $this->db->insert('category_group', array(
-            'store_id' => $store_id,
-            'data' => serialize(array()),
-            'type' => 'brand',
-            'title' => 'Brand'
-        ));
-
-        // Default pages and their aliases
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
-            'title' => 'About us',
-            'description' => 'Company information',
-        ));
-
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'about'
-        ));
-
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
-            'title' => 'Contact us',
-            'description' => 'Contact information',
-        ));
-
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'contact'
-        ));
-
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
-            'title' => 'Terms and conditions',
-            'description' => 'Terms and conditions',
-        ));
-
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'terms'
-        ));
-
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
-            'title' => 'FAQ',
-            'description' => 'Questions and answers',
-        ));
-
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'faq'
-        ));
-
-        return true;
     }
 }

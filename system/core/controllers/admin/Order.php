@@ -163,6 +163,39 @@ class Order extends Controller
     }
 
     /**
+     * Displays the order admin overview page
+     */
+    public function orders()
+    {
+        $query = $this->getFilterQuery();
+        $total = $this->setPager($this->getTotalOrders($query), $query);
+
+        $this->data['orders'] = $this->getOrders($total, $query);
+
+        $this->data['statuses'] = $this->order->getStatuses();
+        $this->data['stores'] = $this->store->getNames();
+
+        array_walk($this->data['orders'], function (&$order) {
+            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+        });
+
+        $this->data['currencies'] = $this->currency->getList();
+
+        $sort_order = $this->request->get('order');
+
+        foreach (array('store_id', 'status', 'created', 'creator', 'customer', 'total', 'currency') as $filter) {
+            $this->data["filter_$filter"] = $this->request->get($filter);
+            $this->data["sort_$filter"] = $this->url(false, array(
+                'sort' => $filter,
+                'order' => ($sort_order == 'desc') ? 'asc' : 'desc') + $query);
+        }
+
+        $this->setTitle($this->text('Orders'));
+        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->output('sale/order/list');
+    }
+
+    /**
      * Returns rendered order summary pane
      * @param array $order
      * @return string
@@ -397,39 +430,6 @@ class Order extends Controller
     protected function getService($id, $type, array $cart, array $order)
     {
         return $this->{$type}->getService($id, $cart, $order);
-    }
-
-    /**
-     * Displays the order admin overview page
-     */
-    public function orders()
-    {
-        $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalOrders($query), $query);
-
-        $this->data['orders'] = $this->getOrders($total, $query);
-
-        $this->data['statuses'] = $this->order->getStatuses();
-        $this->data['stores'] = $this->store->getNames();
-
-        array_walk($this->data['orders'], function (&$order) {
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-        });
-
-        $this->data['currencies'] = $this->currency->getList();
-
-        $sort_order = $this->request->get('order');
-
-        foreach (array('store_id', 'status', 'created', 'creator', 'customer', 'total', 'currency') as $filter) {
-            $this->data["filter_$filter"] = $this->request->get($filter);
-            $this->data["sort_$filter"] = $this->url(false, array(
-                'sort' => $filter,
-                'order' => ($sort_order == 'desc') ? 'asc' : 'desc') + $query);
-        }
-
-        $this->setTitle($this->text('Orders'));
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->output('sale/order/list');
     }
 
     /**

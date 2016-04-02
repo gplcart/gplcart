@@ -159,6 +159,47 @@ class Product extends Controller
     }
 
     /**
+     * Displays the product edit form
+     * @param integer|null $product_id
+     */
+    public function edit($product_id = null)
+    {
+        if ($this->request->ajax()) {
+            $store_id = $this->request->get('store_id', null);
+            if (isset($store_id)) {
+                $this->response->json($this->getFields($store_id));
+            }
+        }
+
+        $this->data['product'] = $product = $this->get($product_id);
+
+        if ($product) {
+            $this->data['related'] = $this->getRelated($product);
+        }
+
+        if ($this->request->post('delete')) {
+            $this->delete($product);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($product);
+        }
+
+        $this->setFieldForms();
+        $this->setImages();
+
+        $this->data['stores'] = $this->store->getNames();
+        $this->data['default_currency'] = $this->currency->getDefault();
+        $this->data['classes'] = $this->product_class->getList(array('status' => 1));
+
+        $this->addJsSettings('product', $product);
+
+        $this->setTitleEdit($product);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Return a number of total products for pager
      * @param array $query
      * @return integer
@@ -286,47 +327,6 @@ class Product extends Controller
         }
 
         return $updated;
-    }
-
-    /**
-     * Displays the product edit form
-     * @param integer|null $product_id
-     */
-    public function edit($product_id = null)
-    {
-        if ($this->request->ajax()) {
-            $store_id = $this->request->get('store_id', null);
-            if (isset($store_id)) {
-                $this->response->json($this->getFields($store_id));
-            }
-        }
-
-        $this->data['product'] = $product = $this->get($product_id);
-
-        if ($product) {
-            $this->data['related'] = $this->getRelated($product);
-        }
-
-        if ($this->request->post('delete')) {
-            $this->delete($product);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($product);
-        }
-
-        $this->setFieldForms();
-        $this->setImages();
-
-        $this->data['stores'] = $this->store->getNames();
-        $this->data['default_currency'] = $this->currency->getDefault();
-        $this->data['classes'] = $this->product_class->getList(array('status' => 1));
-
-        $this->addJsSettings('product', $product);
-
-        $this->setTitleEdit($product);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

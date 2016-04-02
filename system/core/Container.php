@@ -111,17 +111,6 @@ class Container
     }
 
     /**
-     * Returns a registered class instance
-     * @param string $class
-     * @return object|boolean
-     */
-    protected static function registered($class)
-    {
-        $key = strtolower(trim($class, '\\'));
-        return isset(static::$registry[$key]) ? static::$registry[$key] : false;
-    }
-
-    /**
      * Removes a class(es) from the storage
      * @param null|string $class
      */
@@ -135,5 +124,16 @@ class Container
         $key = strtolower(trim($class, '\\'));
         unset(static::$registry[$key]);
         return true;
+    }
+
+    /**
+     * Returns a registered class instance
+     * @param string $class
+     * @return object|boolean
+     */
+    protected static function registered($class)
+    {
+        $key = strtolower(trim($class, '\\'));
+        return isset(static::$registry[$key]) ? static::$registry[$key] : false;
     }
 }

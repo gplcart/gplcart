@@ -234,22 +234,6 @@ class User
     }
 
     /**
-     * Adds/updates an address for a given user
-     * @param integer $user_id
-     * @param array $address
-     * @return bool
-     */
-    protected function setAddress($user_id, array $address)
-    {
-        if (empty($address['address_id'])) {
-            $address['user_id'] = $user_id;
-            return (bool) $this->address->add($address);
-        }
-
-        return (bool) $this->address->update($address['address_id'], $address);
-    }
-
-    /**
      * Deletes a user
      * @param integer $user_id
      * @return boolean
@@ -462,14 +446,6 @@ class User
         $this->hook->fire('login.after', $email, $password, $result);
         return $result;
     }
-    
-    protected function logLogin($user)
-    {
-        $this->logger->log('login', array(
-            'message' => 'User %s has logged in',
-            'variables' => array('%s' => $user['email'])
-        ));
-    }
 
     /**
      * Loads a user by an email
@@ -633,6 +609,30 @@ class User
 
         $this->hook->fire('users', $list);
         return $list;
+    }
+
+    /**
+     * Adds/updates an address for a given user
+     * @param integer $user_id
+     * @param array $address
+     * @return bool
+     */
+    protected function setAddress($user_id, array $address)
+    {
+        if (empty($address['address_id'])) {
+            $address['user_id'] = $user_id;
+            return (bool) $this->address->add($address);
+        }
+
+        return (bool) $this->address->update($address['address_id'], $address);
+    }
+    
+    protected function logLogin($user)
+    {
+        $this->logger->log('login', array(
+            'message' => 'User %s has logged in',
+            'variables' => array('%s' => $user['email'])
+        ));
     }
 
     /**

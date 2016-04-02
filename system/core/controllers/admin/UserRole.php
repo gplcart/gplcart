@@ -58,6 +58,32 @@ class UserRole extends Controller
     }
 
     /**
+     * Displays the roles overview page
+     */
+    public function roles()
+    {
+        $action = $this->request->post('action');
+        $value = $this->request->post('value');
+        $selected = $this->request->post('selected', array());
+
+        if ($action) {
+            $this->action($selected, $action, $value);
+        }
+
+        $query = $this->getFilterQuery();
+        $total = $this->setPager($this->getTotalRoles($query), $query);
+
+        $this->data['roles'] = $this->getRoles($total, $query);
+
+        $filters = array('name', 'role_id', 'status', 'created');
+        $this->setFilter($filters, $query);
+
+        $this->setTitleRoles();
+        $this->setBreadcrumbRoles();
+        $this->outputRoles();
+    }
+
+    /**
      * Renders the role edit page
      */
     protected function outputEdit()
@@ -188,32 +214,6 @@ class UserRole extends Controller
         }
 
         return true;
-    }
-
-    /**
-     * Displays the roles overview page
-     */
-    public function roles()
-    {
-        $action = $this->request->post('action');
-        $value = $this->request->post('value');
-        $selected = $this->request->post('selected', array());
-
-        if ($action) {
-            $this->action($selected, $action, $value);
-        }
-
-        $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalRoles($query), $query);
-
-        $this->data['roles'] = $this->getRoles($total, $query);
-
-        $filters = array('name', 'role_id', 'status', 'created');
-        $this->setFilter($filters, $query);
-
-        $this->setTitleRoles();
-        $this->setBreadcrumbRoles();
-        $this->outputRoles();
     }
 
     /**
