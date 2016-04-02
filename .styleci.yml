@@ -1,10 +1,12 @@
 preset: psr2
 
 finder:
-  exclude:
+  not-path:
     - "files"
     - "cache"
     - "system/libraries"
     - "system/locale"
     - "system/config"
     - "system/help"
+  not-contains:
+    - "templates"
