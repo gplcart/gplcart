@@ -58,6 +58,24 @@ class Language extends Controller
     }
 
     /**
+     * Displays the language overview page
+     */
+    public function languages()
+    {
+        $code = $this->request->get('refresh', null);
+
+        if (isset($code)) {
+            $this->refresh($code);
+        }
+
+        $this->data['languages'] = $this->language->getList();
+
+        $this->setTitleLanguages();
+        $this->setBreadcrumbLanguages();
+        $this->outputLanguages();
+    }
+
+    /**
      * Sets titles on the edit language page
      * @param array $language
      */
@@ -113,24 +131,6 @@ class Language extends Controller
         $this->controlAccess('language_add');
         $this->language->add($this->submitted);
         $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
-    }
-
-    /**
-     * Displays the language overview page
-     */
-    public function languages()
-    {
-        $code = $this->request->get('refresh', null);
-
-        if (isset($code)) {
-            $this->refresh($code);
-        }
-
-        $this->data['languages'] = $this->language->getList();
-
-        $this->setTitleLanguages();
-        $this->setBreadcrumbLanguages();
-        $this->outputLanguages();
     }
 
     /**

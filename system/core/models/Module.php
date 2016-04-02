@@ -283,122 +283,6 @@ class Module
     }
 
     /**
-     * Saves the override config file
-     * @return boolean
-     */
-    protected function setOverrideConfig()
-    {
-        $map = $this->getOverrideMap();
-
-        if (file_exists(GC_CONFIG_OVERRIDE)) {
-            chmod(GC_CONFIG_OVERRIDE, 0644);
-        }
-
-        file_put_contents(GC_CONFIG_OVERRIDE, '<?php return ' . var_export($map, true) . ';');
-        chmod(GC_CONFIG_OVERRIDE, 0444);
-
-        return true;
-    }
-
-    /**
-     * Returns an array of class namespaces to be overridden
-     * @return array
-     */
-    protected function getOverrideMap()
-    {
-        // Clear all caches before getting enabled modules
-        Cache::clear('modules');
-
-        $map = array();
-        foreach ($this->getEnabled() as $module_id => $module) {
-            $directory = GC_MODULE_DIR . "/$module_id/override";
-
-            if (!is_readable($directory)) {
-                continue;
-            }
-
-            foreach ($this->scanOverrideFiles($directory) as $file) {
-                $original = str_replace('/', '\\', str_replace($directory . '/', '', preg_replace('/Override$/', '', $file)));
-                $override = str_replace('/', '\\', str_replace(GC_SYSTEM_DIR . '/', '', $file));
-                $map[$original][$module_id] = $override;
-            }
-        }
-
-        return $map;
-    }
-
-    /**
-     * Recursively scans module override files
-     * @param string $directory
-     * @param array $results
-     * @return array
-     */
-    protected function scanOverrideFiles($directory, array &$results = array())
-    {
-        foreach (scandir($directory) as $value) {
-            $path = "$directory/$value";
-            if (is_file($path)) {
-                if ((substr($path, -4) === '.php')) {
-                    $results[] = rtrim($path, '.php');
-                }
-            } elseif ($value != '.' && $value != '..') {
-                $this->scanOverrideFiles($path, $results);
-            }
-        }
-
-        return $results;
-    }
-
-    /**
-     * Copies translation files into the locale directory
-     * @param string $module_id
-     * @return boolean
-     */
-    protected function setTranslations($module_id)
-    {
-        $files = $this->scanTranslations($module_id);
-
-        if (!$files) {
-            return false;
-        }
-
-        foreach ($files as $file) {
-            $filename = basename($file);
-            $langcode = strtok($filename, '.');
-
-            $langcode_folder = GC_LOCALE_DIR . "/{$langcode}/LC_MESSAGES";
-
-            if (!file_exists($langcode_folder) && !mkdir($langcode_folder, 0644, true)) {
-                continue;
-            }
-
-            $destination = "$langcode_folder/{$module_id}_{$filename}";
-
-            if (!file_exists($destination)) {
-                copy($file, $destination);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Finds possible translations of the module
-     * @param string $module_id
-     * @return array
-     */
-    protected function scanTranslations($module_id)
-    {
-        $directory = GC_MODULE_DIR . "/$module_id/locale";
-
-        if (file_exists($directory)) {
-            return glob("$directory/*.{po,mo}", GLOB_BRACE);
-        }
-
-        return array();
-    }
-
-    /**
      * Disables a module
      * @param string $module_id
      * @return boolean|string
@@ -568,15 +452,6 @@ class Module
     }
 
     /**
-     * Returns the next weight value for a new module
-     * @return integer
-     */
-    protected function getNextWeight()
-    {
-        return $this->getMaxWeight() + 1;
-    }
-
-    /**
      * Uninstalls a module
      * @param string $module_id
      * @return array|boolean
@@ -602,5 +477,130 @@ class Module
         }
 
         return $result;
+    }
+
+    /**
+     * Saves the override config file
+     * @return boolean
+     */
+    protected function setOverrideConfig()
+    {
+        $map = $this->getOverrideMap();
+
+        if (file_exists(GC_CONFIG_OVERRIDE)) {
+            chmod(GC_CONFIG_OVERRIDE, 0644);
+        }
+
+        file_put_contents(GC_CONFIG_OVERRIDE, '<?php return ' . var_export($map, true) . ';');
+        chmod(GC_CONFIG_OVERRIDE, 0444);
+
+        return true;
+    }
+
+    /**
+     * Returns an array of class namespaces to be overridden
+     * @return array
+     */
+    protected function getOverrideMap()
+    {
+        // Clear all caches before getting enabled modules
+        Cache::clear('modules');
+
+        $map = array();
+        foreach ($this->getEnabled() as $module_id => $module) {
+            $directory = GC_MODULE_DIR . "/$module_id/override";
+
+            if (!is_readable($directory)) {
+                continue;
+            }
+
+            foreach ($this->scanOverrideFiles($directory) as $file) {
+                $original = str_replace('/', '\\', str_replace($directory . '/', '', preg_replace('/Override$/', '', $file)));
+                $override = str_replace('/', '\\', str_replace(GC_SYSTEM_DIR . '/', '', $file));
+                $map[$original][$module_id] = $override;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Recursively scans module override files
+     * @param string $directory
+     * @param array $results
+     * @return array
+     */
+    protected function scanOverrideFiles($directory, array &$results = array())
+    {
+        foreach (scandir($directory) as $value) {
+            $path = "$directory/$value";
+            if (is_file($path)) {
+                if ((substr($path, -4) === '.php')) {
+                    $results[] = rtrim($path, '.php');
+                }
+            } elseif ($value != '.' && $value != '..') {
+                $this->scanOverrideFiles($path, $results);
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Copies translation files into the locale directory
+     * @param string $module_id
+     * @return boolean
+     */
+    protected function setTranslations($module_id)
+    {
+        $files = $this->scanTranslations($module_id);
+
+        if (!$files) {
+            return false;
+        }
+
+        foreach ($files as $file) {
+            $filename = basename($file);
+            $langcode = strtok($filename, '.');
+
+            $langcode_folder = GC_LOCALE_DIR . "/{$langcode}/LC_MESSAGES";
+
+            if (!file_exists($langcode_folder) && !mkdir($langcode_folder, 0644, true)) {
+                continue;
+            }
+
+            $destination = "$langcode_folder/{$module_id}_{$filename}";
+
+            if (!file_exists($destination)) {
+                copy($file, $destination);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Finds possible translations of the module
+     * @param string $module_id
+     * @return array
+     */
+    protected function scanTranslations($module_id)
+    {
+        $directory = GC_MODULE_DIR . "/$module_id/locale";
+
+        if (file_exists($directory)) {
+            return glob("$directory/*.{po,mo}", GLOB_BRACE);
+        }
+
+        return array();
+    }
+
+    /**
+     * Returns the next weight value for a new module
+     * @return integer
+     */
+    protected function getNextWeight()
+    {
+        return $this->getMaxWeight() + 1;
     }
 }

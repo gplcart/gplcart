@@ -122,30 +122,6 @@ class Compare extends Controller
     }
 
     /**
-     * Sets titles on the select compared products page
-     */
-    protected function setTitleSelect()
-    {
-        $this->setTitle($this->text('Comparison'));
-    }
-
-    /**
-     * Sets breadcrumbs on the select compared products page
-     */
-    protected function setBreadcrumbSelect()
-    {
-        $this->setBreadcrumb(array('url' => $this->url('/'), 'text' => $this->text('Home')));
-    }
-
-    /**
-     * Renders the select compared products page
-     */
-    protected function outputSelect()
-    {
-        $this->output('compare/select');
-    }
-
-    /**
      * Displays the product compare page
      * @param string $compared
      */
@@ -168,6 +144,30 @@ class Compare extends Controller
         $this->setTitleCompare();
         $this->setBreadcrumbCompare();
         $this->outputCompare();
+    }
+
+    /**
+     * Sets titles on the select compared products page
+     */
+    protected function setTitleSelect()
+    {
+        $this->setTitle($this->text('Comparison'));
+    }
+
+    /**
+     * Sets breadcrumbs on the select compared products page
+     */
+    protected function setBreadcrumbSelect()
+    {
+        $this->setBreadcrumb(array('url' => $this->url('/'), 'text' => $this->text('Home')));
+    }
+
+    /**
+     * Renders the select compared products page
+     */
+    protected function outputSelect()
+    {
+        $this->output('compare/select');
     }
 
     /**

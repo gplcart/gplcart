@@ -165,43 +165,6 @@ class File
     }
 
     /**
-     * Deletes and/or adds file translations
-     * @param integer $file_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslations($file_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($file_id);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($file_id, $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes file translation(s)
-     * @param integer $file_id
-     * @param null|string $language
-     * @return boolean
-     */
-    protected function deleteTranslation($file_id, $language = null)
-    {
-        $where = array('file_id' => (int) $file_id);
-
-        if (isset($language)) {
-            $where['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('file_translation', $where);
-    }
-
-    /**
      * Updates a file
      * @param integer $file_id
      * @param array $data
@@ -450,48 +413,6 @@ class File
     }
 
     /**
-     * Returns an array of all defined file handlers
-     * @return array
-     */
-    protected function getHandlers()
-    {
-        $handlers = &Cache::memory('file.handlers');
-
-        if (isset($handlers)) {
-            return $handlers;
-        }
-
-        $handlers = array(
-            'image' => array(
-                'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
-                'path' => 'image/upload/common',
-                'filesize' => null,
-                'mime_types' => array(),
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'image')
-                )
-            ),
-            'p12' => array(
-                'extensions' => array('p12'),
-                'path' => 'private/certificates',
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'p12')
-                )
-            ),
-            'csv' => array(
-                'extensions' => array('csv'),
-                'path' => 'image/upload/common',
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'csv')
-                )
-            ),
-        );
-
-        $this->hook->fire('file.handlers', $handlers);
-        return $handlers;
-    }
-
-    /**
      * Returns a handler by a given name
      * @param string $name
      * @return array
@@ -529,57 +450,6 @@ class File
     {
         $this->handler = $this->getHandler($id);
         return $this;
-    }
-
-    /**
-     * Moview a file from temporary to final destination
-     * @param string $tempname
-     * @param string $source
-     * @return boolean|string
-     */
-    protected function move($tempname, $source)
-    {
-        $pathinfo = pathinfo(strtok($source, '?'));
-        $filename = preg_replace('/[^A-Za-z0-9.]/', '', $pathinfo['filename']);
-        $extension = $pathinfo['extension'];
-
-        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $filename)) {
-            $filename = $this->language->translit($filename, null);
-        }
-
-        if (empty($this->path) && !empty($this->handler['path'])) {
-            $this->path = $this->handler['path'];
-        }
-
-        $destination = GC_UPLOAD_DIR;
-
-        if (!empty($this->path)) {
-            $destination = GC_FILE_DIR . '/' . trim($this->path, '/');
-        }
-
-        if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
-            return $this->language->text('Unable to create upload directory !name', array('!name' => $destination));
-        }
-
-        $rand = Tool::randomString(6);
-        $destination = "$destination/$filename-$rand.$extension";
-
-        $copied = copy($tempname, $destination);
-        unlink($tempname);
-
-        if (!$copied) {
-            return $this->language->text('Unable to move file !name to !dest', array(
-                        '!name' => $tempname, '!dest' => $destination));
-        }
-
-        if (strpos($destination, GC_PRIVATE_DIR) !== false) {
-            chmod($destination, 0640);
-        } else {
-            chmod($destination, 0644);
-        }
-
-        $this->uploaded = $destination;
-        return true;
     }
 
     /**
@@ -815,5 +685,135 @@ class File
     public function url($path, $absolute = false)
     {
         return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
+    }
+
+    /**
+     * Deletes and/or adds file translations
+     * @param integer $file_id
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslations($file_id, array $data, $delete = true)
+    {
+        if ($delete) {
+            $this->deleteTranslation($file_id);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($file_id, $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes file translation(s)
+     * @param integer $file_id
+     * @param null|string $language
+     * @return boolean
+     */
+    protected function deleteTranslation($file_id, $language = null)
+    {
+        $where = array('file_id' => (int) $file_id);
+
+        if (isset($language)) {
+            $where['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('file_translation', $where);
+    }
+
+    /**
+     * Returns an array of all defined file handlers
+     * @return array
+     */
+    protected function getHandlers()
+    {
+        $handlers = &Cache::memory('file.handlers');
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = array(
+            'image' => array(
+                'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+                'path' => 'image/upload/common',
+                'filesize' => null,
+                'mime_types' => array(),
+                'handlers' => array(
+                    'validator' => array('core\\handlers\\file\\Validator', 'image')
+                )
+            ),
+            'p12' => array(
+                'extensions' => array('p12'),
+                'path' => 'private/certificates',
+                'handlers' => array(
+                    'validator' => array('core\\handlers\\file\\Validator', 'p12')
+                )
+            ),
+            'csv' => array(
+                'extensions' => array('csv'),
+                'path' => 'image/upload/common',
+                'handlers' => array(
+                    'validator' => array('core\\handlers\\file\\Validator', 'csv')
+                )
+            ),
+        );
+
+        $this->hook->fire('file.handlers', $handlers);
+        return $handlers;
+    }
+
+    /**
+     * Moview a file from temporary to final destination
+     * @param string $tempname
+     * @param string $source
+     * @return boolean|string
+     */
+    protected function move($tempname, $source)
+    {
+        $pathinfo = pathinfo(strtok($source, '?'));
+        $filename = preg_replace('/[^A-Za-z0-9.]/', '', $pathinfo['filename']);
+        $extension = $pathinfo['extension'];
+
+        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $filename)) {
+            $filename = $this->language->translit($filename, null);
+        }
+
+        if (empty($this->path) && !empty($this->handler['path'])) {
+            $this->path = $this->handler['path'];
+        }
+
+        $destination = GC_UPLOAD_DIR;
+
+        if (!empty($this->path)) {
+            $destination = GC_FILE_DIR . '/' . trim($this->path, '/');
+        }
+
+        if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
+            return $this->language->text('Unable to create upload directory !name', array('!name' => $destination));
+        }
+
+        $rand = Tool::randomString(6);
+        $destination = "$destination/$filename-$rand.$extension";
+
+        $copied = copy($tempname, $destination);
+        unlink($tempname);
+
+        if (!$copied) {
+            return $this->language->text('Unable to move file !name to !dest', array(
+                        '!name' => $tempname, '!dest' => $destination));
+        }
+
+        if (strpos($destination, GC_PRIVATE_DIR) !== false) {
+            chmod($destination, 0640);
+        } else {
+            chmod($destination, 0644);
+        }
+
+        $this->uploaded = $destination;
+        return true;
     }
 }

@@ -51,60 +51,6 @@ class Config
     }
 
     /**
-     * Initializes system config
-     * @return boolean
-     * @throws SystemLogical
-     */
-    protected function init()
-    {
-        if (!is_readable(GC_CONFIG_COMMON)) {
-            return false;
-        }
-
-        $this->config = include GC_CONFIG_COMMON;
-
-        if (empty($this->config['database'])) {
-            throw new SystemLogical('Missing database settings');
-        }
-
-        $this->exists = true;
-
-        if (isset($this->db)) {
-            return true;
-        }
-
-        $this->db = Container::instance('core\\classes\\Database', array($this->config['database']));
-        $this->config = array_merge($this->config, $this->select());
-        $this->key = $this->get('private_key', '');
-
-        if (empty($this->key)) {
-            $this->key = Tool::randomString();
-            $this->set('private_key', $this->key);
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns an array of settings from the database
-     * @return type
-     */
-    protected function select()
-    {
-        if (!$this->exists) {
-            return array();
-        }
-
-        $settings = array();
-        $sth = $this->db->query('SELECT * FROM settings');
-        foreach ($sth->fetchAll() as $setting) {
-            $settings[$setting['id']] = $setting['serialized'] ? unserialize($setting['value']) : $setting['value'];
-        }
-
-        return $settings;
-    }
-
-    /**
      * Returns a setting value
      * @param string $key
      * @param mixed $default
@@ -310,34 +256,6 @@ class Config
     }
 
     /**
-     * Returns an array of methods which are hooks
-     * @param object|string $class
-     * @return array
-     */
-    protected function getHooks($class)
-    {
-        return array_filter(get_class_methods($class), function ($method) {
-            return (0 === strpos($method, 'hook'));
-        });
-    }
-
-    /**
-     * Validates / filters module name(s)
-     * @param string|array $name
-     * @return boolean|array
-     */
-    protected function validModuleName($name)
-    {
-        if (is_string($name)) {
-            return preg_match('/^[a-z0-9]+$/', $name);
-        }
-
-        return array_filter((array) $name, function ($module_id) {
-            return $this->validModuleName($module_id);
-        });
-    }
-
-    /**
      * Returns an array of all installed modules from the database
      * @return array
      */
@@ -362,6 +280,88 @@ class Config
     {
         return array_filter($this->getModules(), function ($module) {
             return !empty($module['status']);
+        });
+    }
+
+    /**
+     * Initializes system config
+     * @return boolean
+     * @throws SystemLogical
+     */
+    protected function init()
+    {
+        if (!is_readable(GC_CONFIG_COMMON)) {
+            return false;
+        }
+
+        $this->config = include GC_CONFIG_COMMON;
+
+        if (empty($this->config['database'])) {
+            throw new SystemLogical('Missing database settings');
+        }
+
+        $this->exists = true;
+
+        if (isset($this->db)) {
+            return true;
+        }
+
+        $this->db = Container::instance('core\\classes\\Database', array($this->config['database']));
+        $this->config = array_merge($this->config, $this->select());
+        $this->key = $this->get('private_key', '');
+
+        if (empty($this->key)) {
+            $this->key = Tool::randomString();
+            $this->set('private_key', $this->key);
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns an array of settings from the database
+     * @return type
+     */
+    protected function select()
+    {
+        if (!$this->exists) {
+            return array();
+        }
+
+        $settings = array();
+        $sth = $this->db->query('SELECT * FROM settings');
+        foreach ($sth->fetchAll() as $setting) {
+            $settings[$setting['id']] = $setting['serialized'] ? unserialize($setting['value']) : $setting['value'];
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Returns an array of methods which are hooks
+     * @param object|string $class
+     * @return array
+     */
+    protected function getHooks($class)
+    {
+        return array_filter(get_class_methods($class), function ($method) {
+            return (0 === strpos($method, 'hook'));
+        });
+    }
+
+    /**
+     * Validates / filters module name(s)
+     * @param string|array $name
+     * @return boolean|array
+     */
+    protected function validModuleName($name)
+    {
+        if (is_string($name)) {
+            return preg_match('/^[a-z0-9]+$/', $name);
+        }
+
+        return array_filter((array) $name, function ($module_id) {
+            return $this->validModuleName($module_id);
         });
     }
 }

@@ -65,30 +65,6 @@ class Export extends Controller
     }
 
     /**
-     * Sets titles on the operations overview page
-     */
-    protected function setTitleOperatios()
-    {
-        $this->setTitle($this->text('Export'));
-    }
-
-    /**
-     * Sets breadcrumbs on the operations overview page
-     */
-    protected function setBreadcrumbOperatios()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-    }
-
-    /**
-     * Renders the operations overview page
-     */
-    protected function outputOperatios()
-    {
-        $this->output('tool/export/list');
-    }
-
-    /**
      * Displays the csv export page
      */
     public function export($operation_id)
@@ -110,6 +86,30 @@ class Export extends Controller
         $this->setTitleExport($operation);
         $this->setBreadcrumbExport();
         $this->outputExport();
+    }
+
+    /**
+     * Sets titles on the operations overview page
+     */
+    protected function setTitleOperatios()
+    {
+        $this->setTitle($this->text('Export'));
+    }
+
+    /**
+     * Sets breadcrumbs on the operations overview page
+     */
+    protected function setBreadcrumbOperatios()
+    {
+        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+    }
+
+    /**
+     * Renders the operations overview page
+     */
+    protected function outputOperatios()
+    {
+        $this->output('tool/export/list');
     }
 
     /**

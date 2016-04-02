@@ -131,35 +131,6 @@ class Currency
     }
 
     /**
-     * Returns an array of default currencies
-     * @return array
-     */
-    protected function defaultCurrency()
-    {
-        return array(
-            'USD' => array(
-                'code' => 'USD',
-                'name' => 'United States Dollars',
-                'symbol' => '$',
-                'status' => 1,
-                'default' => 1,
-                'decimals' => 2,
-                'major_unit' => 'Dollar',
-                'minor_unit' => 'Cent',
-                'code_spacer' => ' ',
-                'numeric_code' => 840,
-                'symbol_spacer' => ' ',
-                'rounding_step' => 0,
-                'code_placement' => 'after',
-                'convertion_rate' => 1,
-                'symbol_placement' => 'before',
-                'decimal_separator' => '.',
-                'thousands_separator' => ','
-            )
-        );
-    }
-
-    /**
      * Updates a currency
      * @param string $code
      * @param array $data
@@ -315,5 +286,34 @@ class Currency
 
         $currencies = $this->getList();
         return isset($currencies[$default_currency]) ? $currencies[$default_currency] : array();
+    }
+
+    /**
+     * Returns an array of default currencies
+     * @return array
+     */
+    protected function defaultCurrency()
+    {
+        return array(
+            'USD' => array(
+                'code' => 'USD',
+                'name' => 'United States Dollars',
+                'symbol' => '$',
+                'status' => 1,
+                'default' => 1,
+                'decimals' => 2,
+                'major_unit' => 'Dollar',
+                'minor_unit' => 'Cent',
+                'code_spacer' => ' ',
+                'numeric_code' => 840,
+                'symbol_spacer' => ' ',
+                'rounding_step' => 0,
+                'code_placement' => 'after',
+                'convertion_rate' => 1,
+                'symbol_placement' => 'before',
+                'decimal_separator' => '.',
+                'thousands_separator' => ','
+            )
+        );
     }
 }

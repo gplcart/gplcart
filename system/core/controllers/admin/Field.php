@@ -52,6 +52,30 @@ class Field extends Controller
     }
 
     /**
+     * Displays the field edit form
+     * @param integer|null $field_id
+     */
+    public function edit($field_id = null)
+    {
+        $field = $this->get($field_id);
+
+        $this->data['field'] = $field;
+        $this->data['widget_types'] = $this->field->widgetTypes();
+
+        if ($this->request->post('delete')) {
+            $this->delete($field);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($field);
+        }
+
+        $this->setTitleEdit($field);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns an array of fields
      * @param integer $limit
      * @param array $query
@@ -94,30 +118,6 @@ class Field extends Controller
     protected function setBreadcrumbFields()
     {
         $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-    }
-
-    /**
-     * Displays the field edit form
-     * @param integer|null $field_id
-     */
-    public function edit($field_id = null)
-    {
-        $field = $this->get($field_id);
-
-        $this->data['field'] = $field;
-        $this->data['widget_types'] = $this->field->widgetTypes();
-
-        if ($this->request->post('delete')) {
-            $this->delete($field);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($field);
-        }
-
-        $this->setTitleEdit($field);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

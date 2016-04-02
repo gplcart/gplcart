@@ -347,34 +347,6 @@ class PriceRule
     }
 
     /**
-     * Returns true if conditions are met for a given rule
-     * @param array $rule
-     * @param array $data
-     * @return boolean
-     */
-    protected function conditionsMet(array $rule, array $data)
-    {
-        if (empty($rule['data']['conditions'])) {
-            return true;
-        }
-
-        $handlers = $this->getConditionHandlers();
-
-        Tool::sortWeight($rule['data']['conditions']);
-
-        $results = 0;
-        foreach ($rule['data']['conditions'] as $condition) {
-            $result = Handler::call($handlers, $condition['id'], 'condition', array($rule, $condition, $data));
-
-            if ($result === true) {
-                $results++;
-            }
-        }
-
-        return (count($rule['data']['conditions']) === $results);
-    }
-
-    /**
      * Loads a price rule from the database
      * @param integer $price_rule_id
      * @return array
@@ -592,45 +564,6 @@ class PriceRule
     }
 
     /**
-     * Calculates a price rule component
-     * @param integer $amount
-     * @param array $cart
-     * @param array $data
-     * @param array $components
-     * @param array $rule
-     * @return integer
-     */
-    protected function calculateComponent(&$amount, array $cart, array $data, array &$components, array $rule)
-    {
-        $rule_id = $rule['price_rule_id'];
-
-        if ($rule['type'] === 'order' && !empty($rule['code'])) {
-            if (empty($data['order']['code']) || !$this->codeMatches($rule_id, $data['order']['code'])) {
-                $components[$rule_id] = array('rule' => $rule, 'price' => 0);
-                return $amount;
-            }
-        }
-
-        if ($rule['value_type'] === 'percent') {
-            $value = $amount * ((float) $rule['value'] / 100);
-            $components[$rule_id] = array('rule' => $rule, 'price' => $value);
-            $amount += $value;
-            return $amount;
-        }
-
-        $value = (int) $rule['value'];
-
-        if ($cart['currency'] !== $rule['currency']) {
-            $converted = $this->currency->convert(abs($value), $rule['currency'], $cart['currency']);
-            $value = ($value < 0) ? -$converted : $converted;
-        }
-
-        $components[$rule_id] = array('rule' => $rule, 'price' => $value);
-        $amount += $value;
-        return $amount;
-    }
-
-    /**
      * Returns an array of suitable rules for a given context
      * @param string $type
      * @param array $data
@@ -759,5 +692,72 @@ class PriceRule
         }
 
         return false;
+    }
+
+    /**
+     * Returns true if conditions are met for a given rule
+     * @param array $rule
+     * @param array $data
+     * @return boolean
+     */
+    protected function conditionsMet(array $rule, array $data)
+    {
+        if (empty($rule['data']['conditions'])) {
+            return true;
+        }
+
+        $handlers = $this->getConditionHandlers();
+
+        Tool::sortWeight($rule['data']['conditions']);
+
+        $results = 0;
+        foreach ($rule['data']['conditions'] as $condition) {
+            $result = Handler::call($handlers, $condition['id'], 'condition', array($rule, $condition, $data));
+
+            if ($result === true) {
+                $results++;
+            }
+        }
+
+        return (count($rule['data']['conditions']) === $results);
+    }
+
+    /**
+     * Calculates a price rule component
+     * @param integer $amount
+     * @param array $cart
+     * @param array $data
+     * @param array $components
+     * @param array $rule
+     * @return integer
+     */
+    protected function calculateComponent(&$amount, array $cart, array $data, array &$components, array $rule)
+    {
+        $rule_id = $rule['price_rule_id'];
+
+        if ($rule['type'] === 'order' && !empty($rule['code'])) {
+            if (empty($data['order']['code']) || !$this->codeMatches($rule_id, $data['order']['code'])) {
+                $components[$rule_id] = array('rule' => $rule, 'price' => 0);
+                return $amount;
+            }
+        }
+
+        if ($rule['value_type'] === 'percent') {
+            $value = $amount * ((float) $rule['value'] / 100);
+            $components[$rule_id] = array('rule' => $rule, 'price' => $value);
+            $amount += $value;
+            return $amount;
+        }
+
+        $value = (int) $rule['value'];
+
+        if ($cart['currency'] !== $rule['currency']) {
+            $converted = $this->currency->convert(abs($value), $rule['currency'], $cart['currency']);
+            $value = ($value < 0) ? -$converted : $converted;
+        }
+
+        $components[$rule_id] = array('rule' => $rule, 'price' => $value);
+        $amount += $value;
+        return $amount;
     }
 }

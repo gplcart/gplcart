@@ -64,6 +64,25 @@ class Search extends Controller
     }
 
     /**
+     * Displays search index page
+     */
+    public function index()
+    {
+        $this->data['job'] = $this->getJob();
+        $this->data['handlers'] = $this->getHandlers();
+
+        $entity_id = $this->request->post('index');
+
+        if ($entity_id) {
+            $this->submit($entity_id);
+        }
+
+        $this->setTitleIndex();
+        $this->setBreadcrumbIndex();
+        $this->outputIndex();
+    }
+
+    /**
      * Returns a total number of results
      * @param string $search_id
      * @param string $query
@@ -132,25 +151,6 @@ class Search extends Controller
     protected function outputSearch()
     {
         $this->output('search/list');
-    }
-
-    /**
-     * Displays search index page
-     */
-    public function index()
-    {
-        $this->data['job'] = $this->getJob();
-        $this->data['handlers'] = $this->getHandlers();
-
-        $entity_id = $this->request->post('index');
-
-        if ($entity_id) {
-            $this->submit($entity_id);
-        }
-
-        $this->setTitleIndex();
-        $this->setBreadcrumbIndex();
-        $this->outputIndex();
     }
 
     /**

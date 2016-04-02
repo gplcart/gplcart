@@ -301,6 +301,20 @@ class Checkout extends Controller
     }
 
     /**
+     * Displays the complete order page
+     * @param integer $order_id
+     */
+    public function complete($order_id)
+    {
+        $order = $this->getOrder($order_id);
+        $this->data['text'] = $this->order->getCompleteMessage($order);
+        
+        $this->setTitleComplete($order);
+        $this->setBreadcrumbComplete($order);
+        $this->outputComplete();
+    }
+
+    /**
      * Sets titles on the checkout page
      * @param array $order
      */
@@ -324,20 +338,6 @@ class Checkout extends Controller
     protected function outputCheckout()
     {
         $this->output('checkout/checkout');
-    }
-
-    /**
-     * Displays the complete order page
-     * @param integer $order_id
-     */
-    public function complete($order_id)
-    {
-        $order = $this->getOrder($order_id);
-        $this->data['text'] = $this->order->getCompleteMessage($order);
-        
-        $this->setTitleComplete($order);
-        $this->setBreadcrumbComplete($order);
-        $this->outputComplete();
     }
 
     /**

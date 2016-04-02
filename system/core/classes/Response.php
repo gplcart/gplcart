@@ -76,44 +76,6 @@ class Response
     }
 
     /**
-     * Sends headers
-     * @return boolean
-     */
-    protected function sendHeaders()
-    {
-        if (!headers_sent()) {
-            foreach ($this->headers as $header) {
-                header($header, true);
-            }
-
-            return true;
-        }
-
-        $this->headers = array();
-        return false;
-    }
-
-    /**
-     * Adds a header
-     * @param mixed $name Header name or numeric code (for status headers)
-     * @param string $value Optional second part of header name
-     * @return \core\classes\Response
-     */
-    protected function addHeader($name, $value = null)
-    {
-        if (is_numeric($name)) {
-            $status = $this->statuses($name);
-            if (!empty($status)) {
-                $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
-            }
-        } elseif (isset($value)) {
-            $this->headers[] = "$name: $value";
-        }
-
-        return $this;
-    }
-
-    /**
      * Returns an array of standard HTTP statuses
      * @return array|boolean
      */
@@ -184,19 +146,6 @@ class Response
     }
 
     /**
-     * Adds headers from deliver options
-     * @param array $options
-     */
-    protected function addOptionalHeaders($options)
-    {
-        if (!empty($options['headers'])) {
-            foreach ((array) $options['headers'] as $header) {
-                call_user_func_array(array($this, 'addHeader'), (array) $header);
-            }
-        }
-    }
-
-    /**
      * Displays a static HTML
      * @param string $html
      * @param array $options
@@ -262,5 +211,56 @@ class Response
 
         readfile($file);
         exit;
+    }
+
+    /**
+     * Sends headers
+     * @return boolean
+     */
+    protected function sendHeaders()
+    {
+        if (!headers_sent()) {
+            foreach ($this->headers as $header) {
+                header($header, true);
+            }
+
+            return true;
+        }
+
+        $this->headers = array();
+        return false;
+    }
+
+    /**
+     * Adds a header
+     * @param mixed $name Header name or numeric code (for status headers)
+     * @param string $value Optional second part of header name
+     * @return \core\classes\Response
+     */
+    protected function addHeader($name, $value = null)
+    {
+        if (is_numeric($name)) {
+            $status = $this->statuses($name);
+            if (!empty($status)) {
+                $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
+            }
+        } elseif (isset($value)) {
+            $this->headers[] = "$name: $value";
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds headers from deliver options
+     * @param array $options
+     */
+    protected function addOptionalHeaders($options)
+    {
+        if (!empty($options['headers'])) {
+            foreach ((array) $options['headers'] as $header) {
+                call_user_func_array(array($this, 'addHeader'), (array) $header);
+            }
+        }
     }
 }

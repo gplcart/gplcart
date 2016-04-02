@@ -208,54 +208,6 @@ class Image
     }
 
     /**
-     * Applies an array of image style actions to an image
-     * @param string $file
-     * @param array $actions
-     */
-    protected function applyActions($file, array $actions)
-    {
-        $this->imagestyle->setFile($file);
-
-        foreach ($actions as $action_id => $action) {
-            if (method_exists($this->imagestyle, $action_id) && $this->validateAction($action_id, $action)) {
-                call_user_func_array(array($this->imagestyle, $action_id), (array) $action['value']);
-            }
-        }
-    }
-
-    /**
-     * Returns true if the action is valid
-     * @param integer $action_id
-     * @param array $action
-     * @return boolean
-     */
-    protected function validateAction($action_id, array &$action)
-    {
-        if ($action_id == 'overlay') {
-            $action['value'][0] = GC_FILE_DIR . '/' . $action['value'][0];
-            $overlay_pathinfo = pathinfo($action['value'][0]);
-            $fileinfo = pathinfo($file);
-
-            if ($overlay_pathinfo['extension'] != $fileinfo['extension']) {
-                $action['value'][0] = GC_FILE_DIR . '/' . $overlay_pathinfo['filename'] . '.' . $fileinfo['extension'];
-            }
-
-            if (!file_exists($action['value'][0])) {
-                return false;
-            }
-        }
-
-        if ($action_id == 'text') {
-            $action['value'][1] = GC_FILE_DIR . '/' . $action['value'][1];
-            if (!file_exists($action['value'][1])) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Returns an array of image style names
      * @return array
      */
@@ -287,94 +239,6 @@ class Image
 
         $this->hook->fire('imagestyles', $imagestyles);
         return $imagestyles;
-    }
-
-    /**
-     * Returns default image styles
-     * @return array
-     */
-    protected function defaultImageStyle()
-    {
-        $styles = array();
-
-        $styles[1] = array(
-            'name' => '50X50',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(50, 50),
-                ),
-            ),
-        );
-
-        $styles[2] = array(
-            'name' => '100X100',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(100, 100),
-                ),
-            ),
-        );
-
-        $styles[3] = array(
-            'name' => '150X150',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(150, 150),
-                ),
-            ),
-        );
-
-        $styles[4] = array(
-            'name' => '200X200',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(200, 200),
-                ),
-            ),
-        );
-
-        $styles[5] = array(
-            'name' => '300X300',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(300, 300),
-                ),
-            ),
-        );
-
-        $styles[6] = array(
-            'name' => '400X400',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(400, 400),
-                ),
-            ),
-        );
-
-        $styles[7] = array(
-            'name' => '1140X400',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(1140, 380),
-                ),
-            ),
-        );
-
-        return $styles;
     }
 
     /**
@@ -535,5 +399,141 @@ class Image
         $fullpath = GC_FILE_DIR . "/$path";
         $path = 'files/' . trim(str_replace(GC_ROOT_DIR, '', $path), "/");
         return $this->url->get($path, array('v' => filemtime($fullpath)));
+    }
+
+    /**
+     * Applies an array of image style actions to an image
+     * @param string $file
+     * @param array $actions
+     */
+    protected function applyActions($file, array $actions)
+    {
+        $this->imagestyle->setFile($file);
+
+        foreach ($actions as $action_id => $action) {
+            if (method_exists($this->imagestyle, $action_id) && $this->validateAction($action_id, $action)) {
+                call_user_func_array(array($this->imagestyle, $action_id), (array) $action['value']);
+            }
+        }
+    }
+
+    /**
+     * Returns true if the action is valid
+     * @param integer $action_id
+     * @param array $action
+     * @return boolean
+     */
+    protected function validateAction($action_id, array &$action)
+    {
+        if ($action_id == 'overlay') {
+            $action['value'][0] = GC_FILE_DIR . '/' . $action['value'][0];
+            $overlay_pathinfo = pathinfo($action['value'][0]);
+            $fileinfo = pathinfo($file);
+
+            if ($overlay_pathinfo['extension'] != $fileinfo['extension']) {
+                $action['value'][0] = GC_FILE_DIR . '/' . $overlay_pathinfo['filename'] . '.' . $fileinfo['extension'];
+            }
+
+            if (!file_exists($action['value'][0])) {
+                return false;
+            }
+        }
+
+        if ($action_id == 'text') {
+            $action['value'][1] = GC_FILE_DIR . '/' . $action['value'][1];
+            if (!file_exists($action['value'][1])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns default image styles
+     * @return array
+     */
+    protected function defaultImageStyle()
+    {
+        $styles = array();
+
+        $styles[1] = array(
+            'name' => '50X50',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(50, 50),
+                ),
+            ),
+        );
+
+        $styles[2] = array(
+            'name' => '100X100',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(100, 100),
+                ),
+            ),
+        );
+
+        $styles[3] = array(
+            'name' => '150X150',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(150, 150),
+                ),
+            ),
+        );
+
+        $styles[4] = array(
+            'name' => '200X200',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(200, 200),
+                ),
+            ),
+        );
+
+        $styles[5] = array(
+            'name' => '300X300',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(300, 300),
+                ),
+            ),
+        );
+
+        $styles[6] = array(
+            'name' => '400X400',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(400, 400),
+                ),
+            ),
+        );
+
+        $styles[7] = array(
+            'name' => '1140X400',
+            'status' => 1,
+            'actions' => array(
+                'thumbnail' => array(
+                    'weight' => 0,
+                    'value' => array(1140, 380),
+                ),
+            ),
+        );
+
+        return $styles;
     }
 }

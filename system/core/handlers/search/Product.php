@@ -74,46 +74,6 @@ class Product
     }
 
     /**
-     * Adds main product data to the search index
-     * @param array $product
-     * @return boolean
-     */
-    protected function indexProduct($product)
-    {
-        $text = "{$product['title']} {$product['title']} {$product['sku']} {$product['description']}";
-        $filtered_text = $this->search->filterStopwords(strip_tags($text), 'und');
-
-        if ($filtered_text) {
-            return $this->search->setIndex($filtered_text, 'product_id', $product['product_id'], 'und');
-        }
-
-        return false;
-    }
-
-    /**
-     * Adds product translations to the search index
-     * @param array $product
-     * @return boolean
-     */
-    protected function indexProductTranslations($product)
-    {
-        if (empty($product['translation'])) {
-            return false;
-        }
-
-        foreach ($product['translation'] as $language => $translation) {
-            $text = "{$translation['title']}{$translation['title']}{$translation['description']}";
-            $filtered_text = $this->search->filterStopwords(strip_tags($text), $language);
-
-            if ($filtered_text) {
-                $this->search->setIndex($filtered_text, 'product_id', $product['product_id'], $language);
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Returns product total to be indexed
      * @param array $options
      * @return integer
@@ -195,6 +155,46 @@ class Product
         }
 
         return $products;
+    }
+
+    /**
+     * Adds main product data to the search index
+     * @param array $product
+     * @return boolean
+     */
+    protected function indexProduct($product)
+    {
+        $text = "{$product['title']} {$product['title']} {$product['sku']} {$product['description']}";
+        $filtered_text = $this->search->filterStopwords(strip_tags($text), 'und');
+
+        if ($filtered_text) {
+            return $this->search->setIndex($filtered_text, 'product_id', $product['product_id'], 'und');
+        }
+
+        return false;
+    }
+
+    /**
+     * Adds product translations to the search index
+     * @param array $product
+     * @return boolean
+     */
+    protected function indexProductTranslations($product)
+    {
+        if (empty($product['translation'])) {
+            return false;
+        }
+
+        foreach ($product['translation'] as $language => $translation) {
+            $text = "{$translation['title']}{$translation['title']}{$translation['description']}";
+            $filtered_text = $this->search->filterStopwords(strip_tags($text), $language);
+
+            if ($filtered_text) {
+                $this->search->setIndex($filtered_text, 'product_id', $product['product_id'], $language);
+            }
+        }
+
+        return true;
     }
 
     /**

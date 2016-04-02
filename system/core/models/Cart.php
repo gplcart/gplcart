@@ -335,153 +335,6 @@ class Cart
     }
 
     /**
-     * Logs adding products to the cart
-     * @param array $data
-     * @param array $product
-     * @param integer|string $user_id
-     */
-    protected function logAddToCart(array $data, array $product, $user_id)
-    {
-        $log = array(
-            'message' => 'User %uid has added product %product (SKU: %sku) at %store',
-            'variables' => array(
-                '%uid' => is_numeric($user_id) ? $user_id : '',
-                '%product' => $product['product_id'],
-                '%sku' => $data['sku'],
-                '%store' => $product['store_id']
-            )
-        );
-
-        $this->logger->log('cart', $log);
-    }
-
-    /**
-     * Validates a product before adding to the cart
-     * @param array $data
-     * @param array $product
-     * @param string|integer $user_id
-     * @return boolean
-     */
-    protected function validate(array &$data, array $product, $user_id)
-    {
-        if (!$this->validateProduct($product)) {
-            return false;
-        }
-
-        if (empty($data['options'])) {
-            $data['sku'] = $product['sku'];
-            $data['stock'] = $product['stock'];
-        } else {
-            $data['combination_id'] = $this->product->getCombinationId($data['options'], $product['product_id']);
-
-            if (!empty($product['combination'][$data['combination_id']]['sku'])) {
-                $data['sku'] = $product['combination'][$data['combination_id']]['sku'];
-                $data['stock'] = $product['combination'][$data['combination_id']]['stock'];
-            }
-        }
-
-        if (!$this->validateSku($data)) {
-            return false;
-        }
-
-        if (!$this->validateLimits($data, $product, $user_id)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates a product before adding to the cart
-     * @param array $product
-     * @return boolean
-     */
-    protected function validateProduct(array $product)
-    {
-        if (!empty($product['status'])) {
-            return true;
-        }
-
-        $this->errors[] = $this->language->text('Invalid product');
-        return false;
-    }
-
-    /**
-     * Validates a product SKU before addingto the cart
-     * @param array $data
-     * @return boolean
-     */
-    protected function validateSku(array $data)
-    {
-        if (empty($data['sku'])) {
-            $this->errors[] = $this->language->text('SKU not found');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates cart limits for the current cart
-     * @param array $data
-     * @param array $product
-     * @param string|integer $user_id
-     * @return boolean
-     */
-    protected function validateLimits(array $data, array $product, $user_id)
-    {
-        $total = (int) $data['quantity'];
-        $skus = array($data['sku'] => true);
-
-        foreach ($this->getList(array('user_id' => $user_id)) as $item) {
-            $skus[$item['sku']] = true;
-            $total += (int) $item['quantity'];
-        }
-
-        $limit_sku = (int) $this->config->get('cart_sku_limit', 10);
-        $limit_total = (int) $this->config->get('cart_total_limit', 20);
-
-        if (!empty($limit_sku) && (count($skus) > $limit_sku)) {
-            $this->errors[] = $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
-                '%num' => $limit_sku));
-        }
-
-        if (!empty($limit_total) && ($total > $limit_total)) {
-            $this->errors[] = $this->language->text('Sorry, you cannot have more than %num items in your cart', array(
-                '%num' => $limit_total));
-        }
-
-        if ($product['subtract'] && ((int) $data['quantity'] > (int) $data['stock'])) {
-            $this->errors[] = $this->language->text('Too low stock level');
-        }
-
-        return empty($this->errors);
-    }
-
-    /**
-     * Adds/updates products in the cart
-     * @param array $data
-     * @param string|integer $user_id
-     * @return integer
-     */
-    protected function setProduct(array $data, $user_id)
-    {
-        $sql = 'SELECT cart_id, quantity  FROM cart WHERE sku=:sku AND user_id=:user_id AND order_id=:order_id';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':sku' => $data['sku'], ':user_id' => $user_id, 'order_id' => 0));
-        $existing = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (isset($existing['cart_id'])) {
-            $cart_id = $existing['cart_id'];
-            $this->update($cart_id, array('quantity' => $existing['quantity'] ++));
-            return $cart_id;
-        }
-
-        return $this->add($data);
-    }
-
-    /**
      * Updates a cart
      * @param integer $cart_id
      * @param array $data
@@ -714,5 +567,152 @@ class Cart
 
         $this->hook->fire('cart.login.after', $user, $cart);
         return true;
+    }
+
+    /**
+     * Logs adding products to the cart
+     * @param array $data
+     * @param array $product
+     * @param integer|string $user_id
+     */
+    protected function logAddToCart(array $data, array $product, $user_id)
+    {
+        $log = array(
+            'message' => 'User %uid has added product %product (SKU: %sku) at %store',
+            'variables' => array(
+                '%uid' => is_numeric($user_id) ? $user_id : '',
+                '%product' => $product['product_id'],
+                '%sku' => $data['sku'],
+                '%store' => $product['store_id']
+            )
+        );
+
+        $this->logger->log('cart', $log);
+    }
+
+    /**
+     * Validates a product before adding to the cart
+     * @param array $data
+     * @param array $product
+     * @param string|integer $user_id
+     * @return boolean
+     */
+    protected function validate(array &$data, array $product, $user_id)
+    {
+        if (!$this->validateProduct($product)) {
+            return false;
+        }
+
+        if (empty($data['options'])) {
+            $data['sku'] = $product['sku'];
+            $data['stock'] = $product['stock'];
+        } else {
+            $data['combination_id'] = $this->product->getCombinationId($data['options'], $product['product_id']);
+
+            if (!empty($product['combination'][$data['combination_id']]['sku'])) {
+                $data['sku'] = $product['combination'][$data['combination_id']]['sku'];
+                $data['stock'] = $product['combination'][$data['combination_id']]['stock'];
+            }
+        }
+
+        if (!$this->validateSku($data)) {
+            return false;
+        }
+
+        if (!$this->validateLimits($data, $product, $user_id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates a product before adding to the cart
+     * @param array $product
+     * @return boolean
+     */
+    protected function validateProduct(array $product)
+    {
+        if (!empty($product['status'])) {
+            return true;
+        }
+
+        $this->errors[] = $this->language->text('Invalid product');
+        return false;
+    }
+
+    /**
+     * Validates a product SKU before addingto the cart
+     * @param array $data
+     * @return boolean
+     */
+    protected function validateSku(array $data)
+    {
+        if (empty($data['sku'])) {
+            $this->errors[] = $this->language->text('SKU not found');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates cart limits for the current cart
+     * @param array $data
+     * @param array $product
+     * @param string|integer $user_id
+     * @return boolean
+     */
+    protected function validateLimits(array $data, array $product, $user_id)
+    {
+        $total = (int) $data['quantity'];
+        $skus = array($data['sku'] => true);
+
+        foreach ($this->getList(array('user_id' => $user_id)) as $item) {
+            $skus[$item['sku']] = true;
+            $total += (int) $item['quantity'];
+        }
+
+        $limit_sku = (int) $this->config->get('cart_sku_limit', 10);
+        $limit_total = (int) $this->config->get('cart_total_limit', 20);
+
+        if (!empty($limit_sku) && (count($skus) > $limit_sku)) {
+            $this->errors[] = $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
+                '%num' => $limit_sku));
+        }
+
+        if (!empty($limit_total) && ($total > $limit_total)) {
+            $this->errors[] = $this->language->text('Sorry, you cannot have more than %num items in your cart', array(
+                '%num' => $limit_total));
+        }
+
+        if ($product['subtract'] && ((int) $data['quantity'] > (int) $data['stock'])) {
+            $this->errors[] = $this->language->text('Too low stock level');
+        }
+
+        return empty($this->errors);
+    }
+
+    /**
+     * Adds/updates products in the cart
+     * @param array $data
+     * @param string|integer $user_id
+     * @return integer
+     */
+    protected function setProduct(array $data, $user_id)
+    {
+        $sql = 'SELECT cart_id, quantity  FROM cart WHERE sku=:sku AND user_id=:user_id AND order_id=:order_id';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array(':sku' => $data['sku'], ':user_id' => $user_id, 'order_id' => 0));
+        $existing = $sth->fetch(PDO::FETCH_ASSOC);
+
+        if (isset($existing['cart_id'])) {
+            $cart_id = $existing['cart_id'];
+            $this->update($cart_id, array('quantity' => $existing['quantity'] ++));
+            return $cart_id;
+        }
+
+        return $this->add($data);
     }
 }

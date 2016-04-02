@@ -82,6 +82,35 @@ class City extends Controller
     }
 
     /**
+     * Displays the city edit page
+     * @param string $country_code
+     * @param integer $state_id
+     * @param integer $city_id
+     */
+    public function edit($country_code, $state_id, $city_id = null)
+    {
+        $country = $this->getCountry($country_code);
+        $state = $this->getState($state_id);
+        $city = $this->get($city_id);
+
+        $this->data['country'] = $country;
+        $this->data['state'] = $state;
+        $this->data['city'] = $city;
+
+        if ($this->request->post('delete')) {
+            $this->delete($country, $state, $city);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($country, $state, $city);
+        }
+
+        $this->setTitleCity($city);
+        $this->setBreadcrumbCity();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns total number of cities for pager
      * @param integer $state_id
      * @param array $query
@@ -168,35 +197,6 @@ class City extends Controller
         $this->setBreadcrumb(array(
             'url' => $this->url("admin/settings/states/{$country['code']}"),
             'text' => $this->text('States of %country', array('%country' => $country['name']))));
-    }
-
-    /**
-     * Displays the city edit page
-     * @param string $country_code
-     * @param integer $state_id
-     * @param integer $city_id
-     */
-    public function edit($country_code, $state_id, $city_id = null)
-    {
-        $country = $this->getCountry($country_code);
-        $state = $this->getState($state_id);
-        $city = $this->get($city_id);
-
-        $this->data['country'] = $country;
-        $this->data['state'] = $state;
-        $this->data['city'] = $city;
-
-        if ($this->request->post('delete')) {
-            $this->delete($country, $state, $city);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($country, $state, $city);
-        }
-
-        $this->setTitleCity($city);
-        $this->setBreadcrumbCity();
-        $this->outputEdit();
     }
 
     /**

@@ -53,6 +53,30 @@ class CategoryGroup extends Controller
     }
 
     /**
+     * Displays the add/edit category group page
+     * @param integer|null $category_group_id
+     */
+    public function edit($category_group_id = null)
+    {
+        $category_group = $this->get($category_group_id);
+        $this->data['category_group'] = $category_group;
+        $this->data['stores'] = $this->store->getNames();
+        $this->data['can_delete'] = (isset($category_group['category_group_id']) && $this->category_group->canDelete($category_group_id));
+
+        if ($this->request->post('delete')) {
+            $this->delete($category_group);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($category_group);
+        }
+
+        $this->setTitleEdit($category_group);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns total number of category groups for pager
      * @param array $query
      * @return integer
@@ -84,30 +108,6 @@ class CategoryGroup extends Controller
     protected function setBreadcrumbGroups()
     {
         $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-    }
-
-    /**
-     * Displays the add/edit category group page
-     * @param integer|null $category_group_id
-     */
-    public function edit($category_group_id = null)
-    {
-        $category_group = $this->get($category_group_id);
-        $this->data['category_group'] = $category_group;
-        $this->data['stores'] = $this->store->getNames();
-        $this->data['can_delete'] = (isset($category_group['category_group_id']) && $this->category_group->canDelete($category_group_id));
-
-        if ($this->request->post('delete')) {
-            $this->delete($category_group);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($category_group);
-        }
-
-        $this->setTitleEdit($category_group);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

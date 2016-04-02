@@ -27,19 +27,6 @@ class Session
     }
 
     /**
-     * Returns the current session status
-     * @return bool
-     */
-    protected function started()
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return (session_status() === PHP_SESSION_ACTIVE);
-        }
-
-        return (session_id() !== '');
-    }
-
-    /**
      * Regenerates the current session
      * @param boolean $delete_old_session
      * @return boolean
@@ -172,5 +159,18 @@ class Session
         }
 
         return $this->get('token');
+    }
+
+    /**
+     * Returns the current session status
+     * @return bool
+     */
+    protected function started()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+            return (session_status() === PHP_SESSION_ACTIVE);
+        }
+
+        return (session_id() !== '');
     }
 }

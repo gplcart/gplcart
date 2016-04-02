@@ -33,6 +33,15 @@ class Error extends Controller
     }
 
     /**
+     * Displays the access denied page
+     */
+    public function error403()
+    {
+        $this->setTitleError403();
+        $this->outputError403();
+    }
+
+    /**
      * Sets titles on the 404 page not found page
      */
     protected function setTitleError404()
@@ -46,15 +55,6 @@ class Error extends Controller
     protected function outputError404()
     {
         $this->output('common/error/404', array('headers' => array(404)));
-    }
-
-    /**
-     * Displays the access denied page
-     */
-    public function error403()
-    {
-        $this->setTitleError403();
-        $this->outputError403();
     }
 
     /**

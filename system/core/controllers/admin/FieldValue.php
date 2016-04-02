@@ -94,6 +94,37 @@ class FieldValue extends Controller
     }
 
     /**
+     * Displays the field value edit form
+     * @param integer $field_id
+     * @param integer|null $field_value_id
+     */
+    public function edit($field_id, $field_value_id = null)
+    {
+        $field = $this->getField($field_id);
+
+        $field_value = $this->get($field_value_id);
+        $field_value['field_id'] = $field_id;
+
+        $this->data['field'] = $field;
+        $this->data['field_value'] = $field_value;
+        $this->data['widget_types'] = $this->field->widgetTypes();
+
+        if ($this->request->post('delete')) {
+            $this->delete($field_value, $field);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($field_value, $field);
+        }
+
+        $this->prepareFieldValue();
+
+        $this->setTitleEdit($field_value, $field);
+        $this->setBreadcrumbEdit($field);
+        $this->outputEdit();
+    }
+
+    /**
      * Returns total number of values for a given field and conditions
      * @param integer $field_id
      * @param array $query
@@ -184,37 +215,6 @@ class FieldValue extends Controller
         }
 
         return false;
-    }
-
-    /**
-     * Displays the field value edit form
-     * @param integer $field_id
-     * @param integer|null $field_value_id
-     */
-    public function edit($field_id, $field_value_id = null)
-    {
-        $field = $this->getField($field_id);
-
-        $field_value = $this->get($field_value_id);
-        $field_value['field_id'] = $field_id;
-
-        $this->data['field'] = $field;
-        $this->data['field_value'] = $field_value;
-        $this->data['widget_types'] = $this->field->widgetTypes();
-
-        if ($this->request->post('delete')) {
-            $this->delete($field_value, $field);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($field_value, $field);
-        }
-
-        $this->prepareFieldValue();
-
-        $this->setTitleEdit($field_value, $field);
-        $this->setBreadcrumbEdit($field);
-        $this->outputEdit();
     }
 
     /**

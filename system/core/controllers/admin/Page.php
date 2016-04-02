@@ -92,6 +92,36 @@ class Page extends Controller
     }
 
     /**
+     * Displays the page edit form
+     * @param integer|null $page_id
+     */
+    public function edit($page_id = null)
+    {
+        $page = $this->get($page_id);
+
+        if ($this->request->post('action') == 'categories') {
+            $store_id = $this->request->post('store_id', $this->store->getDefault());
+            $this->response->json($this->category->getOptionListByStore($store_id));
+        }
+
+        if ($this->request->post('delete')) {
+            $this->delete($page);
+        }
+
+        $this->data['page'] = $page;
+        $this->data['stores'] = $this->store->getNames();
+
+        if ($this->request->post('save')) {
+            $this->submit($page);
+        }
+
+        $this->preparePage();
+        $this->setTitleEdit($page);
+        $this->setBreadcrumbEdit();
+        $this->outputEdit();
+    }
+
+    /**
      * Returns number of total pages for pager
      * @param array $query
      * @return integer
@@ -160,36 +190,6 @@ class Page extends Controller
         }
 
         return false;
-    }
-
-    /**
-     * Displays the page edit form
-     * @param integer|null $page_id
-     */
-    public function edit($page_id = null)
-    {
-        $page = $this->get($page_id);
-
-        if ($this->request->post('action') == 'categories') {
-            $store_id = $this->request->post('store_id', $this->store->getDefault());
-            $this->response->json($this->category->getOptionListByStore($store_id));
-        }
-
-        if ($this->request->post('delete')) {
-            $this->delete($page);
-        }
-
-        $this->data['page'] = $page;
-        $this->data['stores'] = $this->store->getNames();
-
-        if ($this->request->post('save')) {
-            $this->submit($page);
-        }
-
-        $this->preparePage();
-        $this->setTitleEdit($page);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**

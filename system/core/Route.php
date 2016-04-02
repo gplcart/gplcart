@@ -89,31 +89,6 @@ class Route
     }
 
     /**
-     * Sets the current language
-     */
-    protected function setLangcode()
-    {
-        $default_langcode = $this->config->get('language', '');
-        $languages = $this->config->get('languages', array());
-
-        $segments = $this->url->segments();
-
-        if (!empty($languages[$segments[0]]['status'])) {
-            $this->langcode = $segments[0];
-        } else {
-            $this->langcode = $default_langcode;
-        }
-
-        if ($this->langcode && ($this->langcode === $default_langcode)) {
-            // TODO: redirect to url without language code
-        }
-
-        if ($this->langcode && ($this->langcode !== $default_langcode)) {
-            $this->request->setBaseSuffix($this->langcode);
-        }
-    }
-
-    /**
      * Returns an array of all available routes
      * @return array
      */
@@ -878,6 +853,49 @@ class Route
     }
 
     /**
+     * Returns a language from the current URL
+     * @return string
+     */
+    public function getLangcode()
+    {
+        return $this->langcode;
+    }
+
+    /**
+     * Returns the current route
+     * @return array
+     */
+    public function getCurrent()
+    {
+        return $this->route;
+    }
+
+    /**
+     * Sets the current language
+     */
+    protected function setLangcode()
+    {
+        $default_langcode = $this->config->get('language', '');
+        $languages = $this->config->get('languages', array());
+
+        $segments = $this->url->segments();
+
+        if (!empty($languages[$segments[0]]['status'])) {
+            $this->langcode = $segments[0];
+        } else {
+            $this->langcode = $default_langcode;
+        }
+
+        if ($this->langcode && ($this->langcode === $default_langcode)) {
+            // TODO: redirect to url without language code
+        }
+
+        if ($this->langcode && ($this->langcode !== $default_langcode)) {
+            $this->request->setBaseSuffix($this->langcode);
+        }
+    }
+
+    /**
      *
      * @return type
      */
@@ -991,24 +1009,6 @@ class Route
                 return (isset($match[0][0]) ? trim($match[0][0], '/') : null);
             }
         }, $matches, array_keys($matches));
-    }
-
-    /**
-     * Returns a language from the current URL
-     * @return string
-     */
-    public function getLangcode()
-    {
-        return $this->langcode;
-    }
-
-    /**
-     * Returns the current route
-     * @return array
-     */
-    public function getCurrent()
-    {
-        return $this->route;
     }
 
     /**

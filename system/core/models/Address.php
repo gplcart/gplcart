@@ -235,15 +235,6 @@ class Address
     }
 
     /**
-     * Returns an array of address fields to be used to format geocoding query
-     * @return array
-     */
-    protected function getGeocodeFields()
-    {
-        return array('address_1', 'state_id', 'city_id', 'country');
-    }
-
-    /**
      *
      * @param type $data
      * @return string
@@ -396,5 +387,14 @@ class Address
         $result = $this->db->update('address', $values, array('address_id' => (int) $address_id));
         $this->hook->fire('update.address.after', $address_id, $data, $result);
         return (bool) $result;
+    }
+
+    /**
+     * Returns an array of address fields to be used to format geocoding query
+     * @return array
+     */
+    protected function getGeocodeFields()
+    {
+        return array('address_1', 'state_id', 'city_id', 'country');
     }
 }

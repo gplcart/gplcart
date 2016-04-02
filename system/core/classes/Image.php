@@ -13,16 +13,16 @@ class Image
 {
 
     /**
-     * Image EXIF header
-     * @var mixed
-     */
-    protected $exif;
-
-    /**
      * Image quality (percent)
      * @var integer
      */
     public $quality = 80;
+
+    /**
+     * Image EXIF header
+     * @var mixed
+     */
+    protected $exif;
 
     /**
      * Image resource
@@ -53,6 +53,16 @@ class Image
      * @var integer
      */
     protected $height;
+
+    /**
+     * Destroy image resource
+     */
+    public function __destruct()
+    {
+        if (isset($this->image) && get_resource_type($this->image) === 'gd') {
+            imagedestroy($this->image);
+        }
+    }
 
     /**
      * Sets an image
@@ -89,48 +99,6 @@ class Image
 
         $this->filename = $filename;
         return $this->get_meta_data();
-    }
-
-    /**
-     * Get meta data of image or base64 string
-     * @return \core\classes\Image
-     * @throws \InvalidArgumentException
-     */
-    protected function get_meta_data()
-    {
-        //gather meta data
-        $info = getimagesize($this->filename);
-
-        switch ($info['mime']) {
-            case 'image/gif':
-                $this->image = imagecreatefromgif($this->filename);
-                break;
-            case 'image/jpeg':
-                $this->image = imagecreatefromjpeg($this->filename);
-                break;
-            case 'image/png':
-                $this->image = imagecreatefrompng($this->filename);
-                break;
-            default:
-                throw new \InvalidArgumentException('Invalid image: ' . $this->filename);
-        }
-
-        $this->original_info = array(
-            'width' => $info[0],
-            'height' => $info[1],
-            'orientation' => $this->get_orientation(),
-            'exif' => (function_exists('exif_read_data') && $info['mime'] === 'image/jpeg') ? ($this->exif = @exif_read_data($this->filename)) : null,
-            'format' => preg_replace('/^image\//', '', $info['mime']),
-            'mime' => $info['mime']
-        );
-
-        $this->width = $info[0];
-        $this->height = $info[1];
-
-        imagesavealpha($this->image, true);
-        imagealphablending($this->image, true);
-
-        return $this;
     }
 
     /**
@@ -194,84 +162,6 @@ class Image
         imagefilledrectangle($this->image, 0, 0, $this->width, $this->height, $fill_color);
 
         return $this;
-    }
-
-    /**
-     * Converts a hex color value to its RGB equivalent
-     * @param string $color
-     * @return boolean|array
-     */
-    protected function normalize_color($color)
-    {
-        if (is_string($color)) {
-            $color = trim($color, '#');
-
-            if (strlen($color) == 6) {
-                list($r, $g, $b) = array(
-                    $color[0] . $color[1],
-                    $color[2] . $color[3],
-                    $color[4] . $color[5]
-                );
-            } elseif (strlen($color) == 3) {
-                list($r, $g, $b) = array(
-                    $color[0] . $color[0],
-                    $color[1] . $color[1],
-                    $color[2] . $color[2]
-                );
-            } else {
-                return false;
-            }
-
-            return array('r' => hexdec($r), 'g' => hexdec($g), 'b' => hexdec($b), 'a' => 0);
-        } elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {
-            if (isset($color['r'], $color['g'], $color['b'])) {
-                return array(
-                    'r' => $this->keep_within($color['r'], 0, 255),
-                    'g' => $this->keep_within($color['g'], 0, 255),
-                    'b' => $this->keep_within($color['b'], 0, 255),
-                    'a' => $this->keep_within(isset($color['a']) ? $color['a'] : 0, 0, 127)
-                );
-            } elseif (isset($color[0], $color[1], $color[2])) {
-                return array(
-                    'r' => $this->keep_within($color[0], 0, 255),
-                    'g' => $this->keep_within($color[1], 0, 255),
-                    'b' => $this->keep_within($color[2], 0, 255),
-                    'a' => $this->keep_within(isset($color[3]) ? $color[3] : 0, 0, 127)
-                );
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Ensures $value is always within $min and $max range.
-     * @param integer $value
-     * @param integer $min
-     * @param integer $max
-     * @return integer
-     */
-    protected function keep_within($value, $min, $max)
-    {
-        if ($value < $min) {
-            return $min;
-        }
-
-        if ($value > $max) {
-            return $max;
-        }
-
-        return $value;
-    }
-
-    /**
-     * Destroy image resource
-     */
-    public function __destruct()
-    {
-        if (isset($this->image) && get_resource_type($this->image) === 'gd') {
-            imagedestroy($this->image);
-        }
     }
 
     /**
@@ -537,72 +427,6 @@ class Image
     }
 
     /**
-     * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
-     * @param resource $dst_im
-     * @param resource $src_im
-     * @param integer $dst_x
-     * @param integer $dst_y
-     * @param integer $src_x
-     * @param integer $src_y
-     * @param integer $src_w
-     * @param integer $src_h
-     * @param integer $pct
-     * @return null
-     */
-    protected function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y,
-                                            $src_x, $src_y, $src_w, $src_h, $pct)
-    {
-        // Get image width and height and percentage
-        $pct /= 100;
-        $w = imagesx($src_im);
-        $h = imagesy($src_im);
-
-        // Turn alpha blending off
-        imagealphablending($src_im, false);
-
-        // Find the most opaque pixel in the image (the one with the smallest alpha value)
-        $minalpha = 127;
-
-        for ($x = 0; $x < $w; $x++) {
-            for ($y = 0; $y < $h; $y++) {
-                $alpha = (imagecolorat($src_im, $x, $y) >> 24) & 0xFF;
-                if ($alpha < $minalpha) {
-                    $minalpha = $alpha;
-                }
-            }
-        }
-
-        // Loop through image pixels and modify alpha for each
-        for ($x = 0; $x < $w; $x++) {
-            for ($y = 0; $y < $h; $y++) {
-                // Get current alpha value (represents the TANSPARENCY!)
-                $colorxy = imagecolorat($src_im, $x, $y);
-                $alpha = ($colorxy >> 24) & 0xFF;
-                // Calculate new alpha
-                if ($minalpha !== 127) {
-                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
-                } else {
-                    $alpha += 127 * $pct;
-                }
-                // Get the color index with new alpha
-                $alphacolorxy = imagecolorallocatealpha($src_im, ($colorxy >> 16) & 0xFF, ($colorxy >> 8) & 0xFF, $colorxy & 0xFF, $alpha);
-                // Set pixel with the new color + opacity
-                if (!imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
-                    return;
-                }
-            }
-        }
-
-        // Copy it
-        imagesavealpha($dst_im, true);
-        imagealphablending($dst_im, true);
-        imagesavealpha($src_im, true);
-        imagealphablending($src_im, true);
-        imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
-        return;
-    }
-
-    /**
      * Edge detect
      * @return \core\classes\Image
      */
@@ -818,20 +642,6 @@ class Image
     }
 
     /**
-     * Returns the file extension of the specified file
-     * @param string $filename
-     * @return string
-     */
-    protected function file_ext($filename)
-    {
-        if (!preg_match('/\./', $filename)) {
-            return '';
-        }
-
-        return preg_replace('/^.*\./', '', $filename);
-    }
-
-    /**
      * Sepia
      * @return \core\classes\Image
      */
@@ -1029,5 +839,195 @@ class Image
         $this->image = $new;
 
         return $this;
+    }
+
+    /**
+     * Get meta data of image or base64 string
+     * @return \core\classes\Image
+     * @throws \InvalidArgumentException
+     */
+    protected function get_meta_data()
+    {
+        //gather meta data
+        $info = getimagesize($this->filename);
+
+        switch ($info['mime']) {
+            case 'image/gif':
+                $this->image = imagecreatefromgif($this->filename);
+                break;
+            case 'image/jpeg':
+                $this->image = imagecreatefromjpeg($this->filename);
+                break;
+            case 'image/png':
+                $this->image = imagecreatefrompng($this->filename);
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid image: ' . $this->filename);
+        }
+
+        $this->original_info = array(
+            'width' => $info[0],
+            'height' => $info[1],
+            'orientation' => $this->get_orientation(),
+            'exif' => (function_exists('exif_read_data') && $info['mime'] === 'image/jpeg') ? ($this->exif = @exif_read_data($this->filename)) : null,
+            'format' => preg_replace('/^image\//', '', $info['mime']),
+            'mime' => $info['mime']
+        );
+
+        $this->width = $info[0];
+        $this->height = $info[1];
+
+        imagesavealpha($this->image, true);
+        imagealphablending($this->image, true);
+
+        return $this;
+    }
+
+    /**
+     * Converts a hex color value to its RGB equivalent
+     * @param string $color
+     * @return boolean|array
+     */
+    protected function normalize_color($color)
+    {
+        if (is_string($color)) {
+            $color = trim($color, '#');
+
+            if (strlen($color) == 6) {
+                list($r, $g, $b) = array(
+                    $color[0] . $color[1],
+                    $color[2] . $color[3],
+                    $color[4] . $color[5]
+                );
+            } elseif (strlen($color) == 3) {
+                list($r, $g, $b) = array(
+                    $color[0] . $color[0],
+                    $color[1] . $color[1],
+                    $color[2] . $color[2]
+                );
+            } else {
+                return false;
+            }
+
+            return array('r' => hexdec($r), 'g' => hexdec($g), 'b' => hexdec($b), 'a' => 0);
+        } elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {
+            if (isset($color['r'], $color['g'], $color['b'])) {
+                return array(
+                    'r' => $this->keep_within($color['r'], 0, 255),
+                    'g' => $this->keep_within($color['g'], 0, 255),
+                    'b' => $this->keep_within($color['b'], 0, 255),
+                    'a' => $this->keep_within(isset($color['a']) ? $color['a'] : 0, 0, 127)
+                );
+            } elseif (isset($color[0], $color[1], $color[2])) {
+                return array(
+                    'r' => $this->keep_within($color[0], 0, 255),
+                    'g' => $this->keep_within($color[1], 0, 255),
+                    'b' => $this->keep_within($color[2], 0, 255),
+                    'a' => $this->keep_within(isset($color[3]) ? $color[3] : 0, 0, 127)
+                );
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Ensures $value is always within $min and $max range.
+     * @param integer $value
+     * @param integer $min
+     * @param integer $max
+     * @return integer
+     */
+    protected function keep_within($value, $min, $max)
+    {
+        if ($value < $min) {
+            return $min;
+        }
+
+        if ($value > $max) {
+            return $max;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Same as PHP's imagecopymerge() function, except preserves alpha-transparency in 24-bit PNGs
+     * @param resource $dst_im
+     * @param resource $src_im
+     * @param integer $dst_x
+     * @param integer $dst_y
+     * @param integer $src_x
+     * @param integer $src_y
+     * @param integer $src_w
+     * @param integer $src_h
+     * @param integer $pct
+     * @return null
+     */
+    protected function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y,
+                                            $src_x, $src_y, $src_w, $src_h, $pct)
+    {
+        // Get image width and height and percentage
+        $pct /= 100;
+        $w = imagesx($src_im);
+        $h = imagesy($src_im);
+
+        // Turn alpha blending off
+        imagealphablending($src_im, false);
+
+        // Find the most opaque pixel in the image (the one with the smallest alpha value)
+        $minalpha = 127;
+
+        for ($x = 0; $x < $w; $x++) {
+            for ($y = 0; $y < $h; $y++) {
+                $alpha = (imagecolorat($src_im, $x, $y) >> 24) & 0xFF;
+                if ($alpha < $minalpha) {
+                    $minalpha = $alpha;
+                }
+            }
+        }
+
+        // Loop through image pixels and modify alpha for each
+        for ($x = 0; $x < $w; $x++) {
+            for ($y = 0; $y < $h; $y++) {
+                // Get current alpha value (represents the TANSPARENCY!)
+                $colorxy = imagecolorat($src_im, $x, $y);
+                $alpha = ($colorxy >> 24) & 0xFF;
+                // Calculate new alpha
+                if ($minalpha !== 127) {
+                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
+                } else {
+                    $alpha += 127 * $pct;
+                }
+                // Get the color index with new alpha
+                $alphacolorxy = imagecolorallocatealpha($src_im, ($colorxy >> 16) & 0xFF, ($colorxy >> 8) & 0xFF, $colorxy & 0xFF, $alpha);
+                // Set pixel with the new color + opacity
+                if (!imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
+                    return;
+                }
+            }
+        }
+
+        // Copy it
+        imagesavealpha($dst_im, true);
+        imagealphablending($dst_im, true);
+        imagesavealpha($src_im, true);
+        imagealphablending($src_im, true);
+        imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
+        return;
+    }
+
+    /**
+     * Returns the file extension of the specified file
+     * @param string $filename
+     * @return string
+     */
+    protected function file_ext($filename)
+    {
+        if (!preg_match('/\./', $filename)) {
+            return '';
+        }
+
+        return preg_replace('/^.*\./', '', $filename);
     }
 }

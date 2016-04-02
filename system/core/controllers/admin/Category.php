@@ -85,6 +85,39 @@ class Category extends Controller
         $this->outputCategories();
     }
 
+    /**
+     * Displays the add/edit category form
+     * @param integer $category_group_id
+     * @param integer|null $category_id
+     */
+    public function edit($category_group_id, $category_id = null)
+    {
+        $category_group = $this->getCategoryGroup($category_group_id);
+        $category = $this->get($category_id);
+
+        $this->data['category'] = $category;
+        $this->data['category_group'] = $category_group;
+        $this->data['categories'] = $this->category->getOptionList($category_group_id, 0);
+        $this->data['parent_id'] = (int) $this->request->get('parent_id');
+        $this->data['can_delete'] = (isset($category['category_id']) && $this->category->canDelete($category_id));
+
+        $this->setCategories();
+
+        if ($this->request->post('delete')) {
+            $this->delete($category_group, $category);
+        }
+
+        if ($this->request->post('save')) {
+            $this->submit($category_group, $category);
+        }
+
+        $this->setImages();
+
+        $this->setTitleCategory($category_group, $category);
+        $this->setBreadcrumbCategory($category_group);
+        $this->outputCategory();
+    }
+
     protected function getCategories($category_group)
     {
         $store = $this->store->get($category_group['store_id']);
@@ -143,39 +176,6 @@ class Category extends Controller
     protected function setTitleCategories($category_group)
     {
         $this->setTitle($this->text('Categories of group %name', array('%name' => $category_group['title'])));
-    }
-
-    /**
-     * Displays the add/edit category form
-     * @param integer $category_group_id
-     * @param integer|null $category_id
-     */
-    public function edit($category_group_id, $category_id = null)
-    {
-        $category_group = $this->getCategoryGroup($category_group_id);
-        $category = $this->get($category_id);
-
-        $this->data['category'] = $category;
-        $this->data['category_group'] = $category_group;
-        $this->data['categories'] = $this->category->getOptionList($category_group_id, 0);
-        $this->data['parent_id'] = (int) $this->request->get('parent_id');
-        $this->data['can_delete'] = (isset($category['category_id']) && $this->category->canDelete($category_id));
-
-        $this->setCategories();
-
-        if ($this->request->post('delete')) {
-            $this->delete($category_group, $category);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($category_group, $category);
-        }
-
-        $this->setImages();
-
-        $this->setTitleCategory($category_group, $category);
-        $this->setBreadcrumbCategory($category_group);
-        $this->outputCategory();
     }
 
     /**

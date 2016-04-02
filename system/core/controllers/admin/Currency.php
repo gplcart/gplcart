@@ -47,30 +47,6 @@ class Currency extends Controller
     }
 
     /**
-     * Renders the currency overview page
-     */
-    protected function outputCurrencies()
-    {
-        $this->output('settings/currency/list');
-    }
-
-    /**
-     * Sets titles on the currency overview page
-     */
-    protected function setTitleCurrencies()
-    {
-        $this->setTitle($this->text('Currencies'));
-    }
-
-    /**
-     * Sets breadcrumb on the currency overview page
-     */
-    protected function setBreadcrumbCurrencies()
-    {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-    }
-
-    /**
      * Displays the currency edit form
      * @param string|null $code
      */
@@ -92,6 +68,30 @@ class Currency extends Controller
         $this->setTitleEdit($currency);
         $this->setBreadcrumbEdit();
         $this->outputEdit();
+    }
+
+    /**
+     * Renders the currency overview page
+     */
+    protected function outputCurrencies()
+    {
+        $this->output('settings/currency/list');
+    }
+
+    /**
+     * Sets titles on the currency overview page
+     */
+    protected function setTitleCurrencies()
+    {
+        $this->setTitle($this->text('Currencies'));
+    }
+
+    /**
+     * Sets breadcrumb on the currency overview page
+     */
+    protected function setBreadcrumbCurrencies()
+    {
+        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
     }
 
     /**
