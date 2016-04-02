@@ -119,7 +119,7 @@ class Combination
     }
 
     /**
-     * 
+     * Imports rows
      * @param array $rows
      * @param integer $line
      * @param array $options
