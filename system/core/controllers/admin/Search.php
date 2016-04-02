@@ -159,7 +159,6 @@ class Search extends Controller
      */
     protected function submit($entity_id)
     {
-
         $job_id = "index_$entity_id";
         $this->job->delete($job_id);
 
@@ -208,5 +207,4 @@ class Search extends Controller
     {
         $this->output('tool/search');
     }
-
 }

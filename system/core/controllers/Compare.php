@@ -179,7 +179,7 @@ class Compare extends Controller
     }
 
     /**
-     * Sets breadcrumbs on the product compare page 
+     * Sets breadcrumbs on the product compare page
      */
     protected function setBreadcrumbCompare()
     {
@@ -229,7 +229,7 @@ class Compare extends Controller
         
         // Reindex by product class
         $products = array();
-        foreach($this->prepareProducts($results) as $product_id => $product){
+        foreach ($this->prepareProducts($results) as $product_id => $product) {
             $products[$product['product_class_id']][$product_id] = $product;
         }
         
@@ -250,7 +250,6 @@ class Compare extends Controller
         $imagestyle = $this->config->module($this->theme, 'image_style_product_grid', 3);
 
         foreach ($products as $product_id => &$product) {
-
             if (empty($product['status'])) {
                 continue;
             }
@@ -295,11 +294,9 @@ class Compare extends Controller
         $this->data['option_fields'] = array();
 
         foreach ($products as $product_id => &$product) {
-
             $product_fields = $this->product->getFields($product_id);
 
             foreach ($product_fields as $type => $items) {
-
                 $fields = $this->field->getList(array('field_id' => array_keys($items)));
                 $values = $this->field_value->getList(array('field_id' => array_keys($items)));
 
@@ -380,5 +377,4 @@ class Compare extends Controller
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
         return $this->prepareProducts($products, array('view' => 'grid'));
     }
-
 }

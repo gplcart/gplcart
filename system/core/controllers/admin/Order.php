@@ -236,7 +236,6 @@ class Order extends Controller
 
         $components = array();
         foreach ($order['data']['components'] as $type => $component) {
-
             if ($type === 'cart') {
                 $components[$type] = $this->renderComponentCart($type, $component, $cart, $order);
                 continue;
@@ -364,7 +363,6 @@ class Order extends Controller
         $order['creator_formatted'] = $this->text('Customer');
 
         if (!empty($order['creator'])) {
-
             $order['creator_formatted'] = $this->text('Unknown');
 
             $user = $this->user->get($order['user_id']);
@@ -414,7 +412,7 @@ class Order extends Controller
         $this->data['statuses'] = $this->order->getStatuses();
         $this->data['stores'] = $this->store->getNames();
 
-        array_walk($this->data['orders'], function(&$order) {
+        array_walk($this->data['orders'], function (&$order) {
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         });
 
@@ -463,5 +461,4 @@ class Order extends Controller
     {
         return $this->order->getList(array('count' => true) + $query);
     }
-
 }

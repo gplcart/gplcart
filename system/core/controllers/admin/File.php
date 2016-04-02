@@ -120,7 +120,6 @@ class File extends Controller
         $deleted_disk = $deleted_database = 0;
 
         foreach ($selected as $file_id) {
-
             if (!in_array($action, array('delete', 'delete_both'))) {
                 continue;
             }
@@ -362,5 +361,4 @@ class File extends Controller
 
         return !$has_errors;
     }
-
 }

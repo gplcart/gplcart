@@ -130,7 +130,7 @@ class Address
     }
 
     /**
-     * 
+     *
      * @param type $user_id
      * @param type $status
      * @return type
@@ -148,7 +148,7 @@ class Address
     }
     
     /**
-     * 
+     *
      * @param type $address
      * @param type $both
      * @return type
@@ -160,7 +160,6 @@ class Address
 
         $results = array();
         foreach ($address as $key => $value) {
-
             if (empty($format[$key]) || empty($value)) {
                 continue;
             }
@@ -245,7 +244,7 @@ class Address
     }
 
     /**
-     * 
+     *
      * @param type $data
      * @return string
      */
@@ -398,5 +397,4 @@ class Address
         $this->hook->fire('update.address.after', $address_id, $data, $result);
         return (bool) $result;
     }
-
 }

@@ -197,5 +197,4 @@ class Account
         $to = array($user['email']);
         return $this->mail->send($to, array($subject => $message), $options);
     }
-
 }

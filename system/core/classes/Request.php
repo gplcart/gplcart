@@ -17,13 +17,13 @@ class Request
 
     /**
      * Base path
-     * @var string 
+     * @var string
      */
     protected $base;
 
     /**
      * Language code from URL
-     * @var string 
+     * @var string
      */
     protected $langcode = '';
 
@@ -285,5 +285,4 @@ class Request
 
         return $files;
     }
-
 }
