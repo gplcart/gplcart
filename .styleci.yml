@@ -8,4 +8,6 @@ finder:
     - "system/locale"
     - "system/config"
     - "system/help"
-    - "*templates"
+    - "system/modules/backend/templates"
+    - "system/modules/frontend/templates"
+    - "system/modules/mobile/templates"
