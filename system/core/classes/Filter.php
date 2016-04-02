@@ -85,7 +85,7 @@ class Filter
             <[^>]*(>|$)       # a string that starts with a <, up until the > or the end of the string
             |                 # or
             >                 # just a >
-            )%x', function($match) use($tags) {
+            )%x', function ($match) use ($tags) {
             return $this->split($match, $tags);
         }, $string);
     }
@@ -322,5 +322,4 @@ class Filter
 
         return $uri;
     }
-
 }

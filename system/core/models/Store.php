@@ -27,7 +27,7 @@ class Store
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request 
+     * @var \core\classes\Request $request
      */
     protected $request;
 
@@ -124,7 +124,6 @@ class Store
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY name {$data['order']}";
@@ -223,7 +222,6 @@ class Store
             $sql = 'SELECT * FROM store WHERE store_id=:store_id';
             $where = array(':store_id' => $store_id);
         } else {
-
             $sql = 'SELECT * FROM store WHERE domain=:domain';
             $where = array(':domain' => $store_id);
 
@@ -508,11 +506,10 @@ class Store
                 return $emails;
         }
         
-        if(is_numeric($type)){
+        if (is_numeric($type)) {
             return isset($emails[$type]) ? $emails[$type] : '';
         }
 
         return $emails;
     }
-
 }

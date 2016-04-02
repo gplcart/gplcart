@@ -23,7 +23,6 @@ class Database extends PDO
     public function __construct($config = array())
     {
         if (!empty($config)) {
-
             $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
 
             try {
@@ -145,5 +144,4 @@ class Database extends PDO
         $stmt->execute();
         return $stmt->rowCount();
     }
-
 }

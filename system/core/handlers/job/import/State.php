@@ -82,7 +82,7 @@ class State
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -132,7 +132,7 @@ class State
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -145,7 +145,6 @@ class State
         $errors = array();
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
 
@@ -212,7 +211,7 @@ class State
     }
 
     /**
-     * 
+     *
      * @param type $name
      * @param type $code
      * @param type $country
@@ -233,5 +232,4 @@ class State
 
         return false;
     }
-
 }

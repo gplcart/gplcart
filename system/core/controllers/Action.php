@@ -21,7 +21,7 @@ class Action extends Controller
 
     /**
      * Cart model instance
-     * @var \core\models\Cart $cart 
+     * @var \core\models\Cart $cart
      */
     protected $cart;
 
@@ -237,5 +237,4 @@ class Action extends Controller
             'message_type' => 'success',
             'message' => $this->text('Product has been removed from comparison'));
     }
-
 }

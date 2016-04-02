@@ -90,7 +90,6 @@ class Page
         $page = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($page) {
-
             $page['data'] = unserialize($page['data']);
             $page['language'] = 'und';
 
@@ -281,7 +280,6 @@ class Page
      */
     public function update($page_id, array $data)
     {
-
         $this->hook->fire('update.page.before', $page_id, $data);
 
         if (empty($page_id)) {
@@ -365,7 +363,6 @@ class Page
      */
     public function delete($page_id)
     {
-
         $this->hook->fire('delete.page.before', $page_id);
 
         if (empty($page_id)) {
@@ -388,7 +385,6 @@ class Page
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title, u.email';
 
         if (!empty($data['count'])) {
@@ -439,7 +435,6 @@ class Page
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $sql .= " ORDER BY p.title {$data['order']}";
@@ -482,5 +477,4 @@ class Page
         $this->hook->fire('pages', $list);
         return $list;
     }
-
 }

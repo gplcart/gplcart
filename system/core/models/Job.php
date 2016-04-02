@@ -160,7 +160,6 @@ class Job
         }
 
         foreach ($job['operations'] as $operation_id => &$operation) {
-
             if (empty($operation['queue'])) {
                 continue;
             }
@@ -251,7 +250,6 @@ class Job
         $start_time = microtime(true);
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::JOB_MAX_TIME) {
-
             $args = array_merge(array($job, $operation_id, $done, $context), $arguments);
             $result = Handler::call($handlers, $operation_id, 'process', $args);
 
@@ -479,5 +477,4 @@ class Job
             $this->session->setMessage($this->language->text('An unexpected error has occurred. The job has not been properly completed'), 'danger');
         }
     }
-
 }

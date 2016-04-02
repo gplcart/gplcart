@@ -114,19 +114,19 @@ class Controller
 
     /**
      * Current route data
-     * @var array 
+     * @var array
      */
     protected $current_route = array();
 
     /**
      * Current user data
-     * @var array 
+     * @var array
      */
     protected $current_user = array();
 
     /**
      * Array of the current store
-     * @var array 
+     * @var array
      */
     protected $current_store = array();
 
@@ -138,7 +138,7 @@ class Controller
 
     /**
      * Current job
-     * @var array 
+     * @var array
      */
     protected $current_job = array();
 
@@ -432,10 +432,9 @@ class Controller
         } else {
             if ($this->url->isBackend()) {
                 $this->theme = $this->theme_backend;
-            } else if ($this->url->isInstall()) {
+            } elseif ($this->url->isInstall()) {
                 $this->theme = $this->theme_frontend;
-            } else if (!empty($this->current_store)) {
-
+            } elseif (!empty($this->current_store)) {
                 $this->theme_frontend = $this->theme = $this->store->config('theme');
 
                 if ($this->current_device === 'mobile') {
@@ -748,7 +747,6 @@ class Controller
      */
     protected function prepareOutput()
     {
-
         $this->data['head_title'] = $this->document->title();
         $this->data['page_title'] = $this->document->ptitle();
         $this->data['page_description'] = $this->document->pdescription();
@@ -915,7 +913,7 @@ class Controller
     }
 
     /**
-     * Sets a batch job from the current URL 
+     * Sets a batch job from the current URL
      * @return null
      */
     protected function setJob()
@@ -1032,7 +1030,6 @@ class Controller
         $notifications = $this->notification->getList($this->config->get('notification_summary_limit', 10));
 
         foreach ($notifications as $notification_id => $notification) {
-
             if (!$this->access($notification['access'])) {
                 continue;
             }
@@ -1305,7 +1302,6 @@ class Controller
      */
     protected function getJob()
     {
-
         if (empty($this->current_job['status'])) {
             return '';
         }
@@ -1414,7 +1410,6 @@ class Controller
         $this->data['filtering'] = false;
 
         foreach ($allowed_filters as $filter) {
-
             $this->data["filter_$filter"] = $this->request->get($filter);
 
             if (isset($this->data["filter_$filter"])) {
@@ -1483,5 +1478,4 @@ class Controller
         $this->data['pager'] = $this->pager->render();
         return $this->pager->getLimit();
     }
-
 }
