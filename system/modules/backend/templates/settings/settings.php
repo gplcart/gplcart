@@ -17,9 +17,12 @@
       </label>
       <div class="col-md-4">
         <input name="settings[gapi_email]" class="form-control" value="<?php echo $this->escape($settings['gapi_email']); ?>">
-        <?php if (isset($form_errors['gapi_email'])) { ?>
-        <div class="help-block"><?php echo $form_errors['gapi_email']; ?></div>
-        <?php } ?>
+        <?php if (isset($form_errors['gapi_email'])) {
+    ?>
+        <div class="help-block"><?php echo $form_errors['gapi_email'];
+    ?></div>
+        <?php 
+} ?>
       </div>
     </div>
     <div class="form-group<?php echo isset($form_errors['gapi_certificate']) ? ' has-error' : ''; ?>">
@@ -32,12 +35,18 @@
         <input type="file" accept=".p12" name="gapi_certificate" class="form-control">
         <input type="hidden" name="settings[gapi_certificate]" value="<?php echo $this->escape($settings['gapi_certificate']); ?>">
         <div class="help-block">
-        <?php if ($gapi_certificate) { ?>
-        <?php echo $gapi_certificate; ?>
-        <?php } ?>
-        <?php if (isset($form_errors['gapi_certificate'])) { ?>
-        <?php echo $form_errors['gapi_certificate']; ?>
-        <?php } ?>
+        <?php if ($gapi_certificate) {
+    ?>
+        <?php echo $gapi_certificate;
+    ?>
+        <?php 
+} ?>
+        <?php if (isset($form_errors['gapi_certificate'])) {
+    ?>
+        <?php echo $form_errors['gapi_certificate'];
+    ?>
+        <?php 
+} ?>
         </div>
       </div>
     </div>

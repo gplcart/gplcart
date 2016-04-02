@@ -21,8 +21,7 @@ class Page extends Controller
 
         $langcode = $this->data['lang'];
 
-        if(isset($page['description'][$langcode])) {
-
+        if (isset($page['description'][$langcode])) {
             $page['title'] = $page['description'][$langcode]['title'];
             $page['description'] = $page['description'][$langcode]['description'];
 
@@ -32,6 +31,6 @@ class Page extends Controller
 
         $this->data['page'] = $page;
 
-		$this->hook->fire('page.view', $page);
+        $this->hook->fire('page.view', $page);
     }
 }

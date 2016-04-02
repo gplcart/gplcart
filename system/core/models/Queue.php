@@ -343,5 +343,4 @@ class Queue
         $this->hook->fire('queues', $list);
         return $list;
     }
-
 }

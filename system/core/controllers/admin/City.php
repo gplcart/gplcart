@@ -284,7 +284,6 @@ class City extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('city_edit')) {
                 $updated += (int) $this->city->update($id, array('status' => $value));
             }
@@ -355,5 +354,4 @@ class City extends Controller
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
         }
     }
-
 }

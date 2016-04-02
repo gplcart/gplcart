@@ -259,7 +259,6 @@ class File
         $file = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($file) {
-
             $file['language'] = 'und';
             $file['translation'] = $this->getTranslations($file_id);
 
@@ -380,7 +379,6 @@ class File
      */
     public function validate($path, $filename = null)
     {
-
         $pathinfo = isset($filename) ? pathinfo($filename) : pathinfo($path);
 
         if (empty($pathinfo['filename'])) {
@@ -398,7 +396,6 @@ class File
         }
 
         if (!isset($this->handler)) {
-
             $supported_extensions = $this->supportedExtensions();
 
             if (!in_array($extension, $supported_extensions)) {
@@ -444,7 +441,7 @@ class File
 
         if ($dot) {
             // Prepend the dot to each extension in the array
-            $extensions = array_map(function($value) {
+            $extensions = array_map(function ($value) {
                 return ".$value";
             }, $extensions);
         }
@@ -509,7 +506,6 @@ class File
 
         $extension = ltrim($name, '.');
         foreach ($handlers as $handler) {
-
             if (empty($handler['extensions'])) {
                 continue;
             }
@@ -757,7 +753,6 @@ class File
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'title':
                     $field = 'title';
@@ -821,5 +816,4 @@ class File
     {
         return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
     }
-
 }

@@ -204,5 +204,4 @@ class Url
         $url = $this->request->base() . trim(str_replace(GC_ROOT_DIR, '', $server_path), '/');
         return $url;
     }
-
 }

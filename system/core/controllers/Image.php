@@ -117,5 +117,4 @@ class Image extends Controller
 
         return $headers;
     }
-
 }
