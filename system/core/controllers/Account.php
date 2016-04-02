@@ -255,11 +255,7 @@ class Account extends Controller
      */
     protected function prepareAddress($address)
     {
-        foreach ($address as &$data) {
-            //
-        }
-
-        return $address;
+        return $this->address->getTranslated($address, true);
     }
 
     /**
