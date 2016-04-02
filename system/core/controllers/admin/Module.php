@@ -103,8 +103,8 @@ class Module extends Controller
             $modules = $this->module->getByType($type);
         }
         
-        foreach($modules as &$module){
-            if($this->module->isActiveTheme($module['id'])){
+        foreach ($modules as &$module) {
+            if ($this->module->isActiveTheme($module['id'])) {
                 $module['always_enabled'] = true;
             }
             
@@ -141,5 +141,4 @@ class Module extends Controller
     {
         $this->output('module/list');
     }
-
 }

@@ -52,13 +52,13 @@ class Pager
 
     /**
      * "Previous" label text
-     * @var string 
+     * @var string
      */
     protected $previous_text = 'Previous';
 
     /**
      * "Next" label text
-     * @var string 
+     * @var string
      */
     protected $next_text = 'Next';
 
@@ -433,5 +433,4 @@ class Pager
         $this->next_text = $text;
         return $this;
     }
-
 }

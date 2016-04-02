@@ -90,7 +90,7 @@ class Checkout extends Controller
 
     /**
      * Current state of login form
-     * @var type 
+     * @var type
      */
     protected $login_form;
 
@@ -372,7 +372,6 @@ class Checkout extends Controller
     protected function updateCart()
     {
         foreach ($this->submitted['items'] as $cart_id => $item) {
-
             if ((int) $item['quantity'] === 0) {
                 continue;
             }
@@ -414,7 +413,6 @@ class Checkout extends Controller
         }
 
         if (!empty($this->submitted['minus'])) {
-
             $this->cart_action = $this->submitted['minus'];
 
             if ($this->cart_content['items'][$this->cart_action]['quantity'] > 1) {
@@ -474,7 +472,6 @@ class Checkout extends Controller
         $result = $this->login($this->cart_content);
 
         if (isset($result['user'])) {
-
             $options = array(
                 'redirect' => 'checkout',
                 'message_type' => 'success',
@@ -522,7 +519,6 @@ class Checkout extends Controller
         $imagestyle = $this->config->module($this->theme, 'image_style_cart', 3);
 
         foreach ($cart['items'] as &$item) {
-
             $imagepath = '';
             if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
                 $imagefile = reset($item['product']['images']);
@@ -571,11 +567,9 @@ class Checkout extends Controller
     {
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
-
             $name = $this->text($type);
 
             if (in_array($type, array('shipping', 'payment'))) {
-
                 $service = $this->getService($order[$type], $type, $cart, $order);
 
                 if (isset($service['name'])) {
@@ -616,7 +610,7 @@ class Checkout extends Controller
         
         $result = $this->order->submit($this->form_data['order'], $this->cart_content);
         
-        if(empty($result['order']['order_id'])){
+        if (empty($result['order']['order_id'])) {
             return;
         }
         
@@ -764,7 +758,6 @@ class Checkout extends Controller
     protected function prepareServices(array $services, array $cart, array $order)
     {
         foreach ($services as &$service) {
-
             $service['price'] = $this->price->convert((int) $service['price'], $service['currency'], $order['currency']);
             $service['price_formatted'] = $this->price->format($service['price'], $order['currency']);
 
@@ -785,7 +778,7 @@ class Checkout extends Controller
     }
 
     /**
-     * Returns an order 
+     * Returns an order
      * @param integer $order_id
      * @return array
      */
@@ -822,5 +815,4 @@ class Checkout extends Controller
 
         return $result;
     }
-
 }

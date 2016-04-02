@@ -104,7 +104,6 @@ class Product
         $header = $options['operation']['csv']['header'];
 
         foreach ($products as $product) {
-
             $fields = $this->export->getFields($header, $product);
 
             if (isset($fields['price'])) {
@@ -116,5 +115,4 @@ class Product
 
         return array('errors' => $errors);
     }
-
 }

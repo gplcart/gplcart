@@ -447,5 +447,4 @@ class FieldValue extends Controller
             $this->data['field_value']['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $this->data['field_value']['path']);
         }
     }
-
 }

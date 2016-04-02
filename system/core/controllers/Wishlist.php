@@ -102,7 +102,7 @@ class Wishlist extends Controller
     }
 
     /**
-     * Sets breadcrumbs on the wishlist page 
+     * Sets breadcrumbs on the wishlist page
      */
     protected function setBreadcrumbWishlist()
     {
@@ -150,7 +150,6 @@ class Wishlist extends Controller
         $imagestyle = $this->config->module($this->theme, 'image_style_product_grid', 3);
 
         foreach ($products as $product_id => &$product) {
-
             if (empty($product['status'])) {
                 continue;
             }
@@ -251,5 +250,4 @@ class Wishlist extends Controller
 
         return $tree;
     }
-
 }

@@ -3,17 +3,23 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($review['review_id']) && $this->access('review_delete')) { ?>
+        <?php if (isset($review['review_id']) && $this->access('review_delete')) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url('admin/content/review'); ?>" class="btn btn-default cancel"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
-        <?php if ($this->access('review_edit') || $this->access('review_add')) { ?>
+        <?php if ($this->access('review_edit') || $this->access('review_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-            <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+            <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -44,9 +50,12 @@
         </label>
         <div class="col-md-4">
           <input name="review[product]" class="form-control" value="<?php echo isset($review['product']) ? $this->escape($review['product']) : ''; ?>">
-          <?php if (isset($form_errors['product'])) { ?>
-          <div class="help-block"><?php echo $form_errors['product']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['product'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['product'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <input type="hidden" name="review[product_id]" value="<?php echo isset($review['product_id']) ? $review['product_id'] : ''; ?>">
@@ -58,9 +67,12 @@
         </label>
         <div class="col-md-4">
           <input name="review[email]" class="form-control" value="<?php echo isset($review['email']) ? $this->escape($review['email']) : ''; ?>">
-          <?php if (isset($form_errors['email'])) { ?>
-          <div class="help-block"><?php echo $form_errors['email']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['email'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['email'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group<?php echo isset($form_errors['created']) ? ' has-error' : ''; ?>">
@@ -71,9 +83,12 @@
         </label>
         <div class="col-md-4">
           <input name="review[created]" class="form-control" value="<?php echo!empty($review['created']) ? $this->date($review['created']) : ''; ?>">
-          <?php if (isset($form_errors['created'])) { ?>
-          <div class="help-block"><?php echo $form_errors['created']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['created'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['created'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group required<?php echo isset($form_errors['text']) ? ' has-error' : ''; ?>">
@@ -84,9 +99,12 @@
         </label>
         <div class="col-md-4">
           <textarea name="review[text]" class="form-control"><?php echo isset($review['text']) ? $this->escape($review['text']) : ''; ?></textarea>
-          <?php if (isset($form_errors['text'])) { ?>
-          <div class="help-block"><?php echo $form_errors['text']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['text'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['text'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>

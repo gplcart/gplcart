@@ -12,23 +12,35 @@
     <?php echo $order['country']; ?>
     <?php echo $order['city']; ?>
     <?php echo $order['address_1']; ?>
-    <?php if($order['address_2']) { ?>
-    , <?php echo $order['address_2']; ?>
-    <?php } ?>
-    <?php if($order['phone']) { ?>
-    tel: <?php echo $order['phone']; ?>
-    <?php } ?>
-    <?php if($order['postcode']) { ?>
-    zip: <?php echo $order['postcode']; ?>
-    <?php } ?>
+    <?php if ($order['address_2']) {
+    ?>
+    , <?php echo $order['address_2'];
+    ?>
+    <?php 
+} ?>
+    <?php if ($order['phone']) {
+    ?>
+    tel: <?php echo $order['phone'];
+    ?>
+    <?php 
+} ?>
+    <?php if ($order['postcode']) {
+    ?>
+    zip: <?php echo $order['postcode'];
+    ?>
+    <?php 
+} ?>
     </span>
     <br>
     <span class="small">
     <?php echo $order['last_name']; ?>
     <?php echo $order['first_name']; ?>
-    <?php if($order['middle_name']) { ?>
-    <?php echo $order['middle_name']; ?>
-    <?php } ?>
+    <?php if ($order['middle_name']) {
+    ?>
+    <?php echo $order['middle_name'];
+    ?>
+    <?php 
+} ?>
     </span>
   </span>
 </span>

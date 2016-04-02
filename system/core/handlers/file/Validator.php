@@ -17,7 +17,7 @@ class Validator
 
     /**
      * File model instance
-     * @var \core\models\File $file 
+     * @var \core\models\File $file
      */
     protected $file;
 
@@ -74,5 +74,4 @@ class Validator
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
         return in_array($this->file->getMimetype($file), $allowed);
     }
-
 }

@@ -36,5 +36,4 @@ class Example
             'settings' => array(),
         );
     }
-
 }

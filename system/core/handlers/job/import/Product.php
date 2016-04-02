@@ -121,7 +121,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -173,7 +173,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -187,7 +187,6 @@ class Product
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['product_id']) && is_numeric($data['product_id']));
@@ -281,7 +280,6 @@ class Product
      */
     protected function validateTitle(&$data, &$errors, $line)
     {
-
         if (isset($data['title']) && mb_strlen($data['title']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
@@ -368,7 +366,6 @@ class Product
      */
     protected function validateStore(&$data, &$errors, $line)
     {
-
         if (!isset($data['store_id'])) {
             if (isset($data['update_product']['store_id'])) {
                 $data['store_id'] = $data['update_product']['store_id']; // Needs to regenerate sku
@@ -445,7 +442,6 @@ class Product
      */
     protected function validatePrice(&$data, &$errors, $line)
     {
-
         if (!isset($data['price'])) {
             return true;
         }
@@ -462,7 +458,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param array $data
      * @param type $errors
      * @param type $line
@@ -470,7 +466,6 @@ class Product
      */
     protected function validateStock(&$data, &$errors, $line)
     {
-
         if (!isset($data['stock'])) {
             return true;
         }
@@ -495,7 +490,6 @@ class Product
      */
     protected function validateClass(&$data, &$errors, $line)
     {
-
         if (!isset($data['product_class_id'])) {
             return true;
         }
@@ -536,7 +530,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param array $data
      * @param type $errors
      * @param type $line
@@ -544,7 +538,6 @@ class Product
      */
     protected function validateCategory(&$data, &$errors, $line)
     {
-
         if (!isset($data['category_id'])) {
             return true;
         }
@@ -597,7 +590,6 @@ class Product
      */
     protected function validateBrand(&$data, &$errors, $line)
     {
-
         if (!isset($data['brand_category_id'])) {
             return true;
         }
@@ -626,7 +618,6 @@ class Product
      */
     protected function validateSku(&$data, &$errors, $line)
     {
-
         if (!isset($data['sku'])) {
             return true;
         }
@@ -786,7 +777,6 @@ class Product
 
     protected function validateDimension(&$data, &$errors, $line)
     {
-
         if (isset($data['width']) && (!is_numeric($data['width']) || strlen($data['width']) > 10)) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
@@ -889,5 +879,4 @@ class Product
 
         return $this->product->add($data) ? 1 : 0;
     }
-
 }

@@ -23,38 +23,57 @@
     </a>
   </div>
   <div class="col-md-9">
-    <?php if ($addresses) { ?>
+    <?php if ($addresses) {
+    ?>
     <div class="row addresses">
-      <?php foreach ($addresses as $address_id => $address) { ?>
+      <?php foreach ($addresses as $address_id => $address) {
+    ?>
       <div class="col-md-4">
         <div class="panel panel-default address">
           <div class="panel-body">
             <table class="table table-condensed address">
               <tr>
                 <td colspan="2" class="text-right">
-                  <a href="<?php echo $this->url(false, array('delete' => $address_id)); ?>"><?php echo $this->text('Delete'); ?></a>
+                  <a href="<?php echo $this->url(false, array('delete' => $address_id));
+    ?>"><?php echo $this->text('Delete');
+    ?></a>
                 </td>
               </tr>
-              <?php foreach ($address as $label => $value) { ?>
+              <?php foreach ($address as $label => $value) {
+    ?>
               <tr>
-                <td><?php echo is_numeric($label) ? '' : $this->escape($label); ?></td>
-                <td><?php echo $this->escape($value); ?></td>
+                <td><?php echo is_numeric($label) ? '' : $this->escape($label);
+    ?></td>
+                <td><?php echo $this->escape($value);
+    ?></td>
               </tr>
-              <?php } ?>
+              <?php 
+}
+    ?>
             </table>
           </div>
         </div>
       </div>
-      <?php } ?>
+      <?php 
+}
+    ?>
     </div>
-    <?php } ?>
+    <?php 
+} ?>
     <div class="row">
       <div class="col-md-6">
-        <?php if ($addresses) { ?>
-        <a href="<?php echo $this->url("account/{$user['user_id']}/address/add"); ?>"><?php echo $this->text('Add new address'); ?></a>
-        <?php } else { ?>
-        <?php echo $this->text('No saved addresses. <a href="!href">Add</a>', array('!href' => $this->url("account/{$user['user_id']}/address/add"))); ?>
-        <?php } ?>
+        <?php if ($addresses) {
+    ?>
+        <a href="<?php echo $this->url("account/{$user['user_id']}/address/add");
+    ?>"><?php echo $this->text('Add new address');
+    ?></a>
+        <?php 
+} else {
+    ?>
+        <?php echo $this->text('No saved addresses. <a href="!href">Add</a>', array('!href' => $this->url("account/{$user['user_id']}/address/add")));
+    ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>

@@ -109,7 +109,6 @@ class Bookmark extends Controller
         $bookmarks = $this->bookmark->getList(array('limit' => $limit) + $query);
 
         foreach ($bookmarks as &$bookmark) {
-
             if ($bookmark['id_key'] !== 'product_id' || empty($bookmark['id_value'])) {
                 continue;
             }
@@ -191,5 +190,4 @@ class Bookmark extends Controller
 
         return false;
     }
-
 }

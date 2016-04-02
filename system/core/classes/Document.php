@@ -43,7 +43,6 @@ class Document
         static $scripts = array();
 
         if (empty($script)) {
-
             if (!empty($position)) {
                 return empty($scripts[$position]) ? array() : $scripts[$position];
             }
@@ -222,5 +221,4 @@ class Document
         $description = $string;
         return $description;
     }
-
 }
