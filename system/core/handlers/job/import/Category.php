@@ -64,7 +64,7 @@ class Category
     protected $alias;
 
     /**
-     * 
+     *
      * @param Import $import
      * @param Language $language
      * @param User $user
@@ -85,7 +85,7 @@ class Category
     }
 
     /**
-     * 
+     *
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -137,7 +137,7 @@ class Category
     }
 
     /**
-     * 
+     *
      * @param type $rows
      * @param type $line
      * @param type $options
@@ -151,7 +151,6 @@ class Category
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['category_id']) && is_numeric($data['category_id']));
@@ -481,5 +480,4 @@ class Category
 
         return $this->category->add($data) ? 1 : 0;
     }
-
 }

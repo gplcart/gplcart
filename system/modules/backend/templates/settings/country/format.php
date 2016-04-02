@@ -6,11 +6,14 @@
         <a href="<?php echo $this->url('admin/settings/country'); ?>" class="btn btn-default cancel">
           <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
         </a>
-        <?php if ($this->access('country_format_edit')) { ?>
+        <?php if ($this->access('country_format_edit')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -40,23 +43,36 @@
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($format as $name => $item) { ?>
-          <?php if(isset($item['name'])) { ?>
+          <?php foreach ($format as $name => $item) {
+    ?>
+          <?php if (isset($item['name'])) {
+    ?>
           <tr>
-            <td><?php echo $this->escape($item['name']); ?></td>
+            <td><?php echo $this->escape($item['name']);
+    ?></td>
             <td class="middle">
-              <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1"<?php echo!empty($item['status']) ? ' checked' : ''; ?>>
-              <input type="hidden" name="format[<?php echo $name; ?>][weight]" value="<?php echo $item['weight']; ?>">
+              <input type="checkbox" name="format[<?php echo $name;
+    ?>][status]" value="1"<?php echo!empty($item['status']) ? ' checked' : '';
+    ?>>
+              <input type="hidden" name="format[<?php echo $name;
+    ?>][weight]" value="<?php echo $item['weight'];
+    ?>">
             </td>
             <td class="middle">
-              <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo!empty($item['required']) ? ' checked' : ''; ?>>
+              <input type="checkbox" name="format[<?php echo $name;
+    ?>][required]" value="1"<?php echo!empty($item['required']) ? ' checked' : '';
+    ?>>
             </td>
             <td class="middle">
-              <i class="fa fa-arrows handle"></i> <?php echo $this->escape($item['weight']); ?>
+              <i class="fa fa-arrows handle"></i> <?php echo $this->escape($item['weight']);
+    ?>
             </td>
           </tr>
-          <?php } ?>
-          <?php } ?>
+          <?php 
+}
+    ?>
+          <?php 
+} ?>
         </tbody>
       </table>
     </div>

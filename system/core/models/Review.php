@@ -174,7 +174,6 @@ class Review
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT r.*, u.name, u.email ';
 
         if (!empty($data['count'])) {
@@ -224,7 +223,6 @@ class Review
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
 
             if (in_array($data['sort'], $allowed_sort)) {
@@ -253,5 +251,4 @@ class Review
         $this->hook->fire('reviews', $list);
         return $list;
     }
-
 }

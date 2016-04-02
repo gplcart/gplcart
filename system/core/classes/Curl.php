@@ -83,5 +83,4 @@ class Curl
 
         return $options;
     }
-
 }

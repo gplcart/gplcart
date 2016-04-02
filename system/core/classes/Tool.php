@@ -19,7 +19,7 @@ class Tool
      */
     public static function sortWeight(&$array)
     {
-        uasort($array, function($a, $b) {
+        uasort($array, function ($a, $b) {
             $a_weight = (is_array($a) && isset($a['weight'])) ? $a['weight'] : 0;
             $b_weight = (is_array($b) && isset($b['weight'])) ? $b['weight'] : 0;
 
@@ -72,14 +72,14 @@ class Tool
     public static function trimArray(&$array, $filter = false)
     {
         if ($filter) {
-            array_walk_recursive($array, function(&$v) {
+            array_walk_recursive($array, function (&$v) {
                 $v = filter_var(trim($v), FILTER_SANITIZE_STRING);
             });
 
             return $array;
         }
 
-        array_walk_recursive($array, function(&$v) {
+        array_walk_recursive($array, function (&$v) {
             $v = trim($v);
         });
 
@@ -166,7 +166,6 @@ class Tool
         }
 
         while (!feof($handle)) {
-
             $buffer = fread($handle, $chunksize);
             echo $buffer;
 
@@ -351,7 +350,6 @@ class Tool
         $current = date_timestamp_set($date, $timestamp);
 
         foreach ($ranges[date('D', $timestamp)] as $start => $end) {
-
             $start = date_create_from_format('h:i A', $start);
             $end = date_create_from_format('h:i A', $end);
 
@@ -434,5 +432,4 @@ class Tool
 
         return true;
     }
-
 }

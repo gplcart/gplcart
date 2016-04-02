@@ -153,7 +153,7 @@ class User
 
         return array();
     }
-     * 
+     *
      */
 
     /**
@@ -166,7 +166,7 @@ class User
         //TODO: cache??
         return $this->address->getList(array('user_id' => $user_id));
     }
-     * 
+     *
      */
 
     /**
@@ -443,7 +443,7 @@ class User
             return false;
         }
 
-        if(!$this->session->regenerate(true)) {
+        if (!$this->session->regenerate(true)) {
             throw new SystemLogicalUserAccess('Failed to regenerate the current session');
         }
 
@@ -516,7 +516,7 @@ class User
             return false;
         }
 
-        if(!$this->session->delete()) {
+        if (!$this->session->delete()) {
             throw new SystemLogicalUserAccess('Failed to delete old session on logout');
         }
 
@@ -589,7 +589,6 @@ class User
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -649,5 +648,4 @@ class User
         
         return $this->config->get("user_login_redirect_{$user['role_id']}", "account/{$user['user_id']}");
     }
-
 }

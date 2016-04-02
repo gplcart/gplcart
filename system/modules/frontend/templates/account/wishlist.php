@@ -24,26 +24,37 @@
   </div>
   <div class="col-md-9">
 
-<?php if($wishlist) { ?>
+<?php if ($wishlist) {
+    ?>
     <table class="table table-condensed">
         <thead>
             <tr>
                 <th>#</th>
-                <th><?php echo $this->text('Created'); ?></th>
-                <th><?php echo $this->text('Amount'); ?></th>
-                <th><?php echo $this->text('Status'); ?></th>
+                <th><?php echo $this->text('Created');
+    ?></th>
+                <th><?php echo $this->text('Amount');
+    ?></th>
+                <th><?php echo $this->text('Status');
+    ?></th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach($wishlist as $product) { ?>
+            <?php foreach ($wishlist as $product) {
+    ?>
             <tr>
 
             </tr>
-            <?php } ?>
+            <?php 
+}
+    ?>
         </tbody>
     </table>
-<?php } else { ?>
-<?php echo $this->text('You have no products in your wishlist. <a href="!href">Shop now</a>', array('!href' => $this->url('/'))); ?>
-<?php } ?>
+<?php 
+} else {
+    ?>
+<?php echo $this->text('You have no products in your wishlist. <a href="!href">Shop now</a>', array('!href' => $this->url('/')));
+    ?>
+<?php 
+} ?>
 
   </div>

@@ -893,7 +893,6 @@ class Route
 
         $key = str_replace('_id', '', $result['id_key']);
         foreach ($this->getList() as $pattern => $route) {
-
             if (!isset($route['alias'][0])) {
                 continue;
             }
@@ -917,7 +916,6 @@ class Route
         $path_segments = $this->url->segments();
 
         foreach ($this->getList() as $pattern => $route) {
-
             if (empty($route['alias'])) {
                 continue;
             }
@@ -961,7 +959,6 @@ class Route
     protected function callController()
     {
         foreach ($this->getList() as $pattern => $route) {
-
             $arguments = $this->parsePattern($pattern);
 
             if ($arguments !== false) {
@@ -981,7 +978,6 @@ class Route
      */
     protected function parsePattern($pattern)
     {
-
         if (!preg_match_all('#^' . $pattern . '$#', $this->path(), $matches, PREG_OFFSET_CAPTURE)) {
             return false;
         }
@@ -1023,5 +1019,4 @@ class Route
     {
         return $this->path;
     }
-
 }
