@@ -48,7 +48,7 @@ class Category
 
     /**
      * Hook model instance
-     * @var \core\Hook $hook 
+     * @var \core\Hook $hook
      */
     protected $hook;
 
@@ -80,8 +80,7 @@ class Category
     CategoryGroup $category_group,
     Hook $hook,
     Config $config
-    )
-    {
+    ) {
         $this->hook = $hook;
         $this->image = $image;
         $this->alias = $alias;
@@ -113,7 +112,6 @@ class Category
         $category = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($category) {
-
             $category['data'] = unserialize($category['data']);
             $category['language'] = 'und';
 
@@ -194,7 +192,6 @@ class Category
      */
     public function getTree(array $data)
     {
-
         $tree = &Cache::memory('category.tree.' . implode('.', $data));
 
         if (isset($tree)) {
@@ -268,7 +265,6 @@ class Category
         $process_parents[] = $parent;
 
         while (count($process_parents)) {
-
             $parent = array_pop($process_parents);
             $depth = count($process_parents);
 
@@ -575,7 +571,6 @@ class Category
     public function update($category_id,
                            array $data)
     {
-
         $this->hook->fire('update.category.before', $category_id, $data);
 
         if (empty($category_id)) {
@@ -694,5 +689,4 @@ class Category
 
         return (bool) $sth->fetchColumn();
     }
-
 }

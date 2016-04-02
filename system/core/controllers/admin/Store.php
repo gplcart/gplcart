@@ -217,7 +217,6 @@ class Store extends Controller
         }
 
         if (!empty($this->data['store']['data']['hours'])) {
-
             $opening_hours = '';
             foreach ((array) $this->data['store']['data']['hours'] as $hours) {
                 if (is_array($hours)) {
@@ -322,7 +321,6 @@ class Store extends Controller
     {
         $updated = $deleted = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('store_edit')) {
                 $updated += (int) $this->store->update($id, array('status' => (int) $value));
             }
@@ -385,7 +383,7 @@ class Store extends Controller
 
         $this->submitted['data']['email'] = Tool::stringToArray($this->submitted['data']['email']);
 
-        $emails = array_filter($this->submitted['data']['email'], function($email) {
+        $emails = array_filter($this->submitted['data']['email'], function ($email) {
             return filter_var($email, FILTER_VALIDATE_EMAIL);
         });
 
@@ -438,14 +436,13 @@ class Store extends Controller
 
         $i = 0;
         foreach ($days as &$hours) {
-
             $hours = array_filter(str_replace(' ', '', explode('-', $hours)));
 
             if (!$hours) {
                 continue;
             }
 
-            $timestamps = array_filter($hours, function($hour) {
+            $timestamps = array_filter($hours, function ($hour) {
                 return strtotime($hour);
             });
 
@@ -529,7 +526,6 @@ class Store extends Controller
 
         $existing = false;
         foreach ($stores as $store_id => $data) {
-
             if (isset($store['store_id']) && $store['store_id'] == $store_id) {
                 continue;
             }
@@ -634,7 +630,6 @@ class Store extends Controller
         $favicon = $this->request->file('favicon');
 
         if ($logo) {
-
             if ($this->file->upload($logo) !== true) {
                 $this->data['form_errors']['logo'] = $this->text('Unable to upload the file');
                 return false;
@@ -644,7 +639,6 @@ class Store extends Controller
         }
 
         if ($favicon) {
-
             if ($this->file->upload($favicon) !== true) {
                 $this->data['form_errors']['favicon'] = $this->text('Unable to upload the file');
                 return false;
@@ -655,5 +649,4 @@ class Store extends Controller
 
         return true;
     }
-
 }

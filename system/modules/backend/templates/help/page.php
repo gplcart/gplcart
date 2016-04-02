@@ -1,1 +1,1 @@
-<?php echo $this->xss($text); ?>
+<?php echo $this->xss($text);

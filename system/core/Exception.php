@@ -84,5 +84,4 @@ class Exception extends Base
 
         return $data;
     }
-
 }

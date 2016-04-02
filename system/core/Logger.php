@@ -73,7 +73,7 @@ class Logger
 
         if (is_string($data)) {
             $message = $data;
-        } else if (isset($data['message'])) {
+        } elseif (isset($data['message'])) {
             $message = $data['message'];
             unset($data['message']);
         }
@@ -131,7 +131,6 @@ class Logger
         );
 
         if (in_array($lasterror['type'], $error_types)) {
-
             $error['message'] = $lasterror['message'];
             $error['code'] = $lasterror['type'];
             $error['file'] = $lasterror['file'];
@@ -171,5 +170,4 @@ class Logger
     {
         return static::$errors;
     }
-
 }

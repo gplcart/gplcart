@@ -3,17 +3,23 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($country['code']) && $this->access('country_delete') && empty($country['default'])) { ?>
+        <?php if (isset($country['code']) && $this->access('country_delete') && empty($country['default'])) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url('admin/settings/country'); ?>" class="btn btn-default"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
-        <?php if ($this->access('country_edit') || $this->access('country_add')) { ?>
+        <?php if ($this->access('country_edit') || $this->access('country_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -63,9 +69,12 @@
         </label>
         <div class="col-md-2">
           <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->escape($country['code']) : ''; ?>">
-          <?php if (isset($form_errors['code'])) { ?>
-          <div class="help-block"><?php echo $form_errors['code']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['code'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['code'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
@@ -76,9 +85,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="country[name]" class="form-control" value="<?php echo isset($country['name']) ? $this->escape($country['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['name'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['name'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group<?php echo isset($form_errors['native_name']) ? ' has-error' : ''; ?>">
@@ -89,9 +101,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="country[native_name]" class="form-control" value="<?php echo isset($country['native_name']) ? $this->escape($country['native_name']) : ''; ?>">
-          <?php if (isset($form_errors['native_name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['native_name']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['native_name'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['native_name'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group<?php echo isset($form_errors['weight']) ? ' has-error' : ''; ?>">
@@ -102,9 +117,12 @@
         </label>
         <div class="col-md-2">
           <input maxlength="2" name="country[weight]" class="form-control" value="<?php echo isset($country['weight']) ? $this->escape($country['weight']) : 0; ?>">
-          <?php if (isset($form_errors['weight'])) { ?>
-          <div class="help-block"><?php echo $form_errors['weight']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['weight'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['weight'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>

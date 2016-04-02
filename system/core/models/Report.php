@@ -93,7 +93,6 @@ class Report
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'type':
                     $sql .= " ORDER BY type {$data['order']}";
@@ -323,5 +322,4 @@ class Report
 
         return $result;
     }
-
 }

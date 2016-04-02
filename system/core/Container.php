@@ -38,7 +38,6 @@ class Container
     public static function instance($class, $arguments = array(), $share = true)
     {
         if (is_array($class)) {
-
             if (!is_callable($class)) {
                 return (object) array();
             }
@@ -137,5 +136,4 @@ class Container
         unset(static::$registry[$key]);
         return true;
     }
-
 }

@@ -1,8 +1,11 @@
 <form method="post" id="edit-product" onsubmit="return confirm();" class="form-horizontal<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <?php if (isset($product['currency'])) { ?>
-  <input type="hidden" name="product[currency]" value="<?php echo $this->escape($product['currency']); ?>">
-  <?php } ?>
+  <?php if (isset($product['currency'])) {
+    ?>
+  <input type="hidden" name="product[currency]" value="<?php echo $this->escape($product['currency']);
+    ?>">
+  <?php 
+} ?>
   <div class="row">
     <div class="col-md-6">
       <div class="btn-group" data-toggle="buttons">
@@ -16,17 +19,23 @@
     </div>
     <div class="col-md-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($product['product_id']) && $this->access('product_delete')) { ?>
+        <?php if (isset($product['product_id']) && $this->access('product_delete')) {
+    ?>
         <button class="btn btn-danger" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url('admin/content/product'); ?>" class="btn btn-default"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
-        <?php if ($this->access('product_edit') || $this->access('product_add')) { ?>
+        <?php if ($this->access('product_edit') || $this->access('product_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -52,11 +61,14 @@
                 </label>
                 <div class="col-md-8">
                   <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->escape($product['title']) : ''; ?>" autofocus>
-                  <?php if (isset($form_errors['title'])) { ?>
+                  <?php if (isset($form_errors['title'])) {
+    ?>
                   <div class="help-block">
-                  <?php echo $form_errors['title']; ?>
+                  <?php echo $form_errors['title'];
+    ?>
                   </div>
-                  <?php } ?>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group">
@@ -65,34 +77,52 @@
                   <textarea class="form-control summernote" name="product[description]"><?php echo isset($product['description']) ? $this->xss($product['description']) : ''; ?></textarea>
                 </div>
               </div>
-              <?php if ($languages) { ?>
+              <?php if ($languages) {
+    ?>
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-2">
                   <a data-toggle="collapse" href="#translations">
-                  <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+                  <?php echo $this->text('Translations');
+    ?> <span class="caret"></span>
                   </a>
                 </div>
               </div>
-              <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
-                <?php foreach ($languages as $code => $info) { ?>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
+              <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : '';
+    ?>">
+                <?php foreach ($languages as $code => $info) {
+    ?>
+                <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : '';
+    ?>">
+                  <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name']));
+    ?></label>
                   <div class="col-md-8">
-                    <input name="product[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->escape($product['translation'][$code]['title']) : ''; ?>">
-                    <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
-                    <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
-                    <?php } ?>
+                    <input name="product[translation][<?php echo $code;
+    ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->escape($product['translation'][$code]['title']) : '';
+    ?>">
+                    <?php if (isset($form_errors['translation'][$code]['title'])) {
+    ?>
+                    <div class="help-block"><?php echo $form_errors['translation'][$code]['title'];
+    ?></div>
+                    <?php 
+}
+    ?>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
+                  <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name']));
+    ?></label>
                   <div class="col-md-8">
-                    <textarea class="form-control summernote" name="product[translation][<?php echo $code; ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->xss($product['translation'][$code]['description']) : ''; ?></textarea>
+                    <textarea class="form-control summernote" name="product[translation][<?php echo $code;
+    ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->xss($product['translation'][$code]['description']) : '';
+    ?></textarea>
                   </div>
                 </div>
-                <?php } ?>
+                <?php 
+}
+    ?>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
             </div>
           </div>
         </div>
@@ -106,27 +136,44 @@
           </div>
           <div id="pane-data" class="panel-collapse always-visible collapse in">
             <div class="panel-body">
-              <?php if ($classes) { ?>
+              <?php if ($classes) {
+    ?>
               <div class="form-group">
                 <label class="col-md-2 control-label">
-                  <span class="hint" title="<?php echo $this->text('Product class is a set of attributes and options that defines type of the product'); ?>">
-                  <?php echo $this->text('Product class'); ?>
+                  <span class="hint" title="<?php echo $this->text('Product class is a set of attributes and options that defines type of the product');
+    ?>">
+                  <?php echo $this->text('Product class');
+    ?>
                   </span>
                 </label>
                 <div class="col-md-4">
                   <select class="form-control" name="product[product_class_id]">
-                    <option value="0"><?php echo $this->text('None'); ?></option>
-                    <?php foreach ($classes as $class) { ?>
-                    <?php if (isset($product['product_class_id']) && $product['product_class_id'] == $class['product_class_id']) { ?>
-                    <option value="<?php echo $class['product_class_id']; ?>" selected> <?php echo $this->escape($class['title']); ?></option>
-                    <?php } else { ?>
-                    <option value="<?php echo $class['product_class_id']; ?>"> <?php echo $this->escape($class['title']); ?></option>
-                    <?php } ?>
-                    <?php } ?>
+                    <option value="0"><?php echo $this->text('None');
+    ?></option>
+                    <?php foreach ($classes as $class) {
+    ?>
+                    <?php if (isset($product['product_class_id']) && $product['product_class_id'] == $class['product_class_id']) {
+    ?>
+                    <option value="<?php echo $class['product_class_id'];
+    ?>" selected> <?php echo $this->escape($class['title']);
+    ?></option>
+                    <?php 
+} else {
+    ?>
+                    <option value="<?php echo $class['product_class_id'];
+    ?>"> <?php echo $this->escape($class['title']);
+    ?></option>
+                    <?php 
+}
+    ?>
+                    <?php 
+}
+    ?>
                   </select>
                 </div>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
               <div class="form-group">
                 <div class="col-md-offset-2 col-md-4<?php echo isset($form_errors['sku']) ? ' has-error' : ''; ?>">
                   <label>
@@ -135,9 +182,12 @@
                     </span>
                   </label>
                   <input name="product[sku]" class="form-control" maxlength="255" value="<?php echo isset($product['sku']) ? $this->escape($product['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-                  <?php if (isset($form_errors['sku'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['sku']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['sku'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['sku'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
                 <div class="col-md-2<?php echo isset($form_errors['price']) ? ' has-error' : ''; ?>">
                   <label>
@@ -149,9 +199,12 @@
                     <input type="number" min="0" step="any" pattern="[0-9]+([\.|,][0-9]+)?" name="product[price]" class="form-control" value="<?php echo isset($product['price']) ? $product['price'] : ''; ?>">
                     <span class="input-group-addon"><?php echo isset($product['currency']) ? $this->escape($product['currency']) : $this->escape($default_currency); ?></span>
                   </div>
-                  <?php if (isset($form_errors['price'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['price']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['price'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['price'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
                 <div class="col-md-3<?php echo isset($form_errors['stock']) ? ' has-error' : ''; ?>">
                   <label>
@@ -170,9 +223,12 @@
                       </div>
                     </div>
                   </div>
-                  <?php if (isset($form_errors['stock'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['stock']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['stock'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['stock'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div id="option-form-wrapper"><?php echo $option_form; ?></div>
@@ -209,22 +265,32 @@
                   </div>
                 </div>
               </div>
-              <?php if (count($stores) > 1) { ?>
+              <?php if (count($stores) > 1) {
+    ?>
               <div class="form-group">
                 <label class="col-md-2 control-label">
-                  <span class="hint" title="<?php echo $this->text('This product will be displayed only in the selected store'); ?>">
-                  <?php echo $this->text('Store'); ?>
+                  <span class="hint" title="<?php echo $this->text('This product will be displayed only in the selected store');
+    ?>">
+                  <?php echo $this->text('Store');
+    ?>
                   </span>
                 </label>
                 <div class="col-md-4">
                   <select class="form-control" name="product[store_id]">
-                    <?php foreach ($stores as $store_id => $store_name) { ?>
-                    <option value="<?php echo $store_id; ?>"<?php echo (isset($product['store_id']) && $product['store_id'] == $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store_name); ?></option>
-                    <?php } ?>
+                    <?php foreach ($stores as $store_id => $store_name) {
+    ?>
+                    <option value="<?php echo $store_id;
+    ?>"<?php echo (isset($product['store_id']) && $product['store_id'] == $store_id) ? ' selected' : '';
+    ?>><?php echo $this->escape($store_name);
+    ?></option>
+                    <?php 
+}
+    ?>
                   </select>
                 </div>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
               <div class="form-group">
                 <label class="col-md-2 control-label">
                   <span class="hint" title="<?php echo $this->text('Trademark or distinctive name identifying the product'); ?>">
@@ -257,9 +323,12 @@
                 </label>
                 <div class="col-md-6">
                   <input name="product[alias]" class="form-control" value="<?php echo isset($product['alias']) ? $this->escape($product['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-                  <?php if (isset($form_errors['alias'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['alias']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['alias'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['alias'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
             </div>
@@ -288,21 +357,29 @@
               <div class="row">
                 <div class="col-md-12">
                   <div id="related-products">
-                    <?php if(!empty($related)) { ?>
-                    <?php foreach($related as $related_product_id => $related_product) { ?>
+                    <?php if (!empty($related)) {
+    ?>
+                    <?php foreach ($related as $related_product_id => $related_product) {
+    ?>
                     <span class="related-product-item tag">
-                    <input type="hidden" name="product[related][]" value="<?php echo $related_product_id; ?>">
+                    <input type="hidden" name="product[related][]" value="<?php echo $related_product_id;
+    ?>">
                     <span class="btn btn-default">
-                      <a target="_blank" href="<?php echo $related_product['view_url']; ?>">
-                          <?php echo $this->escape($related_product['title']); ?>
+                      <a target="_blank" href="<?php echo $related_product['view_url'];
+    ?>">
+                          <?php echo $this->escape($related_product['title']);
+    ?>
                       </a>
                       <span class="badge">
                         <i class="fa fa-times remove"></i>
                       </span>
                     </span>
                     </span>
-                    <?php } ?>
-                    <?php } ?>
+                    <?php 
+}
+    ?>
+                    <?php 
+} ?>
                   </div>
                 </div>
               </div>
@@ -322,22 +399,28 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="row image-container">
-                  <?php if (!empty($attached_images)) { ?>
-                  <?php echo $attached_images; ?>
-                  <?php } ?>
+                  <?php if (!empty($attached_images)) {
+    ?>
+                  <?php echo $attached_images;
+    ?>
+                  <?php 
+} ?>
                   </div>
                 </div>
               </div>
-              <?php if ($this->access('file_upload')) { ?>
+              <?php if ($this->access('file_upload')) {
+    ?>
               <div class="row">
                 <div class="col-md-12">
                   <label for="fileinput" class="btn btn-primary">
-                      <i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?>
+                      <i class="fa fa-upload"></i> <?php echo $this->text('Upload');
+    ?>
                   </label>
                   <input class="hide" type="file" id="fileinput" data-entity-type="product" name="file" multiple="multiple" accept="image/*">
                 </div>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
             </div>
           </div>
         </div>
@@ -359,9 +442,12 @@
                 </label>
                 <div class="col-md-2">
                   <input type="number" min="0" step="1" pattern="\d*" maxlength="6" name="product[width]" class="form-control" value="<?php echo isset($product['width']) ? $this->escape($product['width']) : $this->config->get('product_width', 0); ?>">
-                  <?php if (isset($form_errors['width'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['width']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['width'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['width'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group<?php echo isset($form_errors['height']) ? ' has-error' : ''; ?>">
@@ -372,9 +458,12 @@
                 </label>
                 <div class="col-md-2">
                   <input type="number" min="0" step="1" pattern="\d*" maxlength="6" name="product[height]" class="form-control" value="<?php echo isset($product['height']) ? $this->escape($product['height']) : $this->config->get('product_height', 0); ?>">
-                  <?php if (isset($form_errors['height'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['height']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['height'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['height'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group<?php echo isset($form_errors['length']) ? ' has-error' : ''; ?>">
@@ -385,9 +474,12 @@
                 </label>
                 <div class="col-md-2">
                   <input type="number" min="0" step="1" pattern="\d*" maxlength="6" name="product[length]" class="form-control" value="<?php echo isset($product['length']) ? $this->escape($product['length']) : $this->config->get('product_length', 0); ?>">
-                  <?php if (isset($form_errors['length'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['length']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['length'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['length'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group">
@@ -417,9 +509,12 @@
                 </label>
                 <div class="col-md-2">
                   <input type="number" min="0" step="1" pattern="\d*" maxlength="6" name="product[weight]" class="form-control" value="<?php echo isset($product['weight']) ? $this->escape($product['weight']) : $this->config->get('product_weight', 0); ?>">
-                  <?php if (isset($form_errors['weight'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['weight']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['weight'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['weight'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group">
@@ -461,9 +556,12 @@
                 </label>
                 <div class="col-md-6">
                   <input name="product[meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['meta_title']) ? $this->escape($product['meta_title']) : ''; ?>">
-                  <?php if (isset($form_errors['meta_title'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['meta_title']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['meta_title'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['meta_title'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group<?php echo isset($form_errors['meta_description']) ? ' has-error' : ''; ?>">
@@ -474,51 +572,79 @@
                 </label>
                 <div class="col-md-6">
                   <textarea class="form-control" maxlength="160" name="product[meta_description]"><?php echo isset($product['meta_description']) ? $this->escape($product['meta_description']) : ''; ?></textarea>
-                  <?php if (isset($form_errors['meta_description'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['meta_description']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['meta_description'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['meta_description'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
-              <?php if (!empty($languages)) { ?>
+              <?php if (!empty($languages)) {
+    ?>
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-2">
                   <a data-toggle="collapse" href="#meta-translations">
-                    <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+                    <?php echo $this->text('Translations');
+    ?> <span class="caret"></span>
                   </a>
                 </div>
               </div>
-              <div id="meta-translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
-                <?php foreach ($languages as $code => $info) { ?>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
+              <div id="meta-translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : '';
+    ?>">
+                <?php foreach ($languages as $code => $info) {
+    ?>
+                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_title']) ? ' has-error' : '';
+    ?>">
+                  <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name']));
+    ?></label>
                   <div class="col-md-6">
-                    <input name="product[translation][<?php echo $code; ?>][meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['translation'][$code]['meta_title']) ? $this->escape($product['translation'][$code]['meta_title']) : ''; ?>">
-                    <?php if (isset($form_errors['translation'][$code]['meta_title'])) { ?>
-                    <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_title']; ?></div>
-                    <?php } ?>
+                    <input name="product[translation][<?php echo $code;
+    ?>][meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['translation'][$code]['meta_title']) ? $this->escape($product['translation'][$code]['meta_title']) : '';
+    ?>">
+                    <?php if (isset($form_errors['translation'][$code]['meta_title'])) {
+    ?>
+                    <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_title'];
+    ?></div>
+                    <?php 
+}
+    ?>
                   </div>
                 </div>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_description']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name'])); ?></label>
+                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_description']) ? ' has-error' : '';
+    ?>">
+                  <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name']));
+    ?></label>
                   <div class="col-md-6">
-                    <textarea class="form-control" maxlength="160" name="product[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($product['translation'][$code]['meta_description']) ? $this->escape($product['translation'][$code]['meta_description']) : ''; ?></textarea>
-                    <?php if (isset($form_errors['translation'][$code]['meta_description'])) { ?>
-                    <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_description']; ?></div>
-                    <?php } ?>
+                    <textarea class="form-control" maxlength="160" name="product[translation][<?php echo $code;
+    ?>][meta_description]"><?php echo isset($product['translation'][$code]['meta_description']) ? $this->escape($product['translation'][$code]['meta_description']) : '';
+    ?></textarea>
+                    <?php if (isset($form_errors['translation'][$code]['meta_description'])) {
+    ?>
+                    <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_description'];
+    ?></div>
+                    <?php 
+}
+    ?>
                   </div>
                 </div>
-                <?php } ?>
+                <?php 
+}
+    ?>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
             </div>
           </div>
         </div>
-        <?php if (isset($product['product_id'])) { ?>
+        <?php if (isset($product['product_id'])) {
+    ?>
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#pane-info">
-              <?php echo $this->text('Information'); ?>
+              <?php echo $this->text('Information');
+    ?>
               </a>
             </h4>
           </div>
@@ -527,18 +653,28 @@
               <div class="row">
                 <div class="col-md-4">
                   <ul class="list-unstyled">
-                    <li><?php echo $this->text('User'); ?>: <?php echo $product['author']; ?></li>
-                    <li><?php echo $this->text('Created'); ?>: <?php echo $this->date($product['created']); ?></li>
-                    <?php if ($product['modified'] > $product['created']) { ?>
-                    <li><?php echo $this->text('Modified'); ?>: <?php echo $this->date($product['modified']); ?></li>
-                    <?php } ?>
+                    <li><?php echo $this->text('User');
+    ?>: <?php echo $product['author'];
+    ?></li>
+                    <li><?php echo $this->text('Created');
+    ?>: <?php echo $this->date($product['created']);
+    ?></li>
+                    <?php if ($product['modified'] > $product['created']) {
+    ?>
+                    <li><?php echo $this->text('Modified');
+    ?>: <?php echo $this->date($product['modified']);
+    ?></li>
+                    <?php 
+}
+    ?>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
