@@ -26,7 +26,7 @@ class CategoryGroup
 
     /**
      * Hook model instance
-     * @var \core\Hook $hook 
+     * @var \core\Hook $hook
      */
     protected $hook;
 
@@ -72,7 +72,6 @@ class CategoryGroup
         $category_group = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($category_group) {
-
             $category_group['data'] = unserialize($category_group['data']);
             $category_group['language'] = 'und';
 
@@ -132,7 +131,6 @@ class CategoryGroup
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'type':
                     $sql .= " ORDER BY cg.type {$data['order']}";
@@ -321,5 +319,4 @@ class CategoryGroup
 
         return (bool) $sth->fetchColumn();
     }
-
 }

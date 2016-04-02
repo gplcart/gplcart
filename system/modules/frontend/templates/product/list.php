@@ -1,7 +1,13 @@
-<?php if(!empty($products)) { ?>
+<?php if (!empty($products)) {
+    ?>
 <div class="products row section">
-<?php foreach ($products as $product) { ?>
-<?php echo $product['rendered']; ?>
-<?php } ?>
+<?php foreach ($products as $product) {
+    ?>
+<?php echo $product['rendered'];
+    ?>
+<?php 
+}
+    ?>
 </div>
-<?php } ?>
+<?php 
+} ?>

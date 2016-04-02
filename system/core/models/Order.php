@@ -220,7 +220,6 @@ class Order
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             switch ($data['sort']) {
                 case 'order_id':
                     $field = 'o.order_id';
@@ -546,7 +545,6 @@ class Order
     protected function setPriceRule($order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
-
             if (!is_numeric($component_id)) {
                 continue; // We need only rules
             }
@@ -678,7 +676,7 @@ class Order
     }
 
     /**
-     * 
+     *
      * @return type
      */
     protected function getUserData()
@@ -726,5 +724,4 @@ class Order
     {
         return $this->pricerule->codeMatches($price_rule_id, $code);
     }
-
 }

@@ -79,5 +79,4 @@ class Reset extends Controller
             $this->data['form_errors']['confirmation'] = $this->text('Wrong confirmation code');
         }
     }
-
 }

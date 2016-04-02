@@ -37,7 +37,6 @@ class User extends Controller
      */
     public function users()
     {
-
         $action = $this->request->post('action');
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
@@ -129,7 +128,6 @@ class User extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $uid) {
-
             if ($this->user->isSuperadmin($uid)) {
                 continue;
             }
@@ -155,5 +153,4 @@ class User extends Controller
 
         return false;
     }
-
 }

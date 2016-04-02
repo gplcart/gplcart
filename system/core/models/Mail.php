@@ -144,7 +144,7 @@ class Mail
 
         if (isset($options['debug'])) {
             $this->mailer->SMTPDebug = (int) $options['debug'];
-            $this->mailer->Debugoutput = function($str, $level) {
+            $this->mailer->Debugoutput = function ($str, $level) {
                 $this->debug = $str;
             };
         }
@@ -284,5 +284,4 @@ class Mail
     {
         return $this->errors;
     }
-
 }

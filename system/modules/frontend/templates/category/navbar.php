@@ -25,11 +25,18 @@
           <input type="radio" name="view" value="grid"<?php echo ($view == 'grid') ? ' checked' : ''; ?>><i class="fa fa-th-large"></i>
         </label>
       </div>
-      <?php foreach($this->query as $key => $value){ ?>
-      <?php if(!in_array($key, array('sort', 'view'))) { ?>
-      <input type="hidden" name="<?php echo $this->escape($key); ?>" value="<?php echo $this->escape($value); ?>">
-      <?php } ?>
-      <?php } ?>
+      <?php foreach ($this->query as $key => $value) {
+    ?>
+      <?php if (!in_array($key, array('sort', 'view'))) {
+    ?>
+      <input type="hidden" name="<?php echo $this->escape($key);
+    ?>" value="<?php echo $this->escape($value);
+    ?>">
+      <?php 
+}
+    ?>
+      <?php 
+} ?>
       <button class="btn btn-default hidden-js"><?php echo $this->text('Go'); ?></button>
     </form>
   </div>

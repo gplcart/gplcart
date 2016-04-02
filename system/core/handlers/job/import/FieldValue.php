@@ -142,7 +142,6 @@ class FieldValue
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['field_value_id']) && is_numeric($data['field_value_id']));
@@ -379,7 +378,6 @@ class FieldValue
      */
     protected function add(&$data, &$errors, $line)
     {
-
         if (empty($data['title'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
@@ -400,5 +398,4 @@ class FieldValue
 
         return $this->field_value->add($data) ? 1 : 0;
     }
-
 }

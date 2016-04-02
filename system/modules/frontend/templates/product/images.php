@@ -1,27 +1,57 @@
-<?php if (!empty($images['main'])) { ?>
+<?php if (!empty($images['main'])) {
+    ?>
 <div class="row">
-  <?php if (!empty($images['extra'])) { ?>
+  <?php if (!empty($images['extra'])) {
+    ?>
   <div class="col-md-2 hidden-xs hidden-sm">
-    <?php $index = 1; ?>
-    <?php foreach ($images['extra'] as $image) { ?>
-    <a class="gallery" href="<?php echo $image['url_original']; ?>" data-size-w="<?php echo $image['size'][0]; ?>" data-size-h="<?php echo $image['size'][1]; ?>" data-index="<?php echo $index; ?>">
-      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($image['title']); ?>" title="<?php echo $this->escape($image['description']); ?>" src="<?php echo $this->escape($image['url_extra']); ?>">
+    <?php $index = 1;
+    ?>
+    <?php foreach ($images['extra'] as $image) {
+    ?>
+    <a class="gallery" href="<?php echo $image['url_original'];
+    ?>" data-size-w="<?php echo $image['size'][0];
+    ?>" data-size-h="<?php echo $image['size'][1];
+    ?>" data-index="<?php echo $index;
+    ?>">
+      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($image['title']);
+    ?>" title="<?php echo $this->escape($image['description']);
+    ?>" src="<?php echo $this->escape($image['url_extra']);
+    ?>">
     </a>
-    <?php $index++; ?>
-    <?php } ?>
+    <?php $index++;
+    ?>
+    <?php 
+}
+    ?>
   </div>
   <div class="col-md-10">
-    <a class="gallery" href="<?php echo $images['main']['url_original']; ?>" data-size-w="<?php echo $images['main']['size'][0]; ?>" data-size-h="<?php echo $images['main']['size'][1]; ?>" data-index="0">
-      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($images['main']['title']); ?>" title="<?php echo $this->escape($images['main']['description']); ?>" src="<?php echo $this->escape($images['main']['url_big']); ?>">
+    <a class="gallery" href="<?php echo $images['main']['url_original'];
+    ?>" data-size-w="<?php echo $images['main']['size'][0];
+    ?>" data-size-h="<?php echo $images['main']['size'][1];
+    ?>" data-index="0">
+      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($images['main']['title']);
+    ?>" title="<?php echo $this->escape($images['main']['description']);
+    ?>" src="<?php echo $this->escape($images['main']['url_big']);
+    ?>">
     </a>
   </div>
-  <?php } else { ?>
+  <?php 
+} else {
+    ?>
   <div class="col-md-12">
-    <a class="gallery" href="<?php echo $images['main']['url_original']; ?>" data-size-w="<?php echo $images['main']['size'][0]; ?>" data-size-h="<?php echo $images['main']['size'][1]; ?>" data-index="0">
-      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($images['main']['title']); ?>" title="<?php echo $this->escape($images['main']['description']); ?>" src="<?php echo $this->escape($images['main']['url_big']); ?>">
+    <a class="gallery" href="<?php echo $images['main']['url_original'];
+    ?>" data-size-w="<?php echo $images['main']['size'][0];
+    ?>" data-size-h="<?php echo $images['main']['size'][1];
+    ?>" data-index="0">
+      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($images['main']['title']);
+    ?>" title="<?php echo $this->escape($images['main']['description']);
+    ?>" src="<?php echo $this->escape($images['main']['url_big']);
+    ?>">
     </a>
   </div> 
-  <?php } ?>
+  <?php 
+}
+    ?>
 </div>
 <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="pswp__bg"></div>
@@ -34,10 +64,14 @@
     <div class="pswp__ui pswp__ui--hidden">
       <div class="pswp__top-bar">
         <div class="pswp__counter"></div>
-        <button class="pswp__button pswp__button--close" title="<?php echo $this->text('Close'); ?>"></button>
-        <button class="pswp__button pswp__button--share" title="<?php echo $this->text('Share'); ?>"></button>
-        <button class="pswp__button pswp__button--fs" title="<?php echo $this->text('Toggle fullscreen'); ?>"></button>
-        <button class="pswp__button pswp__button--zoom" title="<?php echo $this->text('Zoom in/out'); ?>"></button>
+        <button class="pswp__button pswp__button--close" title="<?php echo $this->text('Close');
+    ?>"></button>
+        <button class="pswp__button pswp__button--share" title="<?php echo $this->text('Share');
+    ?>"></button>
+        <button class="pswp__button pswp__button--fs" title="<?php echo $this->text('Toggle fullscreen');
+    ?>"></button>
+        <button class="pswp__button pswp__button--zoom" title="<?php echo $this->text('Zoom in/out');
+    ?>"></button>
         <div class="pswp__preloader">
           <div class="pswp__preloader__icn">
             <div class="pswp__preloader__cut">
@@ -49,9 +83,11 @@
       <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
         <div class="pswp__share-tooltip"></div> 
       </div>
-      <button class="pswp__button pswp__button--arrow--left" title="<?php echo $this->text('Previous'); ?>">
+      <button class="pswp__button pswp__button--arrow--left" title="<?php echo $this->text('Previous');
+    ?>">
       </button>
-      <button class="pswp__button pswp__button--arrow--right" title="<?php echo $this->text('Next'); ?>">
+      <button class="pswp__button pswp__button--arrow--right" title="<?php echo $this->text('Next');
+    ?>">
       </button>
       <div class="pswp__caption">
         <div class="pswp__caption__center"></div>
@@ -95,4 +131,5 @@ $(function () {
     });
 });
 </script>
-<?php } ?>
+<?php 
+} ?>

@@ -100,7 +100,6 @@ class PriceRule extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {
-
             if ($action == 'status' && $this->access('price_rule_edit')) {
                 $updated += (int) $this->rule->update($rule_id, array('status' => $value));
             }
@@ -365,7 +364,6 @@ class PriceRule extends Controller
      */
     protected function validateValue()
     {
-
         if (!is_numeric($this->submitted['value'])) {
             $this->data['form_errors']['value'] = $this->text('Only numeric values allowed');
             return false;
@@ -420,7 +418,6 @@ class PriceRule extends Controller
         $conditions = Tool::stringToArray($this->submitted['data']['conditions']);
 
         foreach ($conditions as $line => $condition) {
-
             $line++;
 
             $condition = trim($condition);
@@ -429,7 +426,7 @@ class PriceRule extends Controller
             $condition_id = array_shift($parts);
             $operator = array_shift($parts);
 
-            $parameters = array_filter(explode(',', implode('', $parts)), function($value) {
+            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
                 return ($value !== "");
             });
 
@@ -496,5 +493,4 @@ class PriceRule extends Controller
 
         $this->data['price_rule']['data']['conditions'] = implode("\n", $conditions);
     }
-
 }

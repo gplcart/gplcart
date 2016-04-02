@@ -127,7 +127,6 @@ class Bookmark
         $limit = $this->config->get('bookmark_limit', 20);
 
         if (is_numeric($user_id)) {
-
             $user = $this->user->get($user_id);
             if (empty($user['status'])) {
                 return $limit; // Missing / blocked user
@@ -228,7 +227,7 @@ class Bookmark
             if ($data['type'] == 'product') {
                 $sql .= ' AND b.id_key = ? AND b.id_value > 0';
                 $where[] = 'product_id';
-            } else if ($data['type'] === 'url') {
+            } elseif ($data['type'] === 'url') {
                 $sql .= ' AND LENGTH(b.id_key) = 0';
             }
         }
@@ -261,7 +260,6 @@ class Bookmark
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $allowed_sort = array('id_value', 'user_id', 'created', 'title');
 
             if (in_array($data['sort'], $allowed_sort, true)) {
@@ -308,7 +306,6 @@ class Bookmark
         }
 
         if (is_array($condition)) {
-
             $sql = '
             SELECT bookmark_id
             FROM bookmark 
@@ -346,5 +343,4 @@ class Bookmark
 
         return false;
     }
-
 }

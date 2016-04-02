@@ -167,7 +167,6 @@ class Import extends Controller
      */
     protected function submit($operation)
     {
-
         $this->submitted = $this->request->post();
         $this->submitted['operation'] = $operation;
 
@@ -252,5 +251,4 @@ class Import extends Controller
 
         return true;
     }
-
 }
