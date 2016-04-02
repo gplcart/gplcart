@@ -8,11 +8,14 @@
   <div class="form-group required<?php echo isset($form_errors['confirmation']) ? ' has-error' : ''; ?>">
     <div class="col-md-2">
       <input name="confirmation" class="form-control" autocomplete="off" placeholder="<?php echo $this->text('Type DELETE ALL'); ?>">
-      <?php if (isset($form_errors['confirmation'])) { ?>
+      <?php if (isset($form_errors['confirmation'])) {
+    ?>
       <div class="help-block">
-      <?php echo $form_errors['confirmation']; ?>
+      <?php echo $form_errors['confirmation'];
+    ?>
       </div>
-      <?php } ?>
+      <?php 
+} ?>
     </div>
   </div>
   <div class="form-group">

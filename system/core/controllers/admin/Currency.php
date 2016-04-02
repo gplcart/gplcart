@@ -47,7 +47,7 @@ class Currency extends Controller
     }
 
     /**
-     * Renders the currency overview page 
+     * Renders the currency overview page
      */
     protected function outputCurrencies()
     {
@@ -377,5 +377,4 @@ class Currency extends Controller
 
         return true;
     }
-
 }

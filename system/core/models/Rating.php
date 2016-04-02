@@ -169,5 +169,4 @@ class Rating
 
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
-
 }

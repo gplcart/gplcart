@@ -58,7 +58,6 @@ class Price
      */
     public function format($amount, $currency_code, $convert = true)
     {
-
         $currency = $this->currency->get($currency_code);
 
         if ($convert) {
@@ -159,5 +158,4 @@ class Price
     {
         return $this->currency->convert($amount, $currency_code, $target_currency_code);
     }
-
 }

@@ -13,19 +13,19 @@ class Csv
 
     /**
      *
-     * @var resource File handler 
+     * @var resource File handler
      */
     protected $handle;
 
     /**
      *
-     * @var string Current CSV line 
+     * @var string Current CSV line
      */
     protected $current_line;
 
     /**
      *
-     * @var integer Current offset in bytes 
+     * @var integer Current offset in bytes
      */
     protected $current_position;
 
@@ -172,7 +172,6 @@ class Csv
 
         $parsed = 0;
         for ($this->rewind($start); $this->valid(); $this->next()) {
-
             $line = trim($this->current(), "\r\n");
 
             if (empty($line)) {
@@ -367,5 +366,4 @@ class Csv
 
         return array();
     }
-
 }

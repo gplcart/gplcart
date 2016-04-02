@@ -246,7 +246,6 @@ class Field extends Controller
 
         $has_errors = false;
         foreach ($this->submitted['translation'] as $code => $translation) {
-
             if (empty($translation['title'])) {
                 continue;
             }
@@ -259,5 +258,4 @@ class Field extends Controller
 
         return !$has_errors;
     }
-
 }
