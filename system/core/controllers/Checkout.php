@@ -8,10 +8,8 @@ use core\models\Image;
 use core\models\State;
 use core\models\Order;
 use core\models\Price;
-use core\models\Payment;
 use core\models\Address;
 use core\models\Country;
-use core\models\Shipping;
 
 class Checkout extends Controller
 {
@@ -39,18 +37,6 @@ class Checkout extends Controller
      * @var \core\models\Address $address
      */
     protected $address;
-
-    /**
-     * Shipping model instance
-     * @var \core\models\Shipping $shipping
-     */
-    protected $shipping;
-
-    /**
-     * Payment model instance
-     * @var \core\models\Payment $payment
-     */
-    protected $payment;
 
     /**
      * Price model instance
@@ -150,11 +136,9 @@ class Checkout extends Controller
      * @param Address $address
      * @param Order $order
      * @param Price $price
-     * @param Shipping $shipping
-     * @param Payment $payment
      * @param Image $image
      */
-    public function __construct(Cart $cart, Country $country, State $state, Address $address, Order $order, Price $price, Shipping $shipping, Payment $payment, Image $image)
+    public function __construct(Cart $cart, Country $country, State $state, Address $address, Order $order, Price $price, Image $image)
     {
         parent::__construct();
 
@@ -165,8 +149,6 @@ class Checkout extends Controller
         $this->state = $state;
         $this->address = $address;
         $this->country = $country;
-        $this->payment = $payment;
-        $this->shipping = $shipping;
 
         static::$total_quantity = 0;
 
@@ -208,9 +190,8 @@ class Checkout extends Controller
                 'currency' => $this->cart_content['currency']));
 
         $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_user_id);
-        $this->form_data['shipping_services'] = $this->getServices('shipping', $this->cart_content, $this->form_data['order']);
-        $this->form_data['payment_services'] = $this->getServices('payment', $this->cart_content, $this->form_data['order']);
-
+        $this->form_data['shipping_services'] = $this->order->getServices('shipping', $this->cart_content, $this->form_data['order']);
+        $this->form_data['payment_services'] = $this->order->getServices('payment', $this->cart_content, $this->form_data['order']);
         $this->address_form = empty($this->form_data['addresses']);
 
         if (!empty($this->submitted['items']) && $this->request->post('update')) {
@@ -233,7 +214,7 @@ class Checkout extends Controller
             $this->refreshCart();
         }
 
-        $this->form_data['order'] += $this->request->post('order', array());
+        $this->form_data['order'] = $this->request->post('order', array()) + $this->form_data['order'];
         $this->submitted_address = $this->request->post('address', array('country' => $this->country_code));
         $check_code = $this->request->post('check_code');
 
@@ -570,7 +551,7 @@ class Checkout extends Controller
             $name = $this->text($type);
 
             if (in_array($type, array('shipping', 'payment'))) {
-                $service = $this->getService($order[$type], $type, $cart, $order);
+                $service = $this->order->getService($order[$type], $type, $cart, $order);
 
                 if (isset($service['name'])) {
                     $name = $service['name'];
@@ -711,41 +692,6 @@ class Checkout extends Controller
 
         $this->form_data['form_errors']['code'] = $this->text('Invalid code');
         return false;
-    }
-
-    /**
-     * Returns services by a type
-     * @param string $type
-     * @param array $cart
-     * @param array $order
-     * @return array
-     */
-    protected function getServices($type, array $cart, array $order)
-    {
-        if (!isset($this->{$type})) {
-            throw new \UnexpectedValueException('Unexpected service (module) type.');
-        }
-
-        $services = $this->{$type}->getServices($cart, $order);
-        return $this->prepareServices($services, $cart, $order);
-    }
-
-    /**
-     * Returns a service info, e.g shipping or payment
-     * @param string $id
-     * @param string $type
-     * @param array $cart
-     * @param array $order
-     * @return array
-     * @throws \UnexpectedValueException
-     */
-    protected function getService($id, $type, array $cart, array $order)
-    {
-        if (!isset($this->{$type})) {
-            throw new \UnexpectedValueException('Unexpected service (module) type.');
-        }
-
-        return $this->{$type}->getService($id, $cart, $order);
     }
 
     /**

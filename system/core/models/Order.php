@@ -16,11 +16,16 @@ use core\Config;
 use core\Logger;
 use core\models\Cart;
 use core\models\User;
+use core\models\Price;
 use core\classes\Cache;
+use core\models\Payment;
+use core\models\Product;
 use core\classes\Request;
 use core\models\Language;
+use core\models\Shipping;
 use core\models\PriceRule;
 use core\models\Notification;
+use core\exceptions\SystemLogical;
 
 class Order
 {
@@ -56,6 +61,18 @@ class Order
     protected $language;
 
     /**
+     * Price model instance
+     * @var \core\models\Price $price
+     */
+    protected $price;
+
+    /**
+     * Product model instance
+     * @var \core\models\Product $product
+     */
+    protected $product;
+
+    /**
      * Hook class instance
      * @var core\Hook $hook
      */
@@ -86,26 +103,51 @@ class Order
     protected $request;
 
     /**
+     * Shipping model instance
+     * @var \core\models\Shipping $shipping
+     */
+    protected $shipping;
+
+    /**
+     * Payment model instance
+     * @var \core\models\Payment $payment
+     */
+    protected $payment;
+
+    /**
      * Constructor
      * @param User $user
+     * @param Price $price
      * @param PriceRule $pricerule
+     * @param Product $product
      * @param Cart $cart
      * @param Language $language
      * @param Notification $notification
+     * @param Shipping $shipping
+     * @param Payment $payment
      * @param Hook $hook
      * @param Logger $logger
      * @param Request $request
      * @param Config $config
      */
-    public function __construct(User $user, PriceRule $pricerule, Cart $cart, Language $language, Notification $notification, Hook $hook, Logger $logger, Request $request, Config $config)
+    public function __construct(User $user, Price $price, PriceRule $pricerule,
+                                Product $product, Cart $cart,
+                                Language $language, Notification $notification,
+                                Shipping $shipping, Payment $payment,
+                                Hook $hook, Logger $logger, Request $request,
+                                Config $config)
     {
         $this->hook = $hook;
         $this->user = $user;
         $this->cart = $cart;
+        $this->price = $price;
         $this->logger = $logger;
         $this->config = $config;
+        $this->product = $product;
+        $this->payment = $payment;
         $this->request = $request;
         $this->language = $language;
+        $this->shipping = $shipping;
         $this->pricerule = $pricerule;
         $this->db = $this->config->db();
         $this->notification = $notification;
@@ -128,7 +170,7 @@ class Order
         $this->hook->fire('order.statuses', $statuses);
         return $statuses;
     }
-    
+
     /**
      * Returns status name
      * @param string $id
@@ -248,6 +290,7 @@ class Order
 
         $list = array();
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $order) {
+            $order = $this->prepareOrder($order);
             $list[$order['order_id']] = $order;
         }
 
@@ -264,19 +307,19 @@ class Order
     public function get($order_id)
     {
         $this->hook->fire('get.order.before', $order_id);
-        
+
         $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email
                 FROM orders o
                 LEFT JOIN user u ON(o.user_id=u.user_id)
                 WHERE o.order_id=:order_id';
-        
+
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':order_id' => (int) $order_id));
 
         $order = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($order['data'])) {
-            $order['data'] = unserialize($order['data']);
+            $order = $this->prepareOrder($order);
         }
 
         $this->hook->fire('get.order.after', $order_id, $order);
@@ -495,9 +538,8 @@ class Order
         if (empty($data)) {
             return false; // Blocked by a module
         }
-
+        
         $this->setComponents($data, $cart);
-
         $order_id = $this->add($data);
 
         if (empty($order_id)) {
@@ -685,18 +727,37 @@ class Order
     }
 
     /**
-     * Prepares order components
-     * @param array $order
+     * Returns a service (e.g shipping service)
+     * @param string $id
+     * @param string $type
      * @param array $cart
+     * @param array $order
      * @return array
+     * @throws SystemLogical
      */
-    protected function setComponents(&$order, $cart)
+    public function getService($id, $type, array $cart, array $order)
     {
-        foreach ($cart['items'] as $cart_id => $item) {
-            $order['data']['components']['cart'][$cart_id] = $item['total'];
+        if (in_array($type, array('shipping', 'payment'))) {
+            return $this->{$type}->getService($id, $cart, $order);
         }
 
-        return $order;
+        return array();
+    }
+
+    /**
+     * Returns services by a type
+     * @param string $type
+     * @param array $cart
+     * @param array $order
+     * @return array
+     */
+    public function getServices($type, array $cart, array $order)
+    {
+        if (in_array($type, array('shipping', 'payment'))) {
+            return $this->{$type}->getServices($cart, $order);
+        }
+
+        return array();
     }
 
     /**
@@ -724,4 +785,115 @@ class Order
             'agent' => $this->request->agent()
         );
     }
+    
+    /**
+     * Prepares order components
+     * @param array $order
+     * @param array $cart
+     * @return array
+     */
+    protected function setComponents(&$order, $cart)
+    {
+        foreach ($cart['items'] as $cart_id => $item) {
+            $order['data']['components']['cart'][$cart_id] = $item['total'];
+        }
+
+        return $order;
+    }
+
+    /**
+     * Returns an array of order components
+     * @param array $order
+     * @return array
+     */
+    public function getComponents(array $order)
+    {
+        $cart = $this->getCart($order['order_id']);
+
+        $prepared = array();
+        foreach ($order['data']['components'] as $name => $component) {
+
+            if ($name === 'cart') {
+                $prepared[$name] = $this->prepareComponentCart($component, $cart, $order);
+                continue;
+            }
+
+            if (in_array($name, array('shipping', 'payment'))) {
+                $prepared['service'][$name] = $this->prepareComponentService($name, $component, $cart, $order);
+                continue;
+            }
+
+            if (is_numeric($name)) {
+                $prepared['rule'][$name] = $this->prepareComponentPriceRule($name, $component, $cart, $order);
+            }
+        }
+
+        ksort($prepared);
+        return $prepared;
+    }
+
+    /**
+     * Prepares cart order component
+     * @param array $component
+     * @param array $cart
+     * @param array  $order
+     * @return array
+     */
+    protected function prepareComponentCart(array $component, $cart, $order)
+    {
+        foreach ($component as $cart_id => $price) {
+            if (isset($cart[$cart_id]['sku'])) {
+                $cart[$cart_id]['component_price'] = $price;
+                $cart[$cart_id]['component_price_formatted'] = $this->price->format($price, $order['currency']);
+                $cart[$cart_id]['product'] = $this->product->getBySku($cart[$cart_id]['sku'], $order['store_id']);
+            }
+        }
+
+        return $cart;
+    }
+
+    /**
+     * Prepares service cart component
+     * @param string $type
+     * @param integer $price
+     * @param array $cart
+     * @param array $order
+     */
+    protected function prepareComponentService($type, $price, $cart, $order)
+    {
+        $service = $this->getService($order[$type], $type, $cart, $order);
+        $service['component_price'] = $price;
+        $service['component_price_formatted'] = $this->price->format($price, $order['currency']);
+        return $service;
+    }
+
+    /**
+     * Prepares price rule order component
+     * @param integer $rule_id
+     * @param integer $price
+     * @param array $cart
+     * @param array $order
+     * @return array
+     */
+    protected function prepareComponentPriceRule($rule_id, $price, $cart, $order)
+    {
+        $rule = $this->pricerule->get($rule_id);
+        $rule['component_price'] = $price;
+        $rule['component_price_formatted'] = $this->price->format($price, $order['currency']);
+        return $rule;
+    }
+    
+    /**
+     * Returns a prepared order
+     * @param array $order
+     * @return array
+     */
+    protected function prepareOrder($order)
+    {
+        $order['data'] = unserialize($order['data']);
+        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+        $order['status_formatted'] = $this->getStatusName($order['status']);
+        return $order;
+    }
+
 }

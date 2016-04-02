@@ -580,3 +580,18 @@ ul.ui-autocomplete.ui-menu li a:hover {
     margin: 0;
 }
 
+/******** Account ************/
+
+.order-details table {
+    background-color: transparent !important;
+}
+
+.order-details table td {
+    padding: 0 !important;
+    border: none !important;
+}
+
+.order-details .heading {
+    font-weight: bold;
+    padding: 5px 0;
+}

@@ -17,8 +17,6 @@ use core\models\State;
 use core\models\Address;
 use core\models\Price;
 use core\models\Currency;
-use core\models\Shipping;
-use core\models\Payment;
 use core\models\Product;
 use core\models\Cart;
 use core\models\PriceRule;
@@ -69,18 +67,6 @@ class Order extends Controller
     protected $currency;
 
     /**
-     * Shipping model instance
-     * @var \core\models\Shipping $shipping
-     */
-    protected $shipping;
-
-    /**
-     * Payment model instance
-     * @var \core\models\Shipping $payment
-     */
-    protected $payment;
-
-    /**
      * Cart model instance
      * @var \core\models\Cart $cart
      */
@@ -100,12 +86,10 @@ class Order extends Controller
      * @param Address $address
      * @param Price $price
      * @param Currency $currency
-     * @param Shipping $shipping
-     * @param Payment $payment
      * @param Cart $cart
      * @param Product $product
      */
-    public function __construct(O $order, Country $country, State $state, Address $address, Price $price, Currency $currency, Shipping $shipping, Payment $payment, Cart $cart, Product $product, PriceRule $pricerule)
+    public function __construct(O $order, Country $country, State $state, Address $address, Price $price, Currency $currency, Cart $cart, Product $product, PriceRule $pricerule)
     {
         parent::__construct();
 
@@ -113,12 +97,10 @@ class Order extends Controller
         $this->state = $state;
         $this->order = $order;
         $this->price = $price;
-        $this->payment = $payment;
         $this->product = $product;
         $this->country = $country;
         $this->address = $address;
         $this->currency = $currency;
-        $this->shipping = $shipping;
         $this->pricerule = $pricerule;
     }
 
@@ -299,7 +281,7 @@ class Order extends Controller
      */
     protected function renderComponentService($type, $component, array $cart, array $order)
     {
-        $service = $this->getService($order[$type], $type, $cart, $order);
+        $service = $this->order->getService($order[$type], $type, $cart, $order);
         $service['name'] = isset($service['name']) ? $service['name'] : $this->text('Unknown');
         $service['cart']['price_formatted'] = $this->price->format($component, $order['currency']);
         $service['cart']['type'] = ($type === 'payment') ? $this->text('Payment') : $this->text('Shipping');
@@ -329,11 +311,11 @@ class Order extends Controller
 
         return $this->render('sale/order/panes/components/cart', array('products' => $products));
     }
-
+    
     /**
      * Returns rendered price rule component
-     * @param string $type
-     * @param array $component
+     * @param integer $rule_id
+     * @param integer $price
      * @param array $cart
      * @param array $order
      * @return string
@@ -417,19 +399,6 @@ class Order extends Controller
     protected function getAddress($address_id)
     {
         return $this->address->get($address_id);
-    }
-
-    /**
-     * Returns a service
-     * @param string $id
-     * @param string $type
-     * @param array $cart
-     * @param array $order
-     * @return array
-     */
-    protected function getService($id, $type, array $cart, array $order)
-    {
-        return $this->{$type}->getService($id, $cart, $order);
     }
 
     /**

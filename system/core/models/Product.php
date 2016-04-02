@@ -664,6 +664,7 @@ class Product
         $product = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($product) {
+            $product['data'] = unserialize($product['data']);
             $product['images'] = $this->image->getList('product_id', $product['product_id']);
         }
 

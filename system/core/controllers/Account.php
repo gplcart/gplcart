@@ -11,14 +11,16 @@
 namespace core\controllers;
 
 use core\Controller;
+use core\classes\Tool;
 use core\models\State;
 use core\models\Order;
 use core\models\Price;
-use core\classes\Tool;
+use core\models\Product;
 use core\models\Address;
 use core\models\Country;
 use core\models\Bookmark;
 use core\models\UserRole;
+use core\models\PriceRule;
 use core\models\Notification;
 
 class Account extends Controller
@@ -79,6 +81,18 @@ class Account extends Controller
     protected $notification;
 
     /**
+     * Price rule model instance
+     * @var \core\models\PriceRule $pricerule
+     */
+    protected $pricerule;
+
+    /**
+     * Product model instance
+     * @var \core\models\Product $product
+     */
+    protected $product;
+
+    /**
      * Constructor
      * @param Address $address
      * @param Country $country
@@ -88,11 +102,14 @@ class Account extends Controller
      * @param Bookmark $bookmark
      * @param Notification $notification
      * @param UserRole $role
+     * @param Product $product
+     * @param PriceRule $pricerule
      */
     public function __construct(Address $address, Country $country,
                                 State $state, Order $order, Price $price,
                                 Bookmark $bookmark, Notification $notification,
-                                UserRole $role)
+                                UserRole $role, Product $product,
+                                PriceRule $pricerule)
     {
         parent::__construct();
 
@@ -100,9 +117,11 @@ class Account extends Controller
         $this->state = $state;
         $this->order = $order;
         $this->price = $price;
+        $this->product = $product;
         $this->country = $country;
         $this->address = $address;
         $this->bookmark = $bookmark;
+        $this->pricerule = $pricerule;
         $this->notification = $notification;
     }
 
@@ -155,7 +174,7 @@ class Account extends Controller
     {
         $user = $this->user->get($user_id);
 
-        if (!$user) {
+        if (empty($user)) {
             $this->outputError(404);
         }
 
@@ -434,7 +453,9 @@ class Account extends Controller
     {
         $query += array('sort' => 'created', 'order' => 'desc', 'limit' => $limit);
         $query['user_id'] = $user_id;
-        return $this->prepareOrders($this->order->getList($query));
+        
+        $orders = $this->order->getList($query);
+        return $this->prepareOrders($orders);
     }
 
     /**
@@ -456,71 +477,14 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-            $order['status_formatted'] = $this->order->getStatusName($order['status']);
-            $order['rendered'] = $this->renderOrder($order);
+            $address_id = $order['shipping_address'];
+            $order['rendered'] = $this->render('account/order', array(
+                'order' => $order,
+                'components' => $this->order->getComponents($order),
+                'shipping_address' => $this->address->getTranslated($this->address->get($address_id), true)));
         }
 
         return $orders;
-    }
-
-    /**
-     *
-     * @param type $order
-     * @return type
-     */
-    protected function renderOrder($order)
-    {
-        $html = $this->render('account/order', array(
-            'order' => $order,
-            'cart' => $this->getCart($order['order_id']),
-            'shipping_address' => $this->getAddress($order['shipping_address'])));
-
-        return $html;
-    }
-
-    /**
-     *
-     * @param type $order_id
-     * @return type
-     */
-    protected function getCart($order_id)
-    {
-        return $this->prepareCart($this->order->getCart($order_id));
-    }
-
-    /**
-     *
-     * @param type $cart
-     * @return type
-     */
-    protected function prepareCart($cart)
-    {
-        foreach ($cart as &$item) {
-            //
-        }
-
-        return $cart;
-    }
-
-    /**
-     *
-     * @param type $address_id
-     * @return type
-     */
-    protected function getAddress($address_id)
-    {
-        return $this->prepareAddress($this->address->get($address_id));
-    }
-
-    /**
-     *
-     * @param type $address
-     * @return type
-     */
-    protected function prepareAddress($address)
-    {
-        return $this->address->getTranslated($address, true);
     }
 
     /**
@@ -791,4 +755,5 @@ class Account extends Controller
         $this->notification->set('user_changed_password', array($user));
         $this->redirect('login', $this->text('Your password has been successfully changed'), 'success');
     }
+
 }
