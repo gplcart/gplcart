@@ -194,7 +194,6 @@ class Sku
         $store_id = isset($data['store_id']) ? $data['store_id'] : null;
 
         if ($this->get($sku, $store_id)) {
-
             $counter = 0;
             do {
                 $sku = $sku . '-' . $counter++;
@@ -227,5 +226,4 @@ class Sku
 
         return array();
     }
-
 }

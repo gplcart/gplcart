@@ -204,7 +204,6 @@ class Ajax extends Controller
 
         $list = array();
         foreach ($products as $product) {
-
             $product['url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
@@ -254,7 +253,6 @@ class Ajax extends Controller
         $field_value_ids = $this->request->post('values');
 
         if (!empty($field_value_ids)) {
-
             $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
 
             $response = array(
@@ -266,7 +264,6 @@ class Ajax extends Controller
             );
 
             if (!empty($product['combination'][$combination_id])) {
-
                 $combination = $product['combination'][$combination_id];
 
                 if (!empty($combination['price'])) {
@@ -317,7 +314,6 @@ class Ajax extends Controller
         $imagestyle = $this->config->module($this->theme, 'image_style_cart', 3);
 
         foreach ($cart['items'] as &$item) {
-            
             $imagepath = '';
 
             if (empty($item['product']['combination_id'])
@@ -392,7 +388,6 @@ class Ajax extends Controller
         $imestylestyle = $this->config->module($this->theme, 'image_style_product_list', 3);
 
         foreach ($products as $product_id => &$product) {
-
             unset($product['description']);
 
             $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
@@ -505,5 +500,4 @@ class Ajax extends Controller
 
         return array('error' => $this->text('An error occurred'));
     }
-
 }

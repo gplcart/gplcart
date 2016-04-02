@@ -157,7 +157,7 @@ class Language
         $languages = $this->getAll();
 
         if ($enabled) {
-            $languages = array_filter($languages, function($language) {
+            $languages = array_filter($languages, function ($language) {
                 return !empty($language['status']);
             });
         }
@@ -203,7 +203,6 @@ class Language
     {
         $languages = array();
         foreach (glob(GC_LOCALE_DIR . '/*', GLOB_ONLYDIR) as $directory) {
-
             $langcode = basename($directory);
 
             // Skip invalid language codes
@@ -405,7 +404,6 @@ class Language
      */
     public function compile()
     {
-
         if (empty($this->langcode) || empty($this->untranslated) || empty($this->translatable)) {
             return false;
         }
@@ -489,5 +487,4 @@ class Language
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
     }
-
 }

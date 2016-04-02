@@ -41,14 +41,12 @@ class Po
         $entry = array();
 
         while (!feof($fd)) {
-
             $line = trim($line = fgets($fd, 10 * 1024));
 
             $split = preg_split('/\s+/ ', $line, 2);
             $key = $split[0];
 
             if ($line === '' || ($key == 'msgid' && isset($entry['msgid']))) {
-
                 if ($new) {
                     $count++;
                     continue;
@@ -159,7 +157,6 @@ class Po
      */
     protected function isHeader(array $entry)
     {
-
         if (empty($entry) || !isset($entry['msgstr'])) {
             return false;
         }
@@ -175,7 +172,6 @@ class Po
         $items = 0;
 
         foreach ($entry['msgstr'] as $str) {
-
             $tokens = explode(':', $str);
             $tokens[0] = trim($tokens[0], "\"") . ':';
 
@@ -201,7 +197,6 @@ class Po
                 $x[$k] = $this->clean($v);
             }
         } else {
-
             if ($x == '') {
                 return '';
             }
@@ -217,7 +212,7 @@ class Po
     }
 
     /**
-     * 
+     *
      * @param array $entry
      * @return type
      */
@@ -229,5 +224,4 @@ class Po
 
         return implode($this->options['multiline-glue'], (array) $entry['msgid']);
     }
-
 }

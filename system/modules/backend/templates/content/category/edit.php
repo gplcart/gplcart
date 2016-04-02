@@ -16,19 +16,25 @@
     </div>
     <div class="col-md-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($category['category_id']) && $this->access('category_delete') && $can_delete) { ?>
+        <?php if (isset($category['category_id']) && $this->access('category_delete') && $can_delete) {
+    ?>
         <button class="btn btn-danger" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url("admin/content/category/{$category_group['category_group_id']}"); ?>" class="btn btn-default cancel">
           <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
         </a>
-        <?php if ($this->access('category_add') || $this->access('category_edit')) { ?>
+        <?php if ($this->access('category_add') || $this->access('category_edit')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -54,9 +60,12 @@
                 </label>
                 <div class="col-md-4">
                   <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->escape($category['title']) : ''; ?>">
-                  <?php if (isset($form_errors['title'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['title']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['title'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['title'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group">
@@ -79,40 +88,61 @@
                   <textarea class="form-control summernote" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->xss($category['description_2']) : ''; ?></textarea>
                 </div>
               </div>
-              <?php if ($languages) { ?>
+              <?php if ($languages) {
+    ?>
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-2">
                   <a data-toggle="collapse" href="#translations">
-                    <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+                    <?php echo $this->text('Translations');
+    ?> <span class="caret"></span>
                   </a>
                 </div>
               </div>
-              <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
-                <?php foreach ($languages as $code => $language) { ?>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
+              <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : '';
+    ?>">
+                <?php foreach ($languages as $code => $language) {
+    ?>
+                <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : '';
+    ?>">
+                  <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name']));
+    ?></label>
                   <div class="col-md-4">
-                    <input maxlength="255" name="category[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->escape($category['translation'][$code]['title']) : ''; ?>">
-                    <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
-                      <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
-                    <?php } ?>
+                    <input maxlength="255" name="category[translation][<?php echo $code;
+    ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->escape($category['translation'][$code]['title']) : '';
+    ?>">
+                    <?php if (isset($form_errors['translation'][$code]['title'])) {
+    ?>
+                      <div class="help-block"><?php echo $form_errors['translation'][$code]['title'];
+    ?></div>
+                    <?php 
+}
+    ?>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-2 control-label"><?php echo $this->text('First description %language', array('%language' => $language['native_name'])); ?></label>
+                  <label class="col-md-2 control-label"><?php echo $this->text('First description %language', array('%language' => $language['native_name']));
+    ?></label>
                   <div class="col-md-8">
-                    <textarea class="form-control summernote" name="category[translation][<?php echo $code; ?>][description_1]"><?php echo isset($category['translation'][$code]['description_1']) ? $this->xss($category['translation'][$code]['description_1']) : ''; ?></textarea>
+                    <textarea class="form-control summernote" name="category[translation][<?php echo $code;
+    ?>][description_1]"><?php echo isset($category['translation'][$code]['description_1']) ? $this->xss($category['translation'][$code]['description_1']) : '';
+    ?></textarea>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Second description %language', array('%language' => $language['native_name'])); ?></label>
+                  <label class="col-md-2 control-label"><?php echo $this->text('Second description %language', array('%language' => $language['native_name']));
+    ?></label>
                   <div class="col-md-8">
-                    <textarea class="form-control summernote" name="category[translation][<?php echo $code; ?>][description_2]"><?php echo isset($category['translation'][$code]['description_2']) ? $this->xss($category['translation'][$code]['description_2']) : ''; ?></textarea>
+                    <textarea class="form-control summernote" name="category[translation][<?php echo $code;
+    ?>][description_2]"><?php echo isset($category['translation'][$code]['description_2']) ? $this->xss($category['translation'][$code]['description_2']) : '';
+    ?></textarea>
                   </div>
                 </div>
-                <?php } ?>
+                <?php 
+}
+    ?>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
             </div>
           </div>
         </div>
@@ -133,14 +163,22 @@
                   </span>
                 </label>
                 <div class="col-md-4">
-                  <?php if (isset($category['parent_id'])) { ?>
-                  <?php $parent_id = $category['parent_id']; ?>
-                  <?php } ?>
+                  <?php if (isset($category['parent_id'])) {
+    ?>
+                  <?php $parent_id = $category['parent_id'];
+    ?>
+                  <?php 
+} ?>
                   <select data-live-search="true" name="category[parent_id]" class="form-control selectpicker" id="parent_id">
                     <option value="0"><?php echo $this->text('Root'); ?></option>
-                    <?php foreach ($categories as $category_id => $category_name) { ?>
-                    <option value="<?php echo $category_id; ?>"<?php echo ($category_id == $parent_id) ? ' selected' : ''; ?>><?php echo $this->escape($category_name); ?></option>
-                    <?php } ?>
+                    <?php foreach ($categories as $category_id => $category_name) {
+    ?>
+                    <option value="<?php echo $category_id;
+    ?>"<?php echo ($category_id == $parent_id) ? ' selected' : '';
+    ?>><?php echo $this->escape($category_name);
+    ?></option>
+                    <?php 
+} ?>
                   </select>
                 </div>
               </div>
@@ -152,9 +190,12 @@
                 </label>
                 <div class="col-md-4">
                   <input type="text" name="category[alias]" class="form-control" value="<?php echo isset($category['alias']) ? $this->escape($category['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-                  <?php if (isset($form_errors['alias'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['alias']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['alias'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['alias'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
             </div>
@@ -178,9 +219,12 @@
                 </label>
                 <div class="col-md-4">
                   <input maxlength="60" name="category[meta_title]" class="form-control" value="<?php echo isset($category['meta_title']) ? $this->escape($category['meta_title']) : ''; ?>">
-                  <?php if (isset($form_errors['meta_title'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['meta_title']; ?></div>
-                  <?php } ?>
+                  <?php if (isset($form_errors['meta_title'])) {
+    ?>
+                  <div class="help-block"><?php echo $form_errors['meta_title'];
+    ?></div>
+                  <?php 
+} ?>
                 </div>
               </div>
               <div class="form-group">
@@ -193,34 +237,53 @@
                   <textarea maxlength="160" class="form-control" name="category[meta_description]"><?php echo isset($category['meta_description']) ? $this->escape($category['meta_description']) : ''; ?></textarea>
                 </div>
               </div>
-              <?php if ($languages) { ?>
+              <?php if ($languages) {
+    ?>
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-2">
                   <a data-toggle="collapse" href="#meta-translations">
-                    <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+                    <?php echo $this->text('Translations');
+    ?> <span class="caret"></span>
                   </a>
                 </div>
               </div>
-              <div id="meta-translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
-              <?php foreach ($languages as $code => $language) { ?>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $language['native_name'])); ?></label>
+              <div id="meta-translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : '';
+    ?>">
+              <?php foreach ($languages as $code => $language) {
+    ?>
+                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_title']) ? ' has-error' : '';
+    ?>">
+                  <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $language['native_name']));
+    ?></label>
                   <div class="col-md-4">
-                    <input maxlength="60" name="category[translation][<?php echo $code; ?>][meta_title]" class="form-control" id="title-<?php echo $code; ?>" value="<?php echo isset($category['translation'][$code]['meta_title']) ? $this->escape($category['translation'][$code]['meta_title']) : ''; ?>">
-                    <?php if (isset($form_errors['translation'][$code]['meta_title'])) { ?>
-                        <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_title']; ?></div>
-                    <?php } ?>
+                    <input maxlength="60" name="category[translation][<?php echo $code;
+    ?>][meta_title]" class="form-control" id="title-<?php echo $code;
+    ?>" value="<?php echo isset($category['translation'][$code]['meta_title']) ? $this->escape($category['translation'][$code]['meta_title']) : '';
+    ?>">
+                    <?php if (isset($form_errors['translation'][$code]['meta_title'])) {
+    ?>
+                        <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_title'];
+    ?></div>
+                    <?php 
+}
+    ?>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $language['native_name'])); ?></label>
+                  <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $language['native_name']));
+    ?></label>
                   <div class="col-md-6">
-                    <textarea maxlength="160" class="form-control" name="category[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($category['translation'][$code]['meta_description']) ? $this->escape($category['translation'][$code]['meta_description']) : ''; ?></textarea>
+                    <textarea maxlength="160" class="form-control" name="category[translation][<?php echo $code;
+    ?>][meta_description]"><?php echo isset($category['translation'][$code]['meta_description']) ? $this->escape($category['translation'][$code]['meta_description']) : '';
+    ?></textarea>
                   </div>
                 </div>
-              <?php } ?>
+              <?php 
+}
+    ?>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
             </div>
           </div>
         </div>
@@ -237,20 +300,26 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="row image-container">
-                  <?php if (!empty($attached_images)) { ?>
-                  <?php echo $attached_images; ?>
-                  <?php } ?>
+                  <?php if (!empty($attached_images)) {
+    ?>
+                  <?php echo $attached_images;
+    ?>
+                  <?php 
+} ?>
                   </div>
                 </div>
               </div>
-              <?php if ($this->access('file_upload')) { ?>
+              <?php if ($this->access('file_upload')) {
+    ?>
               <div class="row">
                 <div class="col-md-12">
-                  <label for="fileinput" class="btn btn-primary"><i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?></label>
+                  <label for="fileinput" class="btn btn-primary"><i class="fa fa-upload"></i> <?php echo $this->text('Upload');
+    ?></label>
                   <input class="hide" type="file" id="fileinput" name="file" data-entity-type="category" multiple="multiple" accept="image/*">
                 </div>
               </div>
-              <?php } ?>
+              <?php 
+} ?>
             </div>
           </div>
         </div>

@@ -161,7 +161,6 @@ class Alias
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $allowed_sort = array('id_value', 'id_key', 'alias');
 
             if (in_array($data['sort'], $allowed_sort)) {
@@ -265,5 +264,4 @@ class Alias
         $sth->execute(array(':alias' => $alias));
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
-
 }

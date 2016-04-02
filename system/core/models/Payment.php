@@ -86,7 +86,6 @@ class Payment
         $services = $this->defaultServices();
 
         foreach ($this->module->getByType('payment', true) as $module_id => $info) {
-
             $object = Container::instance($info['class']);
 
             if (!method_exists($object, 'services')) {
@@ -102,7 +101,7 @@ class Payment
         $this->hook->fire('payment.services', $cart, $order, $services);
 
         if ($enabled) {
-            return array_filter($services, function($service) {
+            return array_filter($services, function ($service) {
                 return ($service['price'] !== false);
             });
         }
@@ -155,5 +154,4 @@ class Payment
             'currency' => $this->config->get('currency', 'USD')
         );
     }
-
 }

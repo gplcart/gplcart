@@ -204,18 +204,15 @@ class Image
     protected function normalize_color($color)
     {
         if (is_string($color)) {
-
             $color = trim($color, '#');
 
             if (strlen($color) == 6) {
-
                 list($r, $g, $b) = array(
                     $color[0] . $color[1],
                     $color[2] . $color[3],
                     $color[4] . $color[5]
                 );
             } elseif (strlen($color) == 3) {
-
                 list($r, $g, $b) = array(
                     $color[0] . $color[0],
                     $color[1] . $color[1],
@@ -227,9 +224,7 @@ class Image
 
             return array('r' => hexdec($r), 'g' => hexdec($g), 'b' => hexdec($b), 'a' => 0);
         } elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {
-
             if (isset($color['r'], $color['g'], $color['b'])) {
-
                 return array(
                     'r' => $this->keep_within($color['r'], 0, 255),
                     'g' => $this->keep_within($color['g'], 0, 255),
@@ -237,7 +232,6 @@ class Image
                     'a' => $this->keep_within(isset($color['a']) ? $color['a'] : 0, 0, 127)
                 );
             } elseif (isset($color[0], $color[1], $color[2])) {
-
                 return array(
                     'r' => $this->keep_within($color[0], 0, 255),
                     'g' => $this->keep_within($color[1], 0, 255),
@@ -863,7 +857,7 @@ class Image
      * @param integer $level
      * @return \core\classes\Image
      */
-    function smooth($level)
+    public function smooth($level)
     {
         imagefilter($this->image, IMG_FILTER_SMOOTH, $this->keep_within($level, -10, 10));
         return $this;
@@ -931,7 +925,7 @@ class Image
                 $x = 0 + $x_offset;
                 $y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
                 break;
-            case 'right';
+            case 'right':
                 $x = $this->width - $box_width + $x_offset;
                 $y = ($this->height / 2) - (($box_height / 2) - $box_height) + $y_offset;
                 break;
@@ -1036,5 +1030,4 @@ class Image
 
         return $this;
     }
-
 }
