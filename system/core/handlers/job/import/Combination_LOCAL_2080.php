@@ -120,15 +120,12 @@ class Combination
 
     /**
 <<<<<<< HEAD
-<<<<<<< HEAD
      * 
      * @param array $rows
      * @param integer $line
      * @param array $options
      * @return array
 =======
-=======
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
      *
      * @param type $rows
      * @param type $line
@@ -180,7 +177,6 @@ class Combination
     }
 
 <<<<<<< HEAD
-<<<<<<< HEAD
     /**
      * Validates fields
      * @param array $data
@@ -194,20 +190,12 @@ class Combination
     protected function validateFields(&$data, &$errors, $line)
     {
 >>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
-=======
-    protected function validateFields(&$data, &$errors, $line)
-    {
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
         if (!isset($data['fields'])) {
             return true;
         }
 
         $field_value_ids = array();
-<<<<<<< HEAD
         $components = array_filter(array_map('trim', explode($this->import->getCsvDelimiterMultiple(), $data['fields'])));
-=======
-        $components = array_filter(array_map('trim', explode($this->getCsvDelimiterMultiple(), $data['fields'])));
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
 
         foreach ($components as $component) {
             $field_id = null;

@@ -16,7 +16,7 @@ use core\models\User;
 use core\models\Image;
 use core\classes\Csv;
 
-class Combination
+class Category
 {
 
     /**
@@ -43,31 +43,20 @@ class Combination
      */
     protected $user;
     
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
     protected $image;
 
-    /**
-     * Constaructor
-     * @param Import $import
-     * @param Language $language
-     * @param User $user
-     * @param Image $image
-     * @param Csv $csv
-     */
+
     public function __construct(Import $import, Language $language, User $user, Image $image, Csv $csv)
     {
-        $this->csv = $csv;
-        $this->user = $user;
-        $this->image = $image;
         $this->import = $import;
         $this->language = $language;
+        $this->user = $user;
+        $this->image = $image;
+        $this->csv = $csv;
     }
 
     /**
-     *
+     * 
      * @param array $job
      * @param string $operation_id
      * @param integer $done
@@ -119,22 +108,11 @@ class Combination
     }
 
     /**
-<<<<<<< HEAD
-<<<<<<< HEAD
      * 
-     * @param array $rows
-     * @param integer $line
-     * @param array $options
-     * @return array
-=======
-=======
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
-     *
      * @param type $rows
      * @param type $line
      * @param type $options
      * @return type
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
      */
     public function import($rows, $line, $options)
     {
@@ -144,6 +122,7 @@ class Combination
         $operation = $options['operation'];
 
         foreach ($rows as $index => $row) {
+
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['combination_id']) && is_numeric($data['combination_id']));
@@ -160,7 +139,7 @@ class Combination
                 continue;
             }
             
-            if (!$this->validateProduct($data, $errors, $line)) {
+            if(!$this->validateProduct($data, $errors, $line)) {
                 continue;
             }
 
@@ -179,43 +158,23 @@ class Combination
         return array('inserted' => $inserted, 'updated' => $updated, 'errors' => $errors);
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    /**
-     * Validates fields
-     * @param array $data
-     * @param array $errors
-     * @param integer $line
-     * @return boolean
-     */
     protected function validateFields(&$data, &$errors, $line){
 
-=======
-    protected function validateFields(&$data, &$errors, $line)
-    {
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
-=======
-    protected function validateFields(&$data, &$errors, $line)
-    {
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
         if (!isset($data['fields'])) {
             return true;
         }
 
         $field_value_ids = array();
-<<<<<<< HEAD
-        $components = array_filter(array_map('trim', explode($this->import->getCsvDelimiterMultiple(), $data['fields'])));
-=======
         $components = array_filter(array_map('trim', explode($this->getCsvDelimiterMultiple(), $data['fields'])));
->>>>>>> 9ac1f850daef469a8581f8516233867c31fc358b
 
-        foreach ($components as $component) {
+        foreach($components as $component) {
+
             $field_id = null;
-            $keyvalue = array_filter(array_map('trim', explode($this->import->getCsvDelimiterKeyValue(), $component)));
+            $keyvalue = array_filter(array_map('trim', explode($this->getCsvDelimiterKeyValue(), $component)));
 
-            if (count($keyvalue) == 1) {
+            if(count($keyvalue) == 1) {
                 $field_value_id = reset($keyvalue);
-            } elseif (count($keyvalue) == 2) {
+            } else if(count($keyvalue) == 2) {
                 list($field_id, $field_value_id) = $keyvalue;
             } else {
                 $errors[] = $this->language->text('Line @num: @error', array(
@@ -224,9 +183,9 @@ class Combination
                 return false;
             }
 
-            if (isset($field_id)) {
+            if(isset($field_id)) {
                 $field = $this->getField($field_id);
-                if (empty($field['field_id'])) {
+                if(empty($field['field_id'])) {
                     $errors[] = $this->language->text('Line @num: @error', array(
                         '@num' => $line,
                         '@error' => $this->language->text('Field @id neither exists or unique', array('@id' => $field_id))));
@@ -238,7 +197,7 @@ class Combination
 
             $field_value = $this->getFieldValue($field_value_id, $field_id);
 
-            if (empty($field_value['field_value_id'])) {
+            if(empty($field_value['field_value_id'])) {
                 $errors[] = $this->language->text('Line @num: @error', array(
                     '@num' => $line,
                     '@error' => $this->language->text('Field value @id neither exists or unique', array(
@@ -253,11 +212,6 @@ class Combination
         return true;
     }
 
-    /**
-     * Returns a field
-     * @param integer $field_id
-     * @return array
-     */
     protected function getField($field_id)
     {
         if (is_numeric($field_id)) {
@@ -276,12 +230,6 @@ class Combination
         return (count($matches) == 1) ? reset($matches) : $matches;
     }
     
-    /**
-     * Returns a field value
-     * @param integer $field_value_id
-     * @param integer $field_id
-     * @return array
-     */
     protected function getFieldValue($field_value_id, $field_id)
     {
         if (is_numeric($field_value_id)) {
@@ -300,15 +248,9 @@ class Combination
         return (count($matches) == 1) ? reset($matches) : $matches;
     }
     
-    /**
-     * Validates a product
-     * @param array $data
-     * @param array $errors
-     * @param integer $line
-     * @return boolean
-     */
     protected function validateProduct(&$data, &$errors, $line)
     {
+
         if (!isset($data['product_id'])) {
             return true;
         }
@@ -327,11 +269,6 @@ class Combination
         return true;
     }
 
-    /**
-     * Returns a product
-     * @param integer $product_id
-     * @return array
-     */
     protected function getProduct($product_id)
     {
         if (is_numeric($product_id)) {
@@ -351,7 +288,7 @@ class Combination
     }
 
     /**
-     * Validates images
+     *
      * @param array $data
      * @param array $errors
      * @param array $operation
@@ -379,24 +316,11 @@ class Combination
         return true;
     }
     
-    /**
-     * Updates a combination
-     * @param string $combination_id
-     * @param array $data
-     * @return boolean
-     */
     protected function update($combination_id, $data)
     {
         return (int) $this->product->updateCombination($combination_id, $data);
     }
     
-    /**
-     * Adds a combination
-     * @param array $data
-     * @param array $errors
-     * @param integer $line
-     * @return boolean
-     */
     protected function add(&$data, &$errors, $line)
     {
 
@@ -404,4 +328,5 @@ class Combination
 
         return $this->product->addCombination($data) ? 1 : 0;
     }
+    
 }
