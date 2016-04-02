@@ -25,37 +25,73 @@
   <div class="col-md-9">
     <form method="post" id="edit-address" class="form-horizontal margin-top-20<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
       <input type="hidden" name="token" value="<?php echo $token; ?>">
-      <?php foreach ($format as $key => $data) { ?>
-      <div class="record <?php echo $key; ?>"<?php echo empty($data['status']) ? ' style="display:none;"' : ''; ?>>
-        <div class="form-group <?php echo $key; ?><?php echo isset($form_errors[$key]) ? ' has-error' : ''; ?>">
+      <?php foreach ($format as $key => $data) {
+    ?>
+      <div class="record <?php echo $key;
+    ?>"<?php echo empty($data['status']) ? ' style="display:none;"' : '';
+    ?>>
+        <div class="form-group <?php echo $key;
+    ?><?php echo isset($form_errors[$key]) ? ' has-error' : '';
+    ?>">
           <label class="col-md-2 control-label">
-            <?php if (!empty($data['required'])) { ?><span class="text-danger">* </span><?php } ?>
-            <?php echo $this->escape($data['name']); ?>
+            <?php if (!empty($data['required'])) {
+    ?><span class="text-danger">* </span><?php 
+}
+    ?>
+            <?php echo $this->escape($data['name']);
+    ?>
           </label>
           <div class="col-md-6">
-            <?php if ($key == 'country') { ?>
+            <?php if ($key == 'country') {
+    ?>
             <select class="form-control" name="address[country]">
-              <?php foreach ($countries as $code => $name) { ?>
-              <option value="<?php echo $code; ?>"<?php echo (isset($address['country']) && $address['country'] == $code) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
-              <?php } ?>
+              <?php foreach ($countries as $code => $name) {
+    ?>
+              <option value="<?php echo $code;
+    ?>"<?php echo (isset($address['country']) && $address['country'] == $code) ? ' selected' : '';
+    ?>><?php echo $this->escape($name);
+    ?></option>
+              <?php 
+}
+    ?>
             </select>
-            <?php } elseif ($key == 'state_id') { ?>
+            <?php 
+} elseif ($key == 'state_id') {
+    ?>
             <select class="form-control" name="address[state_id]">
-              <option value=""><?php echo $this->text('None'); ?></option>
-              <?php foreach ($states as $state_id => $state) { ?>
-              <option value="<?php echo $state_id; ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : ''; ?>><?php echo $this->escape($state['name']); ?></option>
-              <?php } ?>
+              <option value=""><?php echo $this->text('None');
+    ?></option>
+              <?php foreach ($states as $state_id => $state) {
+    ?>
+              <option value="<?php echo $state_id;
+    ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : '';
+    ?>><?php echo $this->escape($state['name']);
+    ?></option>
+              <?php 
+}
+    ?>
             </select>
-            <?php } else { ?>
-            <input name="address[<?php echo $key; ?>]" maxlength="255" class="form-control" value="<?php echo isset($address[$key]) ? $this->escape($address[$key]) : ''; ?>">
-            <?php } ?>
-            <?php if (isset($form_errors[$key])) { ?>
-            <div class="help-block"><?php echo $form_errors[$key]; ?></div>
-            <?php } ?>  
+            <?php 
+} else {
+    ?>
+            <input name="address[<?php echo $key;
+    ?>]" maxlength="255" class="form-control" value="<?php echo isset($address[$key]) ? $this->escape($address[$key]) : '';
+    ?>">
+            <?php 
+}
+    ?>
+            <?php if (isset($form_errors[$key])) {
+    ?>
+            <div class="help-block"><?php echo $form_errors[$key];
+    ?></div>
+            <?php 
+}
+    ?>  
           </div>
         </div>
       </div>
-      <?php } ?>
+      <?php 
+} ?>
       <div class="row">
         <div class="col-md-4 col-md-offset-2">
           <a class="btn btn-default" href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>">

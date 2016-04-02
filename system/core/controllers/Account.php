@@ -200,7 +200,7 @@ class Account extends Controller
     }
 
     /**
-     * 
+     *
      * @param type $order
      * @return type
      */
@@ -215,7 +215,7 @@ class Account extends Controller
     }
 
     /**
-     * 
+     *
      * @param type $order_id
      * @return type
      */
@@ -225,7 +225,7 @@ class Account extends Controller
     }
 
     /**
-     * 
+     *
      * @param type $cart
      * @return type
      */
@@ -239,7 +239,7 @@ class Account extends Controller
     }
 
     /**
-     * 
+     *
      * @param type $address_id
      * @return type
      */
@@ -249,7 +249,7 @@ class Account extends Controller
     }
 
     /**
-     * 
+     *
      * @param type $address
      * @return type
      */
@@ -353,7 +353,6 @@ class Account extends Controller
         $check_old_password = false;
 
         if (isset($data['email']) && filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-
             $check_email_exists = true;
             if (isset($user['email']) && ($data['email'] === $user['email'])) {
                 $check_email_exists = false;
@@ -457,7 +456,6 @@ class Account extends Controller
      */
     public function editAddress($user_id, $address_id = null)
     {
-
         $user = $this->user->get($user_id);
 
         if (empty($user['status'])) {
@@ -477,7 +475,6 @@ class Account extends Controller
                 $this->data['address'] = $submitted;
                 $country_code = $submitted['country'];
             } else {
-
                 $this->address->add($submitted + array('user_id' => $user_id));
 
                 // Control address limit for the user
@@ -551,7 +548,6 @@ class Account extends Controller
      */
     public function register()
     {
-
         if ($this->uid && !$this->access('user_add')) {
             $this->url->redirect("account/{$this->uid}");
         }
@@ -708,7 +704,6 @@ class Account extends Controller
      */
     protected function validateForgot(&$submitted, $recoverable_user)
     {
-
         if (isset($submitted['email'])) {
             $user = $this->user->getByEmail($submitted['email']);
             if (empty($user['status'])) {
@@ -800,5 +795,4 @@ class Account extends Controller
         $this->logger->log('logout', $log);
         $this->url->redirect('login');
     }
-
 }

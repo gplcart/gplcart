@@ -5,9 +5,12 @@
         <div class="col-md-12">
           <table class="table table-condensed">
             <tbody>
-              <?php foreach($components as $component) { ?>
-              <?php echo $component; ?>
-              <?php } ?>
+              <?php foreach ($components as $component) {
+    ?>
+              <?php echo $component;
+    ?>
+              <?php 
+} ?>
             </tbody>
           </table>
         </div>

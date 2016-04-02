@@ -43,5 +43,4 @@ class DashboardOverride extends Dashboard
         $this->setMessage('Hello! This test message came from modules\example\override\core\controllers\admin\DashboardOverride::dashboard()');
         parent::dashboard();
     }
-
 }

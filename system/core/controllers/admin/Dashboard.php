@@ -137,7 +137,7 @@ class Dashboard extends Controller
     {
         $orders = $this->order->getList(array('limit' => array(0, $limit)));
 
-        array_walk($orders, function(&$order) {
+        array_walk($orders, function (&$order) {
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
             $order['html'] = $this->render('settings/search/suggestion/order', array('order' => $order));
         });
@@ -225,5 +225,4 @@ class Dashboard extends Controller
         $this->data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
         $this->addJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
     }
-
 }

@@ -389,5 +389,4 @@ class Condition
 
         return $this->pricerule->compareNumeric($address['state_id'], $condition_value, $condition['operator']);
     }
-
 }

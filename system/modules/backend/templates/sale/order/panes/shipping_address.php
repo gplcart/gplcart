@@ -3,16 +3,23 @@
   <div class="panel-body">
     <div class="row">
       <div class="col-md-6">
-        <?php if (!empty($items)) { ?>
+        <?php if (!empty($items)) {
+    ?>
         <table class="table table-condensed">
-          <?php foreach ($items as $key => $value) { ?>
+          <?php foreach ($items as $key => $value) {
+    ?>
           <tr>
-            <td><?php echo $this->escape($key); ?></td>
-            <td><?php echo $this->escape($value); ?></td>
+            <td><?php echo $this->escape($key);
+    ?></td>
+            <td><?php echo $this->escape($value);
+    ?></td>
           </tr>
-          <?php } ?>
+          <?php 
+}
+    ?>
         </table>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
       <div class="col-md-6">
         <div class="embed-responsive embed-responsive-4by3">
