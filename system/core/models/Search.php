@@ -205,5 +205,4 @@ class Search
 
         return implode(' ', array_diff(explode(' ', $string), $stopwords));
     }
-
 }

@@ -72,7 +72,7 @@ class Cart
 
     /**
      * Request model instance
-     * @var \core\classes\Request $request 
+     * @var \core\classes\Request $request
      */
     protected $request;
 
@@ -137,7 +137,6 @@ class Cart
         }
 
         if ($cached) {
-
             $cart = &Cache::memory("cart.$user_id");
 
             if (isset($cart)) {
@@ -164,7 +163,6 @@ class Cart
 
         $cart = array();
         foreach ($products as $cart_id => $item) {
-
             $item['product'] = $this->product->getBySku($item['sku'], $item['store_id']);
 
             // Invalid / disabled product
@@ -182,7 +180,7 @@ class Cart
 
             if (empty($item['product']['combination_id'])) {
                 $price = $this->currency->convert($price, $currency, $current_currency);
-            } else if (!empty($item['product']['option_file_id'])) {
+            } elseif (!empty($item['product']['option_file_id'])) {
                 $price = $this->currency->convert($item['product']['option_price'], $currency, $current_currency);
             }
 
@@ -246,12 +244,12 @@ class Cart
         
         $where = array();
         
-        if(isset($data['user_id'])){
+        if (isset($data['user_id'])) {
             $sql .= ' AND user_id=?';
             $where[] = $data['user_id'];
         }
         
-        if(isset($data['order_id'])){
+        if (isset($data['order_id'])) {
             $sql .= ' AND order_id=?';
             $where[] = $data['order_id'];
         }
@@ -374,7 +372,6 @@ class Cart
             $data['sku'] = $product['sku'];
             $data['stock'] = $product['stock'];
         } else {
-
             $data['combination_id'] = $this->product->getCombinationId($data['options'], $product['product_id']);
 
             if (!empty($product['combination'][$data['combination_id']]['sku'])) {
@@ -718,5 +715,4 @@ class Cart
         $this->hook->fire('cart.login.after', $user, $cart);
         return true;
     }
-
 }

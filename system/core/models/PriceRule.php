@@ -283,7 +283,6 @@ class PriceRule
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -365,7 +364,6 @@ class PriceRule
 
         $results = 0;
         foreach ($rule['data']['conditions'] as $condition) {
-
             $result = Handler::call($handlers, $condition['id'], 'condition', array($rule, $condition, $data));
 
             if ($result === true) {
@@ -658,13 +656,11 @@ class PriceRule
         $results = array();
 
         foreach ($rules as $id => $rule) {
-
             if (!$this->conditionsMet($rule, $data)) {
                 continue;
             }
 
             if ($type === 'order' && !empty($rule['code'])) {
-
                 $coupons++;
 
                 if ($coupons > 1) {
@@ -675,7 +671,7 @@ class PriceRule
             $results[$id] = $rule;
         }
 
-        uasort($results, function($a, $b) {
+        uasort($results, function ($a, $b) {
             return empty($a['code']) ? -1 : 1; // Coupons always bottom
         });
 
@@ -764,5 +760,4 @@ class PriceRule
 
         return false;
     }
-
 }

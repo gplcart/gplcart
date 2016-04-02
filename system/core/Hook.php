@@ -35,7 +35,6 @@ class Hook
     public function registerModules($modules)
     {
         foreach ($modules as $module) {
-
             if (empty($module['hooks'])) {
                 continue;
             }
@@ -105,7 +104,6 @@ class Hook
         }
 
         foreach (array_keys(static::$hooks[$method]) as $namespace) {
-
             $instance = Container::instance(array($namespace, $method));
 
             if (empty($instance)) {
@@ -122,5 +120,4 @@ class Hook
 
         return true;
     }
-
 }

@@ -118,7 +118,6 @@ class Module
 
         $module = $this->get($module_id);
         if (is_callable(array($module['class'], 'beforeEnable'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeEnable();
@@ -312,7 +311,6 @@ class Module
 
         $map = array();
         foreach ($this->getEnabled() as $module_id => $module) {
-
             $directory = GC_MODULE_DIR . "/$module_id/override";
 
             if (!is_readable($directory)) {
@@ -343,7 +341,7 @@ class Module
                 if ((substr($path, -4) === '.php')) {
                     $results[] = rtrim($path, '.php');
                 }
-            } else if ($value != '.' && $value != '..') {
+            } elseif ($value != '.' && $value != '..') {
                 $this->scanOverrideFiles($path, $results);
             }
         }
@@ -365,7 +363,6 @@ class Module
         }
 
         foreach ($files as $file) {
-
             $filename = basename($file);
             $langcode = strtok($filename, '.');
 
@@ -412,7 +409,6 @@ class Module
 
         $module = $this->get($module_id);
         if (is_callable(array($module['class'], 'beforeDisable'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeDisable();
@@ -512,7 +508,6 @@ class Module
         $required_by = array();
 
         foreach ($modules as $info) {
-
             if (empty($info['dependencies'])) {
                 continue;
             }
@@ -542,7 +537,6 @@ class Module
         $module = $this->get($module_id);
 
         if (is_callable(array($module['class'], 'beforeInstall'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeInstall();
@@ -593,7 +587,6 @@ class Module
         $module = $this->get($module_id);
 
         if (is_callable(array($module['class'], 'beforeUninstall'))) {
-
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeUninstall();
@@ -610,5 +603,4 @@ class Module
 
         return $result;
     }
-
 }

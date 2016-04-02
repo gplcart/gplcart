@@ -47,7 +47,6 @@ class City
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT c.*, s.code AS state_code ';
 
         if (!empty($data['count'])) {
@@ -84,7 +83,6 @@ class City
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'name':
                     $sql .= " ORDER BY c.name {$data['order']}";
@@ -239,5 +237,4 @@ class City
         $this->hook->fire('update.city.after', $city_id, $data, $result);
         return (bool) $result;
     }
-
 }

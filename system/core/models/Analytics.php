@@ -26,7 +26,7 @@ class Analytics
 
     /**
      * GA profile id
-     * @var type 
+     * @var type
      */
     protected $profile_id;
 
@@ -253,5 +253,4 @@ class Analytics
         $arguments = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
         return $this->getResults($arguments);
     }
-
 }

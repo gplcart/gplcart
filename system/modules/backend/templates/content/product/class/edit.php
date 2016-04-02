@@ -3,17 +3,23 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($product_class['product_class_id']) && $this->access('product_class_delete')) { ?>
+        <?php if (isset($product_class['product_class_id']) && $this->access('product_class_delete')) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/class'); ?>"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
-        <?php if ($this->access('product_class_edit') || $this->access('product_class_add')) { ?>
+        <?php if ($this->access('product_class_edit') || $this->access('product_class_add')) {
+    ?>
         <button class="btn btn-primary" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -44,9 +50,12 @@
         </label>
         <div class="col-md-4">
           <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->escape($product_class['title']) : ''; ?>" required>
-          <?php if (isset($form_errors['title'])) { ?>
-          <div class="help-block"><?php echo $form_errors['title']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['title'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['title'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>

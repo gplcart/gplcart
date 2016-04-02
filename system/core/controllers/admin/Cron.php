@@ -119,13 +119,12 @@ class Cron extends Controller
     protected function processLogs()
     {
         if ($this->config->get('report_errors', 1)) {
-
             $errors = $this->report->getPhpErrors();
             $sent = ($errors && $this->report->reportErrors($errors));
 
             if ($sent) {
                 $this->logger->log('cron', array('message' => 'Error raport has been sent'), 'success');
-            } else if ($errors && !$sent) {
+            } elseif ($errors && !$sent) {
                 $this->logger->log('cron', array('message' => 'Failed to send error report'), 'warning');
             }
         }
@@ -193,5 +192,4 @@ class Cron extends Controller
     {
         $this->config->set('cron_last_run', GC_TIME);
     }
-
 }
