@@ -114,5 +114,4 @@ class Cache
 
         return $data;
     }
-
 }

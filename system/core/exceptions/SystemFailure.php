@@ -36,5 +36,4 @@ class SystemFailure extends Exception
         $message .= $this->getFormattedMessage();
         echo $message;
     }
-
 }

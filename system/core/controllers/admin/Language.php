@@ -120,7 +120,6 @@ class Language extends Controller
      */
     public function languages()
     {
-
         $code = $this->request->get('refresh', null);
 
         if (isset($code)) {
@@ -279,5 +278,4 @@ class Language extends Controller
         $this->submitted['weight'] = 0;
         return true;
     }
-
 }

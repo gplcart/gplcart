@@ -74,7 +74,6 @@ class Facade
         $this->exception = $exception;
 
         if ($this->config->exists()) {
-
             date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
 
             // Set error level
@@ -116,5 +115,4 @@ class Facade
 
         $this->route->process();
     }
-
 }

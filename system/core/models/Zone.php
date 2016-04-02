@@ -36,7 +36,7 @@ class Zone
     protected $config;
 
     /**
-     * 
+     *
      * @param Hook $hook
      * @param Config $config
      */
@@ -125,5 +125,4 @@ class Zone
         $this->hook->fire('zone.list', $list);
         return $list;
     }
-
 }

@@ -22,7 +22,6 @@ use core\models\Review;
 use core\models\Rating;
 use core\models\Alias;
 use core\models\Shipping;
-
 use core\classes\Cache;
 
 class Product extends Controller
@@ -155,7 +154,6 @@ class Product extends Controller
         $limit = $this->setPager($total_reviews, $this->query, $this->config->get('review_limit', 5));
 
         if ($total_reviews) {
-
             $reviews = $this->review->getList(array(
                 'limit' => $limit,
                 'product_id' => $product_id,
@@ -250,7 +248,7 @@ class Product extends Controller
         
         $services = $this->shipping->getServices();
         
-        foreach($services as &$service) {
+        foreach ($services as &$service) {
             $service['price'] = $this->price->convert((int)$service['price'], $service['currency'], $product['currency']);
             $service['price_formatted'] = $this->price->format($service['price'], $product['currency']);
         }
@@ -263,10 +261,9 @@ class Product extends Controller
         $product = Cache::get("product.$product_id.$langcode");
 
         if (!isset($product)) {
-
             $product = $this->product->get($product_id, $langcode);
 
-            if(!$product) {
+            if (!$product) {
                 return array();
             }
 
@@ -306,7 +303,7 @@ class Product extends Controller
 
     protected function getMultiple($product_ids, $langcode)
     {
-        if(!$product_ids) {
+        if (!$product_ids) {
             return array();
         }
         
@@ -314,10 +311,9 @@ class Product extends Controller
 
         $list = array();
         foreach ($product_ids as $product_id) {
-
             $product = $this->get($product_id, $langcode);
             
-            if(!$product) {
+            if (!$product) {
                 continue;
             }
 
@@ -364,7 +360,6 @@ class Product extends Controller
         $add_result = $this->cart->addProduct($submitted);
 
         if ($add_result === true) {
-
             if (!$ajax) {
                 $this->redirect('', $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
             }
@@ -395,7 +390,6 @@ class Product extends Controller
 
     protected function getFields($product)
     {
-
         $field_data = $this->product_class->getFieldData($product['product_class_id']);
 
         if (empty($product['field']['option'])) {
@@ -403,7 +397,6 @@ class Product extends Controller
         }
 
         foreach ($product['field']['option'] as $field_id => $field_values) {
-
             if (empty($field_data['option'][$field_id]) || $field_data['option'][$field_id]['widget'] != 'image') {
                 continue;
             }
@@ -457,5 +450,4 @@ class Product extends Controller
             $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
         }
     }
-
 }

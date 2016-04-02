@@ -203,7 +203,7 @@ class Order
     }
 
     /**
-     * 
+     *
      * @param type $order
      */
     public function updatedCustomer($order)
@@ -212,12 +212,11 @@ class Order
     }
 
     /**
-     * 
+     *
      * @param type $order
      */
     public function status($order)
     {
         // TODO: complete
     }
-
 }

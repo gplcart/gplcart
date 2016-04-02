@@ -357,7 +357,6 @@ class Import
         $this->file->setUploadPath($destination)->setHandler('image');
 
         foreach ($images as $image) {
-
             if (0 === strpos($image, 'http')) {
                 $result = $this->file->download($image);
                 if ($result === true) {
@@ -423,5 +422,4 @@ class Import
     {
         return $this->config->get('csv_delimiter', ",");
     }
-
 }
