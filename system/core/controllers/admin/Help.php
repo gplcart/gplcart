@@ -187,7 +187,6 @@ class Help extends Controller
      */
     protected function getList()
     {
-
         $folder = $this->langcode ? $this->langcode : 'en';
         $directory = GC_HELP_DIR . "/$folder";
 
@@ -199,7 +198,6 @@ class Help extends Controller
 
         $i = 1;
         foreach (Tool::scanFiles($directory, array('php')) as $file) {
-
             $contents = $this->getContents($file);
 
             if (!$contents) {
@@ -221,5 +219,4 @@ class Help extends Controller
         ksort($list);
         return $list;
     }
-
 }

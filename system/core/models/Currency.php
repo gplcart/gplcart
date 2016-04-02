@@ -122,7 +122,7 @@ class Currency
         $this->hook->fire('currencies', $currencies);
 
         if ($enabled) {
-            $currencies = array_filter($currencies, function($currency) {
+            $currencies = array_filter($currencies, function ($currency) {
                 return !empty($currency['status']);
             });
         }
@@ -316,5 +316,4 @@ class Currency
         $currencies = $this->getList();
         return isset($currencies[$default_currency]) ? $currencies[$default_currency] : array();
     }
-
 }

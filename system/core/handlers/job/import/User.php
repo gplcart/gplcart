@@ -141,7 +141,6 @@ class User
         $errors = array();
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['user_id']) && is_numeric($data['user_id']));
@@ -218,7 +217,6 @@ class User
      */
     protected function validateEmail(&$data, &$errors, $line, $update)
     {
-
         if (!isset($data['email'])) {
             return true;
         }
@@ -343,7 +341,6 @@ class User
      */
     protected function validateStore(&$data, &$errors, $line)
     {
-
         if (!isset($data['store_id'])) {
             return true;
         }
@@ -392,7 +389,6 @@ class User
      */
     protected function validateCreate(&$data, &$errors, $line)
     {
-
         if (!isset($data['created'])) {
             return true;
         }
@@ -431,7 +427,6 @@ class User
      */
     protected function add(&$data, &$errors, $line)
     {
-
         if (empty($data['name'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
@@ -455,5 +450,4 @@ class User
 
         return $this->user->add($data) ? 1 : 0;
     }
-
 }

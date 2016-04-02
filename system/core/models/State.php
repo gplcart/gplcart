@@ -96,7 +96,6 @@ class State
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT * ';
 
         if (!empty($data['count'])) {
@@ -127,7 +126,6 @@ class State
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-
             switch ($data['sort']) {
                 case 'country':
                     $sql .= " ORDER BY country {$data['order']}";
@@ -247,5 +245,4 @@ class State
 
         return (bool) $result;
     }
-
 }

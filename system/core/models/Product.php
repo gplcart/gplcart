@@ -450,7 +450,6 @@ class Product
 
         $i = 1;
         foreach ($data['combination'] as $combination) {
-
             $combination['product_id'] = $product_id;
             $combination['currency'] = $data['currency'];
 
@@ -615,7 +614,7 @@ class Product
     {
         if (is_numeric($field_id)) {
             $where['field_id'] = (int) $field_id;
-        } else if (is_string($field_id)) {
+        } elseif (is_string($field_id)) {
             $where = array('type' => $field_id, 'product_id' => (int) $product_id);
         } else {
             $where = array('product_id' => (int) $product_id);
@@ -705,7 +704,6 @@ class Product
         $product = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($product) {
-
             $product['data'] = unserialize($product['data']);
             $product['language'] = 'und';
 
@@ -982,7 +980,7 @@ class Product
     {
         $product_ids = &Cache::memory(__FUNCTION__);
         
-        if(isset($product_ids)){
+        if (isset($product_ids)) {
             return $product_ids;
         }
         
@@ -1060,7 +1058,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param type $product
      * @param type $round
      * @param type $convert_to
@@ -1189,12 +1187,11 @@ class Product
             $where[] = (int) $data['store_id'];
         }
 
-        if(empty($data['count'])) {
+        if (empty($data['count'])) {
             $sql .= ' GROUP BY p.product_id';
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -1247,7 +1244,7 @@ class Product
     }
 
     /**
-     * 
+     *
      * @param type $product_id
      * @param type $limit
      * @param type $lifespan
@@ -1276,11 +1273,10 @@ class Product
         $cookie = Tool::getCookie('viewed_products', '');
         $product_ids = array_filter(explode('|', $cookie), 'is_numeric');
         
-        if(isset($limit)){
+        if (isset($limit)) {
             $product_ids = array_slice($product_ids, -$limit);
         }
         
         return $product_ids;
     }
-
 }

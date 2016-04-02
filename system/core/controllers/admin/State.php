@@ -163,7 +163,7 @@ class State extends Controller
     }
 
     /**
-     * Renders the state edit page 
+     * Renders the state edit page
      */
     protected function outputEdit()
     {
@@ -233,7 +233,6 @@ class State extends Controller
     {
         $deleted = $updated = 0;
         foreach ($selected as $id) {
-
             if ($action == 'status' && $this->access('state_edit')) {
                 $updated += (int) $this->state->update($id, array('status' => $value));
             }
@@ -352,5 +351,4 @@ class State extends Controller
 
         return true;
     }
-
 }

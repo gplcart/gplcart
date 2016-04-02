@@ -298,7 +298,6 @@ class Category extends Controller
 
         $prepared = array();
         foreach ($tree as $category_id => $item) {
-
             $url = $item['alias'] ? $item['alias'] : "category/{$item['category_id']}";
             $item['url'] = $url;
             $item['active'] = ($this->path === $url);
@@ -311,7 +310,7 @@ class Category extends Controller
     }
 
     /**
-     * Returns an array of prepared products 
+     * Returns an array of prepared products
      * @param integer $limit
      * @param array $query
      * @param integer $category_id
@@ -367,7 +366,6 @@ class Category extends Controller
         $imestylestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
 
         foreach ($products as $product_id => &$product) {
-
             $product['in_comparison'] = $this->product->isCompared($product_id);
             $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
@@ -386,5 +384,4 @@ class Category extends Controller
 
         return $products;
     }
-
 }

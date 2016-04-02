@@ -93,5 +93,4 @@ class Common
             'severity' => 'danger'
         );
     }
-
 }

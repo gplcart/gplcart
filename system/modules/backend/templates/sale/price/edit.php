@@ -3,19 +3,25 @@
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
       <div class="btn-toolbar">
-        <?php if (isset($price_rule['price_rule_id']) && $this->access('price_rule_delete')) { ?>
+        <?php if (isset($price_rule['price_rule_id']) && $this->access('price_rule_delete')) {
+    ?>
         <button class="btn btn-danger delete" name="delete" value="1">
-          <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          <i class="fa fa-trash"></i> <?php echo $this->text('Delete');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
         <a href="<?php echo $this->url('admin/sale/price'); ?>" class="btn btn-default cancel">
           <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
         </a>
-        <?php if ($this->access('price_rule_edit') || $this->access('price_rule_add')) { ?>
+        <?php if ($this->access('price_rule_edit') || $this->access('price_rule_add')) {
+    ?>
         <button class="btn btn-primary save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save');
+    ?>
         </button>
-        <?php } ?>
+        <?php 
+} ?>
       </div>
     </div>
   </div>
@@ -46,9 +52,12 @@
         </label>
         <div class="col-md-3">
           <input maxlength="255" name="price_rule[name]" class="form-control" value="<?php echo isset($price_rule['name']) ? $this->escape($price_rule['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['name'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['name'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group">
@@ -74,32 +83,52 @@
         </label>
         <div class="col-md-3">
           <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->escape($price_rule['code']) : ''; ?>">
-          <?php if (isset($form_errors['code'])) { ?>
-            <div class="help-block"><?php echo $form_errors['code']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['code'])) {
+    ?>
+            <div class="help-block"><?php echo $form_errors['code'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
-      <?php if (count($stores) > 1) { ?>
+      <?php if (count($stores) > 1) {
+    ?>
       <div class="form-group">
         <label class="col-md-3 control-label">
-          <span class="hint" title="<?php echo $this->text('The price rule will be available only in selected store'); ?>">
-            <?php echo $this->text('Store'); ?>
+          <span class="hint" title="<?php echo $this->text('The price rule will be available only in selected store');
+    ?>">
+            <?php echo $this->text('Store');
+    ?>
           </span>
         </label>
         <div class="col-md-3">
           <select name="price_rule[store_id]" class="form-control">
-            <?php foreach ($stores as $sid => $store) { ?>
-            <?php $store_name = ($sid) ? $this->escape($store['name']) : $this->text('Default'); ?>
-            <?php if (isset($price_rule['store_id']) && $price_rule['store_id'] == $sid) { ?>
-            <option value="<?php echo $sid; ?>" selected><?php echo $store_name; ?></option>
-            <?php } else { ?>
-            <option value="<?php echo $sid; ?>"><?php echo $store_name; ?></option>
-            <?php } ?>
-            <?php } ?>
+            <?php foreach ($stores as $sid => $store) {
+    ?>
+            <?php $store_name = ($sid) ? $this->escape($store['name']) : $this->text('Default');
+    ?>
+            <?php if (isset($price_rule['store_id']) && $price_rule['store_id'] == $sid) {
+    ?>
+            <option value="<?php echo $sid;
+    ?>" selected><?php echo $store_name;
+    ?></option>
+            <?php 
+} else {
+    ?>
+            <option value="<?php echo $sid;
+    ?>"><?php echo $store_name;
+    ?></option>
+            <?php 
+}
+    ?>
+            <?php 
+}
+    ?>
           </select>
         </div>
       </div>
-      <?php } ?>
+      <?php 
+} ?>
       <div class="form-group required<?php echo isset($form_errors['value']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('Numeric value to be added to the base price. To substract use negative numbers'); ?>">
@@ -108,9 +137,12 @@
         </label>
         <div class="col-md-3">
           <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->escape($price_rule['value']) : ''; ?>">
-          <?php if (isset($form_errors['value'])) { ?>
-          <div class="help-block"><?php echo $form_errors['value']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['value'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['value'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group">
@@ -134,11 +166,16 @@
         </label>
         <div class="col-md-3">
           <select name="price_rule[currency]" class="form-control">
-            <?php foreach ($currencies as $code => $currency) { ?>
-            <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : ''; ?>>
-            <?php echo $this->escape($code); ?>
+            <?php foreach ($currencies as $code => $currency) {
+    ?>
+            <option value="<?php echo $this->escape($code);
+    ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : '';
+    ?>>
+            <?php echo $this->escape($code);
+    ?>
             </option>
-            <?php } ?>
+            <?php 
+} ?>
           </select>
         </div>
       </div>
@@ -150,9 +187,12 @@
         </label>
         <div class="col-md-3">
           <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->escape($price_rule['weight']) : '0'; ?>">
-          <?php if (isset($form_errors['weight'])) { ?>
-          <div class="help-block"><?php echo $form_errors['weight']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['weight'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['weight'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
       <div class="form-group required<?php echo isset($form_errors['conditions']) ? ' has-error' : ''; ?>">
@@ -163,9 +203,12 @@
         </label>
         <div class="col-md-8">
           <textarea name="price_rule[data][conditions]" class="form-control" placeholder="<?php echo $this->text('User is logged in: user_id > 0'); ?>"><?php echo!empty($price_rule['data']['conditions']) ? $this->escape($price_rule['data']['conditions']) : ''; ?></textarea>
-          <?php if (isset($form_errors['conditions'])) { ?>
-          <div class="help-block"><?php echo $form_errors['conditions']; ?></div>
-          <?php } ?>
+          <?php if (isset($form_errors['conditions'])) {
+    ?>
+          <div class="help-block"><?php echo $form_errors['conditions'];
+    ?></div>
+          <?php 
+} ?>
         </div>
       </div>
     </div>
@@ -220,16 +263,23 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($conditions as $id => $info) { ?>
+              <?php foreach ($conditions as $id => $info) {
+    ?>
               <tr>
-                <td><?php echo $id; ?></td>
+                <td><?php echo $id;
+    ?></td>
                 <td>
-                  <?php if (!empty($info['description'])) { ?>
-                  <?php echo $this->escape($info['description']); ?>
-                  <?php } ?>
+                  <?php if (!empty($info['description'])) {
+    ?>
+                  <?php echo $this->escape($info['description']);
+    ?>
+                  <?php 
+}
+    ?>
                 </td>
               </tr>
-              <?php } ?>
+              <?php 
+} ?>
             </tbody>
           </table>
         </div>

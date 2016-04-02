@@ -116,7 +116,6 @@ class Field
      */
     public function addTranslation(array $translation, $language, $field_id)
     {
-
         $values = array(
             'field_id' => (int) $field_id,
             'title' => $translation['title'],
@@ -172,7 +171,6 @@ class Field
         }
 
         if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-
             $order = $data['order'];
 
             switch ($data['sort']) {
@@ -225,7 +223,6 @@ class Field
         $field = $sth->fetch(PDO::FETCH_ASSOC);
 
         if ($field) {
-
             $field['data'] = unserialize($field['data']);
             $field['language'] = 'und';
 
@@ -334,5 +331,4 @@ class Field
         $this->hook->fire('update.field.after', $field_id, $data, $result);
         return $result;
     }
-
 }
