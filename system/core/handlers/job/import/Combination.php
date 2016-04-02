@@ -379,4 +379,5 @@ class Combination
 
         return $this->product->addCombination($data) ? 1 : 0;
     }
+    
 }
