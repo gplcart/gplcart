@@ -8,4 +8,8 @@ finder:
     - "system/locale"
     - "system/config"
     - "system/help"
+<<<<<<< HEAD
     - "*/templates"
+=======
+    - "*template*"
+>>>>>>> d140b5f9bd0ee506de34910c2cbaff7c97336113

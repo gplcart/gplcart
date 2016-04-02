@@ -8,4 +8,5 @@ finder:
     - "system/locale"
     - "system/config"
     - "system/help"
-    - "*/templates"
+  not-contains:
+    - "templates"
