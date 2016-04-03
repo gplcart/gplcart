@@ -160,7 +160,6 @@ class Address
 
         $results = array();
         foreach ($address as $key => $value) {
-
             if (empty($format[$key]) || empty($value)) {
                 continue;
             }
@@ -301,7 +300,6 @@ class Address
      */
     public function canAdd($user_id)
     {
-
         $limit = $this->getLimit();
 
         if (empty($limit)) {
@@ -453,5 +451,4 @@ class Address
     {
         return array('address_1', 'state_id', 'city_id', 'country');
     }
-
 }

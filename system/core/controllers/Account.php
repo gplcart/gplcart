@@ -201,8 +201,8 @@ class Account extends Controller
         $user = $this->getUser($user_id);
         $address_id = $this->request->get('delete');
         
-        if(!empty($address_id)){
-           $this->deleteAddress($address_id);
+        if (!empty($address_id)) {
+            $this->deleteAddress($address_id);
         }
 
         $this->data['user'] = $user;
@@ -364,7 +364,7 @@ class Account extends Controller
         $redirect = "account/{$user['user_id']}/address";
         $message = $this->text('New address has been added');
         
-        if(empty($result)){
+        if (empty($result)) {
             $redirect = '';
             $message_type = 'warning';
             $message = $this->text('Address has not been added');
@@ -386,7 +386,7 @@ class Account extends Controller
     }
     
     /**
-     * 
+     *
      * @param type $user_id
      * @return type
      */
@@ -571,7 +571,6 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
-
             $address_id = $order['shipping_address'];
             $components = $this->order->getComponents($order);
             $address = $this->address->getTranslated($this->address->get($address_id), true);
@@ -855,5 +854,4 @@ class Account extends Controller
         $this->notification->set('user_changed_password', array($user));
         $this->redirect('login', $this->text('Your password has been successfully changed'), 'success');
     }
-
 }
