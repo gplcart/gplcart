@@ -439,5 +439,4 @@ class Order extends Controller
     {
         return $this->order->getList(array('count' => true) + $query);
     }
-
 }

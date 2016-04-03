@@ -511,7 +511,7 @@ class Account extends Controller
     }
 
     /**
-     * 
+     *
      * @return type
      */
     protected function submitRegister()
@@ -683,7 +683,6 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
-
             $address_id = $order['shipping_address'];
             $components = $this->order->getComponents($order);
             $address = $this->address->getTranslated($this->address->get($address_id), true);
@@ -784,7 +783,6 @@ class Account extends Controller
     protected function validateEmail($user)
     {
         if (isset($this->submitted['email']) && filter_var($this->submitted['email'], FILTER_VALIDATE_EMAIL)) {
-
             $check_email_exists = true;
             if (isset($user['email']) && ($this->submitted['email'] === $user['email'])) {
                 $check_email_exists = false;
@@ -954,7 +952,7 @@ class Account extends Controller
     {
         if (isset($this->submitted['email'])) {
             $this->resetLink($this->submitted);
-        } else if (isset($this->submitted['password'])) {
+        } elseif (isset($this->submitted['password'])) {
             $this->newPassword($this->submitted);
         }
     }
@@ -995,5 +993,4 @@ class Account extends Controller
         $this->notification->set('user_changed_password', array($user));
         $this->redirect('login', $this->text('Your password has been successfully changed'), 'success');
     }
-
 }
