@@ -30,6 +30,6 @@
         <?php } ?>
       </button>
     </div>
-    <input name="url" style="position:absolute;top:-999px;" value="">
+    <input name="url" class="collapse" value="">
   </form>
 </div>

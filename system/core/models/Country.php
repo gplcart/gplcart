@@ -60,27 +60,28 @@ class Country
 
     /**
      * Returns an array of country format
-     * @param string $country_code
+     * @param string|array $country
      * @param bool $only_enabled
      * @return type
      */
-    public function getFormat($country_code, $only_enabled = false)
+    public function getFormat($country, $only_enabled = false)
     {
-        $country = $this->get($country_code);
+        $country_data = is_string($country) ? $this->get($country) : (array) $country;
 
-        if (empty($country['format'])) {
+        if (empty($country_data['format'])) {
             $format = $this->defaultFormat();
             Tool::sortWeight($format);
         } else {
-            $format = $country['format'];
+            $format = $country_data['format'];
         }
 
-        if ($only_enabled) {
-            $format = array_filter($format, function ($item) {
-                return !empty($item['status']);
-            });
+        if (!$only_enabled) {
+            return $format;
         }
-        return $format;
+
+        return array_filter($format, function ($item) {
+            return !empty($item['status']);
+        });
     }
 
     /**
@@ -91,11 +92,11 @@ class Country
     public function get($country_code)
     {
         $country = &Cache::memory("country.$country_code");
-        
+
         if (isset($country)) {
             return $country;
         }
-        
+
         $this->hook->fire('get.country.before', $country_code);
 
         $sth = $this->db->prepare('SELECT * FROM country WHERE code=:code');
@@ -203,7 +204,7 @@ class Country
     {
         return $this->config->get('country', '');
     }
-    
+
     /**
      * Whether a country is default
      * @param string $country_code
@@ -277,7 +278,7 @@ class Country
             if ($this->isDefault($code)) {
                 $data['status'] = 1;
             }
-            
+
             $values['status'] = (int) $data['status'];
         }
 
@@ -346,7 +347,9 @@ class Country
     public function getNames($enabled = false)
     {
         $names = array();
-        foreach ($this->getList(array('status' => $enabled)) as $code => $country) {
+        $countries = $this->getList(array('status' => $enabled));
+        
+        foreach ($countries as $code => $country) {
             $names[$code] = $country['native_name'];
         }
 
@@ -361,13 +364,13 @@ class Country
     public function getList(array $data = array())
     {
         $list = &Cache::memory('countries.' . md5(serialize($data)));
-        
+
         if (isset($list)) {
             return $list;
         }
-        
+
         $list = array();
-        
+
         $sql = 'SELECT * ';
 
         if (!empty($data['count'])) {
@@ -430,7 +433,7 @@ class Country
         if (!empty($data['count'])) {
             return $sth->fetchColumn();
         }
-        
+
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $country) {
             $country['format'] = unserialize($country['format']);
             $list[$country['code']] = $country;
@@ -717,4 +720,5 @@ class Country
 
         return $countries;
     }
+
 }

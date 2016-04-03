@@ -24,13 +24,13 @@
       <?php foreach ($addresses as $address_id => $address) { ?>
       <div class="col-md-4">
         <div class="panel panel-default address">
+          <div class="panel-heading clearfix">
+            <a class="btn btn-default btn-sm pull-right" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url(false, array('delete' => $address_id)); ?>">
+              <i class="fa fa-trash"></i>
+            </a>
+          </div>
           <div class="panel-body">
             <table class="table table-condensed address">
-              <tr>
-                <td colspan="2" class="text-right">
-                  <a href="<?php echo $this->url(false, array('delete' => $address_id)); ?>"><?php echo $this->text('Delete'); ?></a>
-                </td>
-              </tr>
               <?php foreach ($address as $label => $value) { ?>
               <tr>
                 <td><?php echo is_numeric($label) ? '' : $this->escape($label); ?></td>
@@ -45,17 +45,13 @@
     </div>
     <?php } ?>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <?php if(empty($addresses)) { ?>
         <?php echo $this->text('You have no saved addresses yet'); ?>
         <?php } ?>
-        <?php if ($can_add) { ?>
-        <p>
-          <a href="<?php echo $this->url("account/{$user['user_id']}/address/add"); ?>">
-            <?php echo $this->text('Add new address'); ?>
-          </a>
-        </p>
-        <?php } ?>
+        <a class="btn btn-success" href="<?php echo $this->url("account/{$user['user_id']}/address/add"); ?>">
+          <?php echo $this->text('Add new address'); ?>
+        </a>
       </div>
     </div>
   </div>

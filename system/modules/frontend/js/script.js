@@ -29,7 +29,7 @@ $(function () {
     $('label.btn > input[type="radio"]').attr('autocomplete', 'off');
 
     /********************** Carousel **********************/
-    
+
     $('.multi-item-carousel').lightSlider({
         item: 4,
         pager: false,
@@ -53,7 +53,7 @@ $(function () {
 
     // Fix catalog equal height
     $('.products .thumbnail .title, label.address').matchHeight();
-    
+
 
     /********************** Cart **********************/
 
@@ -115,7 +115,7 @@ $(function () {
     });
 
     var searchInput = $('input.typeahead');
-    
+
     searchInput.autocomplete({
         minLength: 2,
         source: function (request, response) {
@@ -136,16 +136,62 @@ $(function () {
     }).autocomplete('instance')._renderItem = function (ul, item) {
         return $('<li>').append(item.suggestion).appendTo(ul);
     };
-    
+
     // Retain searching on focus
     searchInput.focus(function () {
         if ($(this).val()) {
             $(this).autocomplete("search");
         }
     });
-    
-    $(document).on('click', '.ui-autocomplete .suggestion', function(){
+
+    $(document).on('click', '.ui-autocomplete .suggestion', function () {
         window.location.href = $(this).attr('data-url');
+    });
+
+
+    /**************** Account ***************/
+
+    var submit = $('#edit-address [name="save"]');
+
+    $('#edit-address select[name$="[country]"]').change(function () {
+
+        submit.prop('disabled', false);
+
+        var form = $(this).closest('form');
+        var selectState = form.find('select[name$="[state_id]"]');
+
+        // Clear up old errors
+        $('#edit-address .form-group.has-error .help-block').remove();
+        $('#edit-address .form-group.has-error').removeClass('has-error');
+
+        $.ajax({
+            url: GplCart.settings.base + 'ajax',
+            method: 'POST',
+            dataType: 'json',
+            data: {action: 'getCountryData', token: GplCart.settings.token, country: $(this).val()},
+            success: function (data) {
+                if (typeof data === 'object' && 'states' in data) {
+
+                    if (jQuery.isEmptyObject(data.states)) {
+                        form.find('div.record:not(.country)').hide();
+                        submit.prop('disabled', true);
+                        return false;
+                    }
+
+                    var options = '';
+                    $.each(data.states, function (code, state) {
+                        options += '<option value="' + code + '">' + state.name + '</option>';
+                    });
+
+                    selectState.html(options);
+
+                    form.find('div.record').hide();
+                    $.each(data.format, function (i, field) {
+                        form.find('div.record.' + field).show();
+                    });
+                }
+            }
+        });
     });
 
 });

@@ -138,7 +138,9 @@ class Checkout extends Controller
      * @param Price $price
      * @param Image $image
      */
-    public function __construct(Cart $cart, Country $country, State $state, Address $address, Order $order, Price $price, Image $image)
+    public function __construct(Cart $cart, Country $country, State $state,
+                                Address $address, Order $order, Price $price,
+                                Image $image)
     {
         parent::__construct();
 
@@ -289,7 +291,7 @@ class Checkout extends Controller
     {
         $order = $this->getOrder($order_id);
         $this->data['text'] = $this->order->getCompleteMessage($order);
-        
+
         $this->setTitleComplete($order);
         $this->setBreadcrumbComplete($order);
         $this->outputComplete();
@@ -370,7 +372,7 @@ class Checkout extends Controller
     }
 
     /**
-     * Moview a cart item to a wishlist
+     * Moview a cart item to the wishlist
      */
     protected function moveWishlist()
     {
@@ -523,7 +525,8 @@ class Checkout extends Controller
      * @param array $order
      * @return array
      */
-    protected function prepareComponents(array $calculated, array $cart, array $order)
+    protected function prepareComponents(array $calculated, array $cart,
+                                         array $order)
     {
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -551,7 +554,7 @@ class Checkout extends Controller
 
         return $components;
     }
-    
+
     /**
      * Saves an order to the database
      * @return null
@@ -567,15 +570,15 @@ class Checkout extends Controller
         if (!empty($this->form_data['form_errors'])) {
             return;
         }
-        
+
         $result = $this->order->submit($this->form_data['order'], $this->cart_content);
-        
+
         if (empty($result['order']['order_id'])) {
             return;
         }
-        
+
         $order_id = $result['order']['order_id'];
-        
+
         $redirect = empty($result['redirect']) ? "checkout/complete/$order_id" : $result['redirect'];
         $message = empty($result['message']) ? '' : $result['message'];
         $message_type = empty($result['message_type']) ? 'info' : $result['message_type'];
@@ -622,11 +625,11 @@ class Checkout extends Controller
         if (!$this->validateAddress()) {
             return false;
         }
-        
+
         $user_id = $this->form_data['order']['user_id'];
         $this->submitted_address['user_id'] = $user_id;
         $this->form_data['order']['shipping_address'] = $this->address->add($this->submitted_address);
-        
+
         $this->address->reduceLimit($user_id);
         return true;
     }
@@ -677,7 +680,8 @@ class Checkout extends Controller
      * @param array $order
      * @return array
      */
-    protected function prepareServices(array $services, array $cart, array $order)
+    protected function prepareServices(array $services, array $cart,
+                                       array $order)
     {
         foreach ($services as &$service) {
             $service['price'] = $this->price->convert((int) $service['price'], $service['currency'], $order['currency']);
@@ -737,4 +741,5 @@ class Checkout extends Controller
 
         return $result;
     }
+
 }

@@ -97,7 +97,10 @@ class Ajax extends Controller
      * @param File $file
      * @param Rating $rating
      */
-    public function __construct(Bookmark $bookmark, Product $product, Price $price, Image $image, Cart $cart, Country $country, State $state, Search $search, File $file, Rating $rating)
+    public function __construct(Bookmark $bookmark, Product $product,
+                                Price $price, Image $image, Cart $cart,
+                                Country $country, State $state, Search $search,
+                                File $file, Rating $rating)
     {
         parent::__construct();
 
@@ -321,12 +324,22 @@ class Ajax extends Controller
             return array();
         }
 
-        $states = $this->state->getList(array('country' => $country_code, 'status' => 1));
+        $states = $this->state->getList(array(
+            'country' => $country_code,
+            'status' => 1));
+        
+        $country = $this->country->get($country_code);
+        
+        if(empty($country['status'])){
+            return array();
+        }
 
-        return array(
+        $response = array(
             'states' => $states,
-            'format' => array_keys($this->country->getFormat($country_code, true))
+            'format' => array_keys($this->country->getFormat($country, true))
         );
+        
+        return $response;
     }
 
     /**
@@ -443,7 +456,8 @@ class Ajax extends Controller
             'html' => $this->render('backend:common/image/attache', array(
                 'name_prefix' => $type,
                 'languages' => $this->languages,
-                'images' => array($key => array(
+                'images' => array(
+                    $key => array(
                         'path' => $path,
                         'weight' => 0,
                         'thumb' => $thumb,
@@ -468,7 +482,7 @@ class Ajax extends Controller
 
         return array('error' => $this->text('An error occurred'));
     }
-    
+
     protected function prepareCartItems($cart)
     {
         $imagestyle = $this->config->module($this->theme, 'image_style_cart', 3);
@@ -476,14 +490,12 @@ class Ajax extends Controller
         foreach ($cart['items'] as &$item) {
             $imagepath = '';
 
-            if (empty($item['product']['combination_id'])
-                    && !empty($item['product']['images'])) {
+            if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
                 $imagefile = reset($item['product']['images']);
                 $imagepath = $imagefile['path'];
             }
 
-            if (!empty($item['product']['option_file_id'])
-                    && !empty($item['product']['images'][$item['product']['option_file_id']]['path'])) {
+            if (!empty($item['product']['option_file_id']) && !empty($item['product']['images'][$item['product']['option_file_id']]['path'])) {
                 $imagepath = $item['product']['images'][$item['product']['option_file_id']]['path'];
             }
 
@@ -496,8 +508,9 @@ class Ajax extends Controller
                 $item['thumb'] = $this->image->url($imagestyle, $imagepath);
             }
         }
-        
+
         $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
         return $cart;
     }
+
 }

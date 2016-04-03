@@ -97,7 +97,7 @@
 # $config['store'] = 1; // Default store database ID
 # $config['summary_delimiter'] = '<!--summary-->';
 # $config['timezone'] = 'Europe/London';
-# $config['user_address_limit'] = 12; // Max number of addresses the user may have
+# $config['user_address_limit'] = 6; // Max number of addresses the user may have
 # $config['user_cookie_name'] = 'user_id'; // Name of cookie that keeps user UID
 # $config['user_login_redirect_*'] = ''; // Redirect URL per user role ID
 # $config['user_login_redirect_superadmin'] = 'admin'; // Redirect URL for superadmin

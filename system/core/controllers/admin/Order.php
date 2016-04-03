@@ -11,16 +11,19 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Order as O;
-use core\models\Country;
-use core\models\State;
-use core\models\Address;
-use core\models\Price;
-use core\models\Currency;
-use core\models\Product;
 use core\models\Cart;
+use core\models\State;
+use core\models\Price;
+use core\models\Address;
+use core\models\Product;
+use core\models\Country;
+use core\models\Currency;
 use core\models\PriceRule;
+use core\models\Order as O;
 
+/**
+ * Provides data to the view and interprets user actions related to orders
+ */
 class Order extends Controller
 {
 
@@ -29,7 +32,7 @@ class Order extends Controller
      * @var \core\models\Order $order
      */
     protected $order;
-    
+
     /**
      * Price rule model instance
      * @var \core\models\PriceRule $pricerule
@@ -89,7 +92,10 @@ class Order extends Controller
      * @param Cart $cart
      * @param Product $product
      */
-    public function __construct(O $order, Country $country, State $state, Address $address, Price $price, Currency $currency, Cart $cart, Product $product, PriceRule $pricerule)
+    public function __construct(O $order, Country $country, State $state,
+                                Address $address, Price $price,
+                                Currency $currency, Cart $cart,
+                                Product $product, PriceRule $pricerule)
     {
         parent::__construct();
 
@@ -265,7 +271,7 @@ class Order extends Controller
                 $components["rule_$type"] = $this->renderComponentRule($type, $component, $cart, $order);
             }
         }
-        
+
         ksort($components);
 
         return $this->render('sale/order/panes/components', array('components' => $components));
@@ -279,7 +285,8 @@ class Order extends Controller
      * @param array $order
      * @return string
      */
-    protected function renderComponentService($type, $component, array $cart, array $order)
+    protected function renderComponentService($type, $component, array $cart,
+                                              array $order)
     {
         $service = $this->order->getService($order[$type], $type, $cart, $order);
         $service['name'] = isset($service['name']) ? $service['name'] : $this->text('Unknown');
@@ -297,7 +304,8 @@ class Order extends Controller
      * @param array $order
      * @return string
      */
-    protected function renderComponentCart($type, array $component, array $cart, array $order)
+    protected function renderComponentCart($type, array $component, array $cart,
+                                           array $order)
     {
         $products = array();
         foreach ($component as $cart_id => $price) {
@@ -311,7 +319,7 @@ class Order extends Controller
 
         return $this->render('sale/order/panes/components/cart', array('products' => $products));
     }
-    
+
     /**
      * Returns rendered price rule component
      * @param integer $rule_id
@@ -320,7 +328,8 @@ class Order extends Controller
      * @param array $order
      * @return string
      */
-    protected function renderComponentRule($rule_id, $price, array $cart, array $order)
+    protected function renderComponentRule($rule_id, $price, array $cart,
+                                           array $order)
     {
         $rule = $this->pricerule->get($rule_id);
         return $this->render('sale/order/panes/components/rule', array('rule' => $rule, 'price' => $price));
@@ -430,4 +439,5 @@ class Order extends Controller
     {
         return $this->order->getList(array('count' => true) + $query);
     }
+
 }

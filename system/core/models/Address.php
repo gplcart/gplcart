@@ -295,30 +295,12 @@ class Address
     }
 
     /**
-     * Wheter a user can add an address
-     * @param integer $user_id
-     * @return boolean
-     */
-    public function canAdd($user_id)
-    {
-
-        $limit = $this->getLimit();
-
-        if (empty($limit)) {
-            return true;
-        }
-
-        $existing = $this->getList(array('user_id' => $user_id, 'status' => true));
-        return (count($existing) < $limit);
-    }
-
-    /**
      * Returns a number of addresses that a user can have
      * @return integer
      */
     public function getLimit()
     {
-        return (int) $this->config->get('user_address_limit', 12);
+        return (int) $this->config->get('user_address_limit', 6);
     }
 
     /**

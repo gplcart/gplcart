@@ -27,6 +27,9 @@ use core\models\PriceRule;
 use core\models\Notification;
 use core\exceptions\SystemLogical;
 
+/**
+ * Manages basic behaviors and data of store orders
+ */
 class Order
 {
 

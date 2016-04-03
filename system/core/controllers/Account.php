@@ -86,6 +86,12 @@ class Account extends Controller
     protected $product;
 
     /**
+     * Used for validation
+     * @var boolean
+     */
+    protected $check_old_password = false;
+
+    /**
      * Constructor
      * @param Address $address
      * @param Country $country
@@ -200,19 +206,18 @@ class Account extends Controller
     {
         $user = $this->getUser($user_id);
         $address_id = $this->request->get('delete');
-        
-        if(!empty($address_id)){
-           $this->deleteAddress($address_id);
+
+        if (!empty($address_id)) {
+            $this->deleteAddress($address_id);
         }
 
         $this->data['user'] = $user;
-        $this->data['can_add'] = $this->address->canAdd($user_id);
-        $this->data['addresses'] = $this->address->getTranslatedList($user_id);
+        $this->data['addresses'] = $this->getAddresses($user_id);
 
         $this->setTitleAddresses();
         $this->outputAddresses();
     }
-    
+
     /**
      * Deletes an address
      * @param integer $address_id
@@ -226,7 +231,7 @@ class Account extends Controller
 
         if (empty($result)) {
             $message_type = 'warning';
-            $message = $this->text('Address has not been deleted. The most probable reason - it is used in your orders');
+            $message = $this->text('Address cannot be deleted');
         }
 
         $this->redirect('', $message, $message_type);
@@ -266,7 +271,7 @@ class Account extends Controller
         }
 
         $country = $this->data['address']['country'];
-        
+
         $this->data['countries'] = $this->getCountryNames();
         $this->data['format'] = $this->getCountryFormat($country);
         $this->data['states'] = $this->getCountryStates($country);
@@ -301,7 +306,7 @@ class Account extends Controller
         $address = array(
             'country' => $this->country->getDefault()
         );
-        
+
         if (is_numeric($address_id)) {
             $address = $this->address->get($address_id);
             if (empty($address)) {
@@ -349,30 +354,30 @@ class Account extends Controller
     protected function submitAddress($user)
     {
         $this->submitted = $this->request->post('address', array());
-        
+
         $this->validateAddress();
 
         if ($this->formErrors()) {
             $this->data['address'] = $this->submitted;
             return;
         }
-        
+
         $address = $this->submitted + array('user_id' => $user['user_id']);
         $result = $this->addAddress($address);
-        
+
         $message_type = 'success';
         $redirect = "account/{$user['user_id']}/address";
         $message = $this->text('New address has been added');
-        
-        if(empty($result)){
+
+        if (empty($result)) {
             $redirect = '';
             $message_type = 'warning';
             $message = $this->text('Address has not been added');
         }
-        
+
         $this->redirect($redirect, $message, $message_type);
     }
-    
+
     /**
      * Adds an address
      * @param array $address
@@ -384,15 +389,15 @@ class Account extends Controller
         $this->address->reduceLimit($address['user_id']);
         return $result;
     }
-    
+
     /**
-     * 
-     * @param type $user_id
-     * @return type
+     * Returns an array of addresses
+     * @param integer $user_id
+     * @return array
      */
     protected function getAddresses($user_id)
     {
-        return $this->address->getList(array('user_id' => $user_id));
+        return $this->address->getTranslatedList($user_id);
     }
 
     /**
@@ -400,26 +405,59 @@ class Account extends Controller
      */
     public function login()
     {
-        if ($this->uid) {
+        if (!empty($this->uid)) {
             $this->url->redirect("account/{$this->uid}");
         }
 
         if ($this->request->post('login')) {
-            $this->controlSpam('login');
-            $submitted = $this->request->post('user', array(), 'raw');
-            $result = $this->user->login($submitted['email'], $submitted['password']);
-
-            if (!empty($result)) {
-                $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-            }
-
-            $this->data['user'] = $submitted;
-            $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
+            $this->submitLogin();
         }
 
+        $this->setTitleLogin();
+        $this->setBreadcrumbLogin();
+        $this->outputLogin();
+    }
+
+    /**
+     * Sets titles on the login page
+     */
+    protected function setTitleLogin()
+    {
         $this->setTitle($this->text('Login'));
+    }
+
+    /**
+     * Sets breadcrumbs on the login page
+     */
+    protected function setBreadcrumbLogin()
+    {
         $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+    }
+
+    /**
+     * Renders the login page
+     */
+    protected function outputLogin()
+    {
         $this->output('login');
+    }
+
+    /**
+     * Logs in a user
+     */
+    protected function submitLogin()
+    {
+        $this->controlSpam('login');
+        $this->submitted = $this->request->post('user', array(), 'raw');
+
+        $result = $this->user->login($this->submitted['email'], $this->submitted['password']);
+
+        if (!empty($result)) {
+            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+        }
+
+        $this->data['user'] = $this->submitted;
+        $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
     }
 
     /**
@@ -432,25 +470,62 @@ class Account extends Controller
         }
 
         if ($this->request->post('register')) {
-            $this->controlSpam('register');
-            $submitted = $this->request->post('user', array(), 'raw');
-            $this->validateUser($submitted, array());
-
-            if ($this->formErrors()) {
-                $this->data['user'] = $submitted;
-            } else {
-                $this->registerUser($submitted);
-            }
+            $this->submitRegister();
         }
+
+        $limits = $this->user->getPasswordLength();
+
+        $this->data['min_password_length'] = $limits['min'];
+        $this->data['max_password_length'] = $limits['max'];
 
         $this->data['roles'] = $this->role->getList();
         $this->data['stores'] = $this->store->getNames();
-        $this->data['min_password_length'] = $this->config->get('user_password_min_length', 8);
-        $this->data['max_password_length'] = $this->config->get('user_password_max_length', 255);
 
+        $this->setTitleRegister();
+        $this->setBreadcrumbRegister();
+        $this->outputRegister();
+    }
+
+    /**
+     * Sets titles on the registration page
+     */
+    protected function setTitleRegister()
+    {
         $this->setTitle($this->text('Register'));
+    }
+
+    /**
+     * Sets breadcrumbs on the registration page
+     */
+    protected function setBreadcrumbRegister()
+    {
         $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+    }
+
+    /**
+     * Renders the registration page
+     */
+    protected function outputRegister()
+    {
         $this->output('register');
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    protected function submitRegister()
+    {
+        $this->controlSpam('register');
+        $this->submitted = $this->request->post('user', array(), 'raw');
+        $this->validateUser();
+
+        if ($this->formErrors()) {
+            $this->data['user'] = $this->submitted;
+            return;
+        }
+
+        $this->registerUser($this->submitted);
     }
 
     /**
@@ -458,38 +533,75 @@ class Account extends Controller
      */
     public function forgot()
     {
-        if ($this->uid) {
+        if (empty($this->uid)) {
             $this->url->redirect("account/{$this->uid}");
         }
 
         // Check password reset URL
-        $recoverable_user = $this->getRecoverableUser();
-        $this->data['recoverable_user'] = $recoverable_user;
+        $user = $this->getRecoverableUser();
+        $this->data['recoverable_user'] = $user;
 
-        if ($recoverable_user === false) {
-            // Reset password link expired or invalid
-            $this->redirect('forgot');
+        if ($user === false) {
+            $this->redirect('forgot'); // Reset password link expired or invalid
         }
 
-        $submitted = $this->request->post('user', array(), 'raw');
-
-        if ($submitted) {
-            $this->controlSpam('forgot');
-            $this->validateForgot($submitted, $recoverable_user);
-
-            if ($this->formErrors()) {
-                $this->data['user'] = $submitted;
-            } else {
-                $this->restorePassword($submitted);
-            }
+        if ($this->request->post('reset')) {
+            $this->submitForgot($user);
         }
 
-        $this->data['min_password_length'] = $this->config->get('user_password_min_length', 8);
-        $this->data['max_password_length'] = $this->config->get('user_password_max_length', 255);
+        $limits = $this->user->getPasswordLength();
 
+        $this->data['min_password_length'] = $limits['min'];
+        $this->data['max_password_length'] = $limits['max'];
+
+        $this->setTitleForgot();
+        $this->setBreadcrumbForgot();
+        $this->outputForgot();
+    }
+
+    /**
+     * Sets titles on the password reset page
+     */
+    protected function setTitleForgot()
+    {
         $this->setTitle($this->text('Reset password'));
+    }
+
+    /**
+     * Sets breadcrumbs on the password reset page
+     */
+    protected function setBreadcrumbForgot()
+    {
         $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+    }
+
+    /**
+     * Renders the password reset page templates
+     */
+    protected function outputForgot()
+    {
         $this->output('forgot');
+    }
+
+    /**
+     * Restores forgotten password
+     * @param array $user
+     * @return null
+     */
+    protected function submitForgot($user)
+    {
+        $this->controlSpam('forgot');
+
+        $this->submitted = $this->request->post('user', array(), 'raw');
+
+        $this->validateForgot($user);
+
+        if ($this->formErrors()) {
+            $this->data['user'] = $this->submitted;
+            return;
+        }
+
+        $this->restorePassword();
     }
 
     /**
@@ -578,82 +690,117 @@ class Account extends Controller
 
             $order['rendered'] = $this->render(
                     'account/order', array(
-                        'order' => $order,
-                        'components' => $components,
-                        'shipping_address' => $address));
+                'order' => $order,
+                'components' => $components,
+                'shipping_address' => $address));
         }
 
         return $orders;
     }
 
     /**
-     * Validates user data
-     * @param array $data
+     * Validates a user
      * @param array $user
-     * @return null
+     * @return boolean
      */
-    protected function validateUser(&$data, $user = array())
+    protected function validateUser($user = array())
     {
         // Registration
-        if (empty($user['user_id']) && !$this->uid) {
-            $data['status'] = $this->config->get('user_registration_status', 1);
-            $data['store_id'] = $this->store_id;
+        if (empty($user['user_id']) && empty($this->uid)) {
+            $this->submitted['status'] = $this->config->get('user_registration_status', 1);
+            $this->submitted['store_id'] = $this->store_id;
         }
 
-        $check_old_password = false;
-
-        if (isset($data['email']) && filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $check_email_exists = true;
-            if (isset($user['email']) && ($data['email'] === $user['email'])) {
-                $check_email_exists = false;
-            }
-
-            if ($check_email_exists && $this->user->getByEmail($data['email'])) {
-                $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
-                return;
-            }
-
-            $check_old_password = $check_email_exists;
-        } else {
-            $this->data['form_errors']['email'] = $this->text('Invalid E-mail');
-            return;
+        if (!$this->validateEmail($user)) {
+            return false;
         }
 
-        if (empty($user['user_id']) && empty($data['name'])) {
-            $data['name'] = strtok($data['email'], '@');
+        if (empty($user['user_id']) && empty($this->submitted['name'])) {
+            $this->submitted['name'] = strtok($this->submitted['email'], '@');
         }
 
-        if (empty($data['name']) || mb_strlen($data['name']) > 255) {
-            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array(
-                '%min' => 1, '%max' => 255));
-        }
+        $this->validateName();
+        return $this->validatePasswordBoth();
+    }
 
-        if (empty($user['user_id']) && empty($data['password'])) {
+    /**
+     * Validates both old and new passwords
+     * @param array $user
+     * @return boolean
+     */
+    protected function validatePasswordBoth($user)
+    {
+        if (empty($user['user_id']) && empty($this->submitted['password'])) {
             $this->data['form_errors']['password'] = $this->text('Required field');
-            return;
+            return false;
         }
 
-        if (!empty($data['password']) && isset($user['user_id'])) {
-            $check_old_password = true;
-            $this->validatePassword($data['password']);
+        if (!empty($this->submitted['password']) && isset($user['user_id'])) {
+            $this->check_old_password = true;
+            $this->validatePassword($this->submitted['password']);
         }
 
         if (isset($this->data['form_errors'])) {
-            return;
+            return false;
         }
 
-        if (!$check_old_password || $this->access('user_edit')) {
-            return;
+        if (!$this->check_old_password || $this->access('user_edit')) {
+            return true;
         }
 
-        if (empty($data['password_old']) || empty($user['hash'])) {
+        if (empty($this->submitted['password_old']) || empty($user['hash'])) {
             $this->data['form_errors']['password_old'] = $this->text('The specified old password does not match the current password');
-            return;
+            return false;
         }
 
-        if (!Tool::hashEquals($user['hash'], Tool::hash($data['password_old'], $user['hash'], false))) {
+        if (!Tool::hashEquals($user['hash'], Tool::hash($this->submitted['password_old'], $user['hash'], false))) {
             $this->data['form_errors']['password_old'] = $this->text('The specified old password does not match the current password');
+            return false;
         }
+
+        return true;
+    }
+
+    /**
+     * Validates user name
+     * @return boolean
+     */
+    protected function validateName()
+    {
+        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
+            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array(
+                '%min' => 1, '%max' => 255));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates an e-mail
+     * @param array $user
+     * @return boolean
+     */
+    protected function validateEmail($user)
+    {
+        if (isset($this->submitted['email']) && filter_var($this->submitted['email'], FILTER_VALIDATE_EMAIL)) {
+
+            $check_email_exists = true;
+            if (isset($user['email']) && ($this->submitted['email'] === $user['email'])) {
+                $check_email_exists = false;
+            }
+
+            if ($check_email_exists && $this->user->getByEmail($this->submitted['email'])) {
+                $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
+                return false;
+            }
+
+            $this->check_old_password = $check_email_exists;
+            return true;
+        }
+
+        $this->data['form_errors']['email'] = $this->text('Invalid E-mail');
+        return false;
     }
 
     /**
@@ -681,7 +828,7 @@ class Account extends Controller
     protected function validateAddress()
     {
         $this->submitted['status'] = !empty($this->submitted['status']);
-        
+
         foreach ($this->country->getFormat($this->submitted['country'], true) as $field => $info) {
             if (!empty($info['required']) && (empty($this->submitted[$field]) || mb_strlen($this->submitted[$field]) > 255)) {
                 $this->data['form_errors'][$field] = $this->text('Content must be %min - %max characters long', array(
@@ -775,48 +922,41 @@ class Account extends Controller
 
     /**
      * Validates the forgot password form values
-     * @param array $submitted
-     * @param mixed $recoverable_user
-     * @return null
+     * @param mixed $user
+     * @return boolean
      */
-    protected function validateForgot(&$submitted, $recoverable_user)
+    protected function validateForgot($user)
     {
-        if (isset($submitted['email'])) {
-            $user = $this->user->getByEmail($submitted['email']);
+        if (isset($this->submitted['email'])) {
+            $user = $this->user->getByEmail($this->submitted['email']);
             if (empty($user['status'])) {
                 $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
-                return;
+                return false;
             }
 
-            $submitted['user'] = $user;
-            return;
+            $this->submitted['user'] = $user;
+            return true;
         }
 
-        if (isset($submitted['password'])) {
-            $this->validatePassword($submitted['password']);
-            $submitted['user'] = $recoverable_user;
+        if (isset($this->submitted['password'])) {
+            $this->validatePassword($this->submitted['password']);
+            $this->submitted['user'] = $user;
         }
 
-        return;
+        return true;
     }
 
     /**
      * Either sends a reset password link or changes a password
-     * @param array $submitted
      * @return null
      */
-    protected function restorePassword($submitted)
+    protected function restorePassword()
     {
-        if (isset($submitted['email'])) {
-            $this->resetLink($submitted);
-            return;
+        if (isset($this->submitted['email'])) {
+            $this->resetLink($this->submitted);
+        } else if (isset($this->submitted['password'])) {
+            $this->newPassword($this->submitted);
         }
-
-        if (isset($submitted['password'])) {
-            $this->newPassword($submitted);
-        }
-
-        return;
     }
 
     /**

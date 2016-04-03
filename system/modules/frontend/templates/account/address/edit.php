@@ -37,7 +37,6 @@
             </select>
             <?php } elseif ($key == 'state_id') { ?>
             <select class="form-control" name="address[state_id]">
-              <option value=""><?php echo $this->text('None'); ?></option>
               <?php foreach ($states as $state_id => $state) { ?>
               <option value="<?php echo $state_id; ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : ''; ?>><?php echo $this->escape($state['name']); ?></option>
               <?php } ?>
@@ -67,40 +66,3 @@
     </form>
   </div>
 </div>
-<script>
-$(function () {
-
-    $('#edit-address select[name$="[country]"]').change(function () {
-
-        var form = $(this).closest('form');
-        var selectState = form.find('select[name$="[state_id]"]');
-        
-        // Clear up old errors
-        $('#edit-address .form-group.has-error .help-block').remove();
-        $('#edit-address .form-group.has-error').removeClass('has-error');
-
-        $.ajax({
-            url: '<?php echo $this->url('ajax'); ?>',
-            method: 'POST',
-            dataType: 'json',
-            data: {action: 'getCountryData', token: '<?php echo $token; ?>', country: $(this).val()},
-            success: function (data) {
-                if (typeof data === 'object' && 'states' in data) {
-
-                    var options = '';
-                    $.each(data.states, function (code, state) {
-                        options += '<option value="' + code + '">' + state.name + '</option>';
-                    });
-
-                    selectState.html(options);
-
-                    form.find('div.record').hide();
-                    $.each(data.format, function (i, field) {
-                        form.find('div.record.' + field).show();
-                    });
-                }
-            }
-        });
-    });
-});
-</script>
