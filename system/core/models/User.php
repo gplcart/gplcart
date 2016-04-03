@@ -689,5 +689,4 @@ class User
 
         return $this->config->get("user_logout_redirect_{$user['role_id']}", '/');
     }
-
 }
