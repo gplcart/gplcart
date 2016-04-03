@@ -815,7 +815,6 @@ class Order
 
         $prepared = array();
         foreach ($order['data']['components'] as $name => $component) {
-
             if ($name === 'cart') {
                 $prepared[$name] = $this->prepareComponentCart($component, $cart, $order);
                 continue;
@@ -898,5 +897,4 @@ class Order
         $order['status_formatted'] = $this->getStatusName($order['status']);
         return $order;
     }
-
 }

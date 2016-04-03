@@ -330,7 +330,7 @@ class Ajax extends Controller
         
         $country = $this->country->get($country_code);
         
-        if(empty($country['status'])){
+        if (empty($country['status'])) {
             return array();
         }
 
@@ -512,5 +512,4 @@ class Ajax extends Controller
         $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
         return $cart;
     }
-
 }

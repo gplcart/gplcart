@@ -160,7 +160,6 @@ class Address
 
         $results = array();
         foreach ($address as $key => $value) {
-
             if (empty($format[$key]) || empty($value)) {
                 continue;
             }
@@ -435,5 +434,4 @@ class Address
     {
         return array('address_1', 'state_id', 'city_id', 'country');
     }
-
 }
