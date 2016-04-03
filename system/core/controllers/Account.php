@@ -20,7 +20,6 @@ use core\models\Address;
 use core\models\Country;
 use core\models\Bookmark;
 use core\models\UserRole;
-use core\models\PriceRule;
 use core\models\Notification;
 
 class Account extends Controller
@@ -81,12 +80,6 @@ class Account extends Controller
     protected $notification;
 
     /**
-     * Price rule model instance
-     * @var \core\models\PriceRule $pricerule
-     */
-    protected $pricerule;
-
-    /**
      * Product model instance
      * @var \core\models\Product $product
      */
@@ -103,13 +96,11 @@ class Account extends Controller
      * @param Notification $notification
      * @param UserRole $role
      * @param Product $product
-     * @param PriceRule $pricerule
      */
     public function __construct(Address $address, Country $country,
                                 State $state, Order $order, Price $price,
                                 Bookmark $bookmark, Notification $notification,
-                                UserRole $role, Product $product,
-                                PriceRule $pricerule)
+                                UserRole $role, Product $product)
     {
         parent::__construct();
 
@@ -121,7 +112,6 @@ class Account extends Controller
         $this->country = $country;
         $this->address = $address;
         $this->bookmark = $bookmark;
-        $this->pricerule = $pricerule;
         $this->notification = $notification;
     }
 
@@ -145,25 +135,6 @@ class Account extends Controller
 
         $this->setTitleAccount();
         $this->outputAccount();
-    }
-
-    /**
-     * Displays the customer wishlist page
-     * @param integer $user_id
-     */
-    public function wishlist($user_id)
-    {
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            $this->outputError(404);
-        }
-
-        $this->data['user'] = $user;
-        $this->data['wishlist'] = $this->bookmark->getList(array('user_id' => $user_id));
-
-        $this->setTitle($this->text('Wishlist'), false);
-        $this->output('account/wishlist');
     }
 
     /**
@@ -222,27 +193,58 @@ class Account extends Controller
     }
 
     /**
-     * Displays the customer addresses account page
+     * Displays the addresses overview page
      * @param integer $user_id
      */
     public function addresses($user_id)
     {
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            $this->outputError(404);
-        }
-
-        $delete = $this->request->get('delete');
-
-        if ($delete && $this->address->delete($delete)) {
-            $this->redirect();
+        $user = $this->getUser($user_id);
+        $address_id = $this->request->get('delete');
+        
+        if(!empty($address_id)){
+           $this->deleteAddress($address_id);
         }
 
         $this->data['user'] = $user;
+        $this->data['can_add'] = $this->address->canAdd($user_id);
+        $this->data['addresses'] = $this->address->getTranslatedList($user_id);
 
-        $this->data['addresses'] = $this->address->getNamedList($user_id);
+        $this->setTitleAddresses();
+        $this->outputAddresses();
+    }
+    
+    /**
+     * Deletes an address
+     * @param integer $address_id
+     */
+    protected function deleteAddress($address_id)
+    {
+        $result = $this->address->delete($address_id);
+
+        $message_type = 'success';
+        $message = $this->text('Address has been deleted');
+
+        if (empty($result)) {
+            $message_type = 'warning';
+            $message = $this->text('Address has not been deleted. The most probable reason - it is used in your orders');
+        }
+
+        $this->redirect('', $message, $message_type);
+    }
+
+    /**
+     * Sets titles on the addresses overview page
+     */
+    protected function setTitleAddresses()
+    {
         $this->setTitle($this->text('Addresses'), false);
+    }
+
+    /**
+     * Renders the addresses overview page
+     */
+    protected function outputAddresses()
+    {
         $this->output('account/address/list');
     }
 
@@ -253,49 +255,144 @@ class Account extends Controller
      */
     public function editAddress($user_id, $address_id = null)
     {
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            $this->outputError(404);
-        }
+        $user = $this->getUser($user_id);
+        $address = $this->getAddress($address_id);
 
         $this->data['user'] = $user;
-
-        $country_code = $this->country->getDefault();
-        $this->data['countries'] = $this->country->getNames(true);
+        $this->data['address'] = $address;
 
         if ($this->request->post('save')) {
-            $submitted = $this->request->post('address');
-            $this->validateAddress($submitted);
+            $this->submitAddress($user, $address);
+        }
 
-            if ($this->formErrors()) {
-                $this->data['address'] = $submitted;
-                $country_code = $submitted['country'];
-            } else {
-                $this->address->add($submitted + array('user_id' => $user_id));
+        $country = $this->data['address']['country'];
+        
+        $this->data['countries'] = $this->getCountryNames();
+        $this->data['format'] = $this->getCountryFormat($country);
+        $this->data['states'] = $this->getCountryStates($country);
 
-                // Control address limit for the user
-                $limit = (int) $this->config->get('user_address_limit', 6);
-                $existing_addresses = $this->address->getList(array('user_id' => $user_id));
-                $existing_count = count($existing_addresses);
+        $this->setTitleEditAddress();
+        $this->outputEditAddress();
+    }
 
-                if ($limit && $existing_count > $limit) {
-                    $delete_count = ($existing_count - $limit);
-                    // Delete older addresses
-                    foreach (array_slice($existing_addresses, 0, $delete_count) as $address) {
-                        $this->address->delete($address['address_id']);
-                    }
-                }
+    /**
+     * Sets titles on the edit address page
+     */
+    protected function setTitleEditAddress()
+    {
+        $this->setTitle($this->text('Add new address'), false);
+    }
 
-                $this->redirect("account/{$user['user_id']}/address", $this->text('New address has been added'), 'success');
+    /**
+     * Renders the edit address page
+     */
+    protected function outputEditAddress()
+    {
+        $this->output('account/address/edit');
+    }
+
+    /**
+     * Returns an address
+     * @param integer $address_id
+     * @return array
+     */
+    protected function getAddress($address_id)
+    {
+        $address = array(
+            'country' => $this->country->getDefault()
+        );
+        
+        if (is_numeric($address_id)) {
+            $address = $this->address->get($address_id);
+            if (empty($address)) {
+                $this->outputError(404);
             }
         }
 
-        $this->data['format'] = $this->country->getFormat($country_code);
-        $this->data['states'] = $this->state->getList(array('country' => $country_code, 'status' => 1));
+        return $address;
+    }
 
-        $this->setTitle($this->text('Add new address'), false);
-        $this->output('account/address/edit');
+    /**
+     * Returns an array of states for a given country code
+     * @param string $country
+     * @return array
+     */
+    protected function getCountryStates($country)
+    {
+        return $this->state->getList(array('country' => $country, 'status' => 1));
+    }
+
+    /**
+     * Returns an array of the coutry format data
+     * @param string $country
+     * @return array
+     */
+    protected function getCountryFormat($country)
+    {
+        return $this->country->getFormat($country);
+    }
+
+    /**
+     * Returns an array of country names
+     * @return array
+     */
+    protected function getCountryNames()
+    {
+        return $this->country->getNames(true);
+    }
+
+    /**
+     * Saves a user address
+     * @param array $user
+     * @return null
+     */
+    protected function submitAddress($user)
+    {
+        $this->submitted = $this->request->post('address', array());
+        
+        $this->validateAddress();
+
+        if ($this->formErrors()) {
+            $this->data['address'] = $this->submitted;
+            return;
+        }
+        
+        $address = $this->submitted + array('user_id' => $user['user_id']);
+        $result = $this->addAddress($address);
+        
+        $message_type = 'success';
+        $redirect = "account/{$user['user_id']}/address";
+        $message = $this->text('New address has been added');
+        
+        if(empty($result)){
+            $redirect = '';
+            $message_type = 'warning';
+            $message = $this->text('Address has not been added');
+        }
+        
+        $this->redirect($redirect, $message, $message_type);
+    }
+    
+    /**
+     * Adds an address
+     * @param array $address
+     * @return integer
+     */
+    protected function addAddress($address)
+    {
+        $result = $this->address->add($address);
+        $this->address->reduceLimit($address['user_id']);
+        return $result;
+    }
+    
+    /**
+     * 
+     * @param type $user_id
+     * @return type
+     */
+    protected function getAddresses($user_id)
+    {
+        return $this->address->getList(array('user_id' => $user_id));
     }
 
     /**
@@ -396,20 +493,17 @@ class Account extends Controller
     }
 
     /**
-     * Displays the user logout page
+     * Logs out a user
      */
     public function logout()
     {
-        $user_id = $this->user->logout();
-        $user = $this->user->get($user_id);
+        $result = $this->user->logout();
 
-        $log = array(
-            'message' => 'User %email has logged out',
-            'variables' => array('%email' => $user['email'])
-        );
+        if (!empty($result)) {
+            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+        }
 
-        $this->logger->log('logout', $log);
-        $this->url->redirect('login');
+        $this->redirect('/');
     }
 
     /**
@@ -453,7 +547,7 @@ class Account extends Controller
     {
         $query += array('sort' => 'created', 'order' => 'desc', 'limit' => $limit);
         $query['user_id'] = $user_id;
-        
+
         $orders = $this->order->getList($query);
         return $this->prepareOrders($orders);
     }
@@ -477,11 +571,16 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
+
             $address_id = $order['shipping_address'];
-            $order['rendered'] = $this->render('account/order', array(
-                'order' => $order,
-                'components' => $this->order->getComponents($order),
-                'shipping_address' => $this->address->getTranslated($this->address->get($address_id), true)));
+            $components = $this->order->getComponents($order);
+            $address = $this->address->getTranslated($this->address->get($address_id), true);
+
+            $order['rendered'] = $this->render(
+                    'account/order', array(
+                        'order' => $order,
+                        'components' => $components,
+                        'shipping_address' => $address));
         }
 
         return $orders;
@@ -579,11 +678,12 @@ class Account extends Controller
      * Validates a submitted address
      * @param array $submitted
      */
-    protected function validateAddress(&$address)
+    protected function validateAddress()
     {
-        $address['status'] = !empty($address['status']);
-        foreach ($this->country->getFormat($address['country'], true) as $field => $info) {
-            if (!empty($info['required']) && (empty($address[$field]) || mb_strlen($address[$field]) > 255)) {
+        $this->submitted['status'] = !empty($this->submitted['status']);
+        
+        foreach ($this->country->getFormat($this->submitted['country'], true) as $field => $info) {
+            if (!empty($info['required']) && (empty($this->submitted[$field]) || mb_strlen($this->submitted[$field]) > 255)) {
                 $this->data['form_errors'][$field] = $this->text('Content must be %min - %max characters long', array(
                     '%min' => 1, '%max' => 255));
             }

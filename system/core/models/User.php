@@ -485,19 +485,30 @@ class User
      */
     public function logout()
     {
-        $uid = $this->id();
-        $this->hook->fire('logout.before', $uid);
+        $user_id = $this->id();
+        $this->hook->fire('logout.before', $user_id);
 
-        if (empty($uid)) {
+        if (empty($user_id)) {
             return false;
         }
 
         if (!$this->session->delete()) {
-            throw new SystemLogicalUserAccess('Failed to delete old session on logout');
+            throw new SystemLogicalUserAccess('Failed to delete the session on logout');
         }
-
-        $this->hook->fire('logout.after', $uid);
-        return $uid;
+        
+        $user = $this->get($user_id);
+        
+        $this->logLogout($user);
+        
+        $result = array(
+            'user' => $user,
+            'message' => null,
+            'message_type' => 'success',
+            'redirect' => $this->getLogOutRedirect($user),
+        );
+        
+        $this->hook->fire('logout.after', $result);
+        return $result;
     }
 
     /**
@@ -627,6 +638,10 @@ class User
         return (bool) $this->address->update($address['address_id'], $address);
     }
     
+    /**
+     * Logs a login event
+     * @param array $user
+     */
     protected function logLogin($user)
     {
         $this->logger->log('login', array(
@@ -634,11 +649,23 @@ class User
             'variables' => array('%s' => $user['email'])
         ));
     }
+    
+    /**
+     * Logs a logout event
+     * @param array $user
+     */
+    protected function logLogout($user)
+    {
+        $this->logger->log('logout', array(
+            'message' => 'User %email has logged out',
+            'variables' => array('%email' => $user['email'])
+        ));
+    }
 
     /**
-     * Retuns an array of redirect parameters (path, message, severity) for logged in user
+     * Retuns a redirect path for logged in user
      * @param array $user
-     * @return array
+     * @return string
      */
     protected function getLoginRedirect(array $user)
     {
@@ -648,4 +675,19 @@ class User
         
         return $this->config->get("user_login_redirect_{$user['role_id']}", "account/{$user['user_id']}");
     }
+    
+    /**
+     * Returns a redirect path for logged out users
+     * @param array $user
+     * @return string
+     */
+    protected function getLogOutRedirect(array $user)
+    {
+        if ($this->isSuperadmin($user['user_id'])) {
+            return $this->config->get('user_logout_redirect_superadmin', '/');
+        }
+
+        return $this->config->get("user_logout_redirect_{$user['role_id']}", '/');
+    }
+
 }

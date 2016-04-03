@@ -5,10 +5,6 @@
         <h4 class="list-group-item-heading"><span class="fa fa-user"></span> <?php echo $this->truncate($this->escape($user['name']), 20); ?></h4>
         <p class="list-group-item-text"><?php echo $this->escape($user['email']); ?></p>
       </a>
-      <a href="<?php echo $this->url("account/{$user['user_id']}/wishlist"); ?>" class="list-group-item">
-        <h4 class="list-group-item-heading"><?php echo $this->text('Wishlist'); ?></h4>
-        <p class="list-group-item-text"><?php echo $this->text('View and manage wishlist'); ?></p>
-      </a>
       <a href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>" class="list-group-item active">
         <h4 class="list-group-item-heading"><?php echo $this->text('Addresses'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('View and manage addressbook'); ?></p>
@@ -23,14 +19,14 @@
     </a>
   </div>
   <div class="col-md-9">
-    <form method="post" id="edit-address" class="form-horizontal margin-top-20<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
+    <form method="post" id="edit-address" class="form-horizontal margin-top-20">
       <input type="hidden" name="token" value="<?php echo $token; ?>">
-      <?php foreach ($format as $key => $data) { ?>
-      <div class="record <?php echo $key; ?>"<?php echo empty($data['status']) ? ' style="display:none;"' : ''; ?>>
+      <?php foreach ($format as $key => $value) { ?>
+      <div class="record <?php echo $key; ?>"<?php echo empty($value['status']) ? ' style="display:none;"' : ''; ?>>
         <div class="form-group <?php echo $key; ?><?php echo isset($form_errors[$key]) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label">
-            <?php if (!empty($data['required'])) { ?><span class="text-danger">* </span><?php } ?>
-            <?php echo $this->escape($data['name']); ?>
+            <?php if (!empty($value['required'])) { ?><span class="text-danger">* </span><?php } ?>
+            <?php echo $this->escape($value['name']); ?>
           </label>
           <div class="col-md-6">
             <?php if ($key == 'country') { ?>

@@ -466,27 +466,6 @@ class Checkout extends Controller
     }
 
     /**
-     * Deletes addresses
-     * @param array $addresses
-     * @param integer $limit
-     * @return boolean
-     */
-    protected function deteleAddresses(array $addresses, $limit)
-    {
-        $delete = (count($addresses) - (int) $limit) + 1;
-
-        if ($delete <= 0) {
-            return false;
-        }
-
-        foreach (array_slice($addresses, 0, $delete) as $item) {
-            $this->address->delete($item['address_id']);
-        }
-
-        return true;
-    }
-
-    /**
      * Modifies an array of cart items before rendering
      * @param array $cart
      * @return array
@@ -643,15 +622,12 @@ class Checkout extends Controller
         if (!$this->validateAddress()) {
             return false;
         }
-
-        $limit = $this->config->get('user_address_limit', 6);
-
-        if (!empty($limit)) {
-            $this->deteleAddresses($this->form_data['addresses'], $limit);
-        }
-
-        $this->submitted_address['user_id'] = $this->form_data['order']['user_id'];
+        
+        $user_id = $this->form_data['order']['user_id'];
+        $this->submitted_address['user_id'] = $user_id;
         $this->form_data['order']['shipping_address'] = $this->address->add($this->submitted_address);
+        
+        $this->address->reduceLimit($user_id);
         return true;
     }
 

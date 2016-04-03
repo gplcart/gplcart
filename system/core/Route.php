@@ -231,12 +231,6 @@ class Route
             )
         );
 
-        $routes['account/(\d+)/wishlist'] = array(
-            'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'wishlist')
-            )
-        );
-
         $routes['wishlist'] = array(
             'handlers' => array(
                 'controller' => array('core\\controllers\\Wishlist', 'wishlist')

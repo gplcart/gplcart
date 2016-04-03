@@ -18,7 +18,7 @@ use core\models\Country;
 
 class Address
 {
-    
+
     /**
      * Country model instance
      * @var \core\models\Country $country
@@ -42,7 +42,7 @@ class Address
      * @var \core\Config $config
      */
     protected $config;
-    
+
     /**
      * Constructor
      * @param Country $country
@@ -130,10 +130,10 @@ class Address
     }
 
     /**
-     *
-     * @param type $user_id
-     * @param type $status
-     * @return type
+     * Returns an array of addresses with translated address fields
+     * @param integer $user_id
+     * @param boolean $status
+     * @return array
      */
     public function getTranslatedList($user_id, $status = true)
     {
@@ -146,12 +146,12 @@ class Address
 
         return $addresses;
     }
-    
+
     /**
-     *
-     * @param type $address
-     * @param type $both
-     * @return type
+     * Returns an array of translated address fields
+     * @param array $address
+     * @param boolean $both
+     * @return array
      */
     public function getTranslated($address, $both = false)
     {
@@ -160,6 +160,7 @@ class Address
 
         $results = array();
         foreach ($address as $key => $value) {
+
             if (empty($format[$key]) || empty($value)) {
                 continue;
             }
@@ -191,8 +192,10 @@ class Address
     {
         $sql = '
                 SELECT a.*,
+                    ci.city_id,
                     COALESCE(ci.name, ci.city_id) AS city_name,
                     c.name AS country_name,
+                    ci.status AS city_status,
                     c.native_name AS country_native_name,
                     c.format AS country_format,
                     s.name AS state_name
@@ -207,8 +210,6 @@ class Address
         if (isset($data['status'])) {
             $sql .= ' AND c.status = ?';
             $sql .= ' AND s.status = ?';
-            $sql .= ' AND ci.status = ?';
-            $where[] = (int) $data['status'];
             $where[] = (int) $data['status'];
             $where[] = (int) $data['status'];
         }
@@ -225,6 +226,12 @@ class Address
 
         $list = array();
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $address) {
+
+            // City ID can be not numeric (user input). Make this check in the query?
+            if (!empty($data['status']) && empty($address['city_status']) && is_numeric($address['city_id'])) {
+                continue;
+            }
+
             $address['data'] = unserialize($address['data']);
             $address['country_format'] = unserialize($address['country_format']);
             $list[$address['address_id']] = $address;
@@ -235,8 +242,8 @@ class Address
     }
 
     /**
-     *
-     * @param type $data
+     * Returns a string containing formatted geocode query
+     * @param array $data
      * @return string
      */
     public function getGeocodeQuery($data)
@@ -256,8 +263,8 @@ class Address
 
     /**
      * Deletes an address
-     * @param integer $address_id An address ID
-     * @return boolean Returns true on success, false on failure
+     * @param integer $address_id
+     * @return boolean
      */
     public function delete($address_id)
     {
@@ -288,19 +295,68 @@ class Address
     }
 
     /**
+     * Wheter a user can add an address
+     * @param integer $user_id
+     * @return boolean
+     */
+    public function canAdd($user_id)
+    {
+
+        $limit = $this->getLimit();
+
+        if (empty($limit)) {
+            return true;
+        }
+
+        $existing = $this->getList(array('user_id' => $user_id, 'status' => true));
+        return (count($existing) < $limit);
+    }
+
+    /**
+     * Returns a number of addresses that a user can have
+     * @return integer
+     */
+    public function getLimit()
+    {
+        return (int) $this->config->get('user_address_limit', 12);
+    }
+
+    /**
+     * Reduces max number of addresses that a user can have
+     * @param integer $user_id
+     * @return boolean
+     */
+    public function reduceLimit($user_id)
+    {
+        $limit = $this->getLimit();
+        $existing = $this->getList(array('user_id' => $user_id));
+
+        $count = count($existing);
+
+        if (empty($limit) || $count <= $limit) {
+            return false;
+        }
+
+        $delete = array_slice($existing, 0, ($count - $limit));
+
+        foreach ($delete as $address) {
+            $this->delete($address['address_id']);
+        }
+
+        return true;
+    }
+
+    /**
      * Returns true if the address has no references
-     * @param type $address_id
+     * @param integer $address_id
      * @return boolean
      */
     public function isReferenced($address_id)
     {
-        $sql = 'SELECT order_id
-                FROM orders
-                WHERE shipping_address=? AND status NOT LIKE ?';
+        $sql = 'SELECT order_id FROM orders WHERE shipping_address=?';
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array((int) $address_id, 'checkout_%'));
-
+        $sth->execute(array((int) $address_id));
         return (bool) $sth->fetchColumn();
     }
 
@@ -397,4 +453,5 @@ class Address
     {
         return array('address_1', 'state_id', 'city_id', 'country');
     }
+
 }
