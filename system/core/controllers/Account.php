@@ -755,5 +755,4 @@ class Account extends Controller
         $this->notification->set('user_changed_password', array($user));
         $this->redirect('login', $this->text('Your password has been successfully changed'), 'success');
     }
-
 }
