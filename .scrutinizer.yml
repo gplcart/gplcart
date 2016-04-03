@@ -6,3 +6,7 @@ filter:
         - system/locale/*
         - system/config/*
         - system/help/*
+
+checks:
+    php:
+        duplication: false
