@@ -721,7 +721,6 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
-            
             $address_id = $order['shipping_address'];
             $components = $this->order->getComponents($order);
             $address = $this->address->getTranslated($this->address->get($address_id), true);
@@ -940,5 +939,4 @@ class Account extends Controller
 
         return true;
     }
-
 }
