@@ -1,5 +1,7 @@
 <div class="row">
-  <form method="post" id="register" class="register col-md-6<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
+  <form method="post" id="register" class="register col-md-6">
+    <input style="position:absolute;top:-9999px;">
+    <input type="password" style="position:absolute;top:-9999px;">
     <input type="hidden" name="token" value="<?php echo $token; ?>">
     <?php if ($this->access('user_add')) { ?> 
     <div class="form-group">

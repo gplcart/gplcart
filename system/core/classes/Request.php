@@ -176,7 +176,7 @@ class Request
      * Returns a data from the POST request
      * @param string $name
      * @param mixed $default
-     * @param bool $filter
+     * @param bool|string $filter
      * @return mixed
      */
     public function post($name = null, $default = null, $filter = true)

@@ -232,7 +232,7 @@ class Account extends Controller
      */
     public function forgot()
     {
-        if (empty($this->uid)) {
+        if (!empty($this->uid)) {
             $this->url->redirect("account/{$this->uid}");
         }
 
@@ -445,14 +445,14 @@ class Account extends Controller
 
         // Data unavailable, exit
         if (empty($token) || empty($user_id)) {
-            return;
+            return array();
         }
 
         $user = $this->user->get($user_id);
 
         // User blocked or not found
         if (empty($user['status'])) {
-            return;
+            return array();
         }
 
         $data = $user['data'];
@@ -587,17 +587,17 @@ class Account extends Controller
      */
     protected function validatePasswordBoth($user)
     {
-        if (empty($user['user_id']) && empty($this->submitted['password'])) {
-            $this->data['form_errors']['password'] = $this->text('Required field');
-            return false;
-        }
-
-        if (!empty($this->submitted['password']) && isset($user['user_id'])) {
+        if (empty($user['user_id'])) {
+            if (empty($this->submitted['password'])) {
+                $this->data['form_errors']['password'] = $this->text('Required field');
+                return false;
+            }
+        } else if (!empty($this->submitted['password'])) {
             $this->check_old_password = true;
             $this->validatePassword($this->submitted['password']);
         }
 
-        if (isset($this->data['form_errors'])) {
+        if (count($this->formErrors()) > 0) {
             return false;
         }
 
@@ -651,7 +651,7 @@ class Account extends Controller
                 return false;
             }
 
-            $this->check_old_password = $check_email_exists;
+            //$this->check_old_password = $check_email_exists;
             return true;
         }
 
@@ -701,17 +701,14 @@ class Account extends Controller
     protected function validateForgot(array $user)
     {
         if (isset($this->submitted['email'])) {
-            $user = $this->user->getByEmail($this->submitted['email']);
-            if (empty($user['status'])) {
+            $email_user = $this->user->getByEmail($this->submitted['email']);
+            if (empty($email_user['status'])) {
                 $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
                 return false;
             }
 
-            $this->submitted['user'] = $user;
-            return true;
-        }
-
-        if (isset($this->submitted['password'])) {
+            $this->submitted['user'] = $email_user;
+        } else if (isset($this->submitted['password'])) {
             $this->validatePassword($this->submitted['password']);
             $this->submitted['user'] = $user;
         }
@@ -730,14 +727,14 @@ class Account extends Controller
         $result = $this->user->delete($user['user_id']);
 
         $redirect = 'admin/user';
+        $message_type = 'success';
         $message = 'User %name has been deleted';
         $variables = array('%name' => $user['name']);
-        $message_type = 'success';
 
         if (empty($result)) {
             $redirect = '';
-            $message = 'Unable to delete user %name. The most probable reason - it is used by one or more orders';
             $message_type = 'danger';
+            $message = 'Unable to delete user %name. The most probable reason - it is used by one or more orders';
         }
 
         $this->redirect($redirect, $this->text($message, $variables), $message_type);
@@ -849,15 +846,15 @@ class Account extends Controller
             return;
         }
 
+        $result = array('message' => '', 'message_type' => '', 'redirect' => '');
+
         if (isset($this->submitted['email'])) {
-            return $this->user->resetPassword($this->submitted['user']);
+            $result = $this->user->resetPassword($this->submitted['user']);
+        } else if (isset($this->submitted['password'])) {
+            $result = $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
         }
 
-        if (isset($this->submitted['password'])) {
-            return $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
-        }
-
-        return;
+        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
     }
 
     /**
