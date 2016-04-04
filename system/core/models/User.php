@@ -18,6 +18,8 @@ use core\classes\Tool;
 use core\classes\Session;
 use core\models\Address;
 use core\models\UserRole;
+use core\models\Language;
+use core\models\Notification;
 use core\exceptions\SystemLogicalUserAccess;
 
 class User
@@ -36,6 +38,18 @@ class User
     protected $role;
 
     /**
+     * Notification model instance
+     * @var \core\models\Notification $notification
+     */
+    protected $notification;
+
+    /**
+     * Language model instance
+     * @var \core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Hook class instance
      * @var \core\Hook $hook
      */
@@ -52,9 +66,9 @@ class User
      * @var core\Config $config
      */
     protected $config;
-    
+
     /**
-     * logger class instance
+     * Logger class instance
      * @var \core\Logger $logger
      */
     protected $logger;
@@ -64,17 +78,22 @@ class User
      * @var \core\classes\Database $db
      */
     protected $db;
-    
+
     /**
      * Constructor
      * @param Address $address
      * @param Hook $hook
      * @param Session $session
      * @param UserRole $role
+     * @param Notification $notification
+     * @param Language $language
      * @param Logger $logger
      * @param Config $config
      */
-    public function __construct(Address $address, Hook $hook, Session $session, UserRole $role, Logger $logger, Config $config)
+    public function __construct(Address $address, Hook $hook, Session $session,
+                                UserRole $role, Notification $notification,
+                                Language $language, Logger $logger,
+                                Config $config)
     {
         $this->role = $role;
         $this->hook = $hook;
@@ -82,7 +101,9 @@ class User
         $this->config = $config;
         $this->address = $address;
         $this->session = $session;
+        $this->language = $language;
         $this->db = $this->config->db();
+        $this->notification = $notification;
     }
 
     /**
@@ -122,52 +143,6 @@ class User
         $this->hook->fire('add.user.after', $data, $user_id);
         return $user_id;
     }
-
-    /**
-     * Returns a shipping address for a given user
-     * @param integer $user_id
-     * @return array
-
-    public function getShippingAddress($user_id)
-    {
-        if ($user_id && is_numeric($user_id)) {
-            $addresses = $this->getAddresses($user_id);
-
-            if ($addresses) {
-                return end($addresses);
-            }
-
-            return array();
-        }
-
-        $address = array(
-            'country' => Tool::getCookie('country'),
-            'state_id' => Tool::getCookie('state_id'),
-            'city_id' => Tool::getCookie('city_id'),
-            'postcode' => Tool::getCookie('postcode')
-        );
-
-        if (isset($address['country']) && isset($address['state_id']) && isset($address['city_id'])) {
-            return $address;
-        }
-
-        return array();
-    }
-     *
-     */
-
-    /**
-     * Returns an array of saved addresses for a given user
-     * @param integer $user_id
-     * @return array
-
-    public function getAddresses($user_id)
-    {
-        //TODO: cache??
-        return $this->address->getList(array('user_id' => $user_id));
-    }
-     *
-     */
 
     /**
      * Updates a user
@@ -360,9 +335,9 @@ class User
             return (int) $this->session->get('user', 'role_id');
         }
 
-        //if (is_numeric($user)) {
-            //return $this->get($user);
-        //}
+        if (is_numeric($user)) {
+            $user = $this->get($user);
+        }
 
         return isset($user['role_id']) ? (int) $user['role_id'] : 0;
     }
@@ -381,7 +356,7 @@ class User
                 FROM user u
                 LEFT JOIN role r ON (u.role_id = r.role_id)
                 WHERE u.user_id=:user_id';
-        
+
         $where = array(':user_id' => (int) $user_id);
 
         if (isset($store_id)) {
@@ -401,7 +376,7 @@ class User
         $this->hook->fire('get.user.after', $user_id, $user);
         return $user;
     }
-    
+
     /**
      * Logs in a user
      * @param string $email
@@ -433,17 +408,73 @@ class User
 
         unset($user['hash']);
         $this->session->set('user', null, $user);
-        
+
         $this->logLogin($user);
-        
+
         $result = array(
             'user' => $user,
-            'message' => null,
+            'message' => '',
             'message_type' => 'success',
             'redirect' => $this->getLoginRedirect($user),
         );
 
         $this->hook->fire('login.after', $email, $password, $result);
+        return $result;
+    }
+
+    /**
+     * Registers a user
+     * @param array $data
+     * @return array
+     */
+    public function register(array $data)
+    {
+        $this->hook->fire('register.user.before', $data);
+
+        $data['user_id'] = $this->add($data);
+
+        if (!empty($data['admin'])) {
+
+            if (!empty($data['notify'])) {
+                $this->notification->set('user_registered_customer', array($data));
+            }
+
+            $result = array(
+                'redirect' => 'admin/user',
+                'message_type' => 'success',
+                'message' => $this->language->text('User has been added')
+            );
+
+            $this->hook->fire('register.user.after', $data, $result);
+            return $result;
+        }
+
+        $this->logRegistration($data);
+
+        // Send an e-mail to the customer
+        if ($this->config->get('user_registration_email_customer', 1)) {
+            $this->notification->set('user_registered_customer', array($data));
+        }
+
+        // Send an e-mail to admin
+        if ($this->config->get('user_registration_email_admin', 1)) {
+            $this->notification->set('user_registered_admin', array($data));
+        }
+
+        if (!$this->config->get('user_registration_login', true) || !$this->config->get('user_registration_status', true)) {
+
+            $result = array(
+                'redirect' => '/',
+                'message_type' => 'success',
+                'message' => $this->language->text('Your account has been created'));
+
+
+            $this->hook->fire('register.user.after', $data, $result);
+            return $result;
+        }
+
+        $result = $this->user->login($data['email'], $data['password']);
+        $this->hook->fire('register.user.after', $data, $result);
         return $result;
     }
 
@@ -477,7 +508,7 @@ class User
     {
         return (array) $this->session->get('user', null, array());
     }
-    
+
     /**
      * Logs out the current user
      * @return mixed
@@ -495,18 +526,18 @@ class User
         if (!$this->session->delete()) {
             throw new SystemLogicalUserAccess('Failed to delete the session on logout');
         }
-        
+
         $user = $this->get($user_id);
-        
+
         $this->logLogout($user);
-        
+
         $result = array(
             'user' => $user,
-            'message' => null,
+            'message' => '',
             'message_type' => 'success',
             'redirect' => $this->getLogOutRedirect($user),
         );
-        
+
         $this->hook->fire('logout.after', $result);
         return $result;
     }
@@ -519,6 +550,71 @@ class User
     {
         $hash = crypt(Tool::randomString(), Tool::randomString());
         return str_replace(array('+', '/', '='), '', base64_encode($hash));
+    }
+
+    /**
+     * Performs reset password operation
+     * @param array $user
+     * @param string $password
+     * @return array
+     */
+    public function resetPassword(array $user, $password = null)
+    {
+        $this->hook->fire('reset.password.before', $user, $password);
+
+        if (isset($password)) {
+            $result = $this->setNewPassword($user, $password);
+        } else {
+            $result = $this->setResetPassword($user);
+        }
+
+        $this->hook->fire('reset.password.after', $user, $password, $result);
+        return $result;
+    }
+
+    /**
+     * Sets reset token and sends reset link
+     * @param array $user
+     * @return array
+     */
+    protected function setResetPassword(array $user)
+    {
+        $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
+
+        $user['data']['reset_password'] = array(
+            'token' => Tool::randomString(),
+            'expires' => GC_TIME + $lifetime,
+        );
+
+        $this->update($user['user_id'], array('data' => $user['data']));
+        $this->notification->set('user_reset_password', array($user));
+
+        return array(
+            'redirect' => 'forgot',
+            'message_type' => 'success',
+            'message' => $this->language->text('Password reset link has been sent to your E-mail')
+        );
+    }
+
+    /**
+     * Sets a new password
+     * @param array $user
+     * @param string $password
+     * @return array
+     */
+    protected function setNewPassword(array $user, $password)
+    {
+        $user['password'] = $password;
+
+        unset($user['data']['reset_password']);
+        $this->update($user['user_id'], $user);
+        $this->notification->set('user_changed_password', array($user));
+
+        return array(
+            'redirect' => 'login',
+            'message_type' => 'success',
+            'message' => $this->language->text('Your password has been successfully changed')
+        );
     }
 
     /**
@@ -637,27 +733,39 @@ class User
 
         return (bool) $this->address->update($address['address_id'], $address);
     }
-    
+
     /**
      * Logs a login event
      * @param array $user
      */
-    protected function logLogin($user)
+    protected function logLogin(array $user)
     {
         $this->logger->log('login', array(
             'message' => 'User %s has logged in',
             'variables' => array('%s' => $user['email'])
         ));
     }
-    
+
     /**
      * Logs a logout event
      * @param array $user
      */
-    protected function logLogout($user)
+    protected function logLogout(array $user)
     {
         $this->logger->log('logout', array(
             'message' => 'User %email has logged out',
+            'variables' => array('%email' => $user['email'])
+        ));
+    }
+
+    /**
+     * Logs a registration event
+     * @param array $user
+     */
+    protected function logRegistration(array $user)
+    {
+        $this->logger->log('register', array(
+            'message' => 'User %email has been registered',
             'variables' => array('%email' => $user['email'])
         ));
     }
@@ -672,10 +780,10 @@ class User
         if ($this->isSuperadmin($user['user_id'])) {
             return $this->config->get('user_login_redirect_superadmin', 'admin');
         }
-        
+
         return $this->config->get("user_login_redirect_{$user['role_id']}", "account/{$user['user_id']}");
     }
-    
+
     /**
      * Returns a redirect path for logged out users
      * @param array $user
@@ -689,4 +797,5 @@ class User
 
         return $this->config->get("user_logout_redirect_{$user['role_id']}", '/');
     }
+
 }

@@ -20,7 +20,6 @@ use core\models\Address;
 use core\models\Country;
 use core\models\Bookmark;
 use core\models\UserRole;
-use core\models\Notification;
 
 class Account extends Controller
 {
@@ -74,12 +73,6 @@ class Account extends Controller
     protected $bookmark;
 
     /**
-     * Notification model instance
-     * @var \core\models\Notification $notification
-     */
-    protected $notification;
-
-    /**
      * Product model instance
      * @var \core\models\Product $product
      */
@@ -99,14 +92,13 @@ class Account extends Controller
      * @param Order $order
      * @param Price $price
      * @param Bookmark $bookmark
-     * @param Notification $notification
      * @param UserRole $role
      * @param Product $product
      */
     public function __construct(Address $address, Country $country,
                                 State $state, Order $order, Price $price,
-                                Bookmark $bookmark, Notification $notification,
-                                UserRole $role, Product $product)
+                                Bookmark $bookmark, UserRole $role,
+                                Product $product)
     {
         parent::__construct();
 
@@ -118,7 +110,6 @@ class Account extends Controller
         $this->country = $country;
         $this->address = $address;
         $this->bookmark = $bookmark;
-        $this->notification = $notification;
     }
 
     /**
@@ -149,16 +140,7 @@ class Account extends Controller
      */
     public function edit($user_id)
     {
-        $user = $this->user->get($user_id);
-
-        if (empty($user)) {
-            $this->outputError(404);
-        }
-
-        // No access for blocked customers, allow only admins
-        if (empty($user['status']) && !$this->access('user_edit')) {
-            $this->outputError(404);
-        }
+        $user = $this->getUser($user_id);
 
         // Only superadmin can edit its own account
         if ($this->user->isSuperadmin($user_id) && !$this->user->isSuperadmin()) {
@@ -169,33 +151,75 @@ class Account extends Controller
         $this->data['roles'] = $this->role->getList();
         $this->data['stores'] = $this->store->getNames();
 
-        if ($this->request->post('delete')) {
-            $this->controlAccess('user_delete');
-            if ($this->user->delete($user_id)) {
-                $this->redirect('admin/user', $this->text('User %name has been deleted', array(
-                            '%name' => $user['name'])), 'success');
-            }
-
-            $this->redirect('', $this->text('Unable to delete user %name. The most probable reason - it is used by one or more orders', array(
-                        '%name' => $user['name'])), 'danger');
-        }
-
         if ($this->request->post('save')) {
-            //$this->controlAccess('user_edit');
-            $submitted = $this->request->post('user', array(), 'raw');
-            $this->validateUser($submitted, $user);
-
-            if ($this->formErrors()) {
-                $this->data['user'] = $submitted + array('user_id' => $user_id);
-            } else {
-                $this->user->update($user_id, $submitted);
-                $this->redirect('', $this->text('Account has been updated'), 'success');
-            }
+            $this->submitEdit($user);
         }
 
-        $this->setTitle($this->text('Edit account'), false);
+        if ($this->request->post('delete')) {
+            $this->submitDelete($user);
+        }
 
+        $this->setTitleEdit();
+        $this->outputEdit();
+    }
+
+    /**
+     * Sets titles on the edit account page
+     */
+    protected function setTitleEdit()
+    {
+        $this->setTitle($this->text('Edit account'), false);
+    }
+
+    /**
+     * Renders the edit account page templates
+     */
+    protected function outputEdit()
+    {
         $this->output('account/edit');
+    }
+
+    /**
+     * Deletes a user
+     * @param array $user
+     */
+    protected function submitDelete($user)
+    {
+        $this->controlAccess('user_delete');
+
+        $result = $this->user->delete($user['user_id']);
+
+        $redirect = 'admin/user';
+        $message = 'User %name has been deleted';
+        $variables = array('%name' => $user['name']);
+        $message_type = 'success';
+
+        if (empty($result)) {
+            $redirect = '';
+            $message = 'Unable to delete user %name. The most probable reason - it is used by one or more orders';
+            $message_type = 'danger';
+        }
+
+        $this->redirect($redirect, $this->text($message, $variables), $message_type);
+    }
+
+    /**
+     * Saves user account settings
+     * @param array $user
+     * @return null
+     */
+    protected function submitEdit($user)
+    {
+        $this->submitted = $this->request->post('user', array(), 'raw');
+        $this->validateUser($user);
+
+        if ($this->formErrors()) {
+            $this->data['user'] = $this->submitted + array('user_id' => $user['user_id']);
+            return;
+        }
+
+        $this->user->update($user['user_id'], $this->submitted);
+        $this->redirect('', $this->text('Account has been updated'), 'success');
     }
 
     /**
@@ -525,7 +549,9 @@ class Account extends Controller
             return;
         }
 
-        $this->registerUser($this->submitted);
+        $this->submitted['admin'] = $this->access('user_add');
+        $result = $this->user->register($this->submitted);
+        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
     }
 
     /**
@@ -591,7 +617,6 @@ class Account extends Controller
     protected function submitForgot($user)
     {
         $this->controlSpam('forgot');
-
         $this->submitted = $this->request->post('user', array(), 'raw');
 
         $this->validateForgot($user);
@@ -601,7 +626,15 @@ class Account extends Controller
             return;
         }
 
-        $this->restorePassword();
+        if (isset($this->submitted['email'])) {
+            return $this->user->resetPassword($this->submitted['user']);
+        }
+        
+        if (isset($this->submitted['password'])) {
+            return $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
+        }
+        
+        return;
     }
 
     /**
@@ -643,7 +676,12 @@ class Account extends Controller
     {
         $user = $this->user->get($user_id);
 
-        if (empty($user['status'])) {
+        if (empty($user)) {
+            $this->outputError(404);
+        }
+
+        // No access for blocked customers, allow only admins
+        if (empty($user['status']) && !$this->access('user_edit')) {
             $this->outputError(404);
         }
 
@@ -683,15 +721,16 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
+            
             $address_id = $order['shipping_address'];
             $components = $this->order->getComponents($order);
             $address = $this->address->getTranslated($this->address->get($address_id), true);
 
             $order['rendered'] = $this->render(
                     'account/order', array(
-                'order' => $order,
-                'components' => $components,
-                'shipping_address' => $address));
+                    'order' => $order,
+                    'components' => $components,
+                    'shipping_address' => $address));
         }
 
         return $orders;
@@ -836,48 +875,6 @@ class Account extends Controller
     }
 
     /**
-     * Registers a user and redirects to a certain URL
-     * @param array $submitted
-     */
-    protected function registerUser($submitted)
-    {
-        $submitted['user_id'] = $this->user->add($submitted);
-
-        // Registerd by an admin
-        if ($this->access('user_add')) {
-            if ($submitted['notify']) {
-                $this->notification->set('user_registered_customer', array($submitted));
-            }
-            $this->redirect('admin/user', $this->text('User has been added'), 'success');
-        }
-
-        // Log the event
-        $log = array(
-            'message' => 'User %email has been registered',
-            'variables' => array('%email' => $submitted['email']));
-
-        $this->logger->log('register', $log); // TODO: move to model
-        // Send an e-mail to the customer
-        if ($this->config->get('user_registration_email_customer', 1)) {
-            $this->notification->set('user_registered_customer', array($submitted));
-        }
-
-        // Send an e-mail to admin
-        if ($this->config->get('user_registration_email_admin', 1)) {
-            $this->notification->set('user_registered_admin', array($submitted));
-        }
-
-        $this->session->setMessage($this->text('Your account has been created'), 'success');
-
-        if (!$this->config->get('user_registration_login', 1) || !$this->config->get('user_registration_status', 1)) {
-            $this->url->redirect('/');
-        }
-
-        $result = $this->user->login($submitted['email'], $submitted['password']);
-        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-    }
-
-    /**
      * Returns a user from the current reset password URL
      * @return boolean|array
      */
@@ -923,7 +920,7 @@ class Account extends Controller
      * @param mixed $user
      * @return boolean
      */
-    protected function validateForgot($user)
+    protected function validateForgot(array $user)
     {
         if (isset($this->submitted['email'])) {
             $user = $this->user->getByEmail($this->submitted['email']);
@@ -944,53 +941,4 @@ class Account extends Controller
         return true;
     }
 
-    /**
-     * Either sends a reset password link or changes a password
-     * @return null
-     */
-    protected function restorePassword()
-    {
-        if (isset($this->submitted['email'])) {
-            $this->resetLink($this->submitted);
-        } elseif (isset($this->submitted['password'])) {
-            $this->newPassword($this->submitted);
-        }
-    }
-
-    /**
-     * Sets a reset password data
-     * @param array $submitted
-     */
-    protected function resetLink($submitted)
-    {
-        $user = $submitted['user'];
-
-        $token = Tool::randomString();
-        $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
-
-        $user['data']['reset_password'] = array(
-            'token' => $token,
-            'expires' => GC_TIME + $lifetime,
-        );
-
-        $this->user->update($user['user_id'], array('data' => $user['data']));
-        $this->notification->set('user_reset_password', array($user));
-        $this->redirect('forgot', $this->text('Password reset link has been sent to %email', array(
-                    '%email' => $user['email'])), 'success');
-    }
-
-    /**
-     * Changes a current user password
-     * @param array $submitted
-     */
-    protected function newPassword($submitted)
-    {
-        $user = $submitted['user'];
-        $user['password'] = $submitted['password'];
-
-        unset($user['data']['reset_password']);
-        $this->user->update($user['user_id'], $user);
-        $this->notification->set('user_changed_password', array($user));
-        $this->redirect('login', $this->text('Your password has been successfully changed'), 'success');
-    }
 }
