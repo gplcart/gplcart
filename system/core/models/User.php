@@ -473,7 +473,7 @@ class User
             return $result;
         }
 
-        $result = $this->user->login($data['email'], $data['password']);
+        $result = $this->login($data['email'], $data['password']);
         $this->hook->fire('register.user.after', $data, $result);
         return $result;
     }

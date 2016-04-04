@@ -151,75 +151,16 @@ class Account extends Controller
         $this->data['roles'] = $this->role->getList();
         $this->data['stores'] = $this->store->getNames();
 
-        if ($this->request->post('save')) {
+        if ($this->request->post('save') !== null) {
             $this->submitEdit($user);
         }
 
-        if ($this->request->post('delete')) {
+        if ($this->request->post('delete') !== null) {
             $this->submitDelete($user);
         }
 
         $this->setTitleEdit();
         $this->outputEdit();
-    }
-
-    /**
-     * Sets titles on the edit account page
-     */
-    protected function setTitleEdit()
-    {
-        $this->setTitle($this->text('Edit account'), false);
-    }
-
-    /**
-     * Renders the edit account page templates
-     */
-    protected function outputEdit()
-    {
-        $this->output('account/edit');
-    }
-
-    /**
-     * Deletes a user
-     * @param array $user
-     */
-    protected function submitDelete($user)
-    {
-        $this->controlAccess('user_delete');
-
-        $result = $this->user->delete($user['user_id']);
-
-        $redirect = 'admin/user';
-        $message = 'User %name has been deleted';
-        $variables = array('%name' => $user['name']);
-        $message_type = 'success';
-
-        if (empty($result)) {
-            $redirect = '';
-            $message = 'Unable to delete user %name. The most probable reason - it is used by one or more orders';
-            $message_type = 'danger';
-        }
-
-        $this->redirect($redirect, $this->text($message, $variables), $message_type);
-    }
-
-    /**
-     * Saves user account settings
-     * @param array $user
-     * @return null
-     */
-    protected function submitEdit($user)
-    {
-        $this->submitted = $this->request->post('user', array(), 'raw');
-        $this->validateUser($user);
-
-        if ($this->formErrors()) {
-            $this->data['user'] = $this->submitted + array('user_id' => $user['user_id']);
-            return;
-        }
-
-        $this->user->update($user['user_id'], $this->submitted);
-        $this->redirect('', $this->text('Account has been updated'), 'success');
     }
 
     /**
@@ -243,30 +184,100 @@ class Account extends Controller
     }
 
     /**
-     * Deletes an address
-     * @param integer $address_id
+     * Displays the login page
      */
-    protected function deleteAddress($address_id)
+    public function login()
     {
-        $result = $this->address->delete($address_id);
-
-        $message_type = 'success';
-        $message = $this->text('Address has been deleted');
-
-        if (empty($result)) {
-            $message_type = 'warning';
-            $message = $this->text('Address cannot be deleted');
+        if (!empty($this->uid)) {
+            $this->url->redirect("account/{$this->uid}");
         }
 
-        $this->redirect('', $message, $message_type);
+        if ($this->request->post('login') !== null) {
+            $this->submitLogin();
+        }
+
+        $this->setTitleLogin();
+        $this->setBreadcrumbLogin();
+        $this->outputLogin();
     }
 
     /**
-     * Sets titles on the addresses overview page
+     * Displays the user registration page
      */
-    protected function setTitleAddresses()
+    public function register()
     {
-        $this->setTitle($this->text('Addresses'), false);
+        if (!empty($this->uid) && !$this->access('user_add')) {
+            $this->url->redirect("account/{$this->uid}");
+        }
+
+        if ($this->request->post('register') !== null) {
+            $this->submitRegister();
+        }
+
+        $limits = $this->user->getPasswordLength();
+
+        $this->data['min_password_length'] = $limits['min'];
+        $this->data['max_password_length'] = $limits['max'];
+
+        $this->data['roles'] = $this->role->getList();
+        $this->data['stores'] = $this->store->getNames();
+
+        $this->setTitleRegister();
+        $this->setBreadcrumbRegister();
+        $this->outputRegister();
+    }
+
+    /**
+     * Displays the user forgotten password page
+     */
+    public function forgot()
+    {
+        if (empty($this->uid)) {
+            $this->url->redirect("account/{$this->uid}");
+        }
+
+        // Check password reset URL
+        $user = $this->getRecoverableUser();
+        $this->data['recoverable_user'] = $user;
+
+        if ($user === false) {
+            $this->redirect('forgot'); // Reset password link expired or invalid
+        }
+
+        if ($this->request->post('reset') !== null) {
+            $this->submitForgot($user);
+        }
+
+        $limits = $this->user->getPasswordLength();
+
+        $this->data['min_password_length'] = $limits['min'];
+        $this->data['max_password_length'] = $limits['max'];
+
+        $this->setTitleForgot();
+        $this->setBreadcrumbForgot();
+        $this->outputForgot();
+    }
+
+    /**
+     * Logs out a user
+     */
+    public function logout()
+    {
+        $result = $this->user->logout();
+
+        if (!empty($result)) {
+            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+        }
+
+        $this->redirect('/');
+    }
+
+    /**
+     * Renders the edit account page templates
+     */
+    protected function outputEdit()
+    {
+        $this->output('account/edit');
     }
 
     /**
@@ -278,46 +289,43 @@ class Account extends Controller
     }
 
     /**
-     * Displays edit address form
-     * @param integer $user_id
-     * @param integer $address_id
-     */
-    public function editAddress($user_id, $address_id = null)
-    {
-        $user = $this->getUser($user_id);
-        $address = $this->getAddress($address_id);
-
-        $this->data['user'] = $user;
-        $this->data['address'] = $address;
-
-        if ($this->request->post('save')) {
-            $this->submitAddress($user, $address);
-        }
-
-        $country = $this->data['address']['country'];
-
-        $this->data['countries'] = $this->getCountryNames();
-        $this->data['format'] = $this->getCountryFormat($country);
-        $this->data['states'] = $this->getCountryStates($country);
-
-        $this->setTitleEditAddress();
-        $this->outputEditAddress();
-    }
-
-    /**
-     * Sets titles on the edit address page
-     */
-    protected function setTitleEditAddress()
-    {
-        $this->setTitle($this->text('Add new address'), false);
-    }
-
-    /**
      * Renders the edit address page
      */
     protected function outputEditAddress()
     {
         $this->output('account/address/edit');
+    }
+
+    /**
+     * Renders the login page
+     */
+    protected function outputLogin()
+    {
+        $this->output('login');
+    }
+
+    /**
+     * Renders the registration page
+     */
+    protected function outputRegister()
+    {
+        $this->output('register');
+    }
+
+    /**
+     * Renders the password reset page templates
+     */
+    protected function outputForgot()
+    {
+        $this->output('forgot');
+    }
+
+    /**
+     * Renders the account page templates
+     */
+    protected function outputAccount()
+    {
+        $this->output('account/account');
     }
 
     /**
@@ -371,50 +379,6 @@ class Account extends Controller
     }
 
     /**
-     * Saves a user address
-     * @param array $user
-     * @return null
-     */
-    protected function submitAddress($user)
-    {
-        $this->submitted = $this->request->post('address', array());
-
-        $this->validateAddress();
-
-        if ($this->formErrors()) {
-            $this->data['address'] = $this->submitted;
-            return;
-        }
-
-        $address = $this->submitted + array('user_id' => $user['user_id']);
-        $result = $this->addAddress($address);
-
-        $message_type = 'success';
-        $redirect = "account/{$user['user_id']}/address";
-        $message = $this->text('New address has been added');
-
-        if (empty($result)) {
-            $redirect = '';
-            $message_type = 'warning';
-            $message = $this->text('Address has not been added');
-        }
-
-        $this->redirect($redirect, $message, $message_type);
-    }
-
-    /**
-     * Adds an address
-     * @param array $address
-     * @return integer
-     */
-    protected function addAddress($address)
-    {
-        $result = $this->address->add($address);
-        $this->address->reduceLimit($address['user_id']);
-        return $result;
-    }
-
-    /**
      * Returns an array of addresses
      * @param integer $user_id
      * @return array
@@ -422,249 +386,6 @@ class Account extends Controller
     protected function getAddresses($user_id)
     {
         return $this->address->getTranslatedList($user_id);
-    }
-
-    /**
-     * Displays the login page
-     */
-    public function login()
-    {
-        if (!empty($this->uid)) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        if ($this->request->post('login')) {
-            $this->submitLogin();
-        }
-
-        $this->setTitleLogin();
-        $this->setBreadcrumbLogin();
-        $this->outputLogin();
-    }
-
-    /**
-     * Sets titles on the login page
-     */
-    protected function setTitleLogin()
-    {
-        $this->setTitle($this->text('Login'));
-    }
-
-    /**
-     * Sets breadcrumbs on the login page
-     */
-    protected function setBreadcrumbLogin()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-    }
-
-    /**
-     * Renders the login page
-     */
-    protected function outputLogin()
-    {
-        $this->output('login');
-    }
-
-    /**
-     * Logs in a user
-     */
-    protected function submitLogin()
-    {
-        $this->controlSpam('login');
-        $this->submitted = $this->request->post('user', array(), 'raw');
-
-        $result = $this->user->login($this->submitted['email'], $this->submitted['password']);
-
-        if (!empty($result)) {
-            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-        }
-
-        $this->data['user'] = $this->submitted;
-        $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
-    }
-
-    /**
-     * Displays the user registration page
-     */
-    public function register()
-    {
-        if ($this->uid && !$this->access('user_add')) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        if ($this->request->post('register')) {
-            $this->submitRegister();
-        }
-
-        $limits = $this->user->getPasswordLength();
-
-        $this->data['min_password_length'] = $limits['min'];
-        $this->data['max_password_length'] = $limits['max'];
-
-        $this->data['roles'] = $this->role->getList();
-        $this->data['stores'] = $this->store->getNames();
-
-        $this->setTitleRegister();
-        $this->setBreadcrumbRegister();
-        $this->outputRegister();
-    }
-
-    /**
-     * Sets titles on the registration page
-     */
-    protected function setTitleRegister()
-    {
-        $this->setTitle($this->text('Register'));
-    }
-
-    /**
-     * Sets breadcrumbs on the registration page
-     */
-    protected function setBreadcrumbRegister()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-    }
-
-    /**
-     * Renders the registration page
-     */
-    protected function outputRegister()
-    {
-        $this->output('register');
-    }
-
-    /**
-     *
-     * @return type
-     */
-    protected function submitRegister()
-    {
-        $this->controlSpam('register');
-        $this->submitted = $this->request->post('user', array(), 'raw');
-        $this->validateUser();
-
-        if ($this->formErrors()) {
-            $this->data['user'] = $this->submitted;
-            return;
-        }
-
-        $this->submitted['admin'] = $this->access('user_add');
-        $result = $this->user->register($this->submitted);
-        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-    }
-
-    /**
-     * Displays the user forgotten password page
-     */
-    public function forgot()
-    {
-        if (empty($this->uid)) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        // Check password reset URL
-        $user = $this->getRecoverableUser();
-        $this->data['recoverable_user'] = $user;
-
-        if ($user === false) {
-            $this->redirect('forgot'); // Reset password link expired or invalid
-        }
-
-        if ($this->request->post('reset')) {
-            $this->submitForgot($user);
-        }
-
-        $limits = $this->user->getPasswordLength();
-
-        $this->data['min_password_length'] = $limits['min'];
-        $this->data['max_password_length'] = $limits['max'];
-
-        $this->setTitleForgot();
-        $this->setBreadcrumbForgot();
-        $this->outputForgot();
-    }
-
-    /**
-     * Sets titles on the password reset page
-     */
-    protected function setTitleForgot()
-    {
-        $this->setTitle($this->text('Reset password'));
-    }
-
-    /**
-     * Sets breadcrumbs on the password reset page
-     */
-    protected function setBreadcrumbForgot()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-    }
-
-    /**
-     * Renders the password reset page templates
-     */
-    protected function outputForgot()
-    {
-        $this->output('forgot');
-    }
-
-    /**
-     * Restores forgotten password
-     * @param array $user
-     * @return null
-     */
-    protected function submitForgot($user)
-    {
-        $this->controlSpam('forgot');
-        $this->submitted = $this->request->post('user', array(), 'raw');
-
-        $this->validateForgot($user);
-
-        if ($this->formErrors()) {
-            $this->data['user'] = $this->submitted;
-            return;
-        }
-
-        if (isset($this->submitted['email'])) {
-            return $this->user->resetPassword($this->submitted['user']);
-        }
-        
-        if (isset($this->submitted['password'])) {
-            return $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
-        }
-        
-        return;
-    }
-
-    /**
-     * Logs out a user
-     */
-    public function logout()
-    {
-        $result = $this->user->logout();
-
-        if (!empty($result)) {
-            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-        }
-
-        $this->redirect('/');
-    }
-
-    /**
-     * Sets titles on the account page
-     */
-    protected function setTitleAccount()
-    {
-        $this->setTitle($this->text('Orders'), false);
-    }
-
-    /**
-     * Renders the account page templates
-     */
-    protected function outputAccount()
-    {
-        $this->output('account/account');
     }
 
     /**
@@ -706,7 +427,7 @@ class Account extends Controller
      * Returns a number of total orders for the customer
      * @param integer $user_id
      * @param array $query
-     * @return type
+     * @return array
      */
     protected function getTotalOrders($user_id)
     {
@@ -714,26 +435,124 @@ class Account extends Controller
     }
 
     /**
-     * Modifies an array of orders before rendering
-     * @param array $orders
-     * @return array
+     * Returns a user from the current reset password URL
+     * @return boolean|array
      */
-    protected function prepareOrders($orders)
+    protected function getRecoverableUser()
     {
-        foreach ($orders as &$order) {
-            
-            $address_id = $order['shipping_address'];
-            $components = $this->order->getComponents($order);
-            $address = $this->address->getTranslated($this->address->get($address_id), true);
+        $token = $this->request->get('key');
+        $user_id = $this->request->get('user_id');
 
-            $order['rendered'] = $this->render(
-                    'account/order', array(
-                    'order' => $order,
-                    'components' => $components,
-                    'shipping_address' => $address));
+        // Data unavailable, exit
+        if (empty($token) || empty($user_id)) {
+            return;
         }
 
-        return $orders;
+        $user = $this->user->get($user_id);
+
+        // User blocked or not found
+        if (empty($user['status'])) {
+            return;
+        }
+
+        $data = $user['data'];
+
+        // No recovery data is set
+        if (empty($data['reset_password'])) {
+            return false;
+        }
+
+        // Invalid token
+        if (!Tool::hashEquals($data['reset_password']['token'], $token)) {
+            return false;
+        }
+
+        // Expired
+        if ((int) $data['reset_password']['expires'] < GC_TIME) {
+            return false;
+        }
+
+        return $user;
+    }
+
+    /**
+     * Sets titles on the account page
+     */
+    protected function setTitleAccount()
+    {
+        $this->setTitle($this->text('Orders'), false);
+    }
+
+    /**
+     * Sets titles on the registration page
+     */
+    protected function setTitleRegister()
+    {
+        $this->setTitle($this->text('Register'));
+    }
+
+    /**
+     * Sets breadcrumbs on the registration page
+     */
+    protected function setBreadcrumbRegister()
+    {
+        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+    }
+
+    /**
+     * Sets titles on the password reset page
+     */
+    protected function setTitleForgot()
+    {
+        $this->setTitle($this->text('Reset password'));
+    }
+
+    /**
+     * Sets breadcrumbs on the password reset page
+     */
+    protected function setBreadcrumbForgot()
+    {
+        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+    }
+
+    /**
+     * Sets titles on the edit account page
+     */
+    protected function setTitleEdit()
+    {
+        $this->setTitle($this->text('Edit account'), false);
+    }
+
+    /**
+     * Sets titles on the addresses overview page
+     */
+    protected function setTitleAddresses()
+    {
+        $this->setTitle($this->text('Addresses'), false);
+    }
+
+    /**
+     * Sets titles on the edit address page
+     */
+    protected function setTitleEditAddress()
+    {
+        $this->setTitle($this->text('Add new address'), false);
+    }
+
+    /**
+     * Sets titles on the login page
+     */
+    protected function setTitleLogin()
+    {
+        $this->setTitle($this->text('Login'));
+    }
+
+    /**
+     * Sets breadcrumbs on the login page
+     */
+    protected function setBreadcrumbLogin()
+    {
+        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
     }
 
     /**
@@ -758,7 +577,7 @@ class Account extends Controller
         }
 
         $this->validateName();
-        return $this->validatePasswordBoth();
+        return $this->validatePasswordBoth($user);
     }
 
     /**
@@ -875,47 +694,6 @@ class Account extends Controller
     }
 
     /**
-     * Returns a user from the current reset password URL
-     * @return boolean|array
-     */
-    protected function getRecoverableUser()
-    {
-        $token = $this->request->get('key');
-        $user_id = $this->request->get('user_id');
-
-        // Data unavailable, exit
-        if (empty($token) || empty($user_id)) {
-            return;
-        }
-
-        $user = $this->user->get($user_id);
-
-        // User blocked or not found
-        if (empty($user['status'])) {
-            return;
-        }
-
-        $data = $user['data'];
-
-        // No recovery data is set
-        if (empty($data['reset_password'])) {
-            return false;
-        }
-
-        // Invalid token
-        if (!Tool::hashEquals($data['reset_password']['token'], $token)) {
-            return false;
-        }
-
-        // Expired
-        if ($data['reset_password']['expires'] < GC_TIME) {
-            return false;
-        }
-
-        return $user;
-    }
-
-    /**
      * Validates the forgot password form values
      * @param mixed $user
      * @return boolean
@@ -939,6 +717,228 @@ class Account extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Deletes a user
+     * @param array $user
+     */
+    protected function submitDelete($user)
+    {
+        $this->controlAccess('user_delete');
+
+        $result = $this->user->delete($user['user_id']);
+
+        $redirect = 'admin/user';
+        $message = 'User %name has been deleted';
+        $variables = array('%name' => $user['name']);
+        $message_type = 'success';
+
+        if (empty($result)) {
+            $redirect = '';
+            $message = 'Unable to delete user %name. The most probable reason - it is used by one or more orders';
+            $message_type = 'danger';
+        }
+
+        $this->redirect($redirect, $this->text($message, $variables), $message_type);
+    }
+
+    /**
+     * Saves user account settings
+     * @param array $user
+     * @return null
+     */
+    protected function submitEdit($user)
+    {
+        $this->submitted = $this->request->post('user', array(), 'raw');
+        $this->validateUser($user);
+
+        if (count($this->formErrors()) > 0) {
+            $this->data['user'] = $this->submitted + array('user_id' => $user['user_id']);
+            return;
+        }
+
+        $this->user->update($user['user_id'], $this->submitted);
+        $this->redirect('', $this->text('Account has been updated'), 'success');
+    }
+
+    /**
+     * Saves a user address
+     * @param array $user
+     * @return null
+     */
+    protected function submitAddress($user)
+    {
+        $this->submitted = $this->request->post('address', array());
+
+        $this->validateAddress();
+
+        if (count($this->formErrors()) > 0) {
+            $this->data['address'] = $this->submitted;
+            return;
+        }
+
+        $address = $this->submitted + array('user_id' => $user['user_id']);
+        $result = $this->addAddress($address);
+
+        $message_type = 'success';
+        $redirect = "account/{$user['user_id']}/address";
+        $message = $this->text('New address has been added');
+
+        if (empty($result)) {
+            $redirect = '';
+            $message_type = 'warning';
+            $message = $this->text('Address has not been added');
+        }
+
+        $this->redirect($redirect, $message, $message_type);
+    }
+
+    /**
+     * Logs in a user
+     */
+    protected function submitLogin()
+    {
+        $this->controlSpam('login');
+        $this->submitted = $this->request->post('user', array(), 'raw');
+
+        $result = $this->user->login($this->submitted['email'], $this->submitted['password']);
+
+        if (!empty($result)) {
+            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+        }
+
+        $this->data['user'] = $this->submitted;
+        $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
+    }
+
+    /**
+     * Registers a user
+     * @return null
+     */
+    protected function submitRegister()
+    {
+        $this->controlSpam('register');
+        $this->submitted = $this->request->post('user', array(), 'raw');
+        $this->validateUser();
+
+        if (count($this->formErrors()) > 0) {
+            $this->data['user'] = $this->submitted;
+            return;
+        }
+
+        $this->submitted['admin'] = $this->access('user_add');
+        $result = $this->user->register($this->submitted);
+        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+    }
+
+    /**
+     * Restores forgotten password
+     * @param array $user
+     * @return null
+     */
+    protected function submitForgot($user)
+    {
+        $this->controlSpam('forgot');
+        $this->submitted = $this->request->post('user', array(), 'raw');
+
+        $this->validateForgot($user);
+
+        if (count($this->formErrors()) > 0) {
+            $this->data['user'] = $this->submitted;
+            return;
+        }
+
+        if (isset($this->submitted['email'])) {
+            return $this->user->resetPassword($this->submitted['user']);
+        }
+
+        if (isset($this->submitted['password'])) {
+            return $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
+        }
+
+        return;
+    }
+
+    /**
+     * Modifies an array of orders before rendering
+     * @param array $orders
+     * @return array
+     */
+    protected function prepareOrders($orders)
+    {
+        foreach ($orders as &$order) {
+
+            $address_id = $order['shipping_address'];
+            $components = $this->order->getComponents($order);
+            $address = $this->address->getTranslated($this->address->get($address_id), true);
+
+            $order['rendered'] = $this->render(
+                    'account/order', array(
+                'order' => $order,
+                'components' => $components,
+                'shipping_address' => $address));
+        }
+
+        return $orders;
+    }
+
+    /**
+     * Deletes an address
+     * @param integer $address_id
+     */
+    protected function deleteAddress($address_id)
+    {
+        $result = $this->address->delete($address_id);
+
+        $message_type = 'success';
+        $message = $this->text('Address has been deleted');
+
+        if (empty($result)) {
+            $message_type = 'warning';
+            $message = $this->text('Address cannot be deleted');
+        }
+
+        $this->redirect('', $message, $message_type);
+    }
+
+    /**
+     * Displays edit address form
+     * @param integer $user_id
+     * @param integer $address_id
+     */
+    public function editAddress($user_id, $address_id = null)
+    {
+        $user = $this->getUser($user_id);
+        $address = $this->getAddress($address_id);
+
+        $this->data['user'] = $user;
+        $this->data['address'] = $address;
+
+        if ($this->request->post('save') !== null) {
+            $this->submitAddress($user, $address);
+        }
+
+        $country = $this->data['address']['country'];
+
+        $this->data['countries'] = $this->getCountryNames();
+        $this->data['format'] = $this->getCountryFormat($country);
+        $this->data['states'] = $this->getCountryStates($country);
+
+        $this->setTitleEditAddress();
+        $this->outputEditAddress();
+    }
+
+    /**
+     * Adds an address
+     * @param array $address
+     * @return integer
+     */
+    protected function addAddress($address)
+    {
+        $result = $this->address->add($address);
+        $this->address->reduceLimit($address['user_id']);
+        return $result;
     }
 
 }
