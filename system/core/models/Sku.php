@@ -232,5 +232,4 @@ class Sku
 
         return array();
     }
-
 }

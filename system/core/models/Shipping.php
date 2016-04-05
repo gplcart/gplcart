@@ -160,5 +160,4 @@ class Shipping
             'currency' => $this->config->get('currency', 'USD')
         );
     }
-
 }

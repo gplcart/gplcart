@@ -287,5 +287,4 @@ class Mail
 
         $this->logger->log('email', $log, $severity);
     }
-
 }

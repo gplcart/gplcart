@@ -324,5 +324,4 @@ class CategoryGroup
 
         return (bool) $sth->fetchColumn();
     }
-
 }

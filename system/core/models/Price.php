@@ -161,5 +161,4 @@ class Price
     {
         return $this->currency->convert($amount, $currency_code, $target_currency_code);
     }
-
 }

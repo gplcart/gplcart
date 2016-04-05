@@ -343,5 +343,4 @@ class ProductClass
 
         return $list;
     }
-
 }

@@ -767,5 +767,4 @@ class PriceRule
         $amount += $value;
         return $amount;
     }
-
 }

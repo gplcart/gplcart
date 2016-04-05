@@ -438,5 +438,4 @@ class Address
     {
         return array('address_1', 'state_id', 'city_id', 'country');
     }
-
 }

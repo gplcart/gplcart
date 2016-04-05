@@ -723,5 +723,4 @@ class Cart
 
         return $this->add($data);
     }
-
 }

@@ -256,5 +256,4 @@ class Analytics
         $arguments = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
         return $this->getResults($arguments);
     }
-
 }

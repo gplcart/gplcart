@@ -437,7 +437,6 @@ class User
         $data['user_id'] = $this->add($data);
 
         if (!empty($data['admin'])) {
-
             if (!empty($data['notify'])) {
                 $this->notification->set('user_registered_customer', array($data));
             }
@@ -465,7 +464,6 @@ class User
         }
 
         if (!$this->config->get('user_registration_login', true) || !$this->config->get('user_registration_status', true)) {
-
             $result = array(
                 'redirect' => '/',
                 'message_type' => 'success',
@@ -800,5 +798,4 @@ class User
 
         return $this->config->get("user_logout_redirect_{$user['role_id']}", '/');
     }
-
 }

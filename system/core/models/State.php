@@ -248,5 +248,4 @@ class State
         $this->hook->fire('update.state.after', $state_id, $data, $result);
         return (bool) $result;
     }
-
 }

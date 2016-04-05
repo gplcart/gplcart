@@ -73,5 +73,4 @@ class Reset
         $this->db->query("ALTER TABLE user AUTO_INCREMENT = $superadmin");
         $this->db->query("ALTER TABLE store AUTO_INCREMENT = $store");
     }
-
 }
