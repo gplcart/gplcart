@@ -254,5 +254,4 @@ class Review
         $this->hook->fire('reviews', $list);
         return $list;
     }
-
 }

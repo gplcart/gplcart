@@ -128,5 +128,4 @@ class Zone
         $this->hook->fire('zone.list', $list);
         return $list;
     }
-
 }

@@ -427,5 +427,4 @@ class Import
     {
         return $this->config->get('csv_delimiter', ",");
     }
-
 }

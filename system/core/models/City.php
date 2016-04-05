@@ -240,5 +240,4 @@ class City
         $this->hook->fire('update.city.after', $city_id, $data, $result);
         return (bool) $result;
     }
-
 }

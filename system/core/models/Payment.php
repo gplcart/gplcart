@@ -160,5 +160,4 @@ class Payment
             'currency' => $this->config->get('currency', 'USD')
         );
     }
-
 }

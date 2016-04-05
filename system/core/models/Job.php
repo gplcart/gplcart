@@ -482,5 +482,4 @@ class Job
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
     }
-
 }

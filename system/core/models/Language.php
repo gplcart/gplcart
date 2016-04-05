@@ -130,7 +130,6 @@ class Language
         $this->langcode = $this->route->getLangcode();
 
         if (!empty($this->langcode)) {
-
             $this->compiled_directory_php = GC_LOCALE_DIR . "/{$this->langcode}/compiled";
             $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
 
@@ -489,5 +488,4 @@ class Language
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
     }
-
 }

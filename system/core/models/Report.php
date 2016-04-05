@@ -325,5 +325,4 @@ class Report
 
         return $result;
     }
-
 }

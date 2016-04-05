@@ -482,5 +482,4 @@ class Page
 
         return (bool) $this->db->delete('page_translation', $where);
     }
-
 }

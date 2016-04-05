@@ -1288,5 +1288,4 @@ class Product
         $this->db->delete('option_combination', $where);
         return true;
     }
-
 }

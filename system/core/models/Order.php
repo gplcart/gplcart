@@ -897,5 +897,4 @@ class Order
         $order['status_formatted'] = $this->getStatusName($order['status']);
         return $order;
     }
-
 }

@@ -390,5 +390,4 @@ class UserRole
 
         return $permissions;
     }
-
 }

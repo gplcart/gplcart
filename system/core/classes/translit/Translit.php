@@ -186,5 +186,4 @@ class Translit
 
         return isset($map[$bank][$langcode][$ord]) ? $map[$bank][$langcode][$ord] : $unknown;
     }
-
 }

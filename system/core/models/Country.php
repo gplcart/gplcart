@@ -724,5 +724,4 @@ class Country
 
         return $countries;
     }
-
 }

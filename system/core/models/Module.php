@@ -605,5 +605,4 @@ class Module
     {
         return $this->getMaxWeight() + 1;
     }
-
 }

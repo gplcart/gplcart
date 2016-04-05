@@ -516,5 +516,4 @@ class Store
 
         return $emails;
     }
-
 }

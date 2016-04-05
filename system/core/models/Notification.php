@@ -230,5 +230,4 @@ class Notification
     {
         return $this->config->reset("notification_$notification_id");
     }
-
 }

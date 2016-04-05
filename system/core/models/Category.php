@@ -79,8 +79,7 @@ class Category
     public function __construct(
     ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
     ModelsCategoryGroup $category_group, Hook $hook, Config $config
-    )
-    {
+    ) {
         $this->hook = $hook;
         $this->image = $image;
         $this->alias = $alias;
@@ -675,5 +674,4 @@ class Category
     {
         return $this->image->setMultiple('category_id', $category_id, $data['images']);
     }
-
 }

@@ -346,5 +346,4 @@ class Bookmark
         $sth->execute($bookmark_ids);
         return $sth->rowCount();
     }
-
 }

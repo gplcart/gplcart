@@ -820,5 +820,4 @@ class File
         $this->uploaded = $destination;
         return true;
     }
-
 }

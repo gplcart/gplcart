@@ -333,5 +333,4 @@ class FieldValue
 
         return !$sth->fetchColumn();
     }
-
 }

@@ -592,7 +592,7 @@ class Account extends Controller
                 $this->data['form_errors']['password'] = $this->text('Required field');
                 return false;
             }
-        } else if (!empty($this->submitted['password'])) {
+        } elseif (!empty($this->submitted['password'])) {
             $this->check_old_password = true;
             $this->validatePassword($this->submitted['password']);
         }
@@ -708,7 +708,7 @@ class Account extends Controller
             }
 
             $this->submitted['user'] = $email_user;
-        } else if (isset($this->submitted['password'])) {
+        } elseif (isset($this->submitted['password'])) {
             $this->validatePassword($this->submitted['password']);
             $this->submitted['user'] = $user;
         }
@@ -850,7 +850,7 @@ class Account extends Controller
 
         if (isset($this->submitted['email'])) {
             $result = $this->user->resetPassword($this->submitted['user']);
-        } else if (isset($this->submitted['password'])) {
+        } elseif (isset($this->submitted['password'])) {
             $result = $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
         }
 
@@ -865,7 +865,6 @@ class Account extends Controller
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
-
             $address_id = $order['shipping_address'];
             $components = $this->order->getComponents($order);
             $address = $this->address->getTranslated($this->address->get($address_id), true);
@@ -937,5 +936,4 @@ class Account extends Controller
         $this->address->reduceLimit($address['user_id']);
         return $result;
     }
-
 }

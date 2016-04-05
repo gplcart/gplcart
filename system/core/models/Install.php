@@ -919,5 +919,4 @@ class Install
 
         return $tables;
     }
-
 }

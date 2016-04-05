@@ -539,5 +539,4 @@ class Image
 
         return $styles;
     }
-
 }
