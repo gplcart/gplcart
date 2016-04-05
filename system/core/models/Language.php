@@ -13,11 +13,14 @@ namespace core\models;
 use core\Hook;
 use core\Route;
 use core\Config;
+use core\classes\Po;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Po;
-use libraries\translit\Translit;
+use core\classes\translit\Translit;
 
+/**
+ * Manages basic behaviors and data related to languages and their translations
+ */
 class Language
 {
 
@@ -114,9 +117,9 @@ class Language
      * @param Po $po
      * @param Route $route
      * @param Config $config
-     * @return type
      */
-    public function __construct(Translit $translit, Hook $hook, Po $po, Route $route, Config $config)
+    public function __construct(Translit $translit, Hook $hook, Po $po,
+                                Route $route, Config $config)
     {
         $this->po = $po;
         $this->hook = $hook;
@@ -126,25 +129,24 @@ class Language
         $this->db = $this->config->db();
         $this->langcode = $this->route->getLangcode();
 
-        if (!$this->langcode) {
-            return;
+        if (!empty($this->langcode)) {
+
+            $this->compiled_directory_php = GC_LOCALE_DIR . "/{$this->langcode}/compiled";
+            $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
+
+            if (!file_exists($this->compiled_directory_php)) {
+                mkdir($this->compiled_directory_php, 0755, true);
+            }
+
+            if (!file_exists($this->compiled_directory_js)) {
+                mkdir($this->compiled_directory_js, 0755, true);
+            }
+
+            $current_route = $this->route->getCurrent();
+            $this->compiled_filename = md5($current_route['pattern']);
+            $this->compiled_file_php = "{$this->compiled_directory_php}/{$this->compiled_filename}.php";
+            $this->compiled_file_js = "{$this->compiled_directory_js}/{$this->compiled_filename}.js";
         }
-
-        $this->compiled_directory_php = GC_LOCALE_DIR . "/{$this->langcode}/compiled";
-        $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
-
-        if (!file_exists($this->compiled_directory_php)) {
-            mkdir($this->compiled_directory_php, 0755, true);
-        }
-
-        if (!file_exists($this->compiled_directory_js)) {
-            mkdir($this->compiled_directory_js, 0755, true);
-        }
-
-        $current_route = $this->route->getCurrent();
-        $this->compiled_filename = md5($current_route['pattern']);
-        $this->compiled_file_php = "{$this->compiled_directory_php}/{$this->compiled_filename}.php";
-        $this->compiled_file_js = "{$this->compiled_directory_js}/{$this->compiled_filename}.js";
     }
 
     /**
@@ -409,7 +411,7 @@ class Language
         }
 
         if (file_exists($this->compiled_file_php)) {
-            // TODO: Cannot use automatic recompilation. Redirect issue
+            // Cannot use automatic recompilation. Redirect issue
             return false;
         }
 
@@ -483,8 +485,9 @@ class Language
             return '';
         }
 
-        $translit = $this->translit->process($string, '?', $language);
+        $translit = $this->translit->translit($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
     }
+
 }

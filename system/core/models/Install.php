@@ -11,13 +11,15 @@
 namespace core\models;
 
 use PDO;
-use PDOException;
 use core\Container;
-use core\models\Store;
-use core\models\Language;
 use core\classes\Tool;
-use core\classes\Request;
+use core\classes\Request as ClassesRequest;
+use core\models\Store as ModelsStore;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to system installation
+ */
 class Install
 {
 
@@ -47,15 +49,16 @@ class Install
 
     /**
      * Constructor
-     * @param Store $store
-     * @param Language $language
-     * @param Request $request
+     * @param ModelsStore $store
+     * @param ModelsLanguage $language
+     * @param ClassesRequest $request
      */
-    public function __construct(Store $store, Language $language, Request $request)
+    public function __construct(ModelsStore $store, ModelsLanguage $language,
+                                ClassesRequest $request)
     {
         $this->store = $store;
-        $this->language = $language;
         $this->request = $request;
+        $this->language = $language;
     }
 
     /**
@@ -141,7 +144,7 @@ class Install
      * @param array $settings
      * @return boolean
      */
-    public function connect($settings)
+    public function connect(array $settings)
     {
         extract($settings);
 
@@ -151,7 +154,7 @@ class Install
             if ($this->db->query('SHOW TABLES')->fetchColumn()) {
                 return $this->language->text('The database you specified already has tables');
             }
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->db = null;
             return $e->getMessage();
         }
@@ -916,4 +919,5 @@ class Install
 
         return $tables;
     }
+
 }

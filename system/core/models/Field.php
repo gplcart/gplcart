@@ -13,9 +13,12 @@ namespace core\models;
 use PDO;
 use core\Hook;
 use core\Config;
-use core\models\Language;
 use core\classes\Cache;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to product fields
+ */
 class Field
 {
 
@@ -39,11 +42,12 @@ class Field
 
     /**
      * Constructor
-     * @param Language $language
+     * @param ModelsLanguage $language
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Language $language, Hook $hook, Config $config)
+    public function __construct(ModelsLanguage $language, Hook $hook,
+                                Config $config)
     {
         $this->hook = $hook;
         $this->db = $config->db();
@@ -52,7 +56,7 @@ class Field
 
     /**
      * Returns an array of widget types
-     * @return type
+     * @return array
      */
     public function widgetTypes()
     {
@@ -270,7 +274,7 @@ class Field
     }
 
     /**
-     * Returns true if the field can be deleted
+     * Whether the field can be deleted
      * @param integer $field_id
      * @return boolean
      */
@@ -331,4 +335,5 @@ class Field
         $this->hook->fire('update.field.after', $field_id, $data, $result);
         return $result;
     }
+
 }

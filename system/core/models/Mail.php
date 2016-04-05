@@ -14,6 +14,9 @@ use core\Hook;
 use core\Config;
 use core\Logger;
 
+/**
+ * Manages basic behaviors and data related to sending e-mails
+ */
 class Mail
 {
 
@@ -284,4 +287,5 @@ class Mail
 
         $this->logger->log('email', $log, $severity);
     }
+
 }

@@ -15,8 +15,11 @@ use DateTime;
 use core\Config;
 use core\classes\Curl;
 use core\classes\Cache;
-use core\models\Module;
+use core\models\Module as ModelsModule;
 
+/**
+ * Manages basic behaviors and data related to various reports
+ */
 class Report
 {
 
@@ -46,11 +49,11 @@ class Report
 
     /**
      * Constructor
-     * @param Module $module
+     * @param ModelsModule $module
      * @param Curl $curl
      * @param Config $config
      */
-    public function __construct(Module $module, Curl $curl, Config $config)
+    public function __construct(ModelsModule $module, Curl $curl, Config $config)
     {
         $this->curl = $curl;
         $this->config = $config;
@@ -202,7 +205,7 @@ class Report
     {
         $results = $analytics->getTraffic();
 
-        if (!$results) {
+        if (empty($results)) {
             return array();
         }
 
@@ -282,7 +285,7 @@ class Report
      */
     public function reportErrors(array $errors, $clear = true)
     {
-        if (!$errors) {
+        if (empty($errors)) {
             return false;
         }
 
@@ -292,9 +295,8 @@ class Report
         );
 
         $result = $this->curl->post(GC_REPORT_URL, array(CURLOPT_POSTFIELDS => http_build_query($data)));
-        // TODO: Check response here
 
-        if ($clear && $result) {
+        if ($clear && !empty($result)) {
             $this->clear(array_keys($errors));
         }
 
@@ -316,10 +318,12 @@ class Report
         if (isset($_SERVER['AUTH_USER'])) {
             $result = str_replace($_SERVER['AUTH_USER'], '***', $$result);
         }
+
         if (isset($_SERVER['AUTH_PASSWORD'])) {
             $result = str_replace($_SERVER['AUTH_PASSWORD'], '***', $result);
         }
 
         return $result;
     }
+
 }

@@ -12,14 +12,14 @@ namespace core\controllers;
 
 use core\Controller;
 use core\classes\Tool;
-use core\models\State;
-use core\models\Order;
-use core\models\Price;
-use core\models\Product;
-use core\models\Address;
-use core\models\Country;
-use core\models\Bookmark;
-use core\models\UserRole;
+use core\models\State as ModelsState;
+use core\models\Order as ModelsOrder;
+use core\models\Price as ModelsPrice;
+use core\models\Product as ModelsProduct;
+use core\models\Address as ModelsAddress;
+use core\models\Country as ModelsCountry;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\UserRole as ModelsUserRole;
 
 class Account extends Controller
 {
@@ -83,22 +83,22 @@ class Account extends Controller
      * @var boolean
      */
     protected $check_old_password = false;
-
+    
     /**
      * Constructor
-     * @param Address $address
-     * @param Country $country
-     * @param State $state
-     * @param Order $order
-     * @param Price $price
-     * @param Bookmark $bookmark
-     * @param UserRole $role
-     * @param Product $product
+     * @param ModelsAddress $address
+     * @param ModelsCountry $country
+     * @param ModelsState $state
+     * @param ModelsOrder $order
+     * @param ModelsPrice $price
+     * @param ModelsBookmark $bookmark
+     * @param ModelsUserRole $role
+     * @param ModelsProduct $product
      */
-    public function __construct(Address $address, Country $country,
-                                State $state, Order $order, Price $price,
-                                Bookmark $bookmark, UserRole $role,
-                                Product $product)
+    public function __construct(ModelsAddress $address, ModelsCountry $country,
+                                ModelsState $state, ModelsOrder $order, ModelsPrice $price,
+                                ModelsBookmark $bookmark, ModelsUserRole $role,
+                                ModelsProduct $product)
     {
         parent::__construct();
 

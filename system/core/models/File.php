@@ -14,12 +14,15 @@ use PDO;
 use core\Hook;
 use core\Config;
 use core\Handler;
-use core\classes\Url;
-use core\classes\Curl;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\models\Language;
+use core\classes\Url as ClassesUrl;
+use core\classes\Curl as ClassesCurl;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to files
+ */
 class File
 {
 
@@ -79,19 +82,20 @@ class File
 
     /**
      * Constructor
-     * @param Language $language
+     * @param ModelsLanguage $language
+     * @param ClassesUrl $url
+     * @param ClassesCurl $curl
      * @param Hook $hook
-     * @param Url $url
-     * @param Curl $curl
      * @param Config $config
      */
-    public function __construct(Language $language, Hook $hook, Url $url, Curl $curl, Config $config)
+    public function __construct(ModelsLanguage $language, ClassesUrl $url,
+                                ClassesCurl $curl, Hook $hook, Config $config)
     {
         $this->url = $url;
         $this->curl = $curl;
         $this->hook = $hook;
-        $this->language = $language;
         $this->config = $config;
+        $this->language = $language;
         $this->db = $this->config->db();
     }
 
@@ -816,4 +820,5 @@ class File
         $this->uploaded = $destination;
         return true;
     }
+
 }

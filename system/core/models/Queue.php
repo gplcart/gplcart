@@ -14,6 +14,9 @@ use PDO;
 use core\Hook;
 use core\Config;
 
+/**
+ * Manages basic behaviors and data related to system queues
+ */
 class Queue
 {
 
@@ -343,4 +346,5 @@ class Queue
         $this->hook->fire('queues', $list);
         return $list;
     }
+
 }

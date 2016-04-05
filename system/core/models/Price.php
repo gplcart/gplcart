@@ -10,8 +10,11 @@
 
 namespace core\models;
 
-use core\models\Currency;
+use core\models\Currency as ModelsCurrency;
 
+/**
+ * Manages basic behaviors and data related to currencies
+ */
 class Price
 {
 
@@ -23,9 +26,9 @@ class Price
 
     /**
      * Constructor
-     * @param Currency $currency
+     * @param ModelsCurrency $currency
      */
-    public function __construct(Currency $currency)
+    public function __construct(ModelsCurrency $currency)
     {
         $this->currency = $currency;
     }
@@ -130,7 +133,7 @@ class Price
     {
         static $factors = array();
 
-        if (!$currency_code) {
+        if (empty($currency_code)) {
             $currency_code = $this->currency->getDefault();
         }
 
@@ -158,4 +161,5 @@ class Price
     {
         return $this->currency->convert($amount, $currency_code, $target_currency_code);
     }
+
 }

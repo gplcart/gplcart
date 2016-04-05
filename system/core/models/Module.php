@@ -11,12 +11,14 @@
 namespace core\models;
 
 use PDO;
-use Exception;
 use core\Config;
 use core\Container;
 use core\classes\Cache;
-use core\models\Language;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to modules
+ */
 class Module
 {
 
@@ -41,13 +43,13 @@ class Module
     /**
      * Constructor
      * @param Config $config
-     * @param Language $language
+     * @param ModelsLanguage $language
      */
-    public function __construct(Config $config, Language $language)
+    public function __construct(Config $config, ModelsLanguage $language)
     {
         $this->config = $config;
-        $this->db = $this->config->db();
         $this->language = $language;
+        $this->db = $this->config->db();
     }
 
     /**
@@ -121,7 +123,7 @@ class Module
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeEnable();
-            } catch (Exception $e) {
+            } catch (\core\exceptions\UsageModule $e) {
                 echo $e->getMessage();
             }
         }
@@ -296,7 +298,7 @@ class Module
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeDisable();
-            } catch (Exception $e) {
+            } catch (\core\exceptions\UsageModule $e) {
                 echo $e->getMessage();
             }
         }
@@ -351,7 +353,7 @@ class Module
     }
 
     /**
-     * Returns an array of actiive theme modules
+     * Returns an array of active theme modules
      * @return array
      */
     public function getActiveThemes()
@@ -424,7 +426,7 @@ class Module
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeInstall();
-            } catch (Exception $e) {
+            } catch (\core\exceptions\UsageModule $e) {
                 // uninstall trouble module
                 $this->db->delete('module', array('module_id' => $module_id));
                 echo $e->getMessage();
@@ -465,7 +467,7 @@ class Module
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeUninstall();
-            } catch (Exception $e) {
+            } catch (\core\exceptions\UsageModule $e) {
                 echo $e->getMessage();
             }
         }
@@ -603,4 +605,5 @@ class Module
     {
         return $this->getMaxWeight() + 1;
     }
+
 }

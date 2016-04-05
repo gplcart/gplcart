@@ -11,9 +11,12 @@
 namespace core\models;
 
 use PDO;
-use core\Config;
 use core\Hook;
+use core\Config;
 
+/**
+ * Manages basic behaviors and data related to cities
+ */
 class City
 {
 
@@ -39,7 +42,7 @@ class City
         $this->hook = $hook;
         $this->db = $config->db();
     }
-    
+
     /**
      * Returns an array of cities for a given state
      * @param array $data
@@ -237,4 +240,5 @@ class City
         $this->hook->fire('update.city.after', $city_id, $data, $result);
         return (bool) $result;
     }
+
 }

@@ -14,6 +14,9 @@ use PDO;
 use core\Hook;
 use core\Config;
 
+/**
+ * Manages basic behaviors and data related to the review system
+ */
 class Review
 {
 
@@ -88,7 +91,7 @@ class Review
 
         $review = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($review) {
+        if (!empty($review)) {
             $review['data'] = unserialize($review['data']);
         }
 
@@ -140,7 +143,7 @@ class Review
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('review', $values, array('review_id' => (int) $review_id));
         }
 
@@ -251,4 +254,5 @@ class Review
         $this->hook->fire('reviews', $list);
         return $list;
     }
+
 }

@@ -1,15 +1,31 @@
 <?php
 
-namespace libraries\translit;
+/**
+ * @package GPL Cart core
+ * @version $Id$
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ */
 
-class Translit {
+namespace core\classes\translit;
+
+/**
+ * Manages basic behaviors and data related to string transliterations
+ * Based on Drupal Transliteration module
+ */
+class Translit
+{
 
     /**
-    * @file
-    * Transliteration processing class.
-    * Based on Drupal Transliteration module
-    */
-    public function process($string, $unknown = '?', $source_langcode = NULL)
+     * Transliterates a string
+     * @staticvar array $tail_bytes
+     * @param string $string
+     * @param string $unknown
+     * @param string|null $source_langcode
+     * @return string
+     */
+    public function translit($string, $unknown = '?', $source_langcode = null)
     {
         // ASCII is always valid NFC! If we're only ever given plain ASCII, we can
         // avoid the overhead of initializing the decomposition tables by skipping
@@ -24,76 +40,68 @@ class Translit {
             // Each UTF-8 head byte is followed by a certain number of tail bytes.
             $tail_bytes = array();
             for ($n = 0; $n < 256; $n++) {
-                    if($n < 0xc0) {
-                        $remaining = 0;
-                    }
-                    elseif ($n < 0xe0) {
-                            $remaining = 1;
-                    }
-                    elseif ($n < 0xf0) {
-                        $remaining = 2;
-                    }
-                    elseif ($n < 0xf8) {
-                        $remaining = 3;
-                    }
-                    elseif ($n < 0xfc) {
-                        $remaining = 4;
-                    }
-                    elseif ($n < 0xfe) {
-                        $remaining = 5;
-                    }
-                    else {
-                        $remaining = 0;
-                    }
-                    $tail_bytes[chr($n)] = $remaining;
+                if ($n < 0xc0) {
+                    $remaining = 0;
+                } elseif ($n < 0xe0) {
+                    $remaining = 1;
+                } elseif ($n < 0xf0) {
+                    $remaining = 2;
+                } elseif ($n < 0xf8) {
+                    $remaining = 3;
+                } elseif ($n < 0xfc) {
+                    $remaining = 4;
+                } elseif ($n < 0xfe) {
+                    $remaining = 5;
+                } else {
+                    $remaining = 0;
                 }
+                $tail_bytes[chr($n)] = $remaining;
+            }
+        }
+
+        // Chop the text into pure-ASCII and non-ASCII areas; large ASCII parts can
+        // be handled much more quickly. Don't chop up Unicode areas for punctuation,
+        // though, that wastes energy.
+        preg_match_all('/[\x00-\x7f]+|[\x80-\xff][\x00-\x40\x5b-\x5f\x7b-\xff]*/', $string, $matches);
+
+        $result = '';
+        foreach ($matches[0] as $str) {
+            if ($str[0] < "\x80") {
+                // ASCII chunk: guaranteed to be valid UTF-8 and in normal form C, so
+                // skip over it.
+                $result .= $str;
+                continue;
             }
 
-            // Chop the text into pure-ASCII and non-ASCII areas; large ASCII parts can
-            // be handled much more quickly. Don't chop up Unicode areas for punctuation,
-            // though, that wastes energy.
-            preg_match_all('/[\x00-\x7f]+|[\x80-\xff][\x00-\x40\x5b-\x5f\x7b-\xff]*/', $string, $matches);
+            // We'll have to examine the chunk byte by byte to ensure that it consists
+            // of valid UTF-8 sequences, and to see if any of them might not be
+            // normalized.
+            //
+            // Since PHP is not the fastest language on earth, some of this code is a
+            // little ugly with inner loop optimizations.
 
-            $result = '';
-            foreach ($matches[0] as $str) {
-                if ($str[0] < "\x80") {
-                    // ASCII chunk: guaranteed to be valid UTF-8 and in normal form C, so
-                    // skip over it.
-                    $result .= $str;
-                    continue;
-                }
+            $head = '';
+            $chunk = strlen($str);
+            // Counting down is faster. I'm *so* sorry.
+            $len = $chunk + 1;
 
-                // We'll have to examine the chunk byte by byte to ensure that it consists
-                // of valid UTF-8 sequences, and to see if any of them might not be
-                // normalized.
-                //
-                // Since PHP is not the fastest language on earth, some of this code is a
-                // little ugly with inner loop optimizations.
-
-                $head = '';
-                $chunk = strlen($str);
-                // Counting down is faster. I'm *so* sorry.
-                $len = $chunk + 1;
-
-                for ($i = -1; --$len; ) {
-                    $c = $str[++$i];
-                    if ($remaining = $tail_bytes[$c]) {
-                        // UTF-8 head byte!
-                        $sequence = $head = $c;
+            for ($i = -1; --$len;) {
+                $c = $str[++$i];
+                if ($remaining = $tail_bytes[$c]) {
+                    // UTF-8 head byte!
+                    $sequence = $head = $c;
                     do {
                         // Look for the defined number of tail bytes...
                         if (--$len && ($c = $str[++$i]) >= "\x80" && $c < "\xc0") {
                             // Legal tail bytes are nice.
                             $sequence .= $c;
-                        }
-                        else {
+                        } else {
                             if ($len == 0) {
                                 // Premature end of string! Drop a replacement character into
                                 // output to represent the invalid UTF-8 sequence.
                                 $result .= $unknown;
                                 break 2;
-                            }
-                            else {
+                            } else {
                                 // Illegal tail byte; abandon the sequence.
                                 $result .= $unknown;
                                 // Back up and reprocess this byte; it may itself be a legal
@@ -108,34 +116,27 @@ class Translit {
                     $n = ord($head);
                     if ($n <= 0xdf) {
                         $ord = ($n - 192) * 64 + (ord($sequence[1]) - 128);
-                    }
-                    elseif ($n <= 0xef) {
+                    } elseif ($n <= 0xef) {
                         $ord = ($n - 224) * 4096 + (ord($sequence[1]) - 128) * 64 + (ord($sequence[2]) - 128);
-                    }
-                    elseif ($n <= 0xf7) {
+                    } elseif ($n <= 0xf7) {
                         $ord = ($n - 240) * 262144 + (ord($sequence[1]) - 128) * 4096 + (ord($sequence[2]) - 128) * 64 + (ord($sequence[3]) - 128);
-                    }
-                    elseif ($n <= 0xfb) {
+                    } elseif ($n <= 0xfb) {
                         $ord = ($n - 248) * 16777216 + (ord($sequence[1]) - 128) * 262144 + (ord($sequence[2]) - 128) * 4096 + (ord($sequence[3]) - 128) * 64 + (ord($sequence[4]) - 128);
-                    }
-                    elseif ($n <= 0xfd) {
+                    } elseif ($n <= 0xfd) {
                         $ord = ($n - 252) * 1073741824 + (ord($sequence[1]) - 128) * 16777216 + (ord($sequence[2]) - 128) * 262144 + (ord($sequence[3]) - 128) * 4096 + (ord($sequence[4]) - 128) * 64 + (ord($sequence[5]) - 128);
                     }
                     $result .= $this->replace($ord, $unknown, $source_langcode);
                     $head = '';
-                }
-                elseif ($c < "\x80") {
+                } elseif ($c < "\x80") {
                     // ASCII byte.
                     $result .= $c;
                     $head = '';
-                }
-                elseif ($c < "\xc0") {
+                } elseif ($c < "\xc0") {
                     // Illegal tail bytes.
                     if ($head == '') {
                         $result .= $unknown;
                     }
-                }
-                else {
+                } else {
                     // Miscellaneous freaks.
                     $result .= $unknown;
                     $head = '';
@@ -146,39 +147,37 @@ class Translit {
     }
 
     /**
-    * Replaces a Unicode character using the transliteration database.
-    *
-    * @param $ord
-    *   An ordinal Unicode character code.
-    * @param $unknown
-    *   Replacement string for characters that do not have a suitable ASCII
-    *   equivalent.
-    * @param $langcode
-    *   Optional ISO 639 language code that denotes the language of the input and
-    *   is used to apply language-specific variations.  Defaults to the current
-    *   display language.
-    * @return
-    *   ASCII replacement character.
-    */
-    private function replace($ord, $unknown = '?', $langcode)
+     * Replaces a Unicode character using the transliteration database.
+     *
+     * @param $ord
+     *   An ordinal Unicode character code.
+     * @param $unknown
+     *   Replacement string for characters that do not have a suitable ASCII
+     *   equivalent.
+     * @param $langcode
+     *   Optional ISO 639 language code that denotes the language of the input and
+     *   is used to apply language-specific variations.  Defaults to the current
+     *   display language.
+     * @return
+     *   ASCII replacement character.
+     */
+    protected function replace($ord, $unknown = '?', $langcode)
     {
         static $map = array();
 
         $bank = $ord >> 8;
 
         if (!isset($map[$bank][$langcode])) {
-            $file = dirname(__FILE__) . '/data/' . sprintf('x%02x', $bank) . '.php';
+            $file = GC_CORE_DIR . '/classes/translit/data/' . sprintf('x%02x', $bank) . '.php';
             if (file_exists($file)) {
                 include $file;
                 if ($langcode != 'en' && isset($variant[$langcode])) {
                     // Merge in language specific mappings.
                     $map[$bank][$langcode] = $variant[$langcode] + $base;
-                }
-                else {
+                } else {
                     $map[$bank][$langcode] = $base;
                 }
-            }
-            else {
+            } else {
                 $map[$bank][$langcode] = array();
             }
         }
@@ -187,4 +186,5 @@ class Translit {
 
         return isset($map[$bank][$langcode][$ord]) ? $map[$bank][$langcode][$ord] : $unknown;
     }
+
 }

@@ -16,6 +16,9 @@ use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
 
+/**
+ * Manages basic behaviors and data related to currencies
+ */
 class Currency
 {
 
@@ -51,10 +54,10 @@ class Currency
      */
     public function __construct(Hook $hook, Request $request, Config $config)
     {
-        $this->config = $config;
-        $this->db = $this->config->db();
         $this->hook = $hook;
+        $this->config = $config;
         $this->request = $request;
+        $this->db = $this->config->db();
     }
 
     /**
@@ -316,4 +319,5 @@ class Currency
             )
         );
     }
+
 }

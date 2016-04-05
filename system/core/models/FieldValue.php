@@ -13,9 +13,12 @@ namespace core\models;
 use PDO;
 use core\Hook;
 use core\Config;
-use core\models\Image;
-use core\models\Language;
+use core\models\Image as ModelsImage;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to field values
+ */
 class FieldValue
 {
 
@@ -45,17 +48,18 @@ class FieldValue
 
     /**
      * Constructor
-     * @param Image $image
-     * @param Language $language
+     * @param ModelsImage $image
+     * @param ModelsLanguage $language
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Image $image, Language $language, Hook $hook, Config $config)
+    public function __construct(ModelsImage $image, ModelsLanguage $language,
+                                Hook $hook, Config $config)
     {
-        $this->image = $image;
-        $this->language = $language;
         $this->hook = $hook;
+        $this->image = $image;
         $this->db = $config->db();
+        $this->language = $language;
     }
 
     /**
@@ -329,4 +333,5 @@ class FieldValue
 
         return !$sth->fetchColumn();
     }
+
 }

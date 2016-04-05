@@ -13,9 +13,12 @@ namespace core\models;
 use core\Hook;
 use core\Config;
 use core\Handler;
-use core\classes\Cache;
 use core\classes\Tool;
+use core\classes\Cache;
 
+/**
+ * Manages basic behaviors and data related to various site notifications
+ */
 class Notification
 {
 
@@ -116,14 +119,14 @@ class Notification
                 'process' => array('core\\handlers\\notification\\Order', 'createdCustomer'),
             ),
         );
-        
+
         // Message on the order complete page for a logged in cutomer
         $handlers['order_complete_customer'] = array(
             'handlers' => array(
                 'process' => array('core\\handlers\\notification\\Order', 'completeCustomer'),
             ),
         );
-        
+
         // Message on the order complete page for an anonymous
         $handlers['order_complete_anonymous'] = array(
             'handlers' => array(
@@ -177,7 +180,7 @@ class Notification
         $handlers = $this->getHandlers();
 
         foreach ($handlers as $notification_id => $handler) {
-            if (isset($handler['storage']) && $handler['storage'] == 'database') {
+            if (isset($handler['storage']) && $handler['storage'] === 'database') {
                 $message = $this->get($notification_id);
                 $message['access'] = isset($handler['access']) ? $handler['access'] : false;
                 $messages[$notification_id] = $message;
@@ -186,7 +189,7 @@ class Notification
 
         Tool::sortWeight($messages);
 
-        if ($limit) {
+        if (!empty($limit)) {
             $messages = array_slice($messages, 0, $limit);
         }
 
@@ -214,7 +217,7 @@ class Notification
         if (empty($data)) {
             return false;
         }
-        
+
         return $this->config->set("notification_$notification_id", $data);
     }
 
@@ -227,4 +230,5 @@ class Notification
     {
         return $this->config->reset("notification_$notification_id");
     }
+
 }

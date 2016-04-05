@@ -14,6 +14,9 @@ use PDO;
 use core\Config;
 use core\Hook;
 
+/**
+ * Manages basic behaviors and data related geo zones
+ */
 class Zone
 {
 
@@ -43,8 +46,8 @@ class Zone
     public function __construct(Hook $hook, Config $config)
     {
         $this->hook = $hook;
-        $this->db = $this->config->db();
         $this->hook = $hook;
+        $this->db = $this->config->db();
     }
 
     /**
@@ -125,4 +128,5 @@ class Zone
         $this->hook->fire('zone.list', $list);
         return $list;
     }
+
 }

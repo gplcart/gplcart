@@ -14,8 +14,11 @@ use PDO;
 use core\Hook;
 use core\Config;
 use core\classes\Tool;
-use core\models\Country;
+use core\models\Country as ModelsCountry;
 
+/**
+ * Manages basic behaviors and data related to user addresses
+ */
 class Address
 {
 
@@ -45,11 +48,12 @@ class Address
 
     /**
      * Constructor
-     * @param Country $country
+     * @param ModelsCountry $country
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Country $country, Hook $hook, Config $config)
+    public function __construct(ModelsCountry $country, Hook $hook,
+                                Config $config)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -434,4 +438,5 @@ class Address
     {
         return array('address_1', 'state_id', 'city_id', 'country');
     }
+
 }

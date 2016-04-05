@@ -15,6 +15,9 @@ use core\Logger;
 use core\Config;
 use core\classes\Cache;
 
+/**
+ * Manages basic behaviors and data related to Google Analytics
+ */
 class Analytics
 {
 
@@ -253,4 +256,5 @@ class Analytics
         $arguments = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
         return $this->getResults($arguments);
     }
+
 }

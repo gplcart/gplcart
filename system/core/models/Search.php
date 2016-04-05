@@ -14,8 +14,11 @@ use core\Hook;
 use core\Config;
 use core\Handler;
 use core\classes\Cache;
-use core\models\Language;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to the search system
+ */
 class Search
 {
 
@@ -39,15 +42,16 @@ class Search
 
     /**
      * Constructor
-     * @param Language $language
+     * @param ModelsLanguage $language
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Language $language, Hook $hook, Config $config)
+    public function __construct(ModelsLanguage $language, Hook $hook,
+                                Config $config)
     {
-        $this->language = $language;
         $this->hook = $hook;
         $this->db = $config->db();
+        $this->language = $language;
     }
 
     /**
@@ -140,7 +144,7 @@ class Search
 
         $filtered_query = $this->filterStopwords($query, $options['language']);
 
-        if ($filtered_query) {
+        if (!empty($filtered_query)) {
             return Handler::call($this->getHandlers(), $id_key, 'search', array($filtered_query, $options));
         }
 
@@ -192,8 +196,8 @@ class Search
     {
         $string = trim($string);
 
-        if ($string === "") {
-            return "";
+        if ($string === '') {
+            return '';
         }
 
         $stopwords = array();
@@ -205,4 +209,5 @@ class Search
 
         return implode(' ', array_diff(explode(' ', $string), $stopwords));
     }
+
 }

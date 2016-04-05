@@ -13,11 +13,14 @@ namespace core\models;
 use core\Hook;
 use core\Logger;
 use core\Config;
-use core\models\Language;
-use core\models\File;
-use core\classes\Cache;
 use core\classes\Csv;
+use core\classes\Cache;
+use core\models\File as ModelsFile;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to import functionality
+ */
 class Import
 {
 
@@ -59,14 +62,16 @@ class Import
 
     /**
      * Constructor
-     * @param Language $language
-     * @param File $file
-     * @param Hook $hook
+     * @param ModelsLanguage $language
+     * @param ModelsFile $file
      * @param Csv $csv
-     * @param Config $config
+     * @param Hook $hook
      * @param Logger $logger
+     * @param Config $config
      */
-    public function __construct(Language $language, File $file, Hook $hook, Csv $csv, Config $config, Logger $logger)
+    public function __construct(ModelsLanguage $language, ModelsFile $file,
+                                Csv $csv, Hook $hook, Logger $logger,
+                                Config $config)
     {
         $this->csv = $csv;
         $this->file = $file;
@@ -422,4 +427,5 @@ class Import
     {
         return $this->config->get('csv_delimiter', ",");
     }
+
 }

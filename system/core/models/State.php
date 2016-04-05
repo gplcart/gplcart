@@ -14,6 +14,9 @@ use PDO;
 use core\Hook;
 use core\Config;
 
+/**
+ * Manages basic behaviors and data related to country states
+ */
 class State
 {
 
@@ -54,11 +57,11 @@ class State
         }
 
         $state_id = $this->db->insert('state', array(
-            'status' => !empty($data['status']),
-            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array()),
-            'country' => $data['country'],
             'code' => $data['code'],
             'name' => $data['name'],
+            'country' => $data['country'],
+            'status' => !empty($data['status']),
+            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array())
         ));
 
         $this->hook->fire('add.state.after', $data, $state_id);
@@ -238,11 +241,12 @@ class State
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('state', $values, array('state_id' => (int) $state_id));
-            $this->hook->fire('update.state.after', $state_id, $data, $result);
         }
 
+        $this->hook->fire('update.state.after', $state_id, $data, $result);
         return (bool) $result;
     }
+
 }

@@ -15,6 +15,9 @@ use core\Hook;
 use core\Config;
 use core\classes\Tool;
 
+/**
+ * Manages basic behaviors and data related to product SKUs
+ */
 class Sku
 {
 
@@ -52,10 +55,11 @@ class Sku
 
         $results = array('base' => '');
         foreach ($skus as $sku) {
-            if (!$sku['combination_id']) {
+            if (empty($sku['combination_id'])) {
                 $results['base'] = $sku['sku'];
                 continue;
             }
+
             $results['combinations'][$sku['combination_id']] = $sku['sku'];
         }
         return $results;
@@ -128,7 +132,8 @@ class Sku
      * @param string $option_combination_id
      * @return boolean|integer
      */
-    public function add($sku, $product_id, $store_id = 1, $option_combination_id = '')
+    public function add($sku, $product_id, $store_id = 1,
+                        $option_combination_id = '')
     {
         $arguments = func_get_args();
 
@@ -181,7 +186,8 @@ class Sku
      * @param array $data
      * @return string
      */
-    public function generate($pattern, array $placeholders = array(), array $data = array())
+    public function generate($pattern, array $placeholders = array(),
+                             array $data = array())
     {
         $sku = $pattern;
 
@@ -226,4 +232,5 @@ class Sku
 
         return array();
     }
+
 }

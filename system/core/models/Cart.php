@@ -14,17 +14,20 @@ use PDO;
 use core\Hook;
 use core\Config;
 use core\Logger;
-use core\models\User;
-use core\models\Store;
-use core\models\Price;
-use core\models\Product;
-use core\models\Currency;
-use core\models\Bookmark;
-use core\models\Language;
 use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
+use core\models\User as ModelsUser;
+use core\models\Store as ModelsStore;
+use core\models\Price as ModelsPrice;
+use core\models\Product as ModelsProduct;
+use core\models\Currency as ModelsCurrency;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to user carts
+ */
 class Cart
 {
 
@@ -96,19 +99,24 @@ class Cart
 
     /**
      * Constructor
-     * @param Product $product
-     * @param Price $price
-     * @param Currency $currency
-     * @param User $user
-     * @param Bookmark $bookmark
-     * @param Language $language
-     * @param Store $store
+     * @param ModelsProduct $product
+     * @param ModelsPrice $price
+     * @param ModelsCurrency $currency
+     * @param ModelsUser $user
+     * @param ModelsBookmark $bookmark
+     * @param ModelsLanguage $language
+     * @param ModelsStore $store
      * @param Hook $hook
      * @param Request $request
      * @param Config $config
      * @param Logger $logger
      */
-    public function __construct(Product $product, Price $price, Currency $currency, User $user, Bookmark $bookmark, Language $language, Store $store, Hook $hook, Request $request, Config $config, Logger $logger)
+    public function __construct(ModelsProduct $product, ModelsPrice $price,
+                                ModelsCurrency $currency, ModelsUser $user,
+                                ModelsBookmark $bookmark,
+                                ModelsLanguage $language, ModelsStore $store,
+                                Hook $hook, Request $request, Config $config,
+                                Logger $logger)
     {
         $this->hook = $hook;
         $this->user = $user;
@@ -236,24 +244,24 @@ class Cart
     public function getList(array $data = array())
     {
         $data += array('order_id' => 0);
-        
+
         $sql = '
             SELECT *, SUM(quantity) AS quantity
             FROM cart
             WHERE cart_id > 0';
-        
+
         $where = array();
-        
+
         if (isset($data['user_id'])) {
             $sql .= ' AND user_id=?';
             $where[] = $data['user_id'];
         }
-        
+
         if (isset($data['order_id'])) {
             $sql .= ' AND order_id=?';
             $where[] = $data['order_id'];
         }
-        
+
         $sql .= ' GROUP BY sku ORDER BY created DESC';
 
         $sth = $this->db->prepare($sql);
@@ -715,4 +723,5 @@ class Cart
 
         return $this->add($data);
     }
+
 }

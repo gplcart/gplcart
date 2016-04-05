@@ -15,13 +15,15 @@ use core\Hook;
 use core\Config;
 use core\Logger;
 use core\classes\Tool;
-use core\classes\Session;
-use core\models\Address;
-use core\models\UserRole;
-use core\models\Language;
-use core\models\Notification;
-use core\exceptions\SystemLogicalUserAccess;
+use core\classes\Session as ClassesSession;
+use core\models\Address as ModelsAddress;
+use core\models\UserRole as ModelsUserRole;
+use core\models\Language as ModelsLanguage;
+use core\models\Notification as ModelsNotification;
 
+/**
+ * Manages basic behaviors and data related to users
+ */
 class User
 {
 
@@ -81,19 +83,20 @@ class User
 
     /**
      * Constructor
-     * @param Address $address
-     * @param Hook $hook
-     * @param Session $session
-     * @param UserRole $role
-     * @param Notification $notification
-     * @param Language $language
+     * @param ModelsAddress $address
+     * @param ModelsUserRole $role
+     * @param ModelsNotification $notification
+     * @param ModelsLanguage $language
+     * @param ClassesSession $session
      * @param Logger $logger
+     * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Address $address, Hook $hook, Session $session,
-                                UserRole $role, Notification $notification,
-                                Language $language, Logger $logger,
-                                Config $config)
+    public function __construct(ModelsAddress $address, ModelsUserRole $role,
+                                ModelsNotification $notification,
+                                ModelsLanguage $language,
+                                ClassesSession $session, Logger $logger,
+                                Hook $hook, Config $config)
     {
         $this->role = $role;
         $this->hook = $hook;
@@ -382,7 +385,7 @@ class User
      * @param string $email
      * @param string $password
      * @return mixed
-     * @throws SystemLogicalUserAccess
+     * @throws \core\exceptions\SystemLogicalUserAccess
      */
     public function login($email, $password)
     {
@@ -403,7 +406,7 @@ class User
         }
 
         if (!$this->session->regenerate(true)) {
-            throw new SystemLogicalUserAccess('Failed to regenerate the current session');
+            throw new \core\exceptions\SystemLogicalUserAccess('Failed to regenerate the current session');
         }
 
         unset($user['hash']);
@@ -452,12 +455,12 @@ class User
         $this->logRegistration($data);
 
         // Send an e-mail to the customer
-        if ($this->config->get('user_registration_email_customer', 1)) {
+        if ($this->config->get('user_registration_email_customer', true)) {
             $this->notification->set('user_registered_customer', array($data));
         }
 
         // Send an e-mail to admin
-        if ($this->config->get('user_registration_email_admin', 1)) {
+        if ($this->config->get('user_registration_email_admin', true)) {
             $this->notification->set('user_registered_admin', array($data));
         }
 
@@ -512,7 +515,7 @@ class User
     /**
      * Logs out the current user
      * @return mixed
-     * @throws SystemLogicalUserAccess
+     * @throws \core\exceptions\SystemLogicalUserAccess
      */
     public function logout()
     {
@@ -524,7 +527,7 @@ class User
         }
 
         if (!$this->session->delete()) {
-            throw new SystemLogicalUserAccess('Failed to delete the session on logout');
+            throw new \core\exceptions\SystemLogicalUserAccess('Failed to delete the session on logout');
         }
 
         $user = $this->get($user_id);

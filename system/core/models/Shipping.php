@@ -13,11 +13,14 @@ namespace core\models;
 use core\Hook;
 use core\Config;
 use core\Container;
-use core\models\Module;
-use core\models\Language;
 use core\classes\Cache;
-use core\classes\Url as U;
+use core\classes\Url as ClassesUrl;
+use core\models\Module as ModelsModule;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to shipping services and modules
+ */
 class Shipping
 {
 
@@ -53,13 +56,14 @@ class Shipping
 
     /**
      * Constructor
-     * @param Module $module
-     * @param Language $language
-     * @param U $url
+     * @param ModelsModule $module
+     * @param ModelsLanguage $language
+     * @param ClassesUrl $url
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Module $module, Language $language, U $url, Hook $hook, Config $config)
+    public function __construct(ModelsModule $module, ModelsLanguage $language,
+                                ClassesUrl $url, Hook $hook, Config $config)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -75,7 +79,8 @@ class Shipping
      * @param boolean $enabled
      * @return array
      */
-    public function getServices(array $cart = array(), array $order = array(), $enabled = true)
+    public function getServices(array $cart = array(), array $order = array(),
+                                $enabled = true)
     {
         $services = &Cache::memory('shipping.services');
 
@@ -84,7 +89,7 @@ class Shipping
         }
 
         $services = $this->defaultServices();
-        
+
         foreach ($this->module->getByType('shipping', true) as $module_id => $info) {
             $object = Container::instance($info['class']);
 
@@ -108,7 +113,7 @@ class Shipping
 
         return $services;
     }
-    
+
     /**
      * Returns a single shipping service
      * @param string $service_id
@@ -116,7 +121,8 @@ class Shipping
      * @param array $order
      * @return array
      */
-    public function getService($service_id, array $cart = array(), array $order = array())
+    public function getService($service_id, array $cart = array(),
+                               array $order = array())
     {
         $services = $this->getServices($cart, $order, false);
         return empty($services[$service_id]) ? array() : $services[$service_id];
@@ -154,4 +160,5 @@ class Shipping
             'currency' => $this->config->get('currency', 'USD')
         );
     }
+
 }

@@ -14,8 +14,11 @@ use PDO;
 use core\Route;
 use core\Config;
 use core\classes\Tool;
-use core\models\Language;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to URL aliasing
+ */
 class Alias
 {
 
@@ -45,11 +48,12 @@ class Alias
 
     /**
      * Constructor
-     * @param Language $language
+     * @param ModelsLanguage $language
      * @param Route $route
      * @param Config $config
      */
-    public function __construct(Language $language, Route $route, Config $config)
+    public function __construct(ModelsLanguage $language, Route $route,
+                                Config $config)
     {
         $this->language = $language;
         $this->route = $route;
@@ -209,7 +213,9 @@ class Alias
      * @param string $language
      * @return string
      */
-    public function generate($pattern, array $placeholders = array(), array $data = array(), $translit = true, $language = null)
+    public function generate($pattern, array $placeholders = array(),
+                             array $data = array(), $translit = true,
+                             $language = null)
     {
         $alias = $pattern;
 
@@ -264,4 +270,5 @@ class Alias
         $sth->execute(array(':alias' => $alias));
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
+
 }

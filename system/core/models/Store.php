@@ -16,6 +16,9 @@ use core\Config;
 use core\classes\Cache;
 use core\classes\Request;
 
+/**
+ * Manages basic behaviors and data related to stores
+ */
 class Store
 {
 
@@ -79,7 +82,8 @@ class Store
     public function getList(array $data = array())
     {
         $cache_key = 'stores';
-        if ($data) {
+
+        if (!empty($data)) {
             $cache_key .= md5(serialize($data));
         }
 
@@ -191,7 +195,7 @@ class Store
         $domain = $this->request->host();
         $basepath = trim($this->request->base(true), '/');
 
-        if ($basepath) {
+        if ($basepath !== '') {
             $domain .= "/$basepath";
         }
 
@@ -237,7 +241,7 @@ class Store
 
         $store = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($store) {
+        if (!empty($store)) {
             $store['data'] = unserialize($store['data']);
             $default_settings = $this->defaultConfig();
             $store['data'] = $store['data'] + $default_settings;
@@ -379,9 +383,9 @@ class Store
 
         if ($values) {
             $result = $this->db->update('store', $values, array('store_id' => (int) $store_id));
-            $this->hook->fire('update.store.after', $store_id, $data, $result);
         }
 
+        $this->hook->fire('update.store.after', $store_id, $data, $result);
         return (bool) $result;
     }
 
@@ -505,11 +509,12 @@ class Store
                 array_shift($emails);
                 return $emails;
         }
-        
+
         if (is_numeric($type)) {
             return isset($emails[$type]) ? $emails[$type] : '';
         }
 
         return $emails;
     }
+
 }

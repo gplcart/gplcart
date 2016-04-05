@@ -14,21 +14,20 @@ use PDO;
 use core\Hook;
 use core\Config;
 use core\Logger;
-use core\models\Cart;
-use core\models\User;
-use core\models\Price;
 use core\classes\Cache;
-use core\models\Payment;
-use core\models\Product;
-use core\classes\Request;
-use core\models\Language;
-use core\models\Shipping;
-use core\models\PriceRule;
-use core\models\Notification;
-use core\exceptions\SystemLogical;
+use core\classes\Request as ClassesRequest;
+use core\models\Cart as ModelsCart;
+use core\models\User as ModelsUser;
+use core\models\Price as ModelsPrice;
+use core\models\Payment as ModelsPayment;
+use core\models\Product as ModelsProduct;
+use core\models\Language as ModelsLanguage;
+use core\models\Shipping as ModelsShipping;
+use core\models\PriceRule as ModelsPriceRule;
+use core\models\Notification as ModelsNotification;
 
 /**
- * Manages basic behaviors and data of store orders
+ * Manages basic behaviors and data related to store orders
  */
 class Order
 {
@@ -119,26 +118,28 @@ class Order
 
     /**
      * Constructor
-     * @param User $user
-     * @param Price $price
-     * @param PriceRule $pricerule
-     * @param Product $product
-     * @param Cart $cart
-     * @param Language $language
-     * @param Notification $notification
-     * @param Shipping $shipping
-     * @param Payment $payment
+     * @param ModelsUser $user
+     * @param ModelsPrice $price
+     * @param ModelsPriceRule $pricerule
+     * @param ModelsProduct $product
+     * @param ModelsCart $cart
+     * @param ModelsLanguage $language
+     * @param ModelsNotification $notification
+     * @param ModelsShipping $shipping
+     * @param ModelsPayment $payment
+     * @param ClassesRequest $request
      * @param Hook $hook
      * @param Logger $logger
-     * @param Request $request
      * @param Config $config
      */
-    public function __construct(User $user, Price $price, PriceRule $pricerule,
-                                Product $product, Cart $cart,
-                                Language $language, Notification $notification,
-                                Shipping $shipping, Payment $payment,
-                                Hook $hook, Logger $logger, Request $request,
-                                Config $config)
+    public function __construct(ModelsUser $user, ModelsPrice $price,
+                                ModelsPriceRule $pricerule,
+                                ModelsProduct $product, ModelsCart $cart,
+                                ModelsLanguage $language,
+                                ModelsNotification $notification,
+                                ModelsShipping $shipping,
+                                ModelsPayment $payment, ClassesRequest $request,
+                                Hook $hook, Logger $logger, Config $config)
     {
         $this->hook = $hook;
         $this->user = $user;
@@ -541,7 +542,7 @@ class Order
         if (empty($data)) {
             return false; // Blocked by a module
         }
-        
+
         $this->setComponents($data, $cart);
         $order_id = $this->add($data);
 
@@ -736,7 +737,6 @@ class Order
      * @param array $cart
      * @param array $order
      * @return array
-     * @throws SystemLogical
      */
     public function getService($id, $type, array $cart, array $order)
     {
@@ -788,7 +788,7 @@ class Order
             'agent' => $this->request->agent()
         );
     }
-    
+
     /**
      * Prepares order components
      * @param array $order
@@ -884,7 +884,7 @@ class Order
         $rule['component_price_formatted'] = $this->price->format($price, $order['currency']);
         return $rule;
     }
-    
+
     /**
      * Returns a prepared order
      * @param array $order
@@ -897,4 +897,5 @@ class Order
         $order['status_formatted'] = $this->getStatusName($order['status']);
         return $order;
     }
+
 }

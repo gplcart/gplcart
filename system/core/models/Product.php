@@ -13,17 +13,20 @@ namespace core\models;
 use PDO;
 use core\Hook;
 use core\Config;
-use core\models\Sku;
-use core\models\Price;
-use core\models\Image;
-use core\models\Alias;
-use core\models\Search;
-use core\models\Language;
-use core\models\PriceRule;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Request;
+use core\classes\Request as ClassesRequest;
+use core\models\Sku as ModelsSku;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Alias as ModelsAlias;
+use core\models\Search as ModelsSearch;
+use core\models\Language as ModelsLanguage;
+use core\models\PriceRule as ModelsPriceRule;
 
+/**
+ * Manages basic behaviors and data related to products
+ */
 class Product
 {
 
@@ -95,18 +98,22 @@ class Product
 
     /**
      * Constructor
-     * @param Price $price
-     * @param PriceRule $pricerule
-     * @param Image $image
-     * @param Alias $alias
-     * @param Language $language
-     * @param Sku $sku
-     * @param Search $search
+     * @param ModelsPrice $price
+     * @param ModelsPriceRule $pricerule
+     * @param ModelsImage $image
+     * @param ModelsAlias $alias
+     * @param ModelsLanguage $language
+     * @param ModelsSku $sku
+     * @param ModelsSearch $search
+     * @param ClassesRequest $request
      * @param Hook $hook
-     * @param Request $request
      * @param Config $config
      */
-    public function __construct(Price $price, PriceRule $pricerule, Image $image, Alias $alias, Language $language, Sku $sku, Search $search, Hook $hook, Request $request, Config $config)
+    public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
+                                ModelsImage $image, ModelsAlias $alias,
+                                ModelsLanguage $language, ModelsSku $sku,
+                                ModelsSearch $search, ClassesRequest $request,
+                                Hook $hook, Config $config)
     {
         $this->sku = $sku;
         $this->hook = $hook;
@@ -427,7 +434,8 @@ class Product
      * @param string $field_type
      * @return boolean|integer
      */
-    public function addField($product_id, $field_id, $field_value_id, $field_type)
+    public function addField($product_id, $field_id, $field_value_id,
+                             $field_type)
     {
         $arguments = func_get_args();
 
@@ -789,11 +797,11 @@ class Product
     public function getCompared()
     {
         $product_ids = &Cache::memory(__FUNCTION__);
-        
+
         if (isset($product_ids)) {
             return $product_ids;
         }
-        
+
         $product_ids = array();
         $saved = $this->request->cookie('comparison');
 
@@ -803,7 +811,7 @@ class Product
 
         return $product_ids;
     }
-    
+
     /**
      * Whether a product is added to comparison
      * @param integer $product_id
@@ -825,7 +833,7 @@ class Product
         $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
         return Tool::setCookie('comparison', implode(',', (array) $product_ids), $lifespan);
     }
-    
+
     /**
      * Removes a products from comparison
      * @param integer $product_id
@@ -868,11 +876,11 @@ class Product
     }
 
     /**
-     *
-     * @param type $product
-     * @param type $round
-     * @param type $convert_to
-     * @return type
+     * Calculates and returns product physical volume
+     * @param array $product
+     * @param integer $round
+     * @param string $convert_to
+     * @return mixed
      */
     public function getVolume(array $product, $round = 2, $convert_to = '')
     {
@@ -1054,11 +1062,11 @@ class Product
     }
 
     /**
-     *
-     * @param type $product_id
-     * @param type $limit
-     * @param type $lifespan
-     * @return type
+     * Saves a product to the cookie
+     * @param integer $product_id
+     * @param integer $limit
+     * @param integer $lifespan
+     * @return array
      */
     public function setViewed($product_id, $limit, $lifespan)
     {
@@ -1072,7 +1080,7 @@ class Product
         Tool::setCookie('viewed_products', implode('|', array_unique($product_ids)), $lifespan);
         return $product_ids;
     }
-    
+
     /**
      * Returns an array of recently viewed product IDs
      * @param integer|null $limit
@@ -1082,11 +1090,11 @@ class Product
     {
         $cookie = Tool::getCookie('viewed_products', '');
         $product_ids = array_filter(explode('|', $cookie), 'is_numeric');
-        
+
         if (isset($limit)) {
             $product_ids = array_slice($product_ids, -$limit);
         }
-        
+
         return $product_ids;
     }
 
@@ -1280,4 +1288,5 @@ class Product
         $this->db->delete('option_combination', $where);
         return true;
     }
+
 }

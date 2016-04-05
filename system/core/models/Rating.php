@@ -14,6 +14,9 @@ use PDO;
 use core\Hook;
 use core\Config;
 
+/**
+ * Manages basic behaviors and data related to the rating system
+ */
 class Rating
 {
 
@@ -169,4 +172,5 @@ class Rating
 
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
+
 }

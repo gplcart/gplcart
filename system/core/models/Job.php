@@ -12,13 +12,16 @@ namespace core\models;
 
 use core\Hook;
 use core\Handler;
-use core\classes\Session;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Url as U;
-use core\models\Language;
-use core\models\Queue;
+use core\classes\Url as ClassesUrl;
+use core\classes\Session as ClassesSession;
+use core\models\Queue as ModelsQueue;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to batch jobs
+ */
 class Job
 {
 
@@ -57,13 +60,15 @@ class Job
 
     /**
      * Constructor
-     * @param Language $language
-     * @param Queue $queue
-     * @param Session $session
+     * @param ModelsLanguage $language
+     * @param ModelsQueue $queue
+     * @param ClassesSession $session
+     * @param ClassesUrl $url
      * @param Hook $hook
-     * @param U $url
      */
-    public function __construct(Language $language, Queue $queue, Session $session, Hook $hook, U $url)
+    public function __construct(ModelsLanguage $language, ModelsQueue $queue,
+                                ClassesSession $session, ClassesUrl $url,
+                                Hook $hook)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -477,4 +482,5 @@ class Job
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
     }
+
 }

@@ -10,15 +10,16 @@
 
 namespace core\models;
 
-use PDO;
-use Exception;
 use core\Hook;
 use core\Config;
 use core\classes\Tool;
-use core\classes\Url;
-use core\models\File;
-use core\classes\Image as Imagestyle;
+use core\classes\Url as ClassesUrl;
+use core\classes\Image as ClassesImage;
+use core\models\File as ModelsFile;
 
+/**
+ * Manages basic behaviors and data related to images
+ */
 class Image
 {
 
@@ -60,20 +61,21 @@ class Image
 
     /**
      * Constructor
-     * @param File $file
-     * @param Imagestyle $imagestyle
+     * @param ModelsFile $file
+     * @param ClassesImage $imagestyle
+     * @param ClassesUrl $url
      * @param Hook $hook
-     * @param Url $url
      * @param Config $config
      */
-    public function __construct(File $file, Imagestyle $imagestyle, Hook $hook, Url $url, Config $config)
+    public function __construct(ModelsFile $file, ClassesImage $imagestyle,
+                                ClassesUrl $url, Hook $hook, Config $config)
     {
         $this->url = $url;
         $this->hook = $hook;
         $this->file = $file;
-        $this->imagestyle = $imagestyle;
         $this->config = $config;
         $this->db = $this->config->db();
+        $this->imagestyle = $imagestyle;
     }
 
     /**
@@ -124,7 +126,8 @@ class Image
      * @param boolean $placeholder
      * @return null|string
      */
-    public function getThumb($id, $imagestyle, $id_key, array $id_value, $placeholder = true)
+    public function getThumb($id, $imagestyle, $id_key, array $id_value,
+                             $placeholder = true)
     {
         if (empty($id_value)) {
             return $placeholder ? $this->placeholder($imagestyle) : null; // prevent loading too many images
@@ -141,7 +144,7 @@ class Image
         if ($placeholder) {
             return $this->placeholder($imagestyle);
         }
-        
+
         return null;
     }
 
@@ -202,8 +205,8 @@ class Image
     {
         try {
             $this->applyActions($file, $actions);
-        } catch (Exception $e) {
-            echo $e->getMessage();
+        } catch (\core\exceptions\Usage $exception) {
+            echo $exception->getMessage();
         }
     }
 
@@ -536,4 +539,5 @@ class Image
 
         return $styles;
     }
+
 }

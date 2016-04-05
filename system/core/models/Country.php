@@ -15,8 +15,11 @@ use core\Hook;
 use core\Config;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\models\Language;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to countries
+ */
 class Country
 {
 
@@ -46,11 +49,12 @@ class Country
 
     /**
      * Constructor
-     * @param Language $language
+     * @param ModelsLanguage $language
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Language $language, Hook $hook, Config $config)
+    public function __construct(ModelsLanguage $language, Hook $hook,
+                                Config $config)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -348,7 +352,7 @@ class Country
     {
         $names = array();
         $countries = $this->getList(array('status' => $enabled));
-        
+
         foreach ($countries as $code => $country) {
             $names[$code] = $country['native_name'];
         }
@@ -720,4 +724,5 @@ class Country
 
         return $countries;
     }
+
 }

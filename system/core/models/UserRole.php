@@ -15,8 +15,11 @@ use core\Hook;
 use core\Config;
 use core\classes\Cache;
 use core\classes\Session;
-use core\models\Language;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to user roles
+ */
 class UserRole
 {
 
@@ -46,12 +49,13 @@ class UserRole
 
     /**
      * Constructor
-     * @param Language $language
-     * @param Hook $hook
+     * @param ModelsLanguage $language
      * @param Session $session
+     * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Language $language, Hook $hook, Session $session, Config $config)
+    public function __construct(ModelsLanguage $language, Session $session,
+                                Hook $hook, Config $config)
     {
         $this->hook = $hook;
         $this->session = $session;
@@ -386,4 +390,5 @@ class UserRole
 
         return $permissions;
     }
+
 }

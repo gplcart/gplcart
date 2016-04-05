@@ -11,11 +11,14 @@
 namespace core\models;
 
 use PDO;
-use core\models\User;
 use core\Hook;
-use core\classes\Cache;
 use core\Config;
+use core\classes\Cache;
+use core\models\User as ModelsUser;
 
+/**
+ * Manages basic behaviors and data related to bookmarks
+ */
 class Bookmark
 {
 
@@ -45,11 +48,11 @@ class Bookmark
 
     /**
      * Constructor
-     * @param User $user
+     * @param ModelsUser $user
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(User $user, Hook $hook, Config $config)
+    public function __construct(ModelsUser $user, Hook $hook, Config $config)
     {
         $this->user = $user;
         $this->hook = $hook;
@@ -290,7 +293,7 @@ class Bookmark
         $this->hook->fire('get.bookmark.after', $condition, $result);
         return $result;
     }
-    
+
     /**
      * Whether an ID is bookmarked
      * @param integer $id_value
@@ -343,4 +346,5 @@ class Bookmark
         $sth->execute($bookmark_ids);
         return $sth->rowCount();
     }
+
 }

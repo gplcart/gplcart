@@ -13,11 +13,14 @@ namespace core\models;
 use PDO;
 use core\Hook;
 use core\Config;
-use core\models\Alias;
-use core\models\Image;
-use core\models\Language;
 use core\classes\Cache;
+use core\models\Alias as ModelsAlias;
+use core\models\Image as ModelsImage;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to pages
+ */
 class Page
 {
 
@@ -59,20 +62,22 @@ class Page
 
     /**
      * Constructor
-     * @param Image $image
-     * @param Alias $alias
-     * @param Language $language
+     * @param ModelsImage $image
+     * @param ModelsAlias $alias
+     * @param ModelsLanguage $language
      * @param Hook $hook
      * @param Config $config
      */
-    public function __construct(Image $image, Alias $alias, Language $language, Hook $hook, Config $config)
+    public function __construct(ModelsImage $image, ModelsAlias $alias,
+                                ModelsLanguage $language, Hook $hook,
+                                Config $config)
     {
         $this->hook = $hook;
         $this->alias = $alias;
         $this->image = $image;
         $this->config = $config;
-        $this->db = $this->config->db();
         $this->language = $language;
+        $this->db = $this->config->db();
     }
 
     /**
@@ -228,7 +233,7 @@ class Page
         if (isset($data['status'])) {
             $values['status'] = (int) $data['status'];
         }
-        
+
         if (isset($data['front'])) {
             $values['front'] = (int) $data['front'];
         }
@@ -359,7 +364,7 @@ class Page
             $sql .= ' AND p.status = ?';
             $where[] = (int) $data['status'];
         }
-        
+
         if (isset($data['front'])) {
             $sql .= ' AND p.front = ?';
             $where[] = (int) $data['front'];
@@ -477,4 +482,5 @@ class Page
 
         return (bool) $this->db->delete('page_translation', $where);
     }
+
 }

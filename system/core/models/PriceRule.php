@@ -16,11 +16,13 @@ use core\Config;
 use core\Handler;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Session;
-use core\models\Currency;
-use core\models\Language;
-use core\exceptions\UsagePriceRule;
+use core\classes\Session as ClassesSession;
+use core\models\Currency as ModelsCurrency;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to price rules
+ */
 class PriceRule
 {
 
@@ -62,13 +64,16 @@ class PriceRule
 
     /**
      * Constructor
-     * @param Currency $currency
-     * @param Language $language
+     * @param ModelsCurrency $currency
+     * @param ModelsLanguage $language
+     * @param ClassesSession $session
      * @param Hook $hook
-     * @param Session $session
      * @param Config $config
      */
-    public function __construct(Currency $currency, Language $language, Hook $hook, Session $session, Config $config)
+    public function __construct(ModelsCurrency $currency,
+                                ModelsLanguage $language,
+                                ClassesSession $session, Hook $hook,
+                                Config $config)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -545,19 +550,20 @@ class PriceRule
 
     /**
      * Applies all suited rules and calculates order totals
-     * @param type $total
+     * @param integer $total
      * @param array $cart
      * @param array $data
      * @param array $components
      */
-    public function calculate(&$total, array $cart, array $data, array &$components)
+    public function calculate(&$total, array $cart, array $data,
+                              array &$components)
     {
         $rules = $this->getSuited('order', array('cart' => $cart, 'data' => $data));
 
         foreach ($rules as $rule) {
             try {
                 $this->calculateComponent($total, $cart, $data, $components, $rule);
-            } catch (UsagePriceRule $exception) {
+            } catch (\core\exceptions\UsagePriceRule $exception) {
                 throw $exception;
             }
         }
@@ -622,11 +628,11 @@ class PriceRule
     public function compareNumeric($value1, $value2, $operator)
     {
         if (!is_numeric($value1)) {
-            throw new UsagePriceRule('Value 1 is not numeric');
+            throw new \core\exceptions\UsagePriceRule('Value 1 is not numeric');
         }
 
         if (!is_numeric($value2) && !is_array($value2)) {
-            throw new UsagePriceRule('Value 2 neither numeric nor array');
+            throw new \core\exceptions\UsagePriceRule('Value 2 neither numeric nor array');
         }
 
         switch ($operator) {
@@ -667,11 +673,11 @@ class PriceRule
     public function compareString($value1, $value2, $operator)
     {
         if (!is_string($value1)) {
-            throw new UsagePriceRule('Value 1 is not string');
+            throw new \core\exceptions\UsagePriceRule('Value 1 is not string');
         }
 
         if (!is_string($value2) && !is_array($value2)) {
-            throw new UsagePriceRule('Value 2 neither string nor array');
+            throw new \core\exceptions\UsagePriceRule('Value 2 neither string nor array');
         }
 
         switch ($operator) {
@@ -731,7 +737,8 @@ class PriceRule
      * @param array $rule
      * @return integer
      */
-    protected function calculateComponent(&$amount, array $cart, array $data, array &$components, array $rule)
+    protected function calculateComponent(&$amount, array $cart, array $data,
+                                          array &$components, array $rule)
     {
         $rule_id = $rule['price_rule_id'];
 
@@ -760,4 +767,5 @@ class PriceRule
         $amount += $value;
         return $amount;
     }
+
 }

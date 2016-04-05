@@ -13,9 +13,12 @@ namespace core\models;
 use core\Hook;
 use core\Config;
 use core\classes\Cache;
-use core\models\Import;
-use core\models\Language;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Manages basic behaviors and data related to export functionality
+ */
 class Export
 {
 
@@ -45,17 +48,18 @@ class Export
 
     /**
      * Constructor
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
      * @param Hook $hook
-     * @param Import $import
-     * @param Language $language
      * @param Config $config
      */
-    public function __construct(Hook $hook, Import $import, Language $language, Config $config)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+                                Hook $hook, Config $config)
     {
         $this->hook = $hook;
         $this->import = $import;
-        $this->language = $language;
         $this->config = $config;
+        $this->language = $language;
     }
 
     /**
@@ -216,4 +220,5 @@ class Export
     {
         return (int) $this->config->get('export_limit', 50);
     }
+
 }
