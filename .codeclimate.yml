@@ -1,0 +1,6 @@
+exclude_paths:
+  - system/config/
+  - system/help/
+  - system/locale/
+  - system/libraries/
+  - "*/templates/*"
