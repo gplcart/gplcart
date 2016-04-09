@@ -81,7 +81,7 @@ class Route
         $this->url = $url;
         $this->hook = $hook;
         $this->config = $config;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->request = $request;
         $this->path = $this->url->path();
 

@@ -74,7 +74,7 @@ class Image
         $this->hook = $hook;
         $this->file = $file;
         $this->config = $config;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
         $this->imagestyle = $imagestyle;
     }
 

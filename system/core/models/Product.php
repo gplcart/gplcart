@@ -125,7 +125,7 @@ class Product
         $this->request = $request;
         $this->language = $language;
         $this->pricerule = $pricerule;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

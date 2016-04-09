@@ -57,7 +57,7 @@ class CategoryGroup
         $this->hook = $hook;
         $this->config = $config;
         $this->language = $language;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

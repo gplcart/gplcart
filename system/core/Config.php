@@ -135,9 +135,18 @@ class Config
      * Returns PDO instance
      * @return object
      */
-    public function db()
+    public function getDb()
     {
         return $this->db;
+    }
+    
+    /**
+     * Sets database instance
+     * @param object $db
+     */
+    public function setDb($db)
+    {
+        $this->db = $db;
     }
 
     /**

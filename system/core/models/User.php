@@ -105,7 +105,7 @@ class User
         $this->address = $address;
         $this->session = $session;
         $this->language = $language;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
         $this->notification = $notification;
     }
 
@@ -793,9 +793,9 @@ class User
     protected function getLogOutRedirect(array $user)
     {
         if ($this->isSuperadmin($user['user_id'])) {
-            return $this->config->get('user_logout_redirect_superadmin', '/');
+            return $this->config->get('user_logout_redirect_superadmin', 'login');
         }
 
-        return $this->config->get("user_logout_redirect_{$user['role_id']}", '/');
+        return $this->config->get("user_logout_redirect_{$user['role_id']}", 'login');
     }
 }

@@ -59,7 +59,7 @@ class UserRole
     {
         $this->hook = $hook;
         $this->session = $session;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->language = $language;
     }
 

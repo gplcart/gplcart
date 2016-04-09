@@ -55,7 +55,7 @@ class Product
         $this->product = $product;
         $this->price = $price;
         $this->image = $image;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
     }
 
     /**

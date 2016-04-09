@@ -40,7 +40,7 @@ class Rating
     public function __construct(Hook $hook, Config $config)
     {
         $this->hook = $hook;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
     }
 
     /**

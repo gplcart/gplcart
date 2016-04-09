@@ -2,6 +2,7 @@
   <form method="post" id="register" class="register col-md-6">
     <input style="position:absolute;top:-9999px;">
     <input type="password" style="position:absolute;top:-9999px;">
+    <input name="url" style="position:absolute;top:-999px;" value="">
     <input type="hidden" name="token" value="<?php echo $token; ?>">
     <?php if ($this->access('user_add')) { ?> 
     <div class="form-group">
@@ -88,7 +89,6 @@
     <div class="form-group">
       <a href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Login'); ?></a>
     </div>
-    <?php } ?> 
-    <input name="url" style="position:absolute;top:-999px;" value="">
+    <?php } ?>
   </form>
 </div>

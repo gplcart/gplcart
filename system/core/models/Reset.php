@@ -38,7 +38,7 @@ class Reset
     public function __construct(Config $config)
     {
         $this->config = $config;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

@@ -58,7 +58,7 @@ class Alias
         $this->language = $language;
         $this->route = $route;
         $this->config = $config;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

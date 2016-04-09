@@ -153,7 +153,7 @@ class Order
         $this->language = $language;
         $this->shipping = $shipping;
         $this->pricerule = $pricerule;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
         $this->notification = $notification;
     }
 

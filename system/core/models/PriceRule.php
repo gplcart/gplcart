@@ -80,7 +80,7 @@ class PriceRule
         $this->session = $session;
         $this->currency = $currency;
         $this->language = $language;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

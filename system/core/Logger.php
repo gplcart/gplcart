@@ -34,7 +34,7 @@ class Logger
      */
     public function __construct(Config $config)
     {
-        $this->db = $config->db();
+        $this->db = $config->getDb();
     }
 
     /**

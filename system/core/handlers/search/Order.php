@@ -59,7 +59,7 @@ class Order
         $this->search = $search;
         $this->price = $price;
         $this->config = $config;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
     }
 
     /**

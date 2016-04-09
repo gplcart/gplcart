@@ -58,7 +58,7 @@ class FieldValue
     {
         $this->hook = $hook;
         $this->image = $image;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->language = $language;
     }
 

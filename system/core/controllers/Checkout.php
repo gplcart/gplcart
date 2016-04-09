@@ -372,7 +372,7 @@ class Checkout extends Controller
     }
 
     /**
-     * Moview a cart item to the wishlist
+     * Moves a cart item to the wishlist
      */
     protected function moveWishlist()
     {

@@ -58,7 +58,7 @@ class Address
         $this->hook = $hook;
         $this->config = $config;
         $this->country = $country;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**
@@ -68,6 +68,7 @@ class Address
      */
     public function get($address_id)
     {
+        
         $this->hook->fire('get.address.before', $address_id);
 
         $sql = '

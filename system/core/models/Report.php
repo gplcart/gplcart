@@ -58,7 +58,7 @@ class Report
         $this->curl = $curl;
         $this->config = $config;
         $this->module = $module;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

@@ -57,7 +57,7 @@ class Store
         $this->hook = $hook;
         $this->config = $config;
         $this->request = $request;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

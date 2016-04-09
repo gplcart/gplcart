@@ -47,7 +47,7 @@ class Zone
     {
         $this->hook = $hook;
         $this->hook = $hook;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

@@ -84,7 +84,7 @@ class Category
         $this->image = $image;
         $this->alias = $alias;
         $this->config = $config;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->language = $language;
         $this->category_group = $category_group;
     }

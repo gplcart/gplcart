@@ -110,7 +110,7 @@ class Cron extends Controller
      */
     protected function processHistory()
     {
-        $sth = $this->config->db()->prepare('DELETE FROM history WHERE time < :time');
+        $sth = $this->config->getDb()->prepare('DELETE FROM history WHERE time < :time');
         $sth->execute(array(':time' => (GC_TIME - (int) $this->config->get('history_lifespan', 2628000))));
     }
 

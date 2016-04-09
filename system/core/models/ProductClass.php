@@ -67,7 +67,7 @@ class ProductClass
     {
         $this->hook = $hook;
         $this->field = $field;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->language = $language;
         $this->field_value = $field_value;
     }

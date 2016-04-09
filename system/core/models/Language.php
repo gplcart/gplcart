@@ -126,7 +126,7 @@ class Language
         $this->route = $route;
         $this->config = $config;
         $this->translit = $translit;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
         $this->langcode = $this->route->getLangcode();
 
         if (!empty($this->langcode)) {

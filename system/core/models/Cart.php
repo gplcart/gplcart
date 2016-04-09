@@ -124,7 +124,7 @@ class Cart
         $this->price = $price;
         $this->config = $config;
         $this->logger = $logger;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->product = $product;
         $this->request = $request;
         $this->currency = $currency;

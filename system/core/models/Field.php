@@ -50,7 +50,7 @@ class Field
                                 Config $config)
     {
         $this->hook = $hook;
-        $this->db = $config->db();
+        $this->db = $config->getDb();
         $this->language = $language;
     }
 

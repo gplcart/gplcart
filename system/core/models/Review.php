@@ -47,7 +47,7 @@ class Review
     {
         $this->hook = $hook;
         $this->config = $config;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**

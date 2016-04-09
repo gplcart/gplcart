@@ -124,7 +124,7 @@ class Validate
         $this->shipping = $shipping;
         $this->currency = $currency;
         $this->category = $category;
-        $this->db = $this->config->db();
+        $this->db = $this->config->getDb();
     }
 
     /**
