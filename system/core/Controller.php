@@ -563,8 +563,10 @@ class Controller
         if (empty($this->theme)) {
             $this->response->error404();
         }
+        
+        $theme_class = "modules\\{$this->theme}\\" . ucfirst($this->theme); // Uppercase class name to prevent "class not found" error
 
-        $instance = Container::instance("modules\\{$this->theme}\\{$this->theme}");
+        $instance = Container::instance($theme_class);
 
         if (empty($instance)) {
             $this->response->error404();
