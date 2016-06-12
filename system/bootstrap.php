@@ -79,7 +79,6 @@ mb_language('uni');
 mb_internal_encoding('UTF-8');
 
 spl_autoload_register(function ($namespace) {
-
     $path = str_replace('\\', '/', $namespace);
     $file = GC_SYSTEM_DIR . "/$path.php";
 
