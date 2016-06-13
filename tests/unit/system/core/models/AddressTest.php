@@ -26,10 +26,6 @@ class AddressTest extends \PHPUnit_Framework_TestCase
         $config->setDb(222);
         
         $this->object = new Address($country, $hook, $config);
-        
-        
-        
-        
     }
 
     /**
@@ -38,7 +34,6 @@ class AddressTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        
     }
 
     /**
@@ -49,5 +44,4 @@ class AddressTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(true);
     }
-
 }

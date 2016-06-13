@@ -8,7 +8,6 @@
  * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 spl_autoload_register(function ($namespace) {
-
     $path = str_replace('\\', '/', $namespace);
     $file = dirname(__FILE__) . "/../../system/$path.php";
 
