@@ -3,72 +3,73 @@
 namespace modules\frontend;
 
 use core\Config;
-use core\models\Cart;
-use core\models\Product;
-use core\models\Bookmark;
-use core\models\Category;
-use core\models\Alias;
-use core\classes\Url;
-use core\classes\Document;
+use core\models\Cart as modelsCart;
+use core\models\Product as modelsProduct;
+use core\models\Bookmark as modelsBookmark;
+use core\models\Category as modelsCategory;
+use core\models\Alias as modelsAlias;
+use core\classes\Url as classesUrl;
+use core\classes\Document as classesDocument;
 
-class Frontend
-{
+class Frontend {
 
     /**
-     *
-     * @var type
+     * Url class instance
+     * @var \core\classes\Url $url
      */
     protected $url;
 
     /**
-     *
-     * @var type
+     * Cart model instance
+     * @var \core\models\Cart $cart
      */
     protected $cart;
 
     /**
-     *
-     * @var type
+     * Product model instance
+     * @var \core\models\Product $product
      */
     protected $product;
 
     /**
-     *
-     * @var type
+     * Bookmark model instance
+     * @var \core\models\Bookmark $bookmark
      */
     protected $bookmark;
 
     /**
-     *
-     * @var type
+     * Category model instance
+     * @var \core\models\Category $category
      */
     protected $category;
 
     /**
-     *
-     * @var type
+     * Alias model instance instance
+     * @var \core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Config class instance
-     * @var type
+     * @var \core\Config $config
      */
     protected $config;
 
     /**
      * Constructor
-     * @param Url $url
-     * @param Document $document
-     * @param Cart $cart
-     * @param Product $product
-     * @param Bookmark $bookmark
-     * @param Category $category
-     * @param Alias $alias
+     * @param classesUrl $url
+     * @param classesDocument $document
+     * @param modelsCart $cart
+     * @param modelsProduct $product
+     * @param modelsBookmark $bookmark
+     * @param modelsCategory $category
+     * @param modelsAlias $alias
      * @param Config $config
      */
-    public function __construct(Url $url, Document $document, Cart $cart, Product $product, Bookmark $bookmark, Category $category, Alias $alias, Config $config)
-    {
+    public function __construct(classesUrl $url, classesDocument $document,
+            modelsCart $cart, modelsProduct $product, modelsBookmark $bookmark,
+            modelsCategory $category, modelsAlias $alias, Config $config) {
+
         $this->url = $url;
         $this->cart = $cart;
         $this->product = $product;
@@ -79,9 +80,13 @@ class Frontend
         $this->config = $config;
 
         if ($this->url->isFrontend()) {
-            $this->addJs();
-            $this->addCss();
+
             $this->addMeta();
+
+            if (!$this->url->isInstall()) {
+                $this->addJs();
+                $this->addCss();
+            }
         }
     }
 
@@ -89,8 +94,7 @@ class Frontend
      * Module info
      * @return array
      */
-    public function info()
-    {
+    public function info() {
         return array(
             'name' => 'Frontend theme',
             'description' => 'Frontend theme',
@@ -106,9 +110,8 @@ class Frontend
      * Injects a data to templates
      * @param array $data
      */
-    public function hookData(&$data)
-    {
-        if ($this->url->isFrontend()) {
+    public function hookData(&$data) {
+        if ($this->url->isFrontend() && !$this->url->isInstall()) {
             $uid = $this->cart->uid();
             $data['cart'] = $this->cart->getByUser($uid);
             $data['wishlist'] = $this->bookmark->getList(array('user_id' => $uid, 'type' => 'product'));
@@ -121,8 +124,7 @@ class Frontend
      * Adds a new route for settings page
      * @param array $routes
      */
-    public function hookRoute(&$routes)
-    {
+    public function hookRoute(&$routes) {
         $routes['admin/module/frontend/settings'] = array(
             'access' => 'module_edit',
             'handlers' => array(
@@ -131,8 +133,7 @@ class Frontend
         );
     }
 
-    protected function getCatalogTree($store)
-    {
+    protected function getCatalogTree($store) {
         $tree = $this->category->getTree(array('store_id' => $store['store_id'], 'type' => 'catalog', 'status' => 1));
 
         $category_aliases = $this->alias->getMultiple('category_id', array_keys($tree));
@@ -157,8 +158,7 @@ class Frontend
     /**
      * Adds theme's javascripts
      */
-    protected function addJs()
-    {
+    protected function addJs() {
         $this->document->js('system/modules/frontend/js/script.js', 'top');
         $this->document->js('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $this->document->js('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
@@ -169,8 +169,7 @@ class Frontend
     /**
      * Adds theme's styles
      */
-    protected function addCss()
-    {
+    protected function addCss() {
         $this->document->css('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
         $this->document->css('files/assets/font-awesome/css/font-awesome.min.css');
         $this->document->css('files/assets/jquery/ui/jquery-ui.min.css');
@@ -181,8 +180,7 @@ class Frontend
     /**
      * Adds theme's meta tags
      */
-    protected function addMeta()
-    {
+    protected function addMeta() {
         $this->document->meta(array('charset' => 'utf-8'));
         $this->document->meta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $this->document->meta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
@@ -193,8 +191,7 @@ class Frontend
      * Returns an array of default module settings
      * @return array
      */
-    protected function getDefaultSettings()
-    {
+    protected function getDefaultSettings() {
         return array(
             'catalog_limit' => 20,
             'catalog_front_limit' => 12,
@@ -213,4 +210,5 @@ class Frontend
             'image_style_page_banner' => 7,
         );
     }
+
 }

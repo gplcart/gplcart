@@ -2,4 +2,5 @@
 <html lang="<?php echo $lang; ?>">
 <?php echo $region_head; ?>
 <?php echo $region_body; ?>
+<?php echo $region_bottom; ?>
 </html>

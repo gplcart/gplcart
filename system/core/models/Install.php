@@ -20,8 +20,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to system installation
  */
-class Install
-{
+class Install {
 
     /**
      * Store model instance
@@ -54,8 +53,7 @@ class Install
      * @param ClassesRequest $request
      */
     public function __construct(ModelsStore $store, ModelsLanguage $language,
-                                ClassesRequest $request)
-    {
+            ClassesRequest $request) {
         $this->store = $store;
         $this->request = $request;
         $this->language = $language;
@@ -65,8 +63,7 @@ class Install
      * Returns an array of requirements
      * @return array
      */
-    public function getRequirements()
-    {
+    public function getRequirements() {
         $requirements = array();
 
         $requirements['extensions']['gd'] = array(
@@ -125,8 +122,7 @@ class Install
      * @param array $requirements
      * @return array
      */
-    public function getRequirementsErrors(array $requirements)
-    {
+    public function getRequirementsErrors(array $requirements) {
         $errors = array();
         foreach ($requirements as $items) {
             foreach ($items as $name => $info) {
@@ -144,8 +140,7 @@ class Install
      * @param array $settings
      * @return boolean
      */
-    public function connect(array $settings)
-    {
+    public function connect(array $settings) {
         extract($settings);
 
         try {
@@ -166,8 +161,7 @@ class Install
      * Creates tables in the database
      * @return boolean
      */
-    public function tables()
-    {
+    public function tables() {
         $imported = 0;
         $tables = $this->dump();
 
@@ -201,15 +195,14 @@ class Install
      * @param array $settings
      * @return boolean
      */
-    public function config(array $settings)
-    {
+    public function config(array $settings) {
         $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
 
         if (!$config) {
             return false;
         }
 
-        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . PHP_EOL;
+        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . ';' . PHP_EOL . PHP_EOL;
         $config .= 'return $config;' . PHP_EOL;
 
         if (!file_put_contents(GC_CONFIG_COMMON, $config)) {
@@ -225,12 +218,11 @@ class Install
      * @param array $settings
      * @return boolean|string
      */
-    public function store(array $settings)
-    {
+    public function store(array $settings) {
         Container::unregister();
         $config = Container::instance('core\\Config');
 
-        $this->db = $config->db();
+        $this->db = $config->getDb();
 
         if (empty($this->db)) {
             return $this->language->text('Unable to connect to the database');
@@ -389,8 +381,7 @@ class Install
      * Returns an array of data used to create tables in the database
      * @return array
      */
-    protected function dump()
-    {
+    protected function dump() {
         $tables['address'] = array(
             'fields' => array(
                 'address_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
@@ -776,7 +767,7 @@ class Install
         $tables['product_related'] = array(
             'fields' => array(
                 'product_id' => 'int(10) NOT NULL PRIMARY KEY',
-                'related_product_id' => 'int(10) NOT NULL PRIMARY KEY',
+                'related_product_id' => 'int(10) NOT NULL',
             )
         );
 
@@ -919,4 +910,5 @@ class Install
 
         return $tables;
     }
+
 }

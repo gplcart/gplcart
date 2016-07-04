@@ -118,3 +118,4 @@
  * End of configurable settings. The settings below are appended automatically during installation.
  * Do not touch them unless you know what you do
  */
+
