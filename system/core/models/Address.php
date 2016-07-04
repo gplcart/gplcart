@@ -68,7 +68,6 @@ class Address
      */
     public function get($address_id)
     {
-        
         $this->hook->fire('get.address.before', $address_id);
 
         $sql = '
