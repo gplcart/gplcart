@@ -2,18 +2,19 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core\classes;
 
-use core\classes\Request;
+use core\classes\Request as classesRequest;
 
-class Document
-{
+/**
+ * Provides methods to work with HTML document
+ */
+class Document {
 
     /**
      * Request class instance
@@ -23,10 +24,9 @@ class Document
 
     /**
      * Constructor
-     * @param Request $request
+     * @param classesRequest $request
      */
-    public function __construct(Request $request)
-    {
+    public function __construct(classesRequest $request) {
         $this->request = $request;
     }
 
@@ -38,8 +38,7 @@ class Document
      * @param integer|null $weight
      * @return mixed
      */
-    public function js($script = '', $position = 'top', $weight = null)
-    {
+    public function js($script = '', $position = 'top', $weight = null) {
         static $scripts = array();
 
         if (empty($script)) {
@@ -78,8 +77,7 @@ class Document
      * @param integer|null $weight
      * @return array
      */
-    public function css($css = '', $weight = null)
-    {
+    public function css($css = '', $weight = null) {
         static $styles = array();
 
         if (empty($css)) {
@@ -114,8 +112,7 @@ class Document
      * @param array|null $data
      * @return array
      */
-    public function meta($data = null)
-    {
+    public function meta($data = null) {
         static $meta = array();
 
         if (!isset($data)) {
@@ -132,8 +129,7 @@ class Document
      * @param array|null $breadcrumb
      * @return array
      */
-    public function breadcrumb($breadcrumb = null)
-    {
+    public function breadcrumb($breadcrumb = null) {
         static $breadcrumbs = array();
 
         if (!isset($breadcrumb)) {
@@ -151,8 +147,7 @@ class Document
      * @param bool $both
      * @return string
      */
-    public function title($string = '', $both = true)
-    {
+    public function title($string = '', $both = true) {
         static $title = '';
 
         if ($string === '') {
@@ -174,8 +169,7 @@ class Document
      * @param string $string
      * @return string
      */
-    public function ptitle($string = '')
-    {
+    public function ptitle($string = '') {
         static $title = '';
 
         if ($string === '') {
@@ -192,8 +186,7 @@ class Document
      * @param string $string
      * @return string
      */
-    public function pdescription($string = '')
-    {
+    public function pdescription($string = '') {
         static $description = '';
 
         if ($string === '') {
@@ -209,8 +202,7 @@ class Document
      * @param string $string
      * @return string
      */
-    protected function getAssetKey($string, $type)
-    {
+    protected function getAssetKey($string, $type) {
         if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
             $file = GC_ROOT_DIR . '/' . $string;
             if (!file_exists($file)) {
@@ -221,4 +213,5 @@ class Document
 
         return 'text.' . md5($string);
     }
+
 }

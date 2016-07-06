@@ -2,16 +2,17 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core\classes;
 
-class Curl
-{
+/**
+ * Provides wrappers for CURL functions
+ */
+class Curl {
 
     /**
      * Performs a GET query
@@ -19,8 +20,7 @@ class Curl
      * @param array $options
      * @return string
      */
-    public function get($url, $options = array())
-    {
+    public function get($url, array $options = array()) {
         $options += $this->defaultOptions($url);
 
         $ch = curl_init();
@@ -36,8 +36,7 @@ class Curl
      * @param array $options
      * @return string
      */
-    public function post($url, $options = array())
-    {
+    public function post($url, array $options = array()) {
         $options += $this->defaultOptions($url);
         $options += array(CURLOPT_POSTFIELDS => '', CURLOPT_POST => true);
 
@@ -54,8 +53,7 @@ class Curl
      * @param array $options
      * @return string
      */
-    public function header($url, $options = array())
-    {
+    public function header($url, array $options = array()) {
         $options += $this->defaultOptions($url);
         $options += array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
 
@@ -72,8 +70,7 @@ class Curl
      * @param string $url
      * @return array
      */
-    protected function defaultOptions($url)
-    {
+    protected function defaultOptions($url) {
         $options = array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
@@ -83,4 +80,5 @@ class Curl
 
         return $options;
     }
+
 }

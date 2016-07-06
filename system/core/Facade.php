@@ -2,10 +2,9 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
@@ -14,12 +13,14 @@ use core\Hook;
 use core\Route;
 use core\Config;
 use core\Logger;
-use core\classes\Url;
-use core\classes\Session;
+use core\classes\Url as classesUrl;
+use core\classes\Session as classesSession;
 use core\exceptions\SystemFailure as Exception;
 
-class Facade
-{
+/**
+ * Provides methods to route incoming requests and setup the system
+ */
+class Facade {
 
     /**
      * Route class instance
@@ -62,9 +63,21 @@ class Facade
      * @var \core\exceptions\SystemFailure $exception
      */
     protected $exception;
+    
+    /**
+     * Constructor
+     * @param Route $route
+     * @param classesUrl $url
+     * @param classesSession $session
+     * @param Config $config
+     * @param Hook $hook
+     * @param Logger $logger
+     * @param Exception $exception
+     */
+    public function __construct(Route $route, classesUrl $url,
+            classesSession $session, Config $config, Hook $hook, Logger $logger,
+            Exception $exception) {
 
-    public function __construct(Route $route, Url $url, Session $session, Config $config, Hook $hook, Logger $logger, Exception $exception)
-    {
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;
@@ -106,8 +119,7 @@ class Facade
     /**
      * Process the route
      */
-    public function route()
-    {
+    public function route() {
         // Redirect to installation if needed
         if ((!$this->config->exists() || $this->session->get('install', 'processing')) && !$this->url->isInstall()) {
             $this->url->redirect('install');
@@ -115,4 +127,5 @@ class Facade
 
         $this->route->process();
     }
+
 }

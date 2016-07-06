@@ -2,16 +2,17 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
- * @author Raúl Ferràs https://github.com/raulferras
  * @author Iurii Makukh <gplcart.software@gmail.com>
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @copyright Copyright (c) 2015, Iurii Makukh
  */
 
 namespace core\classes;
 
-class Po
-{
+/**
+ * Provides methods to parse GETTEXT .po files
+ * Inspired by Raul Ferras's parser https://github.com/raulferras
+ */
+class Po {
 
     /**
      * Separators
@@ -27,9 +28,10 @@ class Po
      * @param string $file Path to .po file
      * @return mixed
      */
-    public function read($file)
-    {
-        if (!($fd = fopen($file, "rb"))) {
+    public function read($file) {
+        $fd = fopen($file, "rb");
+
+        if (empty($fd)) {
             return false;
         }
 
@@ -132,7 +134,7 @@ class Po
 
         $temp = $hash;
         $entries = array();
-        
+
         foreach ($temp as $entry) {
             foreach ($entry as &$v) {
                 $v = $this->clean($v);
@@ -155,8 +157,7 @@ class Po
      * @param array $entry
      * @return boolean
      */
-    protected function isHeader(array $entry)
-    {
+    protected function isHeader(array $entry) {
         if (empty($entry) || !isset($entry['msgstr'])) {
             return false;
         }
@@ -190,8 +191,7 @@ class Po
      * @param mixed $x Input
      * @return string Output
      */
-    protected function clean($x)
-    {
+    protected function clean($x) {
         if (is_array($x)) {
             foreach ($x as $k => $v) {
                 $x[$k] = $this->clean($v);
@@ -214,14 +214,14 @@ class Po
     /**
      *
      * @param array $entry
-     * @return type
+     * @return string
      */
-    protected function getEntryId(array $entry)
-    {
+    protected function getEntryId(array $entry) {
         if (isset($entry['msgctxt'])) {
             return implode($this->options['multiline-glue'], (array) $entry['msgctxt']) . $this->options['context-glue'] . implode($this->options['multiline-glue'], (array) $entry['msgid']);
         }
 
         return implode($this->options['multiline-glue'], (array) $entry['msgid']);
     }
+
 }

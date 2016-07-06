@@ -1,87 +1,78 @@
 <?php
 
 /**
- * @package CSV parser
- * @author Iurii Makukh <ymakux@gmail.com>
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core\classes;
 
-class Csv
-{
+/**
+ * Provides methods to read CSV data
+ */
+class Csv {
 
     /**
-     *
      * @var resource File handler
      */
     protected $handle;
 
     /**
-     *
      * @var string Current CSV line
      */
     protected $current_line;
 
     /**
-     *
      * @var integer Current offset in bytes
      */
     protected $current_position;
 
     /**
-     *
      * @var integer Total CSV file size in bytes
      */
     protected $total;
 
     /**
-     *
      * @var string Path to CSV file
      */
     protected $file;
 
     /**
-     *
      * @var integer Max number of rows to parse
      */
     protected $limit;
 
     /**
-     *
      * @var integer Final offset in bytes
      */
     protected $last_position;
 
     /**
-     *
      * @var integer Starting offset in bytes
      */
     protected $offset;
 
     /**
-     *
      * @var array Array of header names
      */
     protected $header;
 
     /**
-     *
      * @var boolean Skip or not first line
      */
     protected $skip_header;
 
     /**
-     *
      * @var string CSV delimiter
      */
     protected $delimiter;
 
     /**
-     * Sets up variables
+     * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->last_position = 0;
         $this->offset = 0;
         $this->header = array();
@@ -94,21 +85,19 @@ class Csv
     /**
      * Closes file handler
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         if (isset($this->handle)) {
             fclose($this->handle);
         }
     }
-    
+
     /**
      * Sets file to parse
      * @param string $file
      * @param integer $filesize
      * @return \core\classes\Csv
      */
-    public function setFile($file, $filesize = null)
-    {
+    public function setFile($file, $filesize = null) {
         $this->file = $file;
         $this->total = isset($filesize) ? (int) $filesize : filesize($file);
         $this->handle = fopen($file, 'r');
@@ -120,8 +109,7 @@ class Csv
      * @param integer $limit
      * @return \Csv
      */
-    public function setLimit($limit)
-    {
+    public function setLimit($limit) {
         $this->limit = (int) $limit;
         return $this;
     }
@@ -131,8 +119,7 @@ class Csv
      * @param string $character
      * @return \Csv
      */
-    public function setDelimiter($character)
-    {
+    public function setDelimiter($character) {
         $this->delimiter = $character;
         return $this;
     }
@@ -141,20 +128,18 @@ class Csv
      * Get first line of CSV file
      * @return array
      */
-    public function getHeader()
-    {
+    public function getHeader() {
         $this->limit = 1;
         $header = $this->read();
         return $header ? reset($header) : array();
     }
-    
+
     /**
      * Sets header (first line)
      * @param type $header
      * @return \core\classes\Csv
      */
-    public function setHeader($header)
-    {
+    public function setHeader($header) {
         $this->header = $header;
         return $this;
     }
@@ -163,8 +148,7 @@ class Csv
      * CSV reader
      * @return array
      */
-    public function read()
-    {
+    public function read() {
         $rows = array();
 
         $start = $this->offset ? $this->offset : $this->last_position;
@@ -274,8 +258,7 @@ class Csv
      * Get latest file pointer offset in bytes
      * @return integer
      */
-    public function getOffset()
-    {
+    public function getOffset() {
         return $this->last_position;
     }
 
@@ -284,8 +267,7 @@ class Csv
      * @param integer $offset
      * @return \Csv
      */
-    public function setOffset($offset)
-    {
+    public function setOffset($offset) {
         $this->offset = $offset;
         return $this;
     }
@@ -294,8 +276,7 @@ class Csv
      * Force to skip first row (header)
      * @return \Csv
      */
-    public function skipHeader()
-    {
+    public function skipHeader() {
         $this->skip_header = true;
         return $this;
     }
@@ -304,8 +285,7 @@ class Csv
      * Parses CSV into multidimensional array
      * @return array
      */
-    public function parse()
-    {
+    public function parse() {
         if ($this->total) {
             return $this->read();
         }
@@ -317,8 +297,7 @@ class Csv
      * Moves pointer to a certain position
      * @param integer $position Bytes
      */
-    protected function rewind($position = 0)
-    {
+    protected function rewind($position = 0) {
         if (isset($this->handle)) {
             fseek($this->handle, $position);
             $this->next();
@@ -329,8 +308,7 @@ class Csv
      * Sets current string and offset
      * @return mixed
      */
-    protected function next()
-    {
+    protected function next() {
         if (isset($this->handle)) {
             $this->current_line = feof($this->handle) ? null : fgets($this->handle);
             $this->current_position = ftell($this->handle);
@@ -344,8 +322,7 @@ class Csv
      * Determines if CSV line is valid
      * @return boolean
      */
-    protected function valid()
-    {
+    protected function valid() {
         return isset($this->current_line);
     }
 
@@ -353,8 +330,7 @@ class Csv
      * Gets current CSV row
      * @return string
      */
-    protected function current()
-    {
+    protected function current() {
         return $this->current_line;
     }
 
@@ -362,8 +338,8 @@ class Csv
      * Gets current offset in bytes
      * @return integer
      */
-    protected function currentPosition()
-    {
+    protected function currentPosition() {
         return $this->current_position;
     }
+
 }

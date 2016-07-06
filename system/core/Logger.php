@@ -2,10 +2,9 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
@@ -13,8 +12,10 @@ namespace core;
 use core\Config;
 use core\classes\Tool;
 
-class Logger
-{
+/**
+ * Provides methods to log various errors and events
+ */
+class Logger {
 
     /**
      * Collected PHP errors
@@ -32,8 +33,7 @@ class Logger
      * Constructor
      * @param Config $config
      */
-    public function __construct(Config $config)
-    {
+    public function __construct(Config $config) {
         $this->db = $config->getDb();
     }
 
@@ -46,8 +46,7 @@ class Logger
      * @param integer $limit
      * @return bool
      */
-    public function csv($file, $type, $message, $severity = 'info', $limit = 0)
-    {
+    public function csv($file, $type, $message, $severity = 'info', $limit = 0) {
         $fields = array(
             date('M d, Y G:iA'),
             $severity,
@@ -65,8 +64,7 @@ class Logger
      * @param string $severity
      * @return bool
      */
-    public function log($type, $data, $severity = 'info')
-    {
+    public function log($type, $data, $severity = 'info') {
         if (empty($this->db)) {
             return false;
         }
@@ -101,8 +99,7 @@ class Logger
      * @param string $errfile
      * @param integer $errline
      */
-    public function errorHandler($errno, $errstr, $errfile = '', $errline = '')
-    {
+    public function errorHandler($errno, $errstr, $errfile = '', $errline = '') {
         $error['message'] = $errstr;
         $error['code'] = $errno;
         $error['file'] = $errfile;
@@ -115,8 +112,7 @@ class Logger
     /**
      * Shutdown handler
      */
-    public function shutdownHandler()
-    {
+    public function shutdownHandler() {
         $lasterror = error_get_last();
 
         $error_types = array(
@@ -146,8 +142,7 @@ class Logger
      * @param string $header
      * @return string
      */
-    public function errorMessage($error, $header = '')
-    {
+    public function errorMessage($error, $header = '') {
         $message = "";
 
         if ($header) {
@@ -166,8 +161,8 @@ class Logger
      * Returns an array of collected errors
      * @return array
      */
-    public function getErrors()
-    {
+    public function getErrors() {
         return static::$errors;
     }
+
 }

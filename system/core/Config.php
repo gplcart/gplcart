@@ -2,10 +2,9 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
@@ -16,8 +15,11 @@ use core\classes\Tool;
 use core\classes\Cache;
 use code\exceptions\SystemLogical;
 
-class Config
-{
+/**
+ * Contains methods to work with system configurations
+ */
+class Config {
+
     /**
      * PDO instance
      * @var \core\classes\Database $db
@@ -45,8 +47,7 @@ class Config
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->init();
     }
 
@@ -56,8 +57,7 @@ class Config
      * @param mixed $default
      * @return mixed
      */
-    public function get($key = null, $default = null)
-    {
+    public function get($key = null, $default = null) {
         if (!isset($key)) {
             return $this->config;
         }
@@ -76,8 +76,7 @@ class Config
      * @param mixed $default
      * @return mixed
      */
-    public function module($module_id, $key = null, $default = null)
-    {
+    public function module($module_id, $key = null, $default = null) {
         $modules = $this->getModules();
 
         if (empty($modules[$module_id]['settings'])) {
@@ -101,8 +100,7 @@ class Config
      * @param mixed $value
      * @return boolean
      */
-    public function set($key, $value)
-    {
+    public function set($key, $value) {
         if (empty($this->db)) {
             return false;
         }
@@ -125,8 +123,7 @@ class Config
      * @param string $key
      * @return boolean
      */
-    public function reset($key)
-    {
+    public function reset($key) {
         $result = $this->db->delete('settings', array('id' => $key));
         return (bool) $result;
     }
@@ -135,17 +132,15 @@ class Config
      * Returns PDO instance
      * @return object
      */
-    public function getDb()
-    {
+    public function getDb() {
         return $this->db;
     }
-    
+
     /**
      * Sets database instance
      * @param object $db
      */
-    public function setDb($db)
-    {
+    public function setDb($db) {
         $this->db = $db;
     }
 
@@ -153,8 +148,7 @@ class Config
      * Returns true if config.php exists i.e the system is installed
      * @return boolean
      */
-    public function exists()
-    {
+    public function exists() {
         return $this->exists;
     }
 
@@ -163,8 +157,7 @@ class Config
      * @param string $token
      * @return boolean
      */
-    public function tokenValid($token)
-    {
+    public function tokenValid($token) {
         return Tool::hashEquals($this->token(), $token);
     }
 
@@ -172,8 +165,7 @@ class Config
      * Returns a token based on the current session iD
      * @return string
      */
-    public function token()
-    {
+    public function token() {
         return str_replace(array('+', '/', '='), '', base64_encode(crypt(session_id(), $this->key())));
     }
 
@@ -181,8 +173,7 @@ class Config
      * Returns a private key
      * @return string
      */
-    public function key()
-    {
+    public function key() {
         return $this->key;
     }
 
@@ -190,8 +181,7 @@ class Config
      * Returns an array of all available modules
      * @return array
      */
-    public function getModules()
-    {
+    public function getModules() {
         $modules = &Cache::memory('modules');
 
         if (isset($modules)) {
@@ -268,8 +258,7 @@ class Config
      * Returns an array of all installed modules from the database
      * @return array
      */
-    public function getInstalledModules()
-    {
+    public function getInstalledModules() {
         $modules = array();
         $sth = $this->db->query('SELECT * FROM module ORDER BY weight ASC');
 
@@ -285,8 +274,7 @@ class Config
      * Returns an array of enabled modules
      * @return array
      */
-    public function getEnabledModules()
-    {
+    public function getEnabledModules() {
         return array_filter($this->getModules(), function ($module) {
             return !empty($module['status']);
         });
@@ -297,8 +285,7 @@ class Config
      * @return boolean
      * @throws SystemLogical
      */
-    protected function init()
-    {
+    protected function init() {
         if (!is_readable(GC_CONFIG_COMMON)) {
             return false;
         }
@@ -331,8 +318,7 @@ class Config
      * Returns an array of settings from the database
      * @return type
      */
-    protected function select()
-    {
+    protected function select() {
         if (!$this->exists) {
             return array();
         }
@@ -351,8 +337,7 @@ class Config
      * @param object|string $class
      * @return array
      */
-    protected function getHooks($class)
-    {
+    protected function getHooks($class) {
         return array_filter(get_class_methods($class), function ($method) {
             return (0 === strpos($method, 'hook'));
         });
@@ -363,8 +348,7 @@ class Config
      * @param string|array $name
      * @return boolean|array
      */
-    protected function validModuleName($name)
-    {
+    protected function validModuleName($name) {
         if (is_string($name)) {
             return preg_match('/^[a-z0-9]+$/', $name);
         }
@@ -373,4 +357,5 @@ class Config
             return $this->validModuleName($module_id);
         });
     }
+
 }

@@ -2,16 +2,17 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core\classes;
 
-class Twig
-{
+/**
+ * Wrapper class for TWIG template engine
+ */
+class Twig {
 
     /**
      * Twig loader instance
@@ -28,8 +29,7 @@ class Twig
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         require_once GC_LIBRARY_DIR . '/twig/Autoloader.php';
         \Twig_Autoloader::register();
     }
@@ -40,8 +40,7 @@ class Twig
      * @param object $object
      * @param array $options
      */
-    public function set($path, $object, $options = array())
-    {
+    public function set($path, $object, array $options = array()) {
         $this->loader = new \Twig_Loader_Filesystem($path);
         $this->twig = new \Twig_Environment($this->loader, $options);
         $this->twig->addGlobal('gc', $object);
@@ -49,12 +48,11 @@ class Twig
 
     /**
      * Renders a .twig template
-     * @param type $file
-     * @param type $data
-     * @return type
+     * @param string $file
+     * @param array $data
+     * @return string
      */
-    public function render($file, $data)
-    {
+    public function render($file, array $data) {
         if (empty($this->twig)) {
             return "Failed to render twig template $file";
         }
@@ -62,4 +60,5 @@ class Twig
         $template = $this->twig->loadTemplate($file);
         return $template->render($data);
     }
+
 }

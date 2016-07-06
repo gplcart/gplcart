@@ -2,18 +2,19 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
 
 use core\Container;
 
-class Handler
-{
+/**
+ * Provides methods to work with various system handlers
+ */
+class Handler {
 
     /**
      * Calls a handler
@@ -23,11 +24,11 @@ class Handler
      * @param array $arguments
      * @return mixed
      */
-    public static function call($handlers, $handler_id, $method, $arguments = array())
-    {
+    public static function call($handlers, $handler_id, $method,
+            $arguments = array()) {
         $handler = static::get($handlers, $handler_id, $method);
 
-        if ($handler) {
+        if (!empty($handler)) {
             return call_user_func_array($handler, $arguments);
         }
 
@@ -41,8 +42,7 @@ class Handler
      * @param string $method
      * @return boolean|array
      */
-    public static function get($handlers, $handler_id, $method)
-    {
+    public static function get($handlers, $handler_id, $method) {
         if (isset($handler_id)) {
             if (empty($handlers[$handler_id]['handlers'][$method])) {
                 return false;
@@ -66,4 +66,5 @@ class Handler
         $handler[0] = $instance;
         return $handler;
     }
+
 }

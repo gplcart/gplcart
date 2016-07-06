@@ -2,10 +2,9 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
@@ -13,8 +12,11 @@ namespace core;
 use core\Container;
 use core\classes\Tool;
 
-class Controller
-{
+/**
+ * Base controller class. Provides methods to be used in the child classes and
+ * some basic system functions such as access control etc.
+ */
+class Controller {
 
     /**
      * Name of the current theme
@@ -290,8 +292,7 @@ class Controller
     /**
      * Constructor
      */
-    protected function __construct()
-    {
+    protected function __construct() {
         /* @var $user \core\models\User */
         $this->user = Container::instance('core\\models\\User');
 
@@ -359,8 +360,7 @@ class Controller
     /**
      * Catches end of PHP processing
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         $this->text();
     }
 
@@ -369,8 +369,7 @@ class Controller
      * @param string $permission
      * @return boolean
      */
-    public function access($permission)
-    {
+    public function access($permission) {
         return $this->user->access($permission);
     }
 
@@ -381,8 +380,7 @@ class Controller
      * @param boolean $fullpath
      * @return string
      */
-    public function render($file, array $data = array(), $fullpath = false)
-    {
+    public function render($file, array $data = array(), $fullpath = false) {
         $module = $this->theme;
 
         if (strpos($file, ':') !== false) {
@@ -422,8 +420,7 @@ class Controller
      * @param boolean $absolute
      * @return string
      */
-    public function url($path = '', array $query = array(), $absolute = false)
-    {
+    public function url($path = '', array $query = array(), $absolute = false) {
         return $this->url->get($path, $query, $absolute);
     }
 
@@ -433,8 +430,7 @@ class Controller
      * @param array $arguments
      * @return string
      */
-    public function text($string = null, array $arguments = array())
-    {
+    public function text($string = null, array $arguments = array()) {
         return $this->language->text($string, $arguments);
     }
 
@@ -442,8 +438,7 @@ class Controller
      * Whether the current user is superadmin
      * @return boolean
      */
-    public function isSuperadmin()
-    {
+    public function isSuperadmin() {
         return $this->user->isSuperadmin();
     }
 
@@ -452,8 +447,7 @@ class Controller
      * @param integer|null $timestamp
      * @return string
      */
-    public function date($timestamp = null)
-    {
+    public function date($timestamp = null) {
         if (!isset($timestamp)) {
             $timestamp = GC_TIME;
         }
@@ -467,8 +461,7 @@ class Controller
      * @param array $attributes
      * @return string
      */
-    public function attributes($attributes)
-    {
+    public function attributes($attributes) {
         foreach ($attributes as $attribute => &$data) {
             $data = implode(' ', (array) $data);
             $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
@@ -480,8 +473,7 @@ class Controller
     /**
      * Sets the current route data
      */
-    protected function setRoute()
-    {
+    protected function setRoute() {
         // Set access for the route
         $this->current_route = $this->route->getCurrent();
 
@@ -501,8 +493,7 @@ class Controller
      * Defines the current user device
      * @return null
      */
-    protected function setDevice()
-    {
+    protected function setDevice() {
         $device = $this->session->get('device');
 
         if (!empty($device)) {
@@ -523,8 +514,7 @@ class Controller
     /**
      * Sets the current store data
      */
-    protected function setStore()
-    {
+    protected function setStore() {
         $this->current_store = $this->store->current();
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
@@ -535,8 +525,7 @@ class Controller
      * Sets theme data
      * @return boolean
      */
-    protected function setTheme($theme = null)
-    {
+    protected function setTheme($theme = null) {
         $this->theme_frontend = $this->config->get('theme', 'frontend');
         $this->theme_backend = $this->config->get('theme_backend', 'backend');
 
@@ -563,7 +552,7 @@ class Controller
         if (empty($this->theme)) {
             $this->response->error404();
         }
-        
+
         $theme_class = "modules\\{$this->theme}\\" . ucfirst($this->theme); // Uppercase class name to prevent "class not found" error
 
         $instance = Container::instance($theme_class);
@@ -593,8 +582,7 @@ class Controller
     /**
      * Loads translations, available languages etc
      */
-    protected function setLanguage()
-    {
+    protected function setLanguage() {
         $this->language->load();
         $this->languages = $this->language->getList(true);
     }
@@ -603,8 +591,7 @@ class Controller
      * Sets access to the current page
      * @return boolean
      */
-    protected function setAccess()
-    {
+    protected function setAccess() {
         if ($this->url->isInstall()) {
             return;
         }
@@ -653,8 +640,7 @@ class Controller
      * Controls token in the URL query
      * @param boolean $required Whether the token must be presented in the URL
      */
-    protected function controlToken($required = true)
-    {
+    protected function controlToken($required = true) {
         $token = $this->request->get('token', null);
 
         if ($required && !$this->config->tokenValid($token)) {
@@ -670,8 +656,7 @@ class Controller
      * Controls session timeout
      * @return integer Timestamp of the last activity
      */
-    protected function controlSessionTimeout()
-    {
+    protected function controlSessionTimeout() {
         $time = GC_TIME;
 
         $this->last_activity = (int) $this->session->get('last_activity');
@@ -690,8 +675,7 @@ class Controller
      * Controls access to admin pages
      * @return null
      */
-    protected function controlAccessAdmin()
-    {
+    protected function controlAccessAdmin() {
         // Check only admin pages
         if (!$this->url->isBackend()) {
             return;
@@ -717,8 +701,7 @@ class Controller
      * @param string $message
      * @param string $severity
      */
-    protected function redirect($url = '', $message = '', $severity = 'info')
-    {
+    protected function redirect($url = '', $message = '', $severity = 'info') {
         if (!empty($message)) {
             $this->session->setMessage($message, $severity);
         }
@@ -730,8 +713,7 @@ class Controller
      * Displsys an error page
      * @param integer $code
      */
-    protected function outputError($code = 403)
-    {
+    protected function outputError($code = 403) {
         $title = (string) $this->response->statuses($code);
 
         if ($title !== '') {
@@ -747,8 +729,7 @@ class Controller
      * @param boolean $both
      * @return string
      */
-    protected function setTitle($title, $both = true)
-    {
+    protected function setTitle($title, $both = true) {
         return $this->document->title($title, $both);
     }
 
@@ -757,8 +738,7 @@ class Controller
      * @param array|string $templates
      * @param array $options
      */
-    protected function output($templates, array $options = array())
-    {
+    protected function output($templates, array $options = array()) {
         if (is_string($templates)) {
             $templates = array('region_content' => $templates);
         }
@@ -790,8 +770,7 @@ class Controller
      * @param string $template
      * @return string
      */
-    protected function renderRegion($region, $template)
-    {
+    protected function renderRegion($region, $template) {
         if (!isset($this->data[$region])) {
             return $this->render($template, $this->data);
         }
@@ -815,8 +794,7 @@ class Controller
      * @param string|array $item Expected array format:
      * first item - template, second - variables for $this->render()
      */
-    protected function addRegionItem($region, $item)
-    {
+    protected function addRegionItem($region, $item) {
         if (is_array($item)) {
             $template = array_shift($item);
             $data = $item ? reset($item) : array();
@@ -833,8 +811,7 @@ class Controller
      * Returns an array of default templates keyed by region
      * @return array
      */
-    protected function getDefaultTemplates()
-    {
+    protected function getDefaultTemplates() {
         return array(
             'layout' => 'layout/layout',
             'region_head' => 'layout/head',
@@ -850,8 +827,7 @@ class Controller
     /**
      * Modifies data variables before passing them to templates
      */
-    protected function prepareOutput()
-    {
+    protected function prepareOutput() {
         $this->data['head_title'] = $this->document->title();
         $this->data['page_title'] = $this->document->ptitle();
         $this->data['page_description'] = $this->document->pdescription();
@@ -874,8 +850,7 @@ class Controller
      * @param array $data
      * @return null
      */
-    protected function setPhpErrors(&$data)
-    {
+    protected function setPhpErrors(&$data) {
         $errors = $this->logger->getErrors();
 
         if (empty($errors)) {
@@ -901,8 +876,7 @@ class Controller
      * @return string
      */
     protected function renderTwig($template_path, array $data,
-                                  array $options = array())
-    {
+            array $options = array()) {
         $parts = explode('/', $template_path);
         $template_file = array_pop($parts);
         $template_dir = implode('/', $parts);
@@ -917,8 +891,7 @@ class Controller
      * @param array $data
      * @return string
      */
-    protected function renderPhp($template, array $data)
-    {
+    protected function renderPhp($template, array $data) {
         extract($data, EXTR_SKIP);
         ob_start();
         include $template;
@@ -929,8 +902,7 @@ class Controller
      * Contols access to account pages
      * @return null
      */
-    protected function controlAccessAccount()
-    {
+    protected function controlAccessAccount() {
         $account_id = $this->url->isAccount();
 
         if (empty($account_id)) {
@@ -952,8 +924,7 @@ class Controller
     /**
      * Sets cron properties
      */
-    protected function setCron()
-    {
+    protected function setCron() {
         $this->cron_interval = (int) $this->config->get('cron_interval', 86400);
         $this->cron_last_run = (int) $this->config->get('cron_last_run', 0);
         $this->cron_key = $this->config->get('cron_key', '');
@@ -968,8 +939,7 @@ class Controller
      * Sets a batch job from the current URL
      * @return null
      */
-    protected function setJob()
-    {
+    protected function setJob() {
         $job_id = $this->request->get('job_id');
 
         if (empty($job_id)) {
@@ -993,8 +963,7 @@ class Controller
     /**
      * Adds required javascripts
      */
-    protected function setJs()
-    {
+    protected function setJs() {
         // Libraries
         $this->document->js('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -100);
         $this->document->js('files/assets/system/js/common.js', 'top', -90);
@@ -1026,8 +995,7 @@ class Controller
      * @param array $data
      * @param integer|null $weight
      */
-    protected function addJsSettings($key, array $data, $weight = null)
-    {
+    protected function addJsSettings($key, array $data, $weight = null) {
         $json = json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
 
@@ -1041,8 +1009,7 @@ class Controller
     /**
      * Sets default template variables
      */
-    protected function setData()
-    {
+    protected function setData() {
         $this->data['token'] = $this->token;
         $this->data['base'] = $this->base;
         $this->data['lang'] = $this->langcode;
@@ -1073,8 +1040,7 @@ class Controller
      * Sets an array of notification messages
      * @return null
      */
-    protected function setNotifications()
-    {
+    protected function setNotifications() {
         if (!$this->url->isBackend()) {
             return;
         }
@@ -1107,8 +1073,7 @@ class Controller
     /**
      * Switches the site to maintenance mode
      */
-    protected function setMaintenance()
-    {
+    protected function setMaintenance() {
         if (!$this->url->isInstall() && !$this->url->isBackend() && empty($this->current_store['status'])) {
             $this->maintenance = true;
             $this->outputMaintenance();
@@ -1118,8 +1083,7 @@ class Controller
     /**
      * Displays site maintenance page
      */
-    protected function outputMaintenance()
-    {
+    protected function outputMaintenance() {
         $this->setTitle('Site maintenance', false);
         $this->output(array('layout' => 'common/maintenance'), array('headers' => 503));
     }
@@ -1131,8 +1095,7 @@ class Controller
      * @param integer $weight
      * @return array
      */
-    protected function addJs($script, $position, $weight = null)
-    {
+    protected function addJs($script, $position, $weight = null) {
         return $this->document->js($script, $position, $weight);
     }
 
@@ -1142,8 +1105,7 @@ class Controller
      * @param integer $weight
      * @return array
      */
-    protected function addCss($css, $weight = null)
-    {
+    protected function addCss($css, $weight = null) {
         return $this->document->css($css, $weight);
     }
 
@@ -1152,8 +1114,7 @@ class Controller
      * @param array $content
      * @return array
      */
-    protected function setMeta($content)
-    {
+    protected function setMeta($content) {
         return $this->document->meta($content);
     }
 
@@ -1162,8 +1123,7 @@ class Controller
      * @param array $breadcrumb
      * @return array
      */
-    protected function setBreadcrumb(array $breadcrumb)
-    {
+    protected function setBreadcrumb(array $breadcrumb) {
         return $this->document->breadcrumb($breadcrumb);
     }
 
@@ -1172,8 +1132,7 @@ class Controller
      * @param string $title
      * @return string
      */
-    protected function setPageTitle($title)
-    {
+    protected function setPageTitle($title) {
         return $this->document->ptitle($title);
     }
 
@@ -1182,8 +1141,7 @@ class Controller
      * @param string $description
      * @return string
      */
-    protected function setPageDescription($description)
-    {
+    protected function setPageDescription($description) {
         return $this->document->pdescription($description);
     }
 
@@ -1192,8 +1150,7 @@ class Controller
      * @param string $string
      * @return string
      */
-    protected function escape($string)
-    {
+    protected function escape($string) {
         return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
     }
 
@@ -1202,8 +1159,7 @@ class Controller
      * @param string $string
      * @return string
      */
-    protected function filter($string)
-    {
+    protected function filter($string) {
         return filter_var($string, FILTER_SANITIZE_STRING);
     }
 
@@ -1214,8 +1170,7 @@ class Controller
      * @param string $trimmarker
      * @return string
      */
-    protected function truncate($string, $length = 100, $trimmarker = '...')
-    {
+    protected function truncate($string, $length = 100, $trimmarker = '...') {
         return mb_strimwidth($string, 0, $length, $trimmarker, 'UTF-8');
     }
 
@@ -1226,8 +1181,7 @@ class Controller
      * @param array|null $protocols
      * @return string
      */
-    protected function xss($string, $tags = null, $protocols = null)
-    {
+    protected function xss($string, $tags = null, $protocols = null) {
         return $this->filter->xss($string, $tags, $protocols);
     }
 
@@ -1236,8 +1190,7 @@ class Controller
      * @param string $permission
      * @param string $redirect
      */
-    protected function controlAccess($permission, $redirect = '')
-    {
+    protected function controlAccess($permission, $redirect = '') {
         if (!$this->access($permission)) {
             $this->redirect($redirect, $this->text('You are not permitted to perform this operation'), 'danger');
         }
@@ -1248,8 +1201,7 @@ class Controller
      * @param string $type
      * @return null
      */
-    protected function controlSpam($type)
-    {
+    protected function controlSpam($type) {
         $honeypot = $this->request->request('url', '');
 
         if ($honeypot === '') {
@@ -1273,8 +1225,7 @@ class Controller
      * @param boolean $message
      * @return array
      */
-    protected function formErrors($message = true)
-    {
+    protected function formErrors($message = true) {
         if (empty($this->data['form_errors'])) {
             return array();
         }
@@ -1291,8 +1242,7 @@ class Controller
      * @param array|string $messages
      * @param string $severity
      */
-    protected function setMessage($messages, $severity = 'info')
-    {
+    protected function setMessage($messages, $severity = 'info') {
         foreach ((array) $messages as $message) {
             $this->data['messages'][$severity][] = $message;
         }
@@ -1302,8 +1252,7 @@ class Controller
      * Returns a rendered job widget
      * @return string
      */
-    protected function getJob()
-    {
+    protected function getJob() {
         if (empty($this->current_job['status'])) {
             return '';
         }
@@ -1319,8 +1268,7 @@ class Controller
      * Returns a rendered help link depending on the current URL
      * @return string
      */
-    protected function getHelp()
-    {
+    protected function getHelp() {
         $expected_filename = implode('_', $this->url->segments());
         $folder = $this->langcode ? $this->langcode : 'en';
         $directory = GC_HELP_DIR . "/$folder";
@@ -1357,8 +1305,7 @@ class Controller
      * @param string $text
      * @return array
      */
-    protected function explodeText($text)
-    {
+    protected function explodeText($text) {
         return array_filter(explode($this->getSummaryDelimiter(), $text, 2));
     }
 
@@ -1366,8 +1313,7 @@ class Controller
      * Returns a string used to separate summary and rest of text
      * @return string
      */
-    protected function getSummaryDelimiter()
-    {
+    protected function getSummaryDelimiter() {
         return $this->config->get('summary_delimiter', '<!--summary-->');
     }
 
@@ -1380,8 +1326,7 @@ class Controller
      * @return string
      */
     protected function summary($text, $filter_xss = false, $allowed_tags = null,
-                               $allowed_protocols = null)
-    {
+            $allowed_protocols = null) {
         $summary = '';
 
         if ($text !== '') {
@@ -1401,8 +1346,7 @@ class Controller
      * @param array $allowed_filters
      * @param array $query
      */
-    protected function setFilter(array $allowed_filters, $query = null)
-    {
+    protected function setFilter(array $allowed_filters, $query = null) {
         if (!isset($query)) {
             $query = $this->getFilterQuery();
         }
@@ -1429,8 +1373,7 @@ class Controller
      * @param array $default
      * @return array
      */
-    protected function getFilterQuery(array $default = array())
-    {
+    protected function getFilterQuery(array $default = array()) {
         $query = $this->query;
 
         foreach ($query as $key => $value) {
@@ -1455,8 +1398,7 @@ class Controller
      * @param null|integer $limit
      * @return array Array of SQL limit values
      */
-    protected function setPager($total, $query = null, $limit = null)
-    {
+    protected function setPager($total, $query = null, $limit = null) {
         if (!isset($limit)) {
             $limit = $this->config->get('admin_list_limit', 20);
         }
@@ -1480,4 +1422,5 @@ class Controller
         $this->data['pager'] = $this->pager->render();
         return $this->pager->getLimit();
     }
+
 }

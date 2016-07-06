@@ -2,15 +2,14 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 /**
- * WARNING! Invalid code in this file can break down your site!
  * To adjust a setting uncomment it by removing the leading #
+ * WARNING! Invalid code can break down your site!
  */
 
 # $config['account_order_limit'] = 10;
@@ -115,7 +114,7 @@
 # $config['order_complete_message_anonymous'] = 'Thank you for your order! Order ID: !order_id, status: !status';
 
 /**
- * End of configurable settings. The settings below are appended automatically during installation.
- * Do not touch them unless you know what you do
+ * End of configurable settings
+ * The settings below are appended automatically during installation.
  */
 

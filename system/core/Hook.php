@@ -2,19 +2,20 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
 
-use Exception;
 use core\Container;
+use core\exceptions\SystemLogical as SystemLogicalException;
 
-class Hook
-{
+/**
+ * Provides methods to work with system hooks (event system)
+ */
+class Hook {
 
     /**
      * Array of registered hooks
@@ -32,8 +33,7 @@ class Hook
      * Registers modules hooks
      * @param array $modules
      */
-    public function registerModules($modules)
-    {
+    public function registerModules($modules) {
         foreach ($modules as $module) {
             if (empty($module['hooks'])) {
                 continue;
@@ -51,8 +51,7 @@ class Hook
      * @param string $class
      * @return array
      */
-    public function register($method, $class)
-    {
+    public function register($method, $class) {
         static::$hooks[strtolower($method)][$class] = array($class, $method);
         return static::$hooks;
     }
@@ -63,8 +62,7 @@ class Hook
      * @param string $class
      * @return array
      */
-    public function unregister($method, $class)
-    {
+    public function unregister($method, $class) {
         unset(static::$hooks[strtolower($method)][$class]);
         return static::$hooks;
     }
@@ -73,17 +71,15 @@ class Hook
      * Returns a hook data
      * @return array
      */
-    public function getRegistered()
-    {
+    public function getRegistered() {
         return static::$hooks;
     }
 
     /**
      * Returns an array of invoked hooks
-     * @return type
+     * @return array
      */
-    public function getCalled()
-    {
+    public function getCalled() {
         return static::$called;
     }
 
@@ -95,8 +91,7 @@ class Hook
      * @param mixed $c
      * @return boolean
      */
-    public function fire($hook, &$a = null, &$b = null, &$c = null)
-    {
+    public function fire($hook, &$a = null, &$b = null, &$c = null) {
         $method = 'hook' . strtolower(str_replace(".", "", $hook));
 
         if (empty(static::$hooks[$method])) {
@@ -113,11 +108,12 @@ class Hook
             try {
                 $instance->{$method}($a, $b, $c);
                 static::$called[$method][$namespace] = array($namespace, $method);
-            } catch (Exception $e) {
+            } catch (SystemLogicalException $e) {
                 echo $e->getMessage();
             }
         }
 
         return true;
     }
+
 }

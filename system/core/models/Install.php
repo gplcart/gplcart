@@ -5,7 +5,7 @@
  * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core\models;
@@ -123,7 +123,9 @@ class Install {
      * @return array
      */
     public function getRequirementsErrors(array $requirements) {
+        
         $errors = array();
+        
         foreach ($requirements as $items) {
             foreach ($items as $name => $info) {
                 if (empty($info['status'])) {
@@ -162,6 +164,7 @@ class Install {
      * @return boolean
      */
     public function tables() {
+        
         $imported = 0;
         $tables = $this->dump();
 
@@ -198,7 +201,7 @@ class Install {
     public function config(array $settings) {
         $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
 
-        if (!$config) {
+        if (empty($config)) {
             return false;
         }
 

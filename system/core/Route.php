@@ -2,10 +2,9 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
- * @license GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
 namespace core;
@@ -14,12 +13,14 @@ use PDO;
 use core\Hook;
 use core\Config;
 use core\Handler;
-use core\classes\Url;
 use core\classes\Cache;
-use core\classes\Request;
+use core\classes\Url as classesUrl;
+use core\classes\Request as classesRequest;
 
-class Route
-{
+/**
+ * Routes incoming requests
+ */
+class Route {
 
     /**
      * Url class instance
@@ -71,13 +72,14 @@ class Route
 
     /**
      * Constructor
-     * @param Url $url
-     * @param Request $request
+     * @param classesUrl $url
+     * @param classesRequest $request
      * @param Config $config
      * @param Hook $hook
      */
-    public function __construct(Url $url, Request $request, Config $config, Hook $hook)
-    {
+    public function __construct(classesUrl $url, classesRequest $request,
+            Config $config, Hook $hook) {
+
         $this->url = $url;
         $this->hook = $hook;
         $this->config = $config;
@@ -92,8 +94,7 @@ class Route
      * Returns an array of all available routes
      * @return array
      */
-    public function getList()
-    {
+    public function getList() {
         $routes = &Cache::memory('routes');
 
         if (isset($routes)) {
@@ -827,10 +828,9 @@ class Route
     /**
      * Processes the current route
      */
-    public function process()
-    {
+    public function process() {
         // Try to find an alias
-        if ($this->db) {
+        if (!empty($this->db)) {
             $this->findAliasByPath();
             $this->findAliasByPattern();
         }
@@ -850,8 +850,7 @@ class Route
      * Returns a language from the current URL
      * @return string
      */
-    public function getLangcode()
-    {
+    public function getLangcode() {
         return $this->langcode;
     }
 
@@ -859,16 +858,14 @@ class Route
      * Returns the current route
      * @return array
      */
-    public function getCurrent()
-    {
+    public function getCurrent() {
         return $this->route;
     }
 
     /**
      * Sets the current language
      */
-    protected function setLangcode()
-    {
+    protected function setLangcode() {
         $default_langcode = $this->config->get('language', '');
         $languages = $this->config->get('languages', array());
 
@@ -890,20 +887,20 @@ class Route
     }
 
     /**
-     *
-     * @return type
+     * Finds an alias by the path
+     * @return null
      */
-    protected function findAliasByPath()
-    {
+    protected function findAliasByPath() {
         $sth = $this->db->prepare('SELECT id_key, id_value FROM alias WHERE alias=:alias');
         $sth->execute(array(':alias' => $this->path()));
         $result = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if (!$result) {
+        if (empty($result)) {
             return;
         }
 
         $key = str_replace('_id', '', $result['id_key']);
+
         foreach ($this->getList() as $pattern => $route) {
             if (!isset($route['alias'][0])) {
                 continue;
@@ -921,10 +918,9 @@ class Route
     }
 
     /**
-     *
+     * Finds an alias by the route pattern
      */
-    protected function findAliasByPattern()
-    {
+    protected function findAliasByPattern() {
         $path_segments = $this->url->segments();
 
         foreach ($this->getList() as $pattern => $route) {
@@ -957,7 +953,7 @@ class Route
 
             $alias = $sth->fetchColumn();
 
-            if ($alias) {
+            if (!empty($alias)) {
                 $this->url->redirect($alias);
             }
         }
@@ -968,8 +964,7 @@ class Route
      * @param array $routes
      * @return boolean|null
      */
-    protected function callController()
-    {
+    protected function callController() {
         foreach ($this->getList() as $pattern => $route) {
             $arguments = $this->parsePattern($pattern);
 
@@ -988,8 +983,7 @@ class Route
      * @param string $pattern
      * @return boolean|array
      */
-    protected function parsePattern($pattern)
-    {
+    protected function parsePattern($pattern) {
         if (!preg_match_all('#^' . $pattern . '$#', $this->path(), $matches, PREG_OFFSET_CAPTURE)) {
             return false;
         }
@@ -1009,8 +1003,8 @@ class Route
      * Returns the current path
      * @return string
      */
-    protected function path()
-    {
+    protected function path() {
         return $this->path;
     }
+
 }
