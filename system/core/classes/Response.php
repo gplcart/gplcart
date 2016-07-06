@@ -14,7 +14,8 @@ use core\classes\Tool;
 /**
  * Provides methods to output a data to the user
  */
-class Response {
+class Response
+{
 
     /**
      * Array of defined headers
@@ -26,7 +27,8 @@ class Response {
      * Displays 403 Access Denied message
      * @param string $message
      */
-    public function error403($message = true) {
+    public function error403($message = true)
+    {
         $this->addHeader(403)->sendHeaders();
 
         if (!$message) {
@@ -52,7 +54,8 @@ class Response {
      * Displays 404 Not Found error
      * @param boolean $message
      */
-    public function error404($message = true) {
+    public function error404($message = true)
+    {
         $this->addHeader(404)->sendHeaders();
 
         if (!$message) {
@@ -78,7 +81,8 @@ class Response {
      * Returns an array of standard HTTP statuses
      * @return array|boolean
      */
-    public function statuses($status = null) {
+    public function statuses($status = null)
+    {
         $statuses = array(
             100 => 'Continue',
             101 => 'Switching Protocols',
@@ -134,7 +138,8 @@ class Response {
      * @param array $data
      * @param array $options
      */
-    public function json($data, $options = array()) {
+    public function json($data, $options = array())
+    {
         $this->addHeader('Content-Type', 'application/json');
         $this->addOptionalHeaders($options);
         $this->sendHeaders();
@@ -147,7 +152,8 @@ class Response {
      * @param string $html
      * @param array $options
      */
-    public function html($html, $options = array()) {
+    public function html($html, $options = array())
+    {
         $this->addHeader('Content-Type', 'text/html; charset=utf-8');
         $this->addOptionalHeaders($options);
         $this->sendHeaders();
@@ -161,7 +167,8 @@ class Response {
      * @param string $filename An alternative filename
      * @param array $options
      */
-    public function download($file, $filename = '', $options = array()) {
+    public function download($file, $filename = '', $options = array())
+    {
         if (!file_exists($file)) {
             exit;
         }
@@ -189,7 +196,8 @@ class Response {
      * @param string $file
      * @param array $options
      */
-    public function file($file, $options = array()) {
+    public function file($file, $options = array())
+    {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimetype = finfo_file($finfo, $file);
         finfo_close($finfo);
@@ -211,7 +219,8 @@ class Response {
      * Sends headers
      * @return boolean
      */
-    protected function sendHeaders() {
+    protected function sendHeaders()
+    {
         if (!headers_sent()) {
             foreach ($this->headers as $header) {
                 header($header, true);
@@ -230,7 +239,8 @@ class Response {
      * @param string $value Optional second part of header name
      * @return \core\classes\Response
      */
-    protected function addHeader($name, $value = null) {
+    protected function addHeader($name, $value = null)
+    {
         if (is_numeric($name)) {
             $status = $this->statuses($name);
             if (!empty($status)) {
@@ -247,12 +257,12 @@ class Response {
      * Adds headers from deliver options
      * @param array $options
      */
-    protected function addOptionalHeaders($options) {
+    protected function addOptionalHeaders($options)
+    {
         if (!empty($options['headers'])) {
             foreach ((array) $options['headers'] as $header) {
                 call_user_func_array(array($this, 'addHeader'), (array) $header);
             }
         }
     }
-
 }
