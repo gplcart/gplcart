@@ -20,7 +20,8 @@ use core\exceptions\SystemFailure as Exception;
 /**
  * Provides methods to route incoming requests and setup the system
  */
-class Facade {
+class Facade
+{
 
     /**
      * Route class instance
@@ -76,8 +77,8 @@ class Facade {
      */
     public function __construct(Route $route, classesUrl $url,
             classesSession $session, Config $config, Hook $hook, Logger $logger,
-            Exception $exception) {
-
+            Exception $exception)
+    {
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;
@@ -119,7 +120,8 @@ class Facade {
     /**
      * Process the route
      */
-    public function route() {
+    public function route()
+    {
         // Redirect to installation if needed
         if ((!$this->config->exists() || $this->session->get('install', 'processing')) && !$this->url->isInstall()) {
             $this->url->redirect('install');
@@ -127,5 +129,4 @@ class Facade {
 
         $this->route->process();
     }
-
 }
