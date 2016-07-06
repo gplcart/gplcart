@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -63,7 +62,7 @@ class CategoryGroup
     /**
      * Load a gategory group from the database
      * @param integer $category_group_id
-     * @param string $language
+     * @param null|string $language
      * @return array
      */
     public function get($category_group_id, $language = null)
@@ -75,7 +74,7 @@ class CategoryGroup
 
         $category_group = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($category_group) {
+        if (!empty($category_group)) {
             $category_group['data'] = unserialize($category_group['data']);
             $category_group['language'] = 'und';
 
@@ -244,8 +243,8 @@ class CategoryGroup
 
     /**
      * Returns true if the category group can be deleted
-     * @param type $category_group_id
-     * @return type
+     * @param integer $category_group_id
+     * @return boolean
      */
     public function canDelete($category_group_id)
     {
@@ -285,7 +284,7 @@ class CategoryGroup
             $values['title'] = $data['title'];
         }
 
-        if ($values) {
+        if (!empty($values)) {
             $this->db->update('category_group', $values, array('category_group_id' => $category_group_id));
         }
 

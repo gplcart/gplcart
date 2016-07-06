@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -133,13 +132,11 @@ class Order
      * @param Config $config
      */
     public function __construct(ModelsUser $user, ModelsPrice $price,
-                                ModelsPriceRule $pricerule,
-                                ModelsProduct $product, ModelsCart $cart,
-                                ModelsLanguage $language,
-                                ModelsNotification $notification,
-                                ModelsShipping $shipping,
-                                ModelsPayment $payment, ClassesRequest $request,
-                                Hook $hook, Logger $logger, Config $config)
+            ModelsPriceRule $pricerule, ModelsProduct $product,
+            ModelsCart $cart, ModelsLanguage $language,
+            ModelsNotification $notification, ModelsShipping $shipping,
+            ModelsPayment $payment, ClassesRequest $request, Hook $hook,
+            Logger $logger, Config $config)
     {
         $this->hook = $hook;
         $this->user = $user;
@@ -189,7 +186,7 @@ class Order
     /**
      * Returns an array of orders or total number of orders
      * @param array $data
-     * @return mixed
+     * @return array|integer
      */
     public function getList($data = array())
     {
@@ -362,7 +359,7 @@ class Order
      * @param array $data
      * @return boolean
      */
-    public function update($order_id, $data)
+    public function update($order_id, array $data)
     {
         $this->hook->fire('update.order.before', $order_id, $data);
 
@@ -461,7 +458,7 @@ class Order
      * @param array $order
      * @return boolean
      */
-    public function setViewed($order)
+    public function setViewed(array $order)
     {
         $user_id = $this->user->id();
 
@@ -493,7 +490,7 @@ class Order
      * @param integer $user_id
      * @return boolean
      */
-    public function isViewed($order, $user_id)
+    public function isViewed(array $order, $user_id)
     {
         $sql = 'SELECT history_id
                 FROM history
@@ -517,7 +514,7 @@ class Order
      * @param array $order
      * @return boolean
      */
-    public function isNew($order)
+    public function isNew(array $order)
     {
         $viewed = isset($order['viewed']) ? (int) $order['viewed'] : 0;
         $lifespan = (int) $this->config->get('history_lifespan', 2628000);
@@ -535,7 +532,7 @@ class Order
      * @param array $cart
      * @return array|boolean
      */
-    public function submit($data, $cart)
+    public function submit(array $data, array $cart)
     {
         $this->hook->fire('submit.order.before', $data, $cart);
 
@@ -571,7 +568,7 @@ class Order
      * @param array $order
      * @return mixed
      */
-    public function setNotification($order)
+    public function setNotification(array $order)
     {
         $this->notification->set('order_created_admin', array($order));
 
@@ -594,7 +591,7 @@ class Order
      * @param array $order
      * @return string
      */
-    public function getCompleteMessage($order)
+    public function getCompleteMessage(array $order)
     {
         if (is_numeric($order['user_id'])) {
             return $this->notification->set('order_complete_customer', array($order));
@@ -608,7 +605,7 @@ class Order
      * @param array $order
      * @return boolean|integer
      */
-    public function add($order)
+    public function add(array $order)
     {
         $this->hook->fire('add.order.before', $order);
 
@@ -686,7 +683,7 @@ class Order
      */
     protected function getDefaultStatuses()
     {
-        $default = array(
+        return array(
             'pending' => $this->language->text('Pending'),
             'processing' => $this->language->text('Processing'),
             'canceled' => $this->language->text('Canceled'),
@@ -694,15 +691,13 @@ class Order
             'delivered' => $this->language->text('Delivered'),
             'completed' => $this->language->text('Completed')
         );
-
-        return $default;
     }
 
     /**
      * Sets price rules after the order was created
      * @param array $order
      */
-    protected function setPriceRule($order)
+    protected function setPriceRule(array $order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
             if (!is_numeric($component_id)) {
@@ -723,7 +718,7 @@ class Order
      * @param array $order
      * @param array $cart
      */
-    protected function setCart($order, $cart)
+    protected function setCart(array $order, array $cart)
     {
         foreach ($cart['items'] as $item) {
             $this->cart->update($item['cart_id'], array('order_id' => $order['order_id']));
@@ -767,7 +762,7 @@ class Order
      * Logs the order submit event
      * @param array $order
      */
-    protected function logSubmit($order)
+    protected function logSubmit(array $order)
     {
         $log = array(
             'message' => 'User %s has submitted order',
@@ -778,8 +773,8 @@ class Order
     }
 
     /**
-     *
-     * @return type
+     * Returns the current user data to be used in order logs
+     * @return array
      */
     protected function getUserData()
     {
@@ -795,7 +790,7 @@ class Order
      * @param array $cart
      * @return array
      */
-    protected function setComponents(&$order, $cart)
+    protected function setComponents(array &$order, array $cart)
     {
         foreach ($cart['items'] as $cart_id => $item) {
             $order['data']['components']['cart'][$cart_id] = $item['total'];
@@ -841,7 +836,8 @@ class Order
      * @param array  $order
      * @return array
      */
-    protected function prepareComponentCart(array $component, $cart, $order)
+    protected function prepareComponentCart(array $component, array $cart,
+            array $order)
     {
         foreach ($component as $cart_id => $price) {
             if (isset($cart[$cart_id]['sku'])) {
@@ -861,7 +857,8 @@ class Order
      * @param array $cart
      * @param array $order
      */
-    protected function prepareComponentService($type, $price, $cart, $order)
+    protected function prepareComponentService($type, $price, array $cart,
+            array $order)
     {
         $service = $this->getService($order[$type], $type, $cart, $order);
         $service['component_price'] = $price;
@@ -877,7 +874,8 @@ class Order
      * @param array $order
      * @return array
      */
-    protected function prepareComponentPriceRule($rule_id, $price, $cart, $order)
+    protected function prepareComponentPriceRule($rule_id, $price, array $cart,
+            array $order)
     {
         $rule = $this->pricerule->get($rule_id);
         $rule['component_price'] = $price;
@@ -890,11 +888,12 @@ class Order
      * @param array $order
      * @return array
      */
-    protected function prepareOrder($order)
+    protected function prepareOrder(array $order)
     {
         $order['data'] = unserialize($order['data']);
         $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         $order['status_formatted'] = $this->getStatusName($order['status']);
         return $order;
     }
+
 }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -55,7 +54,7 @@ class Module
     /**
      * Whether the module exists and enabled
      * @param string $module_id
-     * @return array
+     * @return boolean
      */
     public function enabled($module_id)
     {
@@ -112,7 +111,7 @@ class Module
     /**
      * Enables a module
      * @param string $module_id
-     * @return boolean
+     * @return boolean|string
      */
     public function enable($module_id)
     {
@@ -141,7 +140,7 @@ class Module
     /**
      * Whether a given module can be enabled
      * @param string $module_id
-     * @return boolean
+     * @return boolean|string
      */
     public function canEnable($module_id)
     {
@@ -182,7 +181,7 @@ class Module
      * Checks required modules for a given module
      * @param string $module_id
      * @param array $modules
-     * @return boolean
+     * @return boolean|array
      */
     public function checkRequiredModules($module_id, array $modules)
     {
@@ -202,12 +201,12 @@ class Module
                 $errors[] = $this->language->text('Required module %name is disabled', array('%name' => $required));
             }
         }
-
-        if ($errors) {
-            return $errors;
+        
+        if(empty($errors)){
+            return true;
         }
-
-        return true;
+        
+        return $errors;
     }
 
     /**
@@ -314,7 +313,7 @@ class Module
     /**
      * Whether a given module can be disabled
      * @param string $module_id
-     * @return boolean
+     * @return boolean|string
      */
     public function canDisable($module_id)
     {
@@ -324,7 +323,7 @@ class Module
     /**
      * Whether a given module can be uninstalled
      * @param string $module_id
-     * @return boolean|string
+     * @return mixed
      */
     public function canUninstall($module_id)
     {
@@ -385,7 +384,7 @@ class Module
      * Checks dependent modules
      * @param string $module_id
      * @param array $modules
-     * @return boolean|array
+     * @return mixed
      */
     public function checkDependentModules($module_id, array $modules)
     {
@@ -415,7 +414,7 @@ class Module
     /**
      * Installs a module
      * @param string $module_id
-     * @return boolean|string
+     * @return mixed
      */
     public function install($module_id)
     {
@@ -456,7 +455,7 @@ class Module
     /**
      * Uninstalls a module
      * @param string $module_id
-     * @return array|boolean
+     * @return mixed
      */
     public function uninstall($module_id)
     {
@@ -557,7 +556,7 @@ class Module
     {
         $files = $this->scanTranslations($module_id);
 
-        if (!$files) {
+        if (empty($files)) {
             return false;
         }
 
@@ -591,7 +590,7 @@ class Module
         $directory = GC_MODULE_DIR . "/$module_id/locale";
 
         if (file_exists($directory)) {
-            return glob("$directory/*.{po,mo}", GLOB_BRACE);
+            return glob("$directory/*.{po}", GLOB_BRACE);
         }
 
         return array();

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -69,8 +68,7 @@ class Page
      * @param Config $config
      */
     public function __construct(ModelsImage $image, ModelsAlias $alias,
-                                ModelsLanguage $language, Hook $hook,
-                                Config $config)
+            ModelsLanguage $language, Hook $hook, Config $config)
     {
         $this->hook = $hook;
         $this->alias = $alias;
@@ -94,7 +92,7 @@ class Page
 
         $page = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($page) {
+        if (!empty($page)) {
             $page['data'] = unserialize($page['data']);
             $page['language'] = 'und';
 
@@ -119,7 +117,7 @@ class Page
     /**
      * Adds a page
      * @param array $data
-     * @return integer
+     * @return integer|boolean
      */
     public function add(array $data)
     {
@@ -274,7 +272,7 @@ class Page
             $values['data'] = serialize((array) $data['data']);
         }
 
-        if ($values) {
+        if (!empty($values)) {
             $values['modified'] = !empty($data['modified']) ? (int) $data['modified'] : GC_TIME;
             $this->db->update('page', $values, $where);
         }
@@ -435,7 +433,7 @@ class Page
      * @param integer $page_id
      * @param array $data
      * @param boolean $delete
-     * @return integer
+     * @return integer|boolean
      */
     protected function setAlias($page_id, array $data, $delete = true)
     {
@@ -482,4 +480,5 @@ class Page
 
         return (bool) $this->db->delete('page_translation', $where);
     }
+
 }

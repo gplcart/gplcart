@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -62,7 +61,7 @@ class Field
     {
         $types = &Cache::memory('widget.types');
 
-        if ($types) {
+        if (isset($types)) {
             return $types;
         }
 
@@ -80,7 +79,7 @@ class Field
     /**
      * Adds a field
      * @param array $data
-     * @return boolean
+     * @return boolean|integer
      */
     public function add(array $data)
     {
@@ -132,7 +131,7 @@ class Field
     /**
      * Returns an array of fields
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -214,7 +213,7 @@ class Field
     /**
      * Loads a field from the database
      * @param integer $field_id
-     * @param string $language
+     * @param string|null $language
      * @return array
      */
     public function get($field_id, $language = null)
@@ -226,7 +225,7 @@ class Field
 
         $field = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($field) {
+        if (!empty($field)) {
             $field['data'] = unserialize($field['data']);
             $field['language'] = 'und';
 
@@ -319,7 +318,7 @@ class Field
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('field', $values, array('field_id' => (int) $field_id));
         }
 

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -84,7 +83,7 @@ class UserRole
 
     /**
      * Returns an array of roles or counts them
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -233,7 +232,7 @@ class UserRole
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('role', $values, array('role_id' => (int) $role_id));
             $this->hook->fire('update.role.after', $role_id, $data, $result);
         }

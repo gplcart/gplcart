@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -140,7 +139,7 @@ class Job
 
         $existing = $this->getSession($job['id']);
 
-        if ($existing && !empty($existing['operations'])) {
+        if (!empty($existing['operations'])) {
             return $existing;
         }
 
@@ -235,6 +234,7 @@ class Job
         $start_time = microtime(true);
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::JOB_MAX_TIME) {
+            
             $args = array_merge(array($job, $operation_id, $done, $context), $arguments);
             $result = Handler::call($handlers, $operation_id, 'process', $args);
 
@@ -396,7 +396,6 @@ class Job
         }
 
         $this->session->setMessage($message, 'danger');
-        return;
     }
 
     /**

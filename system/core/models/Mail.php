@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -166,35 +165,39 @@ class Mail
      * @param array $options Store settings
      * @return string
      */
-    public function signatureText($options)
+    public function signatureText(array $options)
     {
-        $signature[] = '-------------------------------------';
+        $signature[] = array();
 
-        if ($options['owner']) {
+        if (!empty($options['owner'])) {
             $signature[] = "!owner";
         }
 
-        if ($options['address']) {
+        if (!empty($options['address'])) {
             $signature[] = "!address";
         }
 
-        if ($options['phone']) {
+        if (!empty($options['phone'])) {
             $signature[] = "tel: !phone";
         }
 
-        if ($options['fax']) {
+        if (!empty($options['fax'])) {
             $signature[] = "fax: !fax";
         }
 
-        if ($options['email']) {
+        if (!empty($options['email'])) {
             $signature[] = "e-mail: !store_email";
         }
 
-        if ($options['map']) {
+        if (!empty($options['map'])) {
             $signature[] = "Find us on Google Maps: !map";
         }
 
-        return count($signature > 1) ? implode("\n", $signature) : '';
+        if (empty($signature)) {
+            return '';
+        }
+
+        return "-------------------------------------\n" . implode("\n", $signature);
     }
 
     /**
@@ -210,7 +213,7 @@ class Mail
             '!store_email' => implode(',', $options['email']),
             '!fax' => implode(',', $options['fax']),
             '!address' => $options['address'],
-            '!map' => $options['map'] ? 'http://maps.google.com/?q=' . implode(',', $options['map']) : '',
+            '!map' => empty($options['map']) ? '' : 'http://maps.google.com/?q=' . implode(',', $options['map']),
         );
     }
 
@@ -287,4 +290,5 @@ class Mail
 
         $this->logger->log('email', $log, $severity);
     }
+
 }

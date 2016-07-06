@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -354,7 +353,7 @@ class Import
         $return = array('errors' => array(), 'images' => array());
         $images = array_filter(array_map('trim', explode($this->getCsvDelimiterMultiple(), $data)));
 
-        if (!$images) {
+        if (empty($images)) {
             return $return;
         }
 

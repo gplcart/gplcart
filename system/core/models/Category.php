@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -84,15 +83,15 @@ class Category
         $this->image = $image;
         $this->alias = $alias;
         $this->config = $config;
-        $this->db = $config->getDb();
         $this->language = $language;
+        $this->db = $config->getDb();
         $this->category_group = $category_group;
     }
 
     /**
      * Loads a category from the database
      * @param integer $category_id
-     * @param string $language
+     * @param string|null $language
      * @return array
      */
     public function get($category_id, $language = null)
@@ -109,7 +108,7 @@ class Category
 
         $category = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($category) {
+        if (!empty($category)) {
             $category['data'] = unserialize($category['data']);
             $category['language'] = 'und';
 
@@ -144,7 +143,7 @@ class Category
     /**
      * Returns a list of categories per store to use directly in <select>
      * @param integer $store_id
-     * @param string $usage
+     * @param string|null $usage
      * @return array
      */
     public function getOptionListByStore($store_id, $usage = null)
@@ -158,7 +157,7 @@ class Category
 
     /**
      * Returns a list of categories to use directly in <select>
-     * @param integer $group_id
+     * @param null|integer $group_id
      * @param integer $parent_id
      * @param boolean $hierarchy
      * @return array
@@ -168,7 +167,7 @@ class Category
     {
         $categories = $this->getTree(array('category_group_id' => $group_id, 'parent_id' => $parent_id, 'status' => 1));
 
-        if (!$categories) {
+        if (empty($categories)) {
             return array();
         }
 
@@ -342,7 +341,7 @@ class Category
     /**
      * Returns an array of categories
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -404,7 +403,7 @@ class Category
     /**
      * Adds a category
      * @param array $data
-     * @return integer
+     * @return integer|boolean
      */
     public function add(array $data)
     {

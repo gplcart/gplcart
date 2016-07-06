@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -77,7 +76,7 @@ class Store
     /**
      * Returns an array of stores or counts them
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -332,11 +331,11 @@ class Store
     {
         $store_id = $this->config->get('store', 1);
 
-        if (!$load) {
-            return (int) $store_id;
+        if ($load) {
+            return $this->get($store_id);
         }
 
-        return $this->get($store_id);
+        return (int) $store_id;
     }
 
     /**
@@ -381,7 +380,7 @@ class Store
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('store', $values, array('store_id' => (int) $store_id));
         }
 
@@ -516,4 +515,5 @@ class Store
 
         return $emails;
     }
+
 }

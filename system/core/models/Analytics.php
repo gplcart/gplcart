@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -79,10 +78,10 @@ class Analytics
 
     /**
      * Sets credentials for GoogleAPI
-     * @param type $email
-     * @param type $certificate
-     * @param type $app_name
-     * @return \core\models\Analytics
+     * @param string $email
+     * @param string $certificate
+     * @param string $app_name
+     * @return object \core\models\Analytics
      */
     public function setCredentials($email, $certificate, $app_name)
     {
@@ -109,7 +108,7 @@ class Analytics
     /**
      * Sets a Google Analytics view to work with
      * @param string $view
-     * @return \core\models\Analytics
+     * @return object \core\models\Analytics
      */
     public function setView($view)
     {

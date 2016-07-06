@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -66,7 +65,7 @@ class Country
      * Returns an array of country format
      * @param string|array $country
      * @param bool $only_enabled
-     * @return type
+     * @return array
      */
     public function getFormat($country, $only_enabled = false)
     {
@@ -108,7 +107,7 @@ class Country
 
         $country = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($country) {
+        if (!empty($country)) {
             $country['format'] = unserialize($country['format']);
             $default_format = $this->defaultFormat();
             $country['format'] = Tool::merge($default_format, $country['format']);
@@ -296,7 +295,7 @@ class Country
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('country', $values, array('code' => $code));
             $this->hook->fire('update.country.after', $code, $data, $result);
         }

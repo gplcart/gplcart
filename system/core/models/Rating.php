@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -15,7 +14,7 @@ use core\Hook;
 use core\Config;
 
 /**
- * Manages basic behaviors and data related to the rating system
+ * Manages basic behaviors and data related to rating system
  */
 class Rating
 {
@@ -95,7 +94,7 @@ class Rating
     /**
      * Sets an rating for the given user and product
      * @param integer $product_id
-     * @param string $user_id
+     * @param string|integer $user_id
      * @param float|integer $rating
      * @return integer
      */
@@ -112,13 +111,13 @@ class Rating
     /**
      * Adds a user rating
      * @param integer $product_id
-     * @param string $user_id
+     * @param string|integer $user_id
      * @param float|integer $rating
      * @return boolean|integer
      */
     protected function addUser($product_id, $user_id, $rating)
     {
-        if (!$rating) {
+        if (empty($rating)) {
             return false;
         }
 
@@ -132,7 +131,7 @@ class Rating
     }
 
     /**
-     * Sets the bayesian rating and votes for the given product
+     * Sets bayesian rating and votes for the given product
      * @param integer $product_id
      * @return array
      */

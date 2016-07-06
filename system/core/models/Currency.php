@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -108,7 +107,7 @@ class Currency
     /**
      * Returns an array of currensies
      * @param boolean $enabled
-     * @return type
+     * @return array
      */
     public function getList($enabled = false)
     {
@@ -188,7 +187,7 @@ class Currency
 
     /**
      * Returns true if the currency can be deleted
-     * @param type $code
+     * @param string $code
      * @return boolean
      */
     public function canDelete($code)
@@ -232,8 +231,8 @@ class Currency
 
     /**
      * Loads a currency from the database
-     * @param string $currency_code
-     * @return array
+     * @param null|string $currency_code
+     * @return array|string
      */
     public function get($currency_code = null)
     {
@@ -245,19 +244,19 @@ class Currency
 
         $list = $this->getList();
 
-        if ($currency_code) {
+        if (!empty($currency_code)) {
             $currency = isset($list[$currency_code]) ? $list[$currency_code] : array();
             return $currency;
         }
 
         $url = $this->request->get('currency');
 
-        if ($url) {
+        if (!empty($url)) {
             $currency_code = $url;
             $query = true;
         } else {
             $cookie = $this->request->cookie('currency');
-            if ($cookie) {
+            if (!empty($cookie)) {
                 $currency_code = $cookie;
             }
         }
@@ -283,12 +282,12 @@ class Currency
     {
         $default_currency = $this->config->get('currency', 'USD');
 
-        if (!$load) {
-            return $default_currency;
+        if ($load) {
+            $currencies = $this->getList();
+            return isset($currencies[$default_currency]) ? $currencies[$default_currency] : array();
         }
 
-        $currencies = $this->getList();
-        return isset($currencies[$default_currency]) ? $currencies[$default_currency] : array();
+        return $default_currency;
     }
 
     /**
@@ -319,4 +318,5 @@ class Currency
             )
         );
     }
+
 }

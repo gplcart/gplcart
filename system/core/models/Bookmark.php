@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -98,7 +97,7 @@ class Bookmark
 
     /**
      * Whether a user can add a bookmark
-     * @param integer $user_id
+     * @param integer|null $user_id
      * @return boolean
      */
     public function canAdd($user_id = null)

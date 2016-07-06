@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -250,7 +249,7 @@ class Address
      * @param array $data
      * @return string
      */
-    public function getGeocodeQuery($data)
+    public function getGeocodeQuery(array $data)
     {
         $fields = $this->getGeocodeFields();
 

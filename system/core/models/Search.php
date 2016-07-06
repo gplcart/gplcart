@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -120,7 +119,6 @@ class Search
     /**
      * Returns number of items available for indexing
      * @param string $id_key
-     * @param integer $id_value
      * @param array $options
      * @return mixed
      */

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -269,7 +268,7 @@ class Language
         $languages[$data['code']] = $values;
         $this->config->set('languages', $languages);
 
-        if ($values['default']) {
+        if (!empty($values['default'])) {
             $this->config->set('language', $data['code']);
         }
 
@@ -375,7 +374,7 @@ class Language
 
     /**
      * Translates a string
-     * @param string $string
+     * @param null|string $string
      * @param array $arguments
      * @return string
      */

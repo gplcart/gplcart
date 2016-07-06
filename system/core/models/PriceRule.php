@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -93,10 +92,10 @@ class PriceRule
     }
 
     /**
-     * Returns anarray of instance/method of condition handler
+     * Returns array of instance/method of the condition handler
      * @param string $condition_id
      * @param string $method
-     * @return array|false
+     * @return mixed
      */
     public function getConditionHandler($condition_id, $method)
     {
@@ -376,8 +375,8 @@ class PriceRule
     /**
      * Whether a price rule code exists
      * @param string $code
-     * @param integer $store_id
-     * @param boolean $exclude
+     * @param null|integer $store_id
+     * @param null|integer $exclude
      * @return boolean
      */
     public function codeExists($code, $store_id = null, $exclude = null)
@@ -405,7 +404,7 @@ class PriceRule
     /**
      * Adds a price rule
      * @param array $data
-     * @return boolean
+     * @return boolean|integer
      */
     public function add(array $data)
     {

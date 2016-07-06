@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -191,15 +190,16 @@ class Sku
     {
         $sku = $pattern;
 
-        if ($placeholders) {
+        if (!empty($placeholders)) {
             $sku = Tool::replacePlaceholders($pattern, $placeholders, $data);
         }
 
         $sku = mb_strimwidth($sku, 0, 200, 'UTF-8');
 
         $store_id = isset($data['store_id']) ? $data['store_id'] : null;
+        $existing = $this->get($sku, $store_id);
 
-        if ($this->get($sku, $store_id)) {
+        if (!empty($existing)) {
             $counter = 0;
             do {
                 $sku = $sku . '-' . $counter++;

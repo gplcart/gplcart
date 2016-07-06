@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -81,7 +80,7 @@ class Queue
 
         $existing = $this->get($queue['queue_id']);
 
-        if ($existing) {
+        if (!empty($existing)) {
             $queue['total'] = (int) $existing['items'] + (int) $queue['total'];
             $this->update($queue['queue_id'], $queue);
         } else {
@@ -160,7 +159,7 @@ class Queue
 
         $result = 0;
 
-        if ($values) {
+        if (!empty($values)) {
             $sql = 'INSERT INTO queue_item(queue_id, value) VALUES ' . implode(',', $values);
             $result = $this->db->query($sql)->rowCount();
         }
@@ -203,7 +202,7 @@ class Queue
      * @param array $data
      * @return boolean
      */
-    public function update($queue_id, $data)
+    public function update($queue_id, array $data)
     {
         $this->hook->fire('update.queue.before', $queue_id, $data);
 
@@ -227,7 +226,7 @@ class Queue
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $this->db->update('queue', $values, array('queue_id' => $queue_id));
             $result = true;
         }
@@ -249,7 +248,7 @@ class Queue
         $item = false;
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($result) {
+        if (!empty($result)) {
             $item = reset($result);
             $this->db->delete('queue_item', array('queue_item_id' => $item['queue_item_id']));
         }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -74,8 +73,8 @@ class Image
         $this->hook = $hook;
         $this->file = $file;
         $this->config = $config;
-        $this->db = $this->config->getDb();
         $this->imagestyle = $imagestyle;
+        $this->db = $this->config->getDb();
     }
 
     /**
@@ -177,7 +176,7 @@ class Image
     /**
      * Adds an image to the database
      * @param array $data
-     * @return integer
+     * @return integer|boolean
      */
     public function add(array $data)
     {
@@ -349,7 +348,7 @@ class Image
 
         $directory = GC_IMAGE_CACHE_DIR;
 
-        if ($imagestyle_id) {
+        if (!empty($imagestyle_id)) {
             $directory = "$directory/$imagestyle_id";
         }
 
@@ -380,7 +379,6 @@ class Image
      * @param integer $imagestyle_id
      * @param string $image
      * @param boolean $absolute
-     * @param boolean $check
      * @return string
      */
     public function url($imagestyle_id, $image, $absolute = false)

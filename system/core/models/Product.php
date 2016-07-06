@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -110,10 +109,9 @@ class Product
      * @param Config $config
      */
     public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
-                                ModelsImage $image, ModelsAlias $alias,
-                                ModelsLanguage $language, ModelsSku $sku,
-                                ModelsSearch $search, ClassesRequest $request,
-                                Hook $hook, Config $config)
+            ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
+            ModelsSku $sku, ModelsSearch $search, ClassesRequest $request,
+            Hook $hook, Config $config)
     {
         $this->sku = $sku;
         $this->hook = $hook;
@@ -330,7 +328,7 @@ class Product
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $values['modified'] = isset($data['modified']) ? (int) $data['modified'] : GC_TIME;
             $result = (boolean) $this->db->update('product', $values, array('product_id' => (int) $product_id));
         }
@@ -435,7 +433,7 @@ class Product
      * @return boolean|integer
      */
     public function addField($product_id, $field_id, $field_value_id,
-                             $field_type)
+            $field_type)
     {
         $arguments = func_get_args();
 
@@ -496,14 +494,14 @@ class Product
     /**
      * Creates a field combination id from the field value ids
      * @param array $field_value_ids
-     * @param integer $product_id
+     * @param null|integer $product_id
      * @return string
      */
-    public function getCombinationId($field_value_ids, $product_id = null)
+    public function getCombinationId(array $field_value_ids, $product_id = null)
     {
         sort($field_value_ids);
 
-        if ($product_id) {
+        if (!empty($product_id)) {
             return $product_id . '-' . implode('_', $field_value_ids);
         }
 
@@ -538,7 +536,7 @@ class Product
 
         $product = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($product) {
+        if (!empty($product)) {
             $product['data'] = unserialize($product['data']);
             $product['language'] = 'und';
 
@@ -671,7 +669,7 @@ class Product
 
         $product = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($product) {
+        if (!empty($product)) {
             $product['data'] = unserialize($product['data']);
             $product['images'] = $this->image->getList('product_id', $product['product_id']);
         }
@@ -781,7 +779,7 @@ class Product
 
         $limit = (int) $this->config->get('product_comparison_limit', 10);
 
-        if ($limit) {
+        if (!empty($limit)) {
             $product_ids = array_slice($product_ids, -$limit);
         }
 
@@ -805,7 +803,7 @@ class Product
         $product_ids = array();
         $saved = $this->request->cookie('comparison');
 
-        if ($saved) {
+        if (!empty($saved)) {
             $product_ids = explode(',', $saved);
         }
 
@@ -886,7 +884,7 @@ class Product
     {
         $volume_value = (int) $product['width'] * (int) $product['height'] * (int) $product['length'];
 
-        if (!$convert_to) {
+        if (empty($convert_to)) {
             return round($volume_value, $round);
         }
 
@@ -912,7 +910,7 @@ class Product
         $sth->execute(array(':product_id' => $product_id));
         $list = $sth->fetchAll(PDO::FETCH_COLUMN, 0);
 
-        if ($list && $load) {
+        if (!empty($list) && $load) {
             $data += array('product_id' => $list);
             $list = $this->getList($data);
         }
@@ -1150,7 +1148,7 @@ class Product
      * @param integer $product_id
      * @param array $data
      * @param boolean $delete
-     * @return integer
+     * @return integer|boolean
      */
     protected function setAlias($product_id, array $data, $delete = true)
     {
@@ -1288,4 +1286,5 @@ class Product
         $this->db->delete('option_combination', $where);
         return true;
     }
+
 }

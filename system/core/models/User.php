@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -112,7 +111,7 @@ class User
     /**
      * Adds a user
      * @param array $data
-     * @return integer A user ID
+     * @return integer
      */
     public function add(array $data)
     {

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -65,7 +64,7 @@ class FieldValue
     /**
      * Returns an array of values for a given field
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -139,7 +138,7 @@ class FieldValue
     /**
      * Returns a field value
      * @param integer $field_value_id
-     * @param string $language
+     * @param null|string $language
      * @return array
      */
     public function get($field_value_id, $language = null)
@@ -157,7 +156,7 @@ class FieldValue
         $field_value = $sth->fetch(PDO::FETCH_ASSOC);
 
 
-        if ($field_value) {
+        if (!empty($field_value)) {
             $field_value['language'] = 'und';
 
             $sth = $this->db->prepare('SELECT * FROM field_value_translation WHERE field_value_id=:field_value_id');
@@ -179,7 +178,7 @@ class FieldValue
     /**
      * Adds a field value
      * @param array $data
-     * @return boolean
+     * @return boolean|integer
      */
     public function add(array $data)
     {
@@ -267,7 +266,7 @@ class FieldValue
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = (bool) $this->db->update('field_value', $values, array('field_value_id' => (int) $field_value_id));
         }
 

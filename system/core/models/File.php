@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -76,7 +75,7 @@ class File
 
     /**
      * Path of a uploaded file
-     * @var type
+     * @var string
      */
     private $uploaded;
 
@@ -89,7 +88,7 @@ class File
      * @param Config $config
      */
     public function __construct(ModelsLanguage $language, ClassesUrl $url,
-                                ClassesCurl $curl, Hook $hook, Config $config)
+            ClassesCurl $curl, Hook $hook, Config $config)
     {
         $this->url = $url;
         $this->curl = $curl;
@@ -102,11 +101,15 @@ class File
     /**
      * Adds a file to the database
      * @param array $data
-     * @return integer
+     * @return boolean|integer
      */
     public function add(array $data)
     {
         $this->hook->fire('add.file.before', $data);
+
+        if (empty($data)) {
+            return false;
+        }
 
         if (empty($data['mime_type'])) {
             $data['mime_type'] = $this->getMimetype(GC_FILE_DIR . '/' . $data['path']);
@@ -203,7 +206,7 @@ class File
             $this->setTranslations($file_id, $data);
         }
 
-        if ($values) {
+        if (!empty($values)) {
             $this->db->update('file', $values, array('file_id' => $file_id));
         }
 
@@ -225,7 +228,7 @@ class File
 
         $file = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if ($file) {
+        if (!empty($file)) {
             $file['language'] = 'und';
             $file['translation'] = $this->getTranslations($file_id);
 
@@ -341,7 +344,7 @@ class File
     /**
      * Validate a file
      * @param string $path
-     * @param string $filename
+     * @param null|string $filename
      * @return boolean|string
      */
     public function validate($path, $filename = null)
@@ -372,7 +375,7 @@ class File
             $this->handler = $this->getHandler(".$extension");
         }
 
-        if (!$this->handler) {
+        if (empty($this->handler)) {
             return $this->language->text('Missing handler');
         }
 
@@ -502,6 +505,7 @@ class File
     /**
      * Sets a upload destination
      * @param string $path
+     * @return \core\models\File
      */
     public function setUploadPath($path)
     {
@@ -553,7 +557,7 @@ class File
     /**
      * Returns an array of files
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -683,7 +687,7 @@ class File
     /**
      * Creates file URL from path
      * @param string $path
-     * @param type $absolute
+     * @param bool $absolute
      * @return string
      */
     public function url($path, $absolute = false)
@@ -820,4 +824,5 @@ class File
         $this->uploaded = $destination;
         return true;
     }
+
 }
