@@ -984,6 +984,18 @@ class Route {
      * @return boolean|array
      */
     protected function parsePattern($pattern) {
+        
+        $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
+        $url = $this->path();
+        
+        if (preg_match($pattern, $url, $params)) {
+            array_shift($params);
+            return array_values($params);
+        }
+
+        return false;
+
+        /*
         if (!preg_match_all('#^' . $pattern . '$#', $this->path(), $matches, PREG_OFFSET_CAPTURE)) {
             return false;
         }
@@ -997,6 +1009,8 @@ class Route {
                 return (isset($match[0][0]) ? trim($match[0][0], '/') : null);
             }
         }, $matches, array_keys($matches));
+         * 
+         */
     }
 
     /**
