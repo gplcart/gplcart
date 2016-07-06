@@ -24,7 +24,6 @@ use core\models\Language as ModelsLanguage;
  */
 class Job
 {
-
     const JOB_MAX_TIME = 1000;
     const JOB_SESSION_KEY = 'jobs';
 
