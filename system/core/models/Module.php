@@ -202,7 +202,7 @@ class Module
             }
         }
         
-        if(empty($errors)){
+        if (empty($errors)) {
             return true;
         }
         

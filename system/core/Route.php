@@ -20,7 +20,8 @@ use core\classes\Request as classesRequest;
 /**
  * Routes incoming requests
  */
-class Route {
+class Route
+{
 
     /**
      * Url class instance
@@ -78,8 +79,8 @@ class Route {
      * @param Hook $hook
      */
     public function __construct(classesUrl $url, classesRequest $request,
-            Config $config, Hook $hook) {
-
+            Config $config, Hook $hook)
+    {
         $this->url = $url;
         $this->hook = $hook;
         $this->config = $config;
@@ -94,7 +95,8 @@ class Route {
      * Returns an array of all available routes
      * @return array
      */
-    public function getList() {
+    public function getList()
+    {
         $routes = &Cache::memory('routes');
 
         if (isset($routes)) {
@@ -822,7 +824,8 @@ class Route {
     /**
      * Processes the current route
      */
-    public function process() {
+    public function process()
+    {
         // Try to find an alias
         if (!empty($this->db)) {
             $this->findAliasByPath();
@@ -844,7 +847,8 @@ class Route {
      * Returns a language from the current URL
      * @return string
      */
-    public function getLangcode() {
+    public function getLangcode()
+    {
         return $this->langcode;
     }
 
@@ -852,14 +856,16 @@ class Route {
      * Returns the current route
      * @return array
      */
-    public function getCurrent() {
+    public function getCurrent()
+    {
         return $this->route;
     }
 
     /**
      * Sets the current language
      */
-    protected function setLangcode() {
+    protected function setLangcode()
+    {
         $default_langcode = $this->config->get('language', '');
         $languages = $this->config->get('languages', array());
 
@@ -884,7 +890,8 @@ class Route {
      * Finds an alias by the path
      * @return null
      */
-    protected function findAliasByPath() {
+    protected function findAliasByPath()
+    {
         $sth = $this->db->prepare('SELECT id_key, id_value FROM alias WHERE alias=:alias');
         $sth->execute(array(':alias' => $this->path()));
         $result = $sth->fetch(PDO::FETCH_ASSOC);
@@ -914,7 +921,8 @@ class Route {
     /**
      * Finds an alias by the route pattern
      */
-    protected function findAliasByPattern() {
+    protected function findAliasByPattern()
+    {
         $path_segments = $this->url->segments();
 
         foreach ($this->getList() as $pattern => $route) {
@@ -958,7 +966,8 @@ class Route {
      * @param array $routes
      * @return boolean|null
      */
-    protected function callController() {
+    protected function callController()
+    {
         foreach ($this->getList() as $pattern => $route) {
             $arguments = $this->parsePattern($pattern);
 
@@ -977,8 +986,8 @@ class Route {
      * @param string $pattern
      * @return boolean|array
      */
-    protected function parsePattern($pattern) {
-        
+    protected function parsePattern($pattern)
+    {
         $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
         $url = $this->path();
         
@@ -1003,7 +1012,7 @@ class Route {
                 return (isset($match[0][0]) ? trim($match[0][0], '/') : null);
             }
         }, $matches, array_keys($matches));
-         * 
+         *
          */
     }
 
@@ -1011,8 +1020,8 @@ class Route {
      * Returns the current path
      * @return string
      */
-    protected function path() {
+    protected function path()
+    {
         return $this->path;
     }
-
 }
