@@ -61,7 +61,7 @@ class Url {
      * @param boolean $exclude_langcode
      * @return string
      */
-    public function get($path = '', array $options = array(), $absolute = false,
+    public function get($path = '', $options = array(), $absolute = false,
             $exclude_langcode = false) {
         if (!empty($path)) {
             $url = $this->request->base($exclude_langcode) . trim($path, '/');

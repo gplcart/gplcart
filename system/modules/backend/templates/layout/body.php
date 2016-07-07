@@ -138,11 +138,6 @@
               <?php if ($this->access('search_edit')) { ?>
               <li><a href="<?php echo $this->url('admin/tool/search'); ?>"><?php echo $this->text('Search'); ?></a></li>
               <?php } ?>
-              <?php if ($this->isSuperadmin()) { ?>
-              <li>
-                <a href="<?php echo $this->url('admin/tool/reset'); ?>"><?php echo $this->text('Reset'); ?></a>
-              </li>
-              <?php } ?>
             </ul>
           </li>
           <li class="dropdown">

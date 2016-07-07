@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,7 +9,7 @@
 
 namespace core\handlers\file;
 
-use core\models\File;
+use core\models\File as ModelsFile;
 
 class Validator
 {
@@ -20,12 +19,12 @@ class Validator
      * @var \core\models\File $file
      */
     protected $file;
-
+    
     /**
      * Constructor
-     * @param File $file
+     * @param ModelsFile $file
      */
-    public function __construct(File $file)
+    public function __construct(ModelsFile $file)
     {
         $this->file = $file;
     }

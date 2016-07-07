@@ -355,12 +355,6 @@ class Route {
             )
         );
 
-        $routes['admin/tool/reset'] = array(
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Reset', 'reset')
-            )
-        );
-
         $routes['admin/tool/search'] = array(
             'access' => 'search_edit',
             'handlers' => array(
