@@ -23,7 +23,6 @@ use core\models\Language as ModelsLanguage;
  */
 class Job
 {
-
     const JOB_MAX_TIME = 1000;
     const JOB_SESSION_KEY = 'jobs';
 
@@ -234,7 +233,6 @@ class Job
         $start_time = microtime(true);
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::JOB_MAX_TIME) {
-            
             $args = array_merge(array($job, $operation_id, $done, $context), $arguments);
             $result = Handler::call($handlers, $operation_id, 'process', $args);
 

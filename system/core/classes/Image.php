@@ -13,7 +13,8 @@ namespace core\classes;
  * Provides methods to work with images
  * Inspired by SimpleImage https://github.com/claviska/SimpleImage
  */
-class Image {
+class Image
+{
 
     /**
      * Image quality (percent)
@@ -60,7 +61,8 @@ class Image {
     /**
      * Destroy image resource
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         if (isset($this->image) && get_resource_type($this->image) === 'gd') {
             imagedestroy($this->image);
         }
@@ -75,7 +77,8 @@ class Image {
      * @return \core\classes\Image
      */
     public function setFile($filename = null, $width = null, $height = null,
-            $color = null) {
+            $color = null)
+    {
         if ($filename) {
             $this->load($filename);
         } elseif ($width) {
@@ -91,7 +94,8 @@ class Image {
      * @return \core\classes\Image
      * @throws \RuntimeException
      */
-    public function load($filename) {
+    public function load($filename)
+    {
         // Require GD library
         if (!extension_loaded('gd')) {
             throw new \RuntimeException('Required extension GD is not loaded.');
@@ -105,7 +109,8 @@ class Image {
      * Get the current orientation
      * @return string
      */
-    public function get_orientation() {
+    public function get_orientation()
+    {
         if (imagesx($this->image) > imagesy($this->image)) {
             return 'landscape';
         }
@@ -124,7 +129,8 @@ class Image {
      * @param string|null $color
      * @return \core\classes\Image
      */
-    public function create($width, $height = null, $color = null) {
+    public function create($width, $height = null, $color = null)
+    {
         $height = $height ? : $width;
         $this->width = $width;
         $this->height = $height;
@@ -150,7 +156,8 @@ class Image {
      * @param string $color
      * @return \core\classes\Image
      */
-    public function fill($color = '#000000') {
+    public function fill($color = '#000000')
+    {
         $rgba = $this->normalize_color($color);
         $fill_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
 
@@ -165,7 +172,8 @@ class Image {
      * Rotates and/or flips an image automatically so the orientation will be correct (based on exif 'Orientation')
      * @return \core\classes\Image
      */
-    public function auto_orient() {
+    public function auto_orient()
+    {
         switch ($this->original_info['exif']['Orientation']) {
             case 1:
                 // Do nothing
@@ -210,7 +218,8 @@ class Image {
      * @param string $direction
      * @return \core\classes\Image
      */
-    public function flip($direction) {
+    public function flip($direction)
+    {
         $new = imagecreatetruecolor($this->width, $this->height);
 
         imagealphablending($new, false);
@@ -240,7 +249,8 @@ class Image {
      * @param string $bg_color
      * @return \core\classes\Image
      */
-    public function rotate($angle, $bg_color = '#000000') {
+    public function rotate($angle, $bg_color = '#000000')
+    {
         // Perform the rotation
         $rgba = $this->normalize_color($bg_color);
         $bg_color = imagecolorallocatealpha($this->image, $rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);
@@ -264,7 +274,8 @@ class Image {
      * @param integer $max_height
      * @return \core\classes\Image
      */
-    public function best_fit($max_width, $max_height) {
+    public function best_fit($max_width, $max_height)
+    {
 
         // If it already fits, there's nothing to do
         if ($this->width <= $max_width && $this->height <= $max_height) {
@@ -298,7 +309,8 @@ class Image {
      * @param integer $height
      * @return \core\classes\Image
      */
-    public function resize($width, $height) {
+    public function resize($width, $height)
+    {
         // Generate new GD image
         $new = imagecreatetruecolor($width, $height);
 
@@ -337,7 +349,8 @@ class Image {
      * @param integer $passes
      * @return \core\classes\Image
      */
-    public function blur($type = 'selective', $passes = 1) {
+    public function blur($type = 'selective', $passes = 1)
+    {
         switch (strtolower($type)) {
             case 'gaussian':
                 $type = IMG_FILTER_GAUSSIAN_BLUR;
@@ -357,7 +370,8 @@ class Image {
      * @param integer $level
      * @return \core\classes\Image
      */
-    public function brightness($level) {
+    public function brightness($level)
+    {
         imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $this->keep_within($level, -255, 255));
         return $this;
     }
@@ -367,7 +381,8 @@ class Image {
      * @param integer $level
      * @return \core\classes\Image
      */
-    public function contrast($level) {
+    public function contrast($level)
+    {
         imagefilter($this->image, IMG_FILTER_CONTRAST, $this->keep_within($level, -100, 100));
         return $this;
     }
@@ -378,7 +393,8 @@ class Image {
      * @param float $opacity
      * @return \core\classes\Image
      */
-    public function colorize($color, $opacity) {
+    public function colorize($color, $opacity)
+    {
         $rgba = $this->normalize_color($color);
         $alpha = $this->keep_within(127 - (127 * $opacity), 0, 127);
         imagefilter($this->image, IMG_FILTER_COLORIZE, $this->keep_within($rgba['r'], 0, 255), $this->keep_within($rgba['g'], 0, 255), $this->keep_within($rgba['b'], 0, 255), $alpha);
@@ -390,7 +406,8 @@ class Image {
      * @param integer $percentage
      * @return \core\classes\Image
      */
-    public function desaturate($percentage = 100) {
+    public function desaturate($percentage = 100)
+    {
         // Determine percentage
         $percentage = $this->keep_within($percentage, 0, 100);
 
@@ -417,7 +434,8 @@ class Image {
      * Edge detect
      * @return \core\classes\Image
      */
-    public function edges() {
+    public function edges()
+    {
         imagefilter($this->image, IMG_FILTER_EDGEDETECT);
         return $this;
     }
@@ -426,7 +444,8 @@ class Image {
      * Emboss
      * @return \core\classes\Image
      */
-    public function emboss() {
+    public function emboss()
+    {
         imagefilter($this->image, IMG_FILTER_EMBOSS);
         return $this;
     }
@@ -435,7 +454,8 @@ class Image {
      * Get the current height
      * @return integer
      */
-    public function get_height() {
+    public function get_height()
+    {
         return $this->height;
     }
 
@@ -443,7 +463,8 @@ class Image {
      * Get info about the original image
      * @return array
      */
-    public function get_original_info() {
+    public function get_original_info()
+    {
         return $this->original_info;
     }
 
@@ -451,7 +472,8 @@ class Image {
      * Get the current width
      * @return integer
      */
-    public function get_width() {
+    public function get_width()
+    {
         return $this->width;
     }
 
@@ -459,7 +481,8 @@ class Image {
      * Invert
      * @return \core\classes\Image
      */
-    public function invert() {
+    public function invert()
+    {
         imagefilter($this->image, IMG_FILTER_NEGATE);
         return $this;
     }
@@ -468,7 +491,8 @@ class Image {
      * Mean remove
      * @return \core\classes\Image
      */
-    public function mean_remove() {
+    public function mean_remove()
+    {
         imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
         return $this;
     }
@@ -478,7 +502,8 @@ class Image {
      * @param float $opacity
      * @return \core\classes\Image
      */
-    public function opacity($opacity) {
+    public function opacity($opacity)
+    {
         // Determine opacity
         $opacity = $this->keep_within($opacity, 0, 1) * 100;
 
@@ -509,7 +534,8 @@ class Image {
      * @return \core\classes\Image
      */
     public function overlay($overlay, $position = 'center', $opacity = 1,
-            $x_offset = 0, $y_offset = 0) {
+            $x_offset = 0, $y_offset = 0)
+    {
         // Load overlay image
         if (!($overlay instanceof Image)) {
             $overlay = new Image($overlay);
@@ -570,7 +596,8 @@ class Image {
      * @param integer $block_size
      * @return \core\classes\Image
      */
-    public function pixelate($block_size = 10) {
+    public function pixelate($block_size = 10)
+    {
         imagefilter($this->image, IMG_FILTER_PIXELATE, $block_size, true);
         return $this;
     }
@@ -584,7 +611,8 @@ class Image {
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function save($filename = null, $quality = null, $format = null) {
+    public function save($filename = null, $quality = null, $format = null)
+    {
         // Determine quality, filename, and format
         $quality = $quality ? : $this->quality;
         $filename = $filename ? : $this->filename;
@@ -621,7 +649,8 @@ class Image {
      * Sepia
      * @return \core\classes\Image
      */
-    public function sepia() {
+    public function sepia()
+    {
         imagefilter($this->image, IMG_FILTER_GRAYSCALE);
         imagefilter($this->image, IMG_FILTER_COLORIZE, 100, 50, 0);
         return $this;
@@ -631,7 +660,8 @@ class Image {
      * Sketch
      * @return \core\classes\Image
      */
-    public function sketch() {
+    public function sketch()
+    {
         imagefilter($this->image, IMG_FILTER_MEAN_REMOVAL);
         return $this;
     }
@@ -641,7 +671,8 @@ class Image {
      * @param integer $level
      * @return \core\classes\Image
      */
-    public function smooth($level) {
+    public function smooth($level)
+    {
         imagefilter($this->image, IMG_FILTER_SMOOTH, $this->keep_within($level, -10, 10));
         return $this;
     }
@@ -659,7 +690,8 @@ class Image {
      * @throws \RuntimeException
      */
     public function text($text, $font_file, $font_size = 12, $color = '#000000',
-            $position = 'center', $x_offset = 0, $y_offset = 0) {
+            $position = 'center', $x_offset = 0, $y_offset = 0)
+    {
         // todo - this method could be improved to support the text angle
         $angle = 0;
 
@@ -731,7 +763,8 @@ class Image {
      * @param integer|null $height
      * @return \core\classes\Image
      */
-    public function thumbnail($width, $height = null) {
+    public function thumbnail($width, $height = null)
+    {
         // Determine height
         $height = $height ? : $width;
 
@@ -758,7 +791,8 @@ class Image {
      * @param integer $height
      * @return \core\classes\Image
      */
-    public function fit_to_height($height) {
+    public function fit_to_height($height)
+    {
         $aspect_ratio = $this->height / $this->width;
         $width = $height / $aspect_ratio;
         return $this->resize($width, $height);
@@ -769,7 +803,8 @@ class Image {
      * @param integer $width
      * @return \core\classes\Image
      */
-    public function fit_to_width($width) {
+    public function fit_to_width($width)
+    {
         $aspect_ratio = $this->height / $this->width;
         $height = $width * $aspect_ratio;
         return $this->resize($width, $height);
@@ -783,7 +818,8 @@ class Image {
      * @param integer $y2
      * @return \core\classes\Image
      */
-    public function crop($x1, $y1, $x2, $y2) {
+    public function crop($x1, $y1, $x2, $y2)
+    {
         // Determine crop size
         if ($x2 < $x1) {
             list($x1, $x2) = array($x2, $x1);
@@ -814,7 +850,8 @@ class Image {
      * @return \core\classes\Image
      * @throws \InvalidArgumentException
      */
-    protected function get_meta_data() {
+    protected function get_meta_data()
+    {
         //gather meta data
         $info = getimagesize($this->filename);
 
@@ -855,7 +892,8 @@ class Image {
      * @param string $color
      * @return boolean|array
      */
-    protected function normalize_color($color) {
+    protected function normalize_color($color)
+    {
         if (is_string($color)) {
             $color = trim($color, '#');
 
@@ -904,7 +942,8 @@ class Image {
      * @param integer $max
      * @return integer
      */
-    protected function keep_within($value, $min, $max) {
+    protected function keep_within($value, $min, $max)
+    {
         if ($value < $min) {
             return $min;
         }
@@ -930,7 +969,8 @@ class Image {
      * @return null
      */
     protected function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y,
-            $src_x, $src_y, $src_w, $src_h, $pct) {
+            $src_x, $src_y, $src_w, $src_h, $pct)
+    {
         // Get image width and height and percentage
         $pct /= 100;
         $w = imagesx($src_im);
@@ -986,12 +1026,12 @@ class Image {
      * @param string $filename
      * @return string
      */
-    protected function file_ext($filename) {
+    protected function file_ext($filename)
+    {
         if (!preg_match('/\./', $filename)) {
             return '';
         }
 
         return preg_replace('/^.*\./', '', $filename);
     }
-
 }

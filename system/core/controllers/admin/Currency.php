@@ -380,5 +380,4 @@ class Currency extends Controller
 
         return true;
     }
-
 }

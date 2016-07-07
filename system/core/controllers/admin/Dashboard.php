@@ -229,5 +229,4 @@ class Dashboard extends Controller
         $this->data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
         $this->addJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
     }
-
 }

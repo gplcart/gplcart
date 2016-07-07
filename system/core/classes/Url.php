@@ -14,7 +14,8 @@ use core\classes\Request;
 /**
  * Provides methods to work with URLs
  */
-class Url {
+class Url
+{
 
     /**
      * Request class instance
@@ -26,7 +27,8 @@ class Url {
      * Constructor
      * @param Request $request
      */
-    public function __construct(Request $request) {
+    public function __construct(Request $request)
+    {
         $this->request = $request;
     }
 
@@ -36,7 +38,8 @@ class Url {
      * @param array $options
      * @param boolean $full
      */
-    public function redirect($url = '', array $options = array(), $full = false) {
+    public function redirect($url = '', array $options = array(), $full = false)
+    {
         if (!empty($url) && ($full || $this->isAbsolute($url))) {
             header("Location: $url");
             exit;
@@ -62,7 +65,8 @@ class Url {
      * @return string
      */
     public function get($path = '', $options = array(), $absolute = false,
-            $exclude_langcode = false) {
+            $exclude_langcode = false)
+    {
         if (!empty($path)) {
             $url = $this->request->base($exclude_langcode) . trim($path, '/');
         } else {
@@ -94,7 +98,8 @@ class Url {
      * @param string $path
      * @return array
      */
-    public function segments($path = '') {
+    public function segments($path = '')
+    {
         if (empty($path)) {
             $path = $this->path();
         }
@@ -107,7 +112,8 @@ class Url {
      * @param string $path
      * @return string
      */
-    public function path($path = '') {
+    public function path($path = '')
+    {
         if (empty($path)) {
             $path = $this->request->urn();
         }
@@ -119,7 +125,8 @@ class Url {
      * Returns true if the path is an admin area
      * @return boolean
      */
-    public function isBackend() {
+    public function isBackend()
+    {
         $segments = $this->segments();
         return (isset($segments[0]) && $segments[0] === 'admin');
     }
@@ -128,7 +135,8 @@ class Url {
      * Returns true if the path is a public area
      * @return boolean
      */
-    public function isFrontend() {
+    public function isFrontend()
+    {
         return !$this->isBackend();
     }
 
@@ -136,7 +144,8 @@ class Url {
      * Returns true if the path is admin dashboard
      * @return boolean
      */
-    public function isDashboard() {
+    public function isDashboard()
+    {
         $segments = $this->segments();
         return ((isset($segments[0]) && $segments[0] === 'admin') && empty($segments[1]));
     }
@@ -145,7 +154,8 @@ class Url {
      * Returns true if the path is /install
      * @return boolean
      */
-    public function isInstall() {
+    public function isInstall()
+    {
         $segments = $this->segments();
         return (isset($segments[0]) && $segments[0] === 'install');
     }
@@ -154,7 +164,8 @@ class Url {
      * Returns true if the path is front page
      * @return type
      */
-    public function isFront() {
+    public function isFront()
+    {
         $segments = $this->segments();
         return empty($segments[0]);
     }
@@ -163,7 +174,8 @@ class Url {
      * Returns a user ID from the path if it is /account* path
      * @return boolean
      */
-    public function isAccount() {
+    public function isAccount()
+    {
         $segments = $this->segments();
         if ((reset($segments) === 'account') && (isset($segments[1]) && is_numeric($segments[1]))) {
             return (int) $segments[1];
@@ -176,7 +188,8 @@ class Url {
      * @param string $server_path
      * @return string
      */
-    public function fromPath($server_path) {
+    public function fromPath($server_path)
+    {
         $url = $this->request->base() . trim(str_replace(GC_ROOT_DIR, '', $server_path), '/');
         return $url;
     }
@@ -186,11 +199,11 @@ class Url {
      * @param string $url
      * @return boolean
      */
-    protected function isAbsolute($url) {
+    protected function isAbsolute($url)
+    {
         return (bool) preg_match("/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi", $url);
     }
-
 }

@@ -221,5 +221,4 @@ class Help extends Controller
         ksort($list);
         return $list;
     }
-
 }
