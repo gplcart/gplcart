@@ -146,5 +146,4 @@ class Module extends Controller
     {
         $this->output('module/list');
     }
-
 }

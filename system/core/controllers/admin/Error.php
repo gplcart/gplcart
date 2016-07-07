@@ -74,5 +74,4 @@ class Error extends Controller
     {
         $this->output('common/error/403', array('headers' => array(403)));
     }
-
 }

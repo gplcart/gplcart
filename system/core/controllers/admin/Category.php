@@ -543,5 +543,4 @@ class Category extends Controller
 
         return !$has_errors;
     }
-
 }

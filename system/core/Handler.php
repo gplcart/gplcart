@@ -14,7 +14,8 @@ use core\Container;
 /**
  * Provides methods to work with various system handlers
  */
-class Handler {
+class Handler
+{
 
     /**
      * Calls a handler
@@ -25,7 +26,8 @@ class Handler {
      * @return mixed
      */
     public static function call($handlers, $handler_id, $method,
-            $arguments = array()) {
+            $arguments = array())
+    {
         $handler = static::get($handlers, $handler_id, $method);
 
         if (!empty($handler)) {
@@ -42,7 +44,8 @@ class Handler {
      * @param string $method
      * @return boolean|array
      */
-    public static function get($handlers, $handler_id, $method) {
+    public static function get($handlers, $handler_id, $method)
+    {
         if (isset($handler_id)) {
             if (empty($handlers[$handler_id]['handlers'][$method])) {
                 return false;
@@ -66,5 +69,4 @@ class Handler {
         $handler[0] = $instance;
         return $handler;
     }
-
 }

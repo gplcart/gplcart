@@ -12,7 +12,8 @@ namespace core\classes;
 /**
  * Provides methods to store, extract and delete cached data
  */
-class Cache {
+class Cache
+{
 
     /**
      * Returns a data from the cache file
@@ -21,7 +22,8 @@ class Cache {
      * @param integer $lifespan
      * @return mixed
      */
-    public static function get($key, $default = null, $lifespan = 0) {
+    public static function get($key, $default = null, $lifespan = 0)
+    {
         $file = GC_CACHE_DIR . "/$key.cache";
 
         if (file_exists($file)) {
@@ -45,7 +47,8 @@ class Cache {
      * @param array $data
      * @return boolean
      */
-    public static function set($key, array $data) {
+    public static function set($key, array $data)
+    {
         $file = GC_CACHE_DIR . "/$key.cache";
         if (file_put_contents($file, serialize((array) $data)) !== false) {
             chmod($file, 0600); // Read and write for owner, nothing for everybody else
@@ -60,7 +63,8 @@ class Cache {
      * @param string $pattern
      * @return integer
      */
-    public static function clear($cid, $pattern = '.cache') {
+    public static function clear($cid, $pattern = '.cache')
+    {
         static::clearMemory($cid);
 
         if ($cid === true) {
@@ -73,7 +77,8 @@ class Cache {
      * Deletes a variable from the static storage
      * @param string|null $name
      */
-    public static function clearMemory($name = null) {
+    public static function clearMemory($name = null)
+    {
         static::memory($name, null, true);
     }
 
@@ -84,7 +89,8 @@ class Cache {
      * @param boolean $reset
      * @return mixed
      */
-    public static function &memory($name, $default_value = null, $reset = false) {
+    public static function &memory($name, $default_value = null, $reset = false)
+    {
         static $data = array(), $default = array();
 
         if (isset($data[$name]) || array_key_exists($name, $data)) {
@@ -110,5 +116,4 @@ class Cache {
 
         return $data;
     }
-
 }
