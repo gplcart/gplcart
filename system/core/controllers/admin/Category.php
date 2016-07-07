@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Alias;
-use core\models\Image;
-use core\models\CategoryGroup;
-use core\models\Category as C;
+use core\models\Alias as ModelsAlias;
+use core\models\Image as ModelsImage;
+use core\models\Category as ModelsCategory;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 
+/**
+ * Handles incoming requests and outputs data related to categories
+ */
 class Category extends Controller
 {
 
@@ -45,13 +47,13 @@ class Category extends Controller
 
     /**
      * Constructor
-     * @param C $category
-     * @param Alias $alias
-     * @param Image $image
-     * @param CategoryGroup $category_group
+     * @param ModelsCategory $category
+     * @param ModelsAlias $alias
+     * @param ModelsImage $image
+     * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(C $category, Alias $alias, Image $image,
-                                CategoryGroup $category_group)
+    public function __construct(ModelsCategory $category, ModelsAlias $alias,
+            ModelsImage $image, ModelsCategoryGroup $category_group)
     {
         parent::__construct();
 
@@ -73,7 +75,7 @@ class Category extends Controller
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -118,7 +120,12 @@ class Category extends Controller
         $this->outputCategory();
     }
 
-    protected function getCategories($category_group)
+    /**
+     * Returns an array of categories for a given group
+     * @param array $category_group
+     * @return array
+     */
+    protected function getCategories(array $category_group)
     {
         $store = $this->store->get($category_group['store_id']);
         $categories = $this->category->getTree(array('category_group_id' => $category_group['category_group_id']));
@@ -173,7 +180,7 @@ class Category extends Controller
      * Sets titles to the category overview page
      * @param array $category_group
      */
-    protected function setTitleCategories($category_group)
+    protected function setTitleCategories(array $category_group)
     {
         $this->setTitle($this->text('Categories of group %name', array('%name' => $category_group['title'])));
     }
@@ -235,7 +242,7 @@ class Category extends Controller
      * @param array $category_group
      * @param array $category
      */
-    protected function setTitleCategory($category_group, $category)
+    protected function setTitleCategory(array $category_group, array $category)
     {
         if (isset($category['category_id'])) {
             $title = $this->text('Edit category %name', array('%name' => $category['title']));
@@ -249,9 +256,8 @@ class Category extends Controller
     /**
      * Sets breadcrumbs on the category edit page
      * @param array $category_group
-     * @param array $category
      */
-    protected function setBreadcrumbCategory($category_group)
+    protected function setBreadcrumbCategory(array $category_group)
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -292,11 +298,13 @@ class Category extends Controller
      * @param array $category_group
      * @param array $category
      */
-    protected function delete($category_group, $category)
+    protected function delete(array $category_group, array $category)
     {
         $this->controlAccess('category_delete');
 
-        if ($this->category->delete($category['category_id'])) {
+        $deleted = $this->category->delete($category['category_id']);
+
+        if ($deleted) {
             $this->redirect("admin/content/category/{$category_group['category_group_id']}", $this->text('Category has been deleted'), 'success');
         }
 
@@ -326,9 +334,9 @@ class Category extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
-        if ($action == 'weight' && $this->access('category_edit')) {
+        if ($action === 'weight' && $this->access('category_edit')) {
             foreach ($selected as $category_id => $weight) {
                 $this->category->update($category_id, array('weight' => $weight));
             }
@@ -338,21 +346,21 @@ class Category extends Controller
 
         $updated = $deleted = 0;
         foreach ($selected as $category_id) {
-            if ($action == 'status' && $this->access('category_edit')) {
+            if ($action === 'status' && $this->access('category_edit')) {
                 $updated += (int) $this->category->update($category_id, array('status' => (int) $value));
             }
 
-            if ($action == 'delete' && $this->access('category_delete')) {
+            if ($action === 'delete' && $this->access('category_delete')) {
                 $deleted += (int) $this->category->delete($category_id);
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Categories have been updated'), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Categories have been deleted'), 'success');
             return true;
         }
@@ -366,12 +374,14 @@ class Category extends Controller
      * @param array $category
      * @return null
      */
-    protected function submit($category_group, $category)
+    protected function submit(array $category_group, array $category)
     {
         $this->submitted = $this->request->post('category', array(), false);
         $this->validate($category);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['category'] = $this->submitted;
             return;
         }
@@ -391,7 +401,7 @@ class Category extends Controller
      * Performs validation checks on the given category
      * @param array $category
      */
-    protected function validate($category)
+    protected function validate(array $category)
     {
         $this->submitted['parent_id'] = isset($this->submitted['parent_id']) ? (int) $this->submitted['parent_id'] : 0;
         $this->submitted['status'] = !empty($this->submitted['status']);
@@ -440,7 +450,7 @@ class Category extends Controller
      * @param array $category
      * @return boolean
      */
-    protected function validateAlias($category)
+    protected function validateAlias(array $category)
     {
         if (empty($this->submitted['alias'])) {
             if (isset($category['category_id'])) {
@@ -462,7 +472,7 @@ class Category extends Controller
      * Validates title
      * @param array $category
      */
-    protected function validateTitle($category)
+    protected function validateTitle(array $category)
     {
         if (empty($this->submitted['title']) || (mb_strlen($this->submitted['title']) > 255)) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array(
@@ -477,7 +487,7 @@ class Category extends Controller
      * Validates meta title
      * @param array $category
      */
-    protected function validateMetaTitle($category)
+    protected function validateMetaTitle(array $category)
     {
         if (mb_strlen($this->submitted['meta_title']) > 255) {
             $this->data['form_errors']['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
@@ -491,7 +501,7 @@ class Category extends Controller
      * Validates meta description
      * @param array $category
      */
-    protected function validateMetaDescription($category)
+    protected function validateMetaDescription(array $category)
     {
         if (mb_strlen($this->submitted['meta_description']) > 255) {
             $this->data['form_errors']['meta_description'] = $this->text('Content must not exceed %s characters', array(
@@ -506,7 +516,7 @@ class Category extends Controller
      * Validates category translations
      * @param array $category
      */
-    protected function validateTranslation($category)
+    protected function validateTranslation(array $category)
     {
         if (empty($this->submitted['translation'])) {
             return true;
@@ -533,4 +543,5 @@ class Category extends Controller
 
         return !$has_errors;
     }
+
 }

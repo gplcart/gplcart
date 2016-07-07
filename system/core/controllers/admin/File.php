@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use Core\Controller;
-use core\models\File as F;
+use core\models\File as ModelsFile;
 
+/**
+ * Handles incoming requests and outputs data related to files
+ */
 class File extends Controller
 {
 
@@ -24,9 +26,9 @@ class File extends Controller
 
     /**
      * Constructor
-     * @param F $file
+     * @param ModelsFile $file
      */
-    public function __construct(F $file)
+    public function __construct(ModelsFile $file)
     {
         parent::__construct();
 
@@ -49,7 +51,7 @@ class File extends Controller
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action);
         }
 
@@ -87,7 +89,7 @@ class File extends Controller
      * Returns total number of files for pager
      * @param array $query
      */
-    protected function getTotalFiles($query)
+    protected function getTotalFiles(array $query)
     {
         return $this->file->getList(array('count' => true) + $query);
     }
@@ -122,7 +124,7 @@ class File extends Controller
      * @param array $query
      * @return array
      */
-    protected function getFiles($limit, $query)
+    protected function getFiles(array $limit, array $query)
     {
         $files = $this->file->getList(array('limit' => $limit) + $query);
 
@@ -140,7 +142,7 @@ class File extends Controller
      * @param string $action
      * @return boolean
      */
-    protected function action($selected, $action)
+    protected function action(array $selected, $action)
     {
         $deleted_disk = $deleted_database = 0;
 
@@ -215,7 +217,7 @@ class File extends Controller
 
     /**
      * Returns a file
-     * @param mixed $file_id
+     * @param integer $file_id
      * @return array
      */
     protected function get($file_id)
@@ -226,19 +228,23 @@ class File extends Controller
 
         $file = $this->file->get($file_id);
 
-        if ($file) {
-            $file['file_url'] = file_exists(GC_FILE_DIR . '/' . $file['path']) ? $this->file->url($file['path']) : '';
-            return $file;
+        if (empty($file)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        $file['file_url'] = '';
+        if (file_exists(GC_FILE_DIR . '/' . $file['path'])) {
+            $file['file_url'] = $this->file->url($file['path']);
+        }
+
+        return $file;
     }
 
     /**
      * Deletes a file
      * @param array $file
      */
-    protected function delete($file)
+    protected function delete(array $file)
     {
         $this->controlAccess('file_delete');
 
@@ -258,13 +264,15 @@ class File extends Controller
      * @param array $file
      * @return null
      */
-    protected function submit($file)
+    protected function submit(array $file)
     {
         $this->submitted = $this->request->post('file', array());
 
         $this->validate($file);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['file'] = $this->submitted + $file;
             return;
         }
@@ -289,7 +297,7 @@ class File extends Controller
      * Validates an array of submitted data
      * @param array $file
      */
-    protected function validate($file)
+    protected function validate(array $file)
     {
         $this->validateFile($file);
         $this->validateTitle($file);
@@ -301,11 +309,11 @@ class File extends Controller
      * @param array $file
      * @return boolean
      */
-    protected function validateFile($file)
+    protected function validateFile(array $file)
     {
         $upload = $this->request->file('file');
 
-        if ($upload) {
+        if (!empty($upload)) {
             $result = $this->file->upload($upload);
             if ($result !== true) {
                 $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
@@ -329,7 +337,7 @@ class File extends Controller
      * @param array $file
      * @return boolean
      */
-    protected function validateTitle($file)
+    protected function validateTitle(array $file)
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array(
@@ -345,7 +353,7 @@ class File extends Controller
      * @param array $file
      * @return boolean
      */
-    protected function validateTranslation($file)
+    protected function validateTranslation(array $file)
     {
         if (empty($this->submitted['translation'])) {
             return true;
@@ -361,4 +369,5 @@ class File extends Controller
 
         return !$has_errors;
     }
+
 }

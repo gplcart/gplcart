@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Job;
-use core\models\Product;
-use core\models\Export as E;
 use core\classes\Tool;
+use core\models\Job as ModelsJob;
+use core\models\Export as ModelsExport;
+use core\models\Product as ModelsProduct;
 
+/**
+ * Handles incoming requests and outputs data related to export operations
+ */
 class Export extends Controller
 {
 
@@ -39,11 +41,12 @@ class Export extends Controller
 
     /**
      * Constructor
-     * @param Job $job
-     * @param E $export
-     * @param Product $product
+     * @param ModelsJob $job
+     * @param ModelsExport $export
+     * @param ModelsProduct $product
      */
-    public function __construct(Job $job, E $export, Product $product)
+    public function __construct(ModelsJob $job, ModelsExport $export,
+            ModelsProduct $product)
     {
         parent::__construct();
 
@@ -66,6 +69,7 @@ class Export extends Controller
 
     /**
      * Displays the csv export page
+     * @param string $operation_id
      */
     public function export($operation_id)
     {
@@ -124,7 +128,7 @@ class Export extends Controller
      * Sets titles on the export page
      * @param array $operation
      */
-    protected function setTitleExport($operation)
+    protected function setTitleExport(array $operation)
     {
         $this->setTitle($this->text('Export %operation', array('%operation' => $operation['name'])));
     }
@@ -147,20 +151,20 @@ class Export extends Controller
     {
         $operation = $this->export->getOperation($operation_id);
 
-        if ($operation) {
-            return $operation;
+        if (empty($operation)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $operation;
     }
 
     /**
      * Outputs export file to download
      * @param array $operation
      */
-    protected function download($operation)
+    protected function download(array $operation)
     {
-        if (file_exists($operation['file'])) {
+        if (!empty($operation['file']) && file_exists($operation['file'])) {
             $this->response->download($operation['file']);
         }
     }
@@ -170,7 +174,7 @@ class Export extends Controller
      * @param array $operation
      * @return null
      */
-    protected function submit($operation)
+    protected function submit(array $operation)
     {
         $this->submitted = $this->request->post();
         $this->validate($operation);
@@ -204,12 +208,14 @@ class Export extends Controller
 
     /**
      * Validates an array of csv export data
+     * @param array $operation
+     * @return boolean
      */
-    protected function validate($operation)
+    protected function validate(array $operation)
     {
         $this->submitted['total'] = $this->product->getList($this->submitted + array('count' => true));
 
-        if (!$this->submitted['total']) {
+        if (empty($this->submitted['total'])) {
             $this->setMessage($this->text('Nothing to export'), 'danger');
             $this->data['form_errors'] = true;
             return false;
@@ -229,4 +235,5 @@ class Export extends Controller
         $this->submitted['operation'] = $operation;
         return true;
     }
+
 }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -12,6 +11,9 @@ namespace core\controllers;
 
 use core\Controller;
 
+/**
+ * Handles incoming requests and outputs data related to various errors
+ */
 class Error extends Controller
 {
 
@@ -72,4 +74,5 @@ class Error extends Controller
     {
         $this->output('common/error/403', array('headers' => array(403)));
     }
+
 }

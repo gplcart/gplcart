@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Alias as A;
+use core\models\Alias as ModelsAlias;
 
+/**
+ * Handles incoming requests and outputs data related to the URL aliases
+ */
 class Alias extends Controller
 {
 
@@ -21,12 +23,12 @@ class Alias extends Controller
      * @var \core\models\Alias $alias
      */
     protected $alias;
-
+    
     /**
      * Constructor
-     * @param U $alias
+     * @param ModelsAlias $alias
      */
-    public function __construct(A $alias)
+    public function __construct(ModelsAlias $alias)
     {
         parent::__construct();
 
@@ -82,11 +84,14 @@ class Alias extends Controller
     {
         $this->output('content/alias/list');
     }
-
+    
     /**
      * Returns an array of aliases
+     * @param integer $limit
+     * @param array $query
+     * @return array
      */
-    protected function getAliases($limit, $query)
+    protected function getAliases($limit, array $query)
     {
         return $this->alias->getList(array('limit' => $limit) + $query);
     }
@@ -97,7 +102,7 @@ class Alias extends Controller
      * @param string $action
      * @return boolean
      */
-    protected function action($selected, $action)
+    protected function action(array $selected, $action)
     {
         $deleted = 0;
         foreach ($selected as $id) {
@@ -113,7 +118,7 @@ class Alias extends Controller
                 continue;
             }
 
-            if ($action == 'delete') {
+            if ($action === 'delete') {
                 $deleted += (int) $this->alias->delete($id);
             }
         }

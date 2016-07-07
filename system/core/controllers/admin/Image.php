@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -12,9 +11,12 @@ namespace core\controllers\admin;
 
 use core\Controller;
 use core\classes\Tool;
-use core\models\Image as I;
-use core\models\File;
+use core\models\File as ModelsFile;
+use core\models\Image as ModelsImage;
 
+/**
+ * Handles incoming requests and outputs data related to images
+ */
 class Image extends Controller
 {
 
@@ -32,15 +34,15 @@ class Image extends Controller
 
     /**
      * Constructor
-     * @param I $image
-     * @param File $file
+     * @param ModelsImage $image
+     * @param ModelsFile $file
      */
-    public function __construct(I $image, File $file)
+    public function __construct(ModelsImage $image, ModelsFile $file)
     {
         parent::__construct();
 
-        $this->image = $image;
         $this->file = $file;
+        $this->image = $image;
     }
 
     /**
@@ -52,7 +54,7 @@ class Image extends Controller
 
         $style_id = $this->request->get('clear');
 
-        if ($style_id && $this->image->clearCache($style_id)) {
+        if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }
 
@@ -121,7 +123,7 @@ class Image extends Controller
      * Sets titles on the edit imagestyle page
      * @param array $imagestyle
      */
-    protected function setTitleEdit($imagestyle)
+    protected function setTitleEdit(array $imagestyle)
     {
         if (isset($imagestyle['imagestyle_id'])) {
             $title = $this->text('Edit image style %name', array('%name' => $imagestyle['name']));
@@ -154,11 +156,11 @@ class Image extends Controller
 
         $imagestyle = $this->image->getImageStyle($style_id);
 
-        if ($imagestyle) {
-            return $imagestyle;
+        if (empty($imagestyle)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $imagestyle;
     }
 
     /**
@@ -166,7 +168,7 @@ class Image extends Controller
      * @param array $imagestyle
      * @return boolean
      */
-    protected function delete($imagestyle)
+    protected function delete(array $imagestyle)
     {
         if (empty($imagestyle['imagestyle_id'])) {
             return false;
@@ -183,12 +185,14 @@ class Image extends Controller
      * @param array $imagestyle
      * @return null
      */
-    protected function submit($imagestyle)
+    protected function submit(array $imagestyle)
     {
         $this->submitted = $this->request->post('imagestyle');
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['imagestyle'] = $this->submitted;
             return;
         }
@@ -311,7 +315,7 @@ class Image extends Controller
             $modified_actions[$action_id] = array('value' => $value, 'weight' => $line);
         }
 
-        if ($error_lines) {
+        if (!empty($error_lines)) {
             $this->data['form_errors']['actions'] = $this->text('Something wrong on lines %num', array(
                 '%num' => implode(',', $error_lines)));
             return false;
@@ -325,7 +329,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionFlip($value)
+    protected function validateActionFlip(array $value)
     {
         return ((count($value) == 1) && in_array($value[0], array('x', 'y'), true));
     }
@@ -335,7 +339,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionRotate($value)
+    protected function validateActionRotate(array $value)
     {
         return ((count($value) == 1) && is_numeric($value[0]) && (0 <= (int) $value[0]) && ((int) $value[0] <= 360));
     }
@@ -345,7 +349,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionBrightness($value)
+    protected function validateActionBrightness(array $value)
     {
         return ((count($value) == 1) && is_numeric($value[0]) && (-255 <= (int) $value[0]) && ((int) $value[0] <= 255));
     }
@@ -355,7 +359,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionContrast($value)
+    protected function validateActionContrast(array $value)
     {
         return ((count($value) == 1) && is_numeric($value[0]) && (-100 <= (int) $value[0]) && ((int) $value[0] <= 100));
     }
@@ -365,7 +369,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionSmooth($value)
+    protected function validateActionSmooth(array $value)
     {
         return ((count($value) == 1) && is_numeric($value[0]) && (-10 <= (int) $value[0]) && ((int) $value[0] <= 10));
     }
@@ -375,7 +379,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionFill($value)
+    protected function validateActionFill(array $value)
     {
         return ((count($value) == 1) && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]));
     }
@@ -385,7 +389,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionColorize($value)
+    protected function validateActionColorize(array $value)
     {
         return ((count($value) == 2) && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) && is_numeric($value[1]));
     }
@@ -395,7 +399,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionCrop($value)
+    protected function validateActionCrop(array $value)
     {
         return (count(array_filter(array_slice($value, 0, 4), 'is_numeric')) == 4);
     }
@@ -405,7 +409,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionOverlay($value)
+    protected function validateActionOverlay(array $value)
     {
         return ((count($value) == 5) && is_numeric($value[2]) && is_numeric($value[3]) && is_numeric($value[4]));
     }
@@ -415,7 +419,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionText($value)
+    protected function validateActionText(array $value)
     {
         return ((count($value) == 7) && is_numeric($value[2]) && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[3]) && is_numeric($value[5]) && is_numeric($value[6]));
     }
@@ -425,7 +429,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionOpacity($value)
+    protected function validateActionOpacity(array $value)
     {
         return ((count($value) == 1) && is_numeric($value[0]));
     }
@@ -435,7 +439,7 @@ class Image extends Controller
      * @param array $value
      * @return boolean
      */
-    protected function validateActionThumbnail($value)
+    protected function validateActionThumbnail(array $value)
     {
         return (count(array_filter(array_slice($value, 0, 2), 'is_numeric')) == 2);
     }
@@ -463,4 +467,5 @@ class Image extends Controller
 
         $this->data['imagestyle']['actions'] = implode("\n", $actions);
     }
+
 }

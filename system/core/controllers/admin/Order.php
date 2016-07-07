@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,15 +10,15 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Cart;
-use core\models\State;
-use core\models\Price;
-use core\models\Address;
-use core\models\Product;
-use core\models\Country;
-use core\models\Currency;
-use core\models\PriceRule;
-use core\models\Order as O;
+use core\models\Cart as ModelsCart;
+use core\models\State as ModelsState;
+use core\models\Price as ModelsPrice;
+use core\models\Order as ModelsOrder;
+use core\models\Address as ModelsAddress;
+use core\models\Product as ModelsProduct;
+use core\models\Country as ModelsCountry;
+use core\models\Currency as ModelsCurrency;
+use core\models\PriceRule as ModelsPriceRule;
 
 /**
  * Provides data to the view and interprets user actions related to orders
@@ -80,22 +79,23 @@ class Order extends Controller
      * @var \core\models\Product $product
      */
     protected $product;
-
+    
     /**
      * Constructor
-     * @param O $order
-     * @param Country $country
-     * @param State $state
-     * @param Address $address
-     * @param Price $price
-     * @param Currency $currency
-     * @param Cart $cart
-     * @param Product $product
+     * @param ModelsOrder $order
+     * @param ModelsCountry $country
+     * @param ModelsState $state
+     * @param ModelsAddress $address
+     * @param ModelsPrice $price
+     * @param ModelsCurrency $currency
+     * @param ModelsCart $cart
+     * @param ModelsProduct $product
+     * @param ModelsPriceRule $pricerule
      */
-    public function __construct(O $order, Country $country, State $state,
-                                Address $address, Price $price,
-                                Currency $currency, Cart $cart,
-                                Product $product, PriceRule $pricerule)
+    public function __construct(ModelsOrder $order, ModelsCountry $country, ModelsState $state,
+                                ModelsAddress $address, ModelsPrice $price,
+                                ModelsCurrency $currency, ModelsCart $cart,
+                                ModelsProduct $product, ModelsPriceRule $pricerule)
     {
         parent::__construct();
 
@@ -141,7 +141,6 @@ class Order extends Controller
         // ddd($order);
         //ddd($order);
 
-
         $this->setTitle($this->text('Order #@order_id', array('@order_id' => $order['order_id'])));
 
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
@@ -159,7 +158,6 @@ class Order extends Controller
         $total = $this->setPager($this->getTotalOrders($query), $query);
 
         $this->data['orders'] = $this->getOrders($total, $query);
-
         $this->data['statuses'] = $this->order->getStatuses();
         $this->data['stores'] = $this->store->getNames();
 
@@ -409,12 +407,12 @@ class Order extends Controller
     {
         return $this->address->get($address_id);
     }
-
+    
     /**
      * Returns an array of orders
-     * @param integer $total
+     * @param array $limit
      * @param array $query
-     * @return integer
+     * @return array
      */
     protected function getOrders($limit, $query)
     {
@@ -422,6 +420,11 @@ class Order extends Controller
         return $this->prepareOrders($orders);
     }
 
+    /**
+     * Modifies an array of orders
+     * @param array $orders
+     * @return array
+     */
     protected function prepareOrders($orders)
     {
         foreach ($orders as &$order) {
@@ -435,7 +438,7 @@ class Order extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalOrders($query)
+    protected function getTotalOrders(array $query)
     {
         return $this->order->getList(array('count' => true) + $query);
     }

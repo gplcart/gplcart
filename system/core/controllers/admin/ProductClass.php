@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,9 +10,12 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\ProductClass as Pc;
-use core\models\Field;
+use core\models\Field as ModelsField;
+use core\models\ProductClass as ModelsProductClass;
 
+/**
+ * Handles incoming requests and outputs data related to product classes
+ */
 class ProductClass extends Controller
 {
 
@@ -31,15 +33,16 @@ class ProductClass extends Controller
 
     /**
      * Constructor
-     * @param Pc $product_class
-     * @param Field $field
+     * @param ModelsProductClass $product_class
+     * @param ModelsField $field
      */
-    public function __construct(Pc $product_class, Field $field)
+    public function __construct(ModelsProductClass $product_class,
+            ModelsField $field)
     {
         parent::__construct();
 
-        $this->product_class = $product_class;
         $this->field = $field;
+        $this->product_class = $product_class;
     }
 
     /**
@@ -51,7 +54,7 @@ class ProductClass extends Controller
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -71,14 +74,14 @@ class ProductClass extends Controller
      * @param array $query
      * @return integer
      */
-    public function getTotalClasses($query)
+    public function getTotalClasses(array $query)
     {
         return $this->product_class->getList(array('count' => true) + $query);
     }
 
     /**
      * Displays the product class edit page
-     * @param mixed $product_class_id
+     * @param null|integer $product_class_id
      */
     public function edit($product_class_id = null)
     {
@@ -140,8 +143,11 @@ class ProductClass extends Controller
 
     /**
      * Returns an array of classes
+     * @param array $limit
+     * @param array $query
+     * @return array
      */
-    protected function getClasses($limit, $query)
+    protected function getClasses(array $limit, array $query)
     {
         return $this->product_class->getList(array('limit' => $limit) + $query);
     }
@@ -185,18 +191,18 @@ class ProductClass extends Controller
 
         $product_class = $this->product_class->get($product_class_id);
 
-        if ($product_class) {
-            return $product_class;
+        if (empty($product_class)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $product_class;
     }
 
     /**
      * Deletes a product class
      * @param array $product_class
      */
-    protected function delete($product_class)
+    protected function delete(array $product_class)
     {
         if (empty($product_class['product_class_id'])) {
             return;
@@ -210,7 +216,7 @@ class ProductClass extends Controller
 
         $this->redirect('', $this->text('Unable to delete this product class. The most probable reason - it is used by one or more products'), 'danger');
     }
-    
+
     /**
      * Applies an action to the selected product classes
      * @param array $selected
@@ -218,7 +224,7 @@ class ProductClass extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $updated = $deleted = 0;
         foreach ($selected as $id) {
@@ -231,12 +237,12 @@ class ProductClass extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num product classes', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num product classes', array('%num' => $deleted)), 'success');
             return true;
         }
@@ -248,12 +254,14 @@ class ProductClass extends Controller
      * Saves a product class
      * @param array $product_class
      */
-    protected function submit($product_class)
+    protected function submit(array $product_class)
     {
         $this->submitted = $this->request->post('product_class', array());
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['product_class'] = $this->submitted;
             return;
         }
@@ -271,7 +279,6 @@ class ProductClass extends Controller
 
     /**
      * Validates a products class
-     * @param array $data
      */
     protected function validate()
     {
@@ -287,7 +294,7 @@ class ProductClass extends Controller
      * Sets titles on the edit product class page
      * @param array $product_class
      */
-    protected function setTitleEdit($product_class)
+    protected function setTitleEdit(array $product_class)
     {
         if (isset($product_class['product_class_id'])) {
             $title = $this->text('Edit product class %name', array('%name' => $product_class['title']));
@@ -348,7 +355,7 @@ class ProductClass extends Controller
      * Saves the product class fields
      * @param array $product_class
      */
-    protected function submitFields($product_class)
+    protected function submitFields(array $product_class)
     {
         $this->controlAccess('product_class_edit');
         $this->submitted = $this->request->post('fields', array());
@@ -371,7 +378,7 @@ class ProductClass extends Controller
      * Sets titles on the product class fields page
      * @param array $product_class
      */
-    protected function setTitleFields($product_class)
+    protected function setTitleFields(array $product_class)
     {
         $this->setTitle($this->text('Fields of %class', array('%class' => $product_class['title'])));
     }
@@ -402,11 +409,11 @@ class ProductClass extends Controller
      * Adds fields to the given product class
      * @param array $product_class
      */
-    protected function submitField($product_class)
+    protected function submitField(array $product_class)
     {
         $this->controlAccess('product_class_edit');
 
-        foreach ($this->request->post('fields') as $field_id) {
+        foreach ($this->request->post('fields', array()) as $field_id) {
             $field = array(
                 'product_class_id' => $product_class['product_class_id'],
                 'field_id' => $field_id
@@ -423,7 +430,7 @@ class ProductClass extends Controller
      * Sets titles on the add product class field page
      * @param array $product_class
      */
-    protected function setTitleAddField($product_class)
+    protected function setTitleAddField(array $product_class)
     {
         $this->setTitle($this->text('Fields of %class', array('%class' => $product_class['title'])));
     }
@@ -432,7 +439,7 @@ class ProductClass extends Controller
      * Sets breadcrumbs on the add product class field page
      * @param array $product_class
      */
-    protected function setBreadcrumbAddField($product_class)
+    protected function setBreadcrumbAddField(array $product_class)
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -454,4 +461,5 @@ class ProductClass extends Controller
     {
         $this->output('content/product/class/field');
     }
+
 }

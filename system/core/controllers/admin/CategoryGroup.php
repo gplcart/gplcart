@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\CategoryGroup as Cg;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 
+/**
+ * Handles incoming requests and outputs data related to category groups
+ */
 class CategoryGroup extends Controller
 {
 
@@ -24,9 +26,9 @@ class CategoryGroup extends Controller
 
     /**
      * Constructor
-     * @param Cg $category_group
+     * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(Cg $category_group)
+    public function __construct(ModelsCategoryGroup $category_group)
     {
         parent::__construct();
 
@@ -81,7 +83,7 @@ class CategoryGroup extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalGroups($query)
+    protected function getTotalGroups(array $query)
     {
         return $this->category_group->getList(array('count' => true) + $query);
     }
@@ -122,7 +124,7 @@ class CategoryGroup extends Controller
      * Sets titles on the category group edit page
      * @param array $category_group
      */
-    protected function setTitleEdit($category_group)
+    protected function setTitleEdit(array $category_group)
     {
         if (isset($category_group['category_group_id'])) {
             $title = $this->text('Edit category group %name', array(
@@ -161,11 +163,11 @@ class CategoryGroup extends Controller
 
         $category_group = $this->category_group->get($category_group_id);
 
-        if ($category_group) {
-            return $category_group;
+        if (empty($category_group)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $category_group;
     }
 
     /**
@@ -174,7 +176,7 @@ class CategoryGroup extends Controller
      * @param array $query
      * @return array
      */
-    protected function getGroups($limit, $query)
+    protected function getGroups(array $limit, array $query)
     {
         return $this->category_group->getList(array('limit' => $limit) + $query);
     }
@@ -183,13 +185,15 @@ class CategoryGroup extends Controller
      * Deletes a category group
      * @param array $category_group
      */
-    protected function delete($category_group)
+    protected function delete(array $category_group)
     {
         $category_group_id = $category_group['category_group_id'];
 
         $this->controlAccess('category_group_delete');
 
-        if ($this->category_group->delete($category_group_id)) {
+        $deleted = $this->category_group->delete($category_group_id);
+
+        if ($deleted) {
             $this->redirect('admin/content/category/group', $this->text('Category group has been deleted'), 'success');
         }
 
@@ -201,13 +205,15 @@ class CategoryGroup extends Controller
      * @param array $category_group
      * @return null
      */
-    protected function submit($category_group)
+    protected function submit(array $category_group)
     {
         $this->submitted = $this->request->post('category_group', array());
 
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['category_group'] = $this->submitted + $category_group;
             return;
         }
@@ -225,7 +231,6 @@ class CategoryGroup extends Controller
 
     /**
      * Performs validation checks on the given category group
-     * @param array $category_group
      */
     protected function validate()
     {
@@ -236,7 +241,6 @@ class CategoryGroup extends Controller
 
     /**
      * Validates a category group
-     * @param array $category_group
      * @return boolean
      */
     protected function validateCategoryGroup()
@@ -250,7 +254,6 @@ class CategoryGroup extends Controller
 
     /**
      * Validates a category group title
-     * @param array $category_group
      * @return boolean
      */
     protected function validateTitle()
@@ -264,7 +267,6 @@ class CategoryGroup extends Controller
 
     /**
      * Validates category group translations
-     * @param array $category_group
      * @return boolean
      */
     protected function validateTranslations()
@@ -283,4 +285,5 @@ class CategoryGroup extends Controller
 
         return !$has_errors;
     }
+
 }

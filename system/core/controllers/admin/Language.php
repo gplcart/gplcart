@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Language as L;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Handles incoming requests and outputs data related to languages
+ */
 class Language extends Controller
 {
 
@@ -24,9 +26,9 @@ class Language extends Controller
 
     /**
      * Constructor
-     * @param L $language
+     * @param ModelsLanguage $language
      */
-    public function __construct(L $language)
+    public function __construct(ModelsLanguage $language)
     {
         parent::__construct();
 
@@ -79,7 +81,7 @@ class Language extends Controller
      * Sets titles on the edit language page
      * @param array $language
      */
-    protected function setTitleEdit($language)
+    protected function setTitleEdit(array $language)
     {
         if (isset($language['code'])) {
             $title = $this->text('Edit language %name', array('%name' => $language['native_name']));
@@ -112,12 +114,14 @@ class Language extends Controller
      * @param array $language
      * @return null
      */
-    protected function submit($language)
+    protected function submit(array $language)
     {
         $this->submitted = $this->request->post('language', array());
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['language'] = $this->submitted;
             return;
         }
@@ -158,7 +162,7 @@ class Language extends Controller
     }
 
     /**
-     * Refreshes .mo translation files for a given language
+     * Refreshes translation files for a given language
      * @param string $code
      */
     protected function refresh($code)
@@ -181,11 +185,11 @@ class Language extends Controller
 
         $language = $this->language->get($code);
 
-        if ($language) {
-            return $language;
+        if (empty($language)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $language;
     }
 
     /**
@@ -193,7 +197,7 @@ class Language extends Controller
      * @param array $language
      * @return null
      */
-    protected function delete($language)
+    protected function delete(array $language)
     {
         if (empty($language['code'])) {
             return;
@@ -278,4 +282,5 @@ class Language extends Controller
         $this->submitted['weight'] = 0;
         return true;
     }
+
 }

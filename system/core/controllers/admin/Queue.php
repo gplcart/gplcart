@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Queue as Q;
+use core\models\Queue as ModelsQueue;
 
+/**
+ * Handles incoming requests and outputs data related to system queues
+ */
 class Queue extends Controller
 {
 
@@ -24,9 +26,9 @@ class Queue extends Controller
 
     /**
      * Constructor
-     * @param Q $queue
+     * @param ModelsQueue $queue
      */
-    public function __construct(Q $queue)
+    public function __construct(ModelsQueue $queue)
     {
         parent::__construct();
 
@@ -42,7 +44,7 @@ class Queue extends Controller
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -55,8 +57,12 @@ class Queue extends Controller
 
     /**
      * Applies an action to the queues
+     * @param array $selected
+     * @param string $action
+     * @param string $value
+     * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $updated = $deleted = 0;
         foreach ($selected as $queue_id) {
@@ -69,12 +75,12 @@ class Queue extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num queues', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num queues', array('%num' => $deleted)), 'success');
             return true;
         }
@@ -105,4 +111,5 @@ class Queue extends Controller
     {
         $this->output('report/queue');
     }
+
 }

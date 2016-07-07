@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,10 +10,13 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Report as R;
-use core\models\Analytics;
-use core\models\Notification;
+use core\models\Report as ModelsReport;
+use core\models\Analytics as ModelsAnalytics;
+use core\models\Notification as ModelsNotification;
 
+/**
+ * Handles incoming requests and outputs data related to system reports
+ */
 class Report extends Controller
 {
 
@@ -38,10 +40,12 @@ class Report extends Controller
 
     /**
      * Constructor
-     * @param R $report
-     * @param Analytics $analytics
+     * @param ModelsReport $report
+     * @param ModelsAnalytics $analytics
+     * @param ModelsNotification $notification
      */
-    public function __construct(R $report, Analytics $analytics, Notification $notification)
+    public function __construct(ModelsReport $report,
+            ModelsAnalytics $analytics, ModelsNotification $notification)
     {
         parent::__construct();
 
@@ -61,7 +65,7 @@ class Report extends Controller
 
         $errors = $this->report->getPhpErrors();
 
-        if ($this->request->get('report') && $errors) {
+        if ($this->request->get('report') && !empty($errors)) {
             if ($this->report->reportErrors($errors)) {
                 $this->redirect('', $this->text('Error raport has been sent'), 'success');
             }
@@ -102,7 +106,7 @@ class Report extends Controller
         $gapi_email = $this->config->get('gapi_email', '');
         $gapi_certificate = $this->config->get('gapi_certificate', '');
 
-        if (!$gapi_email || !$gapi_certificate) {
+        if (empty($gapi_email) || empty($gapi_certificate)) {
             $this->data['missing_credentials'] = $this->text('<a href="!href">Google API credentials</a> are not properly set', array('!href' => $this->url('admin/settings/common')));
             $this->outputGa();
         }
@@ -125,7 +129,7 @@ class Report extends Controller
 
         $view = $this->request->get('ga_view');
 
-        if ($this->request->get('ga_update') && $view) {
+        if ($this->request->get('ga_update') && !empty($view)) {
             $this->report->clearGaCache($view);
             $this->session->setMessage($this->text('Google Analytics has been updated'), 'success');
             $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
@@ -157,7 +161,7 @@ class Report extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalSystemEvents($query)
+    protected function getTotalSystemEvents(array $query)
     {
         return $this->report->getList(array('count' => true) + $query);
     }
@@ -177,18 +181,15 @@ class Report extends Controller
      * @param array $query
      * @return array
      */
-    protected function getEvents($limit, $query)
+    protected function getEvents(array $limit, array $query)
     {
         $records = $this->report->getList(array('limit' => $limit) + $query);
 
         foreach ($records as &$record) {
             $record['summary'] = '';
-
             $message_variables = isset($record['data']['variables']) ? $record['data']['variables'] : array();
             $record['text'] = $this->text($record['text'], $message_variables);
             $record['summary'] = $this->truncate($record['text']);
-
-
             $record['severity_text'] = $this->text($record['severity']);
             $record['time'] = $this->date($record['time']);
             $record['type'] = $this->text($record['type']);
@@ -199,7 +200,7 @@ class Report extends Controller
 
     /**
      * Returns an array of counted by severity system events
-     * @return type
+     * @return array
      */
     protected function getSeverityCount()
     {
@@ -263,13 +264,12 @@ class Report extends Controller
      * @param string $gapi_email
      * @param string $gapi_certificate
      */
-    protected function setGa($store, $gapi_email, $gapi_certificate)
+    protected function setGa(array $store, $gapi_email, $gapi_certificate)
     {
         $ga_view = $store['data']['ga_view'];
 
         $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
         $this->analytics->setView($ga_view);
-
 
         $this->data['keywords'] = $this->analytics->getKeywords();
         $this->data['sources'] = $this->analytics->getSources();
@@ -359,7 +359,7 @@ class Report extends Controller
                 continue;
             }
 
-            if ($notification['access'] && !$this->access($notification['access'])) {
+            if (!empty($notification['access']) && !$this->access($notification['access'])) {
                 continue;
             }
 
@@ -381,4 +381,5 @@ class Report extends Controller
 
         return $notifications;
     }
+
 }

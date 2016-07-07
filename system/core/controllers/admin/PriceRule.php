@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\PriceRule as P;
-use core\models\Currency;
-use core\models\Price;
 use core\classes\Tool;
+use core\models\Price as ModelsPrice;
+use core\models\Currency as ModelsCurrency;
+use core\models\PriceRule as ModelsPriceRule;
 
+/**
+ * Handles incoming requests and outputs data related to price rules
+ */
 class PriceRule extends Controller
 {
 
@@ -39,17 +41,18 @@ class PriceRule extends Controller
 
     /**
      * Constructor
-     * @param P $rule
-     * @param Currency $currency
-     * @param Price $price
+     * @param ModelsPriceRule $rule
+     * @param ModelsCurrency $currency
+     * @param ModelsPrice $price
      */
-    public function __construct(P $rule, Currency $currency, Price $price)
+    public function __construct(ModelsPriceRule $rule, ModelsCurrency $currency,
+            ModelsPrice $price)
     {
         parent::__construct();
 
         $this->rule = $rule;
-        $this->currency = $currency;
         $this->price = $price;
+        $this->currency = $currency;
     }
 
     /**
@@ -70,7 +73,7 @@ class PriceRule extends Controller
         $selected = $this->request->post('selected', array());
         $value = $this->request->post('value');
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -81,7 +84,7 @@ class PriceRule extends Controller
 
     /**
      * Displays the price rule edit form
-     * @param type $rule_id
+     * @param mixed $rule_id
      */
     public function edit($rule_id = null)
     {
@@ -113,7 +116,7 @@ class PriceRule extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalRules($query)
+    protected function getTotalRules(array $query)
     {
         return $this->rule->getList(array('count' => true) + $query);
     }
@@ -125,7 +128,7 @@ class PriceRule extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {
@@ -138,12 +141,12 @@ class PriceRule extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num price rules', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num price rules', array('%num' => $deleted)), 'success');
             return true;
         }
@@ -181,7 +184,7 @@ class PriceRule extends Controller
      * @param array $query
      * @return array
      */
-    protected function getRules($limit, $query)
+    protected function getRules(array $limit, array $query)
     {
         $rules = $this->rule->getList(array('limit' => $limit) + $query);
 
@@ -196,6 +199,7 @@ class PriceRule extends Controller
 
     /**
      * Sets titles on the edit rules page
+     * @param array $rule
      */
     protected function setTitleEdit($rule)
     {
@@ -227,7 +231,7 @@ class PriceRule extends Controller
 
     /**
      * Returns an array of rule data
-     * @param integer|null $rule_id
+     * @param mixed $rule_id
      * @return array
      */
     protected function get($rule_id)
@@ -238,7 +242,7 @@ class PriceRule extends Controller
 
         $rule = $this->rule->get($rule_id);
 
-        if (!$rule) {
+        if (empty($rule)) {
             $this->outputError(404);
         }
 
@@ -253,7 +257,7 @@ class PriceRule extends Controller
      * Deletes a rule
      * @param array $rule
      */
-    protected function delete($rule)
+    protected function delete(array $rule)
     {
         $this->controlAccess('price_rule_delete');
         $this->rule->delete($rule['price_rule_id']);
@@ -265,13 +269,15 @@ class PriceRule extends Controller
      * @param array $rule
      * @return null
      */
-    protected function submit($rule = array())
+    protected function submit(array $rule = array())
     {
         $this->submitted = $this->request->post('price_rule', '', false);
 
         $this->validate($rule);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['price_rule'] = $this->submitted;
             return;
         }
@@ -293,9 +299,9 @@ class PriceRule extends Controller
 
     /**
      * Validates a rule
-     * @param type $rule
+     * @param array $rule
      */
-    protected function validate($rule = array())
+    protected function validate(array $rule = array())
     {
         if (isset($rule['price_rule_id'])) {
             $this->submitted['price_rule_id'] = $rule['price_rule_id'];
@@ -325,7 +331,7 @@ class PriceRule extends Controller
             return true;
         }
 
-        if (!$this->submitted['name'] || mb_strlen($this->submitted['name']) > 255) {
+        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
@@ -422,7 +428,7 @@ class PriceRule extends Controller
 
             $condition = trim($condition);
             $parts = array_map('trim', explode(' ', $condition));
-            
+
             $condition_id = array_shift($parts);
             $operator = array_shift($parts);
 
@@ -442,7 +448,7 @@ class PriceRule extends Controller
 
             $validator = $this->rule->getConditionHandler($condition_id, 'validate');
 
-            if (!$validator) {
+            if (empty($validator)) {
                 $error_lines[] = $line;
                 continue;
             }
@@ -493,4 +499,5 @@ class PriceRule extends Controller
 
         $this->data['price_rule']['data']['conditions'] = implode("\n", $conditions);
     }
+
 }

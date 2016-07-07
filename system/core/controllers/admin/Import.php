@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,10 +10,13 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Job;
-use core\models\File;
-use core\models\Import as I;
+use core\models\Job as ModelsJob;
+use core\models\File as ModelsFile;
+use core\models\Import as ModelsImport;
 
+/**
+ * Handles incoming requests and outputs data related to import operations
+ */
 class Import extends Controller
 {
 
@@ -38,17 +40,18 @@ class Import extends Controller
 
     /**
      * Constructor
-     * @param Job $job
-     * @param I $import
-     * @param File $file
+     * @param ModelsJob $job
+     * @param ModelsImport $import
+     * @param ModelsFile $file
      */
-    public function __construct(Job $job, I $import, File $file)
+    public function __construct(ModelsJob $job, ModelsImport $import,
+            ModelsFile $file)
     {
         parent::__construct();
 
-        $this->import = $import;
         $this->job = $job;
         $this->file = $file;
+        $this->import = $import;
     }
 
     /**
@@ -120,9 +123,9 @@ class Import extends Controller
 
     /**
      * Sets titles on the import form page
-     * @param type $operation
+     * @param array $operation
      */
-    protected function setTitleImport($operation)
+    protected function setTitleImport(array $operation)
     {
         $this->setTitle($this->text('Import %operation', array('%operation' => $operation['name'])));
     }
@@ -153,11 +156,11 @@ class Import extends Controller
     {
         $operation = $this->import->getOperation($operation_id);
 
-        if ($operation) {
-            return $operation;
+        if (empty($operation)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $operation;
     }
 
     /**
@@ -165,14 +168,16 @@ class Import extends Controller
      * @param array $operation
      * @return null
      */
-    protected function submit($operation)
+    protected function submit(array $operation)
     {
         $this->submitted = $this->request->post();
         $this->submitted['operation'] = $operation;
 
         $this->validate();
 
-        if ($this->formErrors(false)) {
+        $errors = $this->formErrors(false);
+
+        if (!empty($errors)) {
             return;
         }
 
@@ -219,7 +224,7 @@ class Import extends Controller
     {
         $file = $this->request->file('file');
 
-        if (!$file) {
+        if (empty($file)) {
             $this->data['form_errors']['file'] = $this->text('Required field');
             return false;
         }
@@ -251,4 +256,5 @@ class Import extends Controller
 
         return true;
     }
+
 }

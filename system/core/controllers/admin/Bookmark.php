@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,9 +10,12 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Product;
-use core\models\Bookmark as B;
+use core\models\Product as ModelsProduct;
+use core\models\Bookmark as ModelsBookmark;
 
+/**
+ * Handles incoming requests and outputs data related to bookmarks
+ */
 class Bookmark extends Controller
 {
 
@@ -31,10 +33,10 @@ class Bookmark extends Controller
 
     /**
      * Constructor
-     * @param B $bookmark
-     * @param Product $product
+     * @param ModelsBookmark $bookmark
+     * @param ModelsProduct $product
      */
-    public function __construct(B $bookmark, Product $product)
+    public function __construct(ModelsBookmark $bookmark, ModelsProduct $product)
     {
         parent::__construct();
 
@@ -58,7 +60,7 @@ class Bookmark extends Controller
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action);
         }
 
@@ -72,7 +74,7 @@ class Bookmark extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalBookmarks($query)
+    protected function getTotalBookmarks(array $query)
     {
         return $this->bookmark->getList(array('count' => true) + $query);
     }
@@ -103,8 +105,11 @@ class Bookmark extends Controller
 
     /**
      * Returns an array of bookmarks
+     * @param integer $limit
+     * @param array $query
+     * @return array
      */
-    protected function getBookmarks($limit, $query)
+    protected function getBookmarks($limit, array $query)
     {
         $bookmarks = $this->bookmark->getList(array('limit' => $limit) + $query);
 
@@ -150,7 +155,7 @@ class Bookmark extends Controller
     {
         $product_id = $this->request->get('id_value');
 
-        if ($product_id) {
+        if (!empty($product_id)) {
             $product_data = $this->product->get($product_id);
             $this->data['filter_title'] = $this->product->getTitle($product_data);
         }
@@ -158,7 +163,7 @@ class Bookmark extends Controller
         $this->data['user'] = '';
         $user_id = $this->request->get('user_id');
 
-        if (!$user_id) {
+        if (empty($user_id)) {
             return;
         }
 
@@ -174,20 +179,21 @@ class Bookmark extends Controller
      * @param string $action
      * @return boolean
      */
-    protected function action($selected, $action)
+    protected function action(array $selected, $action)
     {
         $deleted = 0;
         foreach ($selected as $id) {
-            if ($action == 'delete' && $this->access('bookmark_delete')) {
+            if ($action === 'delete' && $this->access('bookmark_delete')) {
                 $deleted += (int) $this->bookmark->delete($id);
             }
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num bookmarks', array('%num' => $deleted)), 'success');
             return true;
         }
 
         return false;
     }
+
 }

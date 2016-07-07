@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Field as F;
+use core\models\Field as ModelsField;
 
+/**
+ * Handles incoming requests and outputs data related to product fields
+ */
 class Field extends Controller
 {
 
@@ -24,9 +26,9 @@ class Field extends Controller
 
     /**
      * Constructor
-     * @param F $field
+     * @param ModelsField $field
      */
-    public function __construct(F $field)
+    public function __construct(ModelsField $field)
     {
         parent::__construct();
 
@@ -77,11 +79,11 @@ class Field extends Controller
 
     /**
      * Returns an array of fields
-     * @param integer $limit
+     * @param array $limit
      * @param array $query
      * @return array
      */
-    protected function getFields($limit, $query)
+    protected function getFields(array $limit, array $query)
     {
         return $this->field->getList(array('limit' => $limit) + $query);
     }
@@ -89,9 +91,9 @@ class Field extends Controller
     /**
      * Returns total number of fields for pager
      * @param array $query
-     * @return integer
+     * @return array
      */
-    protected function getTotalFields($query)
+    protected function getTotalFields(array $query)
     {
         return $this->field->getList(array('count' => true) + $query);
     }
@@ -132,7 +134,7 @@ class Field extends Controller
      * Sets titles on the field edit form
      * @param array $field
      */
-    protected function setTitleEdit($field)
+    protected function setTitleEdit(array $field)
     {
         if (isset($field['field_id'])) {
             $title = $this->text('Edit field %name', array('%name' => $field['title']));
@@ -165,24 +167,25 @@ class Field extends Controller
 
         $field = $this->field->get($field_id);
 
-        if ($field) {
-            return $field;
+        if (empty($field)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $field;
     }
 
     /**
      * Deletes a field
      * @param array $field
      */
-    protected function delete($field)
+    protected function delete(array $field)
     {
         $this->controlAccess('field_delete');
+
         if ($this->field->delete($field['field_id'])) {
             $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
-        
+
         $this->redirect('', $this->text('Unable to delete this field. The most probable reason - it is used by one or more products'), 'danger');
     }
 
@@ -191,12 +194,14 @@ class Field extends Controller
      * @param array $field
      * @return null
      */
-    protected function submit($field)
+    protected function submit(array $field)
     {
         $this->submitted = $this->request->post('field', array());
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['field'] = $this->submitted + $field;
             return;
         }
@@ -245,6 +250,7 @@ class Field extends Controller
         }
 
         $has_errors = false;
+
         foreach ($this->submitted['translation'] as $code => $translation) {
             if (empty($translation['title'])) {
                 continue;
@@ -258,4 +264,5 @@ class Field extends Controller
 
         return !$has_errors;
     }
+
 }

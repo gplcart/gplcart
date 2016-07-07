@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,9 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\classes\Cache;
-use core\models\Module as M;
+use core\models\Module as ModelsModule;
 
+/**
+ * Handles incoming requests and outputs data related to modules
+ */
 class Module extends Controller
 {
 
@@ -25,9 +26,9 @@ class Module extends Controller
 
     /**
      * Constructor
-     * @param M $module
+     * @param ModelsModule $module
      */
-    public function __construct(M $module)
+    public function __construct(ModelsModule $module)
     {
         parent::__construct();
 
@@ -36,13 +37,14 @@ class Module extends Controller
 
     /**
      * Displays the module admin overview page
+     * @param null|string $type
      */
     public function modules($type = null)
     {
         $module_id = $this->request->get('module_id');
         $action = $this->request->get('action');
 
-        if ($module_id && $action) {
+        if (!empty($module_id) && !empty($action)) {
             $this->action($module_id, $action);
         }
 
@@ -62,7 +64,9 @@ class Module extends Controller
     {
         $this->controlToken();
 
-        if (!$this->module->get($module_id)) {
+        $module = $this->module->get($module_id);
+
+        if (empty($module)) {
             $this->redirect();
         }
 
@@ -95,22 +99,22 @@ class Module extends Controller
      * @param string|null $type
      * @return array
      */
-    protected function getModules($type)
+    protected function getModules($type = null)
     {
         if (empty($type)) {
             $modules = $this->module->getList();
         } else {
             $modules = $this->module->getByType($type);
         }
-        
+
         foreach ($modules as &$module) {
             if ($this->module->isActiveTheme($module['id'])) {
                 $module['always_enabled'] = true;
             }
-            
+
             $module['type_name'] = $this->text(ucfirst($module['type']));
         }
-        
+
         return $modules;
     }
 
@@ -124,12 +128,13 @@ class Module extends Controller
 
     /**
      * Sets breadcrumbs on the module overview page
+     * @param string $type
      */
     protected function setBreadcrumbModules($type)
     {
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        
-        if ($type) {
+
+        if (!empty($type)) {
             $this->setBreadcrumb(array('text' => $this->text('All modules'), 'url' => $this->url('admin/module')));
         }
     }
@@ -141,4 +146,5 @@ class Module extends Controller
     {
         $this->output('module/list');
     }
+
 }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,10 +10,13 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Country;
-use core\models\State;
-use core\models\City as C;
+use core\models\City as ModelsCity;
+use core\models\State as ModelsState;
+use core\models\Country as ModelsCountry;
 
+/**
+ * Handles incoming requests and outputs data related to cities
+ */
 class City extends Controller
 {
 
@@ -38,21 +40,24 @@ class City extends Controller
 
     /**
      * Constructor
-     * @param Country $country
-     * @param State $state
-     * @param C $city
+     * @param ModelsCountry $country
+     * @param ModelsState $state
+     * @param ModelsCity $city
      */
-    public function __construct(Country $country, State $state, C $city)
+    public function __construct(ModelsCountry $country, ModelsState $state,
+            ModelsCity $city)
     {
         parent::__construct();
 
-        $this->country = $country;
-        $this->state = $state;
         $this->city = $city;
+        $this->state = $state;
+        $this->country = $country;
     }
 
     /**
      * Displays the city overview page
+     * @param string $country_code
+     * @param integer $state_id
      */
     public function cities($country_code, $state_id)
     {
@@ -63,7 +68,7 @@ class City extends Controller
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -85,7 +90,7 @@ class City extends Controller
      * Displays the city edit page
      * @param string $country_code
      * @param integer $state_id
-     * @param integer $city_id
+     * @param null|integer $city_id
      */
     public function edit($country_code, $state_id, $city_id = null)
     {
@@ -116,7 +121,7 @@ class City extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalCities($state_id, $query)
+    protected function getTotalCities($state_id, array $query)
     {
         return $this->city->getList(array('count' => true, 'state_id' => $state_id) + $query);
     }
@@ -138,11 +143,11 @@ class City extends Controller
     {
         $country = $this->country->get($country_code);
 
-        if ($country) {
-            return $country;
+        if (empty($country)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $country;
     }
 
     /**
@@ -154,19 +159,21 @@ class City extends Controller
     {
         $state = $this->state->get($state_id);
 
-        if ($state) {
-            return $state;
+        if (empty($state)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $state;
     }
 
     /**
      * Returns an array of cities
+     * @param array $limit
+     * @param array $query
      * @param integer $state_id
      * @return array
      */
-    protected function getCities($limit, $query, $state_id)
+    protected function getCities(array $limit, array $query, $state_id)
     {
         return $this->city->getList(array('limit' => $limit, 'state_id' => $state_id) + $query);
     }
@@ -175,7 +182,7 @@ class City extends Controller
      * Sets title on the city overview page
      * @param array $state
      */
-    protected function setTitleCities($state)
+    protected function setTitleCities(array $state)
     {
         $this->setTitle($this->text('Cities of state %state', array('%state' => $state['name'])));
     }
@@ -184,7 +191,7 @@ class City extends Controller
      * Sets breadcrumbs on the city overview page
      * @param array $country
      */
-    protected function setBreadcrumbCities($country)
+    protected function setBreadcrumbCities(array $country)
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -211,7 +218,7 @@ class City extends Controller
      * Sets titles on the city edit page
      * @param array $city
      */
-    protected function setTitleCity($city)
+    protected function setTitleCity(array $city)
     {
         if (isset($city['city_id'])) {
             $title = $this->text('Edit city %name', array('%name' => $city['name']));
@@ -243,11 +250,12 @@ class City extends Controller
         }
 
         $city = $this->city->get($city_id);
-        if ($city) {
-            return $city;
+
+        if (empty($city)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $city;
     }
 
     /**
@@ -257,7 +265,7 @@ class City extends Controller
      * @param array $city
      * @return null
      */
-    protected function delete($country, $state, $city)
+    protected function delete(array $country, array $state, array $city)
     {
         if (empty($city['city_id'])) {
             return;
@@ -280,25 +288,25 @@ class City extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $deleted = $updated = 0;
         foreach ($selected as $id) {
-            if ($action == 'status' && $this->access('city_edit')) {
+            if ($action === 'status' && $this->access('city_edit')) {
                 $updated += (int) $this->city->update($id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('city_delete')) {
+            if ($action === 'delete' && $this->access('city_delete')) {
                 $deleted += (int) $this->city->delete($id);
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Cities have been updated'), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Cities have been deleted'), 'success');
             return true;
         }
@@ -313,12 +321,14 @@ class City extends Controller
      * @param array $city
      * @return null
      */
-    protected function submit($country, $state, $city)
+    protected function submit(array $country, array $state, array $city)
     {
         $this->submitted = $this->request->post('city', array());
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['city'] = $this->submitted;
             return;
         }
@@ -354,4 +364,5 @@ class City extends Controller
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
         }
     }
+
 }

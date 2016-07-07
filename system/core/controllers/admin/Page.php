@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Page as P;
-use core\models\Category;
-use core\models\Alias;
-use core\models\Image;
+use core\models\Page as ModelsPage;
+use core\models\Alias as ModelsAlias;
+use core\models\Image as ModelsImage;
+use core\models\Category as ModelsCategory;
 
+/**
+ * Handles incoming requests and outputs data related to pages
+ */
 class Page extends Controller
 {
 
@@ -45,19 +47,20 @@ class Page extends Controller
 
     /**
      * Constructor
-     * @param P $page
-     * @param Category $category
-     * @param Alias $alias
-     * @param Image $image
+     * @param ModelsPage $page
+     * @param ModelsCategory $category
+     * @param ModelsAlias $alias
+     * @param ModelsImage $image
      */
-    public function __construct(P $page, Category $category, Alias $alias, Image $image)
+    public function __construct(ModelsPage $page, ModelsCategory $category,
+            ModelsAlias $alias, ModelsImage $image)
     {
         parent::__construct();
 
         $this->page = $page;
-        $this->category = $category;
         $this->alias = $alias;
         $this->image = $image;
+        $this->category = $category;
     }
 
     /**
@@ -69,7 +72,7 @@ class Page extends Controller
         $selected = $this->request->post('selected', array());
         $value = $this->request->post('value');
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -126,7 +129,7 @@ class Page extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalPages($query)
+    protected function getTotalPages(array $query)
     {
         return $this->page->getList(array('count' => true) + $query);
     }
@@ -162,14 +165,14 @@ class Page extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $deleted = $updated = 0;
         foreach ($selected as $page_id) {
             if ($action == 'status' && $this->access('page_edit')) {
                 $updated += (int) $this->page->update($page_id, array('status' => $value));
             }
-            
+
             if ($action == 'front' && $this->access('page_edit')) {
                 $updated += (int) $this->page->update($page_id, array('front' => $value));
             }
@@ -179,12 +182,12 @@ class Page extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Pages have been updated'), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Pages have been deleted'), 'success');
             return true;
         }
@@ -265,7 +268,7 @@ class Page extends Controller
 
         $page = $this->page->get($page_id);
 
-        if (!$page) {
+        if (empty($page)) {
             $this->outputError(404);
         }
 
@@ -290,7 +293,7 @@ class Page extends Controller
      * @param array $query
      * @return array
      */
-    protected function getPages($limit, $query)
+    protected function getPages(array $limit, array $query)
     {
         $stores = $this->store->getList();
         $pages = $this->page->getList(array('limit' => $limit) + $query);
@@ -310,7 +313,7 @@ class Page extends Controller
      * Deletes a page
      * @param array $page
      */
-    protected function delete($page)
+    protected function delete(array $page)
     {
         $this->controlAccess('page_delete');
         $this->page->delete($page['page_id']);
@@ -322,7 +325,7 @@ class Page extends Controller
      * @param array $page
      * @return null
      */
-    protected function submit($page = array())
+    protected function submit(array $page = array())
     {
         $images = $this->request->post('delete_image');
 
@@ -335,7 +338,9 @@ class Page extends Controller
         $this->submitted = $this->request->post('page', array(), false);
         $this->validate($page);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['page'] = $this->submitted;
             return;
         }
@@ -355,9 +360,8 @@ class Page extends Controller
     /**
      * Validates a single page
      * @param array $page
-     * @return array|boolean
      */
-    protected function validate($page = array())
+    protected function validate(array $page = array())
     {
         $this->validateAlias($page);
         $this->validateTitle();
@@ -375,7 +379,7 @@ class Page extends Controller
      * @param array $page
      * @return boolean
      */
-    protected function validateAlias($page)
+    protected function validateAlias(array $page)
     {
         if (empty($this->submitted['alias'])) {
             if (isset($page['page_id'])) {
@@ -520,4 +524,5 @@ class Page extends Controller
 
         return true;
     }
+
 }

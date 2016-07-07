@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,9 +10,12 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Review as R;
-use core\models\Product;
+use core\models\Review as ModelsReview;
+use core\models\Product as ModelsProduct;
 
+/**
+ * Handles incoming requests and outputs data related to user reviews
+ */
 class Review extends Controller
 {
 
@@ -31,10 +33,10 @@ class Review extends Controller
 
     /**
      * Constructor
-     * @param R $review
-     * @param Product $product
+     * @param ModelsReview $review
+     * @param ModelsProduct $product
      */
-    public function __construct(R $review, Product $product)
+    public function __construct(ModelsReview $review, ModelsProduct $product)
     {
         parent::__construct();
 
@@ -51,7 +53,7 @@ class Review extends Controller
         $action = $this->request->post('action');
         $value = $this->request->post('value');
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -62,7 +64,6 @@ class Review extends Controller
 
         $filters = array('product_id', 'user_id', 'status', 'created', 'text');
         $this->setFilter($filters, $query);
-
         $this->prepareFilter($query);
 
         $this->setTitleReviews();
@@ -108,7 +109,7 @@ class Review extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalReviews($query)
+    protected function getTotalReviews(array $query)
     {
         return $this->review->getList(array('count' => true) + $query);
     }
@@ -119,14 +120,14 @@ class Review extends Controller
      * @param array $query
      * @return array
      */
-    protected function getReviews($limit, $query)
+    protected function getReviews(array $limit, array $query)
     {
         $reviews = $this->review->getList(array('limit' => $limit) + $query);
 
         foreach ($reviews as &$review) {
             $review['product'] = '';
             $product = $this->product->get($review['product_id']);
-            if ($product) {
+            if (!empty($product)) {
                 $review['product'] = $product['title'];
             }
         }
@@ -141,7 +142,7 @@ class Review extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
@@ -155,12 +156,12 @@ class Review extends Controller
         }
 
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num reviews', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 1) {
             $this->session->setMessage($this->text('Deleted %num reviews', array('%num' => $deleted)), 'success');
             return true;
         }
@@ -172,7 +173,7 @@ class Review extends Controller
      * Modifies filter values
      * @param array $query
      */
-    protected function prepareFilter($query)
+    protected function prepareFilter(array $query)
     {
         $this->data['product'] = '';
         $this->data['user'] = '';
@@ -225,11 +226,11 @@ class Review extends Controller
 
         $review = $this->review->get($review_id);
 
-        if ($review) {
-            return $review;
+        if (empty($review)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $review;
     }
 
     /**
@@ -237,7 +238,7 @@ class Review extends Controller
      * @param array $review
      * @return null
      */
-    protected function delete($review)
+    protected function delete(array $review)
     {
         if (empty($review['review_id'])) {
             return;
@@ -253,13 +254,15 @@ class Review extends Controller
      * @param array $review
      * @return null
      */
-    protected function submit($review)
+    protected function submit(array $review)
     {
         $this->submitted = $this->request->post('review');
 
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['review'] = $this->submitted;
             return;
         }
@@ -299,7 +302,7 @@ class Review extends Controller
 
         $limit = (int) $this->config->get('review_length', 1000);
 
-        if ($limit) {
+        if (!empty($limit)) {
             $this->submitted['text'] = $this->truncate($this->submitted['text'], $limit);
         }
 
@@ -319,7 +322,7 @@ class Review extends Controller
 
         $this->submitted['created'] = strtotime($this->submitted['created']);
 
-        if (!$this->submitted['created']) {
+        if (empty($this->submitted['created'])) {
             $this->data['form_errors']['created'] = $this->text('Only valid English textual datetime allowed');
             return false;
         }
@@ -367,7 +370,7 @@ class Review extends Controller
      * Sets titles on the review edit page
      * @param array $review
      */
-    protected function setTitleEdit($review)
+    protected function setTitleEdit(array $review)
     {
         if (isset($review['review_id'])) {
             $title = $this->text('Edit rewiew');
@@ -394,4 +397,5 @@ class Review extends Controller
     {
         $this->output('content/review/edit');
     }
+
 }

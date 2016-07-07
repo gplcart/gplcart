@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -13,6 +12,9 @@ namespace core\controllers\admin;
 use core\Controller;
 use core\classes\Tool;
 
+/**
+ * Handles incoming requests and outputs data related to help documentation
+ */
 class Help extends Controller
 {
 
@@ -26,15 +28,15 @@ class Help extends Controller
 
     /**
      * Displays help page(s)
-     * @param type $filename
+     * @param null|string $filename
      */
     public function help($filename = null)
     {
-        if ($filename) {
-            $this->page($filename);
+        if (empty($filename)) {
+            $this->index();
         }
 
-        $this->index();
+        $this->page($filename);
     }
 
     /**
@@ -106,10 +108,10 @@ class Help extends Controller
     {
         $header = $this->getHeader($text);
 
-        if ($header) {
-            $this->setTitle($header);
-        } else {
+        if (empty($header)) {
             $this->setTitle('Help');
+        } else {
+            $this->setTitle($header);
         }
     }
 
@@ -143,7 +145,7 @@ class Help extends Controller
 
         $contents = $this->getContents($file);
 
-        if (!$contents) {
+        if (empty($contents)) {
             $this->outputError(404);
         }
 
@@ -200,14 +202,14 @@ class Help extends Controller
         foreach (Tool::scanFiles($directory, array('php')) as $file) {
             $contents = $this->getContents($file);
 
-            if (!$contents) {
+            if (empty($contents)) {
                 continue;
             }
 
             $text = end($contents);
             $header = $this->getHeader($text);
 
-            if (!$header) {
+            if (empty($header)) {
                 $header = $this->text('Section @num', array('@num' => $i));
             }
 
@@ -219,4 +221,5 @@ class Help extends Controller
         ksort($list);
         return $list;
     }
+
 }

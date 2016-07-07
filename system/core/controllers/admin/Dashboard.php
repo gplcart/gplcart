@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,13 +10,16 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Product;
-use core\models\Price;
-use core\models\Order;
-use core\models\Report;
-use core\models\Analytics;
-use core\models\Review;
+use core\models\Price as ModelsPrice;
+use core\models\Order as ModelsOrder;
+use core\models\Report as ModelsReport;
+use core\models\Review as ModelsReview;
+use core\models\Product as ModelsProduct;
+use core\models\Analytics as ModelsAnalytics;
 
+/**
+ * Handles incoming requests and outputs data related to admin dashboard
+ */
 class Dashboard extends Controller
 {
 
@@ -59,23 +61,25 @@ class Dashboard extends Controller
 
     /**
      * Constructor
-     * @param Product $product
-     * @param Price $price
-     * @param Order $order
-     * @param Report $report
-     * @param Analytics $analytics
-     * @param Review $review
+     * @param ModelsProduct $product
+     * @param ModelsPrice $price
+     * @param ModelsOrder $order
+     * @param ModelsReport $report
+     * @param ModelsAnalytics $analytics
+     * @param ModelsReview $review
      */
-    public function __construct(Product $product, Price $price, Order $order, Report $report, Analytics $analytics, Review $review)
+    public function __construct(ModelsProduct $product, ModelsPrice $price,
+            ModelsOrder $order, ModelsReport $report,
+            ModelsAnalytics $analytics, ModelsReview $review)
     {
         parent::__construct();
 
         $this->price = $price;
-        $this->product = $product;
         $this->order = $order;
         $this->report = $report;
-        $this->analytics = $analytics;
         $this->review = $review;
+        $this->product = $product;
+        $this->analytics = $analytics;
     }
 
     /**
@@ -83,19 +87,19 @@ class Dashboard extends Controller
      */
     public function dashboard()
     {
-        $this->data['product_total'] = $this->product->getList(array('count' => true));
+        $this->data['stores'] = $this->store->getList();
+        $this->data['store'] = $store = $this->getStore();
         $this->data['user_total'] = $this->user->getList(array('count' => true));
         $this->data['order_total'] = $this->order->getList(array('count' => true));
         $this->data['review_total'] = $this->review->getList(array('count' => true));
-        $this->data['stores'] = $this->store->getList();
-        $this->data['store'] = $store = $this->getStore();
+        $this->data['product_total'] = $this->product->getList(array('count' => true));
 
         $limit = $this->config->get('dashboard_limit', 10);
 
-        $this->data['orders'] = $this->getOrders($limit);
         $this->data['users'] = $this->getUsers($limit);
-        $this->data['severity_count'] = $this->getSeverityCount();
+        $this->data['orders'] = $this->getOrders($limit);
         $this->data['system_events'] = $this->getEvents($limit);
+        $this->data['severity_count'] = $this->getSeverityCount();
 
         $this->setGa($store);
         $this->setTitleDashboard();
@@ -120,7 +124,7 @@ class Dashboard extends Controller
 
     /**
      * Returns a store from the current query
-     * @return type
+     * @return array
      */
     protected function getStore()
     {
@@ -189,7 +193,7 @@ class Dashboard extends Controller
      * @param array $store
      * @return null
      */
-    protected function setGa($store)
+    protected function setGa(array $store)
     {
         $gapi_email = $this->config->get('gapi_email', '');
         $gapi_certificate = $this->config->get('gapi_certificate', '');
@@ -197,7 +201,7 @@ class Dashboard extends Controller
         $this->data['chart_traffic'] = array();
         $this->data['ga_missing_settings'] = $this->data['gapi_missing_credentials'] = '';
 
-        if (!$gapi_email || !$gapi_certificate) {
+        if (empty($gapi_email) || empty($gapi_certificate)) {
             $this->data['gapi_missing_credentials'] = $this->text('<a href="!href">Google API credentials</a> are not properly set up', array('!href' => $this->url('admin/settings/common')));
         }
 
@@ -205,7 +209,7 @@ class Dashboard extends Controller
             $this->data['ga_missing_settings'] = $this->text('<a href="!href">Google Analytics</a> is not properly set up', array('!href' => $this->url("admin/settings/store/{$store['store_id']}")));
         }
 
-        if ($this->data['gapi_missing_credentials'] || $this->data['ga_missing_settings']) {
+        if (!empty($this->data['gapi_missing_credentials']) || !empty($this->data['ga_missing_settings'])) {
             return;
         }
 
@@ -225,4 +229,5 @@ class Dashboard extends Controller
         $this->data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
         $this->addJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
     }
+
 }

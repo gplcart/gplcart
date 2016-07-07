@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Currency as C;
+use core\models\Currency as ModelsCurrency;
 
+/**
+ * Handles incoming requests and outputs data related to currency
+ */
 class Currency extends Controller
 {
 
@@ -26,7 +28,7 @@ class Currency extends Controller
      * Constructor
      * @param C $currency
      */
-    public function __construct(C $currency)
+    public function __construct(ModelsCurrency $currency)
     {
         parent::__construct();
 
@@ -106,7 +108,7 @@ class Currency extends Controller
      * Sets titles on the currency edit page
      * @param array $currency
      */
-    protected function setTitleEdit($currency)
+    protected function setTitleEdit(array $currency)
     {
         if (isset($currency['code'])) {
             $title = $this->text('Edit currency %name', array('%name' => $currency['name']));
@@ -139,11 +141,11 @@ class Currency extends Controller
 
         $currency = $this->currency->get($code);
 
-        if ($currency) {
-            return $currency;
+        if (empty($currency)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $currency;
     }
 
     /**
@@ -151,13 +153,14 @@ class Currency extends Controller
      * @param array $currency
      * @return array
      */
-    protected function delete($currency)
+    protected function delete(array $currency)
     {
         if (empty($currency['code'])) {
             return; // Nothing to delete
         }
 
         $this->controlAccess('currency_delete');
+
         if ($this->currency->delete($currency['code'])) {
             $this->redirect('admin/settings/currency', $this->text('Currency %code has been deleted', array(
                         '%code' => $currency['code'])), 'success');
@@ -170,7 +173,7 @@ class Currency extends Controller
      * Saves a currency
      * @param array $currency
      */
-    protected function submit($currency)
+    protected function submit(array $currency)
     {
         $this->submitted = $this->request->post('currency', array());
         $this->validate($currency);
@@ -197,7 +200,7 @@ class Currency extends Controller
      * Validates a currency data
      * @param array $currency
      */
-    protected function validate($currency)
+    protected function validate(array $currency)
     {
         // Fix checkboxes
         $this->submitted['status'] = !empty($this->submitted['status']);
@@ -224,7 +227,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateCode($currency)
+    protected function validateCode(array $currency)
     {
         if (!preg_match('/^[a-zA-Z]{3}$/', $this->submitted['code'])) {
             $this->data['form_errors']['code'] = $this->text('Invalid currency code. You must only use ISO 4217 codes');
@@ -247,7 +250,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateName($currency)
+    protected function validateName(array $currency)
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
             $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
@@ -262,7 +265,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateNumericCode($currency)
+    protected function validateNumericCode(array $currency)
     {
         if (!preg_match('/^[0-9]{3}$/', $this->submitted['numeric_code'])) {
             $this->data['form_errors']['numeric_code'] = $this->text('Numeric currency code must contain only 3 digits. See ISO 4217');
@@ -277,7 +280,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateSymbol($currency)
+    protected function validateSymbol(array $currency)
     {
         if (empty($this->submitted['symbol'])) {
             $this->data['form_errors']['symbol'] = $this->text('Required field');
@@ -292,7 +295,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateMajorUnit($currency)
+    protected function validateMajorUnit(array $currency)
     {
         if (empty($this->submitted['major_unit'])) {
             $this->data['form_errors']['major_unit'] = $this->text('Required field');
@@ -307,7 +310,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateMinorUnit($currency)
+    protected function validateMinorUnit(array $currency)
     {
         if (empty($this->submitted['minor_unit'])) {
             $this->data['form_errors']['minor_unit'] = $this->text('Required field');
@@ -322,7 +325,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateConvertionRate($currency)
+    protected function validateConvertionRate(array $currency)
     {
         if (empty($this->submitted['convertion_rate'])) {
             $this->submitted['convertion_rate'] = 1;
@@ -343,7 +346,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateDecimals($currency)
+    protected function validateDecimals(array $currency)
     {
         if (empty($this->submitted['decimals'])) {
             $this->submitted['decimals'] = 2;
@@ -363,7 +366,7 @@ class Currency extends Controller
      * @param array $currency
      * @return boolean
      */
-    protected function validateRoundingStep($currency)
+    protected function validateRoundingStep(array $currency)
     {
         if (empty($this->submitted['rounding_step'])) {
             $this->submitted['rounding_step'] = 0;
@@ -377,4 +380,5 @@ class Currency extends Controller
 
         return true;
     }
+
 }

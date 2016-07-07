@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -12,8 +11,11 @@ namespace core\controllers\admin;
 
 use core\Controller;
 use core\classes\Tool;
-use core\models\Report;
+use core\models\Report as ModelsReport;
 
+/**
+ * Handles incoming requests and outputs data related to cron jobs
+ */
 class Cron extends Controller
 {
 
@@ -25,8 +27,9 @@ class Cron extends Controller
 
     /**
      * Controller
+     * @param ModelsReport $report
      */
-    public function __construct(Report $report)
+    public function __construct(ModelsReport $report)
     {
         parent::__construct();
         $this->report = $report;
@@ -98,7 +101,7 @@ class Cron extends Controller
             return true;
         }
 
-        if ($this->cron_interval && ((GC_TIME - $this->cron_last_run) > $this->cron_interval)) {
+        if (!empty($this->cron_interval) && ((GC_TIME - $this->cron_last_run) > $this->cron_interval)) {
             return true;
         }
 
@@ -125,7 +128,7 @@ class Cron extends Controller
         $deleted += Tool::deleteFiles(GC_PRIVATE_IMPORT_DIR, array('csv'), $this->config->get('import_lifespan', 86400));
         $deleted += Tool::deleteFiles(GC_PRIVATE_LOGS_DIR, array('csv'), $this->config->get('log_lifespan', 86400));
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->logger->log('cron', array('message' => 'Deleted @num expired files', 'variables' => array('@num' => $deleted)));
         }
 
@@ -139,12 +142,15 @@ class Cron extends Controller
     protected function processLogs()
     {
         if ($this->config->get('report_errors', 1)) {
+
             $errors = $this->report->getPhpErrors();
-            $sent = ($errors && $this->report->reportErrors($errors));
+
+            $has_errors = !empty($errors);
+            $sent = ($has_errors && $this->report->reportErrors($errors));
 
             if ($sent) {
                 $this->logger->log('cron', array('message' => 'Error raport has been sent'), 'success');
-            } elseif ($errors && !$sent) {
+            } elseif ($has_errors && !$sent) {
                 $this->logger->log('cron', array('message' => 'Failed to send error report'), 'warning');
             }
         }
@@ -192,4 +198,5 @@ class Cron extends Controller
     {
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
     }
+
 }

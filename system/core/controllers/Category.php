@@ -10,14 +10,14 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Cart;
-use core\models\Price;
-use core\models\Image;
-use core\models\Search;
-use core\models\Product;
-use core\models\Bookmark;
-use core\models\CategoryGroup;
-use core\models\Category as C;
+use core\models\Cart as ModelsCart;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Search as ModelsSearch;
+use core\models\Product as ModelsProduct;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\Category as ModelsCategory;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 
 class Category extends Controller
 {
@@ -72,16 +72,19 @@ class Category extends Controller
 
     /**
      * Constructor
-     * @param C $category
-     * @param Image $image
-     * @param Product $product
-     * @param Price $price
-     * @param Cart $cart
-     * @param Bookmark $bookmark
-     * @param Search $search
-     * @param CategoryGroup $category_group
+     * @param ModelsCategory $category
+     * @param ModelsImage $image
+     * @param ModelsProduct $product
+     * @param ModelsPrice $price
+     * @param ModelsCart $cart
+     * @param ModelsBookmark $bookmark
+     * @param ModelsSearch $search
+     * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(C $category, Image $image, Product $product, Price $price, Cart $cart, Bookmark $bookmark, Search $search, CategoryGroup $category_group)
+    public function __construct(ModelsCategory $category, ModelsImage $image,
+            ModelsProduct $product, ModelsPrice $price, ModelsCart $cart,
+            ModelsBookmark $bookmark, ModelsSearch $search,
+            ModelsCategoryGroup $category_group)
     {
         parent::__construct();
 
@@ -102,13 +105,13 @@ class Category extends Controller
     public function category($category_id)
     {
         $category = $this->get($category_id);
-        
+
         $view = $this->config->module($this->theme, 'catalog_view', 'grid');
         $sort = $this->config->module($this->theme, 'catalog_sort', 'price');
         $order = $this->config->module($this->theme, 'catalog_order', 'asc');
-        
+
         $default = array('sort' => $sort, 'order' => $order, 'view' => $view);
-        
+
         $query = $this->getFilterQuery($default);
         $total = $this->getTotalProducts($category_id, $query);
         $limit = $this->setPager($total, $query, $this->config->module($this->theme, 'catalog_limit', 20));
@@ -128,23 +131,23 @@ class Category extends Controller
         $this->setBreadcrumbCategory($category);
         $this->outputCategory();
     }
-    
+
     /**
      * Modifies a product array before rendering
      * @param array $products
      * @param array $query
      * @return array
      */
-    public function prepareProducts($products, array $query)
+    public function prepareProducts(array $products, array $query)
     {
         if (empty($products)) {
             return array();
         }
-        
+
         $user_id = $this->cart->uid();
         $product_ids = array_keys($products);
         $pricerules = $this->store->config('catalog_pricerule');
-        
+
         $view = in_array($query['view'], array('list', 'grid')) ? $query['view'] : 'grid';
         $imestylestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
 
@@ -154,7 +157,7 @@ class Category extends Controller
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
             $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
 
-            if ($pricerules) {
+            if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);
                 $product['price'] = $calculated['total'];
             }
@@ -172,7 +175,7 @@ class Category extends Controller
      * Sets sidebar menu
      * @param array $tree
      */
-    protected function setCategoryMenu($tree)
+    protected function setCategoryMenu(array $tree)
     {
         $this->addRegionItem('region_left', array('category/block/menu', array('tree' => $tree)));
     }
@@ -181,11 +184,11 @@ class Category extends Controller
      * Sets titles on the category page
      * @param array $category
      */
-    protected function setTitleCategory($category)
+    protected function setTitleCategory(array $category)
     {
         $metatitle = $category['meta_title'];
 
-        if ($metatitle === '') {
+        if (empty($metatitle)) {
             $metatitle = $category['title'];
         }
 
@@ -197,7 +200,7 @@ class Category extends Controller
      * Sets breadcrumbs on the category page
      * @param array $category
      */
-    protected function setBreadcrumbCategory($category)
+    protected function setBreadcrumbCategory(array $category)
     {
         $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
         $this->setBreadcrumb(array('text' => $category['title']));
@@ -207,11 +210,11 @@ class Category extends Controller
      * Sets metatags on the category page
      * @param array $category
      */
-    protected function setMetaCategory($category)
+    protected function setMetaCategory(array $category)
     {
         $meta_description = $category['meta_description'];
 
-        if ($meta_description === '') {
+        if (empty($meta_description)) {
             $meta_description = $this->truncate($category['description_1'], 160, '');
         }
 
@@ -273,7 +276,7 @@ class Category extends Controller
      * @param array $tree
      * @return string
      */
-    protected function getRenderedChildren($category_id, $tree)
+    protected function getRenderedChildren($category_id, array $tree)
     {
         $children = $this->category->getChildren($category_id, $tree);
         return $this->render('category/children', array('children' => $children));
@@ -283,9 +286,10 @@ class Category extends Controller
      * Returns ready-to-display category navbar
      * @param integer $quantity
      * @param integer $total
+     * @param array $query
      * @return string
      */
-    protected function getRenderedNavbar($quantity, $total, $query)
+    protected function getRenderedNavbar($quantity, $total, array $query)
     {
         $options = array(
             'total' => $total,
@@ -299,14 +303,12 @@ class Category extends Controller
 
     /**
      * Returns ready-to-display products
-     * @param string $limit
-     * @param array $query
-     * @param integer $category_id
+     * @param array $products
      * @return string
      */
-    protected function getRenderedProducts($products)
+    protected function getRenderedProducts(array $products)
     {
-        return $this->render("product/list", array('products' => $products));
+        return $this->render('product/list', array('products' => $products));
     }
 
     /**
@@ -329,7 +331,7 @@ class Category extends Controller
      * @param array $tree
      * @return array
      */
-    protected function prepareTree($tree)
+    protected function prepareTree(array $tree)
     {
         $category_ids = array_keys($tree);
         $imagestyle = $this->config->module($this->theme, 'image_style_category_child', 3);
@@ -354,7 +356,7 @@ class Category extends Controller
      * @param integer $category_id
      * @return array
      */
-    protected function getProducts($limit, $query, $category_id)
+    protected function getProducts($limit, array $query, $category_id)
     {
         $options = array(
             'status' => 1,
@@ -363,7 +365,7 @@ class Category extends Controller
             'category_id' => $category_id,
             'language' => $this->langcode
         ) + $query;
-        
+
         $products = $this->product->getList($options);
         return $this->prepareProducts($products, $query);
     }
@@ -374,7 +376,7 @@ class Category extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalProducts($category_id, $query)
+    protected function getTotalProducts($category_id, array $query)
     {
         $options = array(
             'count' => true,
@@ -383,4 +385,5 @@ class Category extends Controller
 
         return $this->product->getList($options + $query);
     }
+
 }

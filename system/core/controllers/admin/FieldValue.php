@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Field as F;
-use core\models\Image;
-use core\models\File;
-use core\models\FieldValue as Fv;
+use core\models\File as ModelsFile;
+use core\models\Field as ModelsField;
+use core\models\Image as ModelsImage;
+use core\models\FieldValue as ModelsFieldValue;
 
+/**
+ * Handles incoming requests and outputs data related to field values
+ */
 class FieldValue extends Controller
 {
 
@@ -51,18 +53,20 @@ class FieldValue extends Controller
 
     /**
      * Constructor
-     * @param F $field
-     * @param Image $image
-     * @param File $file
+     * @param ModelsField $field
+     * @param ModelsFieldValue $field_value
+     * @param ModelsImage $image
+     * @param ModelsFile $file
      */
-    public function __construct(F $field, Fv $field_value, Image $image, File $file)
+    public function __construct(ModelsField $field,
+            ModelsFieldValue $field_value, ModelsImage $image, ModelsFile $file)
     {
         parent::__construct();
 
-        $this->field = $field;
-        $this->field_value = $field_value;
-        $this->image = $image;
         $this->file = $file;
+        $this->field = $field;
+        $this->image = $image;
+        $this->field_value = $field_value;
     }
 
     /**
@@ -84,7 +88,7 @@ class FieldValue extends Controller
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action);
         }
 
@@ -128,9 +132,9 @@ class FieldValue extends Controller
      * Returns total number of values for a given field and conditions
      * @param integer $field_id
      * @param array $query
-     * @return integer
+     * @return array
      */
-    protected function getTotalFieldValues($field_id, $query)
+    protected function getTotalFieldValues($field_id, array $query)
     {
         return $this->field_value->getList(array('count' => true, 'field_id' => $field_id) + $query);
     }
@@ -139,7 +143,7 @@ class FieldValue extends Controller
      * Sets titles on the field values overview page
      * @param array $field
      */
-    protected function setTitleValues($field)
+    protected function setTitleValues(array $field)
     {
         $this->setTitle($this->text('Values of %s', array('%s' => $field['title'])));
     }
@@ -170,23 +174,26 @@ class FieldValue extends Controller
     {
         $field = $this->field->get($field_id);
 
-        if ($field) {
-            return $field;
+        if (empty($field)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $field;
     }
 
     /**
      * Returns an array of field values for a given field
+     * @param array $limit
+     * @param integer $field_id
+     * @param array $query
      * @return array
      */
-    protected function getFieldValues($limit, $field_id, $query)
+    protected function getFieldValues(array $limit, $field_id, array $query)
     {
         $values = $this->field_value->getList(array('limit' => $limit, 'field_id' => $field_id) + $query);
 
         foreach ($values as &$value) {
-            if ($value['path']) {
+            if (!empty($value['path'])) {
                 $value['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $value['path']);
             }
         }
@@ -197,19 +204,19 @@ class FieldValue extends Controller
     /**
      * Applies anaction to the selected field values
      * @param array $selected
-     * @param array $action
+     * @param string $action
      * @return boolean
      */
-    protected function action($selected, $action)
+    protected function action(array $selected, $action)
     {
         $deleted = 0;
         foreach ($selected as $field_value_id) {
-            if ($action == 'delete' && $this->access('field_value_delete')) {
+            if ($action === 'delete' && $this->access('field_value_delete')) {
                 $deleted += (int) $this->field_value->delete($field_value_id);
             }
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num field values', array('%num' => $deleted)), 'success');
             return true;
         }
@@ -227,10 +234,10 @@ class FieldValue extends Controller
 
     /**
      * Sets titles on the edit field value page
-     * @param type $field_value
-     * @param type $field
+     * @param array $field_value
+     * @param array $field
      */
-    protected function setTitleEdit($field_value, $field)
+    protected function setTitleEdit(array $field_value, array $field)
     {
         if (isset($field_value['field_value_id'])) {
             $title = $this->text('Edit field value %name', array('%name' => $field_value['title']));
@@ -245,7 +252,7 @@ class FieldValue extends Controller
      * Sets breadcrumbs on the edit field value page
      * @param array $field
      */
-    protected function setBreadcrumbEdit($field)
+    protected function setBreadcrumbEdit(array $field)
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -273,11 +280,11 @@ class FieldValue extends Controller
 
         $field_value = $this->field_value->get($field_value_id);
 
-        if ($field_value) {
-            return $field_value;
+        if (empty($field_value)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $field_value;
     }
 
     /**
@@ -285,7 +292,7 @@ class FieldValue extends Controller
      * @param array $field_value
      * @param array $field
      */
-    protected function delete($field_value, $field)
+    protected function delete(array $field_value, array $field)
     {
         $this->controlAccess('field_value_delete');
 
@@ -304,14 +311,16 @@ class FieldValue extends Controller
      * @param array $field
      * @return null
      */
-    protected function submit($field_value, $field)
+    protected function submit(array $field_value, array $field)
     {
         $this->submitted = $this->request->post('field_value', array());
         $this->submitted += $field_value;
 
         $this->validate($field);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['field_value'] = $this->submitted;
             return;
         }
@@ -331,7 +340,7 @@ class FieldValue extends Controller
      * Performs validation checks on the given field value
      * @param array $field
      */
-    protected function validate($field)
+    protected function validate(array $field)
     {
         $this->validateWeight($field);
         $this->validateColor($field);
@@ -363,7 +372,7 @@ class FieldValue extends Controller
      * @param array $field
      * @return boolean
      */
-    protected function validateColor($field)
+    protected function validateColor(array $field)
     {
         if ($field['widget'] == 'color' && !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $this->submitted['color'])) {
             $this->data['form_errors']['color'] = $this->text('Required field');
@@ -378,7 +387,7 @@ class FieldValue extends Controller
      * @param array $field
      * @return boolean
      */
-    protected function validateTitle($field)
+    protected function validateTitle(array $field)
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
@@ -393,13 +402,14 @@ class FieldValue extends Controller
      * @param array $field
      * @return boolean
      */
-    protected function validateTranslation($field)
+    protected function validateTranslation(array $field)
     {
         if (empty($this->submitted['translation'])) {
             return true;
         }
 
         $has_errors = false;
+
         foreach ($this->submitted['translation'] as $code => $translation) {
             if (mb_strlen($translation['title']) > 255) {
                 $this->data['form_errors']['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
@@ -415,11 +425,11 @@ class FieldValue extends Controller
      * @param array $field
      * @return boolean
      */
-    protected function validateFile($field)
+    protected function validateFile(array $field)
     {
         $file = $this->request->file('file');
 
-        if (!$file) {
+        if (empty($file)) {
             if ($field['widget'] == 'image') {
                 $this->data['form_errors']['image'] = $this->text('Please upload an image');
                 return false;
@@ -447,4 +457,5 @@ class FieldValue extends Controller
             $this->data['field_value']['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $this->data['field_value']['path']);
         }
     }
+
 }
