@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,14 +10,17 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Cart;
-use core\models\Price;
-use core\models\Image;
-use core\models\Product;
-use core\models\Bookmark;
-use core\models\Category;
-use core\models\Search as S;
+use core\models\Cart as ModelsCart;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Search as ModelsSearch;
+use core\models\Product as ModelsProduct;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\Category as ModelsCategory;
 
+/**
+ * Handles incoming requests and outputs data related to search functionality
+ */
 class Search extends Controller
 {
 
@@ -66,15 +68,17 @@ class Search extends Controller
 
     /**
      * Constructor
-     * @param Bookmark $bookmark
-     * @param Product $product
-     * @param S $search
-     * @param Cart $cart
-     * @param Price $price
-     * @param Image $image
-     * @param Category $category
+     * @param ModelsBookmark $bookmark
+     * @param ModelsProduct $product
+     * @param ModelsSearch $search
+     * @param ModelsCart $cart
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
+     * @param ModelsCategory $category
      */
-    public function __construct(Bookmark $bookmark, Product $product, S $search, Cart $cart, Price $price, Image $image, Category $category)
+    public function __construct(ModelsBookmark $bookmark,
+            ModelsProduct $product, ModelsSearch $search, ModelsCart $cart,
+            ModelsPrice $price, ModelsImage $image, ModelsCategory $category)
     {
         parent::__construct();
 
@@ -119,7 +123,7 @@ class Search extends Controller
      */
     protected function setTitleSearch($term)
     {
-        if ($term) {
+        if ($term !== '') {
             $title = $this->text('Search for <small>%term</small>', array('%term' => $term));
         } else {
             $title = $this->text('Search');
@@ -138,7 +142,6 @@ class Search extends Controller
 
     /**
      * Sets breadcrumbs on the search page
-     * @param array $category
      */
     protected function setBreadcrumbSearch()
     {
@@ -165,11 +168,11 @@ class Search extends Controller
     /**
      * Returns an array of search results
      * @param string $term
-     * @param integer $limit
+     * @param array $limit
      * @param array $query
      * @return array
      */
-    protected function getResults($term, $limit, array $query = array())
+    protected function getResults($term, array $limit, array $query = array())
     {
         $options = array(
             'status' => 1,
@@ -187,7 +190,7 @@ class Search extends Controller
      * @param array $query
      * @return array
      */
-    protected function prepareProducts($products, array $query)
+    protected function prepareProducts(array $products, array $query)
     {
         $user_id = $this->cart->uid();
         $product_ids = array_keys($products);
@@ -201,7 +204,7 @@ class Search extends Controller
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
 
-            if ($pricerules) {
+            if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);
                 $product['price'] = $calculated['total'];
             }
@@ -219,7 +222,7 @@ class Search extends Controller
      * @param array $products
      * @return string
      */
-    protected function getRenderedResults($products)
+    protected function getRenderedResults(array $products)
     {
         return $this->render('product/list', array('products' => $products));
     }
@@ -228,6 +231,7 @@ class Search extends Controller
      * Returns ready-to-display category navbar
      * @param integer $quantity
      * @param integer $total
+     * @param array $query
      * @return string
      */
     protected function getRenderedNavbar($quantity, $total, $query)
@@ -272,7 +276,7 @@ class Search extends Controller
      * @param array $tree
      * @return array
      */
-    protected function prepareCategoryTree($tree)
+    protected function prepareCategoryTree(array $tree)
     {
         foreach ($tree as &$item) {
             $item['url'] = $item['alias'] ? $item['alias'] : "category/{$item['category_id']}";
@@ -308,4 +312,5 @@ class Search extends Controller
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
         return $this->prepareProducts($products, array('view' => 'grid'));
     }
+
 }

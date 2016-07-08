@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Page;
-use core\models\Price;
-use core\models\Image;
-use core\models\Product;
+use core\models\Page as ModelsPage;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Product as ModelsProduct;
 
+/**
+ * Handles incoming requests and outputs data related to front page
+ */
 class Front extends Controller
 {
 
@@ -24,7 +26,7 @@ class Front extends Controller
      * @var \core\models\Product $product
      */
     protected $product;
-    
+
     /**
      * Page module instance
      * @var \core\models\Page $page
@@ -42,15 +44,16 @@ class Front extends Controller
      * @var \core\models\Image $image
      */
     protected $image;
-    
+
     /**
      * Constructor
-     * @param Product $product
-     * @param Page $page
-     * @param Price $price
-     * @param Image $image
+     * @param ModelsProduct $product
+     * @param ModelsPage $page
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
      */
-    public function __construct(Product $product, Page $page, Price $price, Image $image)
+    public function __construct(ModelsProduct $product, ModelsPage $page,
+            ModelsPrice $price, ModelsImage $image)
     {
         parent::__construct();
 
@@ -67,8 +70,6 @@ class Front extends Controller
     {
         $this->setFrontPages();
         $this->setFrontProducts();
-        
-        //ddd($this->data['region_content']);
 
         $this->setTitleFront();
         $this->outputFront();
@@ -106,7 +107,7 @@ class Front extends Controller
 
         return $products;
     }
-    
+
     /**
      * Returns an array of pages to be shown on the front page
      */
@@ -127,7 +128,7 @@ class Front extends Controller
      * @param array $products
      * @return array
      */
-    protected function prepareProducts($products)
+    protected function prepareProducts(array $products)
     {
         $product_ids = array_keys($products);
         $pricerules = $this->store->config('catalog_pricerule');
@@ -137,7 +138,7 @@ class Front extends Controller
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
 
-            if ($pricerules) {
+            if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);
                 $product['price'] = $calculated['total'];
             }
@@ -147,13 +148,13 @@ class Front extends Controller
 
         return $products;
     }
-    
+
     /**
      * Modifies pages array
      * @param array $pages
      * @return array
      */
-    protected function preparePages($pages)
+    protected function preparePages(array $pages)
     {
         $page_ids = array_keys($pages);
         $imagestyle = $this->config->module($this->theme, 'image_style_page_banner', 7);
@@ -171,7 +172,7 @@ class Front extends Controller
      * @param array $products
      * @return array
      */
-    protected function renderProducts($products)
+    protected function renderProducts(array $products)
     {
         $rendered = array();
         foreach ($this->prepareProducts($products) as $product) {
@@ -180,13 +181,13 @@ class Front extends Controller
 
         return $rendered;
     }
-    
+
     /**
      * Returns an array of rendered page items
      * @param array $pages
      * @return array
      */
-    protected function renderPages($pages)
+    protected function renderPages(array $pages)
     {
         $rendered = array();
         foreach ($this->preparePages($pages) as $page) {
@@ -203,9 +204,9 @@ class Front extends Controller
     {
         $products = $this->getFrontProducts();
         $this->addRegionItem('region_content', array('front/block/product', array(
-            'products' => $this->renderProducts($products))));
+                'products' => $this->renderProducts($products))));
     }
-    
+
     /**
      * Sets rendered products on the front page
      */
@@ -213,6 +214,7 @@ class Front extends Controller
     {
         $pages = $this->preparePages($this->getFrontPages());
         $this->addRegionItem('region_top', array('page/block/page', array(
-            'pages' => $pages)));
+                'pages' => $pages)));
     }
+
 }

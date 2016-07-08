@@ -14,7 +14,8 @@ use core\classes\Tool;
 /**
  * Provides methods to work with various server data
  */
-class Request {
+class Request
+{
 
     /**
      * Base path
@@ -32,7 +33,8 @@ class Request {
      * Returns the current host
      * @return string
      */
-    public function host() {
+    public function host()
+    {
         return $this->server('HTTP_HOST');
     }
 
@@ -41,7 +43,8 @@ class Request {
      * @param type $exclude_langcode
      * @return string
      */
-    public function base($exclude_langcode = false) {
+    public function base($exclude_langcode = false)
+    {
         if (!isset($this->base)) {
             $base = str_replace(array('\\', ' '), array('/', '%20'), dirname($this->server('SCRIPT_NAME')));
             $this->base = ($base == "/") ? "/" : $base . "/";
@@ -60,7 +63,8 @@ class Request {
      * Sets a language code
      * @param string $code
      */
-    public function setBaseSuffix($code) {
+    public function setBaseSuffix($code)
+    {
         $this->langcode = $code . '/';
     }
 
@@ -68,7 +72,8 @@ class Request {
      * Returns a language suffix from the URL
      * @return string
      */
-    public function getBaseSuffix() {
+    public function getBaseSuffix()
+    {
         return $this->langcode;
     }
 
@@ -76,7 +81,8 @@ class Request {
      * Returns the current URN, i.e path with query
      * @return string
      */
-    public function urn() {
+    public function urn()
+    {
         return $this->server('REQUEST_URI', '');
     }
 
@@ -84,7 +90,8 @@ class Request {
      * Returns request method
      * @return string
      */
-    public function method() {
+    public function method()
+    {
         $method = $this->server('REQUEST_METHOD', 'GET');
         if (isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
             $method = $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'];
@@ -99,7 +106,8 @@ class Request {
      * Returns an address of the page which referred the user agent to the current page
      * @return string HTTP referrer
      */
-    public function referrer() {
+    public function referrer()
+    {
         return $this->server('HTTP_REFERER');
     }
 
@@ -107,7 +115,8 @@ class Request {
      * Returns an IP from which the user is viewing the current page
      * @return string IP address
      */
-    public function ip() {
+    public function ip()
+    {
         return $this->server('REMOTE_ADDR');
     }
 
@@ -115,7 +124,8 @@ class Request {
      * Whether the current request is AJAX
      * @return bool
      */
-    public function ajax() {
+    public function ajax()
+    {
         return ($this->server('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest');
     }
 
@@ -123,7 +133,8 @@ class Request {
      * Returns the current HTTP scheme
      * @return string HTTP scheme
      */
-    public function scheme() {
+    public function scheme()
+    {
         return $this->secure() ? 'https://' : 'http://';
     }
 
@@ -131,7 +142,8 @@ class Request {
      * Whether the current connection is secure
      * @return bool
      */
-    public function secure() {
+    public function secure()
+    {
         return ($this->server('HTTPS', 'off') !== 'off');
     }
 
@@ -139,7 +151,8 @@ class Request {
      * Returns contents of the User-Agent: header from the current request
      * @return string
      */
-    public function agent() {
+    public function agent()
+    {
         return $this->server('HTTP_USER_AGENT');
     }
 
@@ -147,7 +160,8 @@ class Request {
      * Returns a content type
      * @return string Content type
      */
-    public function type() {
+    public function type()
+    {
         return $this->server('CONTENT_TYPE');
     }
 
@@ -155,7 +169,8 @@ class Request {
      * Returns a content length
      * @return integer Content length in bytes
      */
-    public function length() {
+    public function length()
+    {
         return $this->server('CONTENT_LENGTH', 0);
     }
 
@@ -166,7 +181,8 @@ class Request {
      * @param bool|string $filter
      * @return mixed
      */
-    public function post($name = null, $default = null, $filter = true) {
+    public function post($name = null, $default = null, $filter = true)
+    {
         $post = empty($_POST) ? array() : $_POST;
 
         if ($filter !== 'raw') {
@@ -187,7 +203,8 @@ class Request {
      * @param bool $filter
      * @return mixed
      */
-    public function request($name = null, $default = null, $filter = true) {
+    public function request($name = null, $default = null, $filter = true)
+    {
         $request = empty($_REQUEST) ? array() : $_REQUEST;
 
         if ($filter !== 'raw') {
@@ -208,7 +225,8 @@ class Request {
      * @param bool $filter
      * @return mixed
      */
-    public function cookie($name = null, $default = null, $filter = true) {
+    public function cookie($name = null, $default = null, $filter = true)
+    {
         return Tool::getCookie($name, $default, $filter);
     }
 
@@ -219,7 +237,8 @@ class Request {
      * @param bool $filter
      * @return mixed
      */
-    public function get($name = null, $default = null, $filter = true) {
+    public function get($name = null, $default = null, $filter = true)
+    {
         $get = empty($_GET) ? array() : $_GET;
 
         $this->sanitize($get, $filter);
@@ -237,7 +256,8 @@ class Request {
      * @param mixed $default
      * @return mixed
      */
-    public function file($name = null, $default = null) {
+    public function file($name = null, $default = null)
+    {
         $files = $_FILES;
 
         if (isset($name)) {
@@ -253,7 +273,8 @@ class Request {
      * @param mixed $default
      * @return mixed
      */
-    protected function server($var, $default = '') {
+    protected function server($var, $default = '')
+    {
         return isset($_SERVER[$var]) ? trim($_SERVER[$var]) : $default;
     }
 
@@ -262,7 +283,8 @@ class Request {
      * @param array $array
      * @param bool $filter
      */
-    protected function sanitize(&$array, $filter = true) {
+    protected function sanitize(array &$array, $filter = true)
+    {
         Tool::trimArray($array, $filter);
     }
 

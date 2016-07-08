@@ -1,16 +1,26 @@
 <?php
 
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Cart;
-use core\models\Image;
-use core\models\State;
-use core\models\Order;
-use core\models\Price;
-use core\models\Address;
-use core\models\Country;
+use core\models\Cart as ModelsCart;
+use core\models\Image as ModelsImage;
+use core\models\State as ModelsState;
+use core\models\Order as ModelsOrder;
+use core\models\Price as ModelsPrice;
+use core\models\Address as ModelsAddress;
+use core\models\Country as ModelsCountry;
 
+/**
+ * Handles incoming requests and outputs data related to checkout process
+ */
 class Checkout extends Controller
 {
 
@@ -130,17 +140,17 @@ class Checkout extends Controller
 
     /**
      * Constructor
-     * @param Cart $cart
-     * @param Country $country
-     * @param State $state
-     * @param Address $address
-     * @param Order $order
-     * @param Price $price
-     * @param Image $image
+     * @param ModelsCart $cart
+     * @param ModelsCountry $country
+     * @param ModelsState $state
+     * @param ModelsAddress $address
+     * @param ModelsOrder $order
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
      */
-    public function __construct(Cart $cart, Country $country, State $state,
-                                Address $address, Order $order, Price $price,
-                                Image $image)
+    public function __construct(ModelsCart $cart, ModelsCountry $country,
+            ModelsState $state, ModelsAddress $address, ModelsOrder $order,
+            ModelsPrice $price, ModelsImage $image)
     {
         parent::__construct();
 
@@ -252,7 +262,7 @@ class Checkout extends Controller
             $this->submit();
         }
 
-        if ($this->submitted_address) {
+        if (!empty($this->submitted_address)) {
             $this->form_data['address'] = $this->submitted_address;
         }
 
@@ -299,7 +309,6 @@ class Checkout extends Controller
 
     /**
      * Sets titles on the checkout page
-     * @param array $order
      */
     protected function setTitleCheckout()
     {
@@ -308,7 +317,6 @@ class Checkout extends Controller
 
     /**
      * Sets breadcrumbs on the checkout page
-     * @param array $order
      */
     protected function setBreadcrumbCheckout()
     {
@@ -361,7 +369,7 @@ class Checkout extends Controller
 
             static::$total_quantity += (int) $item['quantity'];
 
-            if ($this->quantity_limit && static::$total_quantity >= $this->quantity_limit) {
+            if (!empty($this->quantity_limit) && static::$total_quantity >= $this->quantity_limit) {
                 $this->form_data['form_errors']['cart'] = $this->text('Sorry, you cannot have more than %s items in your cart', array('%s' => $this->quantity_limit));
                 break;
             }
@@ -390,7 +398,7 @@ class Checkout extends Controller
     {
         if (!empty($this->submitted['plus'])) {
             $this->cart_action = $this->submitted['plus'];
-            if ($this->quantity_limit_sku && $this->cart_content['items'][$this->cart_action]['quantity'] < $this->quantity_limit_sku) {
+            if (!empty($this->quantity_limit_sku) && $this->cart_content['items'][$this->cart_action]['quantity'] < $this->quantity_limit_sku) {
                 $this->cart_content['items'][$this->cart_action]['quantity'] ++;
             }
         }
@@ -403,7 +411,7 @@ class Checkout extends Controller
             }
         }
 
-        if ($this->quantity_limit && (int) $this->cart_content['quantity'] >= $this->quantity_limit) {
+        if (!empty($this->quantity_limit) && (int) $this->cart_content['quantity'] >= $this->quantity_limit) {
             $this->limit_reached = !empty($this->submitted['plus']);
         }
 
@@ -526,7 +534,7 @@ class Checkout extends Controller
      * @return array
      */
     protected function prepareComponents(array $calculated, array $cart,
-                                         array $order)
+            array $order)
     {
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -598,17 +606,17 @@ class Checkout extends Controller
             $has_error = true;
         }
 
-        if ($this->form_data['shipping_services'] && empty($this->form_data['order']['shipping'])) {
+        if (!empty($this->form_data['shipping_services']) && empty($this->form_data['order']['shipping'])) {
             $this->form_data['form_errors']['shipping'] = $this->text('Invalid shipping service');
             $has_error = true;
         }
 
-        if ($this->form_data['payment_services'] && empty($this->form_data['order']['payment'])) {
+        if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
             $this->form_data['form_errors']['payment'] = $this->text('Invalid payment service');
             $has_error = true;
         }
 
-        if ($this->form_data['payment_services'] && empty($this->form_data['order']['payment'])) {
+        if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
             $this->form_data['form_errors']['payment'] = $this->text('Invalid payment service');
             $has_error = true;
         }
@@ -665,7 +673,7 @@ class Checkout extends Controller
             $code = $this->form_data['order']['code'];
         }
 
-        if ($code && $this->order->codeMatches($price_rule_id, $code)) {
+        if (!empty($code) && $this->order->codeMatches($price_rule_id, $code)) {
             return true;
         }
 
@@ -681,7 +689,7 @@ class Checkout extends Controller
      * @return array
      */
     protected function prepareServices(array $services, array $cart,
-                                       array $order)
+            array $order)
     {
         foreach ($services as &$service) {
             $service['price'] = $this->price->convert((int) $service['price'], $service['currency'], $order['currency']);
@@ -741,4 +749,5 @@ class Checkout extends Controller
 
         return $result;
     }
+
 }

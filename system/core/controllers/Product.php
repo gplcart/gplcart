@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,19 +10,22 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Product as P;
-use core\models\ProductClass;
-use core\models\Price;
-use core\models\Image;
-use core\models\Cart;
-use core\models\Order;
-use core\models\Bookmark;
-use core\models\Review;
-use core\models\Rating;
-use core\models\Alias;
-use core\models\Shipping;
 use core\classes\Cache;
+use core\models\Cart as ModelsCart;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Order as ModelsOrder;
+use core\models\Alias as ModelsAlias;
+use core\models\Review as ModelsReview;
+use core\models\Rating as ModelsRating;
+use core\models\Product as ModelsProduct;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\Shipping as ModelsShipping;
+use core\models\ProductClass as ModelsProductClass;
 
+/**
+ * Handles incoming requests and outputs data related to products
+ */
 class Product extends Controller
 {
 
@@ -32,7 +34,7 @@ class Product extends Controller
      * @var \core\models\Product $product
      */
     protected $product;
-    
+
     /**
      * Product class model instance
      * @var \core\models\ProductClass $product_class
@@ -56,7 +58,7 @@ class Product extends Controller
      * @var \core\models\Cart $cart
      */
     protected $cart;
-    
+
     /**
      * Orders model instance
      * @var \core\models\Order $order
@@ -86,28 +88,46 @@ class Product extends Controller
      * @var \core\models\Alias $alias
      */
     protected $alias;
-    
+
     /**
      * Shipping model instance
      * @var \core\models\Shipping $shipping
      */
     protected $shipping;
 
-    public function __construct(P $product, ProductClass $product_class, Price $price, Image $image, Cart $cart, Order $order, Bookmark $bookmark, Review $review, Rating $rating, Alias $alias, Shipping $shipping)
+    /**
+     * Constructor
+     * @param ModelsProduct $product
+     * @param ModelsProductClass $product_class
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
+     * @param ModelsCart $cart
+     * @param ModelsOrder $order
+     * @param ModelsBookmark $bookmark
+     * @param ModelsReview $review
+     * @param ModelsRating $rating
+     * @param ModelsAlias $alias
+     * @param ModelsShipping $shipping
+     */
+    public function __construct(ModelsProduct $product,
+            ModelsProductClass $product_class, ModelsPrice $price,
+            ModelsImage $image, ModelsCart $cart, ModelsOrder $order,
+            ModelsBookmark $bookmark, ModelsReview $review,
+            ModelsRating $rating, ModelsAlias $alias, ModelsShipping $shipping)
     {
         parent::__construct();
 
-        $this->product = $product;
-        $this->product_class = $product_class;
+        $this->cart = $cart;
+        $this->alias = $alias;
         $this->price = $price;
         $this->image = $image;
-        $this->cart = $cart;
         $this->order = $order;
-        $this->bookmark = $bookmark;
         $this->review = $review;
         $this->rating = $rating;
-        $this->alias = $alias;
+        $this->product = $product;
+        $this->bookmark = $bookmark;
         $this->shipping = $shipping;
+        $this->product_class = $product_class;
     }
 
     /**
@@ -150,7 +170,7 @@ class Product extends Controller
             'title' => $product['title']));
 
         $total_reviews = $this->getTotalReviews($product_id);
-        
+
         $limit = $this->setPager($total_reviews, $this->query, $this->config->get('review_limit', 5));
 
         if ($total_reviews) {
@@ -201,28 +221,28 @@ class Product extends Controller
             'product' => $product,
             'products' => array_chunk($recent, 6)
         ));
-        
+
         $quotes = $this->getShippingQuotes($product);
         $this->data['shipping_quotes'] = $this->render('product/shipping', array(
             'product' => $product,
             'quotes' => $quotes
         ));
-        
+
         //d($this->user->getShippingAddress($this->uid));
 
         $this->data['price'] = $product['price_formatted'];
         $this->data['footer_content'][] = array('content' => $this->render('product/toolbar', array('product' => $product)));
 
-        $this->addJs('files/assets/photoswipe/photoswipe.min.js', 'top');
-        $this->addJs('files/assets/photoswipe/photoswipe-ui-default.min.js', 'top');
+        $this->setJs('files/assets/photoswipe/photoswipe.min.js', 'top');
+        $this->setJs('files/assets/photoswipe/photoswipe-ui-default.min.js', 'top');
 
-        $this->addCss('files/assets/photoswipe/photoswipe.css');
-        $this->addCss('files/assets/photoswipe/default-skin/default-skin.css');
+        $this->setCss('files/assets/photoswipe/photoswipe.css');
+        $this->setCss('files/assets/photoswipe/default-skin/default-skin.css');
 
         $this->setTitle($product['title'], false);
         $this->output('product/product');
     }
-    
+
     /**
      * Returns a total number of reviews for this product
      * @param integer $product_id
@@ -242,17 +262,17 @@ class Product extends Controller
 
     protected function getShippingQuotes($product)
     {
-        
+
         //$cart = $this->cart->getByUser();
         //$order =array();
-        
+
         $services = $this->shipping->getServices();
-        
+
         foreach ($services as &$service) {
-            $service['price'] = $this->price->convert((int)$service['price'], $service['currency'], $product['currency']);
+            $service['price'] = $this->price->convert((int) $service['price'], $service['currency'], $product['currency']);
             $service['price_formatted'] = $this->price->format($service['price'], $product['currency']);
         }
-        
+
         return $services;
     }
 
@@ -270,10 +290,10 @@ class Product extends Controller
             $alias = $this->alias->get('product_id', $product_id);
             $product['url'] = $alias ? $this->url($alias) : $this->url("product/$product_id");
             $product['fields'] = $this->getFields($product);
-            
+
             Cache::set("product.$product_id.$langcode", $product);
         }
-        
+
         if ($product['store_id'] != $this->store_id) {
             return array();
         }
@@ -306,13 +326,13 @@ class Product extends Controller
         if (!$product_ids) {
             return array();
         }
-        
+
         $style = $this->store->config('image_style_product_grid');
 
         $list = array();
         foreach ($product_ids as $product_id) {
             $product = $this->get($product_id, $langcode);
-            
+
             if (!$product) {
                 continue;
             }
@@ -450,4 +470,5 @@ class Product extends Controller
             $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
         }
     }
+
 }

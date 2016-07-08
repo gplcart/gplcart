@@ -15,7 +15,8 @@ use Exception as Base;
 /**
  * Custom base exception class
  */
-class Exception extends Base {
+class Exception extends Base
+{
 
     /**
      * Logger class instance
@@ -30,7 +31,8 @@ class Exception extends Base {
      * @param Base $previous
      */
     public function __construct($message = null, $code = 0,
-            Base $previous = null) {
+            Base $previous = null)
+    {
         parent::__construct($message, $code, $previous);
         $this->logger = Container::instance('core\\Logger');
     }
@@ -39,7 +41,8 @@ class Exception extends Base {
      * Formatted string for display
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return parent::__toString();
     }
 
@@ -47,7 +50,8 @@ class Exception extends Base {
      * Saves an exception to the database
      * @param string $message
      */
-    public function log($message = '') {
+    public function log($message = '')
+    {
         $error = $this->getMessageArray($message);
         $this->logger->log('php_exception', $error, 'danger');
     }
@@ -57,7 +61,8 @@ class Exception extends Base {
      * @param string $message
      * @return string
      */
-    public function getFormattedMessage($message = '') {
+    public function getFormattedMessage($message = '')
+    {
         $error = $this->getMessageArray($message);
         return $this->logger->errorMessage($error, 'PHP Exception');
     }
@@ -67,7 +72,8 @@ class Exception extends Base {
      * @param string $message
      * @return array
      */
-    protected function getMessageArray($message = '') {
+    protected function getMessageArray($message = '')
+    {
         if ($message === '') {
             $message = $this->message;
         }

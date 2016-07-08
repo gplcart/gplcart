@@ -14,7 +14,8 @@ use ReflectionClass;
 /**
  * Dependency injection container
  */
-class Container {
+class Container
+{
 
     /**
      * Instance storage
@@ -36,7 +37,8 @@ class Container {
      * @param boolean $share
      * @return object
      */
-    public static function instance($class, $arguments = array(), $share = true) {
+    public static function instance($class, $arguments = array(), $share = true)
+    {
         if (is_array($class)) {
             if (!is_callable($class)) {
                 return (object) array();
@@ -104,7 +106,8 @@ class Container {
      * @param object $instance
      * @return object
      */
-    public static function register($namespace, $instance) {
+    public static function register($namespace, $instance)
+    {
         static::$registry[strtolower(trim($namespace, '\\'))] = $instance;
         return $instance;
     }
@@ -113,7 +116,8 @@ class Container {
      * Removes a class(es) from the storage
      * @param null|string $class
      */
-    public static function unregister($class = null) {
+    public static function unregister($class = null)
+    {
         if (!isset($class)) {
             static::$registry = array(); // Unregister all
             return false;
@@ -129,7 +133,8 @@ class Container {
      * @param string $class
      * @return object|boolean
      */
-    protected static function registered($class) {
+    protected static function registered($class)
+    {
         $key = strtolower(trim($class, '\\'));
         return isset(static::$registry[$key]) ? static::$registry[$key] : false;
     }

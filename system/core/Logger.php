@@ -15,7 +15,8 @@ use core\classes\Tool;
 /**
  * Provides methods to log various errors and events
  */
-class Logger {
+class Logger
+{
 
     /**
      * Collected PHP errors
@@ -33,7 +34,8 @@ class Logger {
      * Constructor
      * @param Config $config
      */
-    public function __construct(Config $config) {
+    public function __construct(Config $config)
+    {
         $this->db = $config->getDb();
     }
 
@@ -46,7 +48,8 @@ class Logger {
      * @param integer $limit
      * @return bool
      */
-    public function csv($file, $type, $message, $severity = 'info', $limit = 0) {
+    public function csv($file, $type, $message, $severity = 'info', $limit = 0)
+    {
         $fields = array(
             date('M d, Y G:iA'),
             $severity,
@@ -64,7 +67,8 @@ class Logger {
      * @param string $severity
      * @return bool
      */
-    public function log($type, $data, $severity = 'info') {
+    public function log($type, $data, $severity = 'info')
+    {
         if (empty($this->db)) {
             return false;
         }
@@ -99,11 +103,12 @@ class Logger {
      * @param string $errfile
      * @param integer $errline
      */
-    public function errorHandler($errno, $errstr, $errfile = '', $errline = '') {
-        $error['message'] = $errstr;
+    public function errorHandler($errno, $errstr, $errfile = '', $errline = '')
+    {
         $error['code'] = $errno;
         $error['file'] = $errfile;
         $error['line'] = $errline;
+        $error['message'] = $errstr;
 
         $this->log('php_error', $error, 'warning');
         static::$errors['warning'][] = $this->errorMessage($error);
@@ -112,7 +117,8 @@ class Logger {
     /**
      * Shutdown handler
      */
-    public function shutdownHandler() {
+    public function shutdownHandler()
+    {
         $lasterror = error_get_last();
 
         $error_types = array(
@@ -142,10 +148,11 @@ class Logger {
      * @param string $header
      * @return string
      */
-    public function errorMessage($error, $header = '') {
+    public function errorMessage($error, $header = '')
+    {
         $message = "";
 
-        if ($header) {
+        if ($header !== '') {
             $message .= "<h3>$header</h3>\n";
         }
 
@@ -161,7 +168,8 @@ class Logger {
      * Returns an array of collected errors
      * @return array
      */
-    public function getErrors() {
+    public function getErrors()
+    {
         return static::$errors;
     }
 

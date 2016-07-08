@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,16 +10,19 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Cart;
-use core\models\Field;
-use core\models\Price;
-use core\models\Image;
-use core\models\Product;
-use core\models\Category;
-use core\models\Bookmark;
-use core\models\FieldValue;
-use core\models\ProductClass;
+use core\models\Cart as ModelsCart;
+use core\models\Field as ModelsField;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Product as ModelsProduct;
+use core\models\Category as ModelsCategory;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\FieldValue as ModelsFieldValue;
+use core\models\ProductClass as ModelsProductClass;
 
+/**
+ * Handles incoming requests and outputs data related to product comparison
+ */
 class Compare extends Controller
 {
 
@@ -71,26 +73,30 @@ class Compare extends Controller
      * @var \core\models\Bookmark $bookmark
      */
     protected $bookmark;
-    
+
     /**
      * Category model instance
      * @var \core\models\Category $category
      */
     protected $category;
-    
+
     /**
      * Constructor
-     * @param Product $product
-     * @param ProductClass $product_class
-     * @param Price $price
-     * @param Image $image
-     * @param Cart $cart
-     * @param Field $field
-     * @param FieldValue $field_value
-     * @param Bookmark $bookmark
-     * @param Category $category
+     * @param ModelsProduct $product
+     * @param ModelsProductClass $product_class
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
+     * @param ModelsCart $cart
+     * @param ModelsField $field
+     * @param ModelsFieldValue $field_value
+     * @param ModelsBookmark $bookmark
+     * @param ModelsCategory $category
      */
-    public function __construct(Product $product, ProductClass $product_class, Price $price, Image $image, Cart $cart, Field $field, FieldValue $field_value, Bookmark $bookmark, Category $category)
+    public function __construct(ModelsProduct $product,
+            ModelsProductClass $product_class, ModelsPrice $price,
+            ModelsImage $image, ModelsCart $cart, ModelsField $field,
+            ModelsFieldValue $field_value, ModelsBookmark $bookmark,
+            ModelsCategory $category)
     {
         parent::__construct();
 
@@ -112,10 +118,10 @@ class Compare extends Controller
     {
         $product_ids = $this->getProductIds();
         $this->data['products'] = $this->getProducts($product_ids);
-        
+
         $this->setBlockCategoryMenu();
         $this->setBlockRecentProducts();
-        
+
         $this->setTitleSelect();
         $this->setBreadcrumbSelect();
         $this->outputSelect();
@@ -130,7 +136,7 @@ class Compare extends Controller
         $product_ids = $this->getProductIds($compared);
         $products = $this->getProducts($product_ids);
 
-        if ($products) {
+        if (!empty($products)) {
             $product_class_id = key($products);
             $products = $products[$product_class_id];
             $this->setProductFields($products);
@@ -202,7 +208,7 @@ class Compare extends Controller
 
     /**
      * Returns an array of product IDs to be compared
-     * @param array $product_ids
+     * @param null|array $product_ids
      * @return array
      */
     protected function getProductIds($product_ids = null)
@@ -219,20 +225,20 @@ class Compare extends Controller
      * @param array $product_ids
      * @return array
      */
-    protected function getProducts($product_ids)
+    protected function getProducts(array $product_ids)
     {
         if (empty($product_ids)) {
             return array();
         }
 
         $results = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
-        
+
         // Reindex by product class
         $products = array();
         foreach ($this->prepareProducts($results) as $product_id => $product) {
             $products[$product['product_class_id']][$product_id] = $product;
         }
-        
+
         return $products;
     }
 
@@ -241,7 +247,7 @@ class Compare extends Controller
      * @param array $products
      * @return array
      */
-    protected function prepareProducts($products)
+    protected function prepareProducts(array $products)
     {
         $user_id = $this->cart->uid();
         $product_ids = array_keys($products);
@@ -262,7 +268,7 @@ class Compare extends Controller
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
             $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
 
-            if ($pricerules) {
+            if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);
                 $product['price'] = $calculated['total'];
             }
@@ -288,7 +294,7 @@ class Compare extends Controller
      * Sets products field data
      * @param array $products
      */
-    protected function setProductFields(&$products)
+    protected function setProductFields(array &$products)
     {
         $this->data['attribute_fields'] = array();
         $this->data['option_fields'] = array();
@@ -309,7 +315,7 @@ class Compare extends Controller
             }
         }
     }
-    
+
     /**
      * Sets sidebar menu
      */
@@ -340,7 +346,7 @@ class Compare extends Controller
      * @param array $tree
      * @return array
      */
-    protected function prepareCategoryTree($tree)
+    protected function prepareCategoryTree(array $tree)
     {
         foreach ($tree as &$item) {
             $item['url'] = $item['alias'] ? $item['alias'] : "category/{$item['category_id']}";
@@ -349,8 +355,7 @@ class Compare extends Controller
 
         return $tree;
     }
-    
-    
+
     /**
      * Adds recently viewed products block
      */
@@ -377,4 +382,5 @@ class Compare extends Controller
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
         return $this->prepareProducts($products, array('view' => 'grid'));
     }
+
 }

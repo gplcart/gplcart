@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,12 +9,15 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\User;
-use core\models\Image;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\Image as ModelsImage;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Provides methods to import product combinations
+ */
 class Combination
 {
 
@@ -42,17 +44,29 @@ class Combination
      * @var \core\models\User $user
      */
     protected $user;
-    
+
+    /**
+     * Image model instance
+     * @var \core\models\Image $image 
+     */
     protected $image;
 
-
-    public function __construct(Import $import, Language $language, User $user, Image $image, Csv $csv)
+    /**
+     * Constructor
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsUser $user
+     * @param ModelsImage $image
+     * @param Csv $csv
+     */
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsImage $image, Csv $csv)
     {
-        $this->import = $import;
-        $this->language = $language;
+        $this->csv = $csv;
         $this->user = $user;
         $this->image = $image;
-        $this->csv = $csv;
+        $this->import = $import;
+        $this->language = $language;
     }
 
     /**
@@ -64,7 +78,8 @@ class Combination
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $operation_id, $done, array $context,
+            array $options)
     {
         $import_operation = $options['operation'];
         $header = $import_operation['csv']['header'];
@@ -79,22 +94,22 @@ class Combination
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
+        $bytes = empty($position) ? $job['total'] : $position;
 
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
@@ -108,13 +123,13 @@ class Combination
     }
 
     /**
-     *
-     * @param type $rows
-     * @param type $line
-     * @param type $options
-     * @return type
+     * Imports product combinations
+     * @param array $rows
+     * @param integer $line
+     * @param array $options
+     * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
@@ -137,7 +152,7 @@ class Combination
             if (!$this->validateFields($data, $errors, $line)) {
                 continue;
             }
-            
+
             if (!$this->validateProduct($data, $errors, $line)) {
                 continue;
             }
@@ -157,7 +172,14 @@ class Combination
         return array('inserted' => $inserted, 'updated' => $updated, 'errors' => $errors);
     }
 
-    protected function validateFields(&$data, &$errors, $line)
+    /**
+     * Validates product fields
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateFields(array &$data, array &$errors, $line)
     {
         if (!isset($data['fields'])) {
             return true;
@@ -210,6 +232,11 @@ class Combination
         return true;
     }
 
+    /**
+     * Loads field(s) from the database
+     * @param mixed $field_id
+     * @return array
+     */
     protected function getField($field_id)
     {
         if (is_numeric($field_id)) {
@@ -227,7 +254,13 @@ class Combination
 
         return (count($matches) == 1) ? reset($matches) : $matches;
     }
-    
+
+    /**
+     * Loads field value(s)
+     * @param mixed $field_value_id
+     * @param integer $field_id
+     * @return array
+     */
     protected function getFieldValue($field_value_id, $field_id)
     {
         if (is_numeric($field_value_id)) {
@@ -245,8 +278,15 @@ class Combination
 
         return (count($matches) == 1) ? reset($matches) : $matches;
     }
-    
-    protected function validateProduct(&$data, &$errors, $line)
+
+    /**
+     * Validates a product
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateProduct(array &$data, array &$errors, $line)
     {
         if (!isset($data['product_id'])) {
             return true;
@@ -266,6 +306,11 @@ class Combination
         return true;
     }
 
+    /**
+     * Loads product(s) from the database
+     * @param mixed $product_id
+     * @return array
+     */
     protected function getProduct($product_id)
     {
         if (is_numeric($product_id)) {
@@ -285,26 +330,29 @@ class Combination
     }
 
     /**
-     *
+     * Validates and downloads images
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @param array $operation
      * @return boolean
      */
-    protected function validateImages(&$data, &$errors, $line, $operation)
+    protected function validateImages(array &$data, array &$errors, $line,
+            array $operation)
     {
         if (!isset($data['file_id'])) {
             return true;
         }
 
         $download = $this->import->getImages($data['file_id'], $operation);
-        if ($download['errors']) {
+
+        if (!empty($download['errors'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => implode(',', $download['errors'])));
         }
 
-        $image = $download['images'] ? reset($download['images']) : array();
+        $image = empty($download['images']) ? array() : reset($download['images']);
 
         if (isset($image['path'])) {
             $data['file_id'] = $this->image->add($image);
@@ -312,17 +360,29 @@ class Combination
 
         return true;
     }
-    
-    protected function update($combination_id, $data)
+
+    /**
+     * Updates a product combination
+     * @param string $combination_id
+     * @param array $data
+     * @return integer
+     */
+    protected function update($combination_id, array $data)
     {
         return (int) $this->product->updateCombination($combination_id, $data);
     }
-    
-    protected function add(&$data, &$errors, $line)
+
+    /**
+     * Adds a new product combination
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return integer
+     */
+    protected function add(array &$data, array &$errors, $line)
     {
-
         // validate
-
-        return $this->product->addCombination($data) ? 1 : 0;
+        return (int) $this->product->addCombination($data);
     }
+
 }

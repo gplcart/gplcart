@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,12 +9,15 @@
 
 namespace core\handlers\job\export;
 
-use core\models\Product as P;
-use core\models\FieldValue;
-use core\models\Price;
-use core\models\Export;
 use core\classes\Tool;
+use core\models\Price as ModelsPrice;
+use core\models\Export as ModelsExport;
+use core\models\Product as ModelsProduct;
+use core\models\FieldValue as ModelsFieldValue;
 
+/**
+ * Provides methods to export products
+ */
 class Product
 {
 
@@ -45,17 +47,18 @@ class Product
 
     /**
      * Constructor
-     * @param P $product
-     * @param Price $price
-     * @param FieldValue $field_value
-     * @param Export $export
+     * @param ModelsProduct $product
+     * @param ModelsPrice $price
+     * @param ModelsFieldValue $field_value
+     * @param ModelsExport $export
      */
-    public function __construct(P $product, Price $price, FieldValue $field_value, Export $export)
+    public function __construct(ModelsProduct $product, ModelsPrice $price,
+            ModelsFieldValue $field_value, ModelsExport $export)
     {
-        $this->product = $product;
         $this->price = $price;
-        $this->field_value = $field_value;
         $this->export = $export;
+        $this->product = $product;
+        $this->field_value = $field_value;
     }
 
     /**
@@ -67,7 +70,8 @@ class Product
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $operation_id, $done, array $context,
+            array $options)
     {
         $operation = $options['operation'];
 
@@ -75,7 +79,7 @@ class Product
         $offset = isset($context['offset']) ? (int) $context['offset'] : 0;
         $items = $this->product->getList($options + array('limit' => array($offset, $limit)));
 
-        if (!$items) {
+        if (empty($items)) {
             return array('done' => $job['total']);
         }
 
@@ -97,7 +101,7 @@ class Product
      * @param array $options
      * @return array
      */
-    protected function export($products, $options)
+    protected function export(array $products, array $options)
     {
         $errors = array();
         $file = $options['operation']['file'];
@@ -115,4 +119,5 @@ class Product
 
         return array('errors' => $errors);
     }
+
 }

@@ -14,13 +14,15 @@ use core\exceptions\SystemLogicalUserAccess;
 /**
  * Provides methods to work with sessions
  */
-class Session {
+class Session
+{
 
     /**
      * Starts a session
      * @throws SystemLogicalUserAccess
      */
-    public function __construct() {
+    public function __construct()
+    {
         if (!$this->started() && !session_start()) {
             throw new SystemLogicalUserAccess('Failed to start the session');
         }
@@ -31,7 +33,8 @@ class Session {
      * @param boolean $delete_old_session
      * @return boolean
      */
-    public function regenerate($delete_old_session) {
+    public function regenerate($delete_old_session)
+    {
         if ($this->started()) {
             return session_regenerate_id($delete_old_session);
         }
@@ -45,7 +48,8 @@ class Session {
      * @param string $type
      * @return boolean
      */
-    public function setMessage($message, $type = 'info') {
+    public function setMessage($message, $type = 'info')
+    {
         if ($message === '') {
             return false;
         }
@@ -67,7 +71,8 @@ class Session {
      * @param mixed $default
      * @return mixed
      */
-    public function get($key, $secondkey = null, $default = null) {
+    public function get($key, $secondkey = null, $default = null)
+    {
         if (isset($secondkey)) {
             if (isset($_SESSION[GC_SESSION_PREFIX . $key][$secondkey])) {
                 return $_SESSION[GC_SESSION_PREFIX . $key][$secondkey];
@@ -88,7 +93,8 @@ class Session {
      * @param mixed $value
      * @return boolean
      */
-    public function set($key, $secondkey = null, $value = null) {
+    public function set($key, $secondkey = null, $value = null)
+    {
         if (is_array($key)) {
             foreach ($key as $k => $v) {
                 $_SESSION[GC_SESSION_PREFIX . $k] = $v;
@@ -110,7 +116,8 @@ class Session {
      * @param string $type
      * @return string
      */
-    public function getMessage($type = null) {
+    public function getMessage($type = null)
+    {
         $message = $this->get('messages', $type, array());
         $this->delete('messages', $type);
         return $message;
@@ -122,7 +129,8 @@ class Session {
      * @param string $secondkey
      * @return boolean
      */
-    public function delete($key = null, $secondkey = null) {
+    public function delete($key = null, $secondkey = null)
+    {
         if (!$this->started()) {
             return false;
         }
@@ -146,7 +154,8 @@ class Session {
      * @param mixed $value
      * @return mixed
      */
-    public function token($value = null) {
+    public function token($value = null)
+    {
         if (isset($value)) {
             return $this->set('token', null, $value);
         }
@@ -158,7 +167,8 @@ class Session {
      * Returns the current session status
      * @return bool
      */
-    protected function started() {
+    protected function started()
+    {
         if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             return (session_status() === PHP_SESSION_ACTIVE);
         }

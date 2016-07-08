@@ -13,14 +13,15 @@ use core\Hook;
 use core\Route;
 use core\Config;
 use core\Logger;
-use core\classes\Url as classesUrl;
-use core\classes\Session as classesSession;
-use core\exceptions\SystemFailure as Exception;
+use core\classes\Url;
+use core\classes\Session;
+use core\exceptions\SystemFailure;
 
 /**
  * Provides methods to route incoming requests and setup the system
  */
-class Facade {
+class Facade
+{
 
     /**
      * Route class instance
@@ -63,20 +64,20 @@ class Facade {
      * @var \core\exceptions\SystemFailure $exception
      */
     protected $exception;
-    
+
     /**
      * Constructor
      * @param Route $route
-     * @param classesUrl $url
-     * @param classesSession $session
+     * @param Url $url
+     * @param Session $session
      * @param Config $config
      * @param Hook $hook
      * @param Logger $logger
-     * @param Exception $exception
+     * @param SystemFailure $exception
      */
-    public function __construct(Route $route, classesUrl $url,
-            classesSession $session, Config $config, Hook $hook, Logger $logger,
-            Exception $exception) {
+    public function __construct(Route $route, Url $url, Session $session,
+            Config $config, Hook $hook, Logger $logger, SystemFailure $exception)
+    {
 
         $this->url = $url;
         $this->hook = $hook;
@@ -119,7 +120,8 @@ class Facade {
     /**
      * Process the route
      */
-    public function route() {
+    public function route()
+    {
         // Redirect to installation if needed
         if ((!$this->config->exists() || $this->session->get('install', 'processing')) && !$this->url->isInstall()) {
             $this->url->redirect('install');

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -12,10 +11,14 @@ namespace core\controllers;
 
 use core\Controller;
 use core\classes\Tool;
-use core\models\Country as modelsCountry;
-use core\models\Install as modelsInstall;
+use core\models\Country as ModelsCountry;
+use core\models\Install as ModelsInstall;
 
-class Install extends Controller {
+/**
+ * Handles incoming requests and outputs data related to installation process
+ */
+class Install extends Controller
+{
 
     /**
      * Install model instance
@@ -37,22 +40,23 @@ class Install extends Controller {
 
     /**
      * Constructor
-     * @param modelsInstall $install
-     * @param modelsCountry $country
+     * @param ModelsInstall $install
+     * @param ModelsCountry $country
      */
-    public function __construct(modelsInstall $install, modelsCountry $country) {
+    public function __construct(ModelsInstall $install, ModelsCountry $country)
+    {
         parent::__construct();
 
         $this->install = $install;
         $this->country = $country;
-
         $this->install_language = $this->session->get('language', null, '');
     }
 
     /**
      * Dispays install page
      */
-    public function install() {
+    public function install()
+    {
 
         $this->controlInstallMode();
         $this->setInstallLanguage();
@@ -77,7 +81,8 @@ class Install extends Controller {
         $this->outputInstall();
     }
 
-    protected function submitInstall() {
+    protected function submitInstall()
+    {
 
         ini_set('max_execution_time', 0);
 
@@ -85,7 +90,9 @@ class Install extends Controller {
 
         $this->validateInstall();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['settings'] = $this->submitted;
             return;
         }
@@ -117,7 +124,8 @@ class Install extends Controller {
     /**
      * Sets a language upon installation
      */
-    protected function setInstallLanguage() {
+    protected function setInstallLanguage()
+    {
         $selected = $this->request->post('language');
 
         // Change language
@@ -133,7 +141,8 @@ class Install extends Controller {
     /**
      * Sets issues data (if any)
      */
-    protected function setIssues() {
+    protected function setIssues()
+    {
 
         $this->data['issues'] = $this->install->getRequirementsErrors($this->data['requirements']);
 
@@ -150,7 +159,8 @@ class Install extends Controller {
     /**
      * Ensures that installation process is really needed
      */
-    protected function controlInstallMode() {
+    protected function controlInstallMode()
+    {
         if ($this->config->exists() && !$this->session->get('install', 'processing')) {
             $this->redirect('/');
         }
@@ -159,14 +169,16 @@ class Install extends Controller {
     /**
      * Sets titles on the installation page
      */
-    protected function setTitleInstall() {
+    protected function setTitleInstall()
+    {
         $this->setTitle($this->text('Installing GPL Cart'));
     }
 
     /**
      * Renders installation page
      */
-    protected function outputInstall() {
+    protected function outputInstall()
+    {
         $variables = array(
             'layout' => 'install/layout',
             'region_body' => 'install/body',
@@ -180,26 +192,29 @@ class Install extends Controller {
     /**
      * Adds CSS on the installation page
      */
-    protected function addCssInstall() {
+    protected function addCssInstall()
+    {
 
-        $this->addCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
-        $this->addCss('files/assets/font-awesome/css/font-awesome.min.css');
-        $this->addCss('system/modules/frontend/css/install.css');
+        $this->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
+        $this->setCss('files/assets/font-awesome/css/font-awesome.min.css');
+        $this->setCss('system/modules/frontend/css/install.css');
     }
 
     /**
      * Adds Js on the installation page
      */
-    protected function addJsInstall() {
-        $this->addJs('system/modules/frontend/js/script.js', 'top');
-        $this->addJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
+    protected function addJsInstall()
+    {
+        $this->setJs('system/modules/frontend/js/script.js', 'top');
+        $this->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
     }
 
     /**
      * Validates an array of submitted form values
      * @return null
      */
-    protected function validateInstall() {
+    protected function validateInstall()
+    {
 
         $this->validateDbHost();
         $this->validateDbName();
@@ -227,7 +242,8 @@ class Install extends Controller {
      * Validates database connection
      * @return boolean
      */
-    protected function validateDbConnect() {
+    protected function validateDbConnect()
+    {
         $connect = $this->install->connect($this->submitted['database']);
 
         if ($connect === true) {
@@ -242,7 +258,8 @@ class Install extends Controller {
      * Validates store country
      * @return boolean
      */
-    protected function validateStoreCountry() {
+    protected function validateStoreCountry()
+    {
         if (empty($this->submitted['store']['country'])) {
             $this->data['form_errors']['store']['country'] = $this->text('Required field');
             return false;
@@ -261,7 +278,8 @@ class Install extends Controller {
      * Validates store title
      * @return boolean
      */
-    protected function validateStoreTitle() {
+    protected function validateStoreTitle()
+    {
         if (mb_strlen($this->submitted['store']['title']) > 255) {
             $this->data['form_errors']['store']['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
             return false;
@@ -274,7 +292,8 @@ class Install extends Controller {
      * Validates user e-mail
      * @return boolean
      */
-    protected function validateUserEmail() {
+    protected function validateUserEmail()
+    {
         if (filter_var($this->submitted['user']['email'], FILTER_VALIDATE_EMAIL)) {
             return true;
         }
@@ -287,7 +306,8 @@ class Install extends Controller {
      * Validates user password
      * @return boolean
      */
-    protected function validateUserPassword() {
+    protected function validateUserPassword()
+    {
 
         $min_password_length = 8;
         $max_password_length = 255;
@@ -308,7 +328,8 @@ class Install extends Controller {
      * Validates database host
      * @return boolean
      */
-    protected function validateDbHost() {
+    protected function validateDbHost()
+    {
 
         if (empty($this->submitted['database']['host'])) {
             $this->data['form_errors']['database']['host'] = $this->text('Required field');
@@ -322,7 +343,8 @@ class Install extends Controller {
      * Validates database name
      * @return boolean
      */
-    protected function validateDbName() {
+    protected function validateDbName()
+    {
         if (empty($this->submitted['database']['name'])) {
             $this->data['form_errors']['database']['name'] = $this->text('Required field');
             return false;
@@ -335,7 +357,8 @@ class Install extends Controller {
      * Validates database user
      * @return boolean
      */
-    protected function validateDbUser() {
+    protected function validateDbUser()
+    {
         if (empty($this->submitted['database']['user'])) {
             $this->data['form_errors']['database']['user'] = $this->text('Required field');
             return false;
@@ -348,7 +371,8 @@ class Install extends Controller {
      * Validates database port
      * @return boolean
      */
-    protected function validateDbPort() {
+    protected function validateDbPort()
+    {
         if (empty($this->submitted['database']['port'])) {
             $this->data['form_errors']['database']['port'] = $this->text('Required field');
             return false;

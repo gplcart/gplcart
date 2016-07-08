@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,9 +10,12 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\State as S;
-use core\models\Country;
+use core\models\State as ModelsState;
+use core\models\Country as ModelsCountry;
 
+/**
+ * Handles incoming requests and outputs data related to country states
+ */
 class State extends Controller
 {
 
@@ -31,15 +33,15 @@ class State extends Controller
 
     /**
      * Constructor
-     * @param Country $country
-     * @param S $state
+     * @param ModelsCountry $country
+     * @param ModelsState $state
      */
-    public function __construct(Country $country, S $state)
+    public function __construct(ModelsCountry $country, ModelsState $state)
     {
         parent::__construct();
 
-        $this->country = $country;
         $this->state = $state;
+        $this->country = $country;
     }
 
     /**
@@ -54,7 +56,7 @@ class State extends Controller
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -103,7 +105,7 @@ class State extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalStates($code, $query)
+    protected function getTotalStates($code, array $query)
     {
         return $this->state->getList(array('count' => true, 'country' => $code) + $query);
     }
@@ -115,7 +117,7 @@ class State extends Controller
      * @param string $country
      * @return array
      */
-    protected function getStates($limit, $query, $country)
+    protected function getStates(array $limit, array $query, $country)
     {
         return $this->state->getList(array('country' => $country, 'limit' => $limit) + $query);
     }
@@ -132,7 +134,7 @@ class State extends Controller
      * Sets titles on the states overview page
      * @param array $country
      */
-    protected function setTitleStates($country)
+    protected function setTitleStates(array $country)
     {
         $this->setTitle($this->text('States of %country', array('%country' => $country['name'])));
     }
@@ -155,11 +157,11 @@ class State extends Controller
     {
         $country = $this->country->get($code);
 
-        if ($country) {
-            return $country;
+        if (empty($country)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $country;
     }
 
     /**
@@ -174,7 +176,7 @@ class State extends Controller
      * Set breadcrumbs on the state edit page
      * @param array $country
      */
-    protected function setBreadcrumbEdit($country)
+    protected function setBreadcrumbEdit(array $country)
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -194,7 +196,7 @@ class State extends Controller
      * @param array $country
      * @param array $state
      */
-    protected function setTitleEdit($country, $state)
+    protected function setTitleEdit(array $country, array $state)
     {
         if (isset($state['state_id'])) {
             $title = $this->text('Edit state %name', array('%name' => $state['name']));
@@ -211,7 +213,7 @@ class State extends Controller
      * @param array $state
      * @return null
      */
-    protected function delete($country, $state)
+    protected function delete(array $country, array $state)
     {
         if (empty($state['state_id'])) {
             return;
@@ -229,7 +231,7 @@ class State extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $deleted = $updated = 0;
         foreach ($selected as $id) {
@@ -242,12 +244,12 @@ class State extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num country states', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num country states', array('%num' => $deleted)), 'success');
             return true;
         }
@@ -261,13 +263,15 @@ class State extends Controller
      * @param array $state
      * @return null
      */
-    protected function submit($country, $state)
+    protected function submit(array $country, array $state)
     {
         $this->submitted = $this->request->post('state');
 
         $this->validate($country, $state);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['state'] = $this->submitted;
             return;
         }
@@ -285,7 +289,7 @@ class State extends Controller
 
     /**
      * Returns a state
-     * @param array $state_id
+     * @param integer $state_id
      * @return array
      */
     protected function get($state_id)
@@ -296,11 +300,11 @@ class State extends Controller
 
         $state = $this->state->get($state_id);
 
-        if ($state) {
-            return $state;
+        if (empty($state)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $state;
     }
 
     /**
@@ -308,7 +312,7 @@ class State extends Controller
      * @param array $country
      * @param array $state
      */
-    protected function validate($country, $state)
+    protected function validate(array $country, array $state)
     {
         $this->validateName();
         $this->validateCode($country, $state);
@@ -337,7 +341,7 @@ class State extends Controller
      * @param array $state
      * @return boolean
      */
-    protected function validateCode($country, $state)
+    protected function validateCode(array $country, array $state)
     {
         $check = true;
         if (isset($state['code'])) {
@@ -351,4 +355,5 @@ class State extends Controller
 
         return true;
     }
+
 }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,13 +9,16 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\State;
-use core\models\User;
-use core\models\City as C;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\City as ModelsCity;
+use core\models\State as ModelsState;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Provides methods to import cities
+ */
 class City
 {
 
@@ -64,21 +66,22 @@ class City
 
     /**
      * Constructor
-     * @param Import $import
-     * @param Language $language
-     * @param State $state
-     * @param C $city
-     * @param User $user
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsState $state
+     * @param ModelsCity $city
+     * @param ModelsUser $user
      * @param Csv $csv
      */
-    public function __construct(Import $import, Language $language, State $state, C $city, User $user, Csv $csv)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsState $state, ModelsCity $city, ModelsUser $user, Csv $csv)
     {
-        $this->import = $import;
-        $this->language = $language;
-        $this->state = $state;
+        $this->csv = $csv;
         $this->user = $user;
         $this->city = $city;
-        $this->csv = $csv;
+        $this->state = $state;
+        $this->import = $import;
+        $this->language = $language;
     }
 
     /**
@@ -90,7 +93,8 @@ class City
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $operation_id, $done, array $context,
+            array $options)
     {
         $import_operation = $options['operation'];
         $this->header = $import_operation['csv']['header'];
@@ -103,22 +107,22 @@ class City
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header row
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
+        $bytes = empty($position) ? $job['total'] : $position;
 
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
@@ -132,19 +136,20 @@ class City
     }
 
     /**
-     *
-     * @param type $rows
-     * @param type $line
-     * @param type $options
-     * @return type
+     * Performs import
+     * @param array $rows
+     * @param integer $line
+     * @param array $options
+     * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
         $errors = array();
 
         foreach ($rows as $index => $row) {
+
             $line += $index;
             $data = array_filter(array_map('trim', $row));
 
@@ -161,11 +166,13 @@ class City
             }
 
             if (isset($data['city_id'])) {
+
                 if (is_numeric($data['city_id']) && $this->user->access('city_edit')) {
                     if ($this->city->update($data['city_id'], $data)) {
                         $updated++;
                     }
                 }
+
                 continue;
             }
 
@@ -214,9 +221,9 @@ class City
 
     /**
      * Whether the city exists
-     * @param type $name
-     * @param type $state_code
-     * @param type $country
+     * @param string $name
+     * @param string $state_code
+     * @param string $country
      * @return boolean
      */
     protected function cityExists($name, $state_code, $country)
@@ -234,4 +241,5 @@ class City
 
         return false;
     }
+
 }

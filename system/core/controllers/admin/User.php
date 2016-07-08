@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\UserRole;
+use core\models\UserRole as ModelsUserRole;
 
+/**
+ * Handles incoming requests and outputs data related to user management
+ */
 class User extends Controller
 {
 
@@ -24,9 +26,9 @@ class User extends Controller
 
     /**
      * Constructor
-     * @param UserRole $role
+     * @param ModelsUserRole $role
      */
-    public function __construct(UserRole $role)
+    public function __construct(ModelsUserRole $role)
     {
         parent::__construct();
         $this->role = $role;
@@ -41,7 +43,7 @@ class User extends Controller
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -66,7 +68,7 @@ class User extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalUsers($query)
+    protected function getTotalUsers(array $query)
     {
         return $this->user->getList(array('count' => true) + $query);
     }
@@ -101,7 +103,7 @@ class User extends Controller
      * @param array $query
      * @return array
      */
-    protected function getUsers($limit, $query)
+    protected function getUsers(array $limit, array $query)
     {
         $stores = $this->store->getList();
         $users = $this->user->getList(array('limit' => $limit) + $query);
@@ -124,7 +126,7 @@ class User extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $deleted = $updated = 0;
         foreach ($selected as $uid) {
@@ -141,16 +143,17 @@ class User extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num users', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num users', array('%num' => $deleted)), 'success');
             return true;
         }
 
         return false;
     }
+
 }

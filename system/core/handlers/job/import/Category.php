@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,14 +9,17 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\User;
-use core\models\Category as C;
-use core\models\CategoryGroup;
-use core\models\Alias;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\Alias as ModelsAlias;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
+use core\models\Category as ModelsCategory;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 
+/**
+ * Provides methods to import categories
+ */
 class Category
 {
 
@@ -64,24 +66,26 @@ class Category
     protected $alias;
 
     /**
-     *
-     * @param Import $import
-     * @param Language $language
-     * @param User $user
-     * @param C $category
-     * @param CategoryGroup $category_group
-     * @param Alias $alias
+     * Constructor
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsUser $user
+     * @param ModelsCategory $category
+     * @param ModelsCategoryGroup $category_group
+     * @param ModelsAlias $alias
      * @param Csv $csv
      */
-    public function __construct(Import $import, Language $language, User $user, C $category, CategoryGroup $category_group, Alias $alias, Csv $csv)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsCategory $category,
+            ModelsCategoryGroup $category_group, ModelsAlias $alias, Csv $csv)
     {
+        $this->csv = $csv;
+        $this->user = $user;
+        $this->alias = $alias;
         $this->import = $import;
         $this->language = $language;
         $this->category = $category;
         $this->category_group = $category_group;
-        $this->alias = $alias;
-        $this->user = $user;
-        $this->csv = $csv;
     }
 
     /**
@@ -93,7 +97,8 @@ class Category
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $operation_id, $done, array $context,
+            array $options)
     {
         $import_operation = $options['operation'];
         $header = $import_operation['csv']['header'];
@@ -108,22 +113,22 @@ class Category
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
+        $bytes = empty($position) ? $job['total'] : $position;
 
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
@@ -137,13 +142,13 @@ class Category
     }
 
     /**
-     *
-     * @param type $rows
-     * @param type $line
-     * @param type $options
-     * @return type
+     * Performs import
+     * @param array $rows
+     * @param integer $line
+     * @param array $options
+     * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
@@ -202,9 +207,10 @@ class Category
      * Validates titles
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateTitle(&$data, &$errors, $line)
+    protected function validateTitle(array &$data, array &$errors, $line)
     {
         // Convert "yes, y, true, on" into boolean value
         if (isset($data['status'])) {
@@ -236,13 +242,15 @@ class Category
     }
 
     /**
-     * Whether the category is unique
+     * 
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @param boolean $update
      * @return boolean
      */
-    protected function validateUnique(&$data, &$errors, $line, $update)
+    protected function validateUnique(array &$data, array &$errors, $line,
+            $update)
     {
         if (!isset($data['title'])) {
             return true;
@@ -250,7 +258,7 @@ class Category
 
         $unique = true;
         $existing = $this->getCategory($data['title']);
-        if ($existing) {
+        if (!empty($existing)) {
             $unique = false;
         }
 
@@ -269,8 +277,8 @@ class Category
     }
 
     /**
-     *
-     * @param type $category_id
+     * Loads a category from the database
+     * @param mixed $category_id
      * @return array
      */
     protected function getCategory($category_id)
@@ -295,10 +303,12 @@ class Category
      * Validates a parent category
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @param boolean $update
      * @return boolean
      */
-    protected function validateParent(&$data, &$errors, $line, $update)
+    protected function validateParent(array &$data, array &$errors, $line,
+            $update)
     {
         if (!isset($data['parent_id'])) {
             return true;
@@ -332,9 +342,10 @@ class Category
      * Validates a category group
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateCategoryGroup(&$data, &$errors, $line)
+    protected function validateCategoryGroup(array &$data, array &$errors, $line)
     {
         if (!isset($data['category_group_id'])) {
             return true;
@@ -348,13 +359,14 @@ class Category
                     '@id' => $data['category_group_id']))));
             return false;
         }
+
         $data['category_group_id'] = $group['category_group_id'];
         return true;
     }
 
     /**
-     *
-     * @param type $category_group_id
+     * Loads category group(s) from the database
+     * @param mixed $category_group_id
      * @return array
      */
     protected function getCategoryGroup($category_group_id)
@@ -377,10 +389,12 @@ class Category
      * Validates an alias
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @param boolean $update
      * @return boolean
      */
-    protected function validateAlias(&$data, &$errors, $line, $update)
+    protected function validateAlias(array &$data, array &$errors, $line,
+            $update)
     {
         if (!isset($data['alias'])) {
             return true;
@@ -390,7 +404,7 @@ class Category
             $data['alias'] = $this->category->createAlias($data);
             return true;
         }
-        
+
         if (mb_strlen($data['alias']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
@@ -424,37 +438,48 @@ class Category
      * Validates and downloads images
      * @param array $data
      * @param array $errors
-     * @param array $operation
+     * @param integer $line
+     * @param  array $operation
      * @return boolean
      */
-    protected function validateImages(&$data, &$errors, $line, $operation)
+    protected function validateImages(array &$data, array &$errors, $line,
+            array $operation)
     {
         if (!isset($data['image'])) {
             return true;
         }
 
         $download = $this->import->getImages($data['image'], $operation);
-        if ($download['errors']) {
+
+        if (!empty($download['errors'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => implode(',', $download['errors'])));
         }
+
         $data['image'] = $download['images'];
         return true;
     }
 
-    protected function update($category_id, $data)
+    /**
+     * Updates a category
+     * @param integer $category_id
+     * @param array $data
+     * @return integer
+     */
+    protected function update($category_id, array $data)
     {
         return (int) $this->category->update($category_id, $data);
     }
 
     /**
-     *
-     * @param type $data
-     * @param type $errors
-     * @return boolean
+     * Adds a category
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return integer
      */
-    protected function add(&$data, &$errors, $line)
+    protected function add(array &$data, array &$errors, $line)
     {
         if (!isset($data['meta_title']) && isset($data['title'])) {
             $data['meta_title'] = $data['title'];
@@ -478,6 +503,7 @@ class Category
             return 0;
         }
 
-        return $this->category->add($data) ? 1 : 0;
+        return (int) $this->category->add($data);
     }
+
 }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,14 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Image;
-use core\models\File;
-use core\models\Module;
 use core\classes\Tool;
+use core\models\File as ModelsFile;
+use core\models\Image as ModelsImage;
+use core\models\Module as ModelsModule;
 
+/**
+ * Handles incoming requests and outputs data related to multistore functionality
+ */
 class Store extends Controller
 {
 
@@ -39,16 +41,17 @@ class Store extends Controller
 
     /**
      * Constructor
-     * @param Image $image
-     * @param File $file
-     * @param Module $module
+     * @param ModelsImage $image
+     * @param ModelsFile $file
+     * @param ModelsModule $module
      */
-    public function __construct(Image $image, File $file, Module $module)
+    public function __construct(ModelsImage $image, ModelsFile $file,
+            ModelsModule $module)
     {
         parent::__construct();
 
-        $this->image = $image;
         $this->file = $file;
+        $this->image = $image;
         $this->module = $module;
     }
 
@@ -61,7 +64,7 @@ class Store extends Controller
         $action = $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -111,7 +114,7 @@ class Store extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalStores($query)
+    protected function getTotalStores(array $query)
     {
         return $this->store->getList(array('count' => true) + $query);
     }
@@ -146,7 +149,7 @@ class Store extends Controller
      * @param array $query
      * @return array
      */
-    protected function getStores($limit, $query)
+    protected function getStores(array $limit, array $query)
     {
         return $this->store->getList(array('limit' => $limit) + $query);
     }
@@ -170,8 +173,9 @@ class Store extends Controller
 
     /**
      * Sets titles on the store edit page
+     * @param array $store
      */
-    protected function seTitleEdit($store)
+    protected function seTitleEdit(array $store)
     {
         $title = $this->text('Add store');
 
@@ -200,7 +204,7 @@ class Store extends Controller
         }
 
         if (!empty($this->data['store']['data']['map'])) {
-            $this->addJsSettings('map', $this->data['store']['data']['map']);
+            $this->setJsSettings('map', $this->data['store']['data']['map']);
             $this->data['store']['data']['map'] = implode("\n", (array) $this->data['store']['data']['map']);
         }
 
@@ -232,7 +236,7 @@ class Store extends Controller
 
     /**
      * Returns an array of theme modules
-     * @return type
+     * @return array
      */
     protected function getThemes()
     {
@@ -247,13 +251,15 @@ class Store extends Controller
      * @param array $store
      * @return null
      */
-    protected function submit($store)
+    protected function submit(array $store)
     {
         $this->submitted = $this->request->post('store');
 
         $this->validate($store);
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['store'] = $this->submitted;
             return;
         }
@@ -282,11 +288,11 @@ class Store extends Controller
 
         $store = $this->store->get((int) $store_id);
 
-        if ($store) {
-            return $store;
+        if (empty($store)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $store;
     }
 
     /**
@@ -294,7 +300,7 @@ class Store extends Controller
      * @param array $store
      * @return null
      */
-    protected function delete($store)
+    protected function delete(array $store)
     {
         if (empty($store['store_id'])) {
             return;
@@ -317,7 +323,7 @@ class Store extends Controller
      * @param string $value
      * @return boolean
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $updated = $deleted = 0;
         foreach ($selected as $id) {
@@ -330,12 +336,12 @@ class Store extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Stores have been updated'), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Stores have been deleted'), 'success');
             return true;
         }
@@ -345,8 +351,9 @@ class Store extends Controller
 
     /**
      * Validates a store
+     * @param array $store
      */
-    protected function validate($store)
+    protected function validate(array $store)
     {
         $this->validateDomain();
         $this->validateName();
@@ -438,7 +445,7 @@ class Store extends Controller
         foreach ($days as &$hours) {
             $hours = array_filter(str_replace(' ', '', explode('-', $hours)));
 
-            if (!$hours) {
+            if (empty($hours)) {
                 continue;
             }
 
@@ -511,6 +518,7 @@ class Store extends Controller
 
     /**
      * Validates a store base path
+     * @param array $store
      * @return boolean
      */
     protected function validateBasepath($store)
@@ -629,7 +637,7 @@ class Store extends Controller
         $logo = $this->request->file('logo');
         $favicon = $this->request->file('favicon');
 
-        if ($logo) {
+        if (!empty($logo)) {
             if ($this->file->upload($logo) !== true) {
                 $this->data['form_errors']['logo'] = $this->text('Unable to upload the file');
                 return false;
@@ -638,7 +646,7 @@ class Store extends Controller
             $this->submitted['data']['logo'] = $this->file->path($this->file->getUploadedFile());
         }
 
-        if ($favicon) {
+        if (!empty($favicon)) {
             if ($this->file->upload($favicon) !== true) {
                 $this->data['form_errors']['favicon'] = $this->text('Unable to upload the file');
                 return false;
@@ -649,4 +657,5 @@ class Store extends Controller
 
         return true;
     }
+
 }

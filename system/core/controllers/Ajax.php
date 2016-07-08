@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,17 +10,20 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Bookmark;
-use core\models\Product;
-use core\models\Price;
-use core\models\Image;
-use core\models\Cart;
-use core\models\Country;
-use core\models\State;
-use core\models\Search;
-use core\models\File;
-use core\models\Rating;
+use core\models\Cart as ModelsCart;
+use core\models\File as ModelsFile;
+use core\models\State as ModelsState;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Search as ModelsSearch;
+use core\models\Rating as ModelsRating;
+use core\models\Product as ModelsProduct;
+use core\models\Country as ModelsCountry;
+use core\models\Bookmark as ModelsBookmark;
 
+/**
+ * Handles incoming requests and outputs data related to AJAX operations
+ */
 class Ajax extends Controller
 {
 
@@ -87,20 +89,21 @@ class Ajax extends Controller
 
     /**
      * Constructor
-     * @param Bookmark $bookmark
-     * @param Product $product
-     * @param Price $price
-     * @param Image $image
-     * @param Cart $cart
-     * @param Country $country
-     * @param Search $search
-     * @param File $file
-     * @param Rating $rating
+     * @param ModelsBookmark $bookmark
+     * @param ModelsProduct $product
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
+     * @param ModelsCart $cart
+     * @param ModelsCountry $country
+     * @param ModelsState $state
+     * @param ModelsSearch $search
+     * @param ModelsFile $file
+     * @param ModelsRating $rating
      */
-    public function __construct(Bookmark $bookmark, Product $product,
-                                Price $price, Image $image, Cart $cart,
-                                Country $country, State $state, Search $search,
-                                File $file, Rating $rating)
+    public function __construct(ModelsBookmark $bookmark,
+            ModelsProduct $product, ModelsPrice $price, ModelsImage $image,
+            ModelsCart $cart, ModelsCountry $country, ModelsState $state,
+            ModelsSearch $search, ModelsFile $file, ModelsRating $rating)
     {
         parent::__construct();
 
@@ -201,7 +204,7 @@ class Ajax extends Controller
             'status' => $this->request->post('status', null),
             'limit' => array(0, $this->config->get('admin_autocomplete_limit', 10))));
 
-        if ($products) {
+        if (!empty($products)) {
             $stores = $this->store->getList();
         }
 
@@ -240,7 +243,7 @@ class Ajax extends Controller
 
     /**
      * Toggles product options
-     * @return boolean
+     * @return array
      */
     public function switchProductOptions()
     {
@@ -293,7 +296,7 @@ class Ajax extends Controller
 
     /**
      * Returns the cart preview for the current user
-     * @return type
+     * @return array
      */
     public function getCartPreview()
     {
@@ -327,9 +330,9 @@ class Ajax extends Controller
         $states = $this->state->getList(array(
             'country' => $country_code,
             'status' => 1));
-        
+
         $country = $this->country->get($country_code);
-        
+
         if (empty($country['status'])) {
             return array();
         }
@@ -338,7 +341,7 @@ class Ajax extends Controller
             'states' => $states,
             'format' => array_keys($this->country->getFormat($country, true))
         );
-        
+
         return $response;
     }
 
@@ -467,6 +470,10 @@ class Ajax extends Controller
         return $response;
     }
 
+    /**
+     * Rates a product
+     * @return array
+     */
     public function rate()
     {
         $product_id = $this->request->post('product_id');
@@ -483,7 +490,12 @@ class Ajax extends Controller
         return array('error' => $this->text('An error occurred'));
     }
 
-    protected function prepareCartItems($cart)
+    /**
+     * Prepares cart item before sending to user
+     * @param array $cart
+     * @return array
+     */
+    protected function prepareCartItems(array $cart)
     {
         $imagestyle = $this->config->module($this->theme, 'image_style_cart', 3);
 
@@ -512,4 +524,5 @@ class Ajax extends Controller
         $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
         return $cart;
     }
+
 }

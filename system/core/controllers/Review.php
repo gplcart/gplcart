@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,12 +10,15 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Product;
-use core\models\Price;
-use core\models\Review as R;
-use core\models\Rating;
-use core\models\Image;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Review as ModelsReview;
+use core\models\Rating as ModelsRating;
+use core\models\Product as ModelsProduct;
 
+/**
+ * Handles incoming requests and outputs data related to reviews
+ */
 class Review extends Controller
 {
 
@@ -49,34 +51,36 @@ class Review extends Controller
      * @var \core\models\Image $image
      */
     protected $image;
-
+    
     /**
-     * Constaructor
-     * @param Product $product
-     * @param R $review
-     * @param Price $price
-     * @param Rating $rating
-     * @param Image $image
+     * Constructor
+     * @param ModelsProduct $product
+     * @param ModelsReview $review
+     * @param ModelsPrice $price
+     * @param ModelsRating $rating
+     * @param ModelsImage $image
      */
-    public function __construct(Product $product, R $review, Price $price, Rating $rating, Image $image)
+    public function __construct(ModelsProduct $product, ModelsReview $review, ModelsPrice $price, ModelsRating $rating, ModelsImage $image)
     {
         parent::__construct();
 
-        $this->product = $product;
-        $this->review = $review;
         $this->price = $price;
-        $this->rating = $rating;
         $this->image = $image;
+        $this->rating = $rating;
+        $this->review = $review;
+        $this->product = $product;
     }
 
     /**
      * Displays the review edit page
      * @param integer $product_id
-     * @param integer $review_id
+     * @param integer|null $review_id
      */
     public function edit($product_id, $review_id = null)
     {
-        if (!$this->config->get('review_editable', 1) || !$this->uid) {
+        $editable = (bool) $this->config->get('review_editable', 1);
+        
+        if (!$editable || empty($this->uid)) {
             $this->outputError(403);
         }
 
@@ -90,7 +94,7 @@ class Review extends Controller
 
         if (is_numeric($review_id)) {
             $review = $this->review->get($review_id);
-            if (!$review) {
+            if (empty($review)) {
                 $this->outputError(404);
             }
 
@@ -109,8 +113,10 @@ class Review extends Controller
 
             $submitted = $this->request->post('review');
             $this->validate($submitted, $review);
+            
+            $errors = $this->formErrors(false);
 
-            if ($this->formErrors(false)) {
+            if (!empty($errors)) {
                 $this->data['review'] = $submitted;
             } else {
                 $submitted += array('product_id' => $product_id, 'user_id' => $this->uid);
@@ -129,7 +135,7 @@ class Review extends Controller
             }
         }
 
-        $deletable = $this->config->get('review_deletable', 1);
+        $deletable = (bool) $this->config->get('review_deletable', 1);
 
         if ($this->request->post('delete') && isset($review['review_id']) && $deletable) {
             $this->review->delete($review['review_id']);

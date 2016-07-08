@@ -13,7 +13,8 @@ namespace core\classes;
  * Provides methods to filter text strings
  * Inspired by Drupal's filter
  */
-class Filter {
+class Filter
+{
 
     /**
      * Array of added protocols
@@ -30,7 +31,8 @@ class Filter {
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->allowed_tags = array(
             'a', 'i', 'b', 'em', 'p', 'span', 'strong', 'ul', 'ol',
             'li', 'blockquote', 'code', 'del', 'dd', 'dl', 'dt', 'h1', 'h2',
@@ -48,7 +50,8 @@ class Filter {
      * @param null|array $protocols
      * @return string
      */
-    public function xss($string, $tags = null, $protocols = null) {
+    public function xss($string, $tags = null, $protocols = null)
+    {
         if (isset($protocols)) {
             $this->allowed_protocols = (array) $protocols;
         }
@@ -97,21 +100,23 @@ class Filter {
      * @param string $string
      * @return boolean
      */
-    protected function isUtf8($string) {
+    protected function isUtf8($string)
+    {
         if (strlen($string) == 0) {
             return true;
         }
 
         return (preg_match('/^./us', $string) == 1);
     }
-    
+
     /**
      * Processes a tag
      * @param string $m
      * @param array|null $tags
      * @return string
      */
-    protected function split($m, $tags = null) {
+    protected function split($m, $tags = null)
+    {
         $allowed_tags = isset($tags) ? array_flip((array) $tags) : array_flip($this->allowed_tags);
 
         $string = $m[1];
@@ -168,7 +173,8 @@ class Filter {
      * @param string $attr
      * @return array
      */
-    protected function attributes($attr) {
+    protected function attributes($attr)
+    {
         $mode = 0;
         $skip = true;
         $attrname = '';
@@ -281,7 +287,8 @@ class Filter {
      * @param string $string
      * @return string
      */
-    protected function badProtocol($string) {
+    protected function badProtocol($string)
+    {
         $decoded = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
         return htmlspecialchars($this->stripDangerousProtocols($decoded), ENT_QUOTES, 'UTF-8');
     }
@@ -291,7 +298,8 @@ class Filter {
      * @param string $uri
      * @return string
      */
-    protected function stripDangerousProtocols($uri) {
+    protected function stripDangerousProtocols($uri)
+    {
         // Iteratively remove any invalid protocol found.
         do {
             $before = $uri;

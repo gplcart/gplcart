@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -12,7 +11,7 @@ namespace core\controllers\admin;
 
 use core\Controller;
 use core\classes\Tool;
-use core\models\File;
+use core\models\File as ModelsFile;
 
 class Settings extends Controller
 {
@@ -25,9 +24,9 @@ class Settings extends Controller
 
     /**
      * Constructor
-     * @param File $file
+     * @param ModelsFile $file
      */
-    public function __construct(File $file)
+    public function __construct(ModelsFile $file)
     {
         parent::__construct();
         $this->file = $file;
@@ -93,7 +92,7 @@ class Settings extends Controller
     }
 
     /**
-     * Prepares settings values before passing them to the template
+     * Prepares settings values before passing them to template
      */
     protected function prepareSettings()
     {
@@ -111,7 +110,9 @@ class Settings extends Controller
 
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['settings'] = $this->submitted;
             return;
         }
@@ -134,7 +135,7 @@ class Settings extends Controller
 
         $file = $this->request->file('gapi_certificate');
 
-        if ($file) {
+        if (!empty($file)) {
             $this->file->setHandler('p12');
             if ($this->file->upload($file) === true) {
                 $destination = $this->file->getUploadedFile();
@@ -174,4 +175,5 @@ class Settings extends Controller
     {
         $this->output('settings/settings');
     }
+
 }

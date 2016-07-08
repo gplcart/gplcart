@@ -195,7 +195,7 @@ class Product extends Controller
         $this->data['default_currency'] = $this->currency->getDefault();
         $this->data['classes'] = $this->product_class->getList(array('status' => 1));
 
-        $this->addJsSettings('product', $product);
+        $this->setJsSettings('product', $product);
 
         $this->setTitleEdit($product);
         $this->setBreadcrumbEdit();

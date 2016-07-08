@@ -19,6 +19,9 @@ use core\models\Bookmark as ModelsBookmark;
 use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
 
+/**
+ * Handles incoming requests and outputs data related to product catalog
+ */
 class Category extends Controller
 {
 
@@ -255,7 +258,7 @@ class Category extends Controller
      * @param array $category
      * @return string
      */
-    protected function getRenderedImages($category)
+    protected function getRenderedImages(array $category)
     {
         if (empty($category['images'])) {
             return '';
@@ -364,7 +367,7 @@ class Category extends Controller
             'store_id' => $this->store_id,
             'category_id' => $category_id,
             'language' => $this->langcode
-        ) + $query;
+                ) + $query;
 
         $products = $this->product->getList($options);
         return $this->prepareProducts($products, $query);

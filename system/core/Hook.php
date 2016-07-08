@@ -10,12 +10,13 @@
 namespace core;
 
 use core\Container;
-use core\exceptions\SystemLogical as SystemLogicalException;
+use core\exceptions\SystemLogical;
 
 /**
  * Provides methods to work with system hooks (event system)
  */
-class Hook {
+class Hook
+{
 
     /**
      * Array of registered hooks
@@ -33,7 +34,8 @@ class Hook {
      * Registers modules hooks
      * @param array $modules
      */
-    public function registerModules($modules) {
+    public function registerModules($modules)
+    {
         foreach ($modules as $module) {
             if (empty($module['hooks'])) {
                 continue;
@@ -51,7 +53,8 @@ class Hook {
      * @param string $class
      * @return array
      */
-    public function register($method, $class) {
+    public function register($method, $class)
+    {
         static::$hooks[strtolower($method)][$class] = array($class, $method);
         return static::$hooks;
     }
@@ -62,7 +65,8 @@ class Hook {
      * @param string $class
      * @return array
      */
-    public function unregister($method, $class) {
+    public function unregister($method, $class)
+    {
         unset(static::$hooks[strtolower($method)][$class]);
         return static::$hooks;
     }
@@ -71,7 +75,8 @@ class Hook {
      * Returns a hook data
      * @return array
      */
-    public function getRegistered() {
+    public function getRegistered()
+    {
         return static::$hooks;
     }
 
@@ -79,7 +84,8 @@ class Hook {
      * Returns an array of invoked hooks
      * @return array
      */
-    public function getCalled() {
+    public function getCalled()
+    {
         return static::$called;
     }
 
@@ -91,7 +97,8 @@ class Hook {
      * @param mixed $c
      * @return boolean
      */
-    public function fire($hook, &$a = null, &$b = null, &$c = null) {
+    public function fire($hook, &$a = null, &$b = null, &$c = null)
+    {
         $method = 'hook' . strtolower(str_replace(".", "", $hook));
 
         if (empty(static::$hooks[$method])) {
@@ -108,7 +115,7 @@ class Hook {
             try {
                 $instance->{$method}($a, $b, $c);
                 static::$called[$method][$namespace] = array($namespace, $method);
-            } catch (SystemLogicalException $e) {
+            } catch (SystemLogical $e) {
                 echo $e->getMessage();
             }
         }

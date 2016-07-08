@@ -12,13 +12,15 @@ namespace core\classes;
 /**
  * Collection of helper methods used for different purposes
  */
-class Tool {
+class Tool
+{
 
     /**
      * Sorts an array by the weight element
      * @param array $array
      */
-    public static function sortWeight(array &$array) {
+    public static function sortWeight(array &$array)
+    {
         uasort($array, function ($a, $b) {
             $a_weight = (is_array($a) && isset($a['weight'])) ? $a['weight'] : 0;
             $b_weight = (is_array($b) && isset($b['weight'])) ? $b['weight'] : 0;
@@ -37,7 +39,8 @@ class Tool {
      * @param integer $lifespan
      * @return boolean
      */
-    public static function setCookie($name, $value, $lifespan = 31536000) {
+    public static function setCookie($name, $value, $lifespan = 31536000)
+    {
         return setcookie(GC_COOKIE_PREFIX . $name, $value, GC_TIME + $lifespan, '/');
     }
 
@@ -49,7 +52,8 @@ class Tool {
      * @return mixed
      */
     public static function getCookie($name = null, $default = null,
-            $filter = true) {
+            $filter = true)
+    {
 
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
 
@@ -68,7 +72,8 @@ class Tool {
      * @param boolean $filter
      * @return array
      */
-    public static function trimArray(array &$array, $filter = false) {
+    public static function trimArray(array &$array, $filter = false)
+    {
         if ($filter) {
             array_walk_recursive($array, function (&$v) {
                 $v = filter_var(trim($v), FILTER_SANITIZE_STRING);
@@ -89,7 +94,8 @@ class Tool {
      * @param string $name
      * @return boolean
      */
-    public static function deleteCookie($name = null) {
+    public static function deleteCookie($name = null)
+    {
         if (!isset($name)) {
             foreach ((array) $_COOKIE as $key => $value) {
                 if (0 === strpos($key, GC_COOKIE_PREFIX)) {
@@ -116,7 +122,8 @@ class Tool {
      * @param integer $lifespan
      * @return integer
      */
-    public static function deleteFiles($directory, $pattern, $lifespan = 0) {
+    public static function deleteFiles($directory, $pattern, $lifespan = 0)
+    {
         $deleted = 0;
         foreach (static::scanFiles($directory, $pattern) as $file) {
             if ((filemtime($file) < GC_TIME - $lifespan) && unlink($file)) {
@@ -133,7 +140,8 @@ class Tool {
      * @param string $pattern Either an array of allowed extensions or a pattern for glob()
      * @return array
      */
-    public static function scanFiles($path, $pattern) {
+    public static function scanFiles($path, $pattern)
+    {
         if (is_array($pattern)) {
             $extensions = implode(',', $pattern);
             return glob("$path/*.{{$extensions}}", GLOB_BRACE);
@@ -150,7 +158,8 @@ class Tool {
      * @return boolean
      */
     public static function readfile($filename, $retbytes = true,
-            $chunksize = 1048576) {
+            $chunksize = 1048576)
+    {
         $cnt = 0;
         $buffer = '';
 
@@ -187,7 +196,8 @@ class Tool {
      * @param array $array2
      * @return array
      */
-    public static function merge(array &$array1, array &$array2) {
+    public static function merge(array &$array1, array &$array2)
+    {
         $merged = $array1;
 
         foreach ($array2 as $key => &$value) {
@@ -207,7 +217,8 @@ class Tool {
      * @param type $iterations
      * @return string
      */
-    public static function hash($string, $salt = '', $iterations = 10) {
+    public static function hash($string, $salt = '', $iterations = 10)
+    {
         if ($salt === '') {
             $salt = self::randomString();
         }
@@ -224,7 +235,8 @@ class Tool {
      * @param integer $size
      * @return string
      */
-    public static function randomString($size = 32) {
+    public static function randomString($size = 32)
+    {
         return bin2hex(openssl_random_pseudo_bytes($size));
     }
 
@@ -234,7 +246,8 @@ class Tool {
      * @param string $str2
      * @return boolean
      */
-    public static function hashEquals($str1, $str2) {
+    public static function hashEquals($str1, $str2)
+    {
         if (function_exists('hash_equals')) {
             return hash_equals($str1, $str2);
         }
@@ -261,7 +274,8 @@ class Tool {
      * @return string
      */
     public static function replacePlaceholders($pattern, array $placeholders,
-            array $data) {
+            array $data)
+    {
         foreach ($placeholders as $placeholder => $data_key) {
             if (!isset($data[$data_key]) || !is_string($data[$data_key])) {
                 unset($placeholders[$placeholder]);
@@ -281,7 +295,8 @@ class Tool {
      * @param string $content
      * @return boolean
      */
-    public static function htaccess($directory, $private = true, $content = '') {
+    public static function htaccess($directory, $private = true, $content = '')
+    {
         if ($content === '') {
             $content = 'Options None' . PHP_EOL;
             $content .= 'Options +FollowSymLinks' . PHP_EOL;
@@ -307,7 +322,8 @@ class Tool {
      * Generates an array of time zones and their local data
      * @return array
      */
-    public static function timezones() {
+    public static function timezones()
+    {
         $zones = array();
         $timestamp = GC_TIME;
 
@@ -329,7 +345,8 @@ class Tool {
      * @param mixed $timestamp a UNIX-timestamp or null for the current time
      * @return boolean Returns true if in the range, false otherwise
      */
-    public static function inTimeRange(array $ranges, $timestamp = null) {
+    public static function inTimeRange(array $ranges, $timestamp = null)
+    {
 
         if (!isset($timestamp)) {
             $timestamp = GC_TIME;
@@ -357,7 +374,8 @@ class Tool {
      * limit elements with the last element containing the rest of string
      * @return array
      */
-    public static function stringToArray($string, $limit = null) {
+    public static function stringToArray($string, $limit = null)
+    {
         if (isset($limit)) {
             $array = explode("\n", str_replace("\r", "", $string), $limit);
         } else {
@@ -373,7 +391,8 @@ class Tool {
      * @param array $arguments An associative array of replacements
      * @return string
      */
-    public static function formatString($string, array $arguments = array()) {
+    public static function formatString($string, array $arguments = array())
+    {
         foreach ($arguments as $key => $value) {
             switch ($key[0]) {
                 case '@':
@@ -401,7 +420,8 @@ class Tool {
      * @return boolean Returns true on success, false otherwise
      */
     public static function writeCsv($file, array $data, $delimiter = ',',
-            $enclosure = '"', $limit = 0) {
+            $enclosure = '"', $limit = 0)
+    {
 
         $handle = fopen($file, 'a+');
 

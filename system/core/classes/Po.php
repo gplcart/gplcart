@@ -12,7 +12,8 @@ namespace core\classes;
  * Provides methods to parse GETTEXT .po files
  * Inspired by Raul Ferras's parser https://github.com/raulferras
  */
-class Po {
+class Po
+{
 
     /**
      * Separators
@@ -28,7 +29,8 @@ class Po {
      * @param string $file Path to .po file
      * @return mixed
      */
-    public function read($file) {
+    public function read($file)
+    {
         $fd = fopen($file, "rb");
 
         if (empty($fd)) {
@@ -157,7 +159,8 @@ class Po {
      * @param array $entry
      * @return boolean
      */
-    protected function isHeader(array $entry) {
+    protected function isHeader(array $entry)
+    {
         if (empty($entry) || !isset($entry['msgstr'])) {
             return false;
         }
@@ -191,7 +194,8 @@ class Po {
      * @param mixed $x Input
      * @return string Output
      */
-    protected function clean($x) {
+    protected function clean($x)
+    {
         if (is_array($x)) {
             foreach ($x as $k => $v) {
                 $x[$k] = $this->clean($v);
@@ -216,7 +220,8 @@ class Po {
      * @param array $entry
      * @return string
      */
-    protected function getEntryId(array $entry) {
+    protected function getEntryId(array $entry)
+    {
         if (isset($entry['msgctxt'])) {
             return implode($this->options['multiline-glue'], (array) $entry['msgctxt']) . $this->options['context-glue'] . implode($this->options['multiline-glue'], (array) $entry['msgid']);
         }

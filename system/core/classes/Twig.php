@@ -12,7 +12,8 @@ namespace core\classes;
 /**
  * Wrapper class for TWIG template engine
  */
-class Twig {
+class Twig
+{
 
     /**
      * Twig loader instance
@@ -29,7 +30,8 @@ class Twig {
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         require_once GC_LIBRARY_DIR . '/twig/Autoloader.php';
         \Twig_Autoloader::register();
     }
@@ -40,7 +42,8 @@ class Twig {
      * @param object $object
      * @param array $options
      */
-    public function set($path, $object, array $options = array()) {
+    public function set($path, $object, array $options = array())
+    {
         $this->loader = new \Twig_Loader_Filesystem($path);
         $this->twig = new \Twig_Environment($this->loader, $options);
         $this->twig->addGlobal('gc', $object);
@@ -52,7 +55,8 @@ class Twig {
      * @param array $data
      * @return string
      */
-    public function render($file, array $data) {
+    public function render($file, array $data)
+    {
         if (empty($this->twig)) {
             return "Failed to render twig template $file";
         }

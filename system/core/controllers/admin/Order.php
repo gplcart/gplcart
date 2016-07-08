@@ -207,7 +207,7 @@ class Order extends Controller
         $translated = $this->address->getTranslated($address);
         $geocode = $this->address->getGeocodeQuery($translated);
 
-        $this->addJsSettings('map', array('address' => $geocode));
+        $this->setJsSettings('map', array('address' => $geocode));
 
         $data = array(
             'order' => $order,

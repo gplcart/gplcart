@@ -15,13 +15,15 @@ use PDOException;
 /**
  * Provides wrappers for PDO methods
  */
-class Database extends PDO {
+class Database extends PDO
+{
 
     /**
      * Sets up the database connection
      * @param array $config
      */
-    public function __construct($config = array()) {
+    public function __construct(array $config = array())
+    {
         if (!empty($config)) {
             $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
 
@@ -40,7 +42,8 @@ class Database extends PDO {
      * @param array $data
      * @return integer
      */
-    public function insert($table, $data) {
+    public function insert($table, array $data)
+    {
         ksort($data);
 
         $names = implode(',', array_keys($data));
@@ -64,7 +67,8 @@ class Database extends PDO {
      * @param array $conditions
      * @return integer
      */
-    public function update($table, $data, $conditions) {
+    public function update($table, array $data, array $conditions)
+    {
         ksort($data);
 
         $fields = '';
@@ -107,7 +111,8 @@ class Database extends PDO {
      * @param mixed $conditions
      * @return integer
      */
-    public function delete($table, $conditions) {
+    public function delete($table, $conditions)
+    {
         if (empty($conditions)) {
             return false;
         }

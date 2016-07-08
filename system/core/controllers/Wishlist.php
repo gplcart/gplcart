@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,12 +10,12 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Cart;
-use core\models\Price;
-use core\models\Image;
-use core\models\Product;
-use core\models\Bookmark;
-use core\models\Category;
+use core\models\Cart as ModelsCart;
+use core\models\Price as ModelsPrice;
+use core\models\Image as ModelsImage;
+use core\models\Product as ModelsProduct;
+use core\models\Bookmark as ModelsBookmark;
+use core\models\Category as ModelsCategory;
 
 class Wishlist extends Controller
 {
@@ -59,14 +58,16 @@ class Wishlist extends Controller
 
     /**
      * Constructor
-     * @param Product $product
-     * @param Price $price
-     * @param Image $image
-     * @param Cart $cart
-     * @param Bookmark $bookmark
-     * @param Category $category
+     * @param ModelsProduct $product
+     * @param ModelsPrice $price
+     * @param ModelsImage $image
+     * @param ModelsCart $cart
+     * @param ModelsBookmark $bookmark
+     * @param ModelsCategory $category
      */
-    public function __construct(Product $product, Price $price, Image $image, Cart $cart, Bookmark $bookmark, Category $category)
+    public function __construct(ModelsProduct $product, ModelsPrice $price,
+            ModelsImage $image, ModelsCart $cart, ModelsBookmark $bookmark,
+            ModelsCategory $category)
     {
         parent::__construct();
 
@@ -161,7 +162,7 @@ class Wishlist extends Controller
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
 
-            if ($pricerules) {
+            if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);
                 $product['price'] = $calculated['total'];
             }
@@ -241,7 +242,7 @@ class Wishlist extends Controller
      * @param array $tree
      * @return array
      */
-    protected function prepareTree($tree)
+    protected function prepareTree(array $tree)
     {
         foreach ($tree as &$item) {
             $item['url'] = $item['alias'] ? $item['alias'] : "category/{$item['category_id']}";
@@ -250,4 +251,5 @@ class Wishlist extends Controller
 
         return $tree;
     }
+
 }

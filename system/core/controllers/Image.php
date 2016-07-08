@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,11 +10,15 @@
 namespace core\controllers;
 
 use core\Controller;
-use core\models\Image as I;
 use core\classes\Response;
+use core\models\Image as ModelsImage;
 
+/**
+ * Handles incoming requests and outputs data related to image cache
+ */
 class Image extends Controller
 {
+
     /**
      * Image model instance
      * @var \core\models\Image $image
@@ -30,10 +33,10 @@ class Image extends Controller
 
     /**
      * Constructor
-     * @param I $image
+     * @param ModelsImage $image
      * @param Response $response
      */
-    public function __construct(I $image, Response $response)
+    public function __construct(ModelsImage $image, Response $response)
     {
         parent::__construct();
 
@@ -77,7 +80,7 @@ class Image extends Controller
 
         $image_directory = pathinfo($image, PATHINFO_DIRNAME);
 
-        if ($image_directory) {
+        if (!empty($image_directory)) {
             $preset_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/$image_directory";
         }
 
@@ -93,7 +96,7 @@ class Image extends Controller
 
         $actions = $this->image->getImageStyleActions($imagestyle_id, true);
 
-        if (!$actions) {
+        if (empty($actions)) {
             $this->response->error404(false);
         }
 
@@ -117,4 +120,5 @@ class Image extends Controller
 
         return $headers;
     }
+
 }

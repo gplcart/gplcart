@@ -11,6 +11,9 @@ namespace core\handlers\file;
 
 use core\models\File as ModelsFile;
 
+/**
+ * Provides methods to validate different types of files
+ */
 class Validator
 {
 
@@ -19,7 +22,7 @@ class Validator
      * @var \core\models\File $file
      */
     protected $file;
-    
+
     /**
      * Constructor
      * @param ModelsFile $file
@@ -73,4 +76,5 @@ class Validator
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
         return in_array($this->file->getMimetype($file), $allowed);
     }
+
 }

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -12,10 +11,13 @@ namespace core\controllers;
 
 use core\Hook;
 use core\Controller;
-use core\models\Cart;
-use core\models\Product;
-use core\models\Bookmark;
+use core\models\Cart as ModelsCart;
+use core\models\Product as ModelsProduct;
+use core\models\Bookmark as ModelsBookmark;
 
+/**
+ * Handles incoming requests and outputs data related to user submitted actions
+ */
 class Action extends Controller
 {
 
@@ -45,13 +47,13 @@ class Action extends Controller
 
     /**
      * Constructor
-     * @param Cart $cart
-     * @param Bookmark $bookmark
-     * @param Product $product
+     * @param ModelsCart $cart
+     * @param ModelsBookmark $bookmark
+     * @param ModelsProduct $product
      * @param Hook $hook
      */
-    public function __construct(Cart $cart, Bookmark $bookmark,
-                                Product $product, Hook $hook)
+    public function __construct(ModelsCart $cart, ModelsBookmark $bookmark,
+            ModelsProduct $product, Hook $hook)
     {
         parent::__construct();
 
@@ -157,7 +159,7 @@ class Action extends Controller
             'id_value' => $product_id
                 ), true); // true - check limit
 
-        if ($added) {
+        if (!empty($added)) {
             return array(
                 'message_type' => 'success',
                 'message' => $this->text('Product has been added to your <a href="!href">wishlist</a>', array(
@@ -213,7 +215,7 @@ class Action extends Controller
 
         $added = $this->product->addToCompare($product_id);
 
-        if ($added) {
+        if (!empty($added)) {
             return array(
                 'message_type' => 'success',
                 'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
@@ -237,4 +239,5 @@ class Action extends Controller
             'message_type' => 'success',
             'message' => $this->text('Product has been removed from comparison'));
     }
+
 }

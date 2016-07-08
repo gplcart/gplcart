@@ -227,7 +227,7 @@ class Dashboard extends Controller
         $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
         $this->analytics->setView($ga_view);
         $this->data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
-        $this->addJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
+        $this->setJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
     }
 
 }

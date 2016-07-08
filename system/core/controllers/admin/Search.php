@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,9 +10,12 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Job;
-use core\models\Search as S;
+use core\models\Job as ModelsJob;
+use core\models\Search as ModelsSearch;
 
+/**
+ * Handles incoming requests and outputs data related to search functionality
+ */
 class Search extends Controller
 {
 
@@ -31,10 +33,10 @@ class Search extends Controller
 
     /**
      * Constructor
-     * @param S $search
-     * @param Job $job
+     * @param ModelsSearch $search
+     * @param ModelsJob $job
      */
-    public function __construct(S $search, Job $job)
+    public function __construct(ModelsSearch $search, ModelsJob $job)
     {
         parent::__construct();
 
@@ -49,7 +51,7 @@ class Search extends Controller
     {
         $query = $this->getFilterQuery();
         $term = isset($query['q']) ? $query['q'] : '';
-        
+
         $search_id = $this->request->get('search_id');
         $total = $this->setPager($this->getTotalResults($search_id, $term), $query);
 
@@ -73,7 +75,7 @@ class Search extends Controller
 
         $entity_id = $this->request->post('index');
 
-        if ($entity_id) {
+        if (!empty($entity_id)) {
             $this->submit($entity_id);
         }
 
@@ -207,4 +209,5 @@ class Search extends Controller
     {
         $this->output('tool/search');
     }
+
 }

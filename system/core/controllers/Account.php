@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -21,6 +20,9 @@ use core\models\Country as ModelsCountry;
 use core\models\Bookmark as ModelsBookmark;
 use core\models\UserRole as ModelsUserRole;
 
+/**
+ * Handles incoming requests and outputs data related to user accounts
+ */
 class Account extends Controller
 {
 
@@ -83,7 +85,7 @@ class Account extends Controller
      * @var boolean
      */
     protected $check_old_password = false;
-    
+
     /**
      * Constructor
      * @param ModelsAddress $address
@@ -96,9 +98,9 @@ class Account extends Controller
      * @param ModelsProduct $product
      */
     public function __construct(ModelsAddress $address, ModelsCountry $country,
-                                ModelsState $state, ModelsOrder $order, ModelsPrice $price,
-                                ModelsBookmark $bookmark, ModelsUserRole $role,
-                                ModelsProduct $product)
+            ModelsState $state, ModelsOrder $order, ModelsPrice $price,
+            ModelsBookmark $bookmark, ModelsUserRole $role,
+            ModelsProduct $product)
     {
         parent::__construct();
 
@@ -151,11 +153,11 @@ class Account extends Controller
         $this->data['roles'] = $this->role->getList();
         $this->data['stores'] = $this->store->getNames();
 
-        if ($this->request->post('save') !== null) {
+        if ($this->request->post('save')) {
             $this->submitEdit($user);
         }
 
-        if ($this->request->post('delete') !== null) {
+        if ($this->request->post('delete')) {
             $this->submitDelete($user);
         }
 
@@ -192,7 +194,7 @@ class Account extends Controller
             $this->url->redirect("account/{$this->uid}");
         }
 
-        if ($this->request->post('login') !== null) {
+        if ($this->request->post('login')) {
             $this->submitLogin();
         }
 
@@ -244,7 +246,7 @@ class Account extends Controller
             $this->redirect('forgot'); // Reset password link expired or invalid
         }
 
-        if ($this->request->post('reset') !== null) {
+        if ($this->request->post('reset')) {
             $this->submitForgot($user);
         }
 
@@ -411,10 +413,12 @@ class Account extends Controller
 
     /**
      * Returns an array of orders for the customer
-     * @param integer $user_id
+     * @param mixed $user_id
+     * @param array $limit
+     * @param array $query
      * @return array
      */
-    protected function getOrders($user_id, $limit, $query)
+    protected function getOrders($user_id, array $limit, array $query)
     {
         $query += array('sort' => 'created', 'order' => 'desc', 'limit' => $limit);
         $query['user_id'] = $user_id;
@@ -426,7 +430,6 @@ class Account extends Controller
     /**
      * Returns a number of total orders for the customer
      * @param integer $user_id
-     * @param array $query
      * @return array
      */
     protected function getTotalOrders($user_id)
@@ -560,7 +563,7 @@ class Account extends Controller
      * @param array $user
      * @return boolean
      */
-    protected function validateUser($user = array())
+    protected function validateUser(array $user = array())
     {
         // Registration
         if (empty($user['user_id']) && empty($this->uid)) {
@@ -585,7 +588,7 @@ class Account extends Controller
      * @param array $user
      * @return boolean
      */
-    protected function validatePasswordBoth($user)
+    protected function validatePasswordBoth(array $user)
     {
         if (empty($user['user_id'])) {
             if (empty($this->submitted['password'])) {
@@ -597,7 +600,9 @@ class Account extends Controller
             $this->validatePassword($this->submitted['password']);
         }
 
-        if (count($this->formErrors()) > 0) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             return false;
         }
 
@@ -638,7 +643,7 @@ class Account extends Controller
      * @param array $user
      * @return boolean
      */
-    protected function validateEmail($user)
+    protected function validateEmail(array $user)
     {
         if (isset($this->submitted['email']) && filter_var($this->submitted['email'], FILTER_VALIDATE_EMAIL)) {
             $check_email_exists = true;
@@ -679,7 +684,6 @@ class Account extends Controller
 
     /**
      * Validates a submitted address
-     * @param array $submitted
      */
     protected function validateAddress()
     {
@@ -695,7 +699,7 @@ class Account extends Controller
 
     /**
      * Validates the forgot password form values
-     * @param mixed $user
+     * @param array $user
      * @return boolean
      */
     protected function validateForgot(array $user)
@@ -720,7 +724,7 @@ class Account extends Controller
      * Deletes a user
      * @param array $user
      */
-    protected function submitDelete($user)
+    protected function submitDelete(array $user)
     {
         $this->controlAccess('user_delete');
 
@@ -745,12 +749,14 @@ class Account extends Controller
      * @param array $user
      * @return null
      */
-    protected function submitEdit($user)
+    protected function submitEdit(array $user)
     {
         $this->submitted = $this->request->post('user', array(), 'raw');
         $this->validateUser($user);
 
-        if (count($this->formErrors()) > 0) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['user'] = $this->submitted + array('user_id' => $user['user_id']);
             return;
         }
@@ -764,13 +770,15 @@ class Account extends Controller
      * @param array $user
      * @return null
      */
-    protected function submitAddress($user)
+    protected function submitAddress(array $user)
     {
         $this->submitted = $this->request->post('address', array());
 
         $this->validateAddress();
 
-        if (count($this->formErrors()) > 0) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['address'] = $this->submitted;
             return;
         }
@@ -819,7 +827,9 @@ class Account extends Controller
         $this->submitted = $this->request->post('user', array(), 'raw');
         $this->validateUser();
 
-        if (count($this->formErrors()) > 0) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['user'] = $this->submitted;
             return;
         }
@@ -834,14 +844,16 @@ class Account extends Controller
      * @param array $user
      * @return null
      */
-    protected function submitForgot($user)
+    protected function submitForgot(array $user)
     {
         $this->controlSpam('forgot');
         $this->submitted = $this->request->post('user', array(), 'raw');
 
         $this->validateForgot($user);
 
-        if (count($this->formErrors()) > 0) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['user'] = $this->submitted;
             return;
         }
@@ -862,9 +874,10 @@ class Account extends Controller
      * @param array $orders
      * @return array
      */
-    protected function prepareOrders($orders)
+    protected function prepareOrders(array $orders)
     {
         foreach ($orders as &$order) {
+
             $address_id = $order['shipping_address'];
             $components = $this->order->getComponents($order);
             $address = $this->address->getTranslated($this->address->get($address_id), true);
@@ -911,7 +924,7 @@ class Account extends Controller
         $this->data['user'] = $user;
         $this->data['address'] = $address;
 
-        if ($this->request->post('save') !== null) {
+        if ($this->request->post('save')) {
             $this->submitAddress($user, $address);
         }
 
@@ -930,10 +943,11 @@ class Account extends Controller
      * @param array $address
      * @return integer
      */
-    protected function addAddress($address)
+    protected function addAddress(array $address)
     {
         $result = $this->address->add($address);
         $this->address->reduceLimit($address['user_id']);
         return $result;
     }
+
 }

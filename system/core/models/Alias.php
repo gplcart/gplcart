@@ -52,11 +52,11 @@ class Alias
      * @param Config $config
      */
     public function __construct(ModelsLanguage $language, Route $route,
-                                Config $config)
+            Config $config)
     {
-        $this->language = $language;
         $this->route = $route;
         $this->config = $config;
+        $this->language = $language;
         $this->db = $this->config->getDb();
     }
 
@@ -80,8 +80,8 @@ class Alias
 
     /**
      * Returns an alias
-     * @param string|integer $id_key
-     * @param integer $id_value
+     * @param string $id_key
+     * @param null|integer $id_value
      * @return string
      */
     public function get($id_key, $id_value = null)
@@ -99,8 +99,8 @@ class Alias
 
     /**
      * Deletes an alias
-     * @param string|integer $id_key
-     * @param integer $id_value
+     * @param string $id_key
+     * @param null|integer $id_value
      * @return integer
      */
     public function delete($id_key, $id_value = null)
@@ -213,8 +213,7 @@ class Alias
      * @return string
      */
     public function generate($pattern, array $placeholders = array(),
-                             array $data = array(), $translit = true,
-                             $language = null)
+            array $data = array(), $translit = true, $language = null)
     {
         $alias = $pattern;
 
@@ -269,4 +268,5 @@ class Alias
         $sth->execute(array(':alias' => $alias));
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
+
 }

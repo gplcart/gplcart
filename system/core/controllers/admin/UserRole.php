@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -11,8 +10,11 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\UserRole as Ur;
+use core\models\UserRole as ModelsUserRole;
 
+/**
+ * Handles incoming requests and outputs data related to user role administration
+ */
 class UserRole extends Controller
 {
 
@@ -24,9 +26,9 @@ class UserRole extends Controller
 
     /**
      * Constructor
-     * @param Ur $role
+     * @param ModelsUserRole $role
      */
-    public function __construct(Ur $role)
+    public function __construct(ModelsUserRole $role)
     {
         parent::__construct();
 
@@ -66,7 +68,7 @@ class UserRole extends Controller
         $value = $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
-        if ($action) {
+        if (!empty($action)) {
             $this->action($selected, $action, $value);
         }
 
@@ -107,8 +109,9 @@ class UserRole extends Controller
 
     /**
      * Sets titles on the role edit form
+     * @param array $role
      */
-    protected function setTitleEdit($role)
+    protected function setTitleEdit(array $role)
     {
         if (isset($role['role_id'])) {
             $title = $this->text('Edit role %name', array('%name' => $role['name']));
@@ -121,14 +124,18 @@ class UserRole extends Controller
 
     /**
      * Saves a role
+     * @param array $role
+     * @return null
      */
-    protected function submit($role)
+    protected function submit(array $role)
     {
         $this->submitted = $this->request->post('role', array());
 
         $this->validate();
 
-        if ($this->formErrors()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['role'] = $this->submitted;
             return;
         }
@@ -148,7 +155,7 @@ class UserRole extends Controller
      * Deletes a role
      * @param array $role
      */
-    protected function delete($role)
+    protected function delete(array $role)
     {
         $this->controlAccess('user_role_delete');
 
@@ -172,16 +179,15 @@ class UserRole extends Controller
 
         $role = $this->role->get($role_id);
 
-        if ($role) {
-            return $role;
+        if (empty($role)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $role;
     }
 
     /**
      * Validates a role
-     * @param array $submitted
      */
     protected function validate()
     {
@@ -221,7 +227,7 @@ class UserRole extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalRoles($query)
+    protected function getTotalRoles(array $query)
     {
         return $this->role->getList(array('count' => true) + $query);
     }
@@ -256,7 +262,7 @@ class UserRole extends Controller
      * @param array $query
      * @return array
      */
-    protected function getRoles($limit, $query)
+    protected function getRoles(array $limit, array $query)
     {
         $roles = $this->role->getList(array('limit' => $limit) + $query);
 
@@ -276,7 +282,7 @@ class UserRole extends Controller
      * @param string $action
      * @param string $value
      */
-    protected function action($selected, $action, $value)
+    protected function action(array $selected, $action, $value)
     {
         $deleted = $updated = 0;
         foreach ($selected as $role_id) {
@@ -289,16 +295,17 @@ class UserRole extends Controller
             }
         }
 
-        if ($updated) {
+        if ($updated > 0) {
             $this->session->setMessage($this->text('Updated %num user roles', array('%num' => $updated)), 'success');
             return true;
         }
 
-        if ($deleted) {
+        if ($deleted > 0) {
             $this->session->setMessage($this->text('Deleted %num user roles', array('%num' => $deleted)), 'success');
             return true;
         }
 
         return false;
     }
+
 }
