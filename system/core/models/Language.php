@@ -15,7 +15,7 @@ use core\Config;
 use core\classes\Po;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\translit\Translit;
+use core\models\Translit;
 
 /**
  * Manages basic behaviors and data related to languages and their translations

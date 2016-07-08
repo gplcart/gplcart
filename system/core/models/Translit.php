@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\classes\translit;
+namespace core\models;
 
 /**
  * Manages basic behaviors and data related to string transliterations
@@ -167,7 +167,7 @@ class Translit
         $bank = $ord >> 8;
 
         if (!isset($map[$bank][$langcode])) {
-            $file = GC_CORE_DIR . '/classes/translit/data/' . sprintf('x%02x', $bank) . '.php';
+            $file = GC_CORE_DIR . '/handlers/translit/' . sprintf('x%02x', $bank) . '.php';
             if (file_exists($file)) {
                 include $file;
                 if ($langcode != 'en' && isset($variant[$langcode])) {
@@ -185,4 +185,5 @@ class Translit
 
         return isset($map[$bank][$langcode][$ord]) ? $map[$bank][$langcode][$ord] : $unknown;
     }
+
 }
