@@ -461,5 +461,4 @@ class ProductClass extends Controller
     {
         $this->output('content/product/class/field');
     }
-
 }

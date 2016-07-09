@@ -76,5 +76,4 @@ class Validator
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
         return in_array($this->file->getMimetype($file), $allowed);
     }
-
 }

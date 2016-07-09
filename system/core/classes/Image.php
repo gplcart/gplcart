@@ -1034,5 +1034,4 @@ class Image
 
         return preg_replace('/^.*\./', '', $filename);
     }
-
 }

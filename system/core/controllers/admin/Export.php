@@ -235,5 +235,4 @@ class Export extends Controller
         $this->submitted['operation'] = $operation;
         return true;
     }
-
 }

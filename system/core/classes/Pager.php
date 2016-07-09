@@ -434,5 +434,4 @@ class Pager
             'is_current' => false,
         );
     }
-
 }

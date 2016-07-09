@@ -397,5 +397,4 @@ class Review extends Controller
     {
         $this->output('content/review/edit');
     }
-
 }

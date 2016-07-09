@@ -69,5 +69,4 @@ class Handler
         $handler[0] = $instance;
         return $handler;
     }
-
 }
