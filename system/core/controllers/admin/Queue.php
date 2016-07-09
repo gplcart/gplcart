@@ -111,5 +111,4 @@ class Queue extends Controller
     {
         $this->output('report/queue');
     }
-
 }

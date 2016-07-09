@@ -328,5 +328,4 @@ class Filter
 
         return $uri;
     }
-
 }

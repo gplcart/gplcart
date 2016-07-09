@@ -355,5 +355,4 @@ class State extends Controller
 
         return true;
     }
-
 }

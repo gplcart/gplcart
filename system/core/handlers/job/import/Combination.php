@@ -47,7 +47,7 @@ class Combination
 
     /**
      * Image model instance
-     * @var \core\models\Image $image 
+     * @var \core\models\Image $image
      */
     protected $image;
 
@@ -384,5 +384,4 @@ class Combination
         // validate
         return (int) $this->product->addCombination($data);
     }
-
 }

@@ -57,5 +57,4 @@ class Page extends Controller
 
         $this->hook->fire('page.view', $page);
     }
-
 }

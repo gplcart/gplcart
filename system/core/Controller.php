@@ -1485,5 +1485,4 @@ class Controller
         $this->data['pager'] = $this->pager->render();
         return $this->pager->getLimit();
     }
-
 }

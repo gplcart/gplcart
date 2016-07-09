@@ -307,5 +307,4 @@ class UserRole extends Controller
 
         return false;
     }
-
 }

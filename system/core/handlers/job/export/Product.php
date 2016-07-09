@@ -119,5 +119,4 @@ class Product
 
         return array('errors' => $errors);
     }
-
 }

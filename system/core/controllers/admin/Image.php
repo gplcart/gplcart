@@ -467,5 +467,4 @@ class Image extends Controller
 
         $this->data['imagestyle']['actions'] = implode("\n", $actions);
     }
-
 }

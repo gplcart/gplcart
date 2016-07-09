@@ -195,5 +195,4 @@ class Bookmark extends Controller
 
         return false;
     }
-
 }
