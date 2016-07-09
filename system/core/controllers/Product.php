@@ -470,5 +470,4 @@ class Product extends Controller
             $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
         }
     }
-
 }

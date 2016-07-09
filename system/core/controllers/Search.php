@@ -312,5 +312,4 @@ class Search extends Controller
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
         return $this->prepareProducts($products, array('view' => 'grid'));
     }
-
 }

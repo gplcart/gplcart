@@ -57,7 +57,6 @@ class Install extends Controller
      */
     public function install()
     {
-
         $this->controlInstallMode();
         $this->setInstallLanguage();
 
@@ -83,7 +82,6 @@ class Install extends Controller
 
     protected function submitInstall()
     {
-
         ini_set('max_execution_time', 0);
 
         $this->submitted = $this->request->post('settings', array());
@@ -143,7 +141,6 @@ class Install extends Controller
      */
     protected function setIssues()
     {
-
         $this->data['issues'] = $this->install->getRequirementsErrors($this->data['requirements']);
 
         $this->data['issue_severity'] = '';
@@ -194,7 +191,6 @@ class Install extends Controller
      */
     protected function addCssInstall()
     {
-
         $this->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
         $this->setCss('files/assets/font-awesome/css/font-awesome.min.css');
         $this->setCss('system/modules/frontend/css/install.css');
@@ -215,7 +211,6 @@ class Install extends Controller
      */
     protected function validateInstall()
     {
-
         $this->validateDbHost();
         $this->validateDbName();
         $this->validateDbUser();
@@ -308,7 +303,6 @@ class Install extends Controller
      */
     protected function validateUserPassword()
     {
-
         $min_password_length = 8;
         $max_password_length = 255;
 
@@ -330,7 +324,6 @@ class Install extends Controller
      */
     protected function validateDbHost()
     {
-
         if (empty($this->submitted['database']['host'])) {
             $this->data['form_errors']['database']['host'] = $this->text('Required field');
             return false;
@@ -380,5 +373,4 @@ class Install extends Controller
 
         return true;
     }
-
 }

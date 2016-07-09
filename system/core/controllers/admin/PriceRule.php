@@ -499,5 +499,4 @@ class PriceRule extends Controller
 
         $this->data['price_rule']['data']['conditions'] = implode("\n", $conditions);
     }
-
 }

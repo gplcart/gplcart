@@ -242,7 +242,7 @@ class Category
     }
 
     /**
-     * 
+     *
      * @param array $data
      * @param array $errors
      * @param integer $line
@@ -505,5 +505,4 @@ class Category
 
         return (int) $this->category->add($data);
     }
-
 }

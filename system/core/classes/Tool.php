@@ -54,7 +54,6 @@ class Tool
     public static function getCookie($name = null, $default = null,
             $filter = true)
     {
-
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
 
         Tool::trimArray($cookie, $filter);
@@ -347,7 +346,6 @@ class Tool
      */
     public static function inTimeRange(array $ranges, $timestamp = null)
     {
-
         if (!isset($timestamp)) {
             $timestamp = GC_TIME;
         }
@@ -422,7 +420,6 @@ class Tool
     public static function writeCsv($file, array $data, $delimiter = ',',
             $enclosure = '"', $limit = 0)
     {
-
         $handle = fopen($file, 'a+');
 
         if ($handle === false) {
@@ -439,5 +436,4 @@ class Tool
 
         return true;
     }
-
 }

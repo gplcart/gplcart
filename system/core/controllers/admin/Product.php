@@ -1071,5 +1071,4 @@ class Product extends Controller
 
         return true;
     }
-
 }

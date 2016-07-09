@@ -524,5 +524,4 @@ class Page extends Controller
 
         return true;
     }
-
 }

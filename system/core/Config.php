@@ -376,5 +376,4 @@ class Config
             return $this->validModuleName($module_id);
         });
     }
-
 }
