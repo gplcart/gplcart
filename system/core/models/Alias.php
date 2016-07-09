@@ -268,5 +268,4 @@ class Alias
         $sth->execute(array(':alias' => $alias));
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
-
 }

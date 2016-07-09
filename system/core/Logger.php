@@ -172,5 +172,4 @@ class Logger
     {
         return static::$errors;
     }
-
 }

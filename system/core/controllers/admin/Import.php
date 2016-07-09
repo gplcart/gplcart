@@ -256,5 +256,4 @@ class Import extends Controller
 
         return true;
     }
-
 }

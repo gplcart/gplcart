@@ -138,5 +138,4 @@ class Container
         $key = strtolower(trim($class, '\\'));
         return isset(static::$registry[$key]) ? static::$registry[$key] : false;
     }
-
 }

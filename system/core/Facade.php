@@ -78,7 +78,6 @@ class Facade
     public function __construct(Route $route, Url $url, Session $session,
             Config $config, Hook $hook, Logger $logger, SystemFailure $exception)
     {
-
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;
@@ -129,5 +128,4 @@ class Facade
 
         $this->route->process();
     }
-
 }

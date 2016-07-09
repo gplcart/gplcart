@@ -223,5 +223,4 @@ class Document
 
         return 'text.' . md5($string);
     }
-
 }
