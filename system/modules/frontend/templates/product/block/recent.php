@@ -4,7 +4,7 @@
   <div class="panel-body">
     <div class="row multi-item-carousel products">
       <?php foreach ($products as $product) { ?>
-      <?php echo $product['rendered']; ?>
+      <?php echo $product; ?>
       <?php } ?>
     </div>
   </div>

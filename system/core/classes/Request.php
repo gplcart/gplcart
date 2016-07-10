@@ -124,7 +124,7 @@ class Request
      * Whether the current request is AJAX
      * @return bool
      */
-    public function ajax()
+    public function isAjax()
     {
         return ($this->server('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest');
     }
@@ -135,14 +135,14 @@ class Request
      */
     public function scheme()
     {
-        return $this->secure() ? 'https://' : 'http://';
+        return $this->isSecure() ? 'https://' : 'http://';
     }
 
     /**
      * Whether the current connection is secure
      * @return bool
      */
-    public function secure()
+    public function isSecure()
     {
         return ($this->server('HTTPS', 'off') !== 'off');
     }

@@ -98,7 +98,7 @@ class Action extends Controller
             'message_type' => 'danger',
         );
 
-        if ($this->request->ajax()) {
+        if ($this->request->isAjax()) {
             $this->response->json($result);
         }
 

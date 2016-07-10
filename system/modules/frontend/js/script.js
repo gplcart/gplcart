@@ -30,12 +30,18 @@ $(function () {
 
     /********************** Carousel **********************/
 
-    $('.multi-item-carousel').lightSlider({
-        item: 4,
-        pager: false,
-        autoWidth: false,
-        slideMargin: 0
-    });
+    if (jQuery().lightSlider) {
+        $('.multi-item-carousel').lightSlider({
+            item: 4,
+            pager: false,
+            autoWidth: false,
+            slideMargin: 0
+        });
+    }
+    
+    if (jQuery().lightGallery) {
+        $('#lg-gallery').lightGallery({selector: '.item', thumbnail: true, download: false});
+    }
 
     $('.carousel').carousel();
 

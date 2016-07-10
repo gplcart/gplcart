@@ -20,7 +20,6 @@ use core\models\Review as ModelsReview;
 use core\models\Rating as ModelsRating;
 use core\models\Product as ModelsProduct;
 use core\models\Bookmark as ModelsBookmark;
-use core\models\Shipping as ModelsShipping;
 use core\models\ProductClass as ModelsProductClass;
 
 /**
@@ -90,12 +89,6 @@ class Product extends Controller
     protected $alias;
 
     /**
-     * Shipping model instance
-     * @var \core\models\Shipping $shipping
-     */
-    protected $shipping;
-
-    /**
      * Constructor
      * @param ModelsProduct $product
      * @param ModelsProductClass $product_class
@@ -107,13 +100,12 @@ class Product extends Controller
      * @param ModelsReview $review
      * @param ModelsRating $rating
      * @param ModelsAlias $alias
-     * @param ModelsShipping $shipping
      */
     public function __construct(ModelsProduct $product,
             ModelsProductClass $product_class, ModelsPrice $price,
             ModelsImage $image, ModelsCart $cart, ModelsOrder $order,
             ModelsBookmark $bookmark, ModelsReview $review,
-            ModelsRating $rating, ModelsAlias $alias, ModelsShipping $shipping)
+            ModelsRating $rating, ModelsAlias $alias)
     {
         parent::__construct();
 
@@ -126,7 +118,6 @@ class Product extends Controller
         $this->rating = $rating;
         $this->product = $product;
         $this->bookmark = $bookmark;
-        $this->shipping = $shipping;
         $this->product_class = $product_class;
     }
 
@@ -136,111 +127,237 @@ class Product extends Controller
      */
     public function product($product_id)
     {
-        $product = $this->get($product_id, $this->langcode);
-
-        if (!$product) {
-            $this->outputError(404);
-        }
-
-        $submitted_product = $this->request->post('product');
-
-        if ($submitted_product) {
-            $this->addToCart($submitted_product);
-        }
+        $product = $this->get($product_id);
 
         $this->data['product'] = $product;
+        $this->data['price'] = $product['price_formatted'];
+
+        $this->submitted = $this->request->post('product', array());
+
+        if (!empty($this->submitted)) {
+            $this->addToCart();
+        }
+
+        $this->setReviews($product);
+        $this->setRatingWidget($product);
+        $this->setShareWidget($product);
+        $this->setCartForm($product);
+        $this->setImages($product);
+        $this->setRelated($product);
+        $this->setRecent($product);
+
+        $this->setJsProduct();
+        $this->setCssProduct();
+        $this->setTitleProduct($product);
+        $this->outputProduct();
+    }
+
+    /**
+     * Sets list of reviews related to the product
+     * @param array $product
+     */
+    protected function setReviews(array $product)
+    {
+        $enabled = $this->config->get('review_enabled', 1);
+
+        if (empty($enabled)) {
+            return;
+        }
+
+        $total = $this->getTotalReviews($product['product_id']);
+
+        if (empty($total)) {
+            return;
+        }
+
+        $query = $this->getFilterQuery();
+        $per_page = $this->config->get('review_limit', 5);
+        $limit = $this->setPager($total, $query, $per_page);
+        $reviews = $this->getReviews($limit, $product);
+
+        $this->data['reviews'] = $this->render('review/list', array(
+            'product' => $product,
+            'query' => $this->query,
+            'pager' => $this->getPager(),
+            'reviews' => $this->prepareReviews($reviews),
+            'editable' => (bool) $this->config->get('review_editable', 1)
+        ));
+    }
+
+    /**
+     * Modifies an array of reviews
+     * @param array $reviews
+     * @return array
+     */
+    protected function prepareReviews(array $reviews)
+    {
+        $users = array();
+        foreach ($reviews as $review) {
+            $users[] = $review['user_id'];
+        }
+
+        if (!empty($users)) {
+            $ratings = $this->rating->getByUser($product['product_id'], $users);
+        }
+
+        foreach ($reviews as &$review) {
+            $rating = isset($ratings[$review['user_id']]['rating']) ? $ratings[$review['user_id']]['rating'] : 0;
+            $review['rating_widget'] = $this->render('common/rating/static', array('rating' => $rating));
+        }
+
+        return $reviews;
+    }
+
+    /**
+     * Returns an array of reviews for the product
+     * @param array $limit
+     * @param array $product
+     * @return array
+     */
+    protected function getReviews(array $limit, array $product)
+    {
+        $options = array(
+            'status' => 1,
+            'limit' => $limit,
+            'user_status' => 1,
+            'product_id' => $product['product_id']
+        );
+
+        $options += $this->query;
+        return $this->review->getList($options);
+    }
+
+    /**
+     * Sets rendered rating widget
+     * @param array $product
+     */
+    protected function setRatingWidget(array $product)
+    {
+        $rating = $this->rating->getByProduct($product['product_id'], true);
+
+        $options = array(
+            'product' => $product,
+            'votes' => isset($rating['votes']) ? $rating['votes'] : 0,
+            'rating' => isset($rating['rating']) ? $rating['rating'] : 0
+        );
+
+        $this->data['rating'] = $this->render('common/rating/static', $options);
+    }
+
+    /**
+     * Sets rendered share widget
+     * @param array $product
+     */
+    protected function setShareWidget(array $product)
+    {
+        $this->data['share'] = $this->render('common/share', array(
+            'url' => $this->url(false, array(), true),
+            'title' => $product['title']));
+    }
+
+    /**
+     * Sets rendered "Add to cart form"
+     * @param array $product
+     */
+    protected function setCartForm(array $product)
+    {
+        $access = ($product['stock'] || !$product['subtract']);
 
         $cart = array(
             'product' => $product,
             'token' => $this->token,
-            'field_data' => $product['fields'],
-            'cart_access' => ($product['stock'] || !$product['subtract'])
+            'cart_access' => $access,
+            'field_data' => $product['fields']
         );
 
-        $this->data['cart_form'] = $this->render('common/cart/add', $cart);
+        $this->data['cart_form'] = $this->render('cart/add', $cart);
+    }
 
-        $rating = $this->rating->getByProduct($product_id, true);
-        $this->data['rating'] = $this->render('common/rating/static', array(
-            'product' => $product,
-            'rating' => isset($rating['rating']) ? $rating['rating'] : 0,
-            'votes' => isset($rating['votes']) ? $rating['votes'] : 0));
+    /**
+     * Renders and displays product page
+     */
+    protected function outputProduct()
+    {
+        $this->output('product/product');
+    }
 
-        $this->data['share'] = $this->render('common/share', array(
-            'url' => $this->url(false, array(), true),
-            'title' => $product['title']));
+    /**
+     * Sets title on the product page
+     * @param array $product
+     */
+    protected function setTitleProduct(array $product)
+    {
+        $this->setTitle($product['title'], false);
+    }
 
-        $total_reviews = $this->getTotalReviews($product_id);
+    /**
+     * Sets CSS on the product page
+     */
+    protected function setCssProduct()
+    {
+        $this->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css');
+    }
 
-        $limit = $this->setPager($total_reviews, $this->query, $this->config->get('review_limit', 5));
+    /**
+     * Sets Javascripts on the product page
+     */
+    protected function setJsProduct()
+    {
+        $this->setJs('files/assets/jquery/lightgallery/dist/js/lightgallery-all.min.js', 'top');
+        $this->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
+    }
 
-        if ($total_reviews) {
-            $reviews = $this->review->getList(array(
-                'limit' => $limit,
-                'product_id' => $product_id,
-                'status' => 1,
-                'user_status' => 1) + $this->query);
+    /**
+     * Sets block with recent products on the product page
+     * @param array $product
+     */
+    protected function setRecent(array $product)
+    {
+        $products = $this->getRecent($product['product_id']);
 
-            $users = array();
-            foreach ($reviews as $review) {
-                $users[] = $review['user_id'];
-            }
+        $this->data['recent'] = $this->render('product/block/recent', array(
+            'products' => $this->renderBlockItems($products)
+        ));
+    }
 
-            if ($users) {
-                $ratings = $this->rating->getByUser($product_id, $users);
-            }
+    /**
+     * Sets block with related products on the product page
+     * @param array $product
+     */
+    protected function setRelated(array $product)
+    {
+        $products = $this->getRelated($product['product_id']);
 
-            foreach ($reviews as &$review) {
-                $rating = isset($ratings[$review['user_id']]['rating']) ? $ratings[$review['user_id']]['rating'] : 0;
-                $review['rating_widget'] = $this->render('common/rating/static', array('rating' => $rating));
-            }
+        $this->data['related'] = $this->render('product/block/related', array(
+            'products' => $this->renderBlockItems($products)
+        ));
+    }
 
-            if ($this->config->get('review_enabled', 1)) {
-                $this->data['reviews'] = $this->render('review/list', array(
-                    'product' => $product,
-                    'reviews' => $reviews,
-                    'query' => $query,
-                    'editable' => $this->config->get('review_editable', 1),
-                    'pager' => $this->data['pager'],
-                ));
-            }
-        }
-
+    /**
+     * Sets rendered product images
+     * @param array $product
+     */
+    protected function setImages(array $product)
+    {
         $this->data['images'] = $this->render('product/images', array(
             'product' => $product,
             'images' => $this->getImages($product),
         ));
+    }
 
-        $related = $this->getRelated($product_id, $this->langcode);
-        $this->data['related'] = $this->render('product/block/related', array(
-            'product' => $product,
-            'products' => array_chunk($related, 6)
-        ));
+    /**
+     * Returns an array of rendered, ready-to-display product items
+     * @param array $products
+     * @return array
+     */
+    protected function renderBlockItems(array $products)
+    {
+        $rendered = array();
+        foreach ($products as $product) {
+            $rendered[] = $this->render('product/item/grid', array('product' => $product));
+        }
 
-        $recent = $this->getRecent($product_id, $this->langcode);
-        $this->data['recent'] = $this->render('product/block/recent', array(
-            'product' => $product,
-            'products' => array_chunk($recent, 6)
-        ));
-
-        $quotes = $this->getShippingQuotes($product);
-        $this->data['shipping_quotes'] = $this->render('product/shipping', array(
-            'product' => $product,
-            'quotes' => $quotes
-        ));
-
-        //d($this->user->getShippingAddress($this->uid));
-
-        $this->data['price'] = $product['price_formatted'];
-        $this->data['footer_content'][] = array('content' => $this->render('product/toolbar', array('product' => $product)));
-
-        $this->setJs('files/assets/photoswipe/photoswipe.min.js', 'top');
-        $this->setJs('files/assets/photoswipe/photoswipe-ui-default.min.js', 'top');
-
-        $this->setCss('files/assets/photoswipe/photoswipe.css');
-        $this->setCss('files/assets/photoswipe/default-skin/default-skin.css');
-
-        $this->setTitle($product['title'], false);
-        $this->output('product/product');
+        return $rendered;
     }
 
     /**
@@ -250,59 +367,55 @@ class Product extends Controller
      */
     protected function getTotalReviews($product_id)
     {
-        $total = $this->review->getList(array(
-            'count' => true,
-            'product_id' => $product_id,
-            'status' => 1,
-            'user_status' => 1
+        return $this->review->getList(array(
+                    'status' => 1,
+                    'count' => true,
+                    'user_status' => 1,
+                    'product_id' => $product_id
         ));
-
-        return $total;
     }
 
-    protected function getShippingQuotes($product)
+    /**
+     * Loads a product from the database
+     * @param integer $product_id
+     * @return array
+     */
+    protected function get($product_id)
     {
-
-        //$cart = $this->cart->getByUser();
-        //$order =array();
-
-        $services = $this->shipping->getServices();
-
-        foreach ($services as &$service) {
-            $service['price'] = $this->price->convert((int) $service['price'], $service['currency'], $product['currency']);
-            $service['price_formatted'] = $this->price->format($service['price'], $product['currency']);
-        }
-
-        return $services;
-    }
-
-    protected function get($product_id, $langcode)
-    {
-        $product = Cache::get("product.$product_id.$langcode");
+        $product = Cache::get("product.$product_id.{$this->langcode}");
 
         if (!isset($product)) {
-            $product = $this->product->get($product_id, $langcode);
 
-            if (!$product) {
-                return array();
+            $product = $this->product->get($product_id, $this->langcode);
+
+            if (empty($product)) {
+                $this->outputError(404);
             }
 
             $alias = $this->alias->get('product_id', $product_id);
-            $product['url'] = $alias ? $this->url($alias) : $this->url("product/$product_id");
+
+            if (empty($alias)) {
+                $this->url("product/$product_id");
+            } else {
+                $product['url'] = $this->url($alias);
+            }
+
             $product['fields'] = $this->getFields($product);
 
-            Cache::set("product.$product_id.$langcode", $product);
+            Cache::set("product.$product_id.{$this->langcode}", $product);
         }
 
         if ($product['store_id'] != $this->store_id) {
-            return array();
+            $this->outputError(404);
         }
 
         if (empty($product['status']) && !$this->access('product')) {
-            return array();
+            $this->outputError(404);
         }
 
-        if ($this->store->config('catalog_pricerule')) {
+        $enabled = $this->store->config('catalog_pricerule');
+
+        if (!empty($enabled)) {
             $calculated = $this->product->calculate($product, $this->store_id);
             $product['price'] = $calculated['total'];
         }
@@ -311,104 +424,131 @@ class Product extends Controller
         return $product;
     }
 
-    protected function getRelated($product_id, $langcode)
+    /**
+     * Returns an array of loaded related products
+     * @param integer $product_id
+     * @return array
+     */
+    protected function getRelated($product_id)
     {
-        $related = $this->product->getRelated($product_id, false, array(
-            'store_id' => $this->store_id,
-            'limit' => array(0, $this->config->get('product_related_limit', 12)),
-            'status' => 1));
+        $limit = $this->config->get('product_related_limit', 12);
 
-        return $this->getMultiple($related, $langcode);
+        $options = array(
+            'status' => 1,
+            'limit' => array(0, $limit),
+            'store_id' => $this->store_id
+        );
+
+        $product_ids = $this->product->getRelated($product_id, false, $options);
+        return $this->loadMultiple($product_ids);
     }
 
-    protected function getMultiple($product_ids, $langcode)
-    {
-        if (!$product_ids) {
-            return array();
-        }
-
-        $style = $this->store->config('image_style_product_grid');
-
-        $list = array();
-        foreach ($product_ids as $product_id) {
-            $product = $this->get($product_id, $langcode);
-
-            if (!$product) {
-                continue;
-            }
-
-            if (!empty($product['images'])) {
-                $image = reset($product['images']);
-                $product['thumb'] = $this->image->url($style, $image['path']);
-            } else {
-                $product['thumb'] = $this->image->placeholder($style);
-            }
-
-            $list[$product_id] = $product;
-        }
-
-        return $list;
-    }
-
-    protected function getRecent($product_id, $langcode)
+    /**
+     * Returns an array of loaded recent products
+     * @param integer $product_id
+     * @return array
+     */
+    protected function getRecent($product_id)
     {
         $limit = $this->config->get('product_recent_limit', 12);
         $lifespan = $this->config->get('product_recent_cookie_lifespan', 31536000);
 
-        $products = $this->product->setViewed($product_id, $limit, $lifespan);
-        return $this->getMultiple($products, $langcode);
+        $product_ids = $this->product->setViewed($product_id, $limit, $lifespan);
+        return $this->loadMultiple($product_ids);
+    }
+
+    /**
+     * Returns an array of loaded products
+     * @param array $product_ids
+     * @return array
+     */
+    protected function loadMultiple($product_ids)
+    {
+        if (empty($product_ids)) {
+            return array();
+        }
+
+        $pricerules = $this->store->config('catalog_pricerule');
+        $products = $this->product->getList(array('product_id' => $product_ids));
+        $imagestyle = $this->config->module($this->theme, 'image_style_product_grid', 3);
+
+        foreach ($products as $product_id => &$product) {
+
+            if (empty($product['alias'])) {
+                $product['url'] = $this->url("product/$product_id");
+            } else {
+                $product['url'] = $this->url($product['alias']);
+            }
+
+            $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
+
+            if (!empty($pricerules)) {
+                $calculated = $this->product->calculate($product, $this->store_id);
+                $product['price'] = $calculated['total'];
+            }
+
+            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
+        }
+
+        return $products;
     }
 
     /**
      * Validates and adds a product to the cart
-     * @param array $submitted
      */
-    protected function addToCart($submitted)
+    protected function addToCart()
     {
-        $ajax = $this->request->ajax();
+        $is_ajax = $this->request->isAjax();
 
-        $this->validateAddToCart($submitted);
+        $this->validateAddToCart();
         $errors = $this->formErrors(false);
 
-        if ($errors) {
-            if ($ajax) {
+        if (!empty($errors)) {
+            if ($is_ajax) {
                 $this->response->json(array('errors' => $errors));
             }
             $this->redirect('', $errors, 'danger');
         }
 
-        $add_result = $this->cart->addProduct($submitted);
+        $add_result = $this->cart->addProduct($this->submitted);
 
         if ($add_result === true) {
-            if (!$ajax) {
+            if (!$is_ajax) {
                 $this->redirect('', $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
             }
 
             $cart = $this->cart->getByUser();
 
-            $this->response->json(array(
+            $response = array(
                 'quantity' => $cart['quantity'],
                 'preview' => $this->render('common/cart/preview', array(
                     'cart' => $cart,
                     'limit' => $this->config->get('cart_preview_limit', 5)
-            ))));
+            )));
+
+            $this->response->json($response);
         }
 
         foreach ($add_result as &$error) {
             $error = $this->text($error);
-            if (!$ajax) {
+            if (!$is_ajax) {
                 $this->session->setMessage($error, 'danger');
             }
         }
 
-        if ($ajax) {
+        if ($is_ajax) {
             $this->response->json(array('errors' => $add_result));
         }
 
         $this->redirect();
     }
 
-    protected function getFields($product)
+    /**
+     * Returns an array of product's fields
+     * @param array $product
+     * @return array
+     */
+    protected function getFields(array $product)
     {
         $field_data = $this->product_class->getFieldData($product['product_class_id']);
 
@@ -436,14 +576,19 @@ class Product extends Controller
         return $field_data;
     }
 
+    /**
+     * Returns an array of product images
+     * @param array $product
+     * @return array
+     */
     protected function getImages($product)
     {
         if (empty($product['images'])) {
             return array();
         }
 
-        $imagestyle = $this->store->config('image_style_product');
-        $imagestyle_extra = $this->store->config('image_style_product_extra');
+        $imagestyle = $this->getSettings('image_style_product', 5);
+        $imagestyle_extra = $this->getSettings('image_style_product_extra', 3);
 
         $images = array();
         foreach ($product['images'] as $image) {
@@ -451,7 +596,6 @@ class Product extends Controller
                 'url_original' => $this->image->urlFromPath($image['path']),
                 'url_big' => $this->image->url($imagestyle, $image['path']),
                 'url_extra' => $this->image->url($imagestyle_extra, $image['path']),
-                'size' => getimagesize(GC_FILE_DIR . '/' . $image['path']),
             );
         }
 
@@ -459,14 +603,18 @@ class Product extends Controller
         return array('main' => $main, 'extra' => $images);
     }
 
-    protected function validateAddToCart(&$submitted)
+    /**
+     * Validates adding a product to the cart
+     * @return null
+     */
+    protected function validateAddToCart()
     {
-        if (empty($submitted['quantity'])) {
-            $submitted['quantity'] = 1;
+        if (empty($this->submitted['quantity'])) {
+            $this->submitted['quantity'] = 1;
             return;
         }
 
-        if (!is_numeric($submitted['quantity']) || strlen($submitted['quantity']) > 2) {
+        if (!is_numeric($this->submitted['quantity']) || strlen($this->submitted['quantity']) > 2) {
             $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
         }
     }

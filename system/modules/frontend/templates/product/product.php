@@ -40,11 +40,6 @@
       </div>
   
     </div>
-      
-    
-    <?php if($shipping_quotes) { ?>
-        <?php echo $shipping_quotes; ?>
-    <?php } ?>
   
   
   </div>

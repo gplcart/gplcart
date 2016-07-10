@@ -176,7 +176,7 @@ class Front extends Controller
     {
         $rendered = array();
         foreach ($this->prepareProducts($products) as $product) {
-            $rendered[] = $this->render('category/item/grid', array('product' => $product));
+            $rendered[] = $this->render('product/item/grid', array('product' => $product));
         }
 
         return $rendered;
@@ -203,6 +203,7 @@ class Front extends Controller
     protected function setFrontProducts()
     {
         $products = $this->getFrontProducts();
+
         $this->addRegionItem('region_content', array('front/block/product', array(
                 'products' => $this->renderProducts($products))));
     }

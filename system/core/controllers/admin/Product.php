@@ -167,7 +167,7 @@ class Product extends Controller
      */
     public function edit($product_id = null)
     {
-        if ($this->request->ajax()) {
+        if ($this->request->isAjax()) {
             $store_id = $this->request->get('store_id', null);
             if (isset($store_id)) {
                 $this->response->json($this->getFields($store_id));
@@ -528,7 +528,7 @@ class Product extends Controller
         $errors = $this->formErrors();
 
         if (!empty($errors)) {
-            if ($this->request->ajax()) {
+            if ($this->request->isAjax()) {
                 $this->response->json(array('error' => $this->data['form_errors']));
             }
 
@@ -540,7 +540,7 @@ class Product extends Controller
             return;
         }
 
-        if ($this->request->ajax()) {
+        if ($this->request->isAjax()) {
             if (!$this->access('product_edit')) {
                 $this->response->json(array('error' => $this->text('You are not permitted to perform this operation')));
             }

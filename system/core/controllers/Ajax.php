@@ -124,7 +124,7 @@ class Ajax extends Controller
      */
     public function ajax()
     {
-        if (!$this->request->ajax()) {
+        if (!$this->request->isAjax()) {
             exit; // Reject non-ajax requests
         }
 

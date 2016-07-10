@@ -990,7 +990,7 @@ class Controller
             return;
         }
 
-        if ($this->request->ajax() && $this->request->get('process_job') == $job_id) {
+        if ($this->request->isAjax() && $this->request->get('process_job') == $job_id) {
             $this->response->json($job->process($this->current_job));
         }
     }
@@ -1484,6 +1484,30 @@ class Controller
 
         $this->data['pager'] = $this->pager->render();
         return $this->pager->getLimit();
+    }
+
+    /**
+     * Returns a rendered pager from data array
+     * @return string
+     */
+    protected function getPager()
+    {
+        return isset($this->data['pager']) ? $this->data['pager'] : '';
+    }
+    
+    /**
+     * Returns current theme settings
+     * @param mixed $key
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function getSettings($key = null, $default = null)
+    {
+        if (isset($key)) {
+            return array_key_exists($key, $this->theme_settings) ? $this->theme_settings[$key] : $default;
+        }
+
+        return $this->theme_settings;
     }
 
 }
