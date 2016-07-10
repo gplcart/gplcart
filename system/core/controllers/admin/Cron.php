@@ -142,7 +142,6 @@ class Cron extends Controller
     protected function processLogs()
     {
         if ($this->config->get('report_errors', 1)) {
-
             $errors = $this->report->getPhpErrors();
 
             $has_errors = !empty($errors);
@@ -198,5 +197,4 @@ class Cron extends Controller
     {
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
     }
-
 }

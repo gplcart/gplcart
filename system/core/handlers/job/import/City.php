@@ -149,7 +149,6 @@ class City
         $errors = array();
 
         foreach ($rows as $index => $row) {
-
             $line += $index;
             $data = array_filter(array_map('trim', $row));
 
@@ -166,7 +165,6 @@ class City
             }
 
             if (isset($data['city_id'])) {
-
                 if (is_numeric($data['city_id']) && $this->user->access('city_edit')) {
                     if ($this->city->update($data['city_id'], $data)) {
                         $updated++;
@@ -241,5 +239,4 @@ class City
 
         return false;
     }
-
 }

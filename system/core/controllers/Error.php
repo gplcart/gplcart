@@ -42,5 +42,4 @@ class Error extends Controller
         $this->setTitle($this->text('403 - Permission denied'), false);
         $this->output('common/error/403', array('headers' => array(403)));
     }
-
 }

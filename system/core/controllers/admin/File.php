@@ -369,5 +369,4 @@ class File extends Controller
 
         return !$has_errors;
     }
-
 }

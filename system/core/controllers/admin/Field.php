@@ -264,5 +264,4 @@ class Field extends Controller
 
         return !$has_errors;
     }
-
 }

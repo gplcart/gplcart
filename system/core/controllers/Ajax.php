@@ -524,5 +524,4 @@ class Ajax extends Controller
         $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
         return $cart;
     }
-
 }

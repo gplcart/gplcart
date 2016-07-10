@@ -155,5 +155,4 @@ class User extends Controller
 
         return false;
     }
-
 }

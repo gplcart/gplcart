@@ -1509,5 +1509,4 @@ class Controller
 
         return $this->theme_settings;
     }
-
 }

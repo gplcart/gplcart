@@ -209,5 +209,4 @@ class Search extends Controller
     {
         $this->output('tool/search');
     }
-
 }

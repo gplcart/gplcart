@@ -55,7 +55,6 @@ class Install
     public function __construct(ModelsStore $store, ModelsLanguage $language,
             ClassesRequest $request)
     {
-
         $this->store = $store;
         $this->request = $request;
         $this->language = $language;
@@ -127,7 +126,6 @@ class Install
      */
     public function getRequirementsErrors(array $requirements)
     {
-
         $errors = array();
 
         foreach ($requirements as $items) {
@@ -921,5 +919,4 @@ class Install
 
         return $tables;
     }
-
 }

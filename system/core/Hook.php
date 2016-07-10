@@ -122,5 +122,4 @@ class Hook
 
         return true;
     }
-
 }

@@ -285,5 +285,4 @@ class CategoryGroup extends Controller
 
         return !$has_errors;
     }
-
 }

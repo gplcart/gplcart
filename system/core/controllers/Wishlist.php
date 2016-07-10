@@ -251,5 +251,4 @@ class Wishlist extends Controller
 
         return $tree;
     }
-
 }

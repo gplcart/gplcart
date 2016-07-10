@@ -385,7 +385,6 @@ class Product extends Controller
         $product = Cache::get("product.$product_id.{$this->langcode}");
 
         if (!isset($product)) {
-
             $product = $this->product->get($product_id, $this->langcode);
 
             if (empty($product)) {
@@ -473,7 +472,6 @@ class Product extends Controller
         $imagestyle = $this->config->module($this->theme, 'image_style_product_grid', 3);
 
         foreach ($products as $product_id => &$product) {
-
             if (empty($product['alias'])) {
                 $product['url'] = $this->url("product/$product_id");
             } else {
@@ -618,5 +616,4 @@ class Product extends Controller
             $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
         }
     }
-
 }

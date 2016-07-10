@@ -388,5 +388,4 @@ class Category extends Controller
 
         return $this->product->getList($options + $query);
     }
-
 }

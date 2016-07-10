@@ -287,5 +287,4 @@ class Request
     {
         Tool::trimArray($array, $filter);
     }
-
 }

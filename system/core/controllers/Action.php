@@ -239,5 +239,4 @@ class Action extends Controller
             'message_type' => 'success',
             'message' => $this->text('Product has been removed from comparison'));
     }
-
 }

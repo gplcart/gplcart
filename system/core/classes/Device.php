@@ -48,5 +48,4 @@ class Device
 
         throw new BadMethodCallException("No such method exists: $method");
     }
-
 }

@@ -75,7 +75,6 @@ class Csv
      */
     public function __construct()
     {
-
         $this->last_position = 0;
         $this->offset = 0;
         $this->header = array();
@@ -360,5 +359,4 @@ class Csv
     {
         return $this->current_position;
     }
-
 }

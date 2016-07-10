@@ -282,5 +282,4 @@ class Language extends Controller
         $this->submitted['weight'] = 0;
         return true;
     }
-
 }
