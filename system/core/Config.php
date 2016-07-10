@@ -210,20 +210,15 @@ class Config
             }
 
             $module_name = $module_dir;
-            $module_file = GC_MODULE_DIR . "/$module_name/$module_name.php";
-            $module_namespace = "modules\\$module_name\\$module_name";
+            $module_class = $this->getModuleClass($module_name);
+            $module_data = $this->getModuleData($module_class);
 
-            $instance = Container::instance($module_namespace);
-
-            if (empty($instance) || !is_callable(array($instance, 'info'))) {
+            if (empty($module_data['info']['core'])) {
                 continue;
             }
 
-            $module_info = $instance->info();
-
-            if (empty($module_info['core'])) {
-                continue;
-            }
+            $module_info = $module_data['info'];
+            $module_instance = $module_data['instance'];
 
             if (!empty($module_info['dependencies'])) {
                 $module_info['dependencies'] = $this->validModuleName((array) $module_info['dependencies']);
@@ -233,11 +228,11 @@ class Config
                 continue;
             }
 
-            $module_info['hooks'] = $this->getHooks($instance);
+            $module_info['hooks'] = $this->getHooks($module_instance);
 
             $module_info += array(
-                'file' => $module_file,
-                'class' => $module_namespace,
+                //'file' => $module_file,
+                'class' => $module_class,
                 'directory' => GC_MODULE_DIR . "/$module_name",
                 'name' => $module_name,
                 'description' => '',
@@ -265,6 +260,32 @@ class Config
         }
 
         return $modules;
+    }
+
+    /**
+     * Returns an array containing module info and instance
+     * @param string $class
+     * @return boolean|array
+     */
+    public function getModuleData($class)
+    {
+        $instance = Container::instance($class);
+
+        if (empty($instance) || !is_callable(array($instance, 'info'))) {
+            return false;
+        }
+
+        return array('info' => $instance->info(), 'instance' => $instance);
+    }
+
+    /**
+     * Returns namespaced module class
+     * @param string $module_id
+     * @return string
+     */
+    public function getModuleClass($module_id)
+    {
+        return "modules\\$module_id\\" . ucfirst(str_replace('_', '', $module_id));
     }
 
     /**
@@ -369,7 +390,7 @@ class Config
     protected function validModuleName($name)
     {
         if (is_string($name)) {
-            return preg_match('/^[a-z0-9]+$/', $name);
+            return preg_match('/^[a-z_]+$/', $name);
         }
 
         return array_filter((array) $name, function ($module_id) {

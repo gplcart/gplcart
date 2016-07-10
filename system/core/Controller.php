@@ -566,19 +566,16 @@ class Controller
         if (empty($this->theme)) {
             $this->response->error404();
         }
+        
+        $theme_class = $this->config->getModuleClass($this->theme);
+        $theme_data = $this->config->getModuleData($theme_class);
 
-        $theme_class = "modules\\{$this->theme}\\" . ucfirst($this->theme); // Uppercase class name to prevent "class not found" error
-
-        $instance = Container::instance($theme_class);
-
-        if (empty($instance)) {
+        if (empty($theme_data['info'])) {
             $this->response->error404();
         }
 
-        $info = $instance->info();
-
-        if (!empty($info['settings'])) {
-            $this->theme_settings = $info['settings'];
+        if (!empty($theme_data['info']['settings'])) {
+            $this->theme_settings = $theme_data['info']['settings'];
         }
 
         if (isset($this->theme_settings['twig'])) {
