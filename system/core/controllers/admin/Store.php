@@ -657,5 +657,4 @@ class Store extends Controller
 
         return true;
     }
-
 }

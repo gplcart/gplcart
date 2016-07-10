@@ -381,5 +381,4 @@ class Report extends Controller
 
         return $notifications;
     }
-
 }

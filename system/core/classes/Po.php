@@ -228,5 +228,4 @@ class Po
 
         return implode($this->options['multiline-glue'], (array) $entry['msgid']);
     }
-
 }

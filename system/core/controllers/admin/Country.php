@@ -412,5 +412,4 @@ class Country extends Controller
         $this->country->update($country['code'], array('format' => $format));
         $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
-
 }

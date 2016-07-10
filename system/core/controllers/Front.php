@@ -217,5 +217,4 @@ class Front extends Controller
         $this->addRegionItem('region_top', array('page/block/page', array(
                 'pages' => $pages)));
     }
-
 }

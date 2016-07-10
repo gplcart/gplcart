@@ -749,5 +749,4 @@ class Checkout extends Controller
 
         return $result;
     }
-
 }

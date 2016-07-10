@@ -67,7 +67,6 @@ class Url
     public function get($path = '', $options = array(), $absolute = false,
             $exclude_langcode = false)
     {
-
         if (!empty($path)) {
             $url = $this->request->base($exclude_langcode) . trim($path, '/');
         } else {
@@ -207,5 +206,4 @@ class Url
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi", $url);
     }
-
 }
