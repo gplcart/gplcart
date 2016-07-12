@@ -44,7 +44,8 @@ define('GC_LOCALE_JS_DIR', GC_FILE_DIR . '/assets/system/js/locale');
 define('GC_SESSION_PREFIX', 'gplcart_');
 define('GC_SESSION_TIMEOUT', 1800);
 define('GC_COOKIE_PREFIX', 'gplcart_');
-define('GC_WIKI', 'https://github.com/gplcart/gplcart/wiki');
+define('GC_WIKI_URL', 'https://github.com/gplcart/gplcart/wiki');
+define('GC_DEMO_URL', 'https://gplcart.github.io/demo');
 define('GC_REPORT_URL', 'localhost');
 define('GC_TIME', (int) $_SERVER['REQUEST_TIME']);
 

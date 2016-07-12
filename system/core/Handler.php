@@ -29,12 +29,12 @@ class Handler
             $arguments = array())
     {
         $handler = static::get($handlers, $handler_id, $method);
-
-        if (!empty($handler)) {
-            return call_user_func_array($handler, $arguments);
+        
+        if(empty($handler[0])){
+            return false;
         }
 
-        return false;
+        return call_user_func_array($handler, $arguments);
     }
 
     /**

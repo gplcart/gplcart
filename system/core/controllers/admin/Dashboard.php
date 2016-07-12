@@ -100,10 +100,31 @@ class Dashboard extends Controller
         $this->data['orders'] = $this->getOrders($limit);
         $this->data['system_events'] = $this->getEvents($limit);
         $this->data['severity_count'] = $this->getSeverityCount();
-
+        
         $this->setGa($store);
+        $this->setDemoNotification();
+        
         $this->setTitleDashboard();
         $this->outputDashboard();
+    }
+    
+    /**
+     * Informs a user about demo content
+     */
+    protected function setDemoNotification()
+    {
+        $show = (bool) $this->config->get('notification_demo', 0);
+        
+        $text = 'Does your site look empty?'
+                . ' You can install a demo content which can be safely removed'
+                . ' in the future <a class="btn btn-sm btn-default"'
+                . ' href="!url">Go to installation</a>';
+
+        $message = $this->text($text, array('!url' => $this->url('admin/tool/demo')));
+
+        if ($show) {
+            $this->setMessage($message);
+        }
     }
 
     /**

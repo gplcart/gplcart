@@ -308,7 +308,7 @@ class Ajax extends Controller
 
         $preview = array(
             'preview' => $this->render('cart/preview', array(
-                'cart' => $this->prepareCartItems($cart),
+                'cart' => $this->cart->prepareCartItems($cart, $this->getSettings()),
                 'limit' => $this->config->get('cart_preview_limit', 5)
         )));
 
@@ -488,41 +488,6 @@ class Ajax extends Controller
         }
 
         return array('error' => $this->text('An error occurred'));
-    }
-
-    /**
-     * Prepares cart item before sending to user
-     * @param array $cart
-     * @return array
-     */
-    protected function prepareCartItems(array $cart)
-    {
-        $imagestyle = $this->config->module($this->theme, 'image_style_cart', 3);
-
-        foreach ($cart['items'] as &$item) {
-            $imagepath = '';
-
-            if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
-                $imagefile = reset($item['product']['images']);
-                $imagepath = $imagefile['path'];
-            }
-
-            if (!empty($item['product']['option_file_id']) && !empty($item['product']['images'][$item['product']['option_file_id']]['path'])) {
-                $imagepath = $item['product']['images'][$item['product']['option_file_id']]['path'];
-            }
-
-            $item['total_formatted'] = $this->price->format($item['total'], $cart['currency']);
-            $item['price_formatted'] = $this->price->format($item['price'], $cart['currency']);
-
-            if (empty($imagepath)) {
-                $item['thumb'] = $this->image->placeholder($imagestyle);
-            } else {
-                $item['thumb'] = $this->image->url($imagestyle, $imagepath);
-            }
-        }
-
-        $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
-        return $cart;
     }
 
 }

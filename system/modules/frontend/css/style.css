@@ -23,6 +23,10 @@ body {
     color: #9d9d9d;
 }
 
+.margin-bottom-20 {
+    margin-bottom: 20px !important;
+}
+
 .tab-content {
     padding-top:30px;
 }
@@ -144,7 +148,7 @@ body.install .list-inline.h4 {
     content: "\f005";
 }
 
-/*********************** options **************************/
+/*********************** Product options **************************/
 
 label.option-wrapper > input {
     display: none;
@@ -177,18 +181,13 @@ td.middle {
     display: none !important;
 }
 
-.btn-group.saved-addresses {
-
-}
-
-.section {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-}
-
 .products.section {
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+.panel-footer .pagination {
+    margin: 0;
 }
 
 .btn-group.saved-addresses label {
@@ -226,16 +225,6 @@ td.middle {
     border-top: 0 !important;
 }
 
-/* Fix product item */
-.thumbnail.product {
-    position: relative;
-    padding: 0px;
-    margin-bottom: 20px;
-}
-
-.thumbnail.product img {
-    width: 100%;
-}
 
 /*************************** Carousel ***************************/
 

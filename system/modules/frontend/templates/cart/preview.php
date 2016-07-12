@@ -4,8 +4,8 @@
     <div class="col-md-12">
       <?php foreach($cart['items'] as $item) { ?>
       <div class="media cart-item">
-        <div class="media-left image">
-          <img class="media-object thumbnail" alt="<?php echo $this->escape($item['product']['title']); ?>" src="<?php echo $this->escape($item['thumb']); ?>">
+        <div class="media-left image col-md-2">
+          <img class="media-object thumbnail img-responsive" alt="<?php echo $this->escape($item['product']['title']); ?>" src="<?php echo $this->escape($item['thumb']); ?>">
         </div>
         <div class="media-body info">
           <div class="media-heading"><?php echo $this->escape($item['product']['title']); ?></div>

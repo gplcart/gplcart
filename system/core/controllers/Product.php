@@ -145,9 +145,9 @@ class Product extends Controller
         $this->setImages($product);
         $this->setRelated($product);
         $this->setRecent($product);
-
-        $this->setJsProduct();
+        
         $this->setCssProduct();
+        $this->setJsProduct($product);
         $this->setTitleProduct($product);
         $this->outputProduct();
     }
@@ -179,7 +179,7 @@ class Product extends Controller
             'product' => $product,
             'query' => $this->query,
             'pager' => $this->getPager(),
-            'reviews' => $this->prepareReviews($reviews),
+            'reviews' => $this->prepareReviews($reviews, $product),
             'editable' => (bool) $this->config->get('review_editable', 1)
         ));
     }
@@ -187,9 +187,10 @@ class Product extends Controller
     /**
      * Modifies an array of reviews
      * @param array $reviews
+     * @param array $product
      * @return array
      */
-    protected function prepareReviews(array $reviews)
+    protected function prepareReviews(array $reviews, array $product)
     {
         $users = array();
         foreach ($reviews as $review) {
@@ -297,14 +298,16 @@ class Product extends Controller
     {
         $this->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css');
     }
-
+    
     /**
      * Sets Javascripts on the product page
+     * @param array $product
      */
-    protected function setJsProduct()
+    protected function setJsProduct(array $product)
     {
         $this->setJs('files/assets/jquery/lightgallery/dist/js/lightgallery-all.min.js', 'top');
         $this->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
+        $this->setJsSettings('product', $product);
     }
 
     /**
@@ -470,7 +473,7 @@ class Product extends Controller
 
         $pricerules = $this->store->config('catalog_pricerule');
         $products = $this->product->getList(array('product_id' => $product_ids));
-        $imagestyle = $this->config->module($this->theme, 'image_style_product_grid', 3);
+        $imagestyle = $this->getSettings('image_style_product_grid', 3);
 
         foreach ($products as $product_id => &$product) {
 
@@ -521,8 +524,8 @@ class Product extends Controller
 
             $response = array(
                 'quantity' => $cart['quantity'],
-                'preview' => $this->render('common/cart/preview', array(
-                    'cart' => $cart,
+                'preview' => $this->render('cart/preview', array(
+                    'cart' => $this->cart->prepareCartItems($cart, $this->getSettings()),
                     'limit' => $this->config->get('cart_preview_limit', 5)
             )));
 

@@ -254,6 +254,7 @@ class Install
 
         $store_id = $this->db->insert('store', $store);
         $config->set('store', $store_id);
+        $config->set('notification_demo', 1);
 
         // Default user
         $user = array(

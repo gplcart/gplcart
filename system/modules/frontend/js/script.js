@@ -82,6 +82,71 @@ $(function () {
 
         return false;
     });
+    
+    /********************** Product page **********************/
+    
+    $('.star-rating.static').tooltip();
+
+    $('form#add-to-cart').unbind('submit').submit(function (e) {
+
+        e.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url: GplCart.settings.urn,
+            dataType: 'json',
+            data: $(this).serialize(),
+            success: function (data) {
+                if (typeof data === 'object') {
+                    if ('preview' in data) {
+                        GplCart.theme.modal(data.preview, 'cart-preview', GplCart.text('Your cart'));
+                        $('#cart-quantity-summary').text(data.quantity);
+                    }
+                }
+            },
+            error: function () {}
+        });
+    });
+
+    $('form#add-to-cart [name^="product[options]"]').change(function () {
+
+        var values = $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').map(function () {
+            return this.value;
+        }).get();
+
+        $.ajax({
+            url: GplCart.settings.base + 'ajax',
+            dataType: 'json',
+            method: 'post',
+            data: {
+                token: GplCart.settings.token,
+                action: 'switchProductOptions',
+                values: values,
+                product_id: GplCart.settings.product.product_id,
+            },
+            success: function (data) {
+                if (!jQuery.isEmptyObject(data)) {
+                    
+                    if ('message' in data && data.message) {
+                        // Message
+                    }
+
+                    if ('combination' in data) {
+                        if (data.combination.sku !== '') {
+                            $('#sku').text(data.combination.sku);
+                        }
+
+                        $('#price').text(data.combination.price);
+
+                        if ('image' in data.combination) {
+                            $('#main-image').attr('src', data.combination.image);
+                        }
+                    }
+                }
+            },
+            error: function (error) {}
+        });
+    });
 
     /********************** Product comparison **********************/
 

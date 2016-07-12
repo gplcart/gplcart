@@ -37,9 +37,7 @@ class Settings extends Controller
      */
     public function settings()
     {
-        if (!$this->isSuperadmin()) {
-            $this->outputError(403);
-        }
+        $this->controlAccessSuperAdmin();
 
         $this->setSettings();
 

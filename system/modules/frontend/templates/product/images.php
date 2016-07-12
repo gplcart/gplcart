@@ -10,13 +10,13 @@
   </div>
   <div class="col-md-10">
     <a class="item" href="<?php echo $images['main']['url_original']; ?>" data-src="<?php echo $images['main']['url_original']; ?>">
-      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($images['main']['title']); ?>" title="<?php echo $this->escape($images['main']['description']); ?>" src="<?php echo $this->escape($images['main']['url_big']); ?>">
+      <img class="img-responsive" alt="<?php echo $this->escape($images['main']['title']); ?>" title="<?php echo $this->escape($images['main']['description']); ?>" src="<?php echo $this->escape($images['main']['url_big']); ?>">
     </a>
   </div>
   <?php } else { ?>
   <div class="col-md-12">
     <a class="item" href="<?php echo $images['main']['url_original']; ?>">
-      <img class="img-responsive thumbnail" alt="<?php echo $this->escape($images['main']['title']); ?>" title="<?php echo $this->escape($images['main']['description']); ?>" src="<?php echo $this->escape($images['main']['url_big']); ?>">
+      <img class="img-responsive" alt="<?php echo $this->escape($images['main']['title']); ?>" title="<?php echo $this->escape($images['main']['description']); ?>" src="<?php echo $this->escape($images['main']['url_big']); ?>">
     </a>
   </div> 
   <?php } ?>

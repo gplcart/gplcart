@@ -566,7 +566,7 @@ class Controller
         if (empty($this->theme)) {
             $this->response->error404();
         }
-        
+
         $theme_class = $this->config->getModuleClass($this->theme);
         $theme_data = $this->config->getModuleData($theme_class);
 
@@ -709,6 +709,16 @@ class Controller
         }
 
         if (!$this->access($this->access)) {
+            $this->outputError(403);
+        }
+    }
+    
+    /**
+     * Displays 403 error when the current user is not superadmin
+     */
+    protected function controlAccessSuperAdmin()
+    {
+        if (!$this->isSuperadmin()) {
             $this->outputError(403);
         }
     }
@@ -1491,7 +1501,7 @@ class Controller
     {
         return isset($this->data['pager']) ? $this->data['pager'] : '';
     }
-    
+
     /**
      * Returns current theme settings
      * @param mixed $key

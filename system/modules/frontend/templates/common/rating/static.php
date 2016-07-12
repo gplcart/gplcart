@@ -1,4 +1,5 @@
-<div class="star-rating static" title="<?php echo $rating ? $this->text('@num out of @total stars', array('@num' => $rating, '@total' => 5)) : ''; ?>">
+<?php if(!empty($rating)) { ?>
+<div class="star-rating static" title="<?php echo $this->text('@num out of @total stars', array('@num' => $rating, '@total' => 5)); ?>">
   <div class="star-rating-wrap">
     <?php for($stars = 5; $stars > 0; $stars--) { ?>
     <?php if($stars > $rating) { ?>
@@ -12,5 +13,6 @@
     <?php } ?>
   </div>
 </div>
+<?php } ?>
 
 

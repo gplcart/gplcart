@@ -69,7 +69,7 @@ class Install extends Controller
         $this->data['countries'] = $this->country->countries(true);
         $this->data['requirements'] = $this->install->getRequirements();
         $this->data['timezones'] = Tool::timezones();
-        $this->data['url_wiki'] = GC_WIKI;
+        $this->data['url_wiki'] = GC_WIKI_URL;
         $this->data['url_licence'] = (file_exists(GC_ROOT_DIR . '/LICENSE')) ? $this->url('LICENSE') : 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html';
         $this->data['settings']['site']['timezone'] = 'Europe/London';
         $this->data['languages'] = $this->language->getAvailable();
