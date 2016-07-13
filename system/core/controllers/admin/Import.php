@@ -174,37 +174,27 @@ class Import extends Controller
         $this->submitted['operation'] = $operation;
 
         $this->validate();
-
         $errors = $this->formErrors(false);
 
         if (!empty($errors)) {
             return;
         }
 
-        $job_id = $operation['job_id'];
-
-        $this->job->delete($job_id);
-
-        if (!empty($operation['log']['errors'])) {
-            file_put_contents($operation['log']['errors'], '');
-        }
-
         $job = array(
-            'id' => $job_id,
+            'data' => $this->submitted,
+            'id' => $operation['job_id'],
             'total' => $this->submitted['filesize'],
             'redirect_message' => array(
                 'finish' => 'Data has been successfully imported. Inserted: %inserted, updated: %updated'
             ),
-            'operations' => array($job_id => array('arguments' => array($this->submitted)),
-        ));
+        );
 
         if (!empty($operation['log']['errors'])) {
             $job['redirect_message']['errors'] = $this->text('Inserted: %inserted, updated: %updated, errors: %errors. <a href="!url">See error log</a>', array(
                 '!url' => $this->url(false, array('download_errors' => 1))));
         }
 
-        $this->job->set($job);
-        $this->url->redirect(false, array('job_id' => $job_id));
+        $this->job->submit($job);
     }
 
     /**

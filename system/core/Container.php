@@ -35,7 +35,7 @@ class Container
      * @param string $class
      * @param array $arguments
      * @param boolean $share
-     * @return object|boolean
+     * @return object
      */
     public static function instance($class, $arguments = array(), $share = true)
     {

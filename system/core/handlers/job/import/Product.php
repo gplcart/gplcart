@@ -185,12 +185,13 @@ class Product
      */
     public function import(array $rows, $line, array $job)
     {
-        $inserted = 0;
         $updated = 0;
+        $inserted = 0;
         $errors = array();
         $operation = $job['data']['operation'];
 
         foreach ($rows as $index => $row) {
+
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['product_id']) && is_numeric($data['product_id']));
@@ -211,7 +212,7 @@ class Product
                 continue;
             }
 
-            if (!empty($options['unique']) && !$this->validateUnique($data, $errors, $line)) {
+            if (!empty($job['data']['unique']) && !$this->validateUnique($data, $errors, $line)) {
                 continue;
             }
 
@@ -689,11 +690,8 @@ class Product
             return false;
         }
 
-        $unique = true;
         $alias = $this->alias->exists($data['alias']);
-        if (isset($alias['id_value'])) {
-            $unique = false;
-        }
+        $unique = empty($alias['id_value']);
 
         if ((isset($data['update_product']) && isset($alias['id_value'])) && ($alias['id_value'] == $data['product_id'])) {
             $unique = true;

@@ -89,15 +89,14 @@ class City
      * @param array $job
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
-        $import_operation = $options['operation'];
-        $this->header = $import_operation['csv']['header'];
+        $operation = $job['data']['operation'];
+        $this->header = $operation['csv']['header'];
 
-        $this->csv->setFile($options['filepath'], $options['filesize'])
+        $this->csv->setFile($job['data']['filepath'], $job['data']['filesize'])
                 ->setHeader($this->header)
                 ->setLimit($this->import->getLimit())
                 ->setDelimiter($this->import->getCsvDelimiter());
@@ -118,18 +117,18 @@ class City
         }
 
         $position = $this->csv->getOffset();
-        $result = $this->import($rows, $line, $options);
+        $result = $this->import($rows, $line, $job);
         $line += count($rows);
         $bytes = empty($position) ? $job['total'] : $position;
 
-        $errors = $this->import->getErrors($result['errors'], $import_operation);
+        $errors = $this->import->getErrors($result['errors'], $operation);
 
         return array(
             'done' => $bytes,
             'increment' => false,
-            'inserted' => $result['inserted'],
-            'updated' => $result['updated'],
             'errors' => $errors['count'],
+            'updated' => $result['updated'],
+            'inserted' => $result['inserted'],
             'context' => array('offset' => $position, 'line' => $line));
     }
 
@@ -137,10 +136,10 @@ class City
      * Performs import
      * @param array $rows
      * @param integer $line
-     * @param array $options
+     * @param array $job
      * @return array
      */
-    public function import(array $rows, $line, array $options)
+    public function import(array $rows, $line, array $job)
     {
         $inserted = 0;
         $updated = 0;
@@ -150,70 +149,36 @@ class City
 
             $line += $index;
             $data = array_filter(array_map('trim', $row));
+            $update = (isset($data['city_id']) && is_numeric($data['city_id']));
 
-            // Validate/prepare values
-            if (isset($data['name']) && mb_strlen($data['name']) > 255) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('City name must not be longer than 255 characters')));
+            if ($update && !$this->user->access('city_edit')) {
                 continue;
             }
 
-            if (isset($data['status'])) {
-                $data['status'] = $this->import->toBool($data['status']);
-            }
-
-            if (isset($data['city_id'])) {
-
-                if (is_numeric($data['city_id']) && $this->user->access('city_edit')) {
-                    if ($this->city->update($data['city_id'], $data)) {
-                        $updated++;
-                    }
-                }
-
+            if (!$update && !$this->user->access('city_add')) {
                 continue;
             }
 
-            if (!$this->user->access('city_add')) {
+            if (!$this->validateName($data, $errors, $line)) {
                 continue;
             }
 
-            // Add a new record
-            if ((count($data) + 1) != count($this->header)) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('Wrong format')));
+            $this->validateStatus($data, $errors, $line);
+
+            if ($update) {
+                $updated += $this->update($data);
                 continue;
             }
 
-            $state = $this->state->getByCode($data['state_code'], $data['country']);
-
-            if (empty($state['state_id'])) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('State code @code does not exist for country @country', array(
-                        '@code' => $data['state_code'],
-                        '@country' => $data['country']))));
+            if (!$this->validateState($data, $errors, $line)) {
                 continue;
             }
 
-            $data['state_id'] = $state['state_id'];
-
-            if ($this->cityExists($data['name'], $data['state_code'], $data['country'])) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('City @name already exists for state @state and country @country', array(
-                        '@name' => $data['name'],
-                        '@state' => $data['state_code'],
-                        '@country' => $data['country']))));
+            if (!$this->validateCity($data, $errors, $line)) {
                 continue;
             }
 
-            $added = $this->city->add($data);
-
-            if (!empty($added)) {
-                $inserted++;
-            }
+            $inserted += $this->city->add($data);
         }
 
         return array('inserted' => $inserted, 'updated' => $updated, 'errors' => $errors);
@@ -240,6 +205,108 @@ class City
         }
 
         return false;
+    }
+
+    /**
+     * Validates city name
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateName(array &$data, array &$errors, $line)
+    {
+        if (isset($data['name']) && mb_strlen($data['name']) > 255) {
+            $errors[] = $this->language->text('Line @num: @error', array(
+                '@num' => $line,
+                '@error' => $this->language->text('City name must not be longer than 255 characters')));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates city status
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     */
+    protected function validateStatus(array &$data, array &$errors, $line)
+    {
+        if (isset($data['status'])) {
+            $data['status'] = $this->import->toBool($data['status']);
+        }
+    }
+
+    /**
+     * Validates country state
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateState(array &$data, array &$errors, $line)
+    {
+        $state = $this->state->getByCode($data['state_code'], $data['country']);
+
+        if (empty($state['state_id'])) {
+            $errors[] = $this->language->text('Line @num: @error', array(
+                '@num' => $line,
+                '@error' => $this->language->text('State code @code does not exist for country @country', array(
+                    '@code' => $data['state_code'],
+                    '@country' => $data['country']))));
+            return false;
+        }
+
+        $data['state_id'] = $state['state_id'];
+        return true;
+    }
+
+    /**
+     * Validates a city
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateCity(array &$data, array &$errors, $line)
+    {
+        $exists = $this->cityExists($data['name'], $data['state_code'], $data['country']);
+
+        if (!$exists) {
+            return true;
+        }
+
+        $errors[] = $this->language->text('Line @num: @error', array(
+            '@num' => $line,
+            '@error' => $this->language->text('City @name already exists for state @state and country @country', array(
+                '@name' => $data['name'],
+                '@state' => $data['state_code'],
+                '@country' => $data['country']))));
+
+        return false;
+    }
+
+    /**
+     * Updates a city
+     * @param array $data
+     * @return integer
+     */
+    protected function update(array $data)
+    {
+        return (int) $this->city->update($data['city_id'], $data);
+    }
+
+    /**
+     * Adds a new city to the database
+     * @param array $data
+     * @return integer
+     */
+    protected function add(array $data)
+    {
+        $result = $this->city->add($data);
+        return empty($result) ? 0 : 1;
     }
 
 }

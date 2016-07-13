@@ -74,17 +74,16 @@ class Combination
      * @param array $job
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
-        $import_operation = $options['operation'];
-        $header = $import_operation['csv']['header'];
-        $limit = $options['limit'];
+        $operation = $job['data']['operation'];
+        $header = $operation['csv']['header'];
+        $limit = $job['data']['limit'];
         $delimiter = $this->import->getCsvDelimiter();
 
-        $this->csv->setFile($options['filepath'], $options['filesize'])
+        $this->csv->setFile($job['data']['filepath'], $job['data']['filesize'])
                 ->setHeader($header)
                 ->setLimit($limit)
                 ->setDelimiter($delimiter);
@@ -105,18 +104,18 @@ class Combination
         }
 
         $position = $this->csv->getOffset();
-        $result = $this->import($rows, $line, $options);
+        $result = $this->import($rows, $line, $job);
         $line += count($rows);
         $bytes = empty($position) ? $job['total'] : $position;
 
-        $errors = $this->import->getErrors($result['errors'], $import_operation);
+        $errors = $this->import->getErrors($result['errors'], $operation);
 
         return array(
             'done' => $bytes,
             'increment' => false,
-            'inserted' => $result['inserted'],
-            'updated' => $result['updated'],
             'errors' => $errors['count'],
+            'updated' => $result['updated'],
+            'inserted' => $result['inserted'],
             'context' => array('offset' => $position, 'line' => $line));
     }
 
@@ -124,17 +123,18 @@ class Combination
      * Imports product combinations
      * @param array $rows
      * @param integer $line
-     * @param array $options
+     * @param array $job
      * @return array
      */
-    public function import(array $rows, $line, array $options)
+    public function import(array $rows, $line, array $job)
     {
-        $inserted = 0;
         $updated = 0;
+        $inserted = 0;
         $errors = array();
-        $operation = $options['operation'];
+        $operation = $job['data']['operation'];
 
         foreach ($rows as $index => $row) {
+
             $line += $index;
             $data = array_filter(array_map('trim', $row));
             $update = (isset($data['combination_id']) && is_numeric($data['combination_id']));
@@ -187,6 +187,7 @@ class Combination
         $components = array_filter(array_map('trim', explode($this->getCsvDelimiterMultiple(), $data['fields'])));
 
         foreach ($components as $component) {
+
             $field_id = null;
             $keyvalue = array_filter(array_map('trim', explode($this->getCsvDelimiterKeyValue(), $component)));
 

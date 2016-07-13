@@ -84,17 +84,16 @@ class FieldValue
      * @param array $job
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
-        $import_operation = $options['operation'];
-        $header = $import_operation['csv']['header'];
-        $limit = $options['limit'];
+        $operation = $job['data']['operation'];
+        $header = $operation['csv']['header'];
+        $limit = $job['data']['limit'];
         $delimiter = $this->import->getCsvDelimiter();
 
-        $this->csv->setFile($options['filepath'], $options['filesize'])
+        $this->csv->setFile($job['data']['filepath'], $job['data']['filesize'])
                 ->setHeader($header)
                 ->setLimit($limit)
                 ->setDelimiter($delimiter);
@@ -115,11 +114,11 @@ class FieldValue
         }
 
         $position = $this->csv->getOffset();
-        $result = $this->import($rows, $line, $options);
+        $result = $this->import($rows, $line, $job);
         $line += count($rows);
         $bytes = empty($position) ? $job['total'] : $position;
 
-        $errors = $this->import->getErrors($result['errors'], $import_operation);
+        $errors = $this->import->getErrors($result['errors'], $operation);
 
         return array(
             'done' => $bytes,
@@ -134,15 +133,15 @@ class FieldValue
      * Adds/updates from an array of rows
      * @param array $rows
      * @param integer $line
-     * @param array $options
+     * @param array $job
      * @return array
      */
-    public function import(array $rows, $line, array $options)
+    public function import(array $rows, $line, array $job)
     {
         $inserted = 0;
         $updated = 0;
         $errors = array();
-        $operation = $options['operation'];
+        $operation = $job['data']['operation'];
 
         foreach ($rows as $index => $row) {
             $line += $index;
@@ -161,7 +160,7 @@ class FieldValue
                 continue;
             }
 
-            if (!empty($options['unique']) && !$this->validateUnique($data, $errors, $line, $update)) {
+            if (!empty($job['data']['unique']) && !$this->validateUnique($data, $errors, $line, $update)) {
                 continue;
             }
 
@@ -177,9 +176,7 @@ class FieldValue
                 continue;
             }
 
-            if (isset($data['weight'])) {
-                $data['weight'] = (int) $data['weight'];
-            }
+            $this->validateWeight($data, $errors, $line);
 
             if ($update) {
                 $updated += $this->update($data['field_value_id'], $data);
@@ -190,6 +187,19 @@ class FieldValue
         }
 
         return array('inserted' => $inserted, 'updated' => $updated, 'errors' => $errors);
+    }
+
+    /**
+     * Validates field value weight
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     */
+    protected function validateWeight(array &$data, array &$errors, $line)
+    {
+        if (isset($data['weight'])) {
+            $data['weight'] = (int) $data['weight'];
+        }
     }
 
     /**
@@ -226,12 +236,8 @@ class FieldValue
             return true;
         }
 
-        $unique = true;
         $existing = $this->getFieldValue($data['title']);
-
-        if (!empty($existing)) {
-            $unique = false;
-        }
+        $unique = empty($existing);
 
         if ($update && isset($existing['field_value_id']) && $existing['field_value_id'] == $data['field_value_id']) {
             $unique = true;
@@ -351,7 +357,8 @@ class FieldValue
         }
 
         $download = $this->import->getImages($data['image'], $operation);
-        if ($download['errors']) {
+
+        if (!empty($download['errors'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => implode(',', $download['errors'])));
@@ -404,7 +411,6 @@ class FieldValue
         }
 
         $added = $this->field_value->add($data);
-
         return empty($added) ? 0 : 1;
     }
 

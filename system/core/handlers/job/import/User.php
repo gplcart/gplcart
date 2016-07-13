@@ -83,17 +83,16 @@ class User
      * @param array $job
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
-        $import_operation = $options['operation'];
-        $header = $import_operation['csv']['header'];
-        $limit = $options['limit'];
+        $operation = $job['data']['operation'];
+        $header = $operation['csv']['header'];
+        $limit = $job['data']['limit'];
         $delimiter = $this->import->getCsvDelimiter();
 
-        $this->csv->setFile($options['filepath'], $options['filesize'])
+        $this->csv->setFile($job['data']['filepath'], $job['data']['filesize'])
                 ->setHeader($header)
                 ->setLimit($limit)
                 ->setDelimiter($delimiter);
@@ -114,10 +113,10 @@ class User
         }
 
         $position = $this->csv->getOffset();
-        $result = $this->import($rows, $line, $options);
+        $result = $this->import($rows, $line, $job);
         $line += count($rows);
         $bytes = empty($position) ? $job['total'] : $position;
-        $errors = $this->import->getErrors($result['errors'], $import_operation);
+        $errors = $this->import->getErrors($result['errors'], $operation);
 
         return array(
             'done' => $bytes,
@@ -132,10 +131,10 @@ class User
      * Adds/updates from an array of rows
      * @param array $rows
      * @param integer $line
-     * @param array $options
+     * @param array $job
      * @return array
      */
-    public function import(array $rows, $line, array $options)
+    public function import(array $rows, $line, array $job)
     {
         $inserted = 0;
         $updated = 0;

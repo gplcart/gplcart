@@ -184,17 +184,14 @@ class Export extends Controller
             return;
         }
 
-        $job_id = $operation['job_id'];
-        $this->job->delete($job_id);
-
         $job = array(
-            'id' => $job_id,
+            'data' => $this->submitted,
+            'id' => $operation['job_id'],
+            'total' => $this->submitted['total'],
             'redirect_message' => array(
                 'finish' => $this->text('Successfully exported %count items. <a href="!href">Download</a>', array(
                     '!href' => $this->url(false, array('download' => 1)),
                     '%count' => $this->submitted['total']))),
-            'total' => $this->submitted['total'],
-            'operations' => array($job_id => array('arguments' => array($this->submitted)))
         );
 
         if (!empty($operation['log']['errors'])) {
@@ -202,8 +199,7 @@ class Export extends Controller
                 '!url' => $this->url(false, array('download_errors' => 1))));
         }
 
-        $this->job->set($job);
-        $this->url->redirect(false, array('job_id' => $job_id));
+        $this->job->submit($job);
     }
 
     /**
@@ -225,10 +221,6 @@ class Export extends Controller
             $this->setMessage($this->text('Failed to create file %path', array('%path' => $operation['file'])), 'danger');
             $this->data['form_errors'] = true;
             return false;
-        }
-
-        if (!empty($operation['log']['errors'])) {
-            file_put_contents($operation['log']['errors'], '');
         }
 
         Tool::writeCsv($operation['file'], $operation['csv']['header'], $this->export->getCsvDelimiter());

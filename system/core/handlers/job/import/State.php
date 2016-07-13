@@ -90,15 +90,14 @@ class State
      * @param array $job
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
-        $import_operation = $options['operation'];
-        $this->header = $import_operation['csv']['header'];
+        $operation = $job['data']['operation'];
+        $this->header = $operation['csv']['header'];
 
-        $this->csv->setFile($options['filepath'], $options['filesize'])
+        $this->csv->setFile($job['data']['filepath'], $job['data']['filesize'])
                 ->setHeader($this->header)
                 ->setLimit($this->import->getLimit())
                 ->setDelimiter($this->import->getCsvDelimiter());
@@ -119,11 +118,11 @@ class State
         }
 
         $position = $this->csv->getOffset();
-        $result = $this->import($rows, $line, $options);
+        $result = $this->import($rows, $line, $job);
         $line += count($rows);
         $bytes = empty($position) ? $job['total'] : $position;
 
-        $errors = $this->import->getErrors($result['errors'], $import_operation);
+        $errors = $this->import->getErrors($result['errors'], $operation);
 
         return array(
             'done' => $bytes,
@@ -138,81 +137,125 @@ class State
      * Imports country states
      * @param array $rows
      * @param integer $line
-     * @param array $options
+     * @param array $job
      * @return array
      */
-    public function import(array $rows, $line, array $options)
+    public function import(array $rows, $line, array $job)
     {
         $inserted = 0;
         $updated = 0;
         $errors = array();
 
         foreach ($rows as $index => $row) {
+
             $line += $index;
             $data = array_filter(array_map('trim', $row));
+            $update = (isset($data['state_id']) && is_numeric($data['state_id']));
 
-            // Validate/prepare values
-            if (isset($data['name']) && mb_strlen($data['name']) > 255) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('State name must not be longer than 255 characters')));
+            if ($update && !$this->user->access('state_edit')) {
                 continue;
             }
 
-            if (isset($data['code']) && mb_strlen($data['code']) > 255) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('State code must not be longer than 255 characters')));
+            if (!$update && !$this->user->access('state_add')) {
                 continue;
             }
 
-            if (isset($data['country']) && !$this->country->get($data['country'])) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('Country @code not found', array('@code' => $data['country']))));
+            if (!$this->validateName($data, $errors, $line)) {
                 continue;
             }
 
-            if (isset($data['status'])) {
-                $data['status'] = $this->import->toBool($data['status']);
-            }
-
-            if (isset($data['state_id'])) {
-                if (is_numeric($data['state_id']) && $this->user->access('state_edit')) {
-                    if ($this->state->update($data['state_id'], $data)) {
-                        $updated++;
-                    }
-                }
+            if (!$this->validateCode($data, $errors, $line)) {
                 continue;
             }
 
-            if (!$this->user->access('state_add')) {
+            if (!$this->validateCountry($data, $errors, $line)) {
                 continue;
             }
 
-            // Add a new record
-            if ((count($data) + 1) != count($this->header)) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('Wrong format')));
+            $this->validateStatus($data, $errors, $line);
+
+            if (!empty($job['data']['unique']) && !$this->validateUnique($data, $errors, $line)) {
                 continue;
             }
 
-            if ($this->stateExists($data['name'], $data['code'], $data['country'])) {
-                $errors[] = $this->language->text('Line @num: @error', array(
-                    '@num' => $line,
-                    '@error' => $this->language->text('State @name already exists', array('@name' => $data['name']))));
+            if ($update) {
+                $updated += $this->update($data);
                 continue;
             }
 
-            $added = $this->state->add($data);
-
-            if (!empty($added)) {
-                $inserted++;
-            }
+            $inserted += $this->add($data);
         }
 
         return array('inserted' => $inserted, 'updated' => $updated, 'errors' => $errors);
+    }
+
+    /**
+     * Validates status
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     */
+    protected function validateStatus(array &$data, array &$errors, $line)
+    {
+        if (isset($data['status'])) {
+            $data['status'] = $this->import->toBool($data['status']);
+        }
+    }
+
+    /**
+     * Validates state country
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateCountry(array &$data, array &$errors, $line)
+    {
+        if (isset($data['country']) && !$this->country->get($data['country'])) {
+            $errors[] = $this->language->text('Line @num: @error', array(
+                '@num' => $line,
+                '@error' => $this->language->text('Country @code not found', array('@code' => $data['country']))));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates state code
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     */
+    protected function validateCode(array &$data, array &$errors, $line)
+    {
+        if (isset($data['code']) && mb_strlen($data['code']) > 255) {
+            $errors[] = $this->language->text('Line @num: @error', array(
+                '@num' => $line,
+                '@error' => $this->language->text('State code must not be longer than 255 characters')));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates state name
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateName(array &$data, array &$errors, $line)
+    {
+        if (isset($data['name']) && mb_strlen($data['name']) > 255) {
+            $errors[] = $this->language->text('Line @num: @error', array(
+                '@num' => $line,
+                '@error' => $this->language->text('State name must not be longer than 255 characters')));
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -236,6 +279,43 @@ class State
         }
 
         return false;
+    }
+
+    /**
+     * Validates the state is unique
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     */
+    protected function validateUnique(array &$data, array &$errors, $line)
+    {
+        if ($this->stateExists($data['name'], $data['code'], $data['country'])) {
+            $errors[] = $this->language->text('Line @num: @error', array(
+                '@num' => $line,
+                '@error' => $this->language->text('State @name already exists', array('@name' => $data['name']))));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Adds a new country state
+     * @param array $data
+     */
+    protected function add(array $data)
+    {
+        $result = $this->state->add($data);
+        return empty($result) ? 0 : 1;
+    }
+
+    /**
+     * Updates a state
+     * @param array $data
+     */
+    protected function update(array $data)
+    {
+        return (int) $this->state->update($data['state_id'], $data);
     }
 
 }

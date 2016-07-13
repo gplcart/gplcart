@@ -232,7 +232,7 @@ class City
 
         $result = false;
 
-        if ($values) {
+        if (!empty($values)) {
             $result = $this->db->update('city', $values, array('city_id' => (int) $city_id));
         }
 

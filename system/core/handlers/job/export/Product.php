@@ -66,22 +66,21 @@ class Product
      * @param array $job
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
-        $operation = $options['operation'];
+        $operation = $job['data']['operation'];
 
-        $limit = $options['export_limit'];
+        $limit = $job['data']['export_limit'];
         $offset = isset($context['offset']) ? (int) $context['offset'] : 0;
-        $items = $this->product->getList($options + array('limit' => array($offset, $limit)));
+        $items = $this->product->getList($job['data'] + array('limit' => array($offset, $limit)));
 
         if (empty($items)) {
             return array('done' => $job['total']);
         }
 
-        $result = $this->export($items, $options);
+        $result = $this->export($items, $job);
         $errors = $this->export->getErrors($result['errors'], $operation);
 
         $done = count($items);
@@ -96,14 +95,14 @@ class Product
     /**
      * Exports products to CSV file
      * @param array $products
-     * @param array $options
+     * @param array $job
      * @return array
      */
-    protected function export(array $products, array $options)
+    protected function export(array $products, array $job)
     {
         $errors = array();
-        $file = $options['operation']['file'];
-        $header = $options['operation']['csv']['header'];
+        $file = $job['data']['operation']['file'];
+        $header = $job['data']['operation']['csv']['header'];
 
         foreach ($products as $product) {
             $fields = $this->export->getFields($header, $product);
