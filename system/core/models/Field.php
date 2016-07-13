@@ -332,6 +332,6 @@ class Field
         }
 
         $this->hook->fire('update.field.after', $field_id, $data, $result);
-        return $result;
+        return (bool) $result;
     }
 }

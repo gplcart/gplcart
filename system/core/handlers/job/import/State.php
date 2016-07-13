@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,13 +9,16 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\User;
-use core\models\State as S;
-use core\models\Country;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\State as ModelsState;
+use core\models\Import as ModelsImport;
+use core\models\Country as ModelsCountry;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Imports country states
+ */
 class State
 {
 
@@ -64,33 +66,34 @@ class State
 
     /**
      * Constructor
-     * @param Import $import
-     * @param Language $language
-     * @param User $user
-     * @param S $state
-     * @param Country $country
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsUser $user
+     * @param ModelsState $state
+     * @param ModelsCountry $country
      * @param Csv $csv
      */
-    public function __construct(Import $import, Language $language, User $user, S $state, Country $country, Csv $csv)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsState $state, ModelsCountry $country,
+            Csv $csv)
     {
-        $this->import = $import;
-        $this->language = $language;
-        $this->state = $state;
-        $this->country = $country;
-        $this->user = $user;
         $this->csv = $csv;
+        $this->user = $user;
+        $this->state = $state;
+        $this->import = $import;
+        $this->country = $country;
+        $this->language = $language;
     }
 
     /**
-     *
+     * Processes one AJAX requests
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $import_operation = $options['operation'];
         $this->header = $import_operation['csv']['header'];
@@ -103,42 +106,42 @@ class State
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header row
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
+        $bytes = empty($position) ? $job['total'] : $position;
 
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
         return array(
             'done' => $bytes,
             'increment' => false,
-            'inserted' => $result['inserted'],
-            'updated' => $result['updated'],
             'errors' => $errors['count'],
+            'updated' => $result['updated'],
+            'inserted' => $result['inserted'],
             'context' => array('offset' => $position, 'line' => $line));
     }
 
     /**
-     *
-     * @param type $rows
-     * @param type $line
-     * @param type $options
-     * @return type
+     * Imports country states
+     * @param array $rows
+     * @param integer $line
+     * @param array $options
+     * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
@@ -202,7 +205,9 @@ class State
                 continue;
             }
 
-            if ($this->state->add($data)) {
+            $added = $this->state->add($data);
+
+            if (!empty($added)) {
                 $inserted++;
             }
         }
@@ -211,10 +216,10 @@ class State
     }
 
     /**
-     *
-     * @param type $name
-     * @param type $code
-     * @param type $country
+     * Check if a state already exists in the database
+     * @param string $name
+     * @param string $code
+     * @param string $country
      * @return boolean
      */
     protected function stateExists($name, $code, $country)
@@ -232,4 +237,5 @@ class State
 
         return false;
     }
+
 }

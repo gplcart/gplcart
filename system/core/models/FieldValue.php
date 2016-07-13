@@ -286,7 +286,7 @@ class FieldValue
         }
 
         $this->hook->fire('update.field.value.after', $field_value_id, $data, $result);
-        return $result;
+        return (bool) $result;
     }
 
     /**

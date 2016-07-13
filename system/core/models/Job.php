@@ -11,11 +11,10 @@ namespace core\models;
 
 use core\Hook;
 use core\Handler;
+use core\classes\Url;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Url as ClassesUrl;
-use core\classes\Session as ClassesSession;
-use core\models\Queue as ModelsQueue;
+use core\classes\Session;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -32,12 +31,6 @@ class Job
      * @var \core\models\Language $language
      */
     protected $language;
-
-    /**
-     * Queue model instance
-     * @var \core\models\Queue $queue
-     */
-    protected $queue;
 
     /**
      * Session class instance
@@ -60,18 +53,15 @@ class Job
     /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param ModelsQueue $queue
-     * @param ClassesSession $session
-     * @param ClassesUrl $url
+     * @param Session $session
+     * @param Url $url
      * @param Hook $hook
      */
-    public function __construct(ModelsLanguage $language, ModelsQueue $queue,
-                                ClassesSession $session, ClassesUrl $url,
-                                Hook $hook)
+    public function __construct(ModelsLanguage $language, Session $session,
+            Url $url, Hook $hook)
     {
         $this->url = $url;
         $this->hook = $hook;
-        $this->queue = $queue;
         $this->session = $session;
         $this->language = $language;
     }
@@ -119,11 +109,11 @@ class Job
             'inserted' => 0,
             'updated' => 0,
             'context' => array(),
-            'operations' => array(),
+            'data' => array(),
             'message' => array(
                 'start' => $this->language->text('Starting'),
-                'process' => $this->language->text('Processing'),
-                'finish' => $this->language->text('Finished')
+                'finish' => $this->language->text('Finished'),
+                'process' => $this->language->text('Processing')
             ),
             'redirect' => array(
                 'finish' => $this->url->get(),
@@ -139,24 +129,8 @@ class Job
 
         $existing = $this->getSession($job['id']);
 
-        if (!empty($existing['operations'])) {
+        if (!empty($existing)) {
             return $existing;
-        }
-
-        foreach ($job['operations'] as $operation_id => &$operation) {
-            if (empty($operation['queue'])) {
-                continue;
-            }
-
-            if (empty($job['total'])) {
-                $job['total'] = count($operation['queue']);
-            }
-
-            $queue = array('queue_id' => $operation_id, 'total' => $job['total'], 'status' => 1);
-            $this->queue->set($queue, $operation['queue'], true);
-
-            // Don't keep large arrays in the session
-            unset($job['operations'][$operation_id]['queue']);
         }
 
         $this->setSession($job);
@@ -192,8 +166,8 @@ class Job
      */
     public function process(array $job)
     {
-        register_shutdown_function(array($this, 'shutdownHandler'), $job);
         ini_set('max_execution_time', 0);
+        register_shutdown_function(array($this, 'shutdownHandler'), $job);
 
         $this->hook->fire('process.job.before', $job);
 
@@ -201,28 +175,18 @@ class Job
             return $this->result($job, array('finish' => true));
         }
 
-        if (empty($job['operations'])) {
-            $job['status'] = false;
-            return $this->result($job, array('finish' => true, 'progress' => 100));
-        }
-
-        $operation = reset($job['operations']);
-        $operation_id = key($job['operations']);
-
-        $arguments = !empty($operation['arguments']) ? (array) $operation['arguments'] : array();
-
         static $done = 0;
         static $errors = 0;
-        static $inserted = 0;
         static $updated = 0;
+        static $inserted = 0;
         static $context = array();
 
         $progress = 0;
         $total = (int) $job['total'];
         $message = $job['message']['process'];
 
-        if (isset($job['done'][$operation_id])) {
-            $done = (int) $job['done'][$operation_id];
+        if (isset($job['done'])) {
+            $done = (int) $job['done'];
         }
 
         if (isset($job['context'])) {
@@ -234,12 +198,18 @@ class Job
         $start_time = microtime(true);
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::JOB_MAX_TIME) {
-            
-            $args = array_merge(array($job, $operation_id, $done, $context), $arguments);
-            $result = Handler::call($handlers, $operation_id, 'process', $args);
+
+            $arguments = array($job, $done, $context);
+
+            $result = Handler::call($handlers, $job['id'], 'process', $arguments);
+
+            if (empty($result)) {
+                $job['status'] = false;
+                break;
+            }
 
             if (isset($result['done'])) {
-                if (isset($result['increment']) && !$result['increment']) {
+                if (isset($result['increment']) && empty($result['increment'])) {
                     $done = (int) $result['done'];
                 } else {
                     $done += (int) $result['done'];
@@ -272,25 +242,22 @@ class Job
                 continue;
             }
 
-            if (isset($job['operations'][$operation_id]['queue'])) {
-                $this->queue->delete($operation_id);
-            }
-
-            unset($job['operations'][$operation_id]);
+            $job['status'] = false;
             break;
         }
 
-        $job['done'][$operation_id] = $done;
+        $job['done'] = $done;
         $job['errors'] += $errors;
-        $job['inserted'] += $inserted;
-        $job['updated'] += $updated;
         $job['context'] = $context;
+        $job['updated'] += $updated;
+        $job['inserted'] += $inserted;
 
         $return = $this->result($job, array(
             'done' => $done,
             'errors' => $errors,
+            'message' => $message,
             'progress' => $progress,
-            'message' => $message
+            'finish' => empty($job['status'])
         ));
 
         return $return;
@@ -338,9 +305,9 @@ class Job
     {
         $result += array(
             'done' => 0,
-            'finish' => false,
             'errors' => 0,
             'progress' => 0,
+            'finish' => false,
             'message' => $job['message']['process']
         );
 
@@ -481,4 +448,22 @@ class Job
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
     }
+
+    /**
+     * Starts performing a job
+     * @param array $job
+     */
+    public function submit(array $job)
+    {
+        $this->delete($job['id']);
+
+        if (!empty($job['data']['operation']['log']['errors'])) {
+            // create an empty error log file
+            file_put_contents($job['data']['operation']['log']['errors'], '');
+        }
+
+        $this->set($job);
+        $this->url->redirect('', array('job_id' => $job['id']));
+    }
+
 }

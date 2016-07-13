@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,9 +9,12 @@
 
 namespace core\handlers\job\search;
 
-use core\models\Search;
-use core\models\Product as P;
+use core\models\Search as ModelsSearch;
+use core\models\Product as ModelsProduct;
 
+/**
+ * Provides methods to index products
+ */
 class Product
 {
 
@@ -30,10 +32,10 @@ class Product
 
     /**
      * Constructor
-     * @param P $product
-     * @param \core\handlers\job\search\Search $search
+     * @param ModelsProduct $product
+     * @param ModelsSearch $search
      */
-    public function __construct(P $product, Search $search)
+    public function __construct(ModelsProduct $product, ModelsSearch $search)
     {
         $this->search = $search;
         $this->product = $product;
@@ -42,19 +44,18 @@ class Product
     /**
      * Processes one job iteration
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $offset = isset($context['offset']) ? (int) $context['offset'] : 0;
         $items = $this->product->getList($options + array(
             'limit' => array($offset, $options['index_limit'])));
 
-        if (!$items) {
+        if (empty($items)) {
             return array('done' => $job['total']);
         }
 
@@ -69,10 +70,11 @@ class Product
      * Indexes products
      * @param array $products
      */
-    protected function index($products)
+    protected function index(array $products)
     {
         foreach ($products as $product) {
             $this->search->index('product_id', $product['product_id']);
         }
     }
+
 }

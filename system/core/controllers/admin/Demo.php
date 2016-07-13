@@ -62,12 +62,14 @@ class Demo extends Controller
         $this->config->reset('notification_demo');
         $this->checkConnection();
 
+        // First create categories
         if ($this->request->post('install')) {
-            $this->importCategories();
+            $this->import('category');
         }
 
+        // ... then products
         if ($this->request->get('next') == 'product') {
-            $this->importProducts();
+            $this->import('product');
         }
 
         $this->data['job'] = $this->getJob();
@@ -101,86 +103,57 @@ class Demo extends Controller
      */
     protected function setTitleDemo()
     {
-        $this->setTitle($this->text('Install demo content'), false);
-    }
-
-    /**
-     * Imports product categories from CSV files
-     */
-    protected function importCategories()
-    {
-        $message = array(
-            'start' => $this->text('Starting to create product categories'),
-            'process' => $this->text('Creating categories...')
-        );
-
-        $this->import('category', $message);
-    }
-
-    /**
-     * Imports products from CSV file
-     */
-    protected function importProducts()
-    {
-        $message = array(
-            'start' => $this->text('Starting to create products...'),
-            'process' => $this->text('Creating demo products. It may take some time to download images from external site.')
-        );
-
-        $this->import('product', $message);
+        $this->setTitle($this->text('Install demo content'));
     }
 
     /**
      * Imports demo content from CSV files
      * @param string $operation_id
-     * @param array $messages
      * @return null
      */
-    protected function import($operation_id, array $messages = array())
+    protected function import($operation_id)
     {
-        $messages += array(
-            'start' => $this->text('Starting'),
-            'process' => $this->text('Processing'),
-            'finish' => $this->text('Finished')
-        );
-
         $operation = $this->import->getOperation($operation_id);
 
-        if (empty($operation['csv']['template'])) {
-            $this->data['form_errors']['operation'] = $this->text('Failed to load required import operations');
-            return;
-        }
-
-        $options = array(
-            'limit' => 10,
+        $data = array(
+            'limit' => 1,
             'operation' => $operation,
             'filepath' => $operation['csv']['template'],
             'filesize' => filesize($operation['csv']['template'])
         );
 
-        $job_id = $operation['job_id'];
-
-        $this->job->delete($job_id);
-
-        if (!empty($operation['log']['errors'])) {
-            file_put_contents($operation['log']['errors'], '');
-        }
-
         $job = array(
-            'id' => $job_id,
-            'total' => $options['filesize'],
-            'message' => $messages,
-            'redirect_message' => array('finish' => $this->text('Finished')),
-            'operations' => array($job_id => array('arguments' => array($options)),
-        ));
+            'data' => $data,
+            'id' => $operation['job_id'],
+            'total' => $data['filesize'],
+        );
 
         if ($operation_id == 'category') {
+
+            $job['message'] = array(
+                'start' => $this->text('Starting to create product categories'),
+                'process' => $this->text('Creating categories...')
+            );
+
+            // Go to create products
             $job['redirect']['finish'] = $this->url('', array('next' => 'product'));
-            //$job['redirect']['errors'] = $this->url('', array('next' => 'product'));
         }
 
-        $this->job->set($job);
-        $this->url->redirect('', array('job_id' => $job_id));
+        if ($operation_id == 'product') {
+
+            $job['message'] = array(
+                'start' => $this->text('Starting to create demo products...'),
+                'process' => $this->text('Creating demo products. It may take some time to download images from an external site.'),
+            );
+
+            $job['redirect_message'] = array(
+                'finish' => $this->text('Finished. <a href="!href">See demo products</a>', array(
+                    '!href' => $this->url('admin/content/product'))),
+                'errors' => $this->text('An error occurred while creating demo products. A possible reason might be you have duplicated category names.'),
+            );
+        }
+
+        $this->job->submit($job);
     }
 
 }

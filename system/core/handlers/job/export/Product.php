@@ -64,14 +64,12 @@ class Product
     /**
      * Processes one job iteration
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process(array $job, $operation_id, $done, array $context,
-            array $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $operation = $options['operation'];
 

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,13 +9,16 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\User as U;
-use core\models\UserRole;
-use core\models\Store;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\Store as ModelsStore;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
+use core\models\UserRole as ModelsUserRole;
 
+/**
+ * Imports users from CSV file
+ */
 class User
 {
 
@@ -43,7 +45,7 @@ class User
      * @var \core\models\User $user
      */
     protected $user;
-    
+
     /**
      * User role model instance
      * @var \core\models\UserRole $role
@@ -55,36 +57,36 @@ class User
      * @var \core\models\Store $store
      */
     protected $store;
-    
+
     /**
      * Constructor
-     * @param Import $import
-     * @param Language $language
-     * @param U $user
-     * @param Store $store
-     * @param UserRole $role
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsUser $user
+     * @param ModelsStore $store
+     * @param ModelsUserRole $role
      * @param Csv $csv
      */
-    public function __construct(Import $import, Language $language, U $user, Store $store, UserRole $role, Csv $csv)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsStore $store, ModelsUserRole $role, Csv $csv)
     {
+        $this->csv = $csv;
+        $this->user = $user;
+        $this->role = $role;
+        $this->store = $store;
         $this->import = $import;
         $this->language = $language;
-        $this->user = $user;
-        $this->store = $store;
-        $this->role = $role;
-        $this->csv = $csv;
     }
 
     /**
      * Processes one job iteration
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $import_operation = $options['operation'];
         $header = $import_operation['csv']['header'];
@@ -99,31 +101,30 @@ class User
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
-
+        $bytes = empty($position) ? $job['total'] : $position;
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
         return array(
             'done' => $bytes,
             'increment' => false,
-            'inserted' => $result['inserted'],
-            'updated' => $result['updated'],
             'errors' => $errors['count'],
+            'updated' => $result['updated'],
+            'inserted' => $result['inserted'],
             'context' => array('offset' => $position, 'line' => $line));
     }
 
@@ -134,7 +135,7 @@ class User
      * @param array $options
      * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
@@ -195,7 +196,7 @@ class User
      * @param integer $line
      * @return boolean
      */
-    protected function validateName(&$data, &$errors, $line)
+    protected function validateName(array &$data, array &$errors, $line)
     {
         if (isset($data['name']) && mb_strlen($data['name']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -215,17 +216,15 @@ class User
      * @param boolean $update
      * @return boolean
      */
-    protected function validateEmail(&$data, &$errors, $line, $update)
+    protected function validateEmail(array &$data, array &$errors, $line,
+            $update)
     {
         if (!isset($data['email'])) {
             return true;
         }
 
-        $unique = true;
         $existing = $this->user->getByEmail($data['email']);
-        if ($existing) {
-            $unique = false;
-        }
+        $unique = empty($existing);
 
         if ($update && isset($existing['user_id']) && $existing['user_id'] == $data['user_id']) {
             $unique = true;
@@ -256,7 +255,7 @@ class User
      * @param integer $line
      * @return boolean
      */
-    protected function validatePassword(&$data, &$errors, $line)
+    protected function validatePassword(array &$data, array &$errors, $line)
     {
         if (!isset($data['password'])) {
             return true;
@@ -266,16 +265,16 @@ class User
             $data['password'] = $this->user->generatePassword();
             return true;
         }
-        
+
         $password_length = mb_strlen($data['password']);
         $limits = $this->user->getPasswordLength();
 
         if (($limits['min'] <= $password_length) && ($password_length <= $limits['max'])) {
             return true;
         }
-        
+
         $error = $this->language->text('Password must be %min - %max characters long', array(
-                    '%min' => $limits['min'], '%max' => $limits['max']));
+            '%min' => $limits['min'], '%max' => $limits['max']));
 
         $errors[] = $this->language->text('Line @num: @error', array(
             '@num' => $line,
@@ -291,7 +290,7 @@ class User
      * @param integer $line
      * @return boolean
      */
-    protected function validateRole(&$data, &$errors, $line)
+    protected function validateRole(array &$data, array &$errors, $line)
     {
         if (!isset($data['role_id'])) {
             return true;
@@ -339,7 +338,7 @@ class User
      * @param integer $line
      * @return boolean
      */
-    protected function validateStore(&$data, &$errors, $line)
+    protected function validateStore(array &$data, array &$errors, $line)
     {
         if (!isset($data['store_id'])) {
             return true;
@@ -387,7 +386,7 @@ class User
      * @param integer $line
      * @return boolean
      */
-    protected function validateCreate(&$data, &$errors, $line)
+    protected function validateCreate(array &$data, array &$errors, $line)
     {
         if (!isset($data['created'])) {
             return true;
@@ -395,7 +394,7 @@ class User
 
         $timestamp = strtotime($data['created']);
 
-        if (!$timestamp || $timestamp > GC_TIME) {
+        if (empty($timestamp) || $timestamp > GC_TIME) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => $this->language->text('Invalid date @date', array(
@@ -413,7 +412,7 @@ class User
      * @param array $data
      * @return integer
      */
-    protected function update($user_id, $data)
+    protected function update($user_id, array $data)
     {
         return (int) $this->user->update($user_id, $data);
     }
@@ -425,7 +424,7 @@ class User
      * @param integer $line
      * @return integer
      */
-    protected function add(&$data, &$errors, $line)
+    protected function add(array &$data, array &$errors, $line)
     {
         if (empty($data['name'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -448,6 +447,8 @@ class User
             return 0;
         }
 
-        return $this->user->add($data) ? 1 : 0;
+        $result = $this->user->add($data);
+        return empty($result) ? 0 : 1;
     }
+
 }

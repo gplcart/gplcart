@@ -72,14 +72,12 @@ class Combination
     /**
      *
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process(array $job, $operation_id, $done, array $context,
-            array $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $import_operation = $options['operation'];
         $header = $import_operation['csv']['header'];
@@ -382,7 +380,8 @@ class Combination
     protected function add(array &$data, array &$errors, $line)
     {
         // validate
-        return (int) $this->product->addCombination($data);
+        $added = $this->product->addCombination($data);
+        return empty($added) ? 0 : 1;
     }
 
 }

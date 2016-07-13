@@ -87,14 +87,12 @@ class City
     /**
      *
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process(array $job, $operation_id, $done, array $context,
-            array $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $import_operation = $options['operation'];
         $this->header = $import_operation['csv']['header'];
@@ -211,7 +209,9 @@ class City
                 continue;
             }
 
-            if ($this->city->add($data)) {
+            $added = $this->city->add($data);
+
+            if (!empty($added)) {
                 $inserted++;
             }
         }

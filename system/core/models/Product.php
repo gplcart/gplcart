@@ -369,7 +369,7 @@ class Product
         }
 
         $this->hook->fire('update.product.after', $product_id, $data, $result);
-        return $result;
+        return (bool) $result;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,12 +9,15 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\User;
-use core\models\Field as F;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\Field as ModelsField;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
 
+/**
+ * Handlers import product fields from CSV file
+ */
 class Field
 {
 
@@ -49,25 +51,33 @@ class Field
      */
     protected $field;
 
-    public function __construct(Import $import, Language $language, User $user, F $field, Csv $csv)
+    /**
+     * Constructor
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsUser $user
+     * @param ModelsField $field
+     * @param Csv $csv
+     */
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsField $field, Csv $csv)
     {
-        $this->import = $import;
-        $this->language = $language;
+        $this->csv = $csv;
         $this->user = $user;
         $this->field = $field;
-        $this->csv = $csv;
+        $this->import = $import;
+        $this->language = $language;
     }
 
     /**
-     *
+     * Processes one job iteration
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $import_operation = $options['operation'];
         $header = $import_operation['csv']['header'];
@@ -82,23 +92,22 @@ class Field
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
-
+        $bytes = empty($position) ? $job['total'] : $position;
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
         return array(
@@ -111,13 +120,13 @@ class Field
     }
 
     /**
-     *
-     * @param type $rows
-     * @param type $line
-     * @param type $options
-     * @return type
+     * Imports fields
+     * @param array $rows
+     * @param integer $line
+     * @param array $options
+     * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
@@ -135,7 +144,7 @@ class Field
             if (!$update && !$this->user->access('field_add')) {
                 continue;
             }
-            
+
             if (!$this->validateTitle($data, $errors, $line)) {
                 continue;
             }
@@ -171,9 +180,10 @@ class Field
      * Validates titles
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateTitle(&$data, &$errors, $line)
+    protected function validateTitle(array &$data, array &$errors, $line)
     {
         if (isset($data['title']) && mb_strlen($data['title']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -186,14 +196,15 @@ class Field
     }
 
     /**
-     *
-     * @param type $data
-     * @param type $errors
-     * @param type $line
-     * @param type $update
+     * Validates uniqueness
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @param boolean $update
      * @return boolean
      */
-    protected function validateUnique(&$data, &$errors, $line, $update)
+    protected function validateUnique(array &$data, array &$errors, $line,
+            $update)
     {
         if (!isset($data['title'])) {
             return true;
@@ -221,9 +232,9 @@ class Field
     }
 
     /**
-     *
-     * @param type $field_id
-     * @return type
+     * Loads a field from the database
+     * @param integer|string $field_id
+     * @return mixed
      */
     protected function getField($field_id)
     {
@@ -244,13 +255,13 @@ class Field
     }
 
     /**
-     *
+     * Validates field widget
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateWidget(&$data, &$errors, $line)
+    protected function validateWidget(array &$data, array &$errors, $line)
     {
         if (!isset($data['widget'])) {
             return true;
@@ -271,13 +282,13 @@ class Field
     }
 
     /**
-     *
+     * Validates field type
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateType(&$data, &$errors, $line)
+    protected function validateType(array &$data, array &$errors, $line)
     {
         if (!isset($data['type'])) {
             return true;
@@ -296,24 +307,24 @@ class Field
     }
 
     /**
-     *
-     * @param type $field_id
-     * @param type $data
-     * @return type
+     * Updates a field
+     * @param integer $field_id
+     * @param array $data
+     * @return integer
      */
-    protected function update($field_id, $data)
+    protected function update($field_id, array $data)
     {
         unset($data['type']);
         return (int) $this->field->update($field_id, $data);
     }
 
     /**
-     *
-     * @param type $data
-     * @param type $errors
-     * @return boolean
+     * Adds a new field
+     * @param array $data
+     * @param array $errors
+     * @return integer
      */
-    protected function add(&$data, &$errors, $line)
+    protected function add(array &$data, array &$errors, $line)
     {
         if (empty($data['title'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -340,6 +351,9 @@ class Field
             $data['weight'] = $line;
         }
 
-        return $this->field->add($data) ? 1 : 0;
+        $added = $this->field->add($data);
+
+        return empty($added) ? 0 : 1;
     }
+
 }

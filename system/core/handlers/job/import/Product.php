@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,18 +9,21 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\Category;
-use core\models\Product as P;
-use core\models\Store;
-use core\models\Alias;
-use core\models\User;
-use core\models\Sku;
-use core\models\Currency;
-use core\models\ProductClass;
 use core\classes\Csv;
+use core\models\Sku as ModelsSku;
+use core\models\User as ModelsUser;
+use core\models\Store as ModelsStore;
+use core\models\Alias as ModelsAlias;
+use core\models\Import as ModelsImport;
+use core\models\Product as ModelsProduct;
+use core\models\Currency as ModelsCurrency;
+use core\models\Language as ModelsLanguage;
+use core\models\Category as ModelsCategory;
+use core\models\ProductClass as ModelsProductClass;
 
+/**
+ * Imports products from CSV file
+ */
 class Product
 {
 
@@ -93,50 +95,52 @@ class Product
 
     /**
      * Constructor
-     * @param Import $import
-     * @param Language $language
-     * @param User $user
-     * @param Category $category
-     * @param P $product
-     * @param ProductClass $product_class
-     * @param Store $store
-     * @param Alias $alias
-     * @param Sku $sku
-     * @param Currency $currency
+     * @param ModelsImport $import
+     * @param ModelsLanguage $language
+     * @param ModelsUser $user
+     * @param ModelsCategory $category
+     * @param ModelsProduct $product
+     * @param ModelsProductClass $product_class
+     * @param ModelsStore $store
+     * @param ModelsAlias $alias
+     * @param ModelsSku $sku
+     * @param ModelsCurrency $currency
      * @param Csv $csv
      */
-    public function __construct(Import $import, Language $language, User $user, Category $category, P $product, ProductClass $product_class, Store $store, Alias $alias, Sku $sku, Currency $currency, Csv $csv)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsCategory $category, ModelsProduct $product,
+            ModelsProductClass $product_class, ModelsStore $store,
+            ModelsAlias $alias, ModelsSku $sku, ModelsCurrency $currency,
+            Csv $csv)
     {
-        $this->import = $import;
-        $this->language = $language;
+        $this->csv = $csv;
+        $this->sku = $sku;
         $this->user = $user;
-        $this->category = $category;
-        $this->product = $product;
-        $this->product_class = $product_class;
         $this->store = $store;
         $this->alias = $alias;
-        $this->sku = $sku;
+        $this->import = $import;
+        $this->product = $product;
+        $this->language = $language;
+        $this->category = $category;
         $this->currency = $currency;
-        $this->csv = $csv;
+        $this->product_class = $product_class;
     }
 
     /**
-     *
+     * Processes one AJAX requests
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
-     * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $done, array $context)
     {
-        $import_operation = $options['operation'];
-        $header = $import_operation['csv']['header'];
-        $limit = $options['limit'];
+        $operation = $job['data']['operation'];
+        $header = $operation['csv']['header'];
+        $limit = $job['data']['limit'];
         $delimiter = $this->import->getCsvDelimiter();
 
-        $this->csv->setFile($options['filepath'], $options['filesize'])
+        $this->csv->setFile($job['data']['filepath'], $job['data']['filesize'])
                 ->setHeader($header)
                 ->setLimit($limit)
                 ->setDelimiter($delimiter);
@@ -144,47 +148,47 @@ class Product
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
-        $result = $this->import($rows, $line, $options);
+        $result = $this->import($rows, $line, $job);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
+        $bytes = empty($position) ? $job['total'] : $position;
 
-        $errors = $this->import->getErrors($result['errors'], $import_operation);
+        $errors = $this->import->getErrors($result['errors'], $operation);
 
         return array(
             'done' => $bytes,
             'increment' => false,
-            'inserted' => $result['inserted'],
-            'updated' => $result['updated'],
             'errors' => $errors['count'],
+            'updated' => $result['updated'],
+            'inserted' => $result['inserted'],
             'context' => array('offset' => $position, 'line' => $line));
     }
 
     /**
-     *
-     * @param type $rows
-     * @param type $line
-     * @param type $options
-     * @return type
+     * Imports products
+     * @param array $rows
+     * @param integer $line
+     * @param array $job
+     * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $job)
     {
         $inserted = 0;
         $updated = 0;
         $errors = array();
-        $operation = $options['operation'];
+        $operation = $job['data']['operation'];
 
         foreach ($rows as $index => $row) {
             $line += $index;
@@ -276,9 +280,10 @@ class Product
      * Validates titles
      * @param array $data
      * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateTitle(&$data, &$errors, $line)
+    protected function validateTitle(array &$data, array &$errors, $line)
     {
         if (isset($data['title']) && mb_strlen($data['title']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -308,10 +313,10 @@ class Product
      * Whether the product is unique
      * @param array $data
      * @param array $errors
-     * @param boolean $update
+     * @param integer $line
      * @return boolean
      */
-    protected function validateUnique(&$data, &$errors, $line)
+    protected function validateUnique(array &$data, array &$errors, $line)
     {
         if (!isset($data['title'])) {
             return true;
@@ -323,7 +328,7 @@ class Product
             return true;
         }
 
-        if (!$existing) {
+        if (empty($existing)) {
             return true;
         }
 
@@ -335,9 +340,9 @@ class Product
     }
 
     /**
-     *
-     * @param type $product_id
-     * @return type
+     * Loads a product from the database
+     * @param integer|string $product_id
+     * @return array
      */
     protected function getProduct($product_id)
     {
@@ -358,13 +363,13 @@ class Product
     }
 
     /**
-     *
-     * @param type $data
-     * @param type $errors
-     * @param type $line
+     * Validates a store
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateStore(&$data, &$errors, $line)
+    protected function validateStore(array &$data, array &$errors, $line)
     {
         if (!isset($data['store_id'])) {
             if (isset($data['update_product']['store_id'])) {
@@ -389,9 +394,9 @@ class Product
     }
 
     /**
-     *
-     * @param type $store_id
-     * @return type
+     * Loads a store from the database
+     * @param integer|string $store_id
+     * @return array
      */
     protected function getStore($store_id)
     {
@@ -410,13 +415,13 @@ class Product
     }
 
     /**
-     *
-     * @param type $data
+     * Validates a currency
+     * @param array $data
      * @param array $errors
-     * @param type $line
+     * @param integer $line
      * @return boolean
      */
-    protected function validateCurrency(&$data, &$errors, $line)
+    protected function validateCurrency(array &$data, array &$errors, $line)
     {
         if (!isset($data['currency'])) {
             return true;
@@ -434,13 +439,13 @@ class Product
     }
 
     /**
-     *
-     * @param type $data
+     * Validates a price value
+     * @param array $data
      * @param array $errors
-     * @param type $line
+     * @param integer $line
      * @return boolean
      */
-    protected function validatePrice(&$data, &$errors, $line)
+    protected function validatePrice(array &$data, array &$errors, $line)
     {
         if (!isset($data['price'])) {
             return true;
@@ -458,13 +463,13 @@ class Product
     }
 
     /**
-     *
+     * Validates a stock value
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateStock(&$data, &$errors, $line)
+    protected function validateStock(array &$data, array &$errors, $line)
     {
         if (!isset($data['stock'])) {
             return true;
@@ -482,13 +487,13 @@ class Product
     }
 
     /**
-     *
+     * Validates a product class
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateClass(&$data, &$errors, $line)
+    protected function validateClass(array &$data, array &$errors, $line)
     {
         if (!isset($data['product_class_id'])) {
             return true;
@@ -509,9 +514,9 @@ class Product
     }
 
     /**
-     *
-     * @param type $product_class_id
-     * @return type
+     * Loads a product class from the database
+     * @param integer|string $product_class_id
+     * @return array
      */
     protected function getClass($product_class_id)
     {
@@ -530,13 +535,13 @@ class Product
     }
 
     /**
-     *
+     * Validates a category
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateCategory(&$data, &$errors, $line)
+    protected function validateCategory(array &$data, array &$errors, $line)
     {
         if (!isset($data['category_id'])) {
             return true;
@@ -558,10 +563,10 @@ class Product
     }
 
     /**
-     *
-     * @param type $category_id
-     * @param type $type
-     * @return type
+     * Loads a category from the database
+     * @param integer|string $category_id
+     * @param string $type
+     * @return array
      */
     protected function getCategory($category_id, $type)
     {
@@ -584,11 +589,11 @@ class Product
     /**
      *
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateBrand(&$data, &$errors, $line)
+    protected function validateBrand(array &$data, array &$errors, $line)
     {
         if (!isset($data['brand_category_id'])) {
             return true;
@@ -610,13 +615,13 @@ class Product
     }
 
     /**
-     *
-     * @param type $data
+     * Validates product SKU
+     * @param array $data
      * @param array $errors
-     * @param type $line
+     * @param integer $line
      * @return boolean
      */
-    protected function validateSku(&$data, &$errors, $line)
+    protected function validateSku(array &$data, array &$errors, $line)
     {
         if (!isset($data['sku'])) {
             return true;
@@ -648,7 +653,7 @@ class Product
             }
         }
 
-        if (!$exists) {
+        if (empty($exists)) {
             return true;
         }
 
@@ -660,13 +665,13 @@ class Product
     }
 
     /**
-     *
-     * @param type $data
+     * Validates a URL alias
+     * @param array $data
      * @param array $errors
-     * @param type $line
+     * @param integer $line
      * @return boolean
      */
-    protected function validateAlias(&$data, &$errors, $line)
+    protected function validateAlias(array &$data, array &$errors, $line)
     {
         if (!isset($data['alias'])) {
             return true;
@@ -713,14 +718,16 @@ class Product
      * @param array $operation
      * @return boolean
      */
-    protected function validateImages(&$data, &$errors, $line, $operation)
+    protected function validateImages(array &$data, array &$errors, $line,
+            array $operation)
     {
         if (!isset($data['images'])) {
             return true;
         }
 
         $download = $this->import->getImages($data['images'], $operation);
-        if ($download['errors']) {
+
+        if (!empty($download['errors'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
                 '@num' => $line,
                 '@error' => implode(',', $download['errors'])));
@@ -730,13 +737,13 @@ class Product
     }
 
     /**
-     *
+     * Validates related products
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateRelated(&$data, &$errors, $line)
+    protected function validateRelated(array &$data, array &$errors, $line)
     {
         if (!isset($data['related'])) {
             return true;
@@ -744,7 +751,7 @@ class Product
 
         $related = array_filter(array_map('trim', explode($this->import->getCsvDelimiterMultiple(), $data['related'])));
 
-        if (!$related) {
+        if (empty($related)) {
             return true;
         }
 
@@ -775,7 +782,14 @@ class Product
         return true;
     }
 
-    protected function validateDimension(&$data, &$errors, $line)
+    /**
+     * Validates product dimensions
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return boolean
+     */
+    protected function validateDimension(array &$data, array &$errors, $line)
     {
         if (isset($data['width']) && (!is_numeric($data['width']) || strlen($data['width']) > 10)) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -827,12 +841,12 @@ class Product
     }
 
     /**
-     *
-     * @param type $data
-     * @param type $errors
-     * @param type $line
+     * Validates product status
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
      */
-    protected function validateStatus(&$data, &$errors, $line)
+    protected function validateStatus(array &$data, array &$errors, $line)
     {
         if (isset($data['status'])) {
             $data['status'] = $this->import->toBool($data['status']);
@@ -840,23 +854,24 @@ class Product
     }
 
     /**
-     *
-     * @param type $product_id
-     * @param type $data
-     * @return type
+     * Updates a product
+     * @param integer $product_id
+     * @param array $data
+     * @return integer
      */
-    protected function update($product_id, $data)
+    protected function update($product_id, array $data)
     {
         return (int) $this->product->update($product_id, $data);
     }
 
     /**
-     *
-     * @param type $data
-     * @param type $errors
-     * @return boolean
+     * Adds a product
+     * @param array $data
+     * @param array $errors
+     * @param integer $line
+     * @return integer
      */
-    protected function add(&$data, &$errors, $line)
+    protected function add(array &$data, array &$errors, $line)
     {
         if (!isset($data['meta_title']) && isset($data['title'])) {
             $data['meta_title'] = $data['title'];
@@ -877,6 +892,8 @@ class Product
             return 0;
         }
 
-        return $this->product->add($data) ? 1 : 0;
+        $added = $this->product->add($data);
+        return empty($added) ? 0 : 1;
     }
+
 }

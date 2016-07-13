@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,13 +9,16 @@
 
 namespace core\handlers\job\import;
 
-use core\models\Import;
-use core\models\Language;
-use core\models\User;
-use core\models\Field;
-use core\models\FieldValue as Fv;
 use core\classes\Csv;
+use core\models\User as ModelsUser;
+use core\models\Field as ModelsField;
+use core\models\Import as ModelsImport;
+use core\models\Language as ModelsLanguage;
+use core\models\FieldValue as ModelsFieldValue;
 
+/**
+ * Imports field values from CSV file
+ */
 class FieldValue
 {
 
@@ -65,26 +67,27 @@ class FieldValue
      * @param Field $field
      * @param Csv $csv
      */
-    public function __construct(Import $import, Language $language, User $user, Fv $field_value, Field $field, Csv $csv)
+    public function __construct(ModelsImport $import, ModelsLanguage $language,
+            ModelsUser $user, ModelsFieldValue $field_value, ModelsField $field,
+            Csv $csv)
     {
+        $this->csv = $csv;
+        $this->user = $user;
+        $this->field = $field;
         $this->import = $import;
         $this->language = $language;
-        $this->user = $user;
-        $this->csv = $csv;
-        $this->field = $field;
         $this->field_value = $field_value;
     }
 
     /**
      * Processes one job iteration
      * @param array $job
-     * @param string $operation_id
      * @param integer $done
      * @param array $context
      * @param array $options
      * @return array
      */
-    public function process($job, $operation_id, $done, $context, $options)
+    public function process(array $job, $done, array $context, array $options)
     {
         $import_operation = $options['operation'];
         $header = $import_operation['csv']['header'];
@@ -99,31 +102,31 @@ class FieldValue
         $offset = isset($context['offset']) ? $context['offset'] : 0;
         $line = isset($context['line']) ? $context['line'] : 2; // 2 - skip 0 and header
 
-        if ($offset) {
-            $this->csv->setOffset($offset);
-        } else {
+        if (empty($offset)) {
             $this->csv->skipHeader();
+        } else {
+            $this->csv->setOffset($offset);
         }
 
         $rows = $this->csv->parse();
 
-        if (!$rows) {
+        if (empty($rows)) {
             return array('done' => $job['total']);
         }
 
         $position = $this->csv->getOffset();
         $result = $this->import($rows, $line, $options);
         $line += count($rows);
-        $bytes = $position ? $position : $job['total'];
+        $bytes = empty($position) ? $job['total'] : $position;
 
         $errors = $this->import->getErrors($result['errors'], $import_operation);
 
         return array(
             'done' => $bytes,
             'increment' => false,
-            'inserted' => $result['inserted'],
-            'updated' => $result['updated'],
             'errors' => $errors['count'],
+            'updated' => $result['updated'],
+            'inserted' => $result['inserted'],
             'context' => array('offset' => $position, 'line' => $line));
     }
 
@@ -134,7 +137,7 @@ class FieldValue
      * @param array $options
      * @return array
      */
-    public function import($rows, $line, $options)
+    public function import(array $rows, $line, array $options)
     {
         $inserted = 0;
         $updated = 0;
@@ -193,9 +196,10 @@ class FieldValue
      * Validates titles
      * @param array $data
      * @param array $errors
+     * @param type $line
      * @return boolean
      */
-    protected function validateTitle(&$data, &$errors, $line)
+    protected function validateTitle(array &$data, array &$errors, $line)
     {
         if (isset($data['title']) && mb_strlen($data['title']) > 255) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -215,7 +219,8 @@ class FieldValue
      * @param boolean $update
      * @return boolean
      */
-    protected function validateUnique(&$data, &$errors, $line, $update)
+    protected function validateUnique(array &$data, array &$errors, $line,
+            $update)
     {
         if (!isset($data['title'])) {
             return true;
@@ -223,7 +228,8 @@ class FieldValue
 
         $unique = true;
         $existing = $this->getFieldValue($data['title']);
-        if ($existing) {
+
+        if (!empty($existing)) {
             $unique = false;
         }
 
@@ -266,11 +272,11 @@ class FieldValue
     /**
      * Checks if a field exists and unique
      * @param array $data
-     * @param type $errors
-     * @param type $line
+     * @param array $errors
+     * @param integer $line
      * @return boolean
      */
-    protected function validateField(&$data, &$errors, $line)
+    protected function validateField(array &$data, array &$errors, $line)
     {
         if (!isset($data['field_id'])) {
             return true;
@@ -292,8 +298,8 @@ class FieldValue
 
     /**
      * Returns an array of field data by ID or title
-     * @param type $field_id
-     * @return type
+     * @param integer|string $field_id
+     * @return array
      */
     protected function getField($field_id)
     {
@@ -318,7 +324,7 @@ class FieldValue
      * @param integer $line
      * @return boolean
      */
-    protected function validateColor(&$data, &$errors, $line)
+    protected function validateColor(array &$data, array &$errors, $line)
     {
         if (isset($data['color']) && !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $data['color'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -337,7 +343,8 @@ class FieldValue
      * @param array $operation
      * @return boolean
      */
-    protected function validateImages(&$data, &$errors, $line, $operation)
+    protected function validateImages(array &$data, array &$errors, $line,
+            array $operation)
     {
         if (!isset($data['image'])) {
             return true;
@@ -365,7 +372,7 @@ class FieldValue
      * @param array $data
      * @return integer
      */
-    protected function update($field_value_id, $data)
+    protected function update($field_value_id, array $data)
     {
         return (int) $this->field_value->update($field_value_id, $data);
     }
@@ -376,7 +383,7 @@ class FieldValue
      * @param array $errors
      * @return integer
      */
-    protected function add(&$data, &$errors, $line)
+    protected function add(array &$data, array &$errors, $line)
     {
         if (empty($data['title'])) {
             $errors[] = $this->language->text('Line @num: @error', array(
@@ -396,6 +403,9 @@ class FieldValue
             $data['weight'] = $line;
         }
 
-        return $this->field_value->add($data) ? 1 : 0;
+        $added = $this->field_value->add($data);
+
+        return empty($added) ? 0 : 1;
     }
+
 }

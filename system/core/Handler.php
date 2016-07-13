@@ -29,8 +29,8 @@ class Handler
             $arguments = array())
     {
         $handler = static::get($handlers, $handler_id, $method);
-        
-        if(empty($handler[0])){
+
+        if (empty($handler[0])) {
             return false;
         }
 

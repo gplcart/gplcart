@@ -69,8 +69,7 @@ class Import
      * @param Config $config
      */
     public function __construct(ModelsLanguage $language, ModelsFile $file,
-                                Csv $csv, Hook $hook, Logger $logger,
-                                Config $config)
+            Csv $csv, Hook $hook, Logger $logger, Config $config)
     {
         $this->csv = $csv;
         $this->file = $file;
@@ -270,6 +269,7 @@ class Import
         );
 
         $this->hook->fire('import.operations', $operations);
+        
         return $operations;
     }
 
@@ -344,11 +344,11 @@ class Import
 
     /**
      * Downloads remoted images
-     * @param array $data
+     * @param string $data
      * @param array $operation
      * @return array
      */
-    public function getImages(array $data, array $operation)
+    public function getImages($data, array $operation)
     {
         $return = array('errors' => array(), 'images' => array());
         $images = array_filter(array_map('trim', explode($this->getCsvDelimiterMultiple(), $data)));
@@ -426,4 +426,5 @@ class Import
     {
         return $this->config->get('csv_delimiter', ",");
     }
+
 }
