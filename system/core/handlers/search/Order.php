@@ -31,12 +31,6 @@ class Order
     protected $price;
 
     /**
-     * Queue model instance
-     * @var \core\models\Queue $queue
-     */
-    protected $queue;
-
-    /**
      * Config class instance
      * @var \core\Config $config
      */

@@ -805,13 +805,6 @@ class Route
             )
         );
 
-        $routes['admin/report/queue'] = array(
-            'access' => 'queue',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Queue', 'queues')
-            )
-        );
-
         $routes['admin/help'] = array(
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Help', 'help')

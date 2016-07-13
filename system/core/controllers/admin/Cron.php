@@ -51,7 +51,6 @@ class Cron extends Controller
         $this->processFiles();
         $this->processLogs();
         $this->processNotifications();
-        $this->processQueues();
         $this->processHistory();
 
         $this->hook->fire('cron');
@@ -165,14 +164,6 @@ class Cron extends Controller
     protected function processNotifications()
     {
         $this->notification->set('system_status');
-    }
-
-    /**
-     * Processes active queues
-     */
-    protected function processQueues()
-    {
-        // TODO: complete
     }
 
     /**

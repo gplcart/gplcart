@@ -890,24 +890,6 @@ class Install
             )
         );
 
-        $tables['queue'] = array(
-            'fields' => array(
-                'queue_id' => 'varchar(255) PRIMARY KEY',
-                'status' => 'int(1) NOT NULL DEFAULT 1',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL DEFAULT 0',
-                'total' => 'int(10) NOT NULL DEFAULT 0'
-            )
-        );
-
-        $tables['queue_item'] = array(
-            'fields' => array(
-                'queue_item_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'queue_id' => 'varchar(50) NOT NULL',
-                'value' => 'varchar(255) NOT NULL'
-            )
-        );
-
         $tables['search_index'] = array(
             'fields' => array(
                 'search_index_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',

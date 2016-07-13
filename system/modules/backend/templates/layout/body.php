@@ -85,9 +85,6 @@
               <?php if ($this->access('report_ga')) { ?>
               <li><a href="<?php echo $this->url('admin/report/ga'); ?>"><?php echo $this->text('Analytics'); ?></a></li>
               <?php } ?>
-              <?php if ($this->access('queue')) { ?>
-              <li><a href="<?php echo $this->url('admin/report/queue'); ?>"><?php echo $this->text('Queues'); ?></a></li>
-              <?php } ?>
               <?php if ($this->access('notification')) { ?>
               <li><a href="<?php echo $this->url('admin/report/notification'); ?>"><?php echo $this->text('Notifications'); ?></a></li>
               <?php } ?>
