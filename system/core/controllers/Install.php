@@ -70,7 +70,7 @@ class Install extends Controller
         $this->data['requirements'] = $this->install->getRequirements();
         $this->data['timezones'] = Tool::timezones();
         $this->data['url_wiki'] = GC_WIKI_URL;
-        $this->data['url_licence'] = (file_exists(GC_ROOT_DIR . '/LICENSE')) ? $this->url('LICENSE') : 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html';
+        $this->data['url_licence'] = (file_exists(GC_ROOT_DIR . '/LICENSE')) ? $this->url('LICENSE') : 'https://www.gnu.org/licenses/gpl.html';
         $this->data['settings']['site']['timezone'] = 'Europe/London';
         $this->data['languages'] = $this->language->getAvailable();
 
@@ -118,7 +118,7 @@ class Install extends Controller
         $this->session->delete();
         Tool::deleteCookie();
         $message = $this->text('Congratulations! You have successfully installed your store');
-        $this->redirect('/', $message, 'success');
+        $this->redirect('admin', $message, 'success');
     }
 
     /**

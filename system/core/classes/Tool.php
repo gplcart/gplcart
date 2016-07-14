@@ -440,4 +440,14 @@ class Tool
         return true;
     }
 
+    /**
+     * Validates module id
+     * @param string $string
+     * @return boolean
+     */
+    public static function validModuleId($string)
+    {
+        return preg_match('/^[a-z_]+$/', $string);
+    }
+
 }

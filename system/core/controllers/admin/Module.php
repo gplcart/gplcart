@@ -10,6 +10,7 @@
 namespace core\controllers\admin;
 
 use core\Controller;
+use core\models\File as ModelsFile;
 use core\models\Module as ModelsModule;
 
 /**
@@ -25,13 +26,21 @@ class Module extends Controller
     protected $module;
 
     /**
+     * File model instance
+     * @var \core\models\File $file
+     */
+    protected $file;
+
+    /**
      * Constructor
      * @param ModelsModule $module
+     * @param ModelsFile $file
      */
-    public function __construct(ModelsModule $module)
+    public function __construct(ModelsModule $module, ModelsFile $file)
     {
         parent::__construct();
 
+        $this->file = $file;
         $this->module = $module;
     }
 
@@ -39,16 +48,18 @@ class Module extends Controller
      * Displays the module admin overview page
      * @param null|string $type
      */
-    public function modules($type = null)
+    public function modules()
     {
-        $module_id = $this->request->get('module_id');
+        $type = $this->request->get('type');
         $action = $this->request->get('action');
+        $module_id = $this->request->get('module_id');
 
         if (!empty($module_id) && !empty($action)) {
             $this->action($module_id, $action);
         }
 
         $this->data['modules'] = $this->getModules($type);
+        $this->data['upload_access'] = ($this->access('module_upload'));
 
         $this->setTitleModules();
         $this->setBreadcrumbModules($type);
@@ -145,6 +156,89 @@ class Module extends Controller
     protected function outputModules()
     {
         $this->output('module/list');
+    }
+
+    /**
+     * Displays upload module page
+     */
+    public function upload()
+    {
+        $this->controlAccess('module_install');
+
+        if ($this->request->post('install')) {
+            $this->submitUpload();
+        }
+
+        $this->setBreadcrumbUpload();
+        $this->setTitleUpload();
+        $this->outputUpload();
+    }
+
+    /**
+     * Installs a uploaded module
+     */
+    protected function submitUpload()
+    {
+        $this->validateUpload();
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
+            return false;
+        }
+
+        $result = $this->module->installFromZip($this->submitted['destination']);
+
+        if ($result === true) {
+            $message = $this->text('The module has been <a href="!href">uploaded and installed</a>. You have to enable it manually', array(
+                '!href' => $this->url('admin/module')));
+
+            $this->redirect('', $message, 'success');
+        }
+
+        $this->redirect('', $result, 'warning');
+    }
+
+    /**
+     * Validates and uploads a zip archive
+     * @return boolean
+     */
+    protected function validateUpload()
+    {
+        $this->submitted = $this->request->file('file');
+        $this->file->setHandler('zip')->setUploadPath('private/modules');
+        $result = $this->file->upload($this->submitted);
+
+        if ($result !== true) {
+            $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
+            return false;
+        }
+
+        $this->submitted['destination'] = $this->file->getUploadedFile();
+    }
+
+    /**
+     * Sets breadcrumbs on the module upload page
+     */
+    protected function setBreadcrumbUpload()
+    {
+        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array('text' => $this->text('Modules'), 'url' => $this->url('admin/module')));
+    }
+
+    /**
+     * Sets titles on the module upload page
+     */
+    protected function setTitleUpload()
+    {
+        $this->setTitle($this->text('Upload module'));
+    }
+
+    /**
+     * Renders the module upload page
+     */
+    protected function outputUpload()
+    {
+        $this->output('module/upload');
     }
 
 }

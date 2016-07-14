@@ -615,11 +615,11 @@ class Route
                 'controller' => array('core\\controllers\\admin\\Module', 'modules')
             )
         );
-
-        $routes['admin/module/(\w+)'] = array(
-            'access' => 'module',
+        
+        $routes['admin/module/upload'] = array(
+            'access' => 'module_upload',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'modules')
+                'controller' => array('core\\controllers\\admin\\Module', 'upload')
             )
         );
 

@@ -108,9 +108,9 @@ class Facade
             set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
 
             // Debugging
-            if ($this->config->get('kint', 0)) {
+            //if ($this->config->get('kint', 0)) {
                 require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
-            }
+            //}
 
             // Register hooks
             $this->hook->registerModules($this->config->getEnabledModules());

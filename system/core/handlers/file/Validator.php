@@ -76,5 +76,18 @@ class Validator
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
         return in_array($this->file->getMimetype($file), $allowed);
     }
+    
+    /**
+     * Whether the file is a ZIP file
+     * @param string $file
+     * @param array $validator
+     * @return type
+     */
+    public function zip($file, array $validator)
+    {
+        $allowed = array('application/zip', 'multipart/x-zip');
+        return in_array($this->file->getMimetype($file), $allowed);
+    }
+
 
 }

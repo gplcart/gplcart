@@ -498,7 +498,7 @@ class File
             return $move_result;
         }
 
-        $this->hook->fire('file.download.after', $url, $this->uploaded);
+        $this->hook->fire('file.download.after', $url, $tempname);
         return true;
     }
 
@@ -766,6 +766,13 @@ class File
                 'path' => 'image/upload/common',
                 'handlers' => array(
                     'validator' => array('core\\handlers\\file\\Validator', 'csv')
+                )
+            ),
+            'zip' => array(
+                'extensions' => array('zip'),
+                'path' => 'upload',
+                'handlers' => array(
+                    'validator' => array('core\\handlers\\file\\Validator', 'zip')
                 )
             ),
         );

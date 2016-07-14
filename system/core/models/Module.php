@@ -10,8 +10,10 @@
 namespace core\models;
 
 use PDO;
+use ZipArchive;
 use core\Config;
 use core\Container;
+use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
 
@@ -34,6 +36,12 @@ class Module
     protected $db;
 
     /**
+     * ZipArchive instance
+     * @var \ZipArchive $zip
+     */
+    protected $zip;
+
+    /**
      * Language model instance
      * @var \core\models\Language $language
      */
@@ -43,9 +51,12 @@ class Module
      * Constructor
      * @param Config $config
      * @param ModelsLanguage $language
+     * @param ZipArchive $zip
      */
-    public function __construct(Config $config, ModelsLanguage $language)
+    public function __construct(Config $config, ModelsLanguage $language,
+            ZipArchive $zip)
     {
+        $this->zip = $zip;
         $this->config = $config;
         $this->language = $language;
         $this->db = $this->config->getDb();
@@ -56,10 +67,21 @@ class Module
      * @param string $module_id
      * @return boolean
      */
-    public function enabled($module_id)
+    public function isEnabled($module_id)
     {
         $modules = $this->getList();
         return !empty($modules[$module_id]['status']);
+    }
+
+    /**
+     * Whether the module installed, e.g exists in database
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isInstalled($module_id)
+    {
+        $modules = $this->getList();
+        return !empty($modules[$module_id]['installed']);
     }
 
     /**
@@ -115,9 +137,9 @@ class Module
      */
     public function enable($module_id)
     {
+        $module = $this->get($module_id);
         $result = $this->canEnable($module_id);
 
-        $module = $this->get($module_id);
         if (is_callable(array($module['class'], 'beforeEnable'))) {
             try {
                 $module_class = Container::instance($module['class']);
@@ -144,34 +166,65 @@ class Module
      */
     public function canEnable($module_id)
     {
-        return $this->canInstall($module_id);
+        if ($this->isEnabled($module_id)) {
+            return $this->language->text('Module already installed and enabled');
+        }
+
+        return $this->checkRequirements($module_id);
     }
 
     /**
-     * Whether a given module can be installed
+     * Whether a given module can be installed (and enabled)
      * @param string $module_id
-     * @return boolean|string
+     * @return mixed
      */
     public function canInstall($module_id)
     {
-        $modules = $this->getList();
-
-        if (!empty($modules[$module_id]['status']) && !empty($modules[$module_id]['installed'])) {
+        if ($this->isInstalled($module_id)) {
             return $this->language->text('Module already installed');
         }
 
+        return $this->checkRequirements($module_id);
+    }
+
+    /**
+     * Checks all requirements for the module
+     * @param string $module_id
+     * @return mixed
+     */
+    protected function checkRequirements($module_id)
+    {
+        $modules = $this->getList();
+
+        $result_core = $this->checkCore($module_id, $modules);
+
+        if ($result_core !== true) {
+            return $result_core;
+        }
+
+        $result_required = $this->checkRequiredModules($module_id, $modules);
+
+        if ($result_required !== true) {
+            return $result_required;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks core version requirements
+     * @param string $module_id
+     * @param array $modules
+     * @return boolean|string
+     */
+    protected function checkCore($module_id, $modules)
+    {
         if (empty($modules[$module_id]['core'])) {
             return $this->language->text('Missing core version');
         }
 
         if (version_compare(GC_VERSION, $modules[$module_id]['core']) < 0) {
             return $this->language->text('Module incompatible with the current system core version');
-        }
-
-        $results = $this->checkRequiredModules($module_id, $modules);
-
-        if ($results !== true) {
-            return $results;
         }
 
         return true;
@@ -190,7 +243,6 @@ class Module
         }
 
         $errors = array();
-
         foreach ((array) $modules[$module_id]['dependencies'] as $required) {
             if (empty($modules[$required])) {
                 $errors[] = $this->language->text('Required module %name is missing', array('%name' => $required));
@@ -201,11 +253,11 @@ class Module
                 $errors[] = $this->language->text('Required module %name is disabled', array('%name' => $required));
             }
         }
-        
-        if(empty($errors)){
+
+        if (empty($errors)) {
             return true;
         }
-        
+
         return $errors;
     }
 
@@ -252,7 +304,7 @@ class Module
     {
         $values = array(
             'module_id' => $data['module_id'],
-            'status' => !empty($data['module_id']),
+            'status' => !empty($data['status']),
             'weight' => isset($data['weight']) ? (int) $data['weight'] : $this->getNextWeight(),
             'settings' => empty($data['settings']) ? serialize(array()) : serialize((array) $data['settings']),
         );
@@ -276,7 +328,7 @@ class Module
         }
 
         if ($this->isActiveTheme($module_id)) {
-            $this->add(array('module_id' => $module_id, 'status' => 1, 'settings' => $settings));
+            $this->add(array('module_id' => $module_id, 'status' => true, 'settings' => $settings));
             return true;
         }
 
@@ -290,10 +342,11 @@ class Module
      */
     public function disable($module_id)
     {
+        $module = $this->get($module_id);
         $result = $this->canDisable($module_id);
 
-        $module = $this->get($module_id);
         if (is_callable(array($module['class'], 'beforeDisable'))) {
+
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeDisable();
@@ -303,7 +356,7 @@ class Module
         }
 
         if ($result === true) {
-            $this->update($module_id, array('status' => 0));
+            $this->update($module_id, array('status' => false));
             $this->setOverrideConfig();
             return true;
         }
@@ -404,7 +457,7 @@ class Module
             }
         }
 
-        if ($required_by) {
+        if (!empty($required_by)) {
             return $required_by;
         }
 
@@ -414,12 +467,14 @@ class Module
     /**
      * Installs a module
      * @param string $module_id
+     * @param boolean $status
      * @return mixed
      */
-    public function install($module_id)
+    public function install($module_id, $status = true)
     {
-        $result = $this->canInstall($module_id);
         $module = $this->get($module_id);
+        $result = $this->canInstall($module_id);
+
 
         if (is_callable(array($module['class'], 'beforeInstall'))) {
             try {
@@ -433,7 +488,7 @@ class Module
         }
 
         if ($result === true) {
-            $this->add(array('module_id' => $module_id, 'status' => 1));
+            $this->add(array('module_id' => $module_id, 'status' => $status));
             $this->setOverrideConfig();
             $this->setTranslations($module_id);
             return true;
@@ -509,6 +564,7 @@ class Module
 
         $map = array();
         foreach ($this->getEnabled() as $module_id => $module) {
+
             $directory = GC_MODULE_DIR . "/$module_id/override";
 
             if (!is_readable($directory)) {
@@ -561,9 +617,9 @@ class Module
         }
 
         foreach ($files as $file) {
+
             $filename = basename($file);
             $langcode = strtok($filename, '.');
-
             $langcode_folder = GC_LOCALE_DIR . "/{$langcode}/LC_MESSAGES";
 
             if (!file_exists($langcode_folder) && !mkdir($langcode_folder, 0644, true)) {
@@ -604,4 +660,141 @@ class Module
     {
         return $this->getMaxWeight() + 1;
     }
+
+    /**
+     * Installs a module from a zip archive
+     * @param string $file
+     * @return mixed
+     */
+    public function installFromZip($file)
+    {
+        if (!file_exists($file)) {
+            return $this->language->text('File %file not found', array('%file' => $file));
+        }
+
+        $module_id = $this->getIdFromZip($file);
+
+        if (empty($module_id)) {
+            return $this->language->text('Invalid zip content');
+        }
+
+        // Only disabled existing modules can by updated
+        if ($this->isEnabled($module_id)) {
+            return $this->language->text('Module %id already installed and enabled. Disable it before updating.', array('%id' => $module_id));
+        }
+
+        $backup = $this->backup($module_id);
+
+        if (empty($backup)) {
+            return $this->language->text('Failed to backup module %id', array('%id' => $module_id));
+        }
+
+        $result = $this->zip->extractTo(GC_MODULE_DIR);
+
+        if (!$result) {
+            return $this->language->text('Failed to extract module files');
+        }
+
+        if ($this->isInstalled($module_id)) {
+            return true;
+        }
+
+        return $this->install($module_id, false); // Install but not enable
+    }
+
+    /**
+     * Backups existing module by renaming its folder name
+     * @param string $module_id
+     * @return boolean|string
+     */
+    protected function backup($module_id)
+    {
+        $suffix = $this->getBackupKey();
+        $oldname = GC_MODULE_DIR . "/$module_id";
+        $newname = $oldname . $suffix . date("Y-m-d-H-i-s");
+
+        if (!file_exists($oldname)) {
+            return true;
+        }
+
+        return rename($oldname, $newname) ? $newname : false;
+    }
+
+    /**
+     * Returns a string containing key to be appended to module folder name
+     * @return string
+     */
+    public function getBackupKey()
+    {
+        return '~backup';
+    }
+
+    /**
+     * Returns an array of files in the zip
+     * @param string $file
+     * @return boolean|array
+     */
+    public function getFilesFromZip($file)
+    {
+        $zip = $this->zip->open($file);
+
+        if (empty($zip)) {
+            return false;
+        }
+
+        // At leas 2 files needed - folder and main module class
+        if ($this->zip->numFiles < 2) {
+            return false;
+        }
+
+        // Get simple array of zip files
+        $list = array();
+        for ($i = 0; $i < $this->zip->numFiles; $i++) {
+            $list[] = $this->zip->getNameIndex($i);
+        }
+
+        return $list;
+    }
+
+    /**
+     * Returns a module id from zip file or false on error
+     * @param string $file
+     * @return boolean
+     */
+    public function getIdFromZip($file)
+    {
+        $list = $this->getFilesFromZip($file);
+
+        if (empty($list)) {
+            return false;
+        }
+
+        $folder = reset($list);
+
+        // Check if it's folder
+        if ('/' !== strrchr($folder, '/')) {
+            return false;
+        }
+
+        // Count folder's files
+        $nested = 0;
+        foreach ($list as $item) {
+            if (strpos($item, $folder) === 0) {
+                $nested++;
+            }
+        }
+
+        if (count($list) != $nested) {
+            return false;
+        }
+
+        $id = rtrim($folder, '/');
+
+        if (!Tool::validModuleId($id)) {
+            return false;
+        }
+
+        return $id;
+    }
+
 }

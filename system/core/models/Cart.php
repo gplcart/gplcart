@@ -152,20 +152,23 @@ class Cart
             $user_id = $this->uid();
         }
 
-        if ($cached) {
+        //if ($cached) {
             $cart = &Cache::memory("cart.$user_id");
 
             if (isset($cart)) {
                 return $cart;
             }
 
+            /*
             $cache = Cache::get("cart.$user_id");
 
             if (isset($cache)) {
                 $cart = $cache;
                 return $cart;
             }
-        }
+             * */
+
+        //}
 
         $products = $this->getList(array('user_id' => $user_id));
 
@@ -214,7 +217,7 @@ class Cart
         $this->hook->fire('get.cart.after', $user_id, $cart);
 
         if ($cached) {
-            Cache::set("cart.$user_id", $cart);
+            //Cache::set("cart.$user_id", $cart);
         }
 
         return $cart;

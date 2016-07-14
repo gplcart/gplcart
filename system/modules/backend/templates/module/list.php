@@ -1,3 +1,12 @@
+<?php if($upload_access) { ?>
+<div class="row">
+  <div class="col-md-6 col-md-offset-6 text-right">
+    <a class="btn btn-primary" href="<?php echo $this->url('admin/module/upload'); ?>">
+      <i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?>
+    </a>
+  </div>
+</div>
+<?php } ?>
 <?php if ($modules) { ?>
 <div class="row margin-top-20">
   <div class="col-md-12">

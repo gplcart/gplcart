@@ -98,6 +98,12 @@ class Install
             'severity' => 'danger',
             'message' => $this->language->text('OpenSSL extension installed')
         );
+        
+        $requirements['extensions']['zip'] = array(
+            'status' => class_exists('ZipArchive'),
+            'severity' => 'danger',
+            'message' => $this->language->text('Supports ZIP files')
+        );
 
         $requirements['php']['allow_url_fopen'] = array(
             'status' => !ini_get('allow_url_fopen'),
@@ -334,7 +340,7 @@ class Install
         $this->db->insert('alias', array(
             'id_key' => 'page_id',
             'id_value' => $page_id,
-            'alias' => 'about'
+            'alias' => 'about.html'
         ));
 
         $page_id = $this->db->insert('page', array(
@@ -350,7 +356,7 @@ class Install
         $this->db->insert('alias', array(
             'id_key' => 'page_id',
             'id_value' => $page_id,
-            'alias' => 'contact'
+            'alias' => 'contact.html'
         ));
 
         $page_id = $this->db->insert('page', array(
@@ -366,7 +372,7 @@ class Install
         $this->db->insert('alias', array(
             'id_key' => 'page_id',
             'id_value' => $page_id,
-            'alias' => 'terms'
+            'alias' => 'terms.html'
         ));
 
         $page_id = $this->db->insert('page', array(
@@ -382,7 +388,7 @@ class Install
         $this->db->insert('alias', array(
             'id_key' => 'page_id',
             'id_value' => $page_id,
-            'alias' => 'faq'
+            'alias' => 'faq.html'
         ));
 
         return true;

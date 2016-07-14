@@ -109,13 +109,13 @@
                 <a href="<?php echo $this->url('admin/module'); ?>"><?php echo $this->text('All'); ?></a>
               </li>
               <li>
-                <a href="<?php echo $this->url('admin/module/theme'); ?>"><?php echo $this->text('Theme'); ?></a>
+                <a href="<?php echo $this->url('admin/module', array('type' => 'theme')); ?>"><?php echo $this->text('Theme'); ?></a>
               </li>
               <li>
-                <a href="<?php echo $this->url('admin/module/payment'); ?>"><?php echo $this->text('Payment'); ?></a>
+                <a href="<?php echo $this->url('admin/module', array('type' => 'payment')); ?>"><?php echo $this->text('Payment'); ?></a>
               </li>
               <li>
-                <a href="<?php echo $this->url('admin/module/shipping'); ?>"><?php echo $this->text('Shipping'); ?></a>
+                <a href="<?php echo $this->url('admin/module', array('type' => 'shipping')); ?>"><?php echo $this->text('Shipping'); ?></a>
               </li>
             </ul>
           </li>

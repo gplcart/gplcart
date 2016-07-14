@@ -366,6 +366,7 @@ class Product
         if ($result) {
             $this->search->index('product_id', $product_id);
             Cache::clear("product.$product_id.", "*");
+            //Cache::clear('cart', '*');
         }
 
         $this->hook->fire('update.product.after', $product_id, $data, $result);
@@ -707,6 +708,8 @@ class Product
         $this->db->delete('rating', array('product_id' => $product_id));
         $this->db->delete('rating_user', array('product_id' => $product_id));
         $this->db->delete('search_index', array('id_key' => 'product_id', 'id_value' => $product_id));
+        
+        //Cache::clear('cart', '*');
 
         $this->hook->fire('delete.product.after', $product_id);
         return true;

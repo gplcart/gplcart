@@ -205,7 +205,7 @@ class Config
         $saved_modules = $this->getInstalledModules();
 
         foreach (scandir(GC_MODULE_DIR) as $module_dir) {
-            if (!$this->validModuleName($module_dir)) {
+            if (!$this->validModuleId($module_dir)) {
                 continue;
             }
 
@@ -221,17 +221,16 @@ class Config
             $module_instance = $module_data['instance'];
 
             if (!empty($module_info['dependencies'])) {
-                $module_info['dependencies'] = $this->validModuleName((array) $module_info['dependencies']);
+                $module_info['dependencies'] = $this->validModuleId((array) $module_info['dependencies']);
             }
 
-            if (isset($module_info['id']) && !$this->validModuleName($module_info['id'])) {
+            if (isset($module_info['id']) && !$this->validModuleId($module_info['id'])) {
                 continue;
             }
 
             $module_info['hooks'] = $this->getHooks($module_instance);
 
             $module_info += array(
-                //'file' => $module_file,
                 'class' => $module_class,
                 'directory' => GC_MODULE_DIR . "/$module_name",
                 'name' => $module_name,
@@ -383,18 +382,18 @@ class Config
     }
 
     /**
-     * Validates / filters module name(s)
-     * @param string|array $name
+     * Validates / filters module id(s)
+     * @param string|array $id
      * @return boolean|array
      */
-    protected function validModuleName($name)
+    protected function validModuleId($id)
     {
-        if (is_string($name)) {
-            return preg_match('/^[a-z_]+$/', $name);
+        if (is_string($id)) {
+            return Tool::validModuleId($id);
         }
 
-        return array_filter((array) $name, function ($module_id) {
-            return $this->validModuleName($module_id);
+        return array_filter((array) $id, function ($string) {
+            return Tool::validModuleId($string);
         });
     }
 

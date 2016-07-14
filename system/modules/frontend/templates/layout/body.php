@@ -188,16 +188,16 @@
         <div class="col-md-4">
           <ul class="list-unstyled">
             <li>
-              <a rel="nofollow" href="<?php echo $this->url('about'); ?>"><?php echo $this->text('About us'); ?></a>
+              <a rel="nofollow" href="<?php echo $this->url('about.html'); ?>"><?php echo $this->text('About us'); ?></a>
             </li>
             <li>
-              <a rel="nofollow" href="<?php echo $this->url('contact'); ?>"><?php echo $this->text('Contact us'); ?></a>
+              <a rel="nofollow" href="<?php echo $this->url('contact.html'); ?>"><?php echo $this->text('Contact us'); ?></a>
             </li>
             <li>
-              <a rel="nofollow" href="<?php echo $this->url('terms'); ?>"><?php echo $this->text('Terms and conditions'); ?></a>
+              <a rel="nofollow" href="<?php echo $this->url('terms.html'); ?>"><?php echo $this->text('Terms and conditions'); ?></a>
             </li>
             <li>
-              <a rel="nofollow" href="<?php echo $this->url('faq'); ?>"><?php echo $this->text('Questions and answers'); ?></a>
+              <a rel="nofollow" href="<?php echo $this->url('faq.html'); ?>"><?php echo $this->text('Questions and answers'); ?></a>
             </li>
           </ul>          
         </div>

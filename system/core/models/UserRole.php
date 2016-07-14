@@ -334,6 +334,7 @@ class UserRole
             'module_uninstall' => $this->language->text('Module: uninstall'),
             'module_enable' => $this->language->text('Module: enable'),
             'module_disable' => $this->language->text('Module: disable'),
+            'module_upload' => $this->language->text('Module: upload'),
             'store' => $this->language->text('Store: access'),
             'store_edit' => $this->language->text('Store: edit'),
             'store_add' => $this->language->text('Store: add'),
