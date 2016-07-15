@@ -118,7 +118,7 @@ class Language
      * @param Config $config
      */
     public function __construct(Translit $translit, Hook $hook, Po $po,
-                                Route $route, Config $config)
+            Route $route, Config $config)
     {
         $this->po = $po;
         $this->hook = $hook;
@@ -179,15 +179,16 @@ class Language
             return $languages;
         }
 
+        $default = $this->getDefault();
         $available = $this->getAvailable();
         $saved = $this->config->get('languages', array());
-        $default = $this->getDefault();
 
         $languages = Tool::merge($available, $saved);
 
         foreach ($languages as $code => &$language) {
-            $language['default'] = ($code == $default);
             $language['code'] = $code;
+            $language['default'] = ($code == $default);
+            $language['weight'] = isset($language['weight']) ? (int) $language['weight'] : 0;
         }
 
         $this->hook->fire('languages', $languages);
@@ -215,6 +216,7 @@ class Language
                 'default' => false,
                 'code' => $langcode,
                 'name' => $langcode,
+                'weight' => 0,
                 'native_name' => $langcode
             );
         }
@@ -260,7 +262,8 @@ class Language
             'name' => !empty($data['name']) ? $data['name'] : $data['code'],
             'native_name' => !empty($data['native_name']) ? $data['native_name'] : $data['code'],
             'status' => !empty($data['status']),
-            'default' => !empty($data['default'])
+            'default' => !empty($data['default']),
+            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0
         );
 
         $languages = $this->getAll();
@@ -487,4 +490,5 @@ class Language
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
     }
+
 }
