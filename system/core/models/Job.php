@@ -439,12 +439,6 @@ class Job
             ),
         );
 
-        $handlers['import_option_combination'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\import\\Combination', 'process')
-            ),
-        );
-
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
     }

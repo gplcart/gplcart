@@ -141,13 +141,6 @@ class Export
             'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_product.csv'
         );
 
-        $operations['option_combination'] = array(
-            'name' => $this->language->text('Option combinations'),
-            'job_id' => 'export_option_combination',
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_option_combination_errors.csv'),
-            'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_option_combination.csv'
-        );
-
         // Add the same CSV header from import operations
         foreach ($this->import->getOperations() as $id => $data) {
             if (isset($operations[$id]) && isset($data['csv']['header'])) {

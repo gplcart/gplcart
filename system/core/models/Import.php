@@ -250,24 +250,6 @@ class Import
             'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_product_errors.csv'),
         );
 
-        $operations['option_combination'] = array(
-            'name' => $this->language->text('Option combinations'),
-            'job_id' => 'import_option_combination',
-            'csv' => array(
-                'header' => array(
-                    'combination_id' => 'Combination ID',
-                    'fields' => 'Field values',
-                    'product_id' => 'Product',
-                    'sku' => 'SKU',
-                    'price' => 'Price',
-                    'stock' => 'Stock',
-                    'file_id' => 'Image',
-                ),
-                'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_option_combination.csv'
-            ),
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_option_combination_errors.csv'),
-        );
-
         $this->hook->fire('import.operations', $operations);
         
         return $operations;
