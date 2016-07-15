@@ -164,7 +164,7 @@ class Route
         $routes['page/(\d+)'] = array(
             'alias' => array(0, 1),
             'handlers' => array(
-                'controller' => array('core\\controllers\\Page', 'index')
+                'controller' => array('core\\controllers\\Page', 'page')
             )
         );
 

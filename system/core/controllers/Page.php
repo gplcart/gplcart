@@ -19,7 +19,7 @@ class Page extends Controller
 {
 
     /**
-     * Page model class instance
+     * Page model instance
      * @var \core\models\Page $page
      */
     protected $page;
@@ -37,25 +37,63 @@ class Page extends Controller
 
     /**
      * Displays a page
-     * @param type $page_id
+     * @param integer $page_id
      */
     public function page($page_id)
     {
-        $page = $this->page->getCached($page_id);
-
-        $langcode = $this->data['lang'];
-
-        if (isset($page['description'][$langcode])) {
-            $page['title'] = $page['description'][$langcode]['title'];
-            $page['description'] = $page['description'][$langcode]['description'];
-
-            $this->setMetaTitle($page['title']);
-            $this->setMetaDescription($page['title']);
-        }
-
+        $page = $this->get($page_id);
         $this->data['page'] = $page;
 
-        $this->hook->fire('page.view', $page);
+        $this->setTitlePage($page);
+        $this->setBreadcrumbPage($page);
+        $this->outputPage();
+    }
+
+    /**
+     * Renders the page
+     */
+    protected function outputPage()
+    {
+        $this->output('page/page');
+    }
+
+    /**
+     * Sets breadcrumbs on the page
+     * @param array $page
+     */
+    protected function setBreadcrumbPage(array $page)
+    {
+        $breadcrumb = array('text' => $this->text('Home'), 'url' => $this->url('/'));
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Sets titles on the page
+     * @param array $page
+     */
+    protected function setTitlePage(array $page)
+    {
+        $this->setTitle($page['title']);
+    }
+
+    /**
+     * Loads a page from the database
+     * @param integer $page_id
+     * @return array
+     */
+    protected function get($page_id)
+    {
+        $page = $this->page->get($page_id, $this->langcode);
+
+        if (empty($page['status'])) {
+            $this->outputError(404);
+        }
+
+        if ($page['store_id'] != $this->store_id) {
+            $this->outputError(404);
+        }
+
+        return $page;
     }
 
 }
