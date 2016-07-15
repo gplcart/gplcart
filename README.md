@@ -1,4 +1,6 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/quality-score.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/?branch=dev) [![Build Status](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/build.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/build-status/dev)
+[![Build Status](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/build.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/build-status/dev)
+
+Описание [на русском](#ru)
 
 ## About ##
 GPLCart is an open source e-commerce platform based on the classical LAMP stack (Linux+ Apache+Mysql+PHP). It is free, simple, modern and extendable solution that allows you to build online-shops fast and easy.
@@ -13,6 +15,7 @@ Also you'll need the following extension enabled:
 - OpenSSL
 - Mb string
 - Mod Rewrite
+- ZipArchive
 
 ## Installation ##
 
@@ -45,3 +48,53 @@ For owners:
 - Roles and access control
 
 ...and much more!
+
+----------
+### <a name="ru"></a>
+
+## О программе ##
+GPLCart - это движок интернет-магазина с открытым исходным кодом, который работает на классической связке PHP+Mysql. Это бесплатное, современное и расширяемое решение, которое позволяет строить интернет-магазины быстро и просто!
+
+## Системные требования ##
+
+- PHP 5.3+, Mysql 5+, Apache 1+
+
+Также ваш PHP должен иметь следущие расширения:
+
+- Curl
+- OpenSSL
+- Mb string
+- Mod Rewrite
+- ZipArchive
+
+## Установка ##
+Скачайте архив и установите в рабочую директорию вашего хостинга. Наберите `yourdomain.com` и следуйте инструкциям. Это всё!
+
+## Некоторые возможности системы ##
+
+Для разработчиков:
+
+- Простой MVC паттерн
+- Соответствие стандартам PSR-0, PSR-4
+- Инъекции зависимостей, контейнер
+- Минимум статических методов
+- Простейшая архитектура модулей, темы тоже модули
+- Тонны хуков для отслеживания/изменения поведения системы из модулей
+- Возможность перезаписи методов ядра без хаков и "модов"
+- Поддерживает классические PHP шаблоны и TWIG
+
+Для владельцев:
+
+- Мультисайтинг вида `anotherstore.com, anotherstore.domain.com, domain.com/anotherstore`
+- Нет корзины. Это фича. Всё на странице чекаута.
+- Настоящий одностраничный чекаут с AJAX перегрузкой. Работает и без JS кстати
+- Классы товаров
+- Поля товаров (текст, картинки, цвета)
+- Комбинации опций (XL + красный, XL + зелёный и тд). Самое лёгкое управление ними, которое вы когда либо видели
+- Мощный экспорт/импорт из CSV. Как насчёт 100.000 товаров на слабеньком виртуальном хостинге? Без проблем!
+- Гибкие правила цен для каталога и чекаута (купоны)
+- Встроенная поддержка Google Analytics
+- Мощная система контроля доступа, роли
+
+...и много чего ещё!
+
