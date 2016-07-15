@@ -371,10 +371,6 @@ class Category extends Controller
         ) + $query;
 
         $products = $this->product->getList($options);
-        
-        //ddd($this->langcode);
-        
-        
         return $this->prepareProducts($products, $query);
     }
 
@@ -389,7 +385,8 @@ class Category extends Controller
         $options = array(
             'count' => true,
             'category_id' => $category_id,
-            'language' => $this->langcode);
+            //'language' => $this->langcode
+        );
 
         return $this->product->getList($options + $query);
     }
