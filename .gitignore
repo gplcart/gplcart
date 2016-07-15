@@ -2,15 +2,17 @@
 .idea
 nbproject
 
-# Ignore custom configs
+# Config folder. Ignore all but default config
 system/config/*
 !system/config/common.default.php
 
-# Ignore custom modules
+# Module folder. Ignore all but core modules
 system/modules/*
 !system/modules/frontend
 !system/modules/backend
+!system/modules/mobile
 
+# Private file folder. Ignore all but system files
 files/private/*
 !files/private/.htaccess
 !files/private/stopwords
