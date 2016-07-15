@@ -71,8 +71,6 @@ class Language extends Controller
         }
 
         $this->data['languages'] = $this->language->getList();
-        
-        //ddd($this->data['languages']);
 
         $this->setTitleLanguages();
         $this->setBreadcrumbLanguages();

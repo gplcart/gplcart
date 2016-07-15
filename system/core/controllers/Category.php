@@ -119,6 +119,7 @@ class Category extends Controller
         $total = $this->getTotalProducts($category_id, $query);
         $limit = $this->setPager($total, $query, $this->config->module($this->theme, 'catalog_limit', 20));
         $tree = $this->getTree($category['category_group_id']);
+
         $products = $this->getProducts($limit, $query, $category_id);
 
         $this->data['category'] = $category;
@@ -366,10 +367,14 @@ class Category extends Controller
             'limit' => $limit,
             'store_id' => $this->store_id,
             'category_id' => $category_id,
-            'language' => $this->langcode
-                ) + $query;
+            //'language' => $this->langcode
+        ) + $query;
 
         $products = $this->product->getList($options);
+        
+        //ddd($this->langcode);
+        
+        
         return $this->prepareProducts($products, $query);
     }
 
