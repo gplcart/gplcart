@@ -98,7 +98,7 @@ class Install
             'severity' => 'danger',
             'message' => $this->language->text('OpenSSL extension installed')
         );
-        
+
         $requirements['extensions']['zip'] = array(
             'status' => class_exists('ZipArchive'),
             'severity' => 'danger',
@@ -260,7 +260,7 @@ class Install
 
         $store_id = $this->db->insert('store', $store);
         $config->set('store', $store_id);
-        $config->set('notification_demo', 1);
+        $config->set('intro', 1);
 
         // Default user
         $user = array(

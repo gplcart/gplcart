@@ -2,8 +2,14 @@
 .idea
 nbproject
 
+# Ignore custom configs
 system/config/*
 !system/config/common.default.php
+
+# Ignore custom modules
+system/modules/*
+!system/modules/frontend
+!system/modules/backend
 
 files/private/*
 !files/private/.htaccess

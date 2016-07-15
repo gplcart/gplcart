@@ -771,12 +771,10 @@ class Module
 
         $folder = reset($list);
 
-        // Check if it's folder
         if ('/' !== strrchr($folder, '/')) {
             return false;
         }
 
-        // Count folder's files
         $nested = 0;
         foreach ($list as $item) {
             if (strpos($item, $folder) === 0) {

@@ -87,6 +87,11 @@ class Dashboard extends Controller
      */
     public function dashboard()
     {
+        if ($this->request->get('skip_intro')) {
+            $this->config->reset('intro');
+            $this->redirect();
+        }
+
         $this->data['stores'] = $this->store->getList();
         $this->data['store'] = $store = $this->getStore();
         $this->data['user_total'] = $this->user->getList(array('count' => true));
@@ -100,31 +105,11 @@ class Dashboard extends Controller
         $this->data['orders'] = $this->getOrders($limit);
         $this->data['system_events'] = $this->getEvents($limit);
         $this->data['severity_count'] = $this->getSeverityCount();
-        
+
         $this->setGa($store);
-        $this->setDemoNotification();
-        
+
         $this->setTitleDashboard();
         $this->outputDashboard();
-    }
-    
-    /**
-     * Informs a user about demo content
-     */
-    protected function setDemoNotification()
-    {
-        $show = (bool) $this->config->get('notification_demo', 0);
-        
-        $text = 'Does your site look empty?'
-                . ' You can install a demo content which can be safely removed'
-                . ' in the future <a class="btn btn-sm btn-default"'
-                . ' href="!url">Go to installation</a>';
-
-        $message = $this->text($text, array('!url' => $this->url('admin/tool/demo')));
-
-        if ($show) {
-            $this->setMessage($message);
-        }
     }
 
     /**
@@ -132,6 +117,13 @@ class Dashboard extends Controller
      */
     protected function outputDashboard()
     {
+        $intro = (bool) $this->config->get('intro', 0);
+
+        if ($intro && $this->isSuperadmin()) {
+            // Display intro for newly installed stores
+            $this->output('common/intro');
+        }
+
         $this->output('common/dashboard');
     }
 

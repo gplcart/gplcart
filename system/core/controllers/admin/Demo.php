@@ -59,7 +59,6 @@ class Demo extends Controller
     public function demo()
     {
         $this->controlAccessSuperAdmin();
-        $this->config->reset('notification_demo');
         $this->checkConnection();
 
         // First create categories
