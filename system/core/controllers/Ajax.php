@@ -128,7 +128,7 @@ class Ajax extends Controller
             exit; // Reject non-ajax requests
         }
 
-        $action = $this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
             $this->response->json(array('error' => $this->text('Missing handler')));
@@ -152,13 +152,13 @@ class Ajax extends Controller
             return array('error' => $this->text('You are not permitted to perform this operation'));
         }
 
-        $url = $this->request->post('url');
+        $url = (string) $this->request->post('url');
 
         if (empty($url)) {
             return array('error' => $this->text('You are not permitted to perform this operation'));
         }
 
-        $title = $this->request->post('title');
+        $title = (string) $this->request->post('title');
 
         if (empty($title) || mb_strlen($title) > 255) {
             return array('error' => $this->text('An error occurred'));
@@ -179,7 +179,7 @@ class Ajax extends Controller
      */
     public function deleteBookmark()
     {
-        $bookmark_id = $this->request->post('bookmark_id', 0);
+        $bookmark_id = (int) $this->request->post('bookmark_id', 0);
 
         if ($this->access('bookmark_delete') && $this->bookmark->delete($bookmark_id)) {
             return array('success' => 1);
@@ -199,7 +199,7 @@ class Ajax extends Controller
         }
 
         $products = $this->product->getList(array(
-            'title' => $this->request->post('term', ''),
+            'title' => (string) $this->request->post('term', ''),
             'store_id' => $this->request->post('store_id', null),
             'status' => $this->request->post('status', null),
             'limit' => array(0, $this->config->get('admin_autocomplete_limit', 10))));
@@ -234,7 +234,7 @@ class Ajax extends Controller
         }
 
         $users = $this->user->getList(array(
-            'email' => $this->request->post('term', ''),
+            'email' => (string) $this->request->post('term', ''),
             'store_id' => $this->request->post('store_id', null),
             'limit' => array(0, $this->config->get('admin_autocomplete_limit', 10))));
 
@@ -247,7 +247,7 @@ class Ajax extends Controller
      */
     public function switchProductOptions()
     {
-        $product_id = $this->request->post('product_id');
+        $product_id = (int) $this->request->post('product_id');
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
@@ -259,6 +259,8 @@ class Ajax extends Controller
         $field_value_ids = $this->request->post('values');
 
         if (!empty($field_value_ids)) {
+            
+            $field_value_ids = array_values($field_value_ids);
             $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
 
             $response = array(
@@ -321,7 +323,7 @@ class Ajax extends Controller
      */
     public function getCountryData()
     {
-        $country_code = $this->request->post('country');
+        $country_code = (string) $this->request->post('country');
 
         if (empty($country_code)) {
             return array();
@@ -351,7 +353,7 @@ class Ajax extends Controller
      */
     public function searchProducts()
     {
-        $term = $this->request->post('term');
+        $term = (string) $this->request->post('term');
 
         if (empty($term)) {
             return array();
@@ -394,8 +396,8 @@ class Ajax extends Controller
      */
     public function adminSearch()
     {
-        $term = $this->request->post('term');
-        $id = $this->request->post('id');
+        $term = (string) $this->request->post('term');
+        $id = (string) $this->request->post('id');
 
         if (empty($term) || empty($id)) {
             return array('error' => $this->text('An error occurred'));
@@ -437,7 +439,8 @@ class Ajax extends Controller
         $upload_path = 'image/upload';
         $type = $this->request->post('type');
 
-        if ($type) {
+        if (!empty($type)) {
+            $type = (string) $type;
             $upload_path .= '/' . $this->config->get("{$type}_image_dirname", $type);
         }
 
@@ -476,8 +479,8 @@ class Ajax extends Controller
      */
     public function rate()
     {
-        $product_id = $this->request->post('product_id');
-        $stars = $this->request->post('stars', 0);
+        $product_id = (int) $this->request->post('product_id');
+        $stars = (int) $this->request->post('stars', 0);
 
         if (empty($product_id) || empty($this->uid)) {
             return array('error' => $this->text('You are not permitted to perform this operation'));

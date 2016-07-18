@@ -73,7 +73,7 @@ class Action extends Controller
 
         // Catch spam submits
         $this->controlSpam('action');
-        $action = $this->request->get('action');
+        $action = (string) $this->request->get('action', '');
         $this->hook->fire('action.before', $action);
 
         // Action name = method name
@@ -93,7 +93,7 @@ class Action extends Controller
     protected function finishAction(array $result = array())
     {
         $result += array(
-            'redirect' => $this->request->get('redirect', '/'),
+            'redirect' => (string) $this->request->get('redirect', '/'),
             'message' => $this->text('An error occurred'),
             'message_type' => 'danger',
         );
@@ -115,8 +115,8 @@ class Action extends Controller
      */
     protected function addToCart()
     {
-        $product_id = $this->request->get('product_id');
-        $quantity = $this->request->get('quantity', 1);
+        $product_id = (int) $this->request->get('product_id');
+        $quantity = (int) $this->request->get('quantity', 1);
 
         $result = $this->cart->submit(array(
             'product_id' => $product_id, 'quantity' => $quantity));
@@ -146,7 +146,7 @@ class Action extends Controller
     protected function addToWishlist()
     {
         $user_id = $this->cart->uid();
-        $product_id = $this->request->get('product_id');
+        $product_id = (int) $this->request->get('product_id');
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
@@ -180,7 +180,7 @@ class Action extends Controller
     protected function removeFromWishlist()
     {
         $user_id = $this->cart->uid();
-        $product_id = $this->request->get('product_id');
+        $product_id = (int) $this->request->get('product_id');
 
         $result = $this->bookmark->getList(array(
             'id_key' => 'product_id',
@@ -206,7 +206,7 @@ class Action extends Controller
      */
     protected function addToCompare()
     {
-        $product_id = $this->request->get('product_id');
+        $product_id = (int) $this->request->get('product_id');
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
@@ -231,7 +231,7 @@ class Action extends Controller
      */
     protected function removeFromComparison()
     {
-        $product_id = $this->request->get('product_id');
+        $product_id = (int) $this->request->get('product_id');
         $this->product->removeCompared($product_id);
 
         return array(

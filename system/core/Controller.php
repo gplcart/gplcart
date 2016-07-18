@@ -982,7 +982,7 @@ class Controller
      */
     protected function setJob()
     {
-        $job_id = $this->request->get('job_id');
+        $job_id = (string) $this->request->get('job_id');
 
         if (empty($job_id)) {
             return;
@@ -996,8 +996,10 @@ class Controller
         if (empty($this->current_job['status'])) {
             return;
         }
+        
+        $process_job_id = (string) $this->request->get('process_job');
 
-        if ($this->request->isAjax() && $this->request->get('process_job') == $job_id) {
+        if ($this->request->isAjax() && $process_job_id == $job_id) {
             $this->response->json($job->process($this->current_job));
         }
     }
@@ -1419,12 +1421,12 @@ class Controller
             $query = $this->getFilterQuery();
         }
 
-        $order = $this->request->get('order');
+        $order = (string) $this->request->get('order');
 
         $this->data['filtering'] = false;
 
         foreach ($allowed_filters as $filter) {
-            $this->data["filter_$filter"] = $this->request->get($filter);
+            $this->data["filter_$filter"] = (string) $this->request->get($filter);
 
             if (isset($this->data["filter_$filter"])) {
                 $this->data['filtering'] = true;
@@ -1432,7 +1434,7 @@ class Controller
 
             $this->data["sort_$filter"] = $this->url('', array(
                 'sort' => $filter,
-                'order' => ($order == 'desc') ? 'asc' : 'desc') + $query);
+                'order' => ($order === 'desc') ? 'asc' : 'desc') + $query);
         }
     }
 

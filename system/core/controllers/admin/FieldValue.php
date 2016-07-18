@@ -85,8 +85,8 @@ class FieldValue extends Controller
 
         $this->setFilter(array('title', 'color', 'weight', 'image'), $query);
 
-        $action = $this->request->post('action');
-        $selected = $this->request->post('selected', array());
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action);

@@ -93,7 +93,7 @@ class Search extends Controller
 
     public function search()
     {
-        $term = $this->request->get('q', '');
+        $term = (string) $this->request->get('q', '');
 
         $view = $this->config->module($this->theme, 'catalog_view', 'grid');
         $sort = $this->config->module($this->theme, 'catalog_sort', 'price');

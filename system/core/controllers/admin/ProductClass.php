@@ -50,9 +50,9 @@ class ProductClass extends Controller
      */
     public function classes()
     {
-        $action = $this->request->post('action');
-        $value = $this->request->post('value');
-        $selected = $this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);
@@ -412,8 +412,9 @@ class ProductClass extends Controller
     protected function submitField(array $product_class)
     {
         $this->controlAccess('product_class_edit');
+        $fields = (array) $this->request->post('fields', array());
 
-        foreach ($this->request->post('fields', array()) as $field_id) {
+        foreach (array_values($fields) as $field_id) {
             $field = array(
                 'product_class_id' => $product_class['product_class_id'],
                 'field_id' => $field_id

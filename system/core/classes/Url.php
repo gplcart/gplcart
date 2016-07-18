@@ -45,7 +45,7 @@ class Url
             exit;
         }
 
-        $target = $this->request->get('target');
+        $target = (string) $this->request->get('target');
 
         if (!empty($target)) {
             $url = parse_url($target, PHP_URL_PATH);

@@ -168,6 +168,10 @@ class Config
      */
     public function tokenValid($token)
     {
+        if (!is_string($token)) {
+            return false; // Theoretically can be an array, e.g GET
+        }
+
         return Tool::hashEquals($this->token(), $token);
     }
 

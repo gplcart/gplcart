@@ -69,9 +69,9 @@ class PriceRule extends Controller
         $filters = array('name', 'code', 'value', 'value_type', 'weight', 'status', 'store_id', 'type');
         $this->setFilter($filters, $query);
 
-        $action = $this->request->post('action');
-        $selected = $this->request->post('selected', array());
-        $value = $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);

@@ -248,6 +248,7 @@ class Tool
      */
     public static function hashEquals($str1, $str2)
     {
+        
         if (function_exists('hash_equals')) {
             return hash_equals($str1, $str2);
         }

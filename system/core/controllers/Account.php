@@ -172,7 +172,7 @@ class Account extends Controller
     public function addresses($user_id)
     {
         $user = $this->getUser($user_id);
-        $address_id = $this->request->get('delete');
+        $address_id = (int) $this->request->get('delete');
 
         if (!empty($address_id)) {
             $this->deleteAddress($address_id);
@@ -212,7 +212,7 @@ class Account extends Controller
             $this->url->redirect("account/{$this->uid}");
         }
 
-        if ($this->request->post('register') !== null) {
+        if ($this->request->post('register')) {
             $this->submitRegister();
         }
 
@@ -443,8 +443,8 @@ class Account extends Controller
      */
     protected function getRecoverableUser()
     {
-        $token = $this->request->get('key');
-        $user_id = $this->request->get('user_id');
+        $token = (string) $this->request->get('key', '');
+        $user_id = (string) $this->request->get('user_id', '');
 
         // Data unavailable, exit
         if (empty($token) || empty($user_id)) {

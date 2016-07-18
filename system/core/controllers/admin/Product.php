@@ -133,9 +133,9 @@ class Product extends Controller
      */
     public function products()
     {
-        $selected = $this->request->post('selected', array());
-        $value = $this->request->post('value');
-        $action = $this->request->post('action');
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);
@@ -168,8 +168,9 @@ class Product extends Controller
     public function edit($product_id = null)
     {
         if ($this->request->isAjax()) {
-            $store_id = $this->request->get('store_id', null);
-            if (isset($store_id)) {
+            $store_id = (int) $this->request->get('store_id');
+
+            if (!empty($store_id)) {
                 $this->response->json($this->getFields($store_id));
             }
         }
@@ -246,7 +247,7 @@ class Product extends Controller
     protected function action(array $selected, $action, $value)
     {
         if ($action == 'get_options') {
-            $product_id = $this->request->post('product_id');
+            $product_id = (int) $this->request->post('product_id');
             $product = $this->product->get($product_id);
 
             $data = array();
@@ -473,9 +474,11 @@ class Product extends Controller
         }
 
         $output_field_form = false;
-        if ($this->request->get('product_class_id', null) !== null) {
-            $product_class_id = $this->request->get('product_class_id');
+        $get_product_class_id = (int) $this->request->get('product_class_id');
+
+        if (!empty($get_product_class_id)) {
             $output_field_form = true;
+            $product_class_id = $get_product_class_id;
         }
 
         $data = array(
@@ -560,7 +563,8 @@ class Product extends Controller
 
         if (isset($product['product_id'])) {
             $this->controlAccess('product_edit');
-            foreach ($this->request->post('delete_image', array()) as $file_id) {
+            $images = (array) $this->request->post('delete_image', array());
+            foreach (array_values($images) as $file_id) {
                 $this->image->delete($file_id);
             }
 

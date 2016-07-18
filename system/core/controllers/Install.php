@@ -126,7 +126,7 @@ class Install extends Controller
      */
     protected function setInstallLanguage()
     {
-        $selected = $this->request->post('language');
+        $selected = (string) $this->request->post('language');
 
         // Change language
         if (!empty($selected)) {

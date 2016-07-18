@@ -57,7 +57,7 @@ class Bookmark extends Controller
         $this->setFilter($filters, $query);
         $this->prepareFilter();
 
-        $action = $this->request->post('action');
+        $action = (string) $this->request->post('action');
         $selected = $this->request->post('selected', array());
 
         if (!empty($action)) {
@@ -153,7 +153,7 @@ class Bookmark extends Controller
      */
     protected function prepareFilter()
     {
-        $product_id = $this->request->get('id_value');
+        $product_id = (int) $this->request->get('id_value');
 
         if (!empty($product_id)) {
             $product_data = $this->product->get($product_id);
@@ -161,7 +161,7 @@ class Bookmark extends Controller
         }
 
         $this->data['user'] = '';
-        $user_id = $this->request->get('user_id');
+        $user_id = (int) $this->request->get('user_id');
 
         if (empty($user_id)) {
             return;

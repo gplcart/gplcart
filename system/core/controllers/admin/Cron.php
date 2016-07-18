@@ -85,7 +85,12 @@ class Cron extends Controller
     protected function checkKey()
     {
         $key = $this->request->get('key', '');
-        if (!$key || (strcmp($key, $this->cron_key) !== 0)) {
+
+        if (!is_string($key)) {
+            exit;
+        }
+
+        if (empty($key) || (strcmp($key, $this->cron_key) !== 0)) {
             exit;
         }
     }

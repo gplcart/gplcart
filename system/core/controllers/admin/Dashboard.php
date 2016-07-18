@@ -141,8 +141,8 @@ class Dashboard extends Controller
      */
     protected function getStore()
     {
-        $store_id = $this->request->get('store_id');
-        return $store_id ? $this->store->get($store_id) : $this->store->getDefault(true);
+        $store_id = (int) $this->request->get('store_id');
+        return empty($store_id) ? $this->store->getDefault(true) : $this->store->get($store_id);
     }
 
     /**

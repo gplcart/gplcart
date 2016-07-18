@@ -40,8 +40,8 @@ class Country extends Controller
      */
     public function countries()
     {
-        $action = $this->request->post('action');
-        $value = $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $value = (int) $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
         if (!empty($action)) {
@@ -397,7 +397,7 @@ class Country extends Controller
     protected function submitFormat(array $country)
     {
         $this->controlAccess('country_format_edit');
-        $format = $this->request->post('format');
+        $format = (array) $this->request->post('format');
 
         // Fix checkboxes, enable required fields
         foreach ($format as &$item) {

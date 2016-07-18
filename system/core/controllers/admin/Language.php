@@ -64,9 +64,9 @@ class Language extends Controller
      */
     public function languages()
     {
-        $code = $this->request->get('refresh', null);
+        $code = (string) $this->request->get('refresh');
 
-        if (isset($code)) {
+        if (!empty($code)) {
             $this->refresh($code);
         }
 

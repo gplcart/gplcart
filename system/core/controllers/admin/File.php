@@ -48,8 +48,8 @@ class File extends Controller
         $allowed = array('title', 'mime_type', 'created', 'path');
         $this->setFilter($allowed, $query);
 
-        $action = $this->request->post('action');
-        $selected = $this->request->post('selected', array());
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action);

@@ -52,7 +52,7 @@ class Image extends Controller
     {
         $this->data['styles'] = $this->image->getImageStyleList();
 
-        $style_id = $this->request->get('clear');
+        $style_id = (string) $this->request->get('clear');
 
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');

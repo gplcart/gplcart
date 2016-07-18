@@ -50,9 +50,9 @@ class Module extends Controller
      */
     public function modules()
     {
-        $type = $this->request->get('type');
-        $action = $this->request->get('action');
-        $module_id = $this->request->get('module_id');
+        $type = (string) $this->request->get('type');
+        $action = (string) $this->request->get('action');
+        $module_id = (string) $this->request->get('module_id');
 
         if (!empty($module_id) && !empty($action)) {
             $this->action($module_id, $action);
@@ -81,7 +81,7 @@ class Module extends Controller
             $this->redirect();
         }
 
-        if (!in_array($action, array('enable', 'disable', 'install', 'uninstall'))) {
+        if (!in_array($action, array('enable', 'disable', 'install', 'uninstall'), true)) {
             $this->redirect();
         }
 

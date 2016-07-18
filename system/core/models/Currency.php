@@ -249,13 +249,13 @@ class Currency
             return $currency;
         }
 
-        $url = $this->request->get('currency');
+        $url = (string) $this->request->get('currency');
 
         if (!empty($url)) {
             $currency_code = $url;
             $query = true;
         } else {
-            $cookie = $this->request->cookie('currency');
+            $cookie = (string) $this->request->cookie('currency');
             if (!empty($cookie)) {
                 $currency_code = $cookie;
             }

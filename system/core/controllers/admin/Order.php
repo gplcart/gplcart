@@ -167,13 +167,13 @@ class Order extends Controller
 
         $this->data['currencies'] = $this->currency->getList();
 
-        $sort_order = $this->request->get('order');
+        $sort_order = (string) $this->request->get('order');
 
         foreach (array('store_id', 'status', 'created', 'creator', 'customer', 'total', 'currency') as $filter) {
-            $this->data["filter_$filter"] = $this->request->get($filter);
+            $this->data["filter_$filter"] = (string) $this->request->get($filter);
             $this->data["sort_$filter"] = $this->url(false, array(
                 'sort' => $filter,
-                'order' => ($sort_order == 'desc') ? 'asc' : 'desc') + $query);
+                'order' => ($sort_order === 'desc') ? 'asc' : 'desc') + $query);
         }
 
         $this->setTitle($this->text('Orders'));

@@ -63,10 +63,10 @@ class UserRole extends Controller
      * Displays the roles overview page
      */
     public function roles()
-    {
-        $action = $this->request->post('action');
-        $value = $this->request->post('value');
-        $selected = $this->request->post('selected', array());
+    { 
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);

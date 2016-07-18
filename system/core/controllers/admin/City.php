@@ -64,8 +64,8 @@ class City extends Controller
         $country = $this->getCountry($country_code);
         $state = $this->getState($state_id);
 
-        $action = $this->request->post('action');
-        $value = $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $value = (int) $this->request->post('value');
         $selected = $this->request->post('selected', array());
 
         if (!empty($action)) {
@@ -293,7 +293,7 @@ class City extends Controller
         $deleted = $updated = 0;
         foreach ($selected as $id) {
             if ($action === 'status' && $this->access('city_edit')) {
-                $updated += (int) $this->city->update($id, array('status' => $value));
+                $updated += (int) $this->city->update($id, array('status' => (int) $value));
             }
 
             if ($action === 'delete' && $this->access('city_delete')) {

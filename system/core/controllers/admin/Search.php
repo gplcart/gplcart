@@ -52,7 +52,7 @@ class Search extends Controller
         $query = $this->getFilterQuery();
         $term = isset($query['q']) ? $query['q'] : '';
 
-        $search_id = $this->request->get('search_id');
+        $search_id = (string) $this->request->get('search_id');
         $total = $this->setPager($this->getTotalResults($search_id, $term), $query);
 
         $this->data['query'] = $term;
@@ -73,7 +73,7 @@ class Search extends Controller
         $this->data['job'] = $this->getJob();
         $this->data['handlers'] = $this->getHandlers();
 
-        $entity_id = $this->request->post('index');
+        $entity_id = (string) $this->request->post('index');
 
         if (!empty($entity_id)) {
             $this->submit($entity_id);
@@ -163,13 +163,14 @@ class Search extends Controller
     {
         $job_id = "index_$entity_id";
         $this->job->delete($job_id);
+        $limit = (int) $this->request->post('limit');
 
         $job = array(
             'id' => $job_id,
             'total' => $this->search->total('product_id'),
             'operations' => array($job_id => array(
                     'arguments' => array(array(
-                            'index_limit' => $this->request->post('limit')))))
+                            'index_limit' => $limit))))
         );
 
         $this->job->set($job);

@@ -228,9 +228,9 @@ class Checkout extends Controller
 
         $this->form_data['order'] = $this->request->post('order', array()) + $this->form_data['order'];
         $this->submitted_address = $this->request->post('address', array('country' => $this->country_code));
-        $check_code = $this->request->post('check_code');
+        $check_code = (string) $this->request->post('check_code');
 
-        if (isset($check_code)) {
+        if (!empty($check_code)) {
             $this->validateCode($check_code);
         }
 
@@ -738,8 +738,8 @@ class Checkout extends Controller
      */
     protected function login(array $cart)
     {
-        $email = $this->request->post('email');
-        $password = $this->request->post('password', '', false);
+        $email = (string) $this->request->post('email');
+        $password = (string) $this->request->post('password', '', false);
 
         $result = $this->user->login($email, $password);
 

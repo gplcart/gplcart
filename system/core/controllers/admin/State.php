@@ -51,10 +51,10 @@ class State extends Controller
     public function states($code)
     {
         $country = $this->getCountry($code);
-
-        $action = $this->request->post('action');
-        $value = $this->request->post('value');
-        $selected = $this->request->post('selected', array());
+        
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);
@@ -67,7 +67,6 @@ class State extends Controller
         $this->data['states'] = $this->getStates($total, $query, $code);
 
         $this->setFilter(array('name', 'code', 'status', 'state_id'), $query);
-
         $this->setTitleStates($country);
         $this->setBreadcrumbStates();
         $this->outputStates();

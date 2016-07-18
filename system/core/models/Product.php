@@ -532,6 +532,10 @@ class Product
     {
         $this->hook->fire('get.product.before', $product_id);
 
+        if (empty($product_id)) {
+            return array();
+        }
+
         $sth = $this->db->prepare('SELECT * FROM product WHERE product_id=:product_id');
         $sth->execute(array(':product_id' => (int) $product_id));
 
@@ -708,7 +712,7 @@ class Product
         $this->db->delete('rating', array('product_id' => $product_id));
         $this->db->delete('rating_user', array('product_id' => $product_id));
         $this->db->delete('search_index', array('id_key' => 'product_id', 'id_value' => $product_id));
-        
+
         //Cache::clear('cart', '*');
 
         $this->hook->fire('delete.product.after', $product_id);
@@ -842,6 +846,10 @@ class Product
      */
     public function removeCompared($product_id)
     {
+        if (empty($product_id)) {
+            return false;
+        }
+
         $compared = $this->getCompared();
 
         if (empty($compared)) {

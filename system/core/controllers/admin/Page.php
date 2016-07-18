@@ -68,9 +68,9 @@ class Page extends Controller
      */
     public function pages()
     {
-        $action = $this->request->post('action');
-        $selected = $this->request->post('selected', array());
-        $value = $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);
@@ -101,9 +101,10 @@ class Page extends Controller
     public function edit($page_id = null)
     {
         $page = $this->get($page_id);
+        $action = (string) $this->request->post('action');
 
-        if ($this->request->post('action') == 'categories') {
-            $store_id = $this->request->post('store_id', $this->store->getDefault());
+        if ($action === 'categories') {
+            $store_id = (int) $this->request->post('store_id', $this->store->getDefault());
             $this->response->json($this->category->getOptionListByStore($store_id));
         }
 
@@ -327,9 +328,9 @@ class Page extends Controller
      */
     protected function submit(array $page = array())
     {
-        $images = $this->request->post('delete_image');
+        $images = (array) $this->request->post('delete_image');
 
-        if ($images && ($this->access('page_add') || $this->access('page_edit'))) {
+        if (!empty($images) && ($this->access('page_add') || $this->access('page_edit'))) {
             foreach ($images as $file_id) {
                 $this->image->delete($file_id);
             }

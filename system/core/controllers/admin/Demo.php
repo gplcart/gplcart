@@ -65,9 +65,11 @@ class Demo extends Controller
         if ($this->request->post('install')) {
             $this->import('category');
         }
+        
+        $next = (string) $this->request->get('next');
 
         // ... then products
-        if ($this->request->get('next') == 'product') {
+        if ($next === 'product') {
             $this->import('product');
         }
 

@@ -112,7 +112,7 @@ class Report extends Controller
         }
 
         $default_store = $this->store->getDefault();
-        $store_id = $this->request->get('store_id', $default_store);
+        $store_id = (int) $this->request->get('store_id', $default_store);
 
         $stores = $this->store->getList();
         $store = isset($stores[$store_id]) ? $stores[$store_id] : $stores[$default_store];
@@ -127,7 +127,7 @@ class Report extends Controller
             $this->outputGa();
         }
 
-        $view = $this->request->get('ga_view');
+        $view = (string) $this->request->get('ga_view');
 
         if ($this->request->get('ga_update') && !empty($view)) {
             $this->report->clearGaCache($view);
@@ -305,9 +305,9 @@ class Report extends Controller
      */
     protected function clearNotification()
     {
-        $index = $this->request->get('index');
-        $notification_id = $this->request->get('notification_id');
-        $notification = $this->notification->get($notification_id);
+        $index = (string) $this->request->get('index');
+        $notification_id = (string) $this->request->get('notification_id');
+        $notification = (string) $this->notification->get($notification_id);
 
         if (empty($notification['messages'])) {
             return false;
