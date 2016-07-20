@@ -173,7 +173,7 @@ class Url
 
     /**
      * Returns a user ID from the path if it is /account* path
-     * @return boolean
+     * @return boolean|integer
      */
     public function isAccount()
     {

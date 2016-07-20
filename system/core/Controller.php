@@ -999,7 +999,7 @@ class Controller
         
         $process_job_id = (string) $this->request->get('process_job');
 
-        if ($this->request->isAjax() && $process_job_id == $job_id) {
+        if ($this->request->isAjax() && $process_job_id === $job_id) {
             $this->response->json($job->process($this->current_job));
         }
     }
@@ -1448,6 +1448,9 @@ class Controller
         $query = $this->query;
 
         foreach ($query as $key => $value) {
+            
+            $value = (string) $value;
+            
             if ($key === 'sort' && strpos($value, '-') !== false) {
                 $parts = explode('-', $value, 2);
                 $query['sort'] = reset($parts);
