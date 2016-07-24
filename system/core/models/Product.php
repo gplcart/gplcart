@@ -14,7 +14,7 @@ use core\Hook;
 use core\Config;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Request as ClassesRequest;
+use core\classes\Request;
 use core\models\Sku as ModelsSku;
 use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
@@ -104,13 +104,13 @@ class Product
      * @param ModelsLanguage $language
      * @param ModelsSku $sku
      * @param ModelsSearch $search
-     * @param ClassesRequest $request
+     * @param Request $request
      * @param Hook $hook
      * @param Config $config
      */
     public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
             ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-            ModelsSku $sku, ModelsSearch $search, ClassesRequest $request,
+            ModelsSku $sku, ModelsSearch $search, Request $request,
             Hook $hook, Config $config)
     {
         $this->sku = $sku;

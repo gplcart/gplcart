@@ -254,6 +254,8 @@ $(function () {
     // Session time left counter
     $('#session-expires').countdown(GplCart.settings.session_limit, function (event) {
         $(this).html(event.strftime('%M:%S'));
+    }).on('finish.countdown', function(event) {
+        window.location.replace(GplCart.settings.base + 'logout'); // Automatically log out
     });
 
     /********************************* Accordion *********************************/
