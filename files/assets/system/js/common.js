@@ -6,6 +6,11 @@ var GplCart = {
     text: function (text, options) {
         return text;
     },
+    logout: function(interval){
+        setInterval(function(){
+            window.location.replace(GplCart.settings.base + 'logout'); // Automatically log out
+        }, interval);
+    },
     gmap: function (lat, lng) {
         $.getScript('https://www.google.com/jsapi', function () {
             google.load('maps', '3', {callback: function () {

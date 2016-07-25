@@ -1032,6 +1032,9 @@ class Controller
             $js = "\$(function(){\$.get('$url', function(data){});});";
             $this->document->js($js, 'bottom');
         }
+        
+        $session_limit = GC_SESSION_TIMEOUT * 1000;
+        $this->document->js("GplCart.logout($session_limit);", 'bottom');
     }
 
     /**
