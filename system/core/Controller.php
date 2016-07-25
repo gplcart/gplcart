@@ -1025,16 +1025,20 @@ class Controller
         if (!empty($this->current_job['status'])) {
             $this->setJsSettings('job', $this->current_job, -60);
         }
+        
+        $is_backend = $this->url->isBackend();
 
         // Call cron
-        if ($this->url->isBackend() && !empty($this->cron_interval) && (GC_TIME - $this->cron_last_run) > $this->cron_interval) {
+        if ($is_backend && !empty($this->cron_interval) && (GC_TIME - $this->cron_last_run) > $this->cron_interval) {
             $url = $this->url('cron', array('key' => $this->cron_key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
             $this->document->js($js, 'bottom');
         }
-        
-        $session_limit = GC_SESSION_TIMEOUT * 1000;
-        $this->document->js("GplCart.logout($session_limit);", 'bottom');
+
+        if ($is_backend) {
+            $session_limit = GC_SESSION_TIMEOUT * 1000;
+            $this->document->js("GplCart.logout($session_limit);", 'bottom');
+        }
     }
 
     /**
