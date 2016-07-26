@@ -31,6 +31,8 @@ class CategoryGroup extends Model
      */
     public function __construct(ModelsLanguage $language)
     {
+        parent::__construct();
+
         $this->language = $language;
     }
 
