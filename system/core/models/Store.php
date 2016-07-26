@@ -10,22 +10,15 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Cache;
 use core\classes\Request;
 
 /**
  * Manages basic behaviors and data related to stores
  */
-class Store
+class Store extends Model
 {
-
-    /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
 
     /**
      * Request class instance
@@ -34,29 +27,14 @@ class Store
     protected $request;
 
     /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
-     * @param Hook $hook
      * @param Request $request
-     * @param Config $config
      */
-    public function __construct(Hook $hook, Request $request, Config $config)
+    public function __construct(Request $request)
     {
-        $this->hook = $hook;
-        $this->config = $config;
+        parent::__construct();
+        
         $this->request = $request;
-        $this->db = $this->config->getDb();
     }
 
     /**

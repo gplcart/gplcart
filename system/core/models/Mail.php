@@ -9,14 +9,13 @@
 
 namespace core\models;
 
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Logger;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
  */
-class Mail
+class Mail extends Model
 {
 
     /**
@@ -38,18 +37,6 @@ class Mail
     protected $mailer;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
@@ -57,14 +44,12 @@ class Mail
 
     /**
      * Constructor
-     * @param Hook $hook
-     * @param Config $config
      * @param Logger $logger
      */
-    public function __construct(Hook $hook, Config $config, Logger $logger)
+    public function __construct(Logger $logger)
     {
-        $this->hook = $hook;
-        $this->config = $config;
+        parent::__construct();
+
         $this->logger = $logger;
 
         require GC_LIBRARY_DIR . '/phpmailer/PHPMailerAutoload.php';

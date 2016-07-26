@@ -9,8 +9,7 @@
 
 namespace core\models;
 
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Handler;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
@@ -18,14 +17,8 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to the search system
  */
-class Search
+class Search extends Model
 {
-
-    /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
 
     /**
      * Language model instance
@@ -34,22 +27,13 @@ class Search
     protected $language;
 
     /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Hook $hook,
-                                Config $config)
+    public function __construct(ModelsLanguage $language)
     {
-        $this->hook = $hook;
-        $this->db = $config->getDb();
+        parent::__construct();
+
         $this->language = $language;
     }
 
@@ -207,4 +191,5 @@ class Search
 
         return implode(' ', array_diff(explode(' ', $string), $stopwords));
     }
+
 }

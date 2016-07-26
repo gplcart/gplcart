@@ -9,8 +9,7 @@
 
 namespace core\models;
 
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Handler;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -18,30 +17,15 @@ use core\classes\Cache;
 /**
  * Manages basic behaviors and data related to various site notifications
  */
-class Notification
+class Notification extends Model
 {
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(Hook $hook, Config $config)
+    public function __construct()
     {
-        $this->hook = $hook;
-        $this->config = $config;
+        parent::__construct();
     }
 
     /**
@@ -229,4 +213,5 @@ class Notification
     {
         return $this->config->reset("notification_$notification_id");
     }
+
 }

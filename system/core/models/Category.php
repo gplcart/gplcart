@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Cache;
 use core\models\Image as ModelsImage;
 use core\models\Alias as ModelsAlias;
@@ -21,7 +20,7 @@ use core\models\CategoryGroup as ModelsCategoryGroup;
 /**
  * Manages basic behaviors and data related to product categories
  */
-class Category
+class Category extends Model
 {
 
     /**
@@ -49,42 +48,20 @@ class Category
     protected $language;
 
     /**
-     * Hook model instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsImage $image
      * @param ModelsAlias $alias
      * @param ModelsLanguage $language
      * @param ModelsCategoryGroup $category_group
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(
-    ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-    ModelsCategoryGroup $category_group, Hook $hook, Config $config
-    ) {
-        $this->hook = $hook;
+    public function __construct(ModelsImage $image, ModelsAlias $alias,
+            ModelsLanguage $language, ModelsCategoryGroup $category_group)
+    {
+        parent::__construct();
+
         $this->image = $image;
         $this->alias = $alias;
-        $this->config = $config;
         $this->language = $language;
-        $this->db = $config->getDb();
         $this->category_group = $category_group;
     }
 
@@ -163,7 +140,7 @@ class Category
      * @return array
      */
     public function getOptionList($group_id = null, $parent_id = 0,
-                                  $hierarchy = true)
+            $hierarchy = true)
     {
         $categories = $this->getTree(array('category_group_id' => $group_id, 'parent_id' => $parent_id, 'status' => 1));
 
@@ -673,4 +650,5 @@ class Category
     {
         return $this->image->setMultiple('category_id', $category_id, $data['images']);
     }
+
 }

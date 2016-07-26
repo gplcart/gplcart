@@ -10,36 +10,20 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 
 /**
  * Manages basic behaviors and data related to rating system
  */
-class Rating
+class Rating extends Model
 {
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(Hook $hook, Config $config)
+    public function __construct()
     {
-        $this->hook = $hook;
-        $this->db = $config->getDb();
+        parent::__construct();
     }
 
     /**
@@ -171,4 +155,5 @@ class Rating
 
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
+
 }

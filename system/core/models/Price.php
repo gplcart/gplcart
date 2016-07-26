@@ -9,12 +9,13 @@
 
 namespace core\models;
 
+use core\Model;
 use core\models\Currency as ModelsCurrency;
 
 /**
  * Manages basic behaviors and data related to currencies
  */
-class Price
+class Price extends Model
 {
 
     /**
@@ -29,6 +30,8 @@ class Price
      */
     public function __construct(ModelsCurrency $currency)
     {
+        parent::__construct();
+
         $this->currency = $currency;
     }
 
@@ -160,4 +163,5 @@ class Price
     {
         return $this->currency->convert($amount, $currency_code, $target_currency_code);
     }
+
 }

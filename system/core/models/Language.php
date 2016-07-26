@@ -9,9 +9,8 @@
 
 namespace core\models;
 
-use core\Hook;
+use core\Model;
 use core\Route;
-use core\Config;
 use core\classes\Po;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -20,7 +19,7 @@ use core\models\Translit;
 /**
  * Manages basic behaviors and data related to languages and their translations
  */
-class Language
+class Language extends Model
 {
 
     /**
@@ -30,28 +29,10 @@ class Language
     protected $translit;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * PO class instance
      * @var \core\classes\Po $po
      */
     protected $po;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO class instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
 
     /**
      * Array of trings to be translated
@@ -112,20 +93,16 @@ class Language
     /**
      * Constructor
      * @param Translit $translit
-     * @param Hook $hook
      * @param Po $po
      * @param Route $route
-     * @param Config $config
      */
-    public function __construct(Translit $translit, Hook $hook, Po $po,
-            Route $route, Config $config)
+    public function __construct(Translit $translit, Po $po, Route $route)
     {
+        parent::__construct();
+
         $this->po = $po;
-        $this->hook = $hook;
         $this->route = $route;
-        $this->config = $config;
         $this->translit = $translit;
-        $this->db = $this->config->getDb();
         $this->langcode = $this->route->getLangcode();
 
         if (!empty($this->langcode)) {

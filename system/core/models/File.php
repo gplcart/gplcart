@@ -10,19 +10,18 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Handler;
+use core\classes\Url;
+use core\classes\Curl;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Url as ClassesUrl;
-use core\classes\Curl as ClassesCurl;
 use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to files
  */
-class File
+class File extends Model
 {
 
     /**
@@ -32,28 +31,10 @@ class File
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Url class instance
      * @var \core\classes\Url $url
      */
     protected $url;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * Database class instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
 
     /**
      * An upload directory
@@ -82,20 +63,16 @@ class File
     /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param ClassesUrl $url
-     * @param ClassesCurl $curl
-     * @param Hook $hook
-     * @param Config $config
+     * @param Url $url
+     * @param Curl $curl
      */
-    public function __construct(ModelsLanguage $language, ClassesUrl $url,
-            ClassesCurl $curl, Hook $hook, Config $config)
+    public function __construct(ModelsLanguage $language, Url $url, Curl $curl)
     {
+        parent::__construct();
+
         $this->url = $url;
         $this->curl = $curl;
-        $this->hook = $hook;
-        $this->config = $config;
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**

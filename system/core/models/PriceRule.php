@@ -10,19 +10,17 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Handler;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Session as ClassesSession;
 use core\models\Currency as ModelsCurrency;
 use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to price rules
  */
-class PriceRule
+class PriceRule extends Model
 {
 
     /**
@@ -38,48 +36,17 @@ class PriceRule
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Session class instance
-     * @var \core\classes\Session $session
-     */
-    protected $session;
-
-    /**
-     * Config class instance
-     * @var \core\Confug $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsCurrency $currency
      * @param ModelsLanguage $language
-     * @param ClassesSession $session
-     * @param Hook $hook
-     * @param Config $config
      */
     public function __construct(ModelsCurrency $currency,
-                                ModelsLanguage $language,
-                                ClassesSession $session, Hook $hook,
-                                Config $config)
+            ModelsLanguage $language)
     {
-        $this->hook = $hook;
-        $this->config = $config;
-        $this->session = $session;
+        parent::__construct();
+
         $this->currency = $currency;
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -555,7 +522,7 @@ class PriceRule
      * @param array $components
      */
     public function calculate(&$total, array $cart, array $data,
-                              array &$components)
+            array &$components)
     {
         $rules = $this->getSuited('order', array('cart' => $cart, 'data' => $data));
 
@@ -737,7 +704,7 @@ class PriceRule
      * @return integer
      */
     protected function calculateComponent(&$amount, array $cart, array $data,
-                                          array &$components, array $rule)
+            array &$components, array $rule)
     {
         $rule_id = $rule['price_rule_id'];
 
@@ -766,4 +733,5 @@ class PriceRule
         $amount += $value;
         return $amount;
     }
+
 }

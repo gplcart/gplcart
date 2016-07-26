@@ -10,37 +10,21 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Tool;
 
 /**
  * Manages basic behaviors and data related to product SKUs
  */
-class Sku
+class Sku extends Model
 {
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(Hook $hook, Config $config)
+    public function __construct()
     {
-        $this->hook = $hook;
-        $this->db = $config->getDb();
+        parent::__construct();
     }
 
     /**
@@ -132,7 +116,7 @@ class Sku
      * @return boolean|integer
      */
     public function add($sku, $product_id, $store_id = 1,
-                        $option_combination_id = '')
+            $option_combination_id = '')
     {
         $arguments = func_get_args();
 
@@ -186,7 +170,7 @@ class Sku
      * @return string
      */
     public function generate($pattern, array $placeholders = array(),
-                             array $data = array())
+            array $data = array())
     {
         $sku = $pattern;
 
@@ -232,4 +216,5 @@ class Sku
 
         return array();
     }
+
 }

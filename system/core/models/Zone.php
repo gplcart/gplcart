@@ -10,43 +10,20 @@
 namespace core\models;
 
 use PDO;
-use core\Config;
-use core\Hook;
+use core\Model;
 
 /**
  * Manages basic behaviors and data related geo zones
  */
-class Zone
+class Zone extends Model
 {
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
+     * Constructor
      */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     *
-     * @param Hook $hook
-     * @param Config $config
-     */
-    public function __construct(Hook $hook, Config $config)
+    public function __construct()
     {
-        $this->hook = $hook;
-        $this->hook = $hook;
-        $this->db = $this->config->getDb();
+        parent::__construct();
     }
 
     /**
@@ -127,4 +104,5 @@ class Zone
         $this->hook->fire('zone.list', $list);
         return $list;
     }
+
 }

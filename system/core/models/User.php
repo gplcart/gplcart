@@ -10,11 +10,10 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Logger;
 use core\classes\Tool;
-use core\classes\Session as ClassesSession;
+use core\classes\Session;
 use core\models\Address as ModelsAddress;
 use core\models\UserRole as ModelsUserRole;
 use core\models\Language as ModelsLanguage;
@@ -23,7 +22,7 @@ use core\models\Notification as ModelsNotification;
 /**
  * Manages basic behaviors and data related to users
  */
-class User
+class User extends Model
 {
 
     /**
@@ -51,22 +50,10 @@ class User
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Session class instance
      * @var \core\classes\Session $session
      */
     protected $session;
-
-    /**
-     * Config class instance
-     * @var core\Config $config
-     */
-    protected $config;
 
     /**
      * Logger class instance
@@ -75,36 +62,25 @@ class User
     protected $logger;
 
     /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsAddress $address
      * @param ModelsUserRole $role
      * @param ModelsNotification $notification
      * @param ModelsLanguage $language
-     * @param ClassesSession $session
+     * @param Session $session
      * @param Logger $logger
-     * @param Hook $hook
-     * @param Config $config
      */
     public function __construct(ModelsAddress $address, ModelsUserRole $role,
-                                ModelsNotification $notification,
-                                ModelsLanguage $language,
-                                ClassesSession $session, Logger $logger,
-                                Hook $hook, Config $config)
+            ModelsNotification $notification, ModelsLanguage $language,
+            Session $session, Logger $logger)
     {
+        parent::__construct();
+
         $this->role = $role;
-        $this->hook = $hook;
         $this->logger = $logger;
-        $this->config = $config;
         $this->address = $address;
         $this->session = $session;
         $this->language = $language;
-        $this->db = $this->config->getDb();
         $this->notification = $notification;
     }
 
@@ -797,4 +773,5 @@ class User
 
         return $this->config->get("user_logout_redirect_{$user['role_id']}", 'login');
     }
+
 }

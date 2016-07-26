@@ -10,43 +10,20 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 
 /**
  * Manages basic behaviors and data related to the review system
  */
-class Review
+class Review extends Model
 {
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(Hook $hook, Config $config)
+    public function __construct()
     {
-        $this->hook = $hook;
-        $this->config = $config;
-        $this->db = $this->config->getDb();
+        parent::__construct();
     }
 
     /**
@@ -253,4 +230,5 @@ class Review
         $this->hook->fire('reviews', $list);
         return $list;
     }
+
 }

@@ -9,7 +9,7 @@
 
 namespace core\models;
 
-use core\Hook;
+use core\Model;
 use core\Handler;
 use core\classes\Url;
 use core\classes\Tool;
@@ -20,7 +20,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to batch jobs
  */
-class Job
+class Job extends Model
 {
 
     const JOB_MAX_TIME = 1000;
@@ -39,12 +39,6 @@ class Job
     protected $session;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Url class instance
      * @var \core\classes\Url $url
      */
@@ -55,13 +49,13 @@ class Job
      * @param ModelsLanguage $language
      * @param Session $session
      * @param Url $url
-     * @param Hook $hook
      */
     public function __construct(ModelsLanguage $language, Session $session,
-            Url $url, Hook $hook)
+            Url $url)
     {
+        parent::__construct();
+
         $this->url = $url;
-        $this->hook = $hook;
         $this->session = $session;
         $this->language = $language;
     }

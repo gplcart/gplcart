@@ -9,17 +9,16 @@
 
 namespace core\models;
 
-use core\Hook;
-use core\Config;
+use core\Model;
+use core\classes\Url;
 use core\classes\Tool;
-use core\classes\Url as ClassesUrl;
-use core\classes\Image as ClassesImage;
+use core\classes\Image as Imagestyle;
 use core\models\File as ModelsFile;
 
 /**
  * Manages basic behaviors and data related to images
  */
-class Image
+class Image extends Model
 {
 
     /**
@@ -35,46 +34,25 @@ class Image
     protected $imagestyle;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Url class instance
      * @var \core\classes\Url $url
      */
     protected $url;
 
     /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsFile $file
-     * @param ClassesImage $imagestyle
-     * @param ClassesUrl $url
-     * @param Hook $hook
-     * @param Config $config
+     * @param Image $imagestyle
+     * @param Url $url
      */
-    public function __construct(ModelsFile $file, ClassesImage $imagestyle,
-                                ClassesUrl $url, Hook $hook, Config $config)
+    public function __construct(ModelsFile $file, Imagestyle $imagestyle,
+            Url $url)
     {
+        parent::__construct();
+
         $this->url = $url;
-        $this->hook = $hook;
         $this->file = $file;
-        $this->config = $config;
         $this->imagestyle = $imagestyle;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -126,7 +104,7 @@ class Image
      * @return null|string
      */
     public function getThumb($id, $imagestyle, $id_key, array $id_value,
-                             $placeholder = true)
+            $placeholder = true)
     {
         if (empty($id_value)) {
             return $placeholder ? $this->placeholder($imagestyle) : null; // prevent loading too many images
@@ -537,4 +515,5 @@ class Image
 
         return $styles;
     }
+
 }

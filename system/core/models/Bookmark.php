@@ -10,15 +10,14 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Cache;
 use core\models\User as ModelsUser;
 
 /**
  * Manages basic behaviors and data related to bookmarks
  */
-class Bookmark
+class Bookmark extends Model
 {
 
     /**
@@ -28,35 +27,14 @@ class Bookmark
     protected $user;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
      * @param ModelsUser $user
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsUser $user, Hook $hook, Config $config)
+    public function __construct(ModelsUser $user)
     {
+        parent::__construct();
+
         $this->user = $user;
-        $this->hook = $hook;
-        $this->config = $config;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -345,4 +323,5 @@ class Bookmark
         $sth->execute($bookmark_ids);
         return $sth->rowCount();
     }
+
 }

@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Logger;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -28,7 +27,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to user carts
  */
-class Cart
+class Cart extends Model
 {
 
     /**
@@ -60,7 +59,7 @@ class Cart
      * @var \core\models\Bookmark $bookmark
      */
     protected $bookmark;
-    
+
     /**
      * Image model instance
      * @var \core\models\Image $image
@@ -74,22 +73,10 @@ class Cart
     protected $language;
 
     /**
-     * Hook model instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Request model instance
      * @var \core\classes\Request $request
      */
     protected $request;
-
-    /**
-     * Config model instance
-     * @var \core\Config $config
-     */
-    protected $config;
 
     /**
      * Logger class instance
@@ -102,7 +89,7 @@ class Cart
      * @var array
      */
     protected $errors = array();
-    
+
     /**
      * Constructor
      * @param ModelsProduct $product
@@ -113,31 +100,27 @@ class Cart
      * @param ModelsLanguage $language
      * @param ModelsStore $store
      * @param ModelsImage $image
-     * @param Hook $hook
      * @param Request $request
-     * @param Config $config
      * @param Logger $logger
      */
     public function __construct(ModelsProduct $product, ModelsPrice $price,
             ModelsCurrency $currency, ModelsUser $user,
             ModelsBookmark $bookmark, ModelsLanguage $language,
-            ModelsStore $store, ModelsImage $image, Hook $hook, Request $request, Config $config,
+            ModelsStore $store, ModelsImage $image, Request $request,
             Logger $logger)
     {
+        parent::__construct();
 
-        $this->hook = $hook;
         $this->user = $user;
         $this->store = $store;
         $this->price = $price;
         $this->image = $image;
-        $this->config = $config;
         $this->logger = $logger;
         $this->product = $product;
         $this->request = $request;
         $this->currency = $currency;
         $this->bookmark = $bookmark;
         $this->language = $language;
-        $this->db = $config->getDb();
     }
 
     /**
@@ -153,20 +136,20 @@ class Cart
         }
 
         //if ($cached) {
-            $cart = &Cache::memory("cart.$user_id");
+        $cart = &Cache::memory("cart.$user_id");
 
-            if (isset($cart)) {
-                return $cart;
-            }
+        if (isset($cart)) {
+            return $cart;
+        }
 
-            /*
-            $cache = Cache::get("cart.$user_id");
+        /*
+          $cache = Cache::get("cart.$user_id");
 
-            if (isset($cache)) {
-                $cart = $cache;
-                return $cart;
-            }
-             * */
+          if (isset($cache)) {
+          $cart = $cache;
+          return $cart;
+          }
+         * */
 
         //}
 
@@ -746,7 +729,7 @@ class Cart
         $imagestyle = isset($settings['image_style_cart']) ? (int) $settings['image_style_cart'] : 3;
 
         foreach ($cart['items'] as &$item) {
-            
+
             $imagepath = '';
 
             if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {

@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\models\Field as ModelsField;
 use core\models\Language as ModelsLanguage;
 use core\models\FieldValue as ModelsFieldValue;
@@ -19,7 +18,7 @@ use core\models\FieldValue as ModelsFieldValue;
 /**
  * Manages basic behaviors and data related to product classes
  */
-class ProductClass
+class ProductClass extends Model
 {
 
     /**
@@ -27,18 +26,6 @@ class ProductClass
      * @var \core\models\Language $language
      */
     protected $language;
-
-    /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
 
     /**
      * Field model instance
@@ -57,16 +44,13 @@ class ProductClass
      * @param ModelsLanguage $language
      * @param ModelsField $field
      * @param ModelsFieldValue $field_value
-     * @param Hook $hook
-     * @param Config $config
      */
     public function __construct(ModelsLanguage $language, ModelsField $field,
-                                ModelsFieldValue $field_value, Hook $hook,
-                                Config $config)
+            ModelsFieldValue $field_value)
     {
-        $this->hook = $hook;
+        parent::__construct();
+
         $this->field = $field;
-        $this->db = $config->getDb();
         $this->language = $language;
         $this->field_value = $field_value;
     }
@@ -268,7 +252,7 @@ class ProductClass
      * @return boolean
      */
     public function deleteField($product_class_field_id,
-                                $product_class_id = null)
+            $product_class_id = null)
     {
         $this->hook->fire('delete.product.class.field.before', $product_class_field_id, $product_class_id);
 
@@ -342,4 +326,5 @@ class ProductClass
 
         return $list;
     }
+
 }

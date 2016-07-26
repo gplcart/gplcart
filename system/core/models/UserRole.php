@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Cache;
 use core\classes\Session;
 use core\models\Language as ModelsLanguage;
@@ -19,7 +18,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to user roles
  */
-class UserRole
+class UserRole extends Model
 {
 
     /**
@@ -29,36 +28,21 @@ class UserRole
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Session class instance
      * @var \core\classes\Session $session
      */
     protected $session;
 
     /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
      * @param Session $session
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Session $session,
-                                Hook $hook, Config $config)
+    public function __construct(ModelsLanguage $language, Session $session)
     {
-        $this->hook = $hook;
+        parent::__construct();
+
         $this->session = $session;
-        $this->db = $config->getDb();
         $this->language = $language;
     }
 
@@ -387,4 +371,5 @@ class UserRole
 
         return $permissions;
     }
+
 }

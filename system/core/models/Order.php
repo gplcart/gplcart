@@ -10,11 +10,10 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\Logger;
 use core\classes\Cache;
-use core\classes\Request as ClassesRequest;
+use core\classes\Request;
 use core\models\Cart as ModelsCart;
 use core\models\User as ModelsUser;
 use core\models\Price as ModelsPrice;
@@ -28,7 +27,7 @@ use core\models\Notification as ModelsNotification;
 /**
  * Manages basic behaviors and data related to store orders
  */
-class Order
+class Order extends Model
 {
 
     /**
@@ -74,28 +73,10 @@ class Order
     protected $product;
 
     /**
-     * Hook class instance
-     * @var core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
     protected $logger;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
 
     /**
      * Request class instance
@@ -126,31 +107,27 @@ class Order
      * @param ModelsNotification $notification
      * @param ModelsShipping $shipping
      * @param ModelsPayment $payment
-     * @param ClassesRequest $request
-     * @param Hook $hook
+     * @param Request $request
      * @param Logger $logger
-     * @param Config $config
      */
     public function __construct(ModelsUser $user, ModelsPrice $price,
             ModelsPriceRule $pricerule, ModelsProduct $product,
             ModelsCart $cart, ModelsLanguage $language,
             ModelsNotification $notification, ModelsShipping $shipping,
-            ModelsPayment $payment, ClassesRequest $request, Hook $hook,
-            Logger $logger, Config $config)
+            ModelsPayment $payment, Request $request, Logger $logger)
     {
-        $this->hook = $hook;
+        parent::__construct();
+
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
         $this->logger = $logger;
-        $this->config = $config;
         $this->product = $product;
         $this->payment = $payment;
         $this->request = $request;
         $this->language = $language;
         $this->shipping = $shipping;
         $this->pricerule = $pricerule;
-        $this->db = $this->config->getDb();
         $this->notification = $notification;
     }
 

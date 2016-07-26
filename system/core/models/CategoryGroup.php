@@ -10,14 +10,13 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to category groups
  */
-class CategoryGroup
+class CategoryGroup extends Model
 {
 
     /**
@@ -27,36 +26,12 @@ class CategoryGroup
     protected $language;
 
     /**
-     * Hook model instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Hook $hook,
-                                Config $config)
+    public function __construct(ModelsLanguage $language)
     {
-        $this->hook = $hook;
-        $this->config = $config;
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -206,7 +181,7 @@ class CategoryGroup
      * @return integer
      */
     public function addTranslation(array $translation, $language,
-                                   $category_group_id)
+            $category_group_id)
     {
         $values = array(
             'title' => $translation['title'],
@@ -323,4 +298,5 @@ class CategoryGroup
 
         return (bool) $sth->fetchColumn();
     }
+
 }

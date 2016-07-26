@@ -10,15 +10,14 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\models\Image as ModelsImage;
 use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to field values
  */
-class FieldValue
+class FieldValue extends Model
 {
 
     /**
@@ -34,30 +33,15 @@ class FieldValue
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsImage $image
      * @param ModelsLanguage $language
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsImage $image, ModelsLanguage $language,
-                                Hook $hook, Config $config)
+    public function __construct(ModelsImage $image, ModelsLanguage $language)
     {
-        $this->hook = $hook;
+        parent::__construct();
+
         $this->image = $image;
-        $this->db = $config->getDb();
         $this->language = $language;
     }
 
@@ -332,4 +316,5 @@ class FieldValue
 
         return !$sth->fetchColumn();
     }
+
 }

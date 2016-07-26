@@ -9,9 +9,8 @@
 
 namespace core\models;
 
-use core\Hook;
+use core\Model;
 use core\Logger;
-use core\Config;
 use core\classes\Csv;
 use core\classes\Cache;
 use core\models\File as ModelsFile;
@@ -20,7 +19,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to import functionality
  */
-class Import
+class Import extends Model
 {
 
     /**
@@ -36,22 +35,10 @@ class Import
     protected $file;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * CSV class instance
      * @var \core\classes\Csv $csv
      */
     protected $csv;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
 
     /**
      * Logger class instance
@@ -64,17 +51,15 @@ class Import
      * @param ModelsLanguage $language
      * @param ModelsFile $file
      * @param Csv $csv
-     * @param Hook $hook
      * @param Logger $logger
-     * @param Config $config
      */
     public function __construct(ModelsLanguage $language, ModelsFile $file,
-            Csv $csv, Hook $hook, Logger $logger, Config $config)
+            Csv $csv, Logger $logger)
     {
+        parent::__construct();
+
         $this->csv = $csv;
         $this->file = $file;
-        $this->hook = $hook;
-        $this->config = $config;
         $this->logger = $logger;
         $this->language = $language;
     }
@@ -251,7 +236,7 @@ class Import
         );
 
         $this->hook->fire('import.operations', $operations);
-        
+
         return $operations;
     }
 

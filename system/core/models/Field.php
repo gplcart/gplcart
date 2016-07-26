@@ -10,15 +10,14 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to product fields
  */
-class Field
+class Field extends Model
 {
 
     /**
@@ -28,28 +27,13 @@ class Field
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Hook $hook,
-                                Config $config)
+    public function __construct(ModelsLanguage $language)
     {
-        $this->hook = $hook;
-        $this->db = $config->getDb();
+        parent::__construct();
+
         $this->language = $language;
     }
 
@@ -334,4 +318,5 @@ class Field
         $this->hook->fire('update.field.after', $field_id, $data, $result);
         return (bool) $result;
     }
+
 }

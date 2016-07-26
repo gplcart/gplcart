@@ -9,15 +9,14 @@
 
 namespace core\models;
 
-use core\Hook;
+use core\Model;
 use core\Logger;
-use core\Config;
 use core\classes\Cache;
 
 /**
  * Manages basic behaviors and data related to Google Analytics
  */
-class Analytics
+class Analytics extends Model
 {
 
     /**
@@ -45,18 +44,6 @@ class Analytics
     protected $credentials;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
@@ -64,14 +51,12 @@ class Analytics
 
     /**
      * Constructor
-     * @param Hook $hook
-     * @param Config $config
      * @param Logger $logger
      */
-    public function __construct(Hook $hook, Config $config, Logger $logger)
+    public function __construct(Logger $logger)
     {
-        $this->hook = $hook;
-        $this->config = $config;
+        parent::__construct();
+
         $this->logger = $logger;
         require GC_LIBRARY_DIR . '/gapi/src/Google/autoload.php';
     }
@@ -255,4 +240,5 @@ class Analytics
         $arguments = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
         return $this->getResults($arguments);
     }
+
 }

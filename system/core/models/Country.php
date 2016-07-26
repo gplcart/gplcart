@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
@@ -19,7 +18,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to countries
  */
-class Country
+class Country extends Model
 {
 
     /**
@@ -29,36 +28,14 @@ class Country
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Hook $hook,
-                                Config $config)
+    public function __construct(ModelsLanguage $language)
     {
-        $this->hook = $hook;
-        $this->config = $config;
+        parent::__construct();
+
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -723,4 +700,5 @@ class Country
 
         return $countries;
     }
+
 }

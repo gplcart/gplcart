@@ -11,14 +11,14 @@ namespace core\models;
 
 use PDO;
 use core\Route;
-use core\Config;
+use core\Model;
 use core\classes\Tool;
 use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to URL aliasing
  */
-class Alias
+class Alias extends Model
 {
 
     /**
@@ -34,30 +34,16 @@ class Alias
     protected $route;
 
     /**
-     * Config class instance
-     * @var core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\class\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
      * @param Route $route
-     * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Route $route,
-            Config $config)
+    public function __construct(ModelsLanguage $language, Route $route)
     {
+        parent::__construct();
+
         $this->route = $route;
-        $this->config = $config;
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**

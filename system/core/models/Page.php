@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Cache;
 use core\models\Alias as ModelsAlias;
 use core\models\Image as ModelsImage;
@@ -20,7 +19,7 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to pages
  */
-class Page
+class Page extends Model
 {
 
     /**
@@ -42,40 +41,19 @@ class Page
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      * @param ModelsImage $image
      * @param ModelsAlias $alias
      * @param ModelsLanguage $language
-     * @param Hook $hook
-     * @param Config $config
      */
     public function __construct(ModelsImage $image, ModelsAlias $alias,
-            ModelsLanguage $language, Hook $hook, Config $config)
+            ModelsLanguage $language)
     {
-        $this->hook = $hook;
+        parent::__construct();
+
         $this->alias = $alias;
         $this->image = $image;
-        $this->config = $config;
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**

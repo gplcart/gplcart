@@ -10,15 +10,14 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Tool;
 use core\models\Country as ModelsCountry;
 
 /**
  * Manages basic behaviors and data related to user addresses
  */
-class Address
+class Address extends Model
 {
 
     /**
@@ -28,36 +27,14 @@ class Address
     protected $country;
 
     /**
-     * Hook class inctance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
-     * Database class instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
      * @param ModelsCountry $country
-     * @param Hook $hook
-     * @param Config $config
      */
-    public function __construct(ModelsCountry $country, Hook $hook,
-                                Config $config)
+    public function __construct(ModelsCountry $country)
     {
-        $this->hook = $hook;
-        $this->config = $config;
+        parent::__construct();
+
         $this->country = $country;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -67,7 +44,7 @@ class Address
      */
     public function get($address_id)
     {
-        
+
         $this->hook->fire('get.address.before', $address_id);
 
         $sql = '
@@ -438,4 +415,5 @@ class Address
     {
         return array('address_1', 'state_id', 'city_id', 'country');
     }
+
 }

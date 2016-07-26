@@ -11,7 +11,7 @@ namespace core\models;
 
 use PDO;
 use DateTime;
-use core\Config;
+use core\Model;
 use core\classes\Curl;
 use core\classes\Cache;
 use core\models\Module as ModelsModule;
@@ -19,26 +19,14 @@ use core\models\Module as ModelsModule;
 /**
  * Manages basic behaviors and data related to various reports
  */
-class Report
+class Report extends Model
 {
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
 
     /**
      * Module class instance
      * @var \core\models\Module $module
      */
     protected $module;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
 
     /**
      * CURL class instance
@@ -50,14 +38,13 @@ class Report
      * Constructor
      * @param ModelsModule $module
      * @param Curl $curl
-     * @param Config $config
      */
-    public function __construct(ModelsModule $module, Curl $curl, Config $config)
+    public function __construct(ModelsModule $module, Curl $curl)
     {
+        parent::__construct();
+
         $this->curl = $curl;
-        $this->config = $config;
         $this->module = $module;
-        $this->db = $this->config->getDb();
     }
 
     /**
@@ -324,4 +311,5 @@ class Report
 
         return $result;
     }
+
 }

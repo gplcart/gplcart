@@ -10,8 +10,7 @@
 namespace core\models;
 
 use PDO;
-use core\Hook;
-use core\Config;
+use core\Model;
 use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
@@ -26,7 +25,7 @@ use core\models\PriceRule as ModelsPriceRule;
 /**
  * Manages basic behaviors and data related to products
  */
-class Product
+class Product extends Model
 {
 
     /**
@@ -72,28 +71,10 @@ class Product
     protected $search;
 
     /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Request class instance
      * @var \core\classes\Request $request
      */
     protected $request;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
 
     /**
      * Constructor
@@ -105,25 +86,21 @@ class Product
      * @param ModelsSku $sku
      * @param ModelsSearch $search
      * @param Request $request
-     * @param Hook $hook
-     * @param Config $config
      */
     public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
             ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-            ModelsSku $sku, ModelsSearch $search, Request $request,
-            Hook $hook, Config $config)
+            ModelsSku $sku, ModelsSearch $search, Request $request)
     {
+        parent::__construct();
+
         $this->sku = $sku;
-        $this->hook = $hook;
         $this->price = $price;
         $this->image = $image;
         $this->alias = $alias;
         $this->search = $search;
-        $this->config = $config;
         $this->request = $request;
         $this->language = $language;
         $this->pricerule = $pricerule;
-        $this->db = $this->config->getDb();
     }
 
     /**

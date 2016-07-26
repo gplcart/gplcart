@@ -11,7 +11,7 @@ namespace core\models;
 
 use PDO;
 use ZipArchive;
-use core\Config;
+use core\Model;
 use core\Container;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -20,20 +20,8 @@ use core\models\Language as ModelsLanguage;
 /**
  * Manages basic behaviors and data related to modules
  */
-class Module
+class Module extends Model
 {
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
 
     /**
      * ZipArchive instance
@@ -49,17 +37,15 @@ class Module
 
     /**
      * Constructor
-     * @param Config $config
      * @param ModelsLanguage $language
      * @param ZipArchive $zip
      */
-    public function __construct(Config $config, ModelsLanguage $language,
-            ZipArchive $zip)
+    public function __construct(ModelsLanguage $language, ZipArchive $zip)
     {
+        parent::__construct();
+
         $this->zip = $zip;
-        $this->config = $config;
         $this->language = $language;
-        $this->db = $this->config->getDb();
     }
 
     /**
