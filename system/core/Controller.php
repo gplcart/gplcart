@@ -712,7 +712,7 @@ class Controller
             $this->outputError(403);
         }
     }
-    
+
     /**
      * Displays 403 error when the current user is not superadmin
      */
@@ -996,7 +996,7 @@ class Controller
         if (empty($this->current_job['status'])) {
             return;
         }
-        
+
         $process_job_id = (string) $this->request->get('process_job');
 
         if ($this->request->isAjax() && $process_job_id === $job_id) {
@@ -1025,7 +1025,7 @@ class Controller
         if (!empty($this->current_job['status'])) {
             $this->setJsSettings('job', $this->current_job, -60);
         }
-        
+
         $is_backend = $this->url->isBackend();
 
         // Call cron
@@ -1455,9 +1455,9 @@ class Controller
         $query = $this->query;
 
         foreach ($query as $key => $value) {
-            
+
             $value = (string) $value;
-            
+
             if ($key === 'sort' && strpos($value, '-') !== false) {
                 $parts = explode('-', $value, 2);
                 $query['sort'] = reset($parts);

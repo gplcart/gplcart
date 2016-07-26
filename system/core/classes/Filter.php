@@ -80,6 +80,8 @@ class Filter
 
         // Named entities.
         $string = preg_replace('/&amp;([A-Za-z][A-Za-z0-9]*;)/', '&\1', $string);
+        
+        $object = $this;
 
         return preg_replace_callback('%
             (
@@ -90,8 +92,8 @@ class Filter
             <[^>]*(>|$)       # a string that starts with a <, up until the > or the end of the string
             |                 # or
             >                 # just a >
-            )%x', function ($match) use ($tags) {
-            return $this->split($match, $tags);
+            )%x', function ($match) use ($tags, $object) {
+            return $object->split($match, $tags);
         }, $string);
     }
 
@@ -115,7 +117,7 @@ class Filter
      * @param array|null $tags
      * @return string
      */
-    protected function split($m, $tags = null)
+    public function split($m, $tags = null)
     {
         $allowed_tags = isset($tags) ? array_flip((array) $tags) : array_flip($this->allowed_tags);
 
