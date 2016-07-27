@@ -1,4 +1,5 @@
 <div class="row margin-top-20">
+  <?php if (empty($missing_credentials) && empty($missing_settings)) { ?>
   <div class="col-md-2">
     <select class="form-control" onchange="if (this.value) window.location.href=this.value">
       <?php foreach ($stores as $store_id => $store_data) { ?>
@@ -14,7 +15,6 @@
       <?php } ?>
     </select>  
   </div>
-  <?php if (empty($missing_credentials) && empty($missing_settings)) { ?>
   <div class="col-md-10 text-right">
     <a class="btn btn-default" href="<?php echo $this->url(false, array('ga_update' => 1, 'ga_view' => $ga_view, 'store_id' => $store['store_id'])); ?>">
       <i class="fa fa-refresh"></i> <?php echo $this->text('Update'); ?>
