@@ -1433,11 +1433,14 @@ class Controller
         $this->data['filtering'] = false;
 
         foreach ($allowed_filters as $filter) {
-            $this->data["filter_$filter"] = (string) $this->request->get($filter);
 
-            if (isset($this->data["filter_$filter"])) {
+            $current_filter = $this->request->get($filter, null);
+
+            if (isset($current_filter)) {
                 $this->data['filtering'] = true;
             }
+
+            $this->data["filter_$filter"] = (string) $current_filter;
 
             $this->data["sort_$filter"] = $this->url('', array(
                 'sort' => $filter,

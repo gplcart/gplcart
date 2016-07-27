@@ -1,4 +1,4 @@
-<?php if ($products || $filtering) { ?>
+<?php if (!empty($products) || $filtering) { ?>
 <form method="post" id="products" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="row">
