@@ -13,7 +13,6 @@ namespace modules\backend;
 use core\Route;
 use core\classes\Url;
 use core\classes\Document;
-use core\models\Bookmark;
 use core\models\User;
 use core\models\Store;
 use core\models\Search;
@@ -46,12 +45,6 @@ class Backend
     protected $url;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
-     */
-    protected $bookmark;
-
-    /**
      * Document class instance
      * @var \core\classes\Document $document
      */
@@ -68,18 +61,16 @@ class Backend
      * @param User $user
      * @param Store $store
      * @param Url $url
-     * @param Bookmark $bookmark
      * @param Search $search
      * @param Document $document
      * @param Route $route
      */
-    public function __construct(User $user, Store $store, Url $url, Bookmark $bookmark, Search $search, Document $document, Route $route)
+    public function __construct(User $user, Store $store, Url $url, Search $search, Document $document, Route $route)
     {
         $this->url = $url;
         $this->user = $user;
         $this->store = $store;
         $this->search = $search;
-        $this->bookmark = $bookmark;
         $this->document = $document;
         $this->route = $route;
 
@@ -113,7 +104,6 @@ class Backend
     public function hookData(&$data)
     {
         if ($this->url->isBackend()) {
-            $data['bookmarks'] = $this->bookmark->getList(array('user_id' => $this->user->id(), 'type' => 'url'));
             $data['store_list'] = $this->store->getList();
             $data['search_handlers'] = $this->search->getHandlers();
         }

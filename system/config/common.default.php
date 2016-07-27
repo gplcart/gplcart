@@ -20,8 +20,8 @@
 # $config['dashboard_limit'] = 10; // Max number of items in to be shown on dashboard
 # $config['dashboard_severity'] = 'info'; // System event severity to be shown on dashboard
 # $config['theme_backend'] = 'backend'; // Backend theme module name
-# $config['bookmark_limit'] = 20; // Max number of bookmarks for anonymous
-# $config['bookmark_limit_*'] = 20; // Max number of bookmarks per role. Replace asterisk with the role ID
+# $config['wishlist_limit'] = 20; // Max number of wishlist items for anonymous
+# $config['wishlist_limit_*'] = 20; // Max number of wishlist items per role. Replace asterisk with the role ID
 # $config['cart_cookie_lifespan'] = 31536000; // Lifetime of cookie that keeps an anonymous cart, in seconds
 # $config['cart_login_merge'] = 0; // Whether to merge old and current cart items on login when a customer is checking out
 # $config['cart_preview_limit'] = 5; // Max number of cart items to be shown in the cart preview

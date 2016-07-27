@@ -21,7 +21,7 @@ use core\models\Image as ModelsImage;
 use core\models\Price as ModelsPrice;
 use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -55,10 +55,10 @@ class Cart extends Model
     protected $user;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Image model instance
@@ -96,7 +96,7 @@ class Cart extends Model
      * @param ModelsPrice $price
      * @param ModelsCurrency $currency
      * @param ModelsUser $user
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsLanguage $language
      * @param ModelsStore $store
      * @param ModelsImage $image
@@ -105,7 +105,7 @@ class Cart extends Model
      */
     public function __construct(ModelsProduct $product, ModelsPrice $price,
             ModelsCurrency $currency, ModelsUser $user,
-            ModelsBookmark $bookmark, ModelsLanguage $language,
+            ModelsWishlist $wishlist, ModelsLanguage $language,
             ModelsStore $store, ModelsImage $image, Request $request,
             Logger $logger)
     {
@@ -119,7 +119,7 @@ class Cart extends Model
         $this->product = $product;
         $this->request = $request;
         $this->currency = $currency;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
         $this->language = $language;
     }
 
@@ -470,22 +470,20 @@ class Cart extends Model
             return false;
         }
 
-        $this->db->delete('bookmark', array(
-            'id_key' => 'product_sku_id',
-            'id_value' => (int) $product_sku_id
+        $this->db->delete('wishlist', array(
+            'product_id' => (int) $product_sku_id
         ));
 
-        $bookmark_id = $this->bookmark->add(array(
-            'id_key' => 'product_sku_id',
-            'id_value' => (int) $product_sku_id,
+        $wishlist_id = $this->wishlist->add(array(
+            'product_id' => (int) $product_sku_id,
             'user_id' => $user_id
         ));
 
         $this->db->delete('cart', array('sku' => $sku, 'user_id' => $user_id));
         $this->deleteCache($user_id);
-        $this->hook->fire('move.cart.wishlist.after', $sku, $user_id, $bookmark_id);
+        $this->hook->fire('move.cart.wishlist.after', $sku, $user_id, $wishlist_id);
 
-        return $bookmark_id;
+        return $wishlist_id;
     }
 
     /**

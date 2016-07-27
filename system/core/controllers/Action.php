@@ -13,7 +13,7 @@ use core\Hook;
 use core\Controller;
 use core\models\Cart as ModelsCart;
 use core\models\Product as ModelsProduct;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 
 /**
  * Handles incoming requests and outputs data related to user submitted actions
@@ -28,10 +28,10 @@ class Action extends Controller
     protected $cart;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Product model instance
@@ -48,11 +48,11 @@ class Action extends Controller
     /**
      * Constructor
      * @param ModelsCart $cart
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsProduct $product
      * @param Hook $hook
      */
-    public function __construct(ModelsCart $cart, ModelsBookmark $bookmark,
+    public function __construct(ModelsCart $cart, ModelsWishlist $wishlist,
             ModelsProduct $product, Hook $hook)
     {
         parent::__construct();
@@ -60,7 +60,7 @@ class Action extends Controller
         $this->hook = $hook;
         $this->cart = $cart;
         $this->product = $product;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
     }
 
     /**
@@ -153,11 +153,9 @@ class Action extends Controller
             return array();
         }
 
-        $added = $this->bookmark->add(array(
+        $added = $this->wishlist->add(array(
             'user_id' => $this->cart->uid(),
-            'id_key' => 'product_id',
-            'id_value' => $product_id
-                ), true); // true - check limit
+            'product_id' => $product_id), true); // true - check limit
 
         if (!empty($added)) {
             return array(
@@ -169,7 +167,7 @@ class Action extends Controller
         return array(
             'message_type' => 'warning',
             'message' => $this->text('Oops, you\'re exceeding %limit items in <a href="!href">your wishlist</a>', array(
-                '%limit' => $this->bookmark->getLimits($user_id),
+                '%limit' => $this->wishlist->getLimits($user_id),
                 '!href' => $this->url('wishlist'))));
     }
 
@@ -182,17 +180,14 @@ class Action extends Controller
         $user_id = $this->cart->uid();
         $product_id = (int) $this->request->get('product_id');
 
-        $result = $this->bookmark->getList(array(
-            'id_key' => 'product_id',
-            'id_value' => $product_id,
-            'user_id' => $user_id));
+        $result = $this->wishlist->getList(array('product_id' => $product_id, 'user_id' => $user_id));
 
         if (empty($result)) {
             return array();
         }
 
-        foreach (array_keys($result) as $bookmark_id) {
-            $this->bookmark->delete($bookmark_id);
+        foreach (array_keys($result) as $wishlist_id) {
+            $this->wishlist->delete($wishlist_id);
         }
 
         return array(

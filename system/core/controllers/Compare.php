@@ -16,7 +16,7 @@ use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Product as ModelsProduct;
 use core\models\Category as ModelsCategory;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\FieldValue as ModelsFieldValue;
 use core\models\ProductClass as ModelsProductClass;
 
@@ -69,10 +69,10 @@ class Compare extends Controller
     protected $field_value;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Category model instance
@@ -89,13 +89,13 @@ class Compare extends Controller
      * @param ModelsCart $cart
      * @param ModelsField $field
      * @param ModelsFieldValue $field_value
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsCategory $category
      */
     public function __construct(ModelsProduct $product,
             ModelsProductClass $product_class, ModelsPrice $price,
             ModelsImage $image, ModelsCart $cart, ModelsField $field,
-            ModelsFieldValue $field_value, ModelsBookmark $bookmark,
+            ModelsFieldValue $field_value, ModelsWishlist $wishlist,
             ModelsCategory $category)
     {
         parent::__construct();
@@ -106,7 +106,7 @@ class Compare extends Controller
         $this->field = $field;
         $this->product = $product;
         $this->category = $category;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
         $this->field_value = $field_value;
         $this->product_class = $product_class;
     }
@@ -266,7 +266,7 @@ class Compare extends Controller
 
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
-            $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
+            $product['in_wishlist'] = $this->wishlist->exists($product_id, array('user_id' => $user_id));
 
             if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);

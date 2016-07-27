@@ -51,9 +51,6 @@
               <?php if ($this->access('file')) { ?>
               <li><a href="<?php echo $this->url('admin/content/file'); ?>"><?php echo $this->text('Files'); ?></a></li>
               <?php } ?>
-              <?php if ($this->access('bookmark')) { ?>
-              <li><a href="<?php echo $this->url('admin/content/bookmark'); ?>"><?php echo $this->text('Bookmarks'); ?></a></li>
-              <?php } ?>
               <?php if ($this->access('product_class')) { ?>
               <li><a href="<?php echo $this->url('admin/content/product/class'); ?>"><?php echo $this->text('Product classes'); ?></a></li>
               <?php } ?>
@@ -211,35 +208,6 @@
           </li>
           <?php } ?>
           <li><a href="<?php echo $this->url('admin/help'); ?>"><i class="fa fa-question-circle"></i></a></li>
-          <?php if ($this->access('bookmark') || $this->access('bookmark_add')) { ?>
-              <li class="dropdown">
-                <a title="<?php echo $this->text('Bookmarks'); ?>" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-bookmark"></i>
-                </a>
-                <ul id="bookmarks" class="dropdown-menu dropdown-menu-right">
-                  <?php if (!empty($bookmarks)) { ?>
-                  <?php foreach ($bookmarks as $bookmark) { ?>
-                  <li>
-                    <a href="<?php echo $this->url($bookmark['url']); ?>">
-                      <?php if ($this->access('bookmark_delete')) { ?>
-                      <span title="<?php echo $this->text('Delete'); ?>" data-bookmark-id="<?php echo $bookmark['bookmark_id']; ?>" class="delete">
-                        <i class="fa fa-times-circle"></i>
-                      </span>
-                      <?php } ?>
-                      <?php echo $this->escape($bookmark['title']); ?>
-                    </a>
-                  </li>
-                  <?php } ?>
-                  <?php } ?>
-                  <?php if ($this->access('bookmark_add')) { ?>
-                  <li class="divider"></li>
-                  <li>
-                    <a href="#" id="add-bookmark"><i class="fa fa-plus-circle"></i> <?php echo $this->text('Add'); ?></a>
-                  </li>
-                  <?php } ?>
-                </ul>
-              </li>
-          <?php } ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-user"></i>

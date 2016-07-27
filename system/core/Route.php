@@ -455,13 +455,6 @@ class Route
             )
         );
 
-        $routes['admin/content/bookmark'] = array(
-            'access' => 'bookmark',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Bookmark', 'bookmarks')
-            )
-        );
-
         $routes['admin/content/file'] = array(
             'access' => 'file',
             'handlers' => array(
@@ -480,20 +473,6 @@ class Route
             'access' => 'file_edit',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\File', 'edit')
-            )
-        );
-
-        $routes['admin/content/bookmark/add'] = array(
-            'access' => 'bookmark_add',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Bookmark', 'edit')
-            )
-        );
-
-        $routes['admin/content/bookmark/edit/(\d+)'] = array(
-            'access' => 'bookmark_edit',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Bookmark', 'edit')
             )
         );
 

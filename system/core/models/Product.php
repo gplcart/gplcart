@@ -681,7 +681,7 @@ class Product extends Model
         $this->db->delete('product_translation', array('product_id' => $product_id));
         $this->db->delete('product_field', array('product_id' => $product_id));
         $this->db->delete('review', array('product_id' => $product_id));
-        $this->db->delete('bookmark', array('id_key' => 'product_id', 'id_value' => $product_id));
+        $this->db->delete('wishlist', array('product_id' => $product_id));
         $this->db->delete('alias', array('id_key' => 'product_id', 'id_value' => $product_id));
         $this->db->delete('file', array('id_key' => 'product_id', 'id_value' => $product_id));
         $this->db->delete('product_sku', array('product_id' => $product_id));

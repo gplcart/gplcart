@@ -17,7 +17,7 @@ use core\models\Price as ModelsPrice;
 use core\models\Product as ModelsProduct;
 use core\models\Address as ModelsAddress;
 use core\models\Country as ModelsCountry;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\UserRole as ModelsUserRole;
 
 /**
@@ -69,10 +69,10 @@ class Account extends Controller
     protected $price;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Product model instance
@@ -93,13 +93,13 @@ class Account extends Controller
      * @param ModelsState $state
      * @param ModelsOrder $order
      * @param ModelsPrice $price
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsUserRole $role
      * @param ModelsProduct $product
      */
     public function __construct(ModelsAddress $address, ModelsCountry $country,
             ModelsState $state, ModelsOrder $order, ModelsPrice $price,
-            ModelsBookmark $bookmark, ModelsUserRole $role,
+            ModelsWishlist $wishlist, ModelsUserRole $role,
             ModelsProduct $product)
     {
         parent::__construct();
@@ -111,7 +111,7 @@ class Account extends Controller
         $this->product = $product;
         $this->country = $country;
         $this->address = $address;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
     }
 
     /**

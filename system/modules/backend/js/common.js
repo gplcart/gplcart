@@ -191,64 +191,6 @@ $(function () {
 
     });
 
-    /********************************* Bookmarks *********************************/
-
-    // Adds
-    $('a#add-bookmark').click(function () {
-
-        var title = $('title').text();
-        var conf = prompt('', title);
-
-        if (conf) {
-            $.ajax({
-                method: 'POST',
-                dataType: 'json',
-                url: GplCart.settings.base + 'ajax',
-                data: {
-                    action: 'adminAddBookmark',
-                    title: title,
-                    url: GplCart.settings.uri,
-                    token: GplCart.settings.token
-                },
-                success: function (data) {
-                    if (!jQuery.isEmptyObject(data) && 'success' in data) {
-
-                        var option = '\
-                        <li><a href="' + GplCart.settings.urn + '">\n\
-                        <span data-bookmark-id="' + data.bookmark_id + '" class="delete">\n\
-                        <i class="fa fa-times-circle">\n\
-                        </i>\n\
-                        </span>' + title + '</a>\n\
-                        </li>';
-
-                        $('ul#bookmarks .divider').before(option);
-                    }
-                }
-            });
-        }
-
-        return false;
-    });
-
-    // Remove
-    $(document).on('click', 'ul#bookmarks .delete', function () {
-
-        var row = $(this).closest('li');
-        var id = $(this).attr('data-bookmark-id');
-
-        $.ajax({
-            method: 'POST',
-            dataType: 'json',
-            url: GplCart.settings.base + 'ajax',
-            data: {action: 'deleteBookmark', bookmark_id: id, token: GplCart.settings.token},
-            success: function (data) {
-                if (!jQuery.isEmptyObject(data) && 'success' in data) {
-                    row.remove();
-                }
-            }
-        });
-    });
-
     /********************************* Time counter *********************************/
 
     // Session time left counter

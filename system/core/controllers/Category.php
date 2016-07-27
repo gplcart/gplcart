@@ -15,7 +15,7 @@ use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Search as ModelsSearch;
 use core\models\Product as ModelsProduct;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
 
@@ -56,10 +56,10 @@ class Category extends Controller
     protected $price;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Cart model intance
@@ -80,13 +80,13 @@ class Category extends Controller
      * @param ModelsProduct $product
      * @param ModelsPrice $price
      * @param ModelsCart $cart
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsSearch $search
      * @param ModelsCategoryGroup $category_group
      */
     public function __construct(ModelsCategory $category, ModelsImage $image,
             ModelsProduct $product, ModelsPrice $price, ModelsCart $cart,
-            ModelsBookmark $bookmark, ModelsSearch $search,
+            ModelsWishlist $wishlist, ModelsSearch $search,
             ModelsCategoryGroup $category_group)
     {
         parent::__construct();
@@ -97,7 +97,7 @@ class Category extends Controller
         $this->search = $search;
         $this->product = $product;
         $this->category = $category;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
         $this->category_group = $category_group;
     }
 
@@ -159,7 +159,7 @@ class Category extends Controller
             $product['in_comparison'] = $this->product->isCompared($product_id);
             $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
-            $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
+            $product['in_wishlist'] = $this->wishlist->exists($product_id, array('user_id' => $user_id));
 
             if (!empty($pricerules)) {
                 $calculated = $this->product->calculate($product, $this->store_id);
@@ -367,8 +367,8 @@ class Category extends Controller
             'limit' => $limit,
             'store_id' => $this->store_id,
             'category_id' => $category_id,
-            //'language' => $this->langcode
-        ) + $query;
+                //'language' => $this->langcode
+                ) + $query;
 
         $products = $this->product->getList($options);
         return $this->prepareProducts($products, $query);
@@ -385,7 +385,7 @@ class Category extends Controller
         $options = array(
             'count' => true,
             'category_id' => $category_id,
-            //'language' => $this->langcode
+                //'language' => $this->langcode
         );
 
         return $this->product->getList($options + $query);

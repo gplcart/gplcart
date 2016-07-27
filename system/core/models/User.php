@@ -205,7 +205,7 @@ class User extends Model
 
         $this->db->delete('user', array('user_id' => (int) $user_id));
         $this->db->delete('cart', array('user_id' => $user_id));
-        $this->db->delete('bookmark', array('user_id' => $user_id));
+        $this->db->delete('wishlist', array('user_id' => $user_id));
         $this->db->delete('review', array('user_id' => $user_id));
         $this->db->delete('address', array('user_id' => $user_id));
         $this->db->delete('rating_user', array('user_id' => $user_id));

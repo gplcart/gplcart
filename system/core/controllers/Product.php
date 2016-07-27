@@ -19,7 +19,7 @@ use core\models\Alias as ModelsAlias;
 use core\models\Review as ModelsReview;
 use core\models\Rating as ModelsRating;
 use core\models\Product as ModelsProduct;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\ProductClass as ModelsProductClass;
 
 /**
@@ -65,10 +65,10 @@ class Product extends Controller
     protected $order;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Review model instance
@@ -96,7 +96,7 @@ class Product extends Controller
      * @param ModelsImage $image
      * @param ModelsCart $cart
      * @param ModelsOrder $order
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsReview $review
      * @param ModelsRating $rating
      * @param ModelsAlias $alias
@@ -104,7 +104,7 @@ class Product extends Controller
     public function __construct(ModelsProduct $product,
             ModelsProductClass $product_class, ModelsPrice $price,
             ModelsImage $image, ModelsCart $cart, ModelsOrder $order,
-            ModelsBookmark $bookmark, ModelsReview $review,
+            ModelsWishlist $wishlist, ModelsReview $review,
             ModelsRating $rating, ModelsAlias $alias)
     {
         parent::__construct();
@@ -117,7 +117,7 @@ class Product extends Controller
         $this->review = $review;
         $this->rating = $rating;
         $this->product = $product;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
         $this->product_class = $product_class;
     }
 
@@ -145,7 +145,7 @@ class Product extends Controller
         $this->setImages($product);
         $this->setRelated($product);
         $this->setRecent($product);
-        
+
         $this->setCssProduct();
         $this->setJsProduct($product);
         $this->setTitleProduct($product);
@@ -298,7 +298,7 @@ class Product extends Controller
     {
         $this->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css');
     }
-    
+
     /**
      * Sets Javascripts on the product page
      * @param array $product

@@ -15,7 +15,7 @@ use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Search as ModelsSearch;
 use core\models\Product as ModelsProduct;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\Category as ModelsCategory;
 
 /**
@@ -31,10 +31,10 @@ class Search extends Controller
     protected $cart;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Product model instance
@@ -68,7 +68,7 @@ class Search extends Controller
 
     /**
      * Constructor
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsProduct $product
      * @param ModelsSearch $search
      * @param ModelsCart $cart
@@ -76,7 +76,7 @@ class Search extends Controller
      * @param ModelsImage $image
      * @param ModelsCategory $category
      */
-    public function __construct(ModelsBookmark $bookmark,
+    public function __construct(ModelsWishlist $wishlist,
             ModelsProduct $product, ModelsSearch $search, ModelsCart $cart,
             ModelsPrice $price, ModelsImage $image, ModelsCategory $category)
     {
@@ -88,7 +88,7 @@ class Search extends Controller
         $this->search = $search;
         $this->product = $product;
         $this->category = $category;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
     }
 
     public function search()
@@ -199,8 +199,9 @@ class Search extends Controller
         $imagestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
 
         foreach ($products as $product_id => &$product) {
+
             $product['in_comparison'] = $this->product->isCompared($product_id);
-            $product['in_wishlist'] = $this->bookmark->exists($product_id, array('user_id' => $user_id, 'type' => 'product'));
+            $product['in_wishlist'] = $this->wishlist->exists($product_id, array('user_id' => $user_id));
             $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
             $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
 

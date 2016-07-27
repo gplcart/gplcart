@@ -19,19 +19,12 @@ use core\models\Search as ModelsSearch;
 use core\models\Rating as ModelsRating;
 use core\models\Product as ModelsProduct;
 use core\models\Country as ModelsCountry;
-use core\models\Bookmark as ModelsBookmark;
 
 /**
  * Handles incoming requests and outputs data related to AJAX operations
  */
 class Ajax extends Controller
 {
-
-    /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
-     */
-    protected $bookmark;
 
     /**
      * Product model instance
@@ -89,7 +82,6 @@ class Ajax extends Controller
 
     /**
      * Constructor
-     * @param ModelsBookmark $bookmark
      * @param ModelsProduct $product
      * @param ModelsPrice $price
      * @param ModelsImage $image
@@ -100,10 +92,10 @@ class Ajax extends Controller
      * @param ModelsFile $file
      * @param ModelsRating $rating
      */
-    public function __construct(ModelsBookmark $bookmark,
-            ModelsProduct $product, ModelsPrice $price, ModelsImage $image,
-            ModelsCart $cart, ModelsCountry $country, ModelsState $state,
-            ModelsSearch $search, ModelsFile $file, ModelsRating $rating)
+    public function __construct(ModelsProduct $product, ModelsPrice $price,
+            ModelsImage $image, ModelsCart $cart, ModelsCountry $country,
+            ModelsState $state, ModelsSearch $search, ModelsFile $file,
+            ModelsRating $rating)
     {
         parent::__construct();
 
@@ -116,7 +108,6 @@ class Ajax extends Controller
         $this->search = $search;
         $this->product = $product;
         $this->country = $country;
-        $this->bookmark = $bookmark;
     }
 
     /**
@@ -140,52 +131,6 @@ class Ajax extends Controller
         }
 
         $this->response->json($this->{$action}());
-    }
-
-    /**
-     * Adds a bookmark for an admin
-     * @return array
-     */
-    public function adminAddBookmark()
-    {
-        if (!$this->access('bookmark_add')) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
-        }
-
-        $url = (string) $this->request->post('url');
-
-        if (empty($url)) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
-        }
-
-        $title = (string) $this->request->post('title');
-
-        if (empty($title) || mb_strlen($title) > 255) {
-            return array('error' => $this->text('An error occurred'));
-        }
-
-        $bookmark_id = $this->bookmark->add(array('url' => $url, 'title' => $title, 'user_id' => $this->uid), true);
-
-        if (!empty($bookmark_id)) {
-            return array('success' => 1, 'bookmark_id' => $bookmark_id);
-        }
-
-        return array('error' => $this->text('An error occurred'));
-    }
-
-    /**
-     * Deletes a bookmark
-     * @return array
-     */
-    public function deleteBookmark()
-    {
-        $bookmark_id = (int) $this->request->post('bookmark_id', 0);
-
-        if ($this->access('bookmark_delete') && $this->bookmark->delete($bookmark_id)) {
-            return array('success' => 1);
-        }
-
-        return array('error' => $this->text('An error occurred'));
     }
 
     /**
@@ -259,7 +204,7 @@ class Ajax extends Controller
         $field_value_ids = $this->request->post('values');
 
         if (!empty($field_value_ids)) {
-            
+
             $field_value_ids = array_values($field_value_ids);
             $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
 

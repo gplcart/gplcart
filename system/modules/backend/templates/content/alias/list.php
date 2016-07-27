@@ -19,7 +19,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table class="table margin-top-20 bookmarks">
+      <table class="table margin-top-20 aliases">
         <thead>
           <tr>
             <th>

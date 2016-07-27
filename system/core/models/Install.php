@@ -431,15 +431,12 @@ class Install
             )
         );
 
-        $tables['bookmark'] = array(
+        $tables['wishlist'] = array(
             'fields' => array(
-                'bookmark_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'id_value' => 'int(10) NOT NULL',
+                'wishlist_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
+                'product_id' => 'int(10) NOT NULL',
                 'created' => 'int(10) NOT NULL',
-                'id_key' => 'varchar(50) NOT NULL',
-                'user_id' => 'varchar(255) NOT NULL',
-                'title' => 'varchar(255) NOT NULL DEFAULT ""',
-                'url' => 'varchar(255) NOT NULL DEFAULT ""'
+                'user_id' => 'varchar(255) NOT NULL'
             )
         );
 

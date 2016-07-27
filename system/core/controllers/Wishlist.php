@@ -14,7 +14,7 @@ use core\models\Cart as ModelsCart;
 use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Product as ModelsProduct;
-use core\models\Bookmark as ModelsBookmark;
+use core\models\Wishlist as ModelsWishlist;
 use core\models\Category as ModelsCategory;
 
 class Wishlist extends Controller
@@ -45,10 +45,10 @@ class Wishlist extends Controller
     protected $cart;
 
     /**
-     * Bookmark model instance
-     * @var \core\models\Bookmark $bookmark
+     * Wishlist model instance
+     * @var \core\models\Wishlist $wishlist
      */
-    protected $bookmark;
+    protected $wishlist;
 
     /**
      * Category model instance
@@ -62,11 +62,11 @@ class Wishlist extends Controller
      * @param ModelsPrice $price
      * @param ModelsImage $image
      * @param ModelsCart $cart
-     * @param ModelsBookmark $bookmark
+     * @param ModelsWishlist $wishlist
      * @param ModelsCategory $category
      */
     public function __construct(ModelsProduct $product, ModelsPrice $price,
-            ModelsImage $image, ModelsCart $cart, ModelsBookmark $bookmark,
+            ModelsImage $image, ModelsCart $cart, ModelsWishlist $wishlist,
             ModelsCategory $category)
     {
         parent::__construct();
@@ -75,7 +75,7 @@ class Wishlist extends Controller
         $this->price = $price;
         $this->image = $image;
         $this->product = $product;
-        $this->bookmark = $bookmark;
+        $this->wishlist = $wishlist;
         $this->category = $category;
     }
 
@@ -119,19 +119,18 @@ class Wishlist extends Controller
     }
 
     /**
-     * Returns an array of bookmarked items for the current user
+     * Returns an array of wishlist items for the current user
      * @return array
      */
     protected function getWishlist()
     {
         $user_id = $this->cart->uid();
-        $options = array('user_id' => $user_id, 'id_key' => 'product_id');
-        $results = $this->bookmark->getList($options);
+        $results = $this->wishlist->getList(array('user_id' => $user_id));
 
         // Reindex array
         $products = array();
         foreach ($results as $result) {
-            $products[$result['id_value']] = $result;
+            $products[$result['product_id']] = $result;
         }
 
         return $products;
