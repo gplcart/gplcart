@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['title']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Name of the product class for editors'); ?>">
           <?php echo $this->text('Name'); ?>
@@ -44,8 +44,8 @@
         </label>
         <div class="col-md-4">
           <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->escape($product_class['title']) : ''; ?>" required>
-          <?php if (isset($form_errors['title'])) { ?>
-          <div class="help-block"><?php echo $form_errors['title']; ?></div>
+          <?php if (isset($this->errors['title'])) { ?>
+          <div class="help-block"><?php echo $this->errors['title']; ?></div>
           <?php } ?>
         </div>
       </div>

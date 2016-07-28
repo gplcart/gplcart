@@ -332,7 +332,7 @@ class PriceRule extends Controller
         }
 
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -350,14 +350,14 @@ class PriceRule extends Controller
         }
 
         if (mb_strlen($this->submitted['code']) > 255) {
-            $this->data['form_errors']['code'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+            $this->errors['code'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
             return false;
         }
 
         $price_rule_id = isset($this->submitted['price_rule_id']) ? $this->submitted['price_rule_id'] : null;
 
         if ($this->rule->codeExists($this->submitted['code'], $this->submitted['store_id'], $price_rule_id)) {
-            $this->data['form_errors']['code'] = $this->text('This price rule code already exists');
+            $this->errors['code'] = $this->text('This price rule code already exists');
             return false;
         }
 
@@ -371,20 +371,20 @@ class PriceRule extends Controller
     protected function validateValue()
     {
         if (!is_numeric($this->submitted['value'])) {
-            $this->data['form_errors']['value'] = $this->text('Only numeric values allowed');
+            $this->errors['value'] = $this->text('Only numeric values allowed');
             return false;
         }
 
         if ($this->submitted['value_type'] == 'percent') {
             if (abs($this->submitted['value']) > 100) {
-                $this->data['form_errors']['value'] = $this->text('Percent value must not be greater than 100');
+                $this->errors['value'] = $this->text('Percent value must not be greater than 100');
                 return false;
             }
             return true;
         }
 
         if (strlen($this->submitted['value']) > 10) {
-            $this->data['form_errors']['value'] = $this->text('Content must not exceed %s characters', array('%s' => 10));
+            $this->errors['value'] = $this->text('Content must not exceed %s characters', array('%s' => 10));
             return false;
         }
 
@@ -399,7 +399,7 @@ class PriceRule extends Controller
     {
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->data['form_errors']['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
                 return false;
             }
             return true;
@@ -468,7 +468,7 @@ class PriceRule extends Controller
         }
 
         if (!empty($error_lines)) {
-            $this->data['form_errors']['conditions'] = $this->text('Something wrong on lines %num', array('%num' => implode(',', $error_lines)));
+            $this->errors['conditions'] = $this->text('Something wrong on lines %num', array('%num' => implode(',', $error_lines)));
             return false;
         }
 

@@ -21,7 +21,7 @@
   </div>
   <div class="row margin-top-20">
     <div class="col-md-6">
-      <div class="form-group<?php echo isset($form_errors['status']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['status']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('Disabled imagestyles will not process images'); ?>">
             <?php echo $this->text('Status'); ?>
@@ -36,12 +36,12 @@
               <input name="imagestyle[status]" type="radio" autocomplete="off" value="0"<?php echo empty($imagestyle['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
           </div>
-          <?php if (isset($form_errors['status'])) { ?>
-          <div class="help-block"><?php echo $form_errors['status']; ?></div>
+          <?php if (isset($this->errors['status'])) { ?>
+          <div class="help-block"><?php echo $this->errors['status']; ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('Give a descriptive name for the imagestyle'); ?>">
           <?php echo $this->text('Name'); ?>
@@ -49,12 +49,12 @@
         </label>
         <div class="col-md-8">
           <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->escape($imagestyle['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
+          <?php if (isset($this->errors['name'])) { ?>
+          <div class="help-block"><?php echo $this->errors['name']; ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['actions']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['actions']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('List of actions to be applied to an image when processing with the imagestyle. One action per line. See the legend. Actions are called from the top to bottom'); ?>">
           <?php echo $this->text('Actions'); ?>
@@ -62,8 +62,8 @@
         </label>
         <div class="col-md-8">
           <textarea name="imagestyle[actions]" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->escape($imagestyle['actions']); ?></textarea>
-          <?php if (isset($form_errors['actions'])) { ?>
-          <div class="help-block"><?php echo $form_errors['actions']; ?></div>
+          <?php if (isset($this->errors['actions'])) { ?>
+          <div class="help-block"><?php echo $this->errors['actions']; ?></div>
           <?php } ?>
         </div>
       </div>

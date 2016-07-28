@@ -40,7 +40,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Native name of the city'); ?>">
           <?php echo $this->text('Name'); ?>
@@ -48,8 +48,8 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="city[name]" class="form-control" value="<?php echo isset($city['name']) ? $this->escape($city['name']) : ''; ?>" autofocus>
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
+          <?php if (isset($this->errors['name'])) { ?>
+          <div class="help-block"><?php echo $this->errors['name']; ?></div>
           <?php } ?>
         </div>
       </div>

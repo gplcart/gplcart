@@ -56,12 +56,12 @@
         <?php echo $form_messages['cart']; ?>
       </div>
   <?php } ?>
-  <?php if (isset($form_errors['cart'])) { ?>
+  <?php if (isset($this->errors['cart'])) { ?>
       <div class="alert alert-danger alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <?php echo $form_errors['cart']; ?>
+        <?php echo $this->errors['cart']; ?>
       </div>
   <?php } ?>
   <div class="form-group">
@@ -81,7 +81,7 @@
               <td>
                 
                 <?php if(isset($price_component['rule']['type']) && $price_component['rule']['type'] === 'order' && !empty($price_component['rule']['code'])) { ?>
-                <div class="form-group col-md-8<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
+                <div class="form-group col-md-8<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
                 <div class="input-group">
                 <input class="form-control col-md-2" name="order[code]" placeholder="<?php echo $this->text('Enter your discount code'); ?>" value="<?php echo isset($order['code']) ? $order['code'] : ''; ?>">
                 <span class="input-group-btn">
@@ -91,8 +91,8 @@
 
                 </div>
                 
-                <?php if(isset($form_errors['code'])) { ?>
-                <div class="help-block"><?php echo $form_errors['code']; ?></div>
+                <?php if(isset($this->errors['code'])) { ?>
+                <div class="help-block"><?php echo $this->errors['code']; ?></div>
                 <?php } ?>
                   
                 </div>

@@ -296,7 +296,7 @@ class Review extends Controller
     protected function validateText()
     {
         if (empty($this->submitted['text'])) {
-            $this->data['form_errors']['text'] = $this->text('Required field');
+            $this->errors['text'] = $this->text('Required field');
             return false;
         }
 
@@ -323,7 +323,7 @@ class Review extends Controller
         $this->submitted['created'] = strtotime($this->submitted['created']);
 
         if (empty($this->submitted['created'])) {
-            $this->data['form_errors']['created'] = $this->text('Only valid English textual datetime allowed');
+            $this->errors['created'] = $this->text('Only valid English textual datetime allowed');
             return false;
         }
 
@@ -337,7 +337,7 @@ class Review extends Controller
     protected function validateProduct()
     {
         if (isset($this->submitted['product_id']) && !$this->product->get($this->submitted['product_id'])) {
-            $this->data['form_errors']['product'] = $this->text('Product does not exist');
+            $this->errors['product'] = $this->text('Product does not exist');
             return false;
         }
 
@@ -351,7 +351,7 @@ class Review extends Controller
     protected function validateUser()
     {
         if (empty($this->submitted['email'])) {
-            $this->data['form_errors']['email'] = $this->text('Required field');
+            $this->errors['email'] = $this->text('Required field');
             return false;
         }
 
@@ -362,7 +362,7 @@ class Review extends Controller
             return true;
         }
 
-        $this->data['form_errors']['email'] = $this->text('User does not exist');
+        $this->errors['email'] = $this->text('User does not exist');
         return false;
     }
 

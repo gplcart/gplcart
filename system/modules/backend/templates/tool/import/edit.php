@@ -8,12 +8,12 @@
     <div class="col-md-12"><?php echo $this->xss($operation['description']); ?></div>
   </div>
   <?php } ?>
-  <div class="form-group<?php echo isset($form_errors['file']) ? ' has-error' : ''; ?>">
+  <div class="form-group<?php echo isset($this->errors['file']) ? ' has-error' : ''; ?>">
     <label class="col-md-1 control-label"><?php echo $this->text('CSV file'); ?></label>
     <div class="col-md-4">
       <input type="file" class="form-control" name="file" accept=".csv" required>
-      <?php if (isset($form_errors['file'])) { ?>
-      <div class="help-block"><?php echo $form_errors['file']; ?></div>
+      <?php if (isset($this->errors['file'])) { ?>
+      <div class="help-block"><?php echo $this->errors['file']; ?></div>
       <?php } ?>
     </div>
   </div>

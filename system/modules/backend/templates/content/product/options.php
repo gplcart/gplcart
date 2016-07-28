@@ -37,40 +37,40 @@
             <tr>
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
               <td class="active">
-                <div class="<?php echo isset($form_errors['combination'][$row]['fields'][$field_id]) ? 'has-error' : ''; ?>">
+                <div class="<?php echo isset($this->errors['combination'][$row]['fields'][$field_id]) ? 'has-error' : ''; ?>">
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
                     <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
                     <?php foreach ($option['values'] as $value) { ?>
                     <option value="<?php echo $value['field_value_id']; ?>"<?php echo (!empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields'])) ? ' selected' : ''; ?>><?php echo $this->escape($value['title']); ?></option>
                     <?php } ?>
                   </select>
-                  <?php if (isset($form_errors['combination'][$row]['fields'][$field_id])) { ?>
-                  <div class="help-block"><?php echo $form_errors['combination'][$row]['fields'][$field_id]; ?></div>
+                  <?php if (isset($this->errors['combination'][$row]['fields'][$field_id])) { ?>
+                  <div class="help-block"><?php echo $this->errors['combination'][$row]['fields'][$field_id]; ?></div>
                   <?php } ?>
                 </div>
               </td>
               <?php } ?>
               <td>
-                <div class="<?php echo isset($form_errors['combination'][$row]['sku']) ? 'has-error' : ''; ?>">
+                <div class="<?php echo isset($this->errors['combination'][$row]['sku']) ? 'has-error' : ''; ?>">
                   <input maxlength="255" class="form-control" name="product[combination][<?php echo $row; ?>][sku]" value="<?php echo isset($combination['sku']) ? $this->escape($combination['sku']) : ''; ?>">
-                  <?php if (isset($form_errors['combination'][$row]['sku'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['combination'][$row]['sku']; ?></div>
+                  <?php if (isset($this->errors['combination'][$row]['sku'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['combination'][$row]['sku']; ?></div>
                   <?php } ?>
                 </div>
               </td>
               <td>
-                <div class="<?php echo isset($form_errors['combination'][$row]['price']) ? 'has-error' : ''; ?>">
+                <div class="<?php echo isset($this->errors['combination'][$row]['price']) ? 'has-error' : ''; ?>">
                   <input type="number" min="0" step="any" pattern="[0-9]+([\.|,][0-9]+)?" class="form-control" name="product[combination][<?php echo $row; ?>][price]" value="<?php echo intval($combination['price']); ?>">
-                  <?php if (isset($form_errors['combination'][$row]['price'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['combination'][$row]['price']; ?></div>
+                  <?php if (isset($this->errors['combination'][$row]['price'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['combination'][$row]['price']; ?></div>
                   <?php } ?>
                 </div>
               </td>
               <td>
-                <div class="<?php echo isset($form_errors['combination'][$row]['stock']) ? 'has-error' : ''; ?>">
+                <div class="<?php echo isset($this->errors['combination'][$row]['stock']) ? 'has-error' : ''; ?>">
                   <input type="number" min="0" step="1" pattern="\d*" maxlength="6" class="form-control" name="product[combination][<?php echo $row; ?>][stock]" value="<?php echo $combination['stock']; ?>">
-                  <?php if (isset($form_errors['combination'][$row]['stock'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['combination'][$row]['stock']; ?></div>
+                  <?php if (isset($this->errors['combination'][$row]['stock'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['combination'][$row]['stock']; ?></div>
                   <?php } ?>
                 </div>
               </td>

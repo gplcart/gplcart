@@ -78,41 +78,41 @@
 			  <h4><?php echo $this->text('Database'); ?></h4>
 			</div>
 			<div class="panel-body">
-			  <div class="required form-group<?php echo isset($form_errors['database']['name']) ? ' has-error' : ''; ?>">
+			  <div class="required form-group<?php echo isset($this->errors['database']['name']) ? ' has-error' : ''; ?>">
 			    <label class="col-md-3 control-label"><?php echo $this->text('Database'); ?></label>
 				<div class="col-md-6">
 				  <input name="settings[database][name]" class="form-control" autocomplete="off" value="<?php echo isset($settings['database']['name']) ? $settings['database']['name'] : ''; ?>">
-				  <?php if(isset($form_errors['database']['name'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['database']['name']; ?></div>
+				  <?php if(isset($this->errors['database']['name'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['database']['name']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>
-			  <div class="required form-group<?php echo isset($form_errors['database']['user']) ? ' has-error' : ''; ?>">
+			  <div class="required form-group<?php echo isset($this->errors['database']['user']) ? ' has-error' : ''; ?>">
 			    <label class="col-md-3 control-label"><?php echo $this->text('User'); ?></label>
 				<div class="col-md-6">
 				  <input name="settings[database][user]" class="form-control" autocomplete="off" value="<?php echo isset($settings['database']['user']) ? $settings['database']['user'] : 'root'; ?>">
-				  <?php if(isset($form_errors['database']['user'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['database']['user']; ?></div>
+				  <?php if(isset($this->errors['database']['user'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['database']['user']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>
-			  <div class="form-group<?php echo isset($form_errors['database']['password']) ? ' has-error' : ''; ?>">
+			  <div class="form-group<?php echo isset($this->errors['database']['password']) ? ' has-error' : ''; ?>">
 			    <label class="col-md-3 control-label"><?php echo $this->text('Password'); ?></label>
 				<div class="col-md-6">
 				  <input type="password" name="settings[database][password]" autocomplete="off" class="form-control" value="">
-				  <?php if(isset($form_errors['database']['password'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['database']['password']; ?></div>
+				  <?php if(isset($this->errors['database']['password'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['database']['password']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>
-			  <?php if(empty($form_errors)) { ?>
+			  <?php if(empty($this->errors)) { ?>
 			  <div class="form-group">
 			    <div class="col-md-6 col-md-offset-3">
 				  <a href="#db-advanced" data-toggle="collapse"><?php echo $this->text('Advanced'); ?> <span class="caret"></span></a>
 				</div>
 			  </div>
 			  <?php } ?>
-			  <div id="db-advanced" class="<?php echo empty($form_errors) ? ' collapse' : ''; ?>">
+			  <div id="db-advanced" class="<?php echo empty($this->errors) ? ' collapse' : ''; ?>">
 			    <div class="form-group">
 				  <label class="col-md-3 control-label"><?php echo $this->text('Type'); ?></label>
 				  <div class="col-md-3">
@@ -122,27 +122,27 @@
 					</select>
 				  </div>
 				</div>
-				<div class="required form-group<?php echo isset($form_errors['database']['port']) ? ' has-error' : ''; ?>">
+				<div class="required form-group<?php echo isset($this->errors['database']['port']) ? ' has-error' : ''; ?>">
 				  <label class="col-md-3 control-label"><?php echo $this->text('Port'); ?></label>
 				  <div class="col-md-3">
 				    <input name="settings[database][port]" class="form-control" value="<?php echo isset($settings['database']['port']) ? $settings['database']['port'] : '3306'; ?>">
-					<?php if(isset($form_errors['database']['port'])) { ?>
-					<div class="help-block"><?php echo $form_errors['database']['port']; ?></div>
+					<?php if(isset($this->errors['database']['port'])) { ?>
+					<div class="help-block"><?php echo $this->errors['database']['port']; ?></div>
 					<?php } ?>
 				  </div>
 				</div>
-				<div class="required form-group<?php echo isset($form_errors['database']['host']) ? ' has-error' : ''; ?>">
+				<div class="required form-group<?php echo isset($this->errors['database']['host']) ? ' has-error' : ''; ?>">
 				  <label class="col-md-3 control-label"><?php echo $this->text('Host'); ?></label>
 				  <div class="col-md-6">
 				    <input name="settings[database][host]" class="form-control" value="<?php echo isset($settings['database']['host']) ? $settings['database']['host'] : 'localhost'; ?>">
-					<?php if(isset($form_errors['database']['host'])) { ?>
-					<div class="help-block"><?php echo $form_errors['database']['host']; ?></div>
+					<?php if(isset($this->errors['database']['host'])) { ?>
+					<div class="help-block"><?php echo $this->errors['database']['host']; ?></div>
 					<?php } ?>
 				  </div>
 				</div>
 			  </div>
-			  <?php if(isset($form_errors['database']['connect'])) { ?>
-			  <div class="alert alert-danger"><?php echo $form_errors['database']['connect']; ?></div>
+			  <?php if(isset($this->errors['database']['connect'])) { ?>
+			  <div class="alert alert-danger"><?php echo $this->errors['database']['connect']; ?></div>
 			  <?php } ?>
 			</div>
 		  </div>
@@ -151,26 +151,26 @@
 			  <h4><?php echo $this->text('Site'); ?></h4>
 			</div>
 			<div class="panel-body">
-			  <div class="required form-group<?php echo isset($form_errors['user']['email']) ? ' has-error' : ''; ?>">
+			  <div class="required form-group<?php echo isset($this->errors['user']['email']) ? ' has-error' : ''; ?>">
 			    <label class="col-md-3 control-label"><?php echo $this->text('E-mail'); ?></label>
 				<div class="col-md-6">
 				  <input name="settings[user][email]" class="form-control" value="<?php echo isset($settings['user']['email']) ? $settings['user']['email'] : ''; ?>">
-				  <?php if(isset($form_errors['user']['email'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['user']['email']; ?></div>
+				  <?php if(isset($this->errors['user']['email'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['user']['email']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>
-			  <div class="form-group<?php echo isset($form_errors['user']['password']) ? ' has-error' : ''; ?>">
+			  <div class="form-group<?php echo isset($this->errors['user']['password']) ? ' has-error' : ''; ?>">
 			    <label class="col-md-3 control-label"><?php echo $this->text('Password'); ?></label>
 				<div class="col-md-6">
 				  <input type="password" name="settings[user][password]" class="form-control" value="">
-				  <?php if(isset($form_errors['user']['password'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['user']['password']; ?></div>
+				  <?php if(isset($this->errors['user']['password'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['user']['password']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>
 			  <hr>
-			  <div class="form-group required<?php echo isset($form_errors['store']['country']) ? ' has-error' : ''; ?>">
+			  <div class="form-group required<?php echo isset($this->errors['store']['country']) ? ' has-error' : ''; ?>">
 				<label class="col-md-3 control-label"><?php echo $this->text('Country'); ?></label>
 				<div class="col-md-6">
 				  <select name="settings[store][country]" class="form-control">
@@ -179,17 +179,17 @@
 					<option value="<?php echo $code; ?>"<?php echo (isset($settings['site']['country']) && $settings['site']['country'] == $code) ? ' selected' : ''; ?>><?php echo $this->escape($label['name']); ?></option>
 					<?php } ?>
 				  </select>
-				  <?php if(isset($form_errors['store']['country'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['store']['country']; ?></div>
+				  <?php if(isset($this->errors['store']['country'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['store']['country']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>
-			  <div class="required form-group<?php echo isset($form_errors['store']['title']) ? ' has-error' : ''; ?>">
+			  <div class="required form-group<?php echo isset($this->errors['store']['title']) ? ' has-error' : ''; ?>">
 				<label class="col-md-3 control-label"><?php echo $this->text('Store title'); ?></label>
 				<div class="col-md-6">
 				  <input name="settings[store][title]" class="form-control" value="<?php echo isset($settings['store']['title']) ? $settings['store']['title'] : 'GPL Cart'; ?>">
-				  <?php if(isset($form_errors['store']['title'])) { ?>
-				  <div class="help-block"><?php echo $form_errors['store']['title']; ?></div>
+				  <?php if(isset($this->errors['store']['title'])) { ?>
+				  <div class="help-block"><?php echo $this->errors['store']['title']; ?></div>
 				  <?php } ?>
 				</div>
 			  </div>

@@ -618,7 +618,7 @@ class Product extends Controller
         }
 
         if (!is_numeric($this->submitted['quantity']) || strlen($this->submitted['quantity']) > 2) {
-            $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
+            $this->errors['quantity'] = $this->text('Invalid quantity');
         }
     }
 

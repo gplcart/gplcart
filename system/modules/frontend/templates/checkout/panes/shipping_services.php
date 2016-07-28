@@ -21,12 +21,12 @@
         </div>
         <?php } ?>
     <?php } ?>
-    <?php if (isset($form_errors['shipping']) && !is_array($form_errors['shipping'])) { ?>
+    <?php if (isset($this->errors['shipping']) && !is_array($this->errors['shipping'])) { ?>
     <div class="alert alert-danger alert-dismissible">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <?php echo $form_errors['shipping']; ?>
+      <?php echo $this->errors['shipping']; ?>
     </div>
     <?php } ?>
   </div>

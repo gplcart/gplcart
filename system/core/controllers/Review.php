@@ -208,7 +208,7 @@ class Review extends Controller
     protected function validate(array $review)
     {
         if (empty($this->submitted['text'])) {
-            $this->data['form_errors']['text'] = $this->text('Please write a review');
+            $this->errors['text'] = $this->text('Please write a review');
             return;
         }
 

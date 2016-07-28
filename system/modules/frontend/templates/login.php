@@ -1,18 +1,18 @@
 <div class="row">
-<form method="post" id="login" class="login col-md-6<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
+<form method="post" id="login" class="login col-md-6<?php echo !empty($this->errors) ? ' form-errors' : ''; ?>">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <div class="form-group<?php echo isset($form_errors['email']) ? ' has-error' : ''; ?>">
+  <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
     <label><?php echo $this->text('E-mail'); ?></label>
     <input type="email" class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus required>
-    <?php if (isset($form_errors['email'])) { ?>
-    <div class="help-block"><?php echo $form_errors['email']; ?></div>
+    <?php if (isset($this->errors['email'])) { ?>
+    <div class="help-block"><?php echo $this->errors['email']; ?></div>
     <?php } ?>
   </div>
-  <div class="form-group<?php echo isset($form_errors['password']) ? ' has-error' : ''; ?>">
+  <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
     <label><?php echo $this->text('Password'); ?></label>
     <input class="form-control" type="password" name="user[password]" required>
-    <?php if (isset($form_errors['password'])) { ?>
-    <div class="help-block"><?php echo $form_errors['password']; ?></div>
+    <?php if (isset($this->errors['password'])) { ?>
+    <div class="help-block"><?php echo $this->errors['password']; ?></div>
     <?php } ?>
   </div>
   <div class="form-group">

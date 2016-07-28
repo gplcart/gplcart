@@ -234,7 +234,7 @@ class Language extends Controller
             return true;
         }
 
-        $this->data['form_errors']['code'] = $this->text('Invalid language code. Use only ISO 639-1 codes');
+        $this->errors['code'] = $this->text('Invalid language code. Use only ISO 639-1 codes');
         return false;
     }
 
@@ -248,7 +248,7 @@ class Language extends Controller
             return true;
         }
 
-        $this->data['form_errors']['name'] = $this->text('Invalid language name. It must be 1 - 50 long and contain only latin characters');
+        $this->errors['name'] = $this->text('Invalid language name. It must be 1 - 50 long and contain only latin characters');
         return false;
     }
 
@@ -259,7 +259,7 @@ class Language extends Controller
     protected function validateNativeName()
     {
         if (empty($this->submitted['native_name']) || mb_strlen($this->submitted['native_name']) > 255) {
-            $this->data['form_errors']['native_name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->errors['native_name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
         return true;
@@ -273,7 +273,7 @@ class Language extends Controller
     {
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->data['form_errors']['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
                 return false;
             }
             return true;

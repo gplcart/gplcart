@@ -283,7 +283,7 @@ class ProductClass extends Controller
     protected function validate()
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 

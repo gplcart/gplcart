@@ -183,6 +183,12 @@ class Controller
     protected $submitted = array();
 
     /**
+     * Array of validation errors
+     * @var array
+     */
+    public $errors = array();
+
+    /**
      * User model instance
      * @var \core\models\User $user
      */
@@ -1296,7 +1302,7 @@ class Controller
      */
     protected function formErrors($message = true)
     {
-        if (empty($this->data['form_errors'])) {
+        if (empty($this->errors)) {
             return array();
         }
 
@@ -1304,7 +1310,7 @@ class Controller
             $this->setMessage($this->text('Validation errors. Check form fields and try again'), 'danger');
         }
 
-        return $this->data['form_errors'];
+        return $this->errors;
     }
 
     /**

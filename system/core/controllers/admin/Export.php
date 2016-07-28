@@ -213,13 +213,13 @@ class Export extends Controller
 
         if (empty($this->submitted['total'])) {
             $this->setMessage($this->text('Nothing to export'), 'danger');
-            $this->data['form_errors'] = true;
+            $this->errors = true;
             return false;
         }
 
         if (file_put_contents($operation['file'], '') === false) {
             $this->setMessage($this->text('Failed to create file %path', array('%path' => $operation['file'])), 'danger');
-            $this->data['form_errors'] = true;
+            $this->errors = true;
             return false;
         }
 

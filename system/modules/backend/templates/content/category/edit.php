@@ -1,4 +1,4 @@
-<form method="post" id="edit-category" onsubmit="return confirm();" class="form-horizontal<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
+<form method="post" id="edit-category" onsubmit="return confirm();" class="form-horizontal<?php echo !empty($this->errors) ? ' form-errors' : ''; ?>">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <input type="hidden" name="category[category_group_id]" value="<?php echo $category_group['category_group_id']; ?>">
   <div class="row">
@@ -46,7 +46,7 @@
           </div>
           <div id="pane-description" class="panel-collapse collapse in always-visible">
             <div class="panel-body">
-              <div class="form-group required<?php echo isset($form_errors['title']) ? ' has-error' : ''; ?>">
+              <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
                 <label class="col-md-2 control-label">
                   <span title="<?php echo $this->text('Category name to be used on the category page and menu'); ?>" class="hint">
                     <?php echo $this->text('Title'); ?>
@@ -54,8 +54,8 @@
                 </label>
                 <div class="col-md-4">
                   <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->escape($category['title']) : ''; ?>">
-                  <?php if (isset($form_errors['title'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['title']; ?></div>
+                  <?php if (isset($this->errors['title'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['title']; ?></div>
                   <?php } ?>
                 </div>
               </div>
@@ -87,14 +87,14 @@
                   </a>
                 </div>
               </div>
-              <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
+              <div id="translations" class="collapse translations<?php echo !empty($this->errors) ? ' in' : ''; ?>">
                 <?php foreach ($languages as $code => $language) { ?>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+                <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
                   <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
                   <div class="col-md-4">
                     <input maxlength="255" name="category[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->escape($category['translation'][$code]['title']) : ''; ?>">
-                    <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
-                      <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
+                    <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
+                      <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
                     <?php } ?>
                   </div>
                 </div>
@@ -144,7 +144,7 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group<?php echo isset($form_errors['alias']) ? ' has-error' : ''; ?>">
+              <div class="form-group<?php echo isset($this->errors['alias']) ? ' has-error' : ''; ?>">
                 <label class="col-md-2 control-label">
                   <span class="hint" title="<?php echo $this->text('An alternative, SEO-friendly URL for the category. Leave empty to generate automatically'); ?>">
                   <?php echo $this->text('Alias'); ?>
@@ -152,8 +152,8 @@
                 </label>
                 <div class="col-md-4">
                   <input type="text" name="category[alias]" class="form-control" value="<?php echo isset($category['alias']) ? $this->escape($category['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-                  <?php if (isset($form_errors['alias'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['alias']; ?></div>
+                  <?php if (isset($this->errors['alias'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['alias']; ?></div>
                   <?php } ?>
                 </div>
               </div>
@@ -170,7 +170,7 @@
           </div>
           <div id="pane-meta-description" class="panel-collapse collapse">
             <div class="panel-body">
-              <div class="form-group<?php echo isset($form_errors['meta_title']) ? ' has-error' : ''; ?>">
+              <div class="form-group<?php echo isset($this->errors['meta_title']) ? ' has-error' : ''; ?>">
                 <label class="col-md-2 control-label">
                   <span class="hint" title="<?php echo $this->text('HTML meta title tag on the category page. Important for SEO'); ?>">
                   <?php echo $this->text('Meta title'); ?>
@@ -178,8 +178,8 @@
                 </label>
                 <div class="col-md-4">
                   <input maxlength="60" name="category[meta_title]" class="form-control" value="<?php echo isset($category['meta_title']) ? $this->escape($category['meta_title']) : ''; ?>">
-                  <?php if (isset($form_errors['meta_title'])) { ?>
-                  <div class="help-block"><?php echo $form_errors['meta_title']; ?></div>
+                  <?php if (isset($this->errors['meta_title'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['meta_title']; ?></div>
                   <?php } ?>
                 </div>
               </div>
@@ -201,14 +201,14 @@
                   </a>
                 </div>
               </div>
-              <div id="meta-translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
+              <div id="meta-translations" class="collapse translations<?php echo !empty($this->errors) ? ' in' : ''; ?>">
               <?php foreach ($languages as $code => $language) { ?>
-                <div class="form-group<?php echo isset($form_errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
+                <div class="form-group<?php echo isset($this->errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
                   <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $language['native_name'])); ?></label>
                   <div class="col-md-4">
                     <input maxlength="60" name="category[translation][<?php echo $code; ?>][meta_title]" class="form-control" id="title-<?php echo $code; ?>" value="<?php echo isset($category['translation'][$code]['meta_title']) ? $this->escape($category['translation'][$code]['meta_title']) : ''; ?>">
-                    <?php if (isset($form_errors['translation'][$code]['meta_title'])) { ?>
-                        <div class="help-block"><?php echo $form_errors['translation'][$code]['meta_title']; ?></div>
+                    <?php if (isset($this->errors['translation'][$code]['meta_title'])) { ?>
+                        <div class="help-block"><?php echo $this->errors['translation'][$code]['meta_title']; ?></div>
                     <?php } ?>
                   </div>
                 </div>

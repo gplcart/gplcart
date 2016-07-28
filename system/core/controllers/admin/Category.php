@@ -461,7 +461,7 @@ class Category extends Controller
 
         $check_alias = (isset($category['alias']) && ($category['alias'] !== $this->submitted['alias']));
         if ($check_alias && $this->alias->exists($this->submitted['alias'])) {
-            $this->data['form_errors']['alias'] = $this->text('URL alias already exists');
+            $this->errors['alias'] = $this->text('URL alias already exists');
             return false;
         }
 
@@ -475,7 +475,7 @@ class Category extends Controller
     protected function validateTitle(array $category)
     {
         if (empty($this->submitted['title']) || (mb_strlen($this->submitted['title']) > 255)) {
-            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array(
+            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array(
                 '%min' => 1, '%max' => 255));
             return false;
         }
@@ -490,7 +490,7 @@ class Category extends Controller
     protected function validateMetaTitle(array $category)
     {
         if (mb_strlen($this->submitted['meta_title']) > 255) {
-            $this->data['form_errors']['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+            $this->errors['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
             return false;
         }
 
@@ -504,7 +504,7 @@ class Category extends Controller
     protected function validateMetaDescription(array $category)
     {
         if (mb_strlen($this->submitted['meta_description']) > 255) {
-            $this->data['form_errors']['meta_description'] = $this->text('Content must not exceed %s characters', array(
+            $this->errors['meta_description'] = $this->text('Content must not exceed %s characters', array(
                 '%s' => 255));
             return false;
         }
@@ -525,18 +525,18 @@ class Category extends Controller
         $has_errors = false;
         foreach ($this->submitted['translation'] as $lang => $translation) {
             if (empty($translation['title']) || (mb_strlen($translation['title']) > 255)) {
-                $this->data['form_errors']['translation'][$lang]['title'] = $this->text('Content must be %min - %max characters long', array(
+                $this->errors['translation'][$lang]['title'] = $this->text('Content must be %min - %max characters long', array(
                     '%min' => 1, '%max' => 255));
                 $has_errors = true;
             }
 
             if (mb_strlen($translation['meta_title']) > 255) {
-                $this->data['form_errors']['translation'][$lang]['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->errors['translation'][$lang]['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
 
             if (mb_strlen($translation['meta_description']) > 255) {
-                $this->data['form_errors']['translation'][$lang]['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->errors['translation'][$lang]['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }

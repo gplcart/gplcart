@@ -26,7 +26,7 @@
                 <?php echo $this->escape($attribute['title']); ?>
               </td>
               <td>
-                <div class="<?php echo isset($form_errors['attribute'][$field_id]) ? 'has-error' : ''; ?>">
+                <div class="<?php echo isset($this->errors['attribute'][$field_id]) ? 'has-error' : ''; ?>">
                   <select title="<?php echo $this->text('Select'); ?>" data-live-search="true" class="form-control selectpicker" name="product[field][attribute][<?php echo $field_id; ?>][]"<?php echo $attribute['multiple'] ? ' multiple' : ''; ?>>
                     <?php if (!$attribute['multiple']) { ?>
                     <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
@@ -39,8 +39,8 @@
                     <?php } ?>
                     <?php } ?>
                   </select>
-                  <?php if (isset($form_errors['attribute'][$field_id])) { ?>
-                  <div class="help-block"><?php echo $form_errors['attribute'][$field_id]; ?></div>
+                  <?php if (isset($this->errors['attribute'][$field_id])) { ?>
+                  <div class="help-block"><?php echo $this->errors['attribute'][$field_id]; ?></div>
                   <?php } ?>
                 </div>
               </td>

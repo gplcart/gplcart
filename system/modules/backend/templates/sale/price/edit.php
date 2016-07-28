@@ -38,7 +38,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('Name of the price rule for administrators and customers during checkout'); ?>">
             <?php echo $this->text('Name'); ?>
@@ -46,8 +46,8 @@
         </label>
         <div class="col-md-3">
           <input maxlength="255" name="price_rule[name]" class="form-control" value="<?php echo isset($price_rule['name']) ? $this->escape($price_rule['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
+          <?php if (isset($this->errors['name'])) { ?>
+          <div class="help-block"><?php echo $this->errors['name']; ?></div>
           <?php } ?>
         </div>
       </div>
@@ -66,7 +66,7 @@
           </select>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('A unique string you want to associate with the price rule. Customer must enter the code to apply the rule to the order'); ?>">
             <?php echo $this->text('Code'); ?>
@@ -74,8 +74,8 @@
         </label>
         <div class="col-md-3">
           <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->escape($price_rule['code']) : ''; ?>">
-          <?php if (isset($form_errors['code'])) { ?>
-            <div class="help-block"><?php echo $form_errors['code']; ?></div>
+          <?php if (isset($this->errors['code'])) { ?>
+            <div class="help-block"><?php echo $this->errors['code']; ?></div>
           <?php } ?>
         </div>
       </div>
@@ -100,7 +100,7 @@
         </div>
       </div>
       <?php } ?>
-      <div class="form-group required<?php echo isset($form_errors['value']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['value']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('Numeric value to be added to the base price. To substract use negative numbers'); ?>">
             <?php echo $this->text('Value'); ?>
@@ -108,8 +108,8 @@
         </label>
         <div class="col-md-3">
           <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->escape($price_rule['value']) : ''; ?>">
-          <?php if (isset($form_errors['value'])) { ?>
-          <div class="help-block"><?php echo $form_errors['value']; ?></div>
+          <?php if (isset($this->errors['value'])) { ?>
+          <div class="help-block"><?php echo $this->errors['value']; ?></div>
           <?php } ?>
         </div>
       </div>
@@ -142,7 +142,7 @@
           </select>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('Order of applying enabled price rules. Rules with less weight are applied earlier'); ?>">
             <?php echo $this->text('Weight'); ?>
@@ -150,12 +150,12 @@
         </label>
         <div class="col-md-3">
           <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->escape($price_rule['weight']) : '0'; ?>">
-          <?php if (isset($form_errors['weight'])) { ?>
-          <div class="help-block"><?php echo $form_errors['weight']; ?></div>
+          <?php if (isset($this->errors['weight'])) { ?>
+          <div class="help-block"><?php echo $this->errors['weight']; ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['conditions']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['conditions']) ? ' has-error' : ''; ?>">
         <label class="col-md-3 control-label">
           <span class="hint" title="<?php echo $this->text('What conditions must be met to apply the price rule. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>">
             <?php echo $this->text('Conditions'); ?>
@@ -163,8 +163,8 @@
         </label>
         <div class="col-md-8">
           <textarea name="price_rule[data][conditions]" class="form-control" placeholder="<?php echo $this->text('User is logged in: user_id > 0'); ?>"><?php echo!empty($price_rule['data']['conditions']) ? $this->escape($price_rule['data']['conditions']) : ''; ?></textarea>
-          <?php if (isset($form_errors['conditions'])) { ?>
-          <div class="help-block"><?php echo $form_errors['conditions']; ?></div>
+          <?php if (isset($this->errors['conditions'])) { ?>
+          <div class="help-block"><?php echo $this->errors['conditions']; ?></div>
           <?php } ?>
         </div>
       </div>

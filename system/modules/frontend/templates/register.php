@@ -47,25 +47,25 @@
     </div>
     <?php } ?>
     <?php } ?>
-    <div class="form-group<?php echo isset($form_errors['email']) ? ' has-error' : ''; ?>">
+    <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
       <label><?php echo $this->text('E-mail'); ?></label>
       <input type="email" class="form-control" maxlength="255" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus required>
-      <?php if (isset($form_errors['email'])) { ?>
-      <div class="help-block"><?php echo $form_errors['email']; ?></div>
+      <?php if (isset($this->errors['email'])) { ?>
+      <div class="help-block"><?php echo $this->errors['email']; ?></div>
       <?php } ?>
     </div>
-    <div class="form-group<?php echo isset($form_errors['password']) ? ' has-error' : ''; ?>">
+    <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
       <label><?php echo $this->text('Password'); ?></label>
       <input class="form-control" type="password" pattern=".{<?php echo $min_password_length; ?>,<?php echo $max_password_length; ?>}" maxlength="<?php echo $max_password_length; ?>" name="user[password]" placeholder="<?php echo $this->text('Minimum @num characters', array('@num' => $min_password_length)); ?>" required>
-      <?php if (isset($form_errors['password'])) { ?> 
-      <div class="help-block"><?php echo $form_errors['password']; ?></div>
+      <?php if (isset($this->errors['password'])) { ?> 
+      <div class="help-block"><?php echo $this->errors['password']; ?></div>
       <?php } ?>
     </div>
-    <div class="form-group<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+    <div class="form-group<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
       <label><?php echo $this->text('Name'); ?></label>
       <input class="form-control" maxlength="255" name="user[name]" value="<?php echo isset($user['name']) ? $user['name'] : ''; ?>">
-      <?php if (isset($form_errors['name'])) { ?>
-      <div class="help-block"><?php echo $form_errors['name']; ?></div>
+      <?php if (isset($this->errors['name'])) { ?>
+      <div class="help-block"><?php echo $this->errors['name']; ?></div>
       <?php } ?>
     </div>
     <div class="form-group">

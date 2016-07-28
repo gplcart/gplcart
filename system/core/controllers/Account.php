@@ -592,7 +592,7 @@ class Account extends Controller
     {
         if (empty($user['user_id'])) {
             if (empty($this->submitted['password'])) {
-                $this->data['form_errors']['password'] = $this->text('Required field');
+                $this->errors['password'] = $this->text('Required field');
                 return false;
             }
         } elseif (!empty($this->submitted['password'])) {
@@ -611,12 +611,12 @@ class Account extends Controller
         }
 
         if (empty($this->submitted['password_old']) || empty($user['hash'])) {
-            $this->data['form_errors']['password_old'] = $this->text('The specified old password does not match the current password');
+            $this->errors['password_old'] = $this->text('The specified old password does not match the current password');
             return false;
         }
 
         if (!Tool::hashEquals($user['hash'], Tool::hash($this->submitted['password_old'], $user['hash'], false))) {
-            $this->data['form_errors']['password_old'] = $this->text('The specified old password does not match the current password');
+            $this->errors['password_old'] = $this->text('The specified old password does not match the current password');
             return false;
         }
 
@@ -630,7 +630,7 @@ class Account extends Controller
     protected function validateName()
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array(
+            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array(
                 '%min' => 1, '%max' => 255));
             return false;
         }
@@ -652,7 +652,7 @@ class Account extends Controller
             }
 
             if ($check_email_exists && $this->user->getByEmail($this->submitted['email'])) {
-                $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
+                $this->errors['email'] = $this->text('Please provide another E-mail');
                 return false;
             }
 
@@ -660,7 +660,7 @@ class Account extends Controller
             return true;
         }
 
-        $this->data['form_errors']['email'] = $this->text('Invalid E-mail');
+        $this->errors['email'] = $this->text('Invalid E-mail');
         return false;
     }
 
@@ -677,7 +677,7 @@ class Account extends Controller
             return true;
         }
 
-        $this->data['form_errors']['password'] = $this->language->text('Password must be %min - %max characters long', array(
+        $this->errors['password'] = $this->language->text('Password must be %min - %max characters long', array(
             '%min' => $limits['min'], '%max' => $limits['max']));
         return false;
     }
@@ -691,7 +691,7 @@ class Account extends Controller
 
         foreach ($this->country->getFormat($this->submitted['country'], true) as $field => $info) {
             if (!empty($info['required']) && (empty($this->submitted[$field]) || mb_strlen($this->submitted[$field]) > 255)) {
-                $this->data['form_errors'][$field] = $this->text('Content must be %min - %max characters long', array(
+                $this->errors[$field] = $this->text('Content must be %min - %max characters long', array(
                     '%min' => 1, '%max' => 255));
             }
         }
@@ -707,7 +707,7 @@ class Account extends Controller
         if (isset($this->submitted['email'])) {
             $email_user = $this->user->getByEmail($this->submitted['email']);
             if (empty($email_user['status'])) {
-                $this->data['form_errors']['email'] = $this->text('Please provide another E-mail');
+                $this->errors['email'] = $this->text('Please provide another E-mail');
                 return false;
             }
 

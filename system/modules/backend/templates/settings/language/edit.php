@@ -17,7 +17,7 @@
       </div>
     </div>
   </div>
-  <div class="form-group<?php echo isset($form_errors['status']) ? ' has-error' : ''; ?>">
+  <div class="form-group<?php echo isset($this->errors['status']) ? ' has-error' : ''; ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('Only enabled languages will be shown to users'); ?>">
       <?php echo $this->text('Status'); ?>
@@ -32,8 +32,8 @@
           <input name="language[status]" type="radio" autocomplete="off" value="0"<?php echo empty($language['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
         </label>
       </div>
-      <?php if (isset($form_errors['status'])) { ?>
-      <div class="help-block"><?php echo $form_errors['status']; ?></div>
+      <?php if (isset($this->errors['status'])) { ?>
+      <div class="help-block"><?php echo $this->errors['status']; ?></div>
       <?php } ?>
     </div>
   </div>
@@ -50,7 +50,7 @@
       </div>
     </div>
   </div>
-  <div class="form-group required<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
+  <div class="form-group required<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('ISO 639-1 language code, culture names also accepted'); ?>">
       <?php echo $this->text('Code'); ?>
@@ -59,11 +59,11 @@
     <div class="col-md-1">
       <input name="language[code]" maxlength="2" class="form-control" value="<?php echo isset($language['code']) ? $this->escape($language['code']) : ''; ?>" required>
     </div>
-    <?php if (isset($form_errors['code'])) { ?>
-    <div class="help-block col-md-6"><?php echo $form_errors['code']; ?></div>
+    <?php if (isset($this->errors['code'])) { ?>
+    <div class="help-block col-md-6"><?php echo $this->errors['code']; ?></div>
     <?php } ?>
   </div>
-  <div class="form-group required<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+  <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('International name of the language in english according to ISO 639'); ?>">
       <?php echo $this->text('Name'); ?>
@@ -71,12 +71,12 @@
     </label>
     <div class="col-md-4">
       <input name="language[name]" class="form-control" maxlength="32" value="<?php echo isset($language['name']) ? $this->escape($language['name']) : ''; ?>" required>
-      <?php if (isset($form_errors['name'])) { ?>
-      <div class="help-block"><?php echo $form_errors['name']; ?></div>
+      <?php if (isset($this->errors['name'])) { ?>
+      <div class="help-block"><?php echo $this->errors['name']; ?></div>
       <?php } ?>
     </div>
   </div>
-  <div class="form-group required<?php echo isset($form_errors['native_name']) ? ' has-error' : ''; ?>">
+  <div class="form-group required<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('Local name of the language'); ?>">
       <?php echo $this->text('Native name'); ?>
@@ -84,12 +84,12 @@
     </label>
     <div class="col-md-4">
       <input name="language[native_name]" maxlength="255" class="form-control" value="<?php echo isset($language['native_name']) ? $this->escape($language['native_name']) : ''; ?>" required>
-      <?php if (isset($form_errors['native_name'])) { ?>
-      <div class="help-block"><?php echo $form_errors['native_name']; ?></div>
+      <?php if (isset($this->errors['native_name'])) { ?>
+      <div class="help-block"><?php echo $this->errors['native_name']; ?></div>
       <?php } ?>
     </div>
   </div>
-  <div class="form-group required<?php echo isset($form_errors['weight']) ? ' has-error' : ''; ?>">
+  <div class="form-group required<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
       <?php echo $this->text('Weight'); ?>
@@ -98,8 +98,8 @@
     <div class="col-md-1">
       <input name="language[weight]" maxlength="2" class="form-control" value="<?php echo isset($language['weight']) ? $this->escape($language['weight']) : 0; ?>">
     </div>
-    <?php if (isset($form_errors['weight'])) { ?>
-    <div class="help-block col-md-6"><?php echo $form_errors['weight']; ?></div>
+    <?php if (isset($this->errors['weight'])) { ?>
+    <div class="help-block col-md-6"><?php echo $this->errors['weight']; ?></div>
     <?php } ?>
   </div>
 </form>

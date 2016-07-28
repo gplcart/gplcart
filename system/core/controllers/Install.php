@@ -250,7 +250,7 @@ class Install extends Controller
             return true;
         }
 
-        $this->data['form_errors']['database']['connect'] = $this->text($connect);
+        $this->errors['database']['connect'] = $this->text($connect);
         return false;
     }
 
@@ -261,7 +261,7 @@ class Install extends Controller
     protected function validateStoreCountry()
     {
         if (empty($this->submitted['store']['country'])) {
-            $this->data['form_errors']['store']['country'] = $this->text('Required field');
+            $this->errors['store']['country'] = $this->text('Required field');
             return false;
         }
 
@@ -281,7 +281,7 @@ class Install extends Controller
     protected function validateStoreTitle()
     {
         if (mb_strlen($this->submitted['store']['title']) > 255) {
-            $this->data['form_errors']['store']['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+            $this->errors['store']['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
             return false;
         }
 
@@ -298,7 +298,7 @@ class Install extends Controller
             return true;
         }
 
-        $this->data['form_errors']['user']['email'] = $this->text('Invalid E-mail');
+        $this->errors['user']['email'] = $this->text('Invalid E-mail');
         return false;
     }
 
@@ -318,7 +318,7 @@ class Install extends Controller
             return true;
         }
 
-        $this->data['form_errors']['user']['password'] = $this->text('Content must be %min - %max characters long', array(
+        $this->errors['user']['password'] = $this->text('Content must be %min - %max characters long', array(
             '%min' => $min_password_length, '%max' => $max_password_length));
 
         return false;
@@ -332,7 +332,7 @@ class Install extends Controller
     {
 
         if (empty($this->submitted['database']['host'])) {
-            $this->data['form_errors']['database']['host'] = $this->text('Required field');
+            $this->errors['database']['host'] = $this->text('Required field');
             return false;
         }
 
@@ -346,7 +346,7 @@ class Install extends Controller
     protected function validateDbName()
     {
         if (empty($this->submitted['database']['name'])) {
-            $this->data['form_errors']['database']['name'] = $this->text('Required field');
+            $this->errors['database']['name'] = $this->text('Required field');
             return false;
         }
 
@@ -360,7 +360,7 @@ class Install extends Controller
     protected function validateDbUser()
     {
         if (empty($this->submitted['database']['user'])) {
-            $this->data['form_errors']['database']['user'] = $this->text('Required field');
+            $this->errors['database']['user'] = $this->text('Required field');
             return false;
         }
 
@@ -374,7 +374,7 @@ class Install extends Controller
     protected function validateDbPort()
     {
         if (empty($this->submitted['database']['port'])) {
-            $this->data['form_errors']['database']['port'] = $this->text('Required field');
+            $this->errors['database']['port'] = $this->text('Required field');
             return false;
         }
 

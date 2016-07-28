@@ -8,19 +8,19 @@
     <div class="form-group">
     <?php echo $this->text('Hello %name. Please type your new password in the field below', array('%name' => $recoverable_user['name'])); ?>
     </div>
-    <div class="form-group<?php echo isset($form_errors['password']) ? ' has-error' : ''; ?>">
+    <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
       <label><?php echo $this->text('Password'); ?></label>
       <input class="form-control" type="password" pattern=".{<?php echo $min_password_length; ?>,<?php echo $max_password_length; ?>}" maxlength="<?php echo $max_password_length; ?>" name="user[password]" placeholder="<?php echo $this->text('Minimum @num characters', array('@num' => $min_password_length)); ?>" autofocus>
-      <?php if (isset($form_errors['password'])) { ?>
-      <div class="help-block"><?php echo $form_errors['password']; ?></div>
+      <?php if (isset($this->errors['password'])) { ?>
+      <div class="help-block"><?php echo $this->errors['password']; ?></div>
       <?php } ?>
     </div>
     <?php } else { ?>
-    <div class="form-group<?php echo isset($form_errors['email']) ? ' has-error' : ''; ?>">
+    <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
       <label><?php echo $this->text('E-mail'); ?></label>
       <input class="form-control" maxlength="255" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus>
-      <?php if (isset($form_errors['email'])) { ?>
-      <div class="help-block"><?php echo $form_errors['email']; ?></div>
+      <?php if (isset($this->errors['email'])) { ?>
+      <div class="help-block"><?php echo $this->errors['email']; ?></div>
       <?php } ?>
     </div>
     <?php } ?>
