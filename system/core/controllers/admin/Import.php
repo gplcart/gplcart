@@ -174,8 +174,9 @@ class Import extends Controller
         $this->submitted['operation'] = $operation;
 
         $this->validate();
+        $errors = $this->formErrors(false);
 
-        if ($this->hasError(false)) {
+        if (!empty($errors)) {
             return;
         }
 
@@ -214,14 +215,14 @@ class Import extends Controller
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $this->errors['file'] = $this->text('Required field');
+            $this->data['form_errors']['file'] = $this->text('Required field');
             return false;
         }
 
         $this->file->setUploadPath('private/import')->setHandler('csv');
 
         if ($this->file->upload($file) !== true) {
-            $this->errors['file'] = $this->text('Unable to upload the file');
+            $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
             return false;
         }
 
@@ -239,7 +240,7 @@ class Import extends Controller
         $header_result = $this->import->validateCsvHeader($this->submitted['filepath'], $this->submitted['operation']);
 
         if ($header_result !== true) {
-            $this->errors['file'] = $header_result;
+            $this->data['form_errors']['file'] = $header_result;
             return false;
         }
 

@@ -268,7 +268,9 @@ class State extends Controller
 
         $this->validate($country, $state);
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['state'] = $this->submitted;
             return;
         }
@@ -325,7 +327,7 @@ class State extends Controller
     protected function validateName()
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -346,7 +348,7 @@ class State extends Controller
         }
 
         if ($check && $this->state->getByCode($this->submitted['code'], $country['code'])) {
-            $this->errors['code'] = $this->text('This state code already exists for this country');
+            $this->data['form_errors']['code'] = $this->text('This state code already exists for this country');
             return false;
         }
 

@@ -199,7 +199,9 @@ class Field extends Controller
         $this->submitted = $this->request->post('field', array());
         $this->validate();
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['field'] = $this->submitted + $field;
             return;
         }
@@ -231,7 +233,7 @@ class Field extends Controller
     protected function validateTitle()
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
         return true;
@@ -255,7 +257,7 @@ class Field extends Controller
             }
 
             if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->data['form_errors']['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }

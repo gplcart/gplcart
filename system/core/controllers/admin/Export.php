@@ -178,8 +178,9 @@ class Export extends Controller
     {
         $this->submitted = $this->request->post();
         $this->validate($operation);
+        $errors = $this->formErrors(false);
 
-        if ($this->hasError(false)) {
+        if (!empty($errors)) {
             return;
         }
 
@@ -212,13 +213,13 @@ class Export extends Controller
 
         if (empty($this->submitted['total'])) {
             $this->setMessage($this->text('Nothing to export'), 'danger');
-            $this->errors = true;
+            $this->data['form_errors'] = true;
             return false;
         }
 
         if (file_put_contents($operation['file'], '') === false) {
             $this->setMessage($this->text('Failed to create file %path', array('%path' => $operation['file'])), 'danger');
-            $this->errors = true;
+            $this->data['form_errors'] = true;
             return false;
         }
 

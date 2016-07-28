@@ -318,7 +318,9 @@ class FieldValue extends Controller
 
         $this->validate($field);
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['field_value'] = $this->submitted;
             return;
         }
@@ -355,7 +357,7 @@ class FieldValue extends Controller
     {
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+                $this->data['form_errors']['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
                 return false;
             }
             return true;
@@ -373,7 +375,7 @@ class FieldValue extends Controller
     protected function validateColor(array $field)
     {
         if ($field['widget'] == 'color' && !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $this->submitted['color'])) {
-            $this->errors['color'] = $this->text('Required field');
+            $this->data['form_errors']['color'] = $this->text('Required field');
             return false;
         }
 
@@ -388,7 +390,7 @@ class FieldValue extends Controller
     protected function validateTitle(array $field)
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -410,7 +412,7 @@ class FieldValue extends Controller
 
         foreach ($this->submitted['translation'] as $code => $translation) {
             if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->data['form_errors']['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }
@@ -429,7 +431,7 @@ class FieldValue extends Controller
 
         if (empty($file)) {
             if ($field['widget'] == 'image') {
-                $this->errors['image'] = $this->text('Please upload an image');
+                $this->data['form_errors']['image'] = $this->text('Please upload an image');
                 return false;
             }
             return true;
@@ -438,7 +440,7 @@ class FieldValue extends Controller
         $this->file->setUploadPath('image/upload/field_value');
 
         if ($this->file->upload($file) !== true) {
-            $this->errors['image'] = $this->text('Unable to upload the file');
+            $this->data['form_errors']['image'] = $this->text('Unable to upload the file');
             return false;
         }
 

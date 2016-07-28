@@ -326,7 +326,9 @@ class City extends Controller
         $this->submitted = $this->request->post('city', array());
         $this->validate();
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['city'] = $this->submitted;
             return;
         }
@@ -359,7 +361,7 @@ class City extends Controller
     protected function validateTitle()
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
         }
     }
 

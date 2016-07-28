@@ -167,7 +167,9 @@ class Review extends Controller
         $this->submitted = $this->request->post('review');
         $this->validate($review);
 
-        if ($this->hasError(false)) {
+        $errors = $this->formErrors(false);
+
+        if (!empty($errors)) {
             $this->data['review'] = $this->submitted;
             return;
         }
@@ -206,7 +208,7 @@ class Review extends Controller
     protected function validate(array $review)
     {
         if (empty($this->submitted['text'])) {
-            $this->errors['text'] = $this->text('Please write a review');
+            $this->data['form_errors']['text'] = $this->text('Please write a review');
             return;
         }
 

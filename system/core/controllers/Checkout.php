@@ -370,7 +370,7 @@ class Checkout extends Controller
             static::$total_quantity += (int) $item['quantity'];
 
             if (!empty($this->quantity_limit) && static::$total_quantity >= $this->quantity_limit) {
-                $this->errors['cart'] = $this->text('Sorry, you cannot have more than %s items in your cart', array('%s' => $this->quantity_limit));
+                $this->form_data['form_errors']['cart'] = $this->text('Sorry, you cannot have more than %s items in your cart', array('%s' => $this->quantity_limit));
                 break;
             }
 
@@ -420,7 +420,7 @@ class Checkout extends Controller
         }
 
         if ($this->limit_reached) {
-            $this->errors['cart'] = $this->text('Sorry, you cannot have more than %s items in your cart', array(
+            $this->form_data['form_errors']['cart'] = $this->text('Sorry, you cannot have more than %s items in your cart', array(
                 '%s' => $this->quantity_limit));
             return false;
         }
@@ -472,7 +472,7 @@ class Checkout extends Controller
             $this->redirect($result['redirect'], $result['message'], $result['message_type']);
         }
 
-        $this->errors['login'] = $this->text('Invalid E-mail and/or password');
+        $this->form_data['form_errors']['login'] = $this->text('Invalid E-mail and/or password');
     }
 
     /**
@@ -575,7 +575,7 @@ class Checkout extends Controller
 
         $this->validate();
 
-        if ($this->hasError(false)) {
+        if (!empty($this->form_data['form_errors'])) {
             return;
         }
 
@@ -602,22 +602,22 @@ class Checkout extends Controller
         $has_error = false;
 
         if (!$this->address_form && empty($this->form_data['order']['shipping_address'])) {
-            $this->errors['address'] = $this->text('Invalid address');
+            $this->form_data['form_errors']['address'] = $this->text('Invalid address');
             $has_error = true;
         }
 
         if (!empty($this->form_data['shipping_services']) && empty($this->form_data['order']['shipping'])) {
-            $this->errors['shipping'] = $this->text('Invalid shipping service');
+            $this->form_data['form_errors']['shipping'] = $this->text('Invalid shipping service');
             $has_error = true;
         }
 
         if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
-            $this->errors['payment'] = $this->text('Invalid payment service');
+            $this->form_data['form_errors']['payment'] = $this->text('Invalid payment service');
             $has_error = true;
         }
 
         if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
-            $this->errors['payment'] = $this->text('Invalid payment service');
+            $this->form_data['form_errors']['payment'] = $this->text('Invalid payment service');
             $has_error = true;
         }
 
@@ -653,7 +653,7 @@ class Checkout extends Controller
 
         foreach ($this->submitted_address as $key => $value) {
             if (empty($value) && !empty($format[$key]['required'])) {
-                $this->errors['address'][$key] = $this->text('Required field');
+                $this->form_data['form_errors']['address'][$key] = $this->text('Required field');
                 $has_errors = true;
             }
         }
@@ -677,7 +677,7 @@ class Checkout extends Controller
             return true;
         }
 
-        $this->errors['code'] = $this->text('Invalid code');
+        $this->form_data['form_errors']['code'] = $this->text('Invalid code');
         return false;
     }
 

@@ -55,7 +55,7 @@
           </select>
         </div>
       </div>
-      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
+      <div class="form-group required<?php echo isset($form_errors['title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Name of the field for all users'); ?>">
           <?php echo $this->text('Title'); ?>
@@ -63,8 +63,8 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="field[title]" class="form-control" value="<?php echo (isset($field['title'])) ? $this->escape($field['title']) : ''; ?>">
-          <?php if ($this->error('title', true)) { ?>
-          <div class="help-block"><?php echo $this->error('title'); ?></div>
+          <?php if (isset($form_errors['title'])) { ?>
+          <div class="help-block"><?php echo $form_errors['title']; ?></div>
           <?php } ?>
         </div>
       </div>
@@ -76,14 +76,14 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
+      <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
         <?php foreach ($languages as $code => $language) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-4">
             <input maxlength="255" name="field[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field['translation'][$code]['title'])) ? $this->escape($field['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
+            <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
+            <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
             <?php } ?>
           </div>
         </div>

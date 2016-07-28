@@ -58,10 +58,10 @@
   <?php } ?>
   <div class="row">
     <div class="col-md-6">
-      <div class="input-group"<?php echo $this->error('quantity', ' has-error'); ?>>
+      <div class="input-group"<?php echo isset($form_errors['quantity']) ? ' has-error' : ''; ?>>
         <input name="product[quantity]" maxlength="2" type="number" min="1" step="1" class="form-control" value="<?php echo isset($product['quantity']) ? $product['quantity'] : 1; ?>">
-        <?php if ($this->error('quantity', true)) { ?>
-        <div class="help-block"><?php echo $this->error('quantity'); ?></div>
+        <?php if (isset($form_errors['quantity'])) { ?>
+            <div class="help-block"><?php echo $form_errors['quantity']; ?></div>
         <?php } ?>
         <span class="input-group-btn">
           <button class="btn btn-success add-to-cart"<?php echo $cart_access ? '' : ' disabled'; ?>><?php echo $this->text('Add to cart'); ?></button>

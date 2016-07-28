@@ -78,7 +78,7 @@ class Frontend extends Controller
 
         $this->validate();
 
-        if ($this->hasError()) {
+        if ($this->formErrors()) {
             $this->data['settings'] = $this->submitted;
             return;
         }
@@ -110,7 +110,7 @@ class Frontend extends Controller
             }
 
             if (!is_numeric($this->submitted[$name]) || strlen($this->submitted[$name]) > 2) {
-                $this->errors[$name] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+                $this->data['form_errors'][$name] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
                 $has_errors = true;
             }
         }

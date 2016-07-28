@@ -504,14 +504,13 @@ class Product extends Controller
         $is_ajax = $this->request->isAjax();
 
         $this->validateAddToCart();
-        $errors = $this->hasError(false, null);
+        $errors = $this->formErrors(false);
 
         if (!empty($errors)) {
             if ($is_ajax) {
                 $this->response->json(array('errors' => $errors));
             }
-            
-            $this->redirect('', max($errors), 'danger');
+            $this->redirect('', $errors, 'danger');
         }
 
         $add_result = $this->cart->addProduct($this->submitted);
@@ -619,7 +618,7 @@ class Product extends Controller
         }
 
         if (!is_numeric($this->submitted['quantity']) || strlen($this->submitted['quantity']) > 2) {
-            $this->errors['quantity'] = $this->text('Invalid quantity');
+            $this->data['form_errors']['quantity'] = $this->text('Invalid quantity');
         }
     }
 

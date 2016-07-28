@@ -260,7 +260,9 @@ class Review extends Controller
 
         $this->validate();
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['review'] = $this->submitted;
             return;
         }
@@ -294,7 +296,7 @@ class Review extends Controller
     protected function validateText()
     {
         if (empty($this->submitted['text'])) {
-            $this->errors['text'] = $this->text('Required field');
+            $this->data['form_errors']['text'] = $this->text('Required field');
             return false;
         }
 
@@ -321,7 +323,7 @@ class Review extends Controller
         $this->submitted['created'] = strtotime($this->submitted['created']);
 
         if (empty($this->submitted['created'])) {
-            $this->errors['created'] = $this->text('Only valid English textual datetime allowed');
+            $this->data['form_errors']['created'] = $this->text('Only valid English textual datetime allowed');
             return false;
         }
 
@@ -335,7 +337,7 @@ class Review extends Controller
     protected function validateProduct()
     {
         if (isset($this->submitted['product_id']) && !$this->product->get($this->submitted['product_id'])) {
-            $this->errors['product'] = $this->text('Product does not exist');
+            $this->data['form_errors']['product'] = $this->text('Product does not exist');
             return false;
         }
 
@@ -349,7 +351,7 @@ class Review extends Controller
     protected function validateUser()
     {
         if (empty($this->submitted['email'])) {
-            $this->errors['email'] = $this->text('Required field');
+            $this->data['form_errors']['email'] = $this->text('Required field');
             return false;
         }
 
@@ -360,7 +362,7 @@ class Review extends Controller
             return true;
         }
 
-        $this->errors['email'] = $this->text('User does not exist');
+        $this->data['form_errors']['email'] = $this->text('User does not exist');
         return false;
     }
 

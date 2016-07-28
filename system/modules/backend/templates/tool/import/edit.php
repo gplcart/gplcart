@@ -1,4 +1,6 @@
-<?php if (empty($job)) { ?>
+<?php if ($job) { ?>
+<?php echo $job; ?>
+<?php } else { ?>
 <form method="post" enctype="multipart/form-data" id="import-csv" class="form-horizontal" onsubmit="return confirm();">
   <input type="hidden" name="token" value="<?php echo $this->token; ?>">
   <?php if (!empty($operation['description'])) { ?>
@@ -6,12 +8,12 @@
     <div class="col-md-12"><?php echo $this->xss($operation['description']); ?></div>
   </div>
   <?php } ?>
-  <div class="form-group<?php echo $this->error('file', ' has-error'); ?>">
+  <div class="form-group<?php echo isset($form_errors['file']) ? ' has-error' : ''; ?>">
     <label class="col-md-1 control-label"><?php echo $this->text('CSV file'); ?></label>
     <div class="col-md-4">
       <input type="file" class="form-control" name="file" accept=".csv" required>
-      <?php if ($this->error('file', true)) { ?>
-      <div class="help-block"><?php echo $this->error('file'); ?></div>
+      <?php if (isset($form_errors['file'])) { ?>
+      <div class="help-block"><?php echo $form_errors['file']; ?></div>
       <?php } ?>
     </div>
   </div>
@@ -42,6 +44,4 @@
     </div>
   </div>
 </form>
-<?php } else { ?>
-<?php echo $job; ?>
 <?php } ?>

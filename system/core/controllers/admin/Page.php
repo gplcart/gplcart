@@ -339,7 +339,9 @@ class Page extends Controller
         $this->submitted = $this->request->post('page', array(), false);
         $this->validate($page);
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['page'] = $this->submitted;
             return;
         }
@@ -394,7 +396,7 @@ class Page extends Controller
         }
 
         if ($check_alias && $this->alias->exists($this->submitted['alias'])) {
-            $this->errors['alias'] = $this->text('URL alias already exists');
+            $this->data['form_errors']['alias'] = $this->text('URL alias already exists');
             return false;
         }
 
@@ -412,7 +414,7 @@ class Page extends Controller
         }
 
         if (!$this->submitted['title'] || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -426,7 +428,7 @@ class Page extends Controller
     protected function validateDescription()
     {
         if (isset($this->submitted['description']) && !$this->submitted['description']) {
-            $this->errors['description'] = $this->text('Required field');
+            $this->data['form_errors']['description'] = $this->text('Required field');
             return false;
         }
         return true;
@@ -439,7 +441,7 @@ class Page extends Controller
     protected function validateMetaTitle()
     {
         if (isset($this->submitted['meta_title']) && mb_strlen($this->submitted['meta_title']) > 255) {
-            $this->errors['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+            $this->data['form_errors']['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
             return false;
         }
 
@@ -453,7 +455,7 @@ class Page extends Controller
     protected function validateMetaDescription()
     {
         if (isset($this->submitted['meta_description']) && mb_strlen($this->submitted['meta_description']) > 255) {
-            $this->errors['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+            $this->data['form_errors']['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
             return false;
         }
 
@@ -473,17 +475,17 @@ class Page extends Controller
         $has_errors = false;
         foreach ((array) $this->submitted['translation'] as $lang => &$translation) {
             if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$lang]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->data['form_errors']['translation'][$lang]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
 
             if (mb_strlen($translation['meta_title']) > 255) {
-                $this->errors['translation'][$lang]['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->data['form_errors']['translation'][$lang]['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
 
             if (mb_strlen($translation['meta_description']) > 255) {
-                $this->errors['translation'][$lang]['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->data['form_errors']['translation'][$lang]['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }

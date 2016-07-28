@@ -177,8 +177,9 @@ class Currency extends Controller
     {
         $this->submitted = $this->request->post('currency', array());
         $this->validate($currency);
+        $errors = $this->formErrors();
 
-        if ($this->hasError()) {
+        if (!empty($errors)) {
             $this->data['currency'] = $this->submitted;
             return;
         }
@@ -229,7 +230,7 @@ class Currency extends Controller
     protected function validateCode(array $currency)
     {
         if (!preg_match('/^[a-zA-Z]{3}$/', $this->submitted['code'])) {
-            $this->errors['code'] = $this->text('Invalid currency code. You must only use ISO 4217 codes');
+            $this->data['form_errors']['code'] = $this->text('Invalid currency code. You must only use ISO 4217 codes');
             return false;
         }
 
@@ -237,7 +238,7 @@ class Currency extends Controller
         $existsing_code = isset($currency['code']) ? $currency['code'] : null;
 
         if ($existsing_code !== $this->submitted['code'] && $this->currency->get($this->submitted['code'])) {
-            $this->errors['code'] = $this->text('This currency code already exists');
+            $this->data['form_errors']['code'] = $this->text('This currency code already exists');
             return false;
         }
 
@@ -252,7 +253,7 @@ class Currency extends Controller
     protected function validateName(array $currency)
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -267,7 +268,7 @@ class Currency extends Controller
     protected function validateNumericCode(array $currency)
     {
         if (!preg_match('/^[0-9]{3}$/', $this->submitted['numeric_code'])) {
-            $this->errors['numeric_code'] = $this->text('Numeric currency code must contain only 3 digits. See ISO 4217');
+            $this->data['form_errors']['numeric_code'] = $this->text('Numeric currency code must contain only 3 digits. See ISO 4217');
             return false;
         }
 
@@ -282,7 +283,7 @@ class Currency extends Controller
     protected function validateSymbol(array $currency)
     {
         if (empty($this->submitted['symbol'])) {
-            $this->errors['symbol'] = $this->text('Required field');
+            $this->data['form_errors']['symbol'] = $this->text('Required field');
             return false;
         }
 
@@ -297,7 +298,7 @@ class Currency extends Controller
     protected function validateMajorUnit(array $currency)
     {
         if (empty($this->submitted['major_unit'])) {
-            $this->errors['major_unit'] = $this->text('Required field');
+            $this->data['form_errors']['major_unit'] = $this->text('Required field');
             return false;
         }
 
@@ -312,7 +313,7 @@ class Currency extends Controller
     protected function validateMinorUnit(array $currency)
     {
         if (empty($this->submitted['minor_unit'])) {
-            $this->errors['minor_unit'] = $this->text('Required field');
+            $this->data['form_errors']['minor_unit'] = $this->text('Required field');
             return false;
         }
 
@@ -332,7 +333,7 @@ class Currency extends Controller
         }
 
         if (!is_numeric($this->submitted['convertion_rate'])) {
-            $this->errors['convertion_rate'] = $this->text('Only numeric values allowed');
+            $this->data['form_errors']['convertion_rate'] = $this->text('Only numeric values allowed');
             return false;
         }
 
@@ -353,7 +354,7 @@ class Currency extends Controller
         }
 
         if (!is_numeric($this->submitted['decimals'])) {
-            $this->errors['decimals'] = $this->text('Only numeric values allowed');
+            $this->data['form_errors']['decimals'] = $this->text('Only numeric values allowed');
             return false;
         }
 
@@ -373,7 +374,7 @@ class Currency extends Controller
         }
 
         if (!is_numeric($this->submitted['rounding_step'])) {
-            $this->errors['rounding_step'] = $this->text('Only numeric values allowed');
+            $this->data['form_errors']['rounding_step'] = $this->text('Only numeric values allowed');
             return false;
         }
 

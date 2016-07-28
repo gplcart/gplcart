@@ -25,7 +25,7 @@
         <?php echo $this->text('File'); ?>
         </label>
         <div class="col-md-4">
-          <?php if (!empty($file['file_url'])) { ?>
+          <?php if ($file['file_url']) { ?>
           <a class="btn btn-default btn-block" href="<?php echo $this->escape($file['file_url']); ?>" target="_blank">
             <?php echo $this->truncate($this->escape($file['path'])); ?>
           </a>
@@ -34,7 +34,7 @@
           <?php } ?>
         </div>
       </div>
-      <?php if (!empty($file['file_url'])) { ?>
+      <?php if ($file['file_url']) { ?>
       <div class="form-group">
         <div class="col-md-4 col-md-offset-2">
           <div class="btn-group" data-toggle="buttons">
@@ -46,29 +46,29 @@
       </div>
       <?php } ?>
       <?php } ?>
-      <div class="form-group<?php echo $this->error('file', ' has-error'); ?>">
+      <div class="form-group<?php echo isset($form_errors['file']) ? ' has-error' : ''; ?>">
         <div class="col-md-4 col-md-offset-2">
           <?php if ($this->access('file_upload')) { ?>
           <input class="form-control" type="file" name="file" accept="<?php echo $supported_extensions; ?>">
           <div class="help-block"><?php echo $this->text('Supported file extensions: %s', array('%s' => $supported_extensions)); ?></div>
-          <?php if ($this->error('file', true)) { ?>
-          <div class="help-block"><?php echo $this->error('file'); ?></div>
+          <?php if (isset($form_errors['file'])) { ?>
+          <div class="help-block"><?php echo $form_errors['file']; ?></div>
           <?php } ?>
           <?php } ?>
         </div>
       </div>
-      <div class="required form-group<?php echo $this->error('title', ' has-error'); ?>">
+      <div class="required form-group<?php echo isset($form_errors['title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
         <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="file[title]" class="form-control" value="<?php echo (isset($file['title'])) ? $this->escape($file['title']) : ''; ?>">
-          <?php if ($this->error('title', true)) { ?>
-          <div class="help-block"><?php echo $this->error('title'); ?></div>
+          <?php if (isset($form_errors['title'])) { ?>
+          <div class="help-block"><?php echo $form_errors['title']; ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo $this->error('description', ' has-error'); ?>">
+      <div class="form-group<?php echo isset($form_errors['description']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Description'); ?>
         </label>
@@ -76,7 +76,7 @@
           <textarea name="file[description]" class="form-control"><?php echo isset($file['description']) ? $this->escape($file['description']) : ''; ?></textarea>
         </div>
       </div>
-      <?php if (!empty($languages)) { ?>
+      <?php if ($languages) { ?>
       <div class="form-group">
         <div class="col-md-4 col-md-offset-2">
           <a data-toggle="collapse" href="#translations">
@@ -84,14 +84,14 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
+      <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
         <?php foreach ($languages as $code => $language) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-4">
             <input maxlength="255" name="file[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($file['translation'][$code]['title']) ? $this->escape($file['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
+            <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
+            <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
             <?php } ?>
           </div>
         </div>

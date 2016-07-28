@@ -273,7 +273,9 @@ class Country extends Controller
 
         $this->validate($country);
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['country'] = $this->submitted;
             return;
         }
@@ -315,13 +317,13 @@ class Country extends Controller
     protected function validateCode(array $country)
     {
         if (!preg_match('/^[a-zA-Z]{2}$/', $this->submitted['code'])) {
-            $this->errors['code'] = $this->text('Invalid country code. You must use only 2-digit ISO 3166-2 codes');
+            $this->data['form_errors']['code'] = $this->text('Invalid country code. You must use only 2-digit ISO 3166-2 codes');
             return false;
         }
 
         if (empty($country['code']) || $country['code'] !== $this->submitted['code']) {
             if ($this->country->get($this->submitted['code'])) {
-                $this->errors['code'] = $this->text('This country code already exists');
+                $this->data['form_errors']['code'] = $this->text('This country code already exists');
                 return false;
             }
         }
@@ -336,11 +338,11 @@ class Country extends Controller
     protected function validateName()
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
         }
 
         if (empty($this->submitted['native_name']) || mb_strlen($this->submitted['native_name']) > 255) {
-            $this->errors['native_name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['native_name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
         }
     }
 
@@ -352,7 +354,7 @@ class Country extends Controller
     {
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
+                $this->data['form_errors']['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
                 return false;
             }
             return true;

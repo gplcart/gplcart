@@ -180,8 +180,9 @@ class Module extends Controller
     protected function submitUpload()
     {
         $this->validateUpload();
+        $errors = $this->formErrors();
 
-        if ($this->hasError()) {
+        if (!empty($errors)) {
             return false;
         }
 
@@ -208,7 +209,7 @@ class Module extends Controller
         $result = $this->file->upload($this->submitted);
 
         if ($result !== true) {
-            $this->errors['file'] = $this->text('Unable to upload the file');
+            $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
             return false;
         }
 

@@ -9,7 +9,7 @@
   </div>
   <fieldset class="gapi">
     <legend class="gapi"><?php echo $this->text('Google API'); ?></legend>
-    <div class="form-group<?php echo $this->error('gapi_email', ' has-error'); ?>">
+    <div class="form-group<?php echo isset($form_errors['gapi_email']) ? ' has-error' : ''; ?>">
       <label class="col-md-2 control-label">
         <span class="hint" title="<?php echo $this->text('Service account (e-mail) from Google Developers Console. This is used for Google Analytics'); ?>">
           <?php echo $this->text('Google API service e-mail'); ?>
@@ -17,12 +17,12 @@
       </label>
       <div class="col-md-4">
         <input name="settings[gapi_email]" class="form-control" value="<?php echo $this->escape($settings['gapi_email']); ?>">
-        <?php if ($this->error('gapi_email', true)) { ?>
-        <div class="help-block"><?php echo $this->error('gapi_email'); ?></div>
+        <?php if (isset($form_errors['gapi_email'])) { ?>
+        <div class="help-block"><?php echo $form_errors['gapi_email']; ?></div>
         <?php } ?>
       </div>
     </div>
-    <div class="form-group<?php echo $this->error('gapi_certificate', ' has-error'); ?>">
+    <div class="form-group<?php echo isset($form_errors['gapi_certificate']) ? ' has-error' : ''; ?>">
       <label class="col-md-2 control-label">
         <span class="hint" title="<?php echo $this->text('Upload your .p12 certificate file you got from Google Developers Console. This is used for Google Analytics'); ?>">
           <?php echo $this->text('Google API certificate'); ?>
@@ -35,8 +35,8 @@
         <?php if ($gapi_certificate) { ?>
         <?php echo $gapi_certificate; ?>
         <?php } ?>
-        <?php if ($this->error('gapi_certificate', true)) { ?>
-        <?php echo $this->error('gapi_certificate'); ?>
+        <?php if (isset($form_errors['gapi_certificate'])) { ?>
+        <?php echo $form_errors['gapi_certificate']; ?>
         <?php } ?>
         </div>
       </div>

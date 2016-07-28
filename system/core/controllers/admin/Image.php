@@ -190,7 +190,9 @@ class Image extends Controller
         $this->submitted = $this->request->post('imagestyle');
         $this->validate();
 
-        if ($this->hasError()) {
+        $errors = $this->formErrors();
+
+        if (!empty($errors)) {
             $this->data['imagestyle'] = $this->submitted;
             return;
         }
@@ -223,7 +225,7 @@ class Image extends Controller
     protected function validateName()
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -237,7 +239,7 @@ class Image extends Controller
     protected function validateActions()
     {
         if (empty($this->submitted['actions'])) {
-            $this->errors['actions'] = $this->text('Required field');
+            $this->data['form_errors']['actions'] = $this->text('Required field');
             return false;
         }
 
@@ -314,7 +316,7 @@ class Image extends Controller
         }
 
         if (!empty($error_lines)) {
-            $this->errors['actions'] = $this->text('Something wrong on lines %num', array(
+            $this->data['form_errors']['actions'] = $this->text('Something wrong on lines %num', array(
                 '%num' => implode(',', $error_lines)));
             return false;
         }
