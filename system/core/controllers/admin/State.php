@@ -268,7 +268,7 @@ class State extends Controller
 
         $this->validate($country, $state);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['state'] = $this->submitted;

@@ -275,7 +275,7 @@ class PriceRule extends Controller
 
         $this->validate($rule);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['price_rule'] = $this->submitted;

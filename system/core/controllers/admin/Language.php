@@ -119,7 +119,7 @@ class Language extends Controller
         $this->submitted = $this->request->post('language', array());
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['language'] = $this->submitted;

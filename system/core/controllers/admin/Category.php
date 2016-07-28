@@ -379,7 +379,7 @@ class Category extends Controller
         $this->submitted = $this->request->post('category', array(), false);
         $this->validate($category);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['category'] = $this->submitted;

@@ -600,7 +600,7 @@ class Account extends Controller
             $this->validatePassword($this->submitted['password']);
         }
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             return false;
@@ -754,7 +754,7 @@ class Account extends Controller
         $this->submitted = $this->request->post('user', array(), 'raw');
         $this->validateUser($user);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['user'] = $this->submitted + array('user_id' => $user['user_id']);
@@ -776,7 +776,7 @@ class Account extends Controller
 
         $this->validateAddress();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['address'] = $this->submitted;
@@ -827,7 +827,7 @@ class Account extends Controller
         $this->submitted = $this->request->post('user', array(), 'raw');
         $this->validateUser();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['user'] = $this->submitted;
@@ -851,7 +851,7 @@ class Account extends Controller
 
         $this->validateForgot($user);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['user'] = $this->submitted;

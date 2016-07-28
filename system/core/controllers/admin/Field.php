@@ -199,7 +199,7 @@ class Field extends Controller
         $this->submitted = $this->request->post('field', array());
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['field'] = $this->submitted + $field;

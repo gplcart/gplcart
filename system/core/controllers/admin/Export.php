@@ -178,7 +178,7 @@ class Export extends Controller
     {
         $this->submitted = $this->request->post();
         $this->validate($operation);
-        $errors = $this->formErrors(false);
+        $errors = $this->getErrors(false);
 
         if (!empty($errors)) {
             return;

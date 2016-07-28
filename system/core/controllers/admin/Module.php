@@ -180,7 +180,7 @@ class Module extends Controller
     protected function submitUpload()
     {
         $this->validateUpload();
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             return false;

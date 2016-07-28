@@ -273,7 +273,7 @@ class Country extends Controller
 
         $this->validate($country);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['country'] = $this->submitted;

@@ -1300,7 +1300,7 @@ class Controller
      * @param boolean $message
      * @return array
      */
-    protected function formErrors($message = true)
+    protected function getErrors($message = true)
     {
         if (empty($this->errors)) {
             return array();

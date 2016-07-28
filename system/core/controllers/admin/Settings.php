@@ -108,7 +108,7 @@ class Settings extends Controller
 
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['settings'] = $this->submitted;

@@ -260,7 +260,7 @@ class Review extends Controller
 
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['review'] = $this->submitted;

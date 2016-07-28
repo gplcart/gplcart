@@ -527,7 +527,7 @@ class Product extends Controller
 
         $this->validate($product);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             if ($this->request->isAjax()) {

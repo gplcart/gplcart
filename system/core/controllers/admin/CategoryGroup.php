@@ -211,7 +211,7 @@ class CategoryGroup extends Controller
 
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['category_group'] = $this->submitted + $category_group;

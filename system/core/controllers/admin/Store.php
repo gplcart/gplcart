@@ -257,7 +257,7 @@ class Store extends Controller
 
         $this->validate($store);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['store'] = $this->submitted;

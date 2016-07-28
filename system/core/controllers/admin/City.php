@@ -326,7 +326,7 @@ class City extends Controller
         $this->submitted = $this->request->post('city', array());
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['city'] = $this->submitted;

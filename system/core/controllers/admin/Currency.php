@@ -177,7 +177,7 @@ class Currency extends Controller
     {
         $this->submitted = $this->request->post('currency', array());
         $this->validate($currency);
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['currency'] = $this->submitted;

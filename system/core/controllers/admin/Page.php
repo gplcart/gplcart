@@ -339,7 +339,7 @@ class Page extends Controller
         $this->submitted = $this->request->post('page', array(), false);
         $this->validate($page);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['page'] = $this->submitted;

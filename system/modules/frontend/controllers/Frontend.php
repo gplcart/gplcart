@@ -78,7 +78,7 @@ class Frontend extends Controller
 
         $this->validate();
 
-        if ($this->formErrors()) {
+        if ($this->getErrors()) {
             $this->data['settings'] = $this->submitted;
             return;
         }

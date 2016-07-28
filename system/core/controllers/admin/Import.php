@@ -174,7 +174,7 @@ class Import extends Controller
         $this->submitted['operation'] = $operation;
 
         $this->validate();
-        $errors = $this->formErrors(false);
+        $errors = $this->getErrors(false);
 
         if (!empty($errors)) {
             return;

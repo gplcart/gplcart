@@ -190,7 +190,7 @@ class Image extends Controller
         $this->submitted = $this->request->post('imagestyle');
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['imagestyle'] = $this->submitted;

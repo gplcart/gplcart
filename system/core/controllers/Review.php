@@ -167,7 +167,7 @@ class Review extends Controller
         $this->submitted = $this->request->post('review');
         $this->validate($review);
 
-        $errors = $this->formErrors(false);
+        $errors = $this->getErrors(false);
 
         if (!empty($errors)) {
             $this->data['review'] = $this->submitted;

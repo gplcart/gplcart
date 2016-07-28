@@ -259,7 +259,7 @@ class ProductClass extends Controller
         $this->submitted = $this->request->post('product_class', array());
         $this->validate();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['product_class'] = $this->submitted;

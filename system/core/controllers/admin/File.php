@@ -270,7 +270,7 @@ class File extends Controller
 
         $this->validate($file);
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['file'] = $this->submitted + $file;

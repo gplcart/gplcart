@@ -90,7 +90,7 @@ class Install extends Controller
 
         $this->validateInstall();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             $this->data['settings'] = $this->submitted;
@@ -225,7 +225,7 @@ class Install extends Controller
         $this->validateStoreTitle();
         $this->validateStoreCountry();
 
-        $errors = $this->formErrors();
+        $errors = $this->getErrors();
 
         if (!empty($errors)) {
             return false;
