@@ -12,7 +12,7 @@
       </div>
     </div>
   </div>
-  <div class="form-group<?php echo isset($form_errors['catalog_limit']) ? ' has-error' : ''; ?>">
+  <div class="form-group<?php echo $this->error('catalog_limit', ' has-error'); ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('Number of products per page in the product catalog'); ?>">
         <?php echo $this->text('Catalog product limit'); ?>
@@ -20,12 +20,12 @@
     </label>
     <div class="col-md-4">
       <input name="settings[catalog_limit]" class="form-control" value="<?php echo $this->escape($settings['catalog_limit']); ?>">
-      <?php if (isset($form_errors['catalog_limit'])) { ?>
-      <div class="help-block"><?php echo $form_errors['catalog_limit']; ?></div>
+      <?php if ($this->error('catalog_limit', true)) { ?>
+      <div class="help-block"><?php echo $this->error('catalog_limit'); ?></div>
       <?php } ?>
     </div>
   </div>
-  <div class="form-group<?php echo isset($form_errors['catalog_front_limit']) ? ' has-error' : ''; ?>">
+  <div class="form-group<?php echo $this->error('catalog_front_limit', ' has-error'); ?>">
     <label class="col-md-2 control-label">
       <span class="hint" title="<?php echo $this->text('Number of products to be shown on the front page'); ?>">
         <?php echo $this->text('Front page product limit'); ?>
@@ -33,8 +33,8 @@
     </label>
     <div class="col-md-4">
       <input name="settings[catalog_front_limit]" class="form-control" value="<?php echo $this->escape($settings['catalog_front_limit']); ?>">
-      <?php if (isset($form_errors['catalog_front_limit'])) { ?>
-      <div class="help-block"><?php echo $form_errors['catalog_front_limit']; ?></div>
+      <?php if ($this->error('catalog_front_limit', true)) { ?>
+      <div class="help-block"><?php echo $this->error('catalog_front_limit'); ?></div>
       <?php } ?>
     </div>
   </div>

@@ -1,4 +1,4 @@
-<form method="post" id="edit-order" class="form-horizontal<?php echo isset($form_errors) ? ' form-errors' : ''; ?>">
+<form method="post" id="edit-order" class="form-horizontal<?php echo $this->error(null, ' form-errors'); ?>">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <?php if (!empty($cart['items'])) { ?>
   <input type="hidden" name="order[store_id]" value="<?php echo $store_id; ?>">
@@ -9,22 +9,22 @@
         <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-body">
-              <?php if (isset($form_errors['register'])) { ?>
+              <?php if ($this->error('register', true)) { ?>
               <div class="alert alert-danger alert-dismissible clearfix">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <?php echo implode('<br>', $form_errors['register']); ?>
+                <?php echo implode('<br>', $this->error('register')); ?>
               </div>
               <?php } ?>
               <div class="form-inline clearfix">
-                <div class="form-group required col-md-4<?php echo isset($form_errors['register']['name']) ? ' has-error' : ''; ?>">
+                <div class="form-group required col-md-4<?php echo isset($this->errors['register']['name']) ? ' has-error' : ''; ?>">
                   <label class="col-md-4 control-label"><?php echo $this->text('Name'); ?></label>
                   <div class="col-md-8">
                     <input maxlength="255" class="form-control" name="user[name]" value="<?php echo isset($user['name']) ? $user['name'] : ''; ?>" autofocus>
                   </div>
                 </div>
-                <div class="form-group required col-md-4<?php echo isset($form_errors['register']['email']) ? ' has-error' : ''; ?>">
+                <div class="form-group required col-md-4<?php echo isset($this->errors['register']['email']) ? ' has-error' : ''; ?>">
                   <label class="col-md-4 control-label"><?php echo $this->text('Email'); ?></label>
                   <div class="col-md-8">
                     <input type="email" maxlength="255" class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>">
@@ -53,7 +53,7 @@
         </div>
       </div>
       <?php } else { ?>
-      <div class="required form-group<?php echo isset($form_errors['user']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('user', ' has-error'); ?>">
         <div class="col-md-6">
           <div class="input-group user">
             <input type="hidden" name="order[user_id]" value="<?php echo (isset($order['user_id'])) ? $order['user_id'] : ''; ?>">
@@ -74,7 +74,7 @@
   <div class="row">
     <div class="col-md-4">
       <h3><?php echo $this->text('Shipping address'); ?></h3>
-      <?php if ($addresses && !$address_form) { ?>
+      <?php if (!empty($addresses) && empty($address_form)) { ?>
       <div class="form-group">
         <div class="col-md-12">
           <div class="btn-group margin-top-20 saved-addresses" data-toggle="buttons">
@@ -104,7 +104,7 @@
               <td class="middle"><?php echo $this->text('Country'); ?></td>
               <td>
                 <div class="btn-toolbar">
-                  <div class="btn-group country<?php echo isset($form_errors['address']['country']) ? ' has-error' : ''; ?>">
+                  <div class="btn-group country<?php echo isset($this->errors['address']['country']) ? ' has-error' : ''; ?>">
                     <select class="form-control" name="address[country]">
                       <?php foreach ($countries as $code => $name) { ?>
                       <option value="<?php echo $this->escape($code); ?>"<?php echo ($country_code == $code) ? ' selected' : ''; ?>>
@@ -112,8 +112,8 @@
                       </option>
                       <?php } ?>
                     </select>
-                    <?php if (isset($form_errors['address']['country'])) { ?>
-                    <div class="help-block"><?php echo $form_errors['address']['country']; ?></div>
+                    <?php if (isset($this->errors['address']['country'])) { ?>
+                    <div class="help-block"><?php echo $this->errors['address']['country']; ?></div>
                     <?php } ?>
                   </div>
                 </div>
@@ -126,7 +126,7 @@
               <?php echo $this->text($key); ?>
               </td>
               <td>
-                <div class="<?php echo $key; ?><?php echo isset($form_errors['address'][$key]) ? ' has-error' : ''; ?>">
+                <div class="<?php echo $key; ?><?php echo isset($this->errors['address'][$key]) ? ' has-error' : ''; ?>">
                   <?php if ($key == 'state_id') { ?>
                   <select class="form-control" name="address[state_id]">
                     <?php foreach ($states as $state_id => $state) { ?>
@@ -138,8 +138,8 @@
                   <?php } else { ?>
                   <input name="address[<?php echo $key; ?>]" maxlength="255" class="form-control" value="<?php echo isset($address[$key]) ? $this->escape($address[$key]) : ''; ?>">
                   <?php } ?>
-                  <?php if (isset($form_errors['address'][$key])) { ?>
-                  <div class="help-block"><?php echo $form_errors['address'][$key]; ?></div>
+                  <?php if (isset($this->errors['address'][$key])) { ?>
+                  <div class="help-block"><?php echo $this->errors['address'][$key]; ?></div>
                   <?php } ?>
                 </div>
               </td>
@@ -159,12 +159,12 @@
       </div>
       <?php } ?>
       <?php } ?>
-      <?php if (isset($form_errors['address']) && !is_array($form_errors['address'])) { ?>
+      <?php if (isset($this->errors['address']) && !is_array($this->errors['address'])) { ?>
       <div class="alert alert-danger alert-dismissible">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <?php echo $form_errors['address']; ?>
+        <?php echo $this->errors['address']; ?>
       </div>
       <?php } ?>
     </div>
@@ -194,12 +194,12 @@
           </div>
           <?php } ?>
           <?php } ?>
-          <?php if (isset($form_errors['shipping']) && !is_array($form_errors['shipping'])) { ?>
+          <?php if (isset($this->errors['shipping']) && !is_array($this->errors['shipping'])) { ?>
           <div class="alert alert-danger alert-dismissible">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-            <?php echo $form_errors['shipping']; ?>
+            <?php echo $this->errors['shipping']; ?>
           </div>
           <?php } ?>
           <?php } ?>
@@ -227,12 +227,12 @@
               </div>
               <?php } ?>
               <?php } ?>
-              <?php if (isset($form_errors['payment']) && !is_array($form_errors['payment'])) { ?>
+              <?php if (isset($this->errors['payment']) && !is_array($this->errors['payment'])) { ?>
               <div class="alert alert-danger alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
-                <?php echo $form_errors['payment']; ?>
+                <?php echo $this->errors['payment']; ?>
               </div>
               <?php } ?>
             </div>
@@ -296,12 +296,12 @@
             <?php echo $form_messages['cart']; ?>
           </div>
           <?php } ?>
-          <?php if (isset($form_errors['cart'])) { ?>
+          <?php if (isset($this->errors['cart'])) { ?>
           <div class="alert alert-danger alert-dismissible">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-            <?php echo $form_errors['cart']; ?>
+            <?php echo $this->errors['cart']; ?>
           </div>
           <?php } ?>
           <div class="form-group">

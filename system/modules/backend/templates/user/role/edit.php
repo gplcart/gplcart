@@ -17,7 +17,7 @@
       <?php } ?>
     </div>
   </div>
-  <div class="form-group margin-top-20 required<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+  <div class="form-group margin-top-20 required<?php echo $this->error('name', ' has-error'); ?>">
     <label class="col-md-1 control-label">
       <span class="hint" title="<?php echo $this->text('Give a descriptive name to the role. For example: Boss, Manager etc'); ?>">
       <?php echo $this->text('Name'); ?>
@@ -25,8 +25,8 @@
     </label>
     <div class="col-md-4">
       <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->escape($role['name']) : ''; ?>">
-      <?php if (isset($form_errors['name'])) { ?>
-      <div class="help-block"><?php echo $form_errors['name']; ?></div>
+      <?php if ($this->error('name', true)) { ?>
+      <div class="help-block"><?php echo $this->error('name'); ?></div>
       <?php } ?>
     </div>
   </div>

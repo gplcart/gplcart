@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Official name of the state'); ?>">
           <?php echo $this->text('Name'); ?>
@@ -44,12 +44,12 @@
         </label>
         <div class="col-md-4">
           <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->escape($state['name']) : ''; ?>" required>
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
+          <?php if ($this->error('name', true)) { ?>
+          <div class="help-block"><?php echo $this->error('name'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Code/abbreviation used to represent the state in the country'); ?>">
           <?php echo $this->text('Code'); ?>
@@ -57,8 +57,8 @@
         </label>
         <div class="col-md-4">
           <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->escape($state['code']) : ''; ?>" required>
-          <?php if (isset($form_errors['code'])) { ?>
-          <div class="help-block"><?php echo $form_errors['code']; ?></div>
+          <?php if ($this->error('code', true)) { ?>
+          <div class="help-block"><?php echo $this->error('code'); ?></div>
           <?php } ?>
         </div>
       </div>

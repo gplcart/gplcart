@@ -109,6 +109,8 @@ $(function () {
 
     // Hints
     $('.hint').tooltip();
+    
+    $('.input-group.color').colorpicker();
 
     // Context help popup
     $('.help.summary a').click(function () {

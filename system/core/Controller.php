@@ -183,6 +183,12 @@ class Controller
     protected $submitted = array();
 
     /**
+     * Array of validation errors
+     * @var array
+     */
+    protected $errors = array();
+
+    /**
      * User model instance
      * @var \core\models\User $user
      */
@@ -1035,6 +1041,7 @@ class Controller
             $this->document->js($js, 'bottom');
         }
 
+        // Automatic logout
         if ($is_backend) {
             $session_limit = GC_SESSION_TIMEOUT * 1000;
             $this->document->js("GplCart.logout($session_limit);", 'bottom');
@@ -1253,6 +1260,48 @@ class Controller
     }
 
     /**
+     * Returns text of an error, or array of errors or custom string (second param)
+     * @param null|string $key
+     * @param null|string $return_on_error
+     * @return mixed
+     */
+    public function error($key = null, $return_on_error = null)
+    {
+        if (isset($key)) {
+            $result = isset($this->errors[$key]) ? $this->errors[$key] : null;
+        } else {
+            $result = $this->errors;
+        }
+        
+        if(empty($result)){
+            $result = '';
+        }
+
+        return (isset($return_on_error) && !empty($result)) ? $return_on_error : $result;
+    }
+
+    /**
+     * Whether one or more errors have occurred
+     * @param bool $message
+     * @param mixed $return_on_error
+     * @return mixed
+     */
+    protected function hasError($message = true, $return_on_error = true)
+    {
+        $result = $this->error(null, $return_on_error);
+
+        if (empty($result)) {
+            return false;
+        }
+
+        if ($message) {
+            $this->setMessage($this->text('One or more errors have occured'), 'warning');
+        }
+
+        return $result;
+    }
+
+    /**
      * Displays 403 access denied to unwanted users
      * @param string $permission
      * @param string $redirect
@@ -1287,24 +1336,6 @@ class Controller
 
         $this->logger->log($type, $message, 'warning');
         $this->response->error403(false);
-    }
-
-    /**
-     * Returns form errors (if any)
-     * @param boolean $message
-     * @return array
-     */
-    protected function formErrors($message = true)
-    {
-        if (empty($this->data['form_errors'])) {
-            return array();
-        }
-
-        if ($message) {
-            $this->setMessage($this->text('Validation errors. Check form fields and try again'), 'danger');
-        }
-
-        return $this->data['form_errors'];
     }
 
     /**

@@ -211,9 +211,7 @@ class CategoryGroup extends Controller
 
         $this->validate();
 
-        $errors = $this->formErrors();
-
-        if (!empty($errors)) {
+        if ($this->hasError()) {
             $this->data['category_group'] = $this->submitted + $category_group;
             return;
         }
@@ -246,7 +244,7 @@ class CategoryGroup extends Controller
     protected function validateCategoryGroup()
     {
         if (isset($this->submitted['category_group_id']) && $this->category_group->exists($this->submitted['type'], $this->submitted['store_id'], $this->submitted['category_group_id'])) {
-            $this->data['form_errors']['type'] = $this->text('Wrong category group type');
+            $this->errors['type'] = $this->text('Wrong category group type');
             return false;
         }
         return true;
@@ -259,7 +257,7 @@ class CategoryGroup extends Controller
     protected function validateTitle()
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
         return true;
@@ -278,7 +276,7 @@ class CategoryGroup extends Controller
         $has_errors = false;
         foreach ($this->submitted['translation'] as $language => $translation) {
             if (mb_strlen($translation['title']) > 255) {
-                $this->data['form_errors']['translation'][$language]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->errors['translation'][$language]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }

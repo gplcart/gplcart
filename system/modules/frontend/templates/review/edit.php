@@ -17,12 +17,12 @@
         <label class="col-md-1"><?php echo $this->text('Rating'); ?></label>
         <div class="col-md-6"><?php echo $rating; ?></div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['text']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <label class="col-md-1"><?php echo $this->text('Review'); ?></label>
         <div class="col-md-6">
           <textarea class="form-control" rows="2" name="review[text]" maxlength="<?php echo $max_length; ?>" placeholder="<?php echo $this->text('Maximum @num characters', array('@num' => $max_length)); ?>"><?php echo isset($review['text']) ? $review['text'] : ''; ?></textarea>
-          <?php if (isset($form_errors['text'])) { ?>
-          <div class="help-block"><?php echo $form_errors['text']; ?></div>
+          <?php if ($this->error('text', true)) { ?>
+          <div class="help-block"><?php echo $this->error('text'); ?></div>
           <?php } ?>
         </div>
       </div>

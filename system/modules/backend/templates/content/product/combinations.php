@@ -1,4 +1,4 @@
-<?php if($combinations) { ?>
+<?php if(!empty($combinations)) { ?>
 <?php foreach($combinations as $combination_id => $combination) { ?>
 <tr class="product-options-<?php echo $product['product_id']; ?> active" data-combination-id="<?php echo $combination_id; ?>">
   <td></td>
@@ -20,19 +20,19 @@
     <input type="hidden" name="product[combination][<?php echo $combination_id; ?>][currency]" value="<?php echo $product['currency']; ?>">
   </td>
   <td class="middle">
-    <div class="<?php echo isset($form_errors['combination'][$combination_id]['price']) ? 'has-error' : ''; ?>">
+    <div class="<?php echo isset($this->errors['combination'][$combination_id]['price']) ? 'has-error' : ''; ?>">
       <input class="form-control" name="product[combination][<?php echo $combination_id; ?>][price]" value="<?php echo $combination['price']; ?>"<?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
-      <?php if(isset($form_errors['combination'][$combination_id]['price'])) { ?>
-      <div class="help-block"><?php echo $form_errors['combination'][$combination_id]['price']; ?></div>
+      <?php if(isset($this->errors['combination'][$combination_id]['price'])) { ?>
+      <div class="help-block"><?php echo $this->errors['combination'][$combination_id]['price']; ?></div>
       <?php } ?>
     </div>
   </td>
   <td class="middle"><?php echo $this->escape($product['currency']); ?></td>
   <td class="middle">
-    <div class="<?php echo isset($form_errors['combination'][$combination_id]['stock']) ? 'has-error' : ''; ?>">
+    <div class="<?php echo isset($this->errors['combination'][$combination_id]['stock']) ? 'has-error' : ''; ?>">
       <input class="form-control" name="product[combination][<?php echo $combination_id; ?>][stock]" value="<?php echo $combination['stock']; ?>"<?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
-      <?php if(isset($form_errors['combination'][$combination_id]['stock'])) { ?>
-      <div class="help-block"><?php echo $form_errors['combination'][$combination_id]['stock']; ?></div>
+      <?php if(isset($this->errors['combination'][$combination_id]['stock'])) { ?>
+      <div class="help-block"><?php echo $this->errors['combination'][$combination_id]['stock']; ?></div>
       <?php } ?>
     </div>
   </td>

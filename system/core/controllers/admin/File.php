@@ -270,9 +270,7 @@ class File extends Controller
 
         $this->validate($file);
 
-        $errors = $this->formErrors();
-
-        if (!empty($errors)) {
+        if ($this->hasError()) {
             $this->data['file'] = $this->submitted + $file;
             return;
         }
@@ -316,7 +314,7 @@ class File extends Controller
         if (!empty($upload)) {
             $result = $this->file->upload($upload);
             if ($result !== true) {
-                $this->data['form_errors']['file'] = $this->text('Unable to upload the file');
+                $this->errors['file'] = $this->text('Unable to upload the file');
                 return false;
             }
 
@@ -325,7 +323,7 @@ class File extends Controller
         }
 
         if (empty($file['file_id']) || (isset($file['file_id']) && $this->request->post('delete_disk'))) {
-            $this->data['form_errors']['file'] = $this->text('Required field');
+            $this->errors['file'] = $this->text('Required field');
             return false;
         }
 
@@ -340,7 +338,7 @@ class File extends Controller
     protected function validateTitle(array $file)
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->data['form_errors']['title'] = $this->text('Content must be %min - %max characters long', array(
+            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array(
                 '%min' => 1, '%max' => 255));
             return false;
         }
@@ -362,7 +360,7 @@ class File extends Controller
         $has_errors = false;
         foreach ($this->submitted['translation'] as $code => $translation) {
             if (mb_strlen($translation['title']) > 255) {
-                $this->data['form_errors']['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->errors['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }

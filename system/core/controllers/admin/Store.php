@@ -257,9 +257,7 @@ class Store extends Controller
 
         $this->validate($store);
 
-        $errors = $this->formErrors();
-
-        if (!empty($errors)) {
+        if ($this->hasError()) {
             $this->data['store'] = $this->submitted;
             return;
         }
@@ -384,7 +382,7 @@ class Store extends Controller
     protected function validateEmail()
     {
         if (empty($this->submitted['data']['email'])) {
-            $this->data['form_errors']['email'] = $this->text('Required field');
+            $this->errors['email'] = $this->text('Required field');
             return false;
         }
 
@@ -395,7 +393,7 @@ class Store extends Controller
         });
 
         if (count($emails) != count($this->submitted['data']['email'])) {
-            $this->data['form_errors']['email'] = $this->text('Invalid E-mail');
+            $this->errors['email'] = $this->text('Invalid E-mail');
             return false;
         }
 
@@ -417,7 +415,7 @@ class Store extends Controller
         $count = count(array_filter($this->submitted['data']['map'], 'is_numeric'));
 
         if (($count != count($this->submitted['data']['map'])) || $count != 2) {
-            $this->data['form_errors']['data']['map'] = $this->text('Invalid map coordinates');
+            $this->errors['data']['map'] = $this->text('Invalid map coordinates');
             return false;
         }
 
@@ -437,7 +435,7 @@ class Store extends Controller
         $this->submitted['data']['hours'] = $days = Tool::stringToArray($this->submitted['data']['hours']);
 
         if (count($days) != 7) {
-            $this->data['form_errors']['data']['hours'] = $this->text('Must be 7 lines, one line per day');
+            $this->errors['data']['hours'] = $this->text('Must be 7 lines, one line per day');
             return false;
         }
 
@@ -454,7 +452,7 @@ class Store extends Controller
             });
 
             if (count($timestamps) != 2) {
-                $this->data['form_errors']['data']['hours'] = $this->text('Error on line %s. Please use valid time formats: http://php.net/manual/en/datetime.formats.time.php', array('%s' => $i + 1));
+                $this->errors['data']['hours'] = $this->text('Error on line %s. Please use valid time formats: http://php.net/manual/en/datetime.formats.time.php', array('%s' => $i + 1));
                 break;
             }
 
@@ -462,7 +460,7 @@ class Store extends Controller
             $i++;
         }
 
-        if (empty($this->data['form_errors']['data']['hours'])) {
+        if (empty($this->errors['data']['hours'])) {
             $this->submitted['data']['hours'] = $days;
             return true;
         }
@@ -485,7 +483,7 @@ class Store extends Controller
         $reindexed = array();
         foreach ($this->submitted['data']['social'] as $url) {
             if (!filter_var($url, FILTER_VALIDATE_URL)) {
-                $this->data['form_errors']['data']['social'] = $this->text('Invalid URL');
+                $this->errors['data']['social'] = $this->text('Invalid URL');
                 return false;
             }
 
@@ -509,7 +507,7 @@ class Store extends Controller
         }
 
         if (!preg_match('/^[a-z0-9.:-]+$/i', $this->submitted['domain'])) {
-            $this->data['form_errors']['domain'] = $this->text('Invalid domain. Example: domain.com or domain.com:8080');
+            $this->errors['domain'] = $this->text('Invalid domain. Example: domain.com or domain.com:8080');
             return false;
         }
 
@@ -524,7 +522,7 @@ class Store extends Controller
     protected function validateBasepath($store)
     {
         if (isset($this->submitted['basepath']) && mb_strlen($this->submitted['basepath']) > 50) {
-            $this->data['form_errors']['basepath'] = $this->text('Content must not exceed %s characters', array('%s' => 50));
+            $this->errors['basepath'] = $this->text('Content must not exceed %s characters', array('%s' => 50));
             return false;
         }
 
@@ -544,7 +542,7 @@ class Store extends Controller
         }
 
         if ($existing) {
-            $this->data['form_errors']['basepath'] = $this->text('Basepath %basepath already taken for this domain', array('%basepath' => $basepath));
+            $this->errors['basepath'] = $this->text('Basepath %basepath already taken for this domain', array('%basepath' => $basepath));
             return false;
         }
 
@@ -559,7 +557,7 @@ class Store extends Controller
     protected function validateName()
     {
         if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->data['form_errors']['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -574,7 +572,7 @@ class Store extends Controller
     protected function validateNumeric($key)
     {
         if (isset($this->submitted['data'][$key]) && !is_numeric($this->submitted['data'][$key])) {
-            $this->data['form_errors']['data'][$key] = $this->text('Only numeric values allowed');
+            $this->errors['data'][$key] = $this->text('Only numeric values allowed');
             return false;
         }
 
@@ -588,7 +586,7 @@ class Store extends Controller
     protected function validateTitle()
     {
         if (empty($this->submitted['data']['title']) || mb_strlen($this->submitted['data']['title']) > 255) {
-            $this->data['form_errors']['data']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
+            $this->errors['data']['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
             return false;
         }
 
@@ -608,7 +606,7 @@ class Store extends Controller
         $has_errors = false;
         foreach ($this->submitted['data']['translation'] as $code => $translation) {
             if (isset($translation['title']) && mb_strlen($translation['title']) > 255) {
-                $this->data['form_errors']['data']['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
+                $this->errors['data']['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $has_errors = true;
             }
         }
@@ -639,7 +637,7 @@ class Store extends Controller
 
         if (!empty($logo)) {
             if ($this->file->upload($logo) !== true) {
-                $this->data['form_errors']['logo'] = $this->text('Unable to upload the file');
+                $this->errors['logo'] = $this->text('Unable to upload the file');
                 return false;
             }
 
@@ -648,7 +646,7 @@ class Store extends Controller
 
         if (!empty($favicon)) {
             if ($this->file->upload($favicon) !== true) {
-                $this->data['form_errors']['favicon'] = $this->text('Unable to upload the file');
+                $this->errors['favicon'] = $this->text('Unable to upload the file');
                 return false;
             }
 

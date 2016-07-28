@@ -20,7 +20,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Default currency is the base currency of the store'); ?>">
-          <?php echo $this->text('Default'); ?>
+            <?php echo $this->text('Default'); ?>
           </span>
         </label>
         <div class="col-md-6">
@@ -55,7 +55,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['convertion_rate']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('convertion_rate', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('An exchange rate against default (base) currency. Only numeric values'); ?>">
             <?php echo $this->text('Convertion rate'); ?>
@@ -63,12 +63,12 @@
         </label>
         <div class="col-md-1">
           <input type="number" step="any" min="0" name="currency[convertion_rate]" class="form-control" value="<?php echo isset($currency['convertion_rate']) ? $this->escape($currency['convertion_rate']) : 1; ?>">
-          <?php if (isset($form_errors['convertion_rate'])) { ?>
-            <div class="help-block"><?php echo $form_errors['convertion_rate']; ?></div>
+          <?php if ($this->error('convertion_rate', true)) { ?>
+            <div class="help-block"><?php echo $this->error('convertion_rate'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="required form-group<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Official currency name for customers'); ?>">
             <?php echo $this->text('Name'); ?>
@@ -76,13 +76,13 @@
         </label>
         <div class="col-md-4">
           <input maxlength="32" name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->escape($currency['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-            <div class="help-block"><?php echo $form_errors['name']; ?></div>
+          <?php if ($this->error('name', true)) { ?>
+              <div class="help-block"><?php echo $this->error('name'); ?></div>
           <?php } ?>
         </div>
       </div>
       <?php if (empty($currency['code'])) { ?>
-      <div class="required form-group<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('3-letter ISO 4217 code , i.e USD for US dollar'); ?>">
             <?php echo $this->text('Code'); ?>
@@ -90,41 +90,41 @@
         </label>
         <div class="col-md-4">
           <input maxlength="3" pattern="[a-zA-Z]{3}" name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->escape($currency['code']) : ''; ?>">
-          <?php if (isset($form_errors['code'])) { ?>
-              <div class="help-block"><?php echo $form_errors['code']; ?></div>
+          <?php if ($this->error('code', true)) { ?>
+            <div class="help-block"><?php echo $this->error('code'); ?></div>
           <?php } ?>
         </div>
       </div>
       <?php } else { ?>
-        <input type="hidden" name="currency[code]" value="<?php echo $currency['code']; ?>">
+      <input type="hidden" name="currency[code]" value="<?php echo $currency['code']; ?>">
       <?php } ?>
-      <div class="required form-group<?php echo isset($form_errors['numeric_code']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('numeric_code', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('ISO 4217 numeric code'); ?>">
-            <?php echo $this->text('Numeric code'); ?>
+          <?php echo $this->text('Numeric code'); ?>
           </span>
         </label>
         <div class="col-md-4">
           <input maxlength="3" type="number" pattern="[0-9]{3}" name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->escape($currency['numeric_code']) : ''; ?>">
-          <?php if (isset($form_errors['numeric_code'])) { ?>
-            <div class="help-block"><?php echo $form_errors['numeric_code']; ?></div>
+          <?php if ($this->error('numeric_code', true)) { ?>
+          <div class="help-block"><?php echo $this->error('numeric_code'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="required form-group<?php echo isset($form_errors['symbol']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('symbol', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Currency sign, i.e $ for US dollar'); ?>">
-            <?php echo $this->text('Symbol'); ?>
+          <?php echo $this->text('Symbol'); ?>
           </span>
         </label>
         <div class="col-md-4">
           <input maxlength="32" name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->escape($currency['symbol']) : ''; ?>">
-          <?php if (isset($form_errors['symbol'])) { ?>
-          <div class="help-block"><?php echo $form_errors['symbol']; ?></div>
+          <?php if ($this->error('symbol', true)) { ?>
+          <div class="help-block"><?php echo $this->error('symbol'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="required form-group<?php echo isset($form_errors['major_unit']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('major_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Highest valued currency unit, i.e Dollar for US dollar'); ?>">
           <?php echo $this->text('Major unit'); ?>
@@ -132,12 +132,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="32" name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->escape($currency['major_unit']) : ''; ?>">
-          <?php if (isset($form_errors['major_unit'])) { ?>
-          <div class="help-block"><?php echo $form_errors['major_unit']; ?></div>
+          <?php if ($this->error('major_unit', true)) { ?>
+          <div class="help-block"><?php echo $this->error('major_unit'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="required form-group<?php echo isset($form_errors['minor_unit']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('minor_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Usually has a value that is 1/100 of the major unit, i.e cents'); ?>">
           <?php echo $this->text('Minor unit'); ?>
@@ -145,12 +145,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="32" name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->escape($currency['minor_unit']) : ''; ?>">
-          <?php if (isset($form_errors['minor_unit'])) { ?>
-          <div class="help-block"><?php echo $form_errors['minor_unit']; ?></div>
+          <?php if ($this->error('minor_unit', true)) { ?>
+          <div class="help-block"><?php echo $this->error('minor_unit'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['symbol_placement']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('symbol_placement', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Position of currency sign, either before or after value'); ?>">
           <?php echo $this->text('Symbol placement'); ?>
@@ -162,12 +162,12 @@
             <option value="before"<?php echo (isset($currency['symbol_placement']) && $currency['symbol_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
             <option value="after"<?php echo (isset($currency['symbol_placement']) && $currency['symbol_placement'] == 'after') ? ' selected' : ''; ?>><?php echo $this->text('After'); ?></option>
           </select>
-          <?php if (isset($form_errors['symbol_placement'])) { ?>
-          <div class="help-block"><?php echo $form_errors['symbol_placement']; ?></div>
+          <?php if ($this->error('symbol_placement', true)) { ?>
+          <div class="help-block"><?php echo $this->error('symbol_placement'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['code_placement']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('code_placement', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Position of currency code, either after or before value'); ?>">
           <?php echo $this->text('Code placement'); ?>
@@ -179,82 +179,75 @@
             <option value="before"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
             <option value="after"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'after') ? ' selected' : ''; ?>><?php echo $this->text('After'); ?></option>
           </select>
-          <?php if (isset($form_errors['code_placement'])) { ?>
-          <div class="help-block"><?php echo $form_errors['code_placement']; ?></div>
+          <?php if ($this->error('code_placement', true)) { ?>
+          <div class="help-block"><?php echo $this->error('code_placement'); ?></div>
+          <?php } ?>
+        </div>
+      </div>
+      <div class="form-group<?php echo $this->error('decimals', ' has-error'); ?>">
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Number of decimal points'); ?>">
+          <?php echo $this->text('Decimals'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input maxlength="1" pattern="[0-9]{1}" type="number" min="0" step="1" name="currency[decimals]" class="form-control" value="<?php echo (isset($currency['decimals'])) ? $this->escape($currency['decimals']) : 2; ?>">
+          <?php if ($this->error('decimals', true)) { ?>
+          <div class="help-block"><?php echo $this->error('decimals'); ?></div>
+          <?php } ?>
+        </div>
+      </div>
+      <div class="form-group<?php echo $this->error('rounding_step', ' has-error'); ?>">
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Rounding a specific step for more granular control of final value'); ?>">
+          <?php echo $this->text('Rounding step'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input maxlength="1" pattern="[0-9]{1}" type="number" min="0" step="1" name="currency[rounding_step]" class="form-control" value="<?php echo (isset($currency['rounding_step'])) ? $this->escape($currency['rounding_step']) : 0; ?>">
+          <?php if ($this->error('rounding_step', true)) { ?>
+          <div class="help-block"><?php echo $this->error('rounding_step'); ?></div>
           <?php } ?>
         </div>
       </div>
       <div class="form-group">
-        <div class="col-md-2 text-right">
-          <a data-toggle="collapse" href="#more"><?php echo $this->text('More'); ?> <span class="caret"></span></a>
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Character used to separate thousands, e.g comma'); ?>">
+              <?php echo $this->text('Thousands separator'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input maxlength="1" name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->escape($currency['thousands_separator']) : ','; ?>">
         </div>
       </div>
-      <div class="collapse more<?php echo empty($form_errors) ? '' : ' in'; ?>" id="more">
-        <div class="form-group<?php echo isset($form_errors['decimals']) ? ' has-error' : ''; ?>">
-          <label class="col-md-2 control-label">
-            <span class="hint" title="<?php echo $this->text('Number of decimal points'); ?>">
-            <?php echo $this->text('Decimals'); ?>
-            </span>
-          </label>
-          <div class="col-md-1">
-            <input maxlength="1" pattern="[0-9]{1}" type="number" min="0" step="1" name="currency[decimals]" class="form-control" value="<?php echo (isset($currency['decimals'])) ? $this->escape($currency['decimals']) : 2; ?>">
-            <?php if (isset($form_errors['decimals'])) { ?>
-            <div class="help-block"><?php echo $form_errors['decimals']; ?></div>
-            <?php } ?>
-          </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Character used to separate decimals, e.g period'); ?>">
+              <?php echo $this->text('Decimal separator'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input maxlength="1" name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->escape($currency['decimal_separator']) : '.'; ?>">
         </div>
-        <div class="form-group<?php echo isset($form_errors['rounding_step']) ? ' has-error' : ''; ?>">
-          <label class="col-md-2 control-label">
-            <span class="hint" title="<?php echo $this->text('Rounding a specific step for more granular control of final value'); ?>">
-            <?php echo $this->text('Rounding step'); ?>
-            </span>
-          </label>
-          <div class="col-md-1">
-            <input maxlength="1" pattern="[0-9]{1}" type="number" min="0" step="1" name="currency[rounding_step]" class="form-control" value="<?php echo (isset($currency['rounding_step'])) ? $this->escape($currency['rounding_step']) : 0; ?>">
-            <?php if (isset($form_errors['rounding_step'])) { ?>
-            <div class="help-block"><?php echo $form_errors['rounding_step']; ?></div>
-            <?php } ?>
-          </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Character between price value and currency sign'); ?>">
+              <?php echo $this->text('Symbol spacer'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input maxlength="2" name="currency[symbol_spacer]" class="form-control" value="<?php echo (isset($currency['symbol_spacer'])) ? $this->escape($currency['symbol_spacer']) : ' '; ?>">
         </div>
-        <div class="form-group">
-          <label class="col-md-2 control-label">
-            <span class="hint" title="<?php echo $this->text('Character used to separate thousands, e.g comma'); ?>">
-            <?php echo $this->text('Thousands separator'); ?>
-            </span>
-          </label>
-          <div class="col-md-1">
-            <input maxlength="1" name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->escape($currency['thousands_separator']) : ','; ?>">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-md-2 control-label">
-            <span class="hint" title="<?php echo $this->text('Character used to separate decimals, e.g period'); ?>">
-            <?php echo $this->text('Decimal separator'); ?>
-            </span>
-          </label>
-          <div class="col-md-1">
-            <input maxlength="1" name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->escape($currency['decimal_separator']) : '.'; ?>">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-md-2 control-label">
-            <span class="hint" title="<?php echo $this->text('Character between price value and currency sign'); ?>">
-            <?php echo $this->text('Symbol spacer'); ?>
-            </span>
-          </label>
-          <div class="col-md-1">
-            <input maxlength="2" name="currency[symbol_spacer]" class="form-control" value="<?php echo (isset($currency['symbol_spacer'])) ? $this->escape($currency['symbol_spacer']) : ' '; ?>">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-md-2 control-label">
-            <span class="hint" title="<?php echo $this->text('Character between currency code and price value'); ?>">
-            <?php echo $this->text('Code spacer'); ?>
-            </span>
-          </label>
-          <div class="col-md-1">
-            <input maxlength="2" name="currency[code_spacer]" class="form-control" value="<?php echo (isset($currency['code_spacer'])) ? $this->escape($currency['code_spacer']) : ' '; ?>">
-          </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Character between currency code and price value'); ?>">
+              <?php echo $this->text('Code spacer'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input maxlength="2" name="currency[code_spacer]" class="form-control" value="<?php echo (isset($currency['code_spacer'])) ? $this->escape($currency['code_spacer']) : ' '; ?>">
         </div>
       </div>
     </div>

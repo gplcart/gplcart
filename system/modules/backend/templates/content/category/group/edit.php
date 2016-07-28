@@ -21,7 +21,7 @@
   </div>
   <div class="row margin-top-20">
     <div class="col-md-12">
-      <div class="form-group<?php echo isset($form_errors['type']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('type', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Brand categories are used for grouping products by trademark, catalog - grouping by type'); ?>">
           <?php echo $this->text('Type'); ?>
@@ -34,8 +34,8 @@
             <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->text($type); ?></option>
             <?php } ?>
           </select>
-          <?php if (isset($form_errors['type'])) { ?>
-          <div class="help-block"><?php echo $form_errors['type']; ?></div>
+          <?php if ($this->error('type', true)) { ?>
+          <div class="help-block"><?php echo $this->error('type'); ?></div>
           <?php } ?>
         </div>
       </div>
@@ -59,14 +59,14 @@
         </div>
       </div>
       <?php } ?>
-      <div class="form-group required<?php echo isset($form_errors['title']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label">
         <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-4">
           <input name="category_group[title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['title']) ? $this->escape($category_group['title']) : ''; ?>" required autofocus>
-          <?php if (isset($form_errors['title'])) { ?>
-          <div class="help-block"><?php echo $form_errors['title']; ?></div>
+          <?php if ($this->error('title', true)) { ?>
+          <div class="help-block"><?php echo $this->error('title'); ?></div>
           <?php } ?>
         </div>
       </div>
@@ -78,14 +78,14 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $info) { ?>
-        <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-4">
             <input name="category_group[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['translation'][$code]['title']) ? $this->escape($category_group['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
-            <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
+            <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
+            <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
             <?php } ?>
           </div>
         </div>

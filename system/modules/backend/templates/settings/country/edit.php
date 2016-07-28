@@ -55,7 +55,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Short alphabetic geographical code according to ISO 3166-2 standard'); ?>">
           <?php echo $this->text('Code'); ?>
@@ -63,12 +63,12 @@
         </label>
         <div class="col-md-2">
           <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->escape($country['code']) : ''; ?>">
-          <?php if (isset($form_errors['code'])) { ?>
-          <div class="help-block"><?php echo $form_errors['code']; ?></div>
+          <?php if ($this->error('code', true)) { ?>
+          <div class="help-block"><?php echo $this->error('code'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('International name of the country in english according to ISO 3166-2 standard'); ?>">
           <?php echo $this->text('Name'); ?>
@@ -76,12 +76,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="country[name]" class="form-control" value="<?php echo isset($country['name']) ? $this->escape($country['name']) : ''; ?>">
-          <?php if (isset($form_errors['name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['name']; ?></div>
+          <?php if ($this->error('name', true)) { ?>
+          <div class="help-block"><?php echo $this->error('name'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['native_name']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('native_name', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Local name of the country'); ?>">
           <?php echo $this->text('Native name'); ?>
@@ -89,12 +89,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="country[native_name]" class="form-control" value="<?php echo isset($country['native_name']) ? $this->escape($country['native_name']) : ''; ?>">
-          <?php if (isset($form_errors['native_name'])) { ?>
-          <div class="help-block"><?php echo $form_errors['native_name']; ?></div>
+          <?php if ($this->error('native_name', true)) { ?>
+          <div class="help-block"><?php echo $this->error('native_name'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
           <?php echo $this->text('Weight'); ?>
@@ -102,8 +102,8 @@
         </label>
         <div class="col-md-2">
           <input maxlength="2" name="country[weight]" class="form-control" value="<?php echo isset($country['weight']) ? $this->escape($country['weight']) : 0; ?>">
-          <?php if (isset($form_errors['weight'])) { ?>
-          <div class="help-block"><?php echo $form_errors['weight']; ?></div>
+          <?php if ($this->error('weight', true)) { ?>
+          <div class="help-block"><?php echo $this->error('weight'); ?></div>
           <?php } ?>
         </div>
       </div>

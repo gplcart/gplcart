@@ -108,9 +108,7 @@ class Settings extends Controller
 
         $this->validate();
 
-        $errors = $this->formErrors();
-
-        if (!empty($errors)) {
+        if ($this->hasError()) {
             $this->data['settings'] = $this->submitted;
             return;
         }
@@ -139,12 +137,12 @@ class Settings extends Controller
                 $destination = $this->file->getUploadedFile();
                 $this->submitted['gapi_certificate'] = $this->file->path($destination);
             } else {
-                $this->data['form_errors']['gapi_certificate'] = $this->text('Unable to upload the file');
+                $this->errors['gapi_certificate'] = $this->text('Unable to upload the file');
             }
         }
 
         if (isset($this->submitted['gapi_email']) && !filter_var($this->submitted['gapi_email'], FILTER_VALIDATE_EMAIL)) {
-            $this->data['form_errors']['gapi_email'] = $this->text('Invalid E-mail');
+            $this->errors['gapi_email'] = $this->text('Invalid E-mail');
         }
 
         $this->submitted['smtp_host'] = Tool::stringToArray($this->submitted['smtp_host']);

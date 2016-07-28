@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['product']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('product', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Autocomplete field. Select a product that is related to the review'); ?>">
           <?php echo $this->text('Product'); ?>
@@ -44,13 +44,13 @@
         </label>
         <div class="col-md-4">
           <input name="review[product]" class="form-control" value="<?php echo isset($review['product']) ? $this->escape($review['product']) : ''; ?>">
-          <?php if (isset($form_errors['product'])) { ?>
-          <div class="help-block"><?php echo $form_errors['product']; ?></div>
+          <?php if ($this->error('product', true)) { ?>
+          <div class="help-block"><?php echo $this->error('product'); ?></div>
           <?php } ?>
         </div>
       </div>
       <input type="hidden" name="review[product_id]" value="<?php echo isset($review['product_id']) ? $review['product_id'] : ''; ?>">
-      <div class="form-group required<?php echo isset($form_errors['email']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Reviewer\'s e-mail'); ?>">
           <?php echo $this->text('Email'); ?>
@@ -58,12 +58,12 @@
         </label>
         <div class="col-md-4">
           <input name="review[email]" class="form-control" value="<?php echo isset($review['email']) ? $this->escape($review['email']) : ''; ?>">
-          <?php if (isset($form_errors['email'])) { ?>
-          <div class="help-block"><?php echo $form_errors['email']; ?></div>
+          <?php if ($this->error('email', true)) { ?>
+          <div class="help-block"><?php echo $this->error('email'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['created']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('created', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Date when review was created. Leave empty for current date'); ?>">
           <?php echo $this->text('Created'); ?>
@@ -71,12 +71,12 @@
         </label>
         <div class="col-md-4">
           <input name="review[created]" class="form-control" value="<?php echo!empty($review['created']) ? $this->date($review['created']) : ''; ?>">
-          <?php if (isset($form_errors['created'])) { ?>
-          <div class="help-block"><?php echo $form_errors['created']; ?></div>
+          <?php if ($this->error('created', true)) { ?>
+          <div class="help-block"><?php echo $this->error('created'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($form_errors['text']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Review text. HTML not allowed'); ?>">
           <?php echo $this->text('Text'); ?>
@@ -84,8 +84,8 @@
         </label>
         <div class="col-md-4">
           <textarea name="review[text]" class="form-control"><?php echo isset($review['text']) ? $this->escape($review['text']) : ''; ?></textarea>
-          <?php if (isset($form_errors['text'])) { ?>
-          <div class="help-block"><?php echo $form_errors['text']; ?></div>
+          <?php if ($this->error('text', true)) { ?>
+          <div class="help-block"><?php echo $this->error('text'); ?></div>
           <?php } ?>
         </div>
       </div>

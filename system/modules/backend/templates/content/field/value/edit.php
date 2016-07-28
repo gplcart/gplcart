@@ -21,7 +21,7 @@
   </div>
   <div class="row margin-top-20">
     <div class="col-md-12">
-      <div class="required form-group<?php echo isset($form_errors['title']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Name of the value for all users'); ?>">
           <?php echo $this->text('Title'); ?>
@@ -29,12 +29,12 @@
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="field_value[title]" class="form-control" value="<?php echo (isset($field_value['title'])) ? $this->escape($field_value['title']) : ''; ?>">
-          <?php if (isset($form_errors['title'])) { ?>
-          <div class="help-block"><?php echo $form_errors['title']; ?></div>
+          <?php if ($this->error('title', true)) { ?>
+          <div class="help-block"><?php echo $this->error('title'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['color']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('color', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Select a color for the field value. It\'s applicable only for fields with color widgets'); ?>">
           <?php echo $this->text('Color'); ?>
@@ -45,12 +45,12 @@
             <input class="form-control" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '' : $this->escape($field_value['color']); ?>">
             <span class="input-group-addon"><i></i></span>
           </div>
-          <?php if (isset($form_errors['color'])) { ?>
-          <div class="help-block"><?php echo $form_errors['color']; ?></div>
+          <?php if ($this->error('color', true)) { ?>
+          <div class="help-block"><?php echo $this->error('color'); ?></div>
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($form_errors['image']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('image', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Upload an image for the field value. It\'s applicable only for fields with image widgets'); ?>">
             <?php echo $this->text('Image'); ?>
@@ -61,8 +61,8 @@
           <input type="file" name="file" accept="image/*" class="form-control">
           <?php } ?>
           <input type="hidden" name="field_value[path]" value="<?php echo isset($field_value['path']) ? $this->escape($field_value['path']) : ''; ?>">
-          <?php if (isset($form_errors['image'])) { ?>
-          <div class="help-block"><?php echo $form_errors['image']; ?></div>
+          <?php if ($this->error('image', true)) { ?>
+          <div class="help-block"><?php echo $this->error('image'); ?></div>
           <?php } ?>
         </div>
       </div>
@@ -73,14 +73,14 @@
         </div>
       </div>
       <?php } ?>
-      <div class="form-group<?php echo isset($form_errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Weight'); ?>
         </label>
         <div class="col-md-1">
           <input maxlength="2" name="field_value[weight]" class="form-control" value="<?php echo (isset($field_value['weight'])) ? $this->escape($field_value['weight']) : 0; ?>">
-          <?php if (isset($form_errors['weight'])) { ?>
-          <div class="help-block"><?php echo $form_errors['weight']; ?></div>
+          <?php if ($this->error('weight', true)) { ?>
+          <div class="help-block"><?php echo $this->error('weight'); ?></div>
           <?php } ?>
         </div>
       </div>
@@ -92,14 +92,14 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo isset($form_errors) ? ' in' : ''; ?>">
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $language) { ?>
-        <div class="form-group<?php echo isset($form_errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-4">
             <input maxlength="255" name="field_value[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field_value['translation'][$code]['title'])) ? $this->escape($field_value['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($form_errors['translation'][$code]['title'])) { ?>
-                <div class="help-block"><?php echo $form_errors['translation'][$code]['title']; ?></div>
+            <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
+                <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
             <?php } ?>
           </div>
         </div>
@@ -109,8 +109,3 @@
     </div>
   </div>
 </form>
-<script>
-$(function () {
-    $('.input-group.color').colorpicker();
-});  
-</script>
