@@ -1,13 +1,18 @@
-<?php if($upload_access) { ?>
 <div class="row">
   <div class="col-md-6 col-md-offset-6 text-right">
-    <a class="btn btn-primary" href="<?php echo $this->url('admin/module/upload'); ?>">
-      <i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?>
+    <?php if($upload_access) { ?>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/module/upload'); ?>">
+      <?php echo $this->text('Upload'); ?>
     </a>
+    <?php } ?>
+    <?php if ($this->access('marketplace')) { ?>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/module/marketplace'); ?>">
+      <?php echo $this->text('Marketplace'); ?>
+    </a>
+    <?php } ?>
   </div>
 </div>
-<?php } ?>
-<?php if ($modules) { ?>
+<?php if (!empty($modules)) { ?>
 <div class="row margin-top-20">
   <div class="col-md-12">
     <table class="table modules">

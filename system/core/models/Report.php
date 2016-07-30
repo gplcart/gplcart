@@ -280,7 +280,7 @@ class Report extends Model
             'errors' => $errors
         );
 
-        $result = $this->curl->post(GC_REPORT_URL, array(CURLOPT_POSTFIELDS => http_build_query($data)));
+        $result = $this->curl->post(GC_REPORT_API_URL, array('fields' => $data));
 
         if ($clear && !empty($result)) {
             $this->clear(array_keys($errors));

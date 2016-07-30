@@ -53,6 +53,30 @@ class Settings extends Controller
     }
 
     /**
+     * Sets titles on the settings form page
+     */
+    protected function setTitleSettings()
+    {
+        $this->setTitle($this->text('Settings'));
+    }
+
+    /**
+     * Sets breadcrumbs on the settings form page
+     */
+    protected function setBreadcrumbSettings()
+    {
+        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+    }
+
+    /**
+     * Renders settings page
+     */
+    protected function outputSettings()
+    {
+        $this->output('settings/settings');
+    }
+
+    /**
      * Returns an array of settings with their default values
      * @return array
      */
@@ -83,6 +107,7 @@ class Settings extends Controller
         }
 
         $this->data['gapi_certificate'] = '';
+
         if (!empty($this->data['settings']['gapi_certificate'])) {
             $this->data['gapi_certificate'] = $this->text('Currently using !file', array(
                 '!file' => 'file/' . $this->data['settings']['gapi_certificate']));
@@ -127,51 +152,60 @@ class Settings extends Controller
      */
     protected function validate()
     {
-        if (empty($this->submitted['cron_key'])) {
-            $this->submitted['cron_key'] = Tool::randomString();
+        $this->validateCron();
+        $this->validateGapi();
+        $this->validateSmtp();
+    }
+
+    /**
+     * Validates / prepares submitted SMTP settings
+     * @return boolean
+     */
+    protected function validateSmtp()
+    {
+        $this->submitted['smtp_host'] = Tool::stringToArray($this->submitted['smtp_host']);
+        return true;
+    }
+
+    /**
+     * Validates / prepares submitted GAPI settings
+     * @return boolean
+     */
+    protected function validateGapi()
+    {
+        if (!empty($this->submitted['gapi_email']) && !filter_var($this->submitted['gapi_email'], FILTER_VALIDATE_EMAIL)) {
+            $this->errors['gapi_email'] = $this->text('Invalid E-mail');
         }
 
         $file = $this->request->file('gapi_certificate');
 
-        if (!empty($file)) {
-            $this->file->setHandler('p12');
-            if ($this->file->upload($file) === true) {
-                $destination = $this->file->getUploadedFile();
-                $this->submitted['gapi_certificate'] = $this->file->path($destination);
-            } else {
-                $this->errors['gapi_certificate'] = $this->text('Unable to upload the file');
-            }
+        if (empty($file)) {
+            return empty($this->errors);
         }
 
-        if (isset($this->submitted['gapi_email']) && !filter_var($this->submitted['gapi_email'], FILTER_VALIDATE_EMAIL)) {
-            $this->errors['gapi_email'] = $this->text('Invalid E-mail');
+        $this->file->setHandler('p12');
+
+        if ($this->file->upload($file) === true) {
+            $destination = $this->file->getUploadedFile();
+            $this->submitted['gapi_certificate'] = $this->file->path($destination);
+        } else {
+            $this->errors['gapi_certificate'] = $this->text('Unable to upload the file');
         }
 
-        $this->submitted['smtp_host'] = Tool::stringToArray($this->submitted['smtp_host']);
+        return empty($this->errors);
     }
 
     /**
-     * Sets titles on the settings form page
+     * Validates/prepares submitted cron settings
+     * @return boolean
      */
-    protected function setTitleSettings()
+    protected function validateCron()
     {
-        $this->setTitle($this->text('Settings'));
-    }
+        if (empty($this->submitted['cron_key'])) {
+            $this->submitted['cron_key'] = Tool::randomString();
+        }
 
-    /**
-     * Sets breadcrumbs on the settings form page
-     */
-    protected function setBreadcrumbSettings()
-    {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-    }
-
-    /**
-     * Renders settings page
-     */
-    protected function outputSettings()
-    {
-        $this->output('settings/settings');
+        return true;
     }
 
 }

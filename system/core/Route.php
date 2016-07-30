@@ -364,7 +364,7 @@ class Route
                 'controller' => array('core\\controllers\\admin\\Search', 'index')
             )
         );
-        
+
         $routes['admin/tool/demo'] = array(
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Demo', 'demo')
@@ -594,11 +594,18 @@ class Route
                 'controller' => array('core\\controllers\\admin\\Module', 'modules')
             )
         );
-        
+
         $routes['admin/module/upload'] = array(
             'access' => 'module_upload',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Module', 'upload')
+            )
+        );
+
+        $routes['admin/module/marketplace'] = array(
+            'access' => 'marketplace',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Module', 'marketplace')
             )
         );
 

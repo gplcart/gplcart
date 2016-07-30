@@ -10,6 +10,7 @@
 namespace core\controllers\admin;
 
 use core\Controller;
+use core\classes\Curl;
 use core\models\File as ModelsFile;
 use core\models\Module as ModelsModule;
 
@@ -32,14 +33,23 @@ class Module extends Controller
     protected $file;
 
     /**
+     * Curl class instance
+     * @var \core\classes\Curl $curl
+     */
+    protected $curl;
+
+    /**
      * Constructor
      * @param ModelsModule $module
      * @param ModelsFile $file
+     * @param Curl $curl
      */
-    public function __construct(ModelsModule $module, ModelsFile $file)
+    public function __construct(ModelsModule $module, ModelsFile $file,
+            Curl $curl)
     {
         parent::__construct();
 
+        $this->curl = $curl;
         $this->file = $file;
         $this->module = $module;
     }
@@ -239,6 +249,85 @@ class Module extends Controller
     protected function outputUpload()
     {
         $this->output('module/upload');
+    }
+
+    /**
+     * Displays the marketplace overview page
+     */
+    public function marketplace()
+    {
+        $limit = $this->config->get('marketplace_limit', 12);
+        $order = $this->config->get('marketplace_order', 'desc');
+        $sort = $this->config->get('marketplace_sort', 'views');
+        $default = array('sort' => $sort, 'order' => $order);
+
+        $query = $this->getFilterQuery($default);
+        $total = $this->getMarketplaceTotal($query);
+
+        $query['limit'] = $this->setPager($total, $query, $limit);
+        $results = $this->getMarketplaceList($query);
+        $this->setFilter(array('category_id', 'price', 'views', 'rating'), $query);
+
+        $this->data['marketplace'] = $results;
+
+        $this->setTitleMarketplace();
+        $this->setBreadcrumbMarketplace();
+        $this->outputMarketplace();
+    }
+
+    /**
+     * Sets titles on the marketplace overview page
+     */
+    protected function setTitleMarketplace()
+    {
+        $this->setTitle($this->text('Marketplace'));
+    }
+
+    /**
+     * Sets breadcrumbs on the marketplace overview page
+     */
+    protected function setBreadcrumbMarketplace()
+    {
+        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array('url' => $this->url('admin/module'), 'text' => $this->text('Modules')));
+    }
+
+    /**
+     * Renders an outputs the marketplace overview page
+     */
+    protected function outputMarketplace()
+    {
+        $this->output('module/marketplace');
+    }
+
+    /**
+     * Returns an array of marketplace items or null on error
+     * @param array $options
+     * @return array|null
+     */
+    protected function getMarketplaceList(array $options = array())
+    {
+        $options += array('core' => strtok(GC_VERSION, '.'));
+        $response = $this->curl->post(GC_MARKETPLACE_API_URL, array('fields' => $options));
+        $info = $this->curl->getInfo();
+
+        if (empty($info['http_code']) || $info['http_code'] != 200) {
+            return array();
+        }
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Returns total marketplace items found for the given conditions
+     * @param array $options
+     * @return integer
+     */
+    protected function getMarketplaceTotal(array $options = array())
+    {
+        $options['count'] = true;
+        $result = $this->getMarketplaceList($options);
+        return empty($result['total']) ? 0 : (int) $result['total'];
     }
 
 }

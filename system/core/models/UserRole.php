@@ -310,6 +310,7 @@ class UserRole extends Model
             'order_add' => $this->language->text('Order: add'),
             'order_edit' => $this->language->text('Order: edit'),
             'order_delete' => $this->language->text('Order: delete'),
+            'marketplace' => $this->language->text('Marketplace: access'),
             'module' => $this->language->text('Module: access'),
             'module_edit' => $this->language->text('Module: edit'),
             'module_install' => $this->language->text('Module: install'),

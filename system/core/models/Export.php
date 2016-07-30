@@ -39,6 +39,8 @@ class Export extends Model
      */
     public function __construct(ModelsImport $import, ModelsLanguage $language)
     {
+        parent::__construct();
+
         $this->import = $import;
         $this->language = $language;
     }

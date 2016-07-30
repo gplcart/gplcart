@@ -16,6 +16,12 @@ class Curl
 {
 
     /**
+     * Array of curl response info
+     * @var array
+     */
+    protected $info = array();
+
+    /**
      * Performs a GET query
      * @param string $url
      * @param array $options
@@ -28,8 +34,20 @@ class Curl
         $ch = curl_init();
         curl_setopt_array($ch, $options);
         $response = curl_exec($ch);
+
+        $this->info = curl_getinfo($ch);
+
         curl_close($ch);
         return $response;
+    }
+
+    /**
+     * Returns an array of response info
+     * @return array
+     */
+    public function getInfo()
+    {
+        return $this->info;
     }
 
     /**
@@ -41,11 +59,21 @@ class Curl
     public function post($url, array $options = array())
     {
         $options += $this->defaultOptions($url);
-        $options += array(CURLOPT_POSTFIELDS => '', CURLOPT_POST => true);
+
+        $fields = '';
+        if (!empty($options['fields'])) {
+            $fields = http_build_query($options['fields']);
+            unset($options['fields']);
+        }
+
+        $options += array(CURLOPT_POSTFIELDS => $fields, CURLOPT_POST => true);
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
         $response = curl_exec($ch);
+
+        $this->info = curl_getinfo($ch);
+
         curl_close($ch);
         return $response;
     }
@@ -65,6 +93,9 @@ class Curl
         curl_setopt_array($ch, $options);
         curl_exec($ch);
         $info = curl_getinfo($ch);
+
+        $this->info = $info;
+
         curl_close($ch);
         return $info;
     }

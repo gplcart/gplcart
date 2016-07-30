@@ -98,22 +98,20 @@
               <?php } ?>
             </ul>
           </li>
-          <?php if ($this->access('module')) { ?>
+          <?php if ($this->access('module') || $this->access('marketplace')) { ?>
           <li>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->text('Modules'); ?></a>
             <ul class="dropdown-menu">
+              <?php if ($this->access('module')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/module'); ?>"><?php echo $this->text('All'); ?></a>
+                <a href="<?php echo $this->url('admin/module'); ?>"><?php echo $this->text('Existing'); ?></a>
               </li>
+              <?php } ?>
+              <?php if ($this->access('marketplace')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/module', array('type' => 'theme')); ?>"><?php echo $this->text('Theme'); ?></a>
+                <a href="<?php echo $this->url('admin/module/marketplace'); ?>"><?php echo $this->text('Marketplace'); ?></a>
               </li>
-              <li>
-                <a href="<?php echo $this->url('admin/module', array('type' => 'payment')); ?>"><?php echo $this->text('Payment'); ?></a>
-              </li>
-              <li>
-                <a href="<?php echo $this->url('admin/module', array('type' => 'shipping')); ?>"><?php echo $this->text('Shipping'); ?></a>
-              </li>
+              <?php } ?>
             </ul>
           </li>
           <?php } ?>

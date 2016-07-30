@@ -1452,6 +1452,10 @@ class Controller
                 'sort' => $filter,
                 'order' => ($order === 'desc') ? 'asc' : 'desc') + $query);
         }
+
+        if(isset($query['sort']) && isset($query['order'])){
+            $this->data['sort'] = $query['sort'] . '-' . $query['order'];
+        }
     }
 
     /**
