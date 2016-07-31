@@ -467,7 +467,7 @@ class Controller
             $timestamp = GC_TIME;
         }
 
-        $format = $this->config->get('date_format', 'd.m.Y H:i');
+        $format = $this->config->get('date_format', 'd.m.y H:i');
         return date($format, (int) $timestamp);
     }
 

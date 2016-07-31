@@ -54,6 +54,12 @@ class Dashboard extends Controller
     protected $analytics;
 
     /**
+     * Max items to be shown in the dashboard panels
+     * @var integer
+     */
+    protected $dashboard_limit;
+
+    /**
      * Review model instance
      * @var \core\models\Review $review
      */
@@ -80,6 +86,9 @@ class Dashboard extends Controller
         $this->review = $review;
         $this->product = $product;
         $this->analytics = $analytics;
+
+        $this->dashboard_limit = (int) $this->config->get('dashboard_limit', 10);
+        ;
     }
 
     /**
@@ -92,21 +101,11 @@ class Dashboard extends Controller
             $this->redirect();
         }
 
-        $this->data['stores'] = $this->store->getList();
-        $this->data['store'] = $store = $this->getStore();
-        $this->data['user_total'] = $this->user->getList(array('count' => true));
-        $this->data['order_total'] = $this->order->getList(array('count' => true));
-        $this->data['review_total'] = $this->review->getList(array('count' => true));
-        $this->data['product_total'] = $this->product->getList(array('count' => true));
-
-        $limit = $this->config->get('dashboard_limit', 10);
-
-        $this->data['users'] = $this->getUsers($limit);
-        $this->data['orders'] = $this->getOrders($limit);
-        $this->data['system_events'] = $this->getEvents($limit);
-        $this->data['severity_count'] = $this->getSeverityCount();
-
-        $this->setGa($store);
+        $this->setPanelGa();
+        $this->setPanelUsers();
+        $this->setPanelOrders();
+        $this->setPanelEvents();
+        $this->setPanelSummary();
 
         $this->setTitleDashboard();
         $this->outputDashboard();
@@ -120,11 +119,10 @@ class Dashboard extends Controller
         $intro = (bool) $this->config->get('intro', 0);
 
         if ($intro && $this->isSuperadmin()) {
-            // Display intro for newly installed stores
-            $this->output('common/intro');
+            $this->output('dashboard/intro');
         }
 
-        $this->output('common/dashboard');
+        $this->output('dashboard/dashboard');
     }
 
     /**
@@ -133,43 +131,6 @@ class Dashboard extends Controller
     protected function setTitleDashboard()
     {
         $this->setTitle($this->text('Dashboard'), false);
-    }
-
-    /**
-     * Returns a store from the current query
-     * @return array
-     */
-    protected function getStore()
-    {
-        $store_id = (int) $this->request->get('store_id');
-        return empty($store_id) ? $this->store->getDefault(true) : $this->store->get($store_id);
-    }
-
-    /**
-     * Returns an array of orders
-     * @param integer $limit
-     * @return array
-     */
-    protected function getOrders($limit)
-    {
-        $orders = $this->order->getList(array('limit' => array(0, $limit)));
-
-        array_walk($orders, function (&$order) {
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-            $order['html'] = $this->render('settings/search/suggestion/order', array('order' => $order));
-        });
-
-        return $orders;
-    }
-
-    /**
-     * Returns an array of users
-     * @param integer $limit
-     * @return array
-     */
-    protected function getUsers($limit)
-    {
-        return $this->user->getList(array('limit' => array(0, $limit)));
     }
 
     /**
@@ -183,64 +144,103 @@ class Dashboard extends Controller
     }
 
     /**
-     * Returns an array of system events
-     * @param integer $limit
-     * @return array
-     */
-    protected function getEvents($limit)
-    {
-        $events = $this->report->getList(array(
-            'limit' => array(0, $limit), 'severity' => $this->config->get('dashboard_severity', 'info')));
-
-        foreach ($events as &$event) {
-            $variables = empty($event['data']['variables']) ? array() : (array) $event['data']['variables'];
-            $message = $this->text($event['text'], $variables);
-            $event['message'] = $this->truncate($message);
-        }
-
-        return $events;
-    }
-
-    /**
-     * Sets Google Analytics data
-     * @param array $store
+     * Sets Google Analytics panel
      * @return null
      */
-    protected function setGa(array $store)
+    protected function setPanelGa()
     {
         $gapi_email = $this->config->get('gapi_email', '');
         $gapi_certificate = $this->config->get('gapi_certificate', '');
+        $store_id = $this->request->get('store_id', $this->store->getDefault());
 
-        $this->data['chart_traffic'] = array();
-        $this->data['ga_missing_settings'] = $this->data['gapi_missing_credentials'] = '';
+        $data = array(
+            'chart_traffic' => array(),
+            'stores' => $this->store->getList(),
+            'store' => $this->store->get($store_id),
+            'missing_settings' => empty($data['store']['data']['ga_view']),
+            'missing_credentials' => (empty($gapi_email) || empty($gapi_certificate))
+        );
 
-        if (empty($gapi_email) || empty($gapi_certificate)) {
-            $this->data['gapi_missing_credentials'] = $this->text('<a href="!href">Google API credentials</a> are not properly set up', array('!href' => $this->url('admin/settings/common')));
+        if (!$data['missing_settings']) {
+            $data['ga_view'] = $data['store']['data']['ga_view'];
         }
 
-        if (empty($store['data']['ga_view'])) {
-            $this->data['ga_missing_settings'] = $this->text('<a href="!href">Google Analytics</a> is not properly set up', array('!href' => $this->url("admin/settings/store/{$store['store_id']}")));
+        if ($this->request->get('ga_update') && $this->access('report_ga') && !empty($data['ga_view'])) {
+            $this->report->clearGaCache($data['ga_view']);
+            $this->redirect();
         }
 
-        if (!empty($this->data['gapi_missing_credentials']) || !empty($this->data['ga_missing_settings'])) {
-            return;
+        if (!$data['missing_credentials'] && !$data['missing_settings']) {
+            $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$data['store']['domain']}");
+            $this->analytics->setView($data['ga_view']);
+            $data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
+            $this->setJsSettings('chart', array('traffic' => $data['chart_traffic']));
         }
 
-        $ga_view = $store['data']['ga_view'];
+        $this->data['dashboard_panel_ga'] = $this->render('dashboard/panels/ga', $data);
+    }
 
-        if (!$this->access('report_ga')) {
-            return;
+    /**
+     * Sets summary panel
+     */
+    protected function setPanelSummary()
+    {
+        $data = array(
+            'user_total' => $this->user->getList(array('count' => true)),
+            'order_total' => $this->order->getList(array('count' => true)),
+            'review_total' => $this->review->getList(array('count' => true)),
+            'product_total' => $this->product->getList(array('count' => true))
+        );
+
+        $this->data['dashboard_panel_summary'] = $this->render('dashboard/panels/summary', $data);
+    }
+
+    /**
+     * Sets recent users panel
+     */
+    protected function setPanelUsers()
+    {
+        $users = $this->user->getList(array('limit' => array(0, $this->dashboard_limit)));
+        $this->data['dashboard_panel_users'] = $this->render('dashboard/panels/users', array('users' => $users));
+    }
+
+    /**
+     * Sets recent orders panel
+     */
+    protected function setPanelOrders()
+    {
+        $orders = $this->order->getList(array('limit' => array(0, $this->dashboard_limit)));
+
+        array_walk($orders, function (&$order) {
+            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+            $order['html'] = $this->render('settings/search/suggestion/order', array('order' => $order));
+        });
+
+        $this->data['dashboard_panel_orders'] = $this->render('dashboard/panels/orders', array('orders' => $orders));
+    }
+
+    /**
+     * Sets recent events panel
+     */
+    protected function setPanelEvents()
+    {
+        $events = array();
+        foreach (array('info', 'warning', 'danger') as $severity) {
+
+            $items = $this->report->getList(array(
+                'limit' => array(0, $this->dashboard_limit),
+                'severity' => $severity));
+
+            foreach ($items as &$item) {
+                $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
+                $message = $this->text($item['text'], $variables);
+                $item['message'] = strip_tags($message);
+            }
+
+            $events[$severity] = $items;
         }
 
-        if ($this->request->get('ga_update')) {
-            $this->report->clearGaCache($ga_view);
-            $this->url->redirect();
-        }
-
-        $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
-        $this->analytics->setView($ga_view);
-        $this->data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
-        $this->setJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
+        $this->data['dashboard_panel_events'] = $this->render('dashboard/panels/events', array('events' => $events));
     }
 
 }

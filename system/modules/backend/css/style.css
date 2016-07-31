@@ -8,6 +8,27 @@ body {
     margin-bottom: 80px;
 }
 
+.navbar-fixed-top {
+    background-color: #2c3742;
+}
+
+.navbar-fixed-top .navbar-nav > li > a {
+    color: #fff;
+}
+
+.list-unstyled .list-group-item {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    padding: 8px;
+}
+
+.list-unstyled .list-group-item:first-child {
+    border-top: none;
+}
+
+
 .main {
     padding: 20px;
 }

@@ -104,7 +104,7 @@
             <ul class="dropdown-menu">
               <?php if ($this->access('module')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/module'); ?>"><?php echo $this->text('Existing'); ?></a>
+                <a href="<?php echo $this->url('admin/module'); ?>"><?php echo $this->text('Local'); ?></a>
               </li>
               <?php } ?>
               <?php if ($this->access('marketplace')) { ?>

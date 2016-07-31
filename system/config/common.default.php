@@ -18,7 +18,6 @@
 # $config['admin_list_limit'] = 20; // Max number of items to be shown for an admin
 # $config['autocomplete_limit'] = 10; // Max number of items to be shown for customers
 # $config['dashboard_limit'] = 10; // Max number of items in to be shown on dashboard
-# $config['dashboard_severity'] = 'info'; // System event severity to be shown on dashboard
 # $config['theme_backend'] = 'backend'; // Backend theme module name
 # $config['wishlist_limit'] = 20; // Max number of wishlist items for anonymous
 # $config['wishlist_limit_*'] = 20; // Max number of wishlist items per role. Replace asterisk with the role ID

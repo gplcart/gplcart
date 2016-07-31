@@ -135,12 +135,11 @@ class Report extends Model
      */
     public function countSeverity()
     {
-        $sql = "
-        SELECT
-        SUM(severity = 'danger') AS danger,
-        SUM(severity = 'warning') AS warning,
-        SUM(severity = 'info') AS info
-        FROM log";
+        $sql = "SELECT"
+                . " SUM(severity = 'danger') AS danger,"
+                . " SUM(severity = 'warning') AS warning,"
+                . " SUM(severity = 'info') AS info"
+                . " FROM log";
 
         $result = $this->db->query($sql)->fetchAll();
         return reset($result);
