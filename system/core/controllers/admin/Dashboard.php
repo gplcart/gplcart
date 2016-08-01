@@ -88,7 +88,6 @@ class Dashboard extends Controller
         $this->analytics = $analytics;
 
         $this->dashboard_limit = (int) $this->config->get('dashboard_limit', 10);
-        ;
     }
 
     /**
@@ -151,18 +150,20 @@ class Dashboard extends Controller
     {
         $gapi_email = $this->config->get('gapi_email', '');
         $gapi_certificate = $this->config->get('gapi_certificate', '');
+
         $store_id = $this->request->get('store_id', $this->store->getDefault());
+        $store = $this->store->get($store_id);
 
         $data = array(
             'chart_traffic' => array(),
             'stores' => $this->store->getList(),
-            'store' => $this->store->get($store_id),
-            'missing_settings' => empty($data['store']['data']['ga_view']),
+            'store' => $store,
+            'missing_settings' => empty($store['data']['ga_view']),
             'missing_credentials' => (empty($gapi_email) || empty($gapi_certificate))
         );
 
         if (!$data['missing_settings']) {
-            $data['ga_view'] = $data['store']['data']['ga_view'];
+            $data['ga_view'] = $store['data']['ga_view'];
         }
 
         if ($this->request->get('ga_update') && $this->access('report_ga') && !empty($data['ga_view'])) {
@@ -171,10 +172,11 @@ class Dashboard extends Controller
         }
 
         if (!$data['missing_credentials'] && !$data['missing_settings']) {
-            $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$data['store']['domain']}");
+            $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
             $this->analytics->setView($data['ga_view']);
             $data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
             $this->setJsSettings('chart', array('traffic' => $data['chart_traffic']));
+            $this->setJs('files/assets/chart/Chart.min.js', 'top');
         }
 
         $this->data['dashboard_panel_ga'] = $this->render('dashboard/panels/ga', $data);

@@ -227,7 +227,7 @@ class Report extends Model
             'data' => $traffic_data[1],
         );
 
-        $build['options'] = array('bezierCurve' => false, 'responsive' => true);
+        $build['options'] = array('bezierCurve' => false, 'responsive' => true, 'maintainAspectRatio' => false);
 
         return $build;
     }

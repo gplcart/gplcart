@@ -133,16 +133,15 @@ class Backend
         $this->document->js('system/modules/backend/js/common.js', 'top');
         $this->document->js('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $this->document->js('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
-        $this->document->js('files/assets/chart/Chart.min.js', 'top');
 
         $segments = $this->url->segments();
 
         if ($this->url->isDashboard()) {
-            $this->document->js('system/modules/backend/js/dashboard.js', 'top');
+            $this->document->js('system/modules/backend/js/dashboard.js', 'bottom');
         }
 
         if (isset($segments[2])) {
-            $this->document->js("system/modules/backend/js/{$segments[2]}.js", 'top');
+            $this->document->js("system/modules/backend/js/{$segments[2]}.js", 'bottom');
         }
 
         $this->document->js('files/assets/bootstrap/growl/jquery.bootstrap-growl.min.js', 'bottom');

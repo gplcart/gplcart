@@ -26,8 +26,7 @@
   </div>
   <div class="panel-body">
     <?php if ($chart_traffic) { ?>
-    <canvas id="chart-traffic" style="height:150px; width:100%;"></canvas>
-    <div id="chart-traffic-legend"></div>
+    <canvas id="chart-traffic"></canvas>
     <?php } else { ?>
     <?php if ($missing_settings) { ?>
     <?php echo $this->text('<a href="!href">Google Analytics</a> is not properly set up', array('!href' => $this->url("admin/settings/store/{$store['store_id']}"))); ?>

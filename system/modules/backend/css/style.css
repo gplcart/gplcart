@@ -303,34 +303,6 @@ body.admin .panel-heading .event-severity {
     margin-left: 1em;
 }
 
-.line-legend li {
-    display: inline;
-    list-style-type: none;
-    margin-right: 5px;
-}
-
-.line-legend li span {
-    padding: .2em .6em .3em;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: .25em;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
-}
-
-.chart-traffic {
-    position: relative;
-}
-
-#chart-traffic-legend {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
 .tag {
     margin-bottom: 5px;
     margin-right: 5px;

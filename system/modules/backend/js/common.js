@@ -99,8 +99,7 @@ GplCart.theme = {
             var traffic = GplCart.settings.chart[source];
             var ctx = document.getElementById('chart-' + source).getContext("2d");
             var data = {labels: traffic.labels, datasets: traffic.datasets};
-            var chart = new Chart(ctx).Line(data, traffic.options);
-            document.getElementById('chart-' + source + '-legend').innerHTML = chart.generateLegend();
+            var chart = new Chart(ctx, {type: 'line', data: data, options: traffic.options});
         }
     }
 };

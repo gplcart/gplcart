@@ -34,8 +34,7 @@
     </ul>
     <div class="tab-content">
       <div class="tab-pane active chart-traffic" id="traffic">
-        <canvas id="chart-traffic" style="height:200px; width:100%;"></canvas>
-        <div id="chart-traffic-legend"></div>
+        <canvas id="chart-traffic"></canvas>
       </div>
       <div class="tab-pane" id="keywords">
         <?php if ($keywords) { ?>
