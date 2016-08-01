@@ -14,10 +14,10 @@ use core\Model;
 use core\Logger;
 use core\classes\Tool;
 use core\classes\Session;
+use core\models\Mail as ModelsMail;
 use core\models\Address as ModelsAddress;
 use core\models\UserRole as ModelsUserRole;
 use core\models\Language as ModelsLanguage;
-use core\models\Notification as ModelsNotification;
 
 /**
  * Manages basic behaviors and data related to users
@@ -38,10 +38,10 @@ class User extends Model
     protected $role;
 
     /**
-     * Notification model instance
-     * @var \core\models\Notification $notification
+     * Mail model instance
+     * @var \core\models\Mail $mail
      */
-    protected $notification;
+    protected $mail;
 
     /**
      * Language model instance
@@ -65,23 +65,23 @@ class User extends Model
      * Constructor
      * @param ModelsAddress $address
      * @param ModelsUserRole $role
-     * @param ModelsNotification $notification
+     * @param ModelsMail $mail
      * @param ModelsLanguage $language
      * @param Session $session
      * @param Logger $logger
      */
     public function __construct(ModelsAddress $address, ModelsUserRole $role,
-            ModelsNotification $notification, ModelsLanguage $language,
-            Session $session, Logger $logger)
+            ModelsMail $mail, ModelsLanguage $language, Session $session,
+            Logger $logger)
     {
         parent::__construct();
 
+        $this->mail = $mail;
         $this->role = $role;
         $this->logger = $logger;
         $this->address = $address;
         $this->session = $session;
         $this->language = $language;
-        $this->notification = $notification;
     }
 
     /**
@@ -412,8 +412,9 @@ class User extends Model
         $data['user_id'] = $this->add($data);
 
         if (!empty($data['admin'])) {
+
             if (!empty($data['notify'])) {
-                $this->notification->set('user_registered_customer', array($data));
+                $this->mail->set('user_registered_customer', array($data));
             }
 
             $result = array(
@@ -430,12 +431,12 @@ class User extends Model
 
         // Send an e-mail to the customer
         if ($this->config->get('user_registration_email_customer', true)) {
-            $this->notification->set('user_registered_customer', array($data));
+            $this->mail->set('user_registered_customer', array($data));
         }
 
         // Send an e-mail to admin
         if ($this->config->get('user_registration_email_admin', true)) {
-            $this->notification->set('user_registered_admin', array($data));
+            $this->mail->set('user_registered_admin', array($data));
         }
 
         if (!$this->config->get('user_registration_login', true) || !$this->config->get('user_registration_status', true)) {
@@ -563,7 +564,7 @@ class User extends Model
         );
 
         $this->update($user['user_id'], array('data' => $user['data']));
-        $this->notification->set('user_reset_password', array($user));
+        $this->mail->set('user_reset_password', array($user));
 
         return array(
             'redirect' => 'forgot',
@@ -584,7 +585,7 @@ class User extends Model
 
         unset($user['data']['reset_password']);
         $this->update($user['user_id'], $user);
-        $this->notification->set('user_changed_password', array($user));
+        $this->mail->set('user_changed_password', array($user));
 
         return array(
             'redirect' => 'login',

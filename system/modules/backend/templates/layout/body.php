@@ -8,28 +8,13 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <ul class="nav navbar-nav navbar-left goto">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle navbar-brand" data-toggle="dropdown">
-              GPL Cart <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <?php if ($this->access('dashboard') && !$this->url->isDashboard()) { ?>
-              <li><a href="<?php echo $this->url('admin'); ?>">
-              <?php echo $this->text('Dashboard'); ?></a>
-              </li>
-              <li class="divider"></li>
-              <?php } ?>
-              <?php foreach ($store_list as $store) { ?>
-              <li>
-                <a href="<?php echo $this->escape("{$store['scheme']}{$store['domain']}/{$store['basepath']}"); ?>">
-                  <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
-                </a>
-              </li>
-              <?php } ?>
-            </ul>
-          </li>
-        </ul>
+        <?php if ($this->access('dashboard') && !$this->url->isDashboard()) { ?>
+        <a class="navbar-brand" href="<?php echo $this->url('admin'); ?>" title="<?php echo $this->text('Dashboard'); ?>">
+        GPL Cart
+        </a>
+        <?php } else { ?>
+        <span class="navbar-brand">GPL Cart</span>
+        <?php } ?>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
@@ -82,8 +67,8 @@
               <?php if ($this->access('report_ga')) { ?>
               <li><a href="<?php echo $this->url('admin/report/ga'); ?>"><?php echo $this->text('Analytics'); ?></a></li>
               <?php } ?>
-              <?php if ($this->access('notification')) { ?>
-              <li><a href="<?php echo $this->url('admin/report/notification'); ?>"><?php echo $this->text('Notifications'); ?></a></li>
+              <?php if ($this->access('report_status')) { ?>
+              <li><a href="<?php echo $this->url('admin/report/status'); ?>"><?php echo $this->text('Status'); ?></a></li>
               <?php } ?>
             </ul>
           </li>
@@ -189,22 +174,20 @@
           </div>
         </form>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
-          <?php if ($this->access('notification') && $notifications) { ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
-              <i class="fa notification fa-exclamation-circle"></i>
+              <i class="fa fa-globe"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
-              <?php foreach ($notifications as $notification_id => $notification) { ?>
-              <li class="text-<?php echo $this->escape($notification['severity']); ?>">
-                <a href="<?php echo $this->url("admin/report/notification#notification-$notification_id"); ?>">
-                  <?php echo $this->escape($notification['text']); ?>
+              <?php foreach ($store_list as $store) { ?>
+              <li>
+                <a target="_blank" href="<?php echo $this->escape("{$store['scheme']}{$store['domain']}/{$store['basepath']}"); ?>">
+                  <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
                 </a>
               </li>
               <?php } ?>
             </ul>
           </li>
-          <?php } ?>
           <li><a href="<?php echo $this->url('admin/help'); ?>"><i class="fa fa-question-circle"></i></a></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">

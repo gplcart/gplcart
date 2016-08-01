@@ -213,12 +213,6 @@ class Controller
     protected $langcode;
 
     /**
-     * Notification model instance
-     * @var \core\models\Notification $notification
-     */
-    protected $notification;
-
-    /**
      * Url class instance
      * @var \core\classes\Url $url
      */
@@ -310,9 +304,6 @@ class Controller
         /* @var $language \core\models\Language */
         $this->language = Container::instance('core\\models\\Language');
 
-        /* @var $notification \core\models\Notification */
-        $this->notification = Container::instance('core\\models\\Notification');
-
         /* @var $url \core\classes\Url */
         $this->url = Container::instance('core\\classes\\Url');
 
@@ -361,7 +352,6 @@ class Controller
         $this->setCron();
         $this->setData();
         $this->setScripts();
-        $this->setNotifications();
         $this->setMaintenance();
     }
 
@@ -1084,7 +1074,6 @@ class Controller
             $this->data['lang_region'] = $this->langcode . '-' . strtoupper($this->langcode);
         }
 
-        $this->data['notifications'] = array();
         $this->data['messages'] = $this->session->getMessage();
         $this->data['languages'] = $this->languages;
         $route_class = str_replace('/', '-', preg_replace("/[^A-Za-z0-9\/]/", '', $this->current_route['pattern']));
@@ -1093,41 +1082,6 @@ class Controller
 
         if ($this->url->isBackend()) {
             $this->data['help'] = $this->getHelp();
-        }
-    }
-
-    /**
-     * Sets an array of notification messages
-     * @return null
-     */
-    protected function setNotifications()
-    {
-        if (!$this->url->isBackend()) {
-            return;
-        }
-
-        $notifications = $this->notification->getList($this->config->get('notification_summary_limit', 10));
-
-        foreach ($notifications as $notification_id => $notification) {
-            if (!$this->access($notification['access'])) {
-                continue;
-            }
-
-            if (empty($notification['summary']['message'])) {
-                continue;
-            }
-
-            $severity = 'info';
-            $text = $notification['summary']['message'];
-
-            if (isset($notification['summary']['severity'])) {
-                $severity = $notification['summary']['severity'];
-            }
-
-            $this->data['notifications'][$notification_id] = array(
-                'text' => $this->text($text),
-                'severity' => $severity
-            );
         }
     }
 

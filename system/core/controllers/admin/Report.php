@@ -12,7 +12,6 @@ namespace core\controllers\admin;
 use core\Controller;
 use core\models\Report as ModelsReport;
 use core\models\Analytics as ModelsAnalytics;
-use core\models\Notification as ModelsNotification;
 
 /**
  * Handles incoming requests and outputs data related to system reports
@@ -33,25 +32,16 @@ class Report extends Controller
     protected $ga;
 
     /**
-     * Notification model instance
-     * @var \core\models\Notification $notification
-     */
-    protected $notification;
-
-    /**
      * Constructor
      * @param ModelsReport $report
      * @param ModelsAnalytics $analytics
-     * @param ModelsNotification $notification
      */
-    public function __construct(ModelsReport $report,
-            ModelsAnalytics $analytics, ModelsNotification $notification)
+    public function __construct(ModelsReport $report, ModelsAnalytics $analytics)
     {
         parent::__construct();
 
         $this->report = $report;
         $this->analytics = $analytics;
-        $this->notification = $notification;
     }
 
     /**
@@ -140,20 +130,14 @@ class Report extends Controller
     }
 
     /**
-     * Displays the notification overview admin page
+     * Displays the system status page
      */
-    public function notifications()
+    public function status()
     {
-        $this->data['notifications_list'] = $this->getNotifications();
 
-        if ($this->request->get('clear')) {
-            $this->clearNotification();
-            $this->redirect();
-        }
-
-        $this->setTitleNotifications();
-        $this->setBreadcrumbNotifications();
-        $this->outputNotifications();
+        $this->setTitleStatus();
+        $this->setBreadcrumbStatus();
+        $this->outputStatus();
     }
 
     /**
@@ -209,7 +193,7 @@ class Report extends Controller
     }
 
     /**
-     * Sets titles on the system notifications overview page
+     * Sets titles on the system events overview page
      */
     protected function setTitleSystem()
     {
@@ -217,7 +201,7 @@ class Report extends Controller
     }
 
     /**
-     * Sets breadcrumbs on the system notifications overview page
+     * Sets breadcrumbs on the system events overview page
      */
     protected function setBreadcrumbSystem()
     {
@@ -226,7 +210,7 @@ class Report extends Controller
     }
 
     /**
-     * Renders the system notifications overview page
+     * Renders the system events overview page
      */
     protected function outputSystem()
     {
@@ -300,86 +284,27 @@ class Report extends Controller
     }
 
     /**
-     * Removes a message from saved notifications
-     * @return boolean
+     * Sets titles on the system status page
      */
-    protected function clearNotification()
+    protected function setTitleStatus()
     {
-        $index = (string) $this->request->get('index');
-        $notification_id = (string) $this->request->get('notification_id');
-        $notification = (string) $this->notification->get($notification_id);
-
-        if (empty($notification['messages'])) {
-            return false;
-        }
-
-        unset($notification['messages'][$index]);
-
-        if (empty($notification['messages'])) {
-            return $this->notification->clear($notification_id);
-        }
-
-        return $this->notification->save($notification_id, $notification);
+        $this->setTitle('System status');
     }
 
     /**
-     * Sets titles on the notification overview admin page
+     * Sets breadcrumbs on the system status page
      */
-    protected function setTitleNotifications()
-    {
-        $this->setTitle('Notifications');
-    }
-
-    /**
-     * Sets breadcrumbs on the notification overview admin page
-     */
-    protected function setBreadcrumbNotifications()
+    protected function setBreadcrumbStatus()
     {
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
     }
 
     /**
-     * Renders the notification page templates
+     * Renders the system status templates
      */
-    protected function outputNotifications()
+    protected function outputStatus()
     {
-        $this->output('report/notifications');
-    }
-
-    /**
-     * Returns an array of notifications
-     * @return array
-     */
-    protected function getNotifications()
-    {
-        $notifications = array();
-
-        foreach ($this->notification->getList() as $notification_id => $notification) {
-            if (empty($notification['messages'])) {
-                continue;
-            }
-
-            if (!empty($notification['access']) && !$this->access($notification['access'])) {
-                continue;
-            }
-
-            foreach ($notification['messages'] as $index => $message) {
-                if (empty($message['message'])) {
-                    continue;
-                }
-
-                if (!isset($message['variables'])) {
-                    $message['variables'] = array();
-                }
-
-                $notifications[$notification_id][$index] = array(
-                    'message' => $this->text($message['message'], $message['variables']),
-                    'severity' => isset($message['severity']) ? $message['severity'] : 'info'
-                );
-            }
-        }
-
-        return $notifications;
+        $this->output('report/status');
     }
 
 }

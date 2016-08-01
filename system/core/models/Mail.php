@@ -11,6 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
+use core\Handler;
+use core\classes\Cache;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -52,7 +54,64 @@ class Mail extends Model
 
         $this->logger = $logger;
 
-        require GC_LIBRARY_DIR . '/phpmailer/PHPMailerAutoload.php';
+        require_once GC_LIBRARY_DIR . '/phpmailer/PHPMailerAutoload.php';
+    }
+
+    /**
+     * Returns an array of email handlers
+     * @return array
+     */
+    protected function getHandlers()
+    {
+        $handlers = &Cache::memory('mail.handlers');
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = array();
+
+        $handlers['order_created_admin'] = array(
+            'access' => 'order',
+            'handlers' => array(
+                'process' => array('core\\handlers\\mail\\Order', 'createdToAdmin')
+            ),
+        );
+
+        $handlers['order_created_customer'] = array(
+            'handlers' => array(
+                'process' => array('core\\handlers\\mail\\Order', 'createdToCustomer'),
+            ),
+        );
+
+        $handlers['user_registered_admin'] = array(
+            'access' => 'user',
+            'handlers' => array(
+                'process' => array('core\\handlers\\mail\\Account', 'registeredToAdmin'),
+            ),
+        );
+
+        $handlers['user_registered_customer'] = array(
+            'handlers' => array(
+                'process' => array('core\\handlers\\mail\\Account', 'registeredToCustomer'),
+            ),
+        );
+
+        $handlers['user_reset_password'] = array(
+            'handlers' => array(
+                'process' => array('core\\handlers\\mail\\Account', 'resetPassword'),
+            ),
+        );
+
+        $handlers['user_changed_password'] = array(
+            'handlers' => array(
+                'process' => array('core\\handlers\\mail\\Account', 'changedPassword'),
+            ),
+        );
+
+        $this->hook->fire('mail.handlers', $handlers);
+
+        return $handlers;
     }
 
     /**
@@ -143,6 +202,23 @@ class Mail extends Model
 
         $this->hook->fire('mail.after', $to, $message, $options);
         return (bool) $options['status'];
+    }
+
+    /**
+     * Sends E-mail with predefined parameters using a handler ID
+     * @param string $handler_id
+     * @param array $arguments
+     * @return boolean
+     */
+    public function set($handler_id, array $arguments)
+    {
+        $handlers = $this->getHandlers();
+
+        if (empty($handlers[$handler_id])) {
+            return false;
+        }
+
+        return Handler::call($handlers, $handler_id, 'process', $arguments);
     }
 
     /**
@@ -273,7 +349,7 @@ class Mail extends Model
             )
         );
 
-        $this->logger->log('email', $log, $severity);
+        $this->logger->log('mail', $log, $severity);
     }
 
 }

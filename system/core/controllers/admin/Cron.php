@@ -50,7 +50,6 @@ class Cron extends Controller
 
         $this->processFiles();
         $this->processLogs();
-        $this->processNotifications();
         $this->processHistory();
 
         $this->hook->fire('cron');
@@ -161,14 +160,6 @@ class Cron extends Controller
 
         $this->report->clearExpired($this->config->get('report_log_lifespan', 86400));
         return true;
-    }
-
-    /**
-     * Processes notifications
-     */
-    protected function processNotifications()
-    {
-        $this->notification->set('system_status');
     }
 
     /**

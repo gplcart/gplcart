@@ -56,7 +56,6 @@
 # $config['marketplace_sort'] = 'views';
 # $config['marketplace_order'] = 'desc';
 # $config['theme_mobile'] = 'mobile';
-# $config['notification_summary_limit'] = 10; // Max number of notifications to be shown in the summary
 # $config['no_image'] = 'image/misc/no-image.png';
 # $config['order_status'] = 'pending';
 # $config['page_alias_check'] = 1;

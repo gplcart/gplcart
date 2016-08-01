@@ -2,18 +2,17 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\notification;
+namespace core\handlers\mail;
 
 use core\Config;
-use core\models\Mail;
-use core\models\Store;
-use core\models\Language;
+use core\models\Mail as ModelsMail;
+use core\models\Store as ModelsStore;
+use core\models\Language as ModelsLanguage;
 
 class Account
 {
@@ -42,12 +41,21 @@ class Account
      */
     protected $config;
 
-    public function __construct(Store $store, Mail $mail, Language $language, Config $config)
+    /**
+     * Constructor
+     * @param ModelsStore $store
+     * @param ModelsMail $mail
+     * @param ModelsLanguage $language
+     * @param Config $config
+     */
+    public function __construct(ModelsStore $store, ModelsMail $mail,
+            ModelsLanguage $language, Config $config)
     {
-        $this->store = $store;
+
         $this->mail = $mail;
-        $this->language = $language;
+        $this->store = $store;
         $this->config = $config;
+        $this->language = $language;
     }
 
     /**
@@ -55,7 +63,7 @@ class Account
      * @param array $user
      * @return boolean
      */
-    public function registeredAdmin($user)
+    public function registeredToAdmin($user)
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
@@ -81,7 +89,7 @@ class Account
 
         $options['from'] = array(reset($store['data']['email']), $store['name']);
         $to = array($options['from']);
-        
+
         return $this->mail->send($to, array($subject => $message), $options);
     }
 
@@ -90,7 +98,7 @@ class Account
      * @param array $user
      * @return boolean
      */
-    public function registeredCustomer($user)
+    public function registeredToCustomer($user)
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
@@ -195,6 +203,8 @@ class Account
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
         $to = array($user['email']);
+
         return $this->mail->send($to, array($subject => $message), $options);
     }
+
 }

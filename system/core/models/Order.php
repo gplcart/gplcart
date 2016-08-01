@@ -14,6 +14,7 @@ use core\Model;
 use core\Logger;
 use core\classes\Cache;
 use core\classes\Request;
+use core\models\Mail as ModelsMail;
 use core\models\Cart as ModelsCart;
 use core\models\User as ModelsUser;
 use core\models\Price as ModelsPrice;
@@ -22,7 +23,6 @@ use core\models\Product as ModelsProduct;
 use core\models\Language as ModelsLanguage;
 use core\models\Shipping as ModelsShipping;
 use core\models\PriceRule as ModelsPriceRule;
-use core\models\Notification as ModelsNotification;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -49,10 +49,10 @@ class Order extends Model
     protected $cart;
 
     /**
-     * Notification model instance
-     * @var \core\models\Notification $notification
+     * Mail model instance
+     * @var \core\models\Mail $mail
      */
-    protected $notification;
+    protected $mail;
 
     /**
      * Language model instance
@@ -104,7 +104,7 @@ class Order extends Model
      * @param ModelsProduct $product
      * @param ModelsCart $cart
      * @param ModelsLanguage $language
-     * @param ModelsNotification $notification
+     * @param ModelsMail $mail
      * @param ModelsShipping $shipping
      * @param ModelsPayment $payment
      * @param Request $request
@@ -112,12 +112,13 @@ class Order extends Model
      */
     public function __construct(ModelsUser $user, ModelsPrice $price,
             ModelsPriceRule $pricerule, ModelsProduct $product,
-            ModelsCart $cart, ModelsLanguage $language,
-            ModelsNotification $notification, ModelsShipping $shipping,
-            ModelsPayment $payment, Request $request, Logger $logger)
+            ModelsCart $cart, ModelsLanguage $language, ModelsMail $mail,
+            ModelsShipping $shipping, ModelsPayment $payment, Request $request,
+            Logger $logger)
     {
         parent::__construct();
 
+        $this->mail = $mail;
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
@@ -128,7 +129,6 @@ class Order extends Model
         $this->language = $language;
         $this->shipping = $shipping;
         $this->pricerule = $pricerule;
-        $this->notification = $notification;
     }
 
     /**
@@ -547,10 +547,10 @@ class Order extends Model
      */
     public function setNotification(array $order)
     {
-        $this->notification->set('order_created_admin', array($order));
+        $this->mail->set('order_created_admin', array($order));
 
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
-            return $this->notification->set('order_created_customer', array($order));
+            return $this->mail->set('order_created_customer', array($order));
         }
     }
 
@@ -571,10 +571,28 @@ class Order extends Model
     public function getCompleteMessage(array $order)
     {
         if (is_numeric($order['user_id'])) {
-            return $this->notification->set('order_complete_customer', array($order));
+
+            $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
+            $message = $this->config->get('order_complete_message', $default);
+
+            $variables = array(
+                '!order_id' => $order['order_id'],
+                '!url' => $this->request->base() . "account/{$order['user_id']}",
+                '!status' => $this->getStatusName($order['status'])
+            );
+
+            return $this->language->text($message, $variables);
         }
 
-        return $this->notification->set('order_complete_anonymous', array($order));
+        $default = 'Thank you for your order! Order ID: !order_id, status: !status';
+        $message = $this->config->get('order_complete_message_anonymous', $default);
+
+        $variables = array(
+            '!order_id' => $order['order_id'],
+            '!status' => $this->getStatusName($order['status'])
+        );
+
+        return $this->language->text($message, $variables);
     }
 
     /**

@@ -777,10 +777,10 @@ class Route
             )
         );
 
-        $routes['admin/report/notification'] = array(
-            'access' => 'notification',
+        $routes['admin/report/status'] = array(
+            'access' => 'report_status',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'notifications')
+                'controller' => array('core\\controllers\\admin\\Report', 'status')
             )
         );
 

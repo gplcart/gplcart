@@ -2,21 +2,20 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\notification;
+namespace core\handlers\mail;
 
 use core\Config;
 use core\classes\Url;
-use core\models\Mail;
-use core\models\Store;
-use core\models\Price;
-use core\models\Language;
-use core\models\Order as O;
+use core\models\Mail as ModelsMail;
+use core\models\Store as ModelsStore;
+use core\models\Price as ModelsPrice;
+use core\models\Order as ModelsOrder;
+use core\models\Language as ModelsLanguage;
 
 class Order
 {
@@ -65,16 +64,17 @@ class Order
 
     /**
      * Constructor
-     * @param Store $store
-     * @param Mail $mail
-     * @param Language $language
-     * @param O $order
-     * @param Price $price
+     * @param ModelsStore $store
+     * @param ModelsMail $mail
+     * @param ModelsLanguage $language
+     * @param ModelsOrder $order
+     * @param ModelsPrice $price
      * @param Url $url
      * @param Config $config
      */
-    public function __construct(Store $store, Mail $mail, Language $language,
-                                O $order, Price $price, Url $url, Config $config)
+    public function __construct(ModelsStore $store, ModelsMail $mail,
+            ModelsLanguage $language, ModelsOrder $order, ModelsPrice $price,
+            Url $url, Config $config)
     {
         $this->url = $url;
         $this->mail = $mail;
@@ -90,7 +90,7 @@ class Order
      * @param array $order
      * @return boolean
      */
-    public function createdAdmin($order)
+    public function createdToAdmin($order)
     {
         $store = $this->store->get($order['store_id']);
         $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
@@ -122,6 +122,7 @@ class Order
         );
 
         $message = $this->language->text($message_text, $message_arguments);
+
         return $this->mail->send(array($admin_email), array($subject => $message), $options);
     }
 
@@ -130,7 +131,7 @@ class Order
      * @param array $order
      * @return boolean
      */
-    public function createdCustomer($order)
+    public function createdToCustomer($order)
     {
         $store = $this->store->get($order['store_id']);
         $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
@@ -162,61 +163,8 @@ class Order
 
         $message_arguments = array_merge($message_arguments, $this->mail->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
+
         return $this->mail->send(array($order['user_email']), array($subject => $message), $options);
     }
 
-    /**
-     * Returns a text to be shown on the order complete page for a logged in customer
-     * @param array $order
-     * @return string
-     */
-    public function completeCustomer($order)
-    {
-        $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
-        $message = $this->config->get('order_complete_message', $default);
-
-        $variables = array(
-            '!order_id' => $order['order_id'],
-            '!url' => $this->url->get("account/{$order['user_id']}"),
-            '!status' => $this->order->getStatusName($order['status'])
-        );
-
-        return $this->language->text($message, $variables);
-    }
-
-    /**
-     * Returns a text to be shown on the order complete page for an anonymous
-     * @param array $order
-     * @return string
-     */
-    public function completeAnonymous($order)
-    {
-        $default = 'Thank you for your order! Order ID: !order_id, status: !status';
-        $message = $this->config->get('order_complete_message_anonymous', $default);
-
-        $variables = array(
-            '!order_id' => $order['order_id'],
-            '!status' => $this->order->getStatusName($order['status'])
-        );
-
-        return $this->language->text($message, $variables);
-    }
-
-    /**
-     *
-     * @param type $order
-     */
-    public function updatedCustomer($order)
-    {
-        // TODO: complete
-    }
-
-    /**
-     *
-     * @param type $order
-     */
-    public function status($order)
-    {
-        // TODO: complete
-    }
 }
