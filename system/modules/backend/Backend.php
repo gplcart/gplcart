@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -13,10 +12,13 @@ namespace modules\backend;
 use core\Route;
 use core\classes\Url;
 use core\classes\Document;
-use core\models\User;
-use core\models\Store;
-use core\models\Search;
+use core\models\User as ModelsUser;
+use core\models\Store as ModelsStore;
+use core\models\Search as ModelsSearch;
 
+/**
+ * Main backend theme class
+ */
 class Backend
 {
 
@@ -58,26 +60,27 @@ class Backend
 
     /**
      * Constructor
-     * @param User $user
-     * @param Store $store
+     * @param ModelsUser $user
+     * @param ModelsStore $store
+     * @param ModelsSearch $search
      * @param Url $url
-     * @param Search $search
      * @param Document $document
      * @param Route $route
      */
-    public function __construct(User $user, Store $store, Url $url, Search $search, Document $document, Route $route)
+    public function __construct(ModelsUser $user, ModelsStore $store,
+            ModelsSearch $search, Url $url, Document $document, Route $route)
     {
         $this->url = $url;
         $this->user = $user;
         $this->store = $store;
+        $this->route = $route;
         $this->search = $search;
         $this->document = $document;
-        $this->route = $route;
 
         if ($this->url->isBackend()) {
-            $this->addMeta();
-            $this->addCss();
             $this->addJs();
+            $this->addCss();
+            $this->addMeta();
         }
     }
 
@@ -109,6 +112,9 @@ class Backend
         }
     }
 
+    /**
+     * Adds Bootstrap meta data
+     */
     protected function addMeta()
     {
         $this->document->meta(array('charset' => 'utf-8'));
@@ -117,6 +123,9 @@ class Backend
         $this->document->meta(array('name' => 'author', 'content' => 'GPL Cart'));
     }
 
+    /**
+     * Adds CSS styles
+     */
     protected function addCss()
     {
         $this->document->css('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
@@ -128,17 +137,20 @@ class Backend
         $this->document->css('system/modules/backend/css/style.css');
     }
 
+    /**
+     * Adds Java Scripts
+     */
     protected function addJs()
     {
         $this->document->js('system/modules/backend/js/common.js', 'top');
         $this->document->js('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $this->document->js('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
 
-        $segments = $this->url->segments();
-
         if ($this->url->isDashboard()) {
             $this->document->js('system/modules/backend/js/dashboard.js', 'bottom');
         }
+
+        $segments = $this->url->segments();
 
         if (isset($segments[2])) {
             $this->document->js("system/modules/backend/js/{$segments[2]}.js", 'bottom');
@@ -158,4 +170,5 @@ class Backend
         $this->document->js('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
         $this->document->js('files/assets/jquery/countdown/countdown.js', 'bottom');
     }
+
 }
