@@ -16,6 +16,7 @@ use core\classes\Tool;
 use core\classes\Curl;
 use core\classes\Cache;
 use core\models\Module as ModelsModule;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to various reports
@@ -24,10 +25,16 @@ class Report extends Model
 {
 
     /**
-     * Module class instance
+     * Module model instance
      * @var \core\models\Module $module
      */
     protected $module;
+
+    /**
+     * Language model instance
+     * @var \core\models\Language $language
+     */
+    protected $language;
 
     /**
      * CURL class instance
@@ -38,14 +45,17 @@ class Report extends Model
     /**
      * Constructor
      * @param ModelsModule $module
+     * @param ModelsLanguage $language
      * @param Curl $curl
      */
-    public function __construct(ModelsModule $module, Curl $curl)
+    public function __construct(ModelsModule $module, ModelsLanguage $language,
+            Curl $curl)
     {
         parent::__construct();
 
         $this->curl = $curl;
         $this->module = $module;
+        $this->language = $language;
     }
 
     /**
@@ -117,6 +127,8 @@ class Report extends Model
             $record['data'] = unserialize($record['data']);
             $list[$record['log_id']] = $record;
         }
+
+        $this->hook->fire('report.list', $list);
 
         return $list;
     }
@@ -303,37 +315,118 @@ class Report extends Model
     }
 
     /**
-     * Checks system directories and files
-     * and returns an array of notifications if at least one error occurred
-     * @param array $parameters
+     * Returns an array of system statuses
+     * @return array
+     */
+    public function getStatus()
+    {
+        $statuses = array();
+
+        $statuses['core_version'] = array(
+            'title' => $this->language->text('Core version'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => GC_VERSION,
+            'weight' => 0,
+        );
+
+        $statuses['database_version'] = array(
+            'title' => $this->language->text('Database version'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => $this->db->getAttribute(PDO::ATTR_SERVER_VERSION),
+            'weight' => 1,
+        );
+
+        $statuses['php_version'] = array(
+            'title' => $this->language->text('PHP version'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => PHP_VERSION,
+            'weight' => 2,
+        );
+
+        $statuses['php_os'] = array(
+            'title' => $this->language->text('PHP operating system'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => PHP_OS,
+            'weight' => 3,
+        );
+
+        $statuses['php_memory_limit'] = array(
+            'title' => $this->language->text('PHP Memory Limit'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => ini_get('memory_limit'),
+            'weight' => 4,
+        );
+
+        $statuses['php_apc_enabled'] = array(
+            'title' => $this->language->text('PHP APC cache enabled'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => ini_get('apc.enabled'),
+            'weight' => 5,
+        );
+
+        $statuses['server_software'] = array(
+            'title' => $this->language->text('Server software'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => $_SERVER['SERVER_SOFTWARE'],
+            'weight' => 6
+        );
+
+        $statuses['cron'] = array(
+            'title' => $this->language->text('Cron last run'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => date($this->config->get('date_format', 'd.m.y H:i'), $this->config->get('cron_last_run')),
+            'weight' => 7,
+        );
+
+        $statuses['filesystem'] = array(
+            'title' => $this->language->text('Filesystem is protected'),
+            'description' => '',
+            'severity' => 'danger',
+            'status' => $this->checkFilesystem(),
+            'weight' => 8,
+        );
+
+        $this->hook->fire('report.statuses', $statuses);
+
+        Tool::sortWeight($statuses);
+
+        return $statuses;
+    }
+
+    /**
+     * Checks filesystem. Returns true if no issues found or an array of errors
      * @return boolean|array
      */
-    public function status()
+    public function checkFilesystem()
     {
-        $notifications[] = $this->checkPermissions(GC_CONFIG_COMMON);
+        $results[] = $this->checkPermissions(GC_CONFIG_COMMON);
 
         if (file_exists(GC_CONFIG_OVERRIDE)) {
-            $notifications[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
+            $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
         }
 
-        $notifications[] = $this->checkHtaccess(GC_ROOT_DIR);
-        $notifications[] = $this->checkHtaccess(GC_CACHE_DIR);
+        $directories = array(GC_ROOT_DIR, GC_CACHE_DIR, GC_PRIVATE_DIR, GC_FILE_DIR);
 
-        // false - do not add "Deny from all" as it public directory
-        $notifications[] = $this->checkHtaccess(GC_FILE_DIR, false);
-        $notifications[] = $this->checkHtaccess(GC_PRIVATE_DIR);
-
-        $notifications = array_filter($notifications, 'is_array');
-
-        if (empty($notifications)) {
-            return false;
+        foreach ($directories as $directory) {
+            $private = ($directory !== GC_FILE_DIR);
+            $results[] = $this->checkHtaccess($directory, $private);
         }
 
-        return array(
-            'summary' => array('message' => 'Security issue', 'severity' => 'warning'),
-            'messages' => $notifications,
-            'weight' => -99,
-        );
+        $results = array_filter($results, 'is_string');
+
+        if (empty($results)) {
+            return true;
+        }
+
+        return $results;
     }
 
     /**
@@ -348,11 +441,9 @@ class Report extends Model
             return true;
         }
 
-        return array(
-            'message' => 'File %s is not secure. File permissions must be %perm',
-            'variables' => array('%s' => $file, '%perm' => $permissions),
-            'severity' => 'warning',
-        );
+        return $this->language->text('File %s is not secure. The file permissions must be %perm', array(
+                    '%s' => $file,
+                    '%perm' => $permissions));
     }
 
     /**
@@ -374,11 +465,8 @@ class Report extends Model
             return true;
         }
 
-        return array(
-            'message' => 'Missing .htaccess file %s',
-            'variables' => array('%s' => $htaccess),
-            'severity' => 'danger'
-        );
+        return $this->language->text('Missing .htaccess file %s', array(
+                    '%s' => $htaccess));
     }
 
 }

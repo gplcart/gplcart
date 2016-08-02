@@ -1407,7 +1407,7 @@ class Controller
                 'order' => ($order === 'desc') ? 'asc' : 'desc') + $query);
         }
 
-        if(isset($query['sort']) && isset($query['order'])){
+        if (isset($query['sort']) && isset($query['order'])) {
             $this->data['sort'] = $query['sort'] . '-' . $query['order'];
         }
     }

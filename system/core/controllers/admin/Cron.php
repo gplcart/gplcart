@@ -159,6 +159,14 @@ class Cron extends Controller
         }
 
         $this->report->clearExpired($this->config->get('report_log_lifespan', 86400));
+
+        $status = $this->report->checkFilesystem();
+
+        if ($status !== true) {
+            $this->logger->log('system_status', array(
+                'message' => implode('<br>', (array) $status)), 'warning');
+        }
+
         return true;
     }
 

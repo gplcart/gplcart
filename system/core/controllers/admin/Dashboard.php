@@ -232,13 +232,15 @@ class Dashboard extends Controller
                 'limit' => array(0, $this->dashboard_limit),
                 'severity' => $severity));
 
-            foreach ($items as &$item) {
+            foreach ($items as $i => &$item) {
                 $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
                 $message = $this->text($item['text'], $variables);
                 $item['message'] = strip_tags($message);
             }
 
-            $events[$severity] = $items;
+            if (!empty($items)) {
+                $events[$severity] = $items;
+            }
         }
 
         $this->setJsChartEvents();

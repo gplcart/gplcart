@@ -5,7 +5,7 @@
   </div>
   <div class="panel-body">
     <?php if (!empty($events)) { ?>   
-    <ul class="nav nav-tabs">
+    <ul class="list-inline text-right">
       <li role="presentation" class="active">
         <a href="#tab-chart-events" data-toggle="tab"><?php echo $this->text('Summary'); ?></a>
       </li>
@@ -27,7 +27,7 @@
         <ul class="list-unstyled">
           <?php foreach ($items as $event) { ?>
           <li class="list-group-item clearfix">
-            <span class="pull-left"><?php echo $this->truncate($this->escape($event['message'])); ?></span>
+            <span class="pull-left"><?php echo $this->truncate($this->escape($event['message']), 70); ?></span>
             <span class="pull-right small text-muted"><?php echo $this->date($event['time']); ?></span>
           </li>
           <?php } ?>

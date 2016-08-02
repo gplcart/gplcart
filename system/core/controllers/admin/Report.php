@@ -134,6 +134,12 @@ class Report extends Controller
      */
     public function status()
     {
+        
+        $statuses = $this->report->getStatus();
+        
+        
+        
+        $this->data['statuses'] = $statuses;
 
         $this->setTitleStatus();
         $this->setBreadcrumbStatus();
