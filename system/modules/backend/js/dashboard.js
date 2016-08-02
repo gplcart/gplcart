@@ -1,2 +1,3 @@
-GplCart.theme.chart('traffic');
+GplCart.theme.chart('traffic', 'line');
+GplCart.theme.chart('events', 'doughnut');
 

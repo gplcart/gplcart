@@ -207,27 +207,17 @@ class Report extends Model
 
         $build['datasets'][0] = array(
             'label' => 'sessions',
-            'fillColor' => 'rgba(220,220,220,0.2)',
-            'strokeColor' => 'rgba(220,220,220,1)',
-            'pointColor' => 'rgba(220,220,220,1)',
-            'pointStrokeColor' => '#fff',
-            'pointHighlightFill' => '#fff',
-            'pointHighlightStroke' => 'rgba(220,220,220,1)',
             'data' => $traffic_data[0],
         );
 
         $build['datasets'][1] = array(
             'label' => 'pageviews',
-            'fillColor' => 'rgba(151,187,205,0.2)',
-            'strokeColor' => 'rgba(151,187,205,1)',
-            'pointColor' => 'rgba(151,187,205,1)',
-            'pointStrokeColor' => '#fff',
-            'pointHighlightFill' => '#fff',
-            'pointHighlightStroke' => 'rgba(151,187,205,1)',
             'data' => $traffic_data[1],
         );
 
-        $build['options'] = array('bezierCurve' => false, 'responsive' => true, 'maintainAspectRatio' => false);
+        $build['options'] = array(
+            'responsive' => true,
+            'maintainAspectRatio' => false);
 
         return $build;
     }
@@ -311,8 +301,7 @@ class Report extends Model
 
         return $result;
     }
-    
-    
+
     /**
      * Checks system directories and files
      * and returns an array of notifications if at least one error occurred
@@ -390,6 +379,6 @@ class Report extends Model
             'variables' => array('%s' => $htaccess),
             'severity' => 'danger'
         );
-    } 
+    }
 
 }

@@ -6,6 +6,7 @@ html {
 body {
     padding-top: 50px;
     margin-bottom: 80px;
+    background-color: #f5f5f5;
 }
 
 .navbar-fixed-top {
@@ -96,6 +97,16 @@ h1 {
 
 .tab-content {
     padding-top:30px;
+}
+
+.panel {
+    border: none;
+    background-color: #fff;
+    box-shadow: none;
+}
+
+.panel-default>.panel-heading {
+    background-color: #fff;
 }
 
 .margin-top-20 {

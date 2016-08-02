@@ -106,8 +106,18 @@ class Dashboard extends Controller
         $this->setPanelEvents();
         $this->setPanelSummary();
 
+        $this->setJsDashboard();
+
         $this->setTitleDashboard();
         $this->outputDashboard();
+    }
+
+    /**
+     * Sets Java Scripts on the dashboard page
+     */
+    protected function setJsDashboard()
+    {
+        $this->setJs('files/assets/chart/Chart.min.js', 'top');
     }
 
     /**
@@ -130,16 +140,6 @@ class Dashboard extends Controller
     protected function setTitleDashboard()
     {
         $this->setTitle($this->text('Dashboard'), false);
-    }
-
-    /**
-     * Returns an array of system event numbers keyed by severity type
-     * @return array
-     */
-    protected function getSeverityCount()
-    {
-        $allowed = array_flip(array('danger', 'warning', 'info'));
-        return array_filter(array_intersect_key($this->report->countSeverity(), $allowed));
     }
 
     /**
@@ -174,12 +174,11 @@ class Dashboard extends Controller
         if (!$data['missing_credentials'] && !$data['missing_settings']) {
             $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
             $this->analytics->setView($data['ga_view']);
-            $data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
-            $this->setJsSettings('chart', array('traffic' => $data['chart_traffic']));
-            $this->setJs('files/assets/chart/Chart.min.js', 'top');
+            $chart = $this->report->buildTrafficChart($this->analytics);
+            $this->setJsSettings('chart_traffic', $chart);
         }
 
-        $this->data['dashboard_panel_ga'] = $this->render('dashboard/panels/ga', $data);
+        $this->data['dashboard_panel_ga_chart'] = $this->render('dashboard/panels/ga', $data);
     }
 
     /**
@@ -242,7 +241,30 @@ class Dashboard extends Controller
             $events[$severity] = $items;
         }
 
+        $this->setJsChartEvents();
+
         $this->data['dashboard_panel_events'] = $this->render('dashboard/panels/events', array('events' => $events));
+    }
+
+    /**
+     * Sets JS settings for events chart
+     */
+    protected function setJsChartEvents()
+    {
+        $allowed = array('danger' => '#FF6384', 'warning' => '#FFCE56', 'info' => '#36A2EB');
+        $results = array_filter(array_intersect_key($this->report->countSeverity(), $allowed));
+
+        $chart = array('options' => array('maintainAspectRatio' => false, 'responsive' => true));
+
+        $i = 0;
+        foreach ($results as $severity => $count) {
+            $chart['labels'][$i] = $severity;
+            $chart['datasets'][0]['data'][$i] = $count;
+            $chart['datasets'][0]['backgroundColor'][$i] = $allowed[$severity];
+            $i++;
+        }
+
+        $this->setJsSettings('chart_events', $chart);
     }
 
 }

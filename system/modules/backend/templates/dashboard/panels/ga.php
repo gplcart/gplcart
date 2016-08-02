@@ -25,8 +25,13 @@
     <?php } ?>
   </div>
   <div class="panel-body">
-    <?php if ($chart_traffic) { ?>
+    <?php if (!$missing_settings && !$missing_credentials) { ?>
     <canvas id="chart-traffic"></canvas>
+    <div class="text-right">
+      <a href="<?php echo $this->url('admin/report/ga'); ?>">
+        <?php echo $this->text('See all analytics'); ?>
+      </a>
+    </div> 
     <?php } else { ?>
     <?php if ($missing_settings) { ?>
     <?php echo $this->text('<a href="!href">Google Analytics</a> is not properly set up', array('!href' => $this->url("admin/settings/store/{$store['store_id']}"))); ?>
@@ -35,11 +40,6 @@
     <br><?php echo $this->text('<a href="!href">Google API credentials</a> are not properly set up', array('!href' => $this->url('admin/settings/common'))); ?>
     <?php } ?>
     <?php } ?>
-    <div class="text-right">
-      <a href="<?php echo $this->url('admin/report/ga'); ?>">
-        <?php echo $this->text('See all analytics'); ?>
-      </a>
-    </div> 
   </div>
 </div>
 <?php } ?>

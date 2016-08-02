@@ -1,26 +1,29 @@
 <?php if ($this->access('report_system')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <?php echo $this->text('Recent events'); ?>
+    <?php echo $this->text('System events'); ?>
   </div>
   <div class="panel-body">
     <?php if (!empty($events)) { ?>   
     <ul class="nav nav-tabs">
-      <?php $index = 0; ?>
+      <li role="presentation" class="active">
+        <a href="#tab-chart-events" data-toggle="tab"><?php echo $this->text('Summary'); ?></a>
+      </li>
       <?php foreach ($events as $severity => $items) { ?>
       <?php if (!empty($items)) { ?>
-      <li role="presentation" class="<?php echo ($index == 0) ? 'active' : ''; ?>">
+      <li role="presentation">
         <a href="#event-<?php echo $severity; ?>" data-toggle="tab"><?php echo $this->text($severity); ?></a>
       </li>
       <?php } ?>
-      <?php $index++; ?>
       <?php } ?>
     </ul>    
     <div class="tab-content">
-      <?php $index = 0; ?>
+      <div class="tab-pane active" id="tab-chart-events">
+        <canvas id="chart-events"></canvas>
+      </div>
       <?php foreach ($events as $severity => $items) { ?>
       <?php if (!empty($items)) { ?>
-      <div class="tab-pane<?php echo ($index == 0) ? ' active' : ''; ?>" id="event-<?php echo $severity; ?>">
+      <div class="tab-pane" id="event-<?php echo $severity; ?>">
         <ul class="list-unstyled">
           <?php foreach ($items as $event) { ?>
           <li class="list-group-item clearfix">
@@ -36,7 +39,6 @@
         </div>
       </div>
       <?php } ?>
-      <?php $index++; ?>
       <?php } ?>
     </div>
     <?php } else { ?>

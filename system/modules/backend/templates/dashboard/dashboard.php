@@ -6,6 +6,6 @@
   </div>
   <div class="col-md-6">
     <?php echo $dashboard_panel_summary; ?>
-    <?php echo $dashboard_panel_ga; ?>
+    <?php echo $dashboard_panel_ga_chart; ?>
   </div>
 </div>
