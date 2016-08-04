@@ -23,7 +23,7 @@
   </div>
   <div class="form-group">
     <div class="col-md-11 col-md-offset-1">
-      <button class="btn btn-primary" name="export" value="1">
+      <button class="btn btn-default" name="export" value="1">
         <i class="fa fa-download"></i> <?php echo $this->text('Export'); ?>
       </button>
     </div>

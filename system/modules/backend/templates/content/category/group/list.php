@@ -1,17 +1,15 @@
-<?php if ($groups || $filtering) { ?>
-<div class="row">
-  <div class="col-md-6 col-md-offset-6 text-right">
-    <div class="btn-toolbar">
-      <?php if ($this->access('category_group_add')) { ?>
-      <a class="btn btn-success" href="<?php echo $this->url('admin/content/category/group/add'); ?>">
+<?php if (!empty($groups) || $filtering) { ?>
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <?php if ($this->access('category_group_add')) { ?>
+    <div class="btn-toolbar pull-right">
+      <a class="btn btn-default" href="<?php echo $this->url('admin/content/category/group/add'); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
-      <?php } ?>
     </div>
+    <?php } ?>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
+  <div class="panel-body">
     <table class="table table-responsive margin-top-20 category-group">
       <thead>
         <tr>
@@ -50,45 +48,51 @@
         </tr>
       </thead>
       <tbody>
+        <?php if (empty($groups) && $filtering) { ?>
+        <tr>
+          <td colspan="4">
+            <?php echo $this->text('No results'); ?>
+            <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
+        <?php } else { ?>
         <?php foreach ($groups as $id => $group) { ?>
         <tr>
           <td class="middle"><?php echo $this->escape($group['title']); ?></td>
           <td class="middle">
-          <?php echo isset($stores[$group['store_id']]) ? $this->escape($stores[$group['store_id']]) : $this->text('Unknown'); ?>
+            <?php echo isset($stores[$group['store_id']]) ? $this->escape($stores[$group['store_id']]) : $this->text('Unknown'); ?>
           </td>
           <td class="middle"><?php echo $this->text($group['type'], array(), $this->text('None')); ?>
           </td>
           <td class="middle">
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-bars"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <?php if ($this->access('category_group_edit')) { ?>
-                  <li>
-                    <a href="<?php echo $this->url("admin/content/category/group/edit/$id"); ?>">
-                      <?php echo $this->text('Edit'); ?>
-                    </a>
-                  </li>
-                  <?php } ?>
-                  <?php if ($this->access('category')) { ?>
-                  <li>
-                    <a href="<?php echo $this->url("admin/content/category/$id"); ?>">
-                      <?php echo $this->text('Categories'); ?>
-                    </a>
-                  </li>
-                  <?php } ?>
-                </ul>
-            </div>
+            <ul class="list-inline">
+              <?php if ($this->access('category_group_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/category/group/edit/$id"); ?>">
+                  <?php echo strtolower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('category')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/category/$id"); ?>">
+                  <?php echo strtolower($this->text('Categories')); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <?php } ?>
+        <?php } ?>
       </tbody>
-    </table>
+    </table>  
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12"><?php echo $pager; ?></div>
+  <?php if (!empty($pager)) { ?>
+  <div class="panel-footer text-right">
+    <?php echo $pager; ?>
+  </div>
+  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">
@@ -96,7 +100,7 @@
     <?php echo $this->text('You have no category groups yet'); ?>
     <?php if ($this->access('category_group_add')) { ?>
     <a href="<?php echo $this->url('admin/content/category/group/add'); ?>">
-    <?php echo $this->text('Add'); ?>
+      <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
   </div>

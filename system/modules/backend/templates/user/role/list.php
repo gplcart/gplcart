@@ -32,7 +32,7 @@
   </div>
   <div class="col-md-6 text-right">
     <?php if ($this->access('user_role_add')) { ?>  
-    <a href="<?php echo $this->url('admin/user/role/add'); ?>" class="btn btn-success add">
+    <a href="<?php echo $this->url('admin/user/role/add'); ?>" class="btn btn-default add">
       <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>

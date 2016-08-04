@@ -445,19 +445,25 @@ class Controller
     {
         return $this->user->isSuperadmin();
     }
-
+    
     /**
      * Formats a local time/date
-     * @param integer|null $timestamp
+     * @param null|integer $timestamp
+     * @param bool $full
      * @return string
      */
-    public function date($timestamp = null)
+    public function date($timestamp = null, $full = true)
     {
         if (!isset($timestamp)) {
             $timestamp = GC_TIME;
         }
 
-        $format = $this->config->get('date_format', 'd.m.y H:i');
+        $format = $this->config->get('date_prefix', 'd.m.y');
+        
+        if($full){
+            $format .= $this->config->get('date_suffix', ' H:i');
+        }
+        
         return date($format, (int) $timestamp);
     }
 
@@ -1261,7 +1267,7 @@ class Controller
         }
 
         if ($message) {
-            $this->setMessage($this->text('Validation errors. Check form fields and try again'), 'danger');
+            $this->setMessage($this->text('One or more errors occurred'), 'danger');
         }
 
         return $this->errors;

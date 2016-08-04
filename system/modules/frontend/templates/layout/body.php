@@ -135,7 +135,7 @@
       </div>
     </div>
     <?php } ?>
-      <?php if ($breadcrumb) { ?>
+      <?php if (!empty($breadcrumb)) { ?>
         <ol class="breadcrumb">
           <?php foreach ($breadcrumb as $item) { ?>
           <?php if(!empty($item['url'])) { ?>

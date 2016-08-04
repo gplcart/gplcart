@@ -2,7 +2,7 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-6 text-right">
     <div class="btn-toolbar">
-      <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-success add">
+      <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-default add">
       <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>

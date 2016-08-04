@@ -34,7 +34,7 @@
     </div>
     <div class="col-md-6 text-right">
       <?php if ($this->access('order_add')) { ?>
-      <a class="btn btn-success" href="<?php echo $this->url('admin/sale/order/add'); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url('admin/sale/order/add'); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
       <?php } ?>

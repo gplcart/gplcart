@@ -34,7 +34,7 @@
   </div>
   <div class="form-group">
     <div class="col-md-4 col-md-offset-1">
-    <button class="btn btn-primary import" name="import" value="1">
+    <button class="btn btn-default import" name="import" value="1">
       <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
     </button>
     <?php if(!empty($operation['csv']['template'])) { ?>

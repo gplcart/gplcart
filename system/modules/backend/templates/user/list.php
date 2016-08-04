@@ -34,13 +34,13 @@
     <div class="col-md-6 text-right">
       <?php if ($this->access('user_add')) { ?>
       <div class="btn-group">
-        <a class="btn btn-success" href="<?php echo $this->url('register'); ?>">
+        <a class="btn btn-default" href="<?php echo $this->url('register'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
       </div>
       <?php if ($this->access('import')) { ?>
       <div class="btn-group">
-        <a class="btn btn-primary" href="<?php echo $this->url('admin/tool/import/user'); ?>">
+        <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import/user'); ?>">
           <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
         </a>
       </div>

@@ -10,7 +10,7 @@
         <?php } ?>
         <a href="<?php echo $this->url('admin/settings/country'); ?>" class="btn btn-default"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
         <?php if ($this->access('country_edit') || $this->access('country_add')) { ?>
-        <button class="btn btn-primary save" name="save" value="1">
+        <button class="btn btn-default save" name="save" value="1">
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>

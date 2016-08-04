@@ -359,10 +359,14 @@ class ProductClass extends Controller
     {
         $this->controlAccess('product_class_edit');
         $this->submitted = $this->request->post('fields', array());
-
         $this->product_class->deleteField(false, $product_class['product_class_id']);
 
         foreach ($this->submitted as $field_id => $field) {
+
+            if (!empty($field['remove'])) {
+                continue;
+            }
+
             $field['product_class_id'] = $product_class['product_class_id'];
             $field['required'] = !empty($field['required']);
             $field['multiple'] = !empty($field['multiple']);
@@ -433,7 +437,7 @@ class ProductClass extends Controller
      */
     protected function setTitleAddField(array $product_class)
     {
-        $this->setTitle($this->text('Fields of %class', array('%class' => $product_class['title'])));
+        $this->setTitle($this->text('Add field to %class', array('%class' => $product_class['title'])));
     }
 
     /**

@@ -377,12 +377,15 @@ class Report extends Model
             'status' => $_SERVER['SERVER_SOFTWARE'],
             'weight' => 6
         );
+        
+        $date_format = $this->config->get('date_prefix', 'd.m.Y');
+        $date_format .= $this->config->get('date_suffix', ' H:i');
 
         $statuses['cron'] = array(
             'title' => $this->language->text('Cron last run'),
             'description' => '',
             'severity' => 'info',
-            'status' => date($this->config->get('date_format', 'd.m.y H:i'), $this->config->get('cron_last_run')),
+            'status' => date($date_format, $this->config->get('cron_last_run')),
             'weight' => 7,
         );
 

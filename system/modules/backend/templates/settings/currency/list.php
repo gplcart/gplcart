@@ -2,7 +2,7 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-6 text-right">
     <div class="btn-group">
-      <a href="<?php echo $this->url('admin/settings/currency/add'); ?>" class="btn btn-success">
+      <a href="<?php echo $this->url('admin/settings/currency/add'); ?>" class="btn btn-default">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>

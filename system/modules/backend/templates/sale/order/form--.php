@@ -345,7 +345,7 @@
               </div>
             </div>
             <div class="col-md-8">
-              <button class="btn btn-success btn-block" name="save" value="1"><?php echo $this->text('Save'); ?></button>
+              <button class="btn btn-default btn-block" name="save" value="1"><?php echo $this->text('Save'); ?></button>
             </div>
           </div>
         </div>

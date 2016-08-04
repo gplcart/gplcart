@@ -10,7 +10,7 @@
         <?php } ?>
         <a href="<?php echo $this->url('admin/settings/language'); ?>" class="btn btn-default cancel"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
         <?php if ($this->access('language_edit') || $this->access('language_add')) { ?>
-        <button class="btn btn-primary save" name="save" value="1">
+        <button class="btn btn-default save" name="save" value="1">
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>

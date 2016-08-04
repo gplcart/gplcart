@@ -40,6 +40,8 @@ class File extends Controller
      */
     public function files()
     {
+        $this->setDownload();
+
         $query = $this->getFilterQuery();
         $limit = $this->setPager($this->getTotalFiles($query), $query);
 
@@ -58,31 +60,6 @@ class File extends Controller
         $this->setTitleFiles();
         $this->setBreadcrumbFiles();
         $this->outputFiles();
-    }
-
-    /**
-     * Displays the edit file form
-     * @param integer|null $file_id
-     */
-    public function edit($file_id = null)
-    {
-        $file = $this->get($file_id);
-
-        $supported_extensions = $this->file->supportedExtensions(true);
-        $this->data['supported_extensions'] = implode(',', $supported_extensions);
-        $this->data['file'] = $file;
-
-        if ($this->request->post('delete')) {
-            $this->delete($file);
-        }
-
-        if ($this->request->post('save')) {
-            $this->submit($file);
-        }
-
-        $this->setTitleEdit($file);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
     }
 
     /**
@@ -147,7 +124,8 @@ class File extends Controller
         $deleted_disk = $deleted_database = 0;
 
         foreach ($selected as $file_id) {
-            if (!in_array($action, array('delete', 'delete_both'))) {
+
+            if ($action !== 'delete') {
                 continue;
             }
 
@@ -156,15 +134,13 @@ class File extends Controller
             }
 
             $file = $this->file->get($file_id);
-            $success = $this->file->delete($file_id);
 
-            if ($success) {
-                $deleted_database++;
+            if (empty($file)) {
+                continue;
             }
 
-            if ($action == 'delete_both' && $success && $this->deleteFromDisk($file)) {
-                $deleted_disk++;
-            }
+            $deleted_database += (int) $this->file->delete($file_id);
+            $deleted_disk += (int) $this->file->deleteFromDisk($file);
         }
 
         $message = $this->text('Deleted from database: %db, disk: %disk', array(
@@ -175,199 +151,19 @@ class File extends Controller
     }
 
     /**
-     * Deletes a file from the disk
-     * @param string $file
+     * Downloads a file using a file id from the URL
      */
-    protected function deleteFromDisk($file)
+    protected function setDownload()
     {
-        return empty($file['path']) ? false : unlink(GC_FILE_DIR . '/' . $file['path']);
-    }
+        $file_id = (int) $this->request->get('download');
 
-    /**
-     * Renders the file edit page
-     */
-    protected function outputEdit()
-    {
-        $this->output('content/file/edit');
-    }
+        if (!empty($file_id)) {
+            $file = $this->file->get($file_id);
 
-    /**
-     * Sets titles on the file edit page
-     * @param type $file
-     */
-    protected function setTitleEdit($file)
-    {
-        if (isset($file['file_id'])) {
-            $title = $this->text('Edit file');
-        } else {
-            $title = $this->text('Add file');
-        }
-
-        $this->setTitle($title);
-    }
-
-    /**
-     * Sets breadcrumbs on the file edit page
-     */
-    protected function setBreadcrumbEdit()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Files'), 'url' => $this->url('admin/content/file')));
-    }
-
-    /**
-     * Returns a file
-     * @param integer $file_id
-     * @return array
-     */
-    protected function get($file_id)
-    {
-        if (!is_numeric($file_id)) {
-            return array();
-        }
-
-        $file = $this->file->get($file_id);
-
-        if (empty($file)) {
-            $this->outputError(404);
-        }
-
-        $file['file_url'] = '';
-        if (file_exists(GC_FILE_DIR . '/' . $file['path'])) {
-            $file['file_url'] = $this->file->url($file['path']);
-        }
-
-        return $file;
-    }
-
-    /**
-     * Deletes a file
-     * @param array $file
-     */
-    protected function delete(array $file)
-    {
-        $this->controlAccess('file_delete');
-
-        if (!$this->file->delete($file['file_id'])) {
-            $this->redirect('admin/content/file', $this->text('Unable to delete this file. The most probable reason - it is used somewhere'), 'danger');
-        }
-
-        if ($this->request->post('delete_disk') && $this->deleteFromDisk($file)) {
-            $this->redirect('admin/content/file', $this->text('File has been deleted both from the database and disk'), 'success');
-        }
-
-        $this->redirect('admin/content/file', $this->text('File has been deleted from the database'), 'success');
-    }
-
-    /**
-     * Saves a file
-     * @param array $file
-     * @return null
-     */
-    protected function submit(array $file)
-    {
-        $this->submitted = $this->request->post('file', array());
-
-        $this->validate($file);
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['file'] = $this->submitted + $file;
-            return;
-        }
-
-        if (isset($file['file_id'])) {
-            $this->controlAccess('file_edit');
-            $this->file->update($file['file_id'], $this->submitted);
-
-            if ($this->request->post('delete_disk') && $this->deleteFromDisk($file)) {
-                $this->redirect('admin/content/file', $this->text('File has been updated, old file deleted from the disk'), 'success');
-            }
-
-            $this->redirect('admin/content/file', $this->text('File has been updated'), 'success');
-        }
-
-        $this->controlAccess('file_add');
-        $this->file->add($this->submitted);
-        $this->redirect('admin/content/file', $this->text('File has been added'), 'success');
-    }
-
-    /**
-     * Validates an array of submitted data
-     * @param array $file
-     */
-    protected function validate(array $file)
-    {
-        $this->validateFile($file);
-        $this->validateTitle($file);
-        $this->validateTranslation($file);
-    }
-
-    /**
-     * Validates and uploads a file
-     * @param array $file
-     * @return boolean
-     */
-    protected function validateFile(array $file)
-    {
-        $upload = $this->request->file('file');
-
-        if (!empty($upload)) {
-            $result = $this->file->upload($upload);
-            if ($result !== true) {
-                $this->errors['file'] = $this->text('Unable to upload the file');
-                return false;
-            }
-
-            $this->submitted['path'] = $this->file->path($this->file->getUploadedFile());
-            return true;
-        }
-
-        if (empty($file['file_id']) || (isset($file['file_id']) && $this->request->post('delete_disk'))) {
-            $this->errors['file'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates title field
-     * @param array $file
-     * @return boolean
-     */
-    protected function validateTitle(array $file)
-    {
-        if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array(
-                '%min' => 1, '%max' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates file translations
-     * @param array $file
-     * @return boolean
-     */
-    protected function validateTranslation(array $file)
-    {
-        if (empty($this->submitted['translation'])) {
-            return true;
-        }
-
-        $has_errors = false;
-        foreach ($this->submitted['translation'] as $code => $translation) {
-            if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
+            if (!empty($file['path'])) {
+                $this->response->download(GC_FILE_DIR . '/' . $file['path']);
             }
         }
-
-        return !$has_errors;
     }
 
 }

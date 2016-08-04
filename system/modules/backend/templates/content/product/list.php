@@ -1,10 +1,10 @@
 <?php if (!empty($products) || $filtering) { ?>
 <form method="post" id="products" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <div class="row">
-    <div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
       <?php if ($this->access('product_edit') || $this->access('product_delete')) { ?>
-      <div class="btn-group">
+      <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
@@ -41,26 +41,20 @@
         </ul>
       </div>
       <?php } ?>
-    </div>
-    <div class="col-md-6 text-right">
-      <?php if ($this->access('product_add')) { ?>
-      <div class="btn-group">
-        <a class="btn btn-success" href="<?php echo $this->url('admin/content/product/add'); ?>">
+      <div class="btn-toolbar pull-right">
+        <?php if ($this->access('product_add')) { ?>
+        <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
-      </div>
-      <?php if ($this->access('import') && $this->access('file_upload')) { ?>
-      <div class="btn-group">
-        <a class="btn btn-primary" href="<?php echo $this->url('admin/tool/import/product'); ?>">
+        <?php } ?>
+        <?php if ($this->access('import') && $this->access('file_upload')) { ?>
+        <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import/product'); ?>">
           <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
         </a>
+        <?php } ?>
       </div>
-      <?php } ?>
-      <?php } ?>
     </div>
-  </div>
-  <div class="row margin-top-20">
-    <div class="col-md-12">
+    <div class="panel-body table-responsive">
       <table class="table table-responsive table-editable products">
         <thead>
           <tr>
@@ -122,7 +116,7 @@
               <select class="form-control" name="currency">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($currencies as $code => $currency) { ?>
-                <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($filter_currency) && $filter_currency === $code) ? ' selected' : ''; ?>><?php echo $this->escape($code); ?></option>
+                    <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($filter_currency) && $filter_currency === $code) ? ' selected' : ''; ?>><?php echo $this->escape($code); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -140,26 +134,26 @@
             <th class="text-center middle">
               <select class="form-control" name="status">
                 <option value="any">
-                  <?php echo $this->text('Any'); ?>
+                <?php echo $this->text('Any'); ?>
                 </option>
                 <option value="1"<?php echo ($filter_front === '1') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Enabled'); ?>
+                <?php echo $this->text('Enabled'); ?>
                 </option>
                 <option value="0"<?php echo ($filter_front === '0') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Disabled'); ?>
+                <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
             </th>
             <th class="text-center middle">
               <select class="form-control" name="front">
                 <option value="any">
-                  <?php echo $this->text('Any'); ?>
+                <?php echo $this->text('Any'); ?>
                 </option>
                 <option value="1"<?php echo ($filter_front === '1') ? ' selected' : ''; ?>>
-                    <?php echo $this->text('Yes'); ?>
+                <?php echo $this->text('Yes'); ?>
                 </option>
                 <option value="0"<?php echo ($filter_front === '0') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('No'); ?>
+                <?php echo $this->text('No'); ?>
                 </option>
               </select>
             </th>
@@ -174,19 +168,27 @@
           </tr>
         </thead>
         <tbody>
+          <?php if (empty($products) && $filtering) { ?>
+          <tr>
+            <td colspan="10">
+              <?php echo $this->text('No results'); ?>
+              <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
+            </td>
+          </tr>
+          <?php } else { ?>
           <?php foreach ($products as $id => $product) { ?>
           <tr data-product-id="<?php echo $id; ?>">
             <td class="middle">
-                <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
-                <input type="hidden" name="product[product_id]" value="<?php echo $id; ?>">
+              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
+              <input type="hidden" name="product[product_id]" value="<?php echo $id; ?>">
             </td>
             <td class="middle">
               <span class="hint" title="<?php echo $this->escape($product['title']); ?>">
-              <?php echo $this->truncate($this->escape($product['title']), 30); ?>
+                <?php echo $this->truncate($this->escape($product['title']), 30); ?>
               </span>
             </td>
             <td class="middle">
-            <?php echo $this->escape($product['sku']); ?>
+              <?php echo $this->escape($product['sku']); ?>
             </td>
             <td class="middle">
               <input name="product[price]" maxlength="8" class="form-control" value="<?php echo $this->escape($product['price']); ?>"<?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
@@ -244,12 +246,13 @@
             </td>
           </tr>
           <?php } ?>
+          <?php } ?>
         </tbody>
       </table>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12"><?php echo $pager; ?></div>
+    <?php if (!empty($pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

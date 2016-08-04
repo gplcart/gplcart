@@ -210,19 +210,15 @@
   <?php if ($page_title || $page_description || $breadcrumb) { ?>
   <div class="container-fluid content-header">
     <div class="row">
-      <div class="col-md-8">
-        <div class="header-wrapper pull-left">
-          <h1 class="h3 pull-left"><?php echo $page_title; ?></h1><?php echo $help; ?>
-        </div>
-        <?php if ($page_description) { ?>
-        <span class="small"><?php echo $page_description; ?></span>
-        <?php } ?>
-      </div>
-      <div class="col-md-4 text-right">
-        <?php if ($breadcrumb) { ?>
-        <ol class="breadcrumb pull-right">
+      <div class="col-md-12">
+        <?php if (!empty($breadcrumb)) { ?>
+        <ol class="breadcrumb">
           <?php foreach ($breadcrumb as $item) { ?>
+          <?php if(empty($item['url'])) { ?>
+          <li><?php echo $item['text']; ?></li>
+          <?php } else { ?>
           <li><a href="<?php echo $item['url']; ?>"><?php echo $item['text']; ?></a></li>
+          <?php } ?>
           <?php } ?>
         </ol>
         <?php } ?>

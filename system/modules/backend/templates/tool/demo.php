@@ -5,7 +5,7 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="form-group">
     <div class="col-md-10">
-      <button class="btn btn-primary" name="install" value="1">
+      <button class="btn btn-default" name="install" value="1">
         <?php echo $this->text('Install'); ?>
       </button>
     </div>

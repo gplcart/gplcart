@@ -1,9 +1,9 @@
-<?php if ($pages || $filtering) { ?>
+<?php if (!empty($pages) || $filtering) { ?>
 <form method="post" id="pages" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <div class="row">
-    <div class="col-md-6">
-      <div class="btn-group">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
@@ -11,12 +11,12 @@
           <?php if ($this->access('page_edit')) { ?>
           <li>
             <a data-action="status" data-action-value="1" href="#">
-            <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
+              <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
             </a>
           </li>
           <li>
             <a data-action="status" data-action-value="0" href="#">
-            <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
+              <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
             </a>
           </li>
           <li>
@@ -33,26 +33,22 @@
           <?php if ($this->access('page_delete')) { ?>
           <li>
             <a data-action="delete" href="#">
-            <?php echo $this->text('Delete'); ?>
+              <?php echo $this->text('Delete'); ?>
             </a>
           </li>
           <?php } ?>
         </ul>
       </div>
-    </div>
-    <div class="col-md-6 text-right">
-      <?php if ($this->access('page_add')) { ?>
-      <div class="btn-group">
-        <a class="btn btn-success" href="<?php echo $this->url('admin/content/page/add'); ?>">
+      <div class="btn-toolbar pull-right">
+        <?php if ($this->access('page_add')) { ?>
+        <a class="btn btn-default" href="<?php echo $this->url('admin/content/page/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
-      </div>
-      <?php } ?>
+        <?php } ?> 
+      </div>  
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <table class="table table-responsive margin-top-20 pages-list">
+    <div class="panel-body table-responsive">
+      <table class="table pages-list">
         <thead>
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>
@@ -109,26 +105,26 @@
             <th>
               <select class="form-control" name="status">
                 <option value="any">
-                  <?php echo $this->text('Any'); ?>
+                <?php echo $this->text('Any'); ?>
                 </option>
                 <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Enabled'); ?>
+                <?php echo $this->text('Enabled'); ?>
                 </option>
                 <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Disabled'); ?>
+                <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
             </th>
             <th class="middle">
               <select class="form-control" name="front">
                 <option value="any">
-                  <?php echo $this->text('Any'); ?>
+                <?php echo $this->text('Any'); ?>
                 </option>
                 <option value="1"<?php echo ($filter_front === '1') ? ' selected' : ''; ?>>
-                    <?php echo $this->text('Yes'); ?>
+                <?php echo $this->text('Yes'); ?>
                 </option>
                 <option value="0"<?php echo ($filter_front === '0') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('No'); ?>
+                <?php echo $this->text('No'); ?>
                 </option>
               </select>
             </th>
@@ -144,9 +140,12 @@
           </tr>
         </thead>
         <tbody>
-          <?php if($filtering && !$pages) { ?>
+          <?php if ($filtering && empty($pages)) { ?>
           <tr>
-            <td colspan="8"><?php echo $this->text('No results'); ?></td>
+            <td colspan="8">
+              <?php echo $this->text('No results'); ?>
+              <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+            </td>
           </tr>
           <?php } ?>
           <?php foreach ($pages as $id => $page) { ?>
@@ -156,24 +155,24 @@
             </td>
             <td class="middle"><?php echo $this->truncate($this->escape($page['title']), 30); ?></td>
             <td class="middle">
-              <?php if(isset($stores[$page['store_id']])) { ?>
+              <?php if (isset($stores[$page['store_id']])) { ?>
               <?php echo $this->escape($stores[$page['store_id']]); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($page['email']); ?>
+                <?php echo $this->escape($page['email']); ?>
             </td>
             <td class="middle">
-              <?php if(empty($page['status'])){ ?>
+              <?php if (empty($page['status'])) { ?>
               <i class="fa fa-square-o"></i>
               <?php } else { ?>
               <i class="fa fa-check-square-o"></i>
               <?php } ?>
             </td>
             <td class="middle">
-              <?php if(empty($page['front'])){ ?>
+              <?php if (empty($page['front'])) { ?>
               <i class="fa fa-square-o"></i>
               <?php } else { ?>
               <i class="fa fa-check-square-o"></i>
@@ -181,40 +180,39 @@
             </td>
             <td class="middle"><?php echo $this->date($page['created']); ?></td>
             <td class="middle">
-              <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-bars"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li>
-                    <a href="<?php echo $this->escape($page['url']); ?>">
-                    <?php echo $this->text('View'); ?>
-                    </a>
-                  </li>
-                  <?php if ($this->access('page_edit')) { ?>
-                  <li>
-                    <a href="<?php echo $this->url("admin/content/page/edit/$id"); ?>">
-                    <?php echo $this->text('Edit'); ?>
-                    </a>
-                  </li>
-                  <?php } ?>
-                </ul>
-              </div>
+              <ul class="list-inline">
+                <li>
+                  <a href="<?php echo $this->escape($page['url']); ?>">
+                    <?php echo strtolower($this->text('View')); ?>
+                  </a>
+                </li>
+                <?php if ($this->access('page_edit')) { ?>
+                <li>
+                  <a href="<?php echo $this->url("admin/content/page/edit/$id"); ?>">
+                  <?php echo strtolower($this->text('Edit')); ?>
+                  </a>
+                </li>
+                <?php } ?>
+              </ul>
             </td>
           </tr>
           <?php } ?>
         </tbody>
       </table>
     </div>
+    <?php if (!empty($pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php } ?>
   </div>
-  <div class="row"><div class="col-md-12"><?php echo $pager; ?></div></div>
 </form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
     <?php echo $this->text('You have no pages yet'); ?>
     <?php if ($this->access('page_add')) { ?>
-    <a href="<?php echo $this->url('admin/content/page/add'); ?>"><?php echo $this->text('Add'); ?></a>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/page/add'); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
     <?php } ?>
   </div>
 </div>

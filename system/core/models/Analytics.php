@@ -146,10 +146,16 @@ class Analytics extends Model
         if (isset($cache)) {
             $return = $cache;
         } else {
-            $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
-            $rows = $results->getRows();
 
-            if ($rows) {
+            try {
+                $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
+                $rows = $results->getRows();
+            } catch (\Google_IO_Exception $e) {
+                $this->logger->log('ga', $e->getMessage(), 'warning'); // Failed to connect, etc...
+                return array();
+            }
+
+            if (!empty($rows)) {
                 $return = $rows;
             }
 

@@ -103,12 +103,19 @@ class Backend
     /**
      * Implements hook data
      * @param array $data
+     * @return null
      */
-    public function hookData(&$data)
+    public function hookData(array &$data)
     {
-        if ($this->url->isBackend()) {
-            $data['store_list'] = $this->store->getList();
-            $data['search_handlers'] = $this->search->getHandlers();
+        if (!$this->url->isBackend()) {
+            return;
+        }
+
+        $data['store_list'] = $this->store->getList();
+        $data['search_handlers'] = $this->search->getHandlers();
+
+        if (!empty($data['page_title'])) {
+            $data['breadcrumb'][] = array('text' => $data['page_title']);
         }
     }
 

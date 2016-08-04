@@ -342,7 +342,7 @@ class Product extends Controller
         $title = $this->text('Add product');
 
         if (isset($product['product_id'])) {
-            $title = $this->text('Edit product %title', array('%title' => $product['title']));
+            $title = $this->text('Edit %title', array('%title' => $product['title']));
         }
 
         $this->setTitle($title);

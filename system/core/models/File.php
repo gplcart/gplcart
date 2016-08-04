@@ -103,7 +103,7 @@ class File extends Model
             'file_type' => $data['file_type'],
             'mime_type' => $data['mime_type'],
             'id_value' => !empty($data['id_value']) ? (int) $data['id_value'] : 0,
-            'title' => !empty($data['title']) ? $data['title'] : '',
+            'title' => !empty($data['title']) ? $data['title'] : basename($data['path']),
             'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
             'description' => !empty($data['description']) ? $data['description'] : ''
         ));
@@ -707,6 +707,20 @@ class File extends Model
         }
 
         return (bool) $this->db->delete('file_translation', $where);
+    }
+
+    /**
+     * Deletes a file from the disk
+     * @param array $file
+     * @return boolean
+     */
+    public function deleteFromDisk(array $file)
+    {
+        if (empty($file['path'])) {
+            return false;
+        }
+
+        return unlink(GC_FILE_DIR . '/' . $file['path']);
     }
 
     /**

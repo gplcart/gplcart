@@ -33,7 +33,7 @@
     <div class="col-md-6 text-right">
       <div class="btn-toolbar">
         <?php if ($this->access('price_rule_add')) { ?>
-        <a href="<?php echo $this->url('admin/sale/price/add'); ?>" class="btn btn-success add">
+        <a href="<?php echo $this->url('admin/sale/price/add'); ?>" class="btn btn-default add">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
         <?php } ?>
@@ -191,7 +191,7 @@
             </td>
             <td>
               <div class="btn-group">
-                <button type="button" class="btn dropdown-toggle<?php echo empty($rule['data']['conditions']) ? ' btn-default' : ' btn-primary'; ?>" data-toggle="dropdown">
+                <button type="button" class="btn dropdown-toggle<?php echo empty($rule['data']['conditions']) ? ' btn-default' : ' btn-default'; ?>" data-toggle="dropdown">
                   <i class="fa fa-bars"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">

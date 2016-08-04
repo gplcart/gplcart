@@ -6,7 +6,7 @@ GplCart.theme = {
         <div class="modal-dialog">\n\
         <div class="modal-content">\n\
         <div class="modal-header clearfix">\n\
-        <button type="button" class="btn btn-primary pull-right" data-dismiss="modal">\n\
+        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">\n\
         <i class="fa fa-times"></i></button>';
 
         if (typeof header !== 'undefined') {
@@ -197,24 +197,19 @@ $(function () {
         $(this).html(event.strftime('%M:%S'));
     });
 
-    /********************************* Accordion *********************************/
-
-    // Expand/collapse accordion panes
-    $(document).on('click', 'form .fa-chevron-up', function () {
-        $('form .panel-collapse').collapse('show');
-        $(this).toggleClass('fa-chevron-down fa-chevron-up');
-        return false;
-    });
-
-    $(document).on('click', 'form .fa-chevron-down', function () {
-        $('form .panel-collapse:not(.always-visible)').collapse('hide');
-        $(this).toggleClass('fa-chevron-up fa-chevron-down');
-        return false;
-    });
-
     /********************************* WYSIWYG *********************************/
-
-    $('textarea.summernote').summernote({height: 200, lang: GplCart.settings.lang_region});
+    
+    $('textarea.summernote').summernote({
+          height: 150,
+          lang: GplCart.settings.lang_region,
+          toolbar: [
+        ['font', ['bold', 'italic', 'underline', 'clear']],
+        ['style', ['style']],
+        ['para', ['ul', 'ol']],
+        ['table', ['table']],
+        ['insert', ['link', 'picture', 'hr']],
+        ['view', ['fullscreen', 'codeview']]
+    ]});
 
     /********************************* Images *********************************/
 

@@ -159,10 +159,13 @@ class Account
         $message_text = $this->config->get('email_message_reset_password', $message_default);
 
         $base = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", '/');
+        
+        $date_format = $this->config->get('date_prefix', 'd.m.Y');
+        $date_format .= $this->config->get('date_suffix', ' H:i');
 
         $message_arguments = array(
             '!store' => $store_name,
-            '!expires' => date($this->config->get('date_format', 'd.m.Y H:i'), $user['data']['reset_password']['expires']),
+            '!expires' => date($date_format, $user['data']['reset_password']['expires']),
             '!link' => "$base/forgot?" . http_build_query(array(
                 'key' => $user['data']['reset_password']['token'],
                 'user_id' => $user['user_id']

@@ -2,7 +2,7 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="row">
     <div class="col-md-6 col-md-offset-6 text-right">
-      <button class="btn btn-primary" name="save" value="1">
+      <button class="btn btn-default" name="save" value="1">
         <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
       </button>
     </div>

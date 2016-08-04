@@ -40,6 +40,15 @@ class Field extends Controller
      */
     public function fields()
     {
+
+        $action = (string) $this->request->post('action');
+        $value = (int) $this->request->post('value');
+        $selected = $this->request->post('selected', array());
+
+        if (!empty($action)) {
+            $this->action($selected, $action, $value);
+        }
+
         $query = $this->getFilterQuery();
         $limit = $this->setPager($this->getTotalFields($query), $query);
 
@@ -187,6 +196,31 @@ class Field extends Controller
         }
 
         $this->redirect('', $this->text('Unable to delete this field. The most probable reason - it is used by one or more products'), 'danger');
+    }
+
+    /**
+     * Applies an action to the selected fields
+     * @param array $selected
+     * @param string $action
+     * @param string $value
+     * @return boolean
+     */
+    protected function action(array $selected, $action, $value)
+    {
+
+        $deleted = 0;
+        foreach ($selected as $field_id) {
+            if ($action === 'delete' && $this->access('field_delete')) {
+                $deleted += (int) $this->field->delete($field_id);
+            }
+        }
+
+        if ($deleted > 0) {
+            $this->session->setMessage($this->text('Fields have been deleted'), 'success');
+            return true;
+        }
+
+        return false;
     }
 
     /**

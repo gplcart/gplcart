@@ -462,20 +462,6 @@ class Route
             )
         );
 
-        $routes['admin/content/file/add'] = array(
-            'access' => 'file_add',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\File', 'edit')
-            )
-        );
-
-        $routes['admin/content/file/edit/(\d+)'] = array(
-            'access' => 'file_edit',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\File', 'edit')
-            )
-        );
-
         $routes['admin/content/category/group'] = array(
             'access' => 'category_group',
             'handlers' => array(

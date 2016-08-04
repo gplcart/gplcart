@@ -1,10 +1,10 @@
-<?php if ($reviews || $filtering) { ?>
+<?php if (!empty($reviews) || $filtering) { ?>
 <form method="post" id="reviews" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <div class="row">
-    <div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
       <?php if ($this->access('review_edit') || $this->access('review_delete')) { ?>
-      <div class="btn-group">
+      <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
@@ -23,36 +23,32 @@
           <?php if ($this->access('review_delete')) { ?>
           <li>
             <a data-action="delete" href="#">
-                <?php echo $this->text('Delete'); ?>
+              <?php echo $this->text('Delete'); ?>
             </a>
           </li>
           <?php } ?>
         </ul>
       </div>
-      <?php } ?>
-    </div>
-    <div class="col-md-6 text-right">
+      <?php } ?> 
       <?php if ($this->access('review_add')) { ?>
-      <div class="btn-group">
-        <a class="btn btn-success" href="<?php echo $this->url('admin/content/review/add'); ?>">
+      <div class="btn-toolbar pull-right">
+        <a class="btn btn-default" href="<?php echo $this->url('admin/content/review/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
       </div>
-      <?php } ?>
+      <?php } ?>   
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
+    <div class="panel-body"> 
       <table class="table margin-top-20 reviews">
         <thead>
           <tr>
             <th class="middle">
-                <input type="checkbox" id="select-all" value="1">
+              <input type="checkbox" id="select-all" value="1">
             </th>
             <th class="middle">
-                <a href="<?php echo $sort_text; ?>">
-                  <?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i>
-                </a>
+              <a href="<?php echo $sort_text; ?>">
+                <?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i>
+              </a>
             </th>
             <th class="middle">
               <a href="<?php echo $sort_product_id; ?>">
@@ -92,13 +88,13 @@
             <th class="middle">
               <select class="form-control" name="status">
                 <option value="any">
-                  <?php echo $this->text('Any'); ?>
+                <?php echo $this->text('Any'); ?>
                 </option>
                 <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Enabled'); ?>
+                <?php echo $this->text('Enabled'); ?>
                 </option>
                 <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Disabled'); ?>
+                <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
             </th>
@@ -114,9 +110,12 @@
           </tr>
         </thead>
         <tbody>
-          <?php if($filtering && !$reviews) { ?>
+          <?php if ($filtering && empty($reviews)) { ?>
           <tr>
-            <td colspan="7"><?php echo $this->text('No results'); ?></td>
+            <td colspan="7">
+              <?php echo $this->text('No results'); ?>
+              <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
+            </td>
           </tr>
           <?php } ?>
           <?php foreach ($reviews as $id => $review) { ?>
@@ -128,7 +127,7 @@
               <a href="#review-id-<?php echo $id; ?>" data-toggle="collapse"><?php echo $this->truncate($this->escape($review['text']), 30); ?></a>
             </td>
             <td class="middle">
-              <?php if($review['product_id']) { ?>
+              <?php if ($review['product_id']) { ?>
               <a target="_blank" href="<?php echo $this->url("product/{$review['product_id']}"); ?>">
                 <?php echo $this->truncate($this->escape($review['product']), 30); ?>
               </a>
@@ -144,15 +143,15 @@
             <?php } ?>
             </td>
             <td class="middle">
-            <?php echo!empty($review['status']) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?>
+              <?php echo!empty($review['status']) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?>
             </td>
             <td class="middle">
-            <?php echo $this->date($review['created']); ?>
+                <?php echo $this->date($review['created']); ?>
             </td>
             <td class="middle">
               <?php if ($this->access('review_edit')) { ?>
-              <a title="<?php echo $this->text('Edit'); ?>" class="btn btn-default" href="<?php echo $this->url("admin/content/review/edit/$id"); ?>">
-                <i class="fa fa-edit"></i> 
+              <a title="<?php echo $this->text('Edit'); ?>" href="<?php echo $this->url("admin/content/review/edit/$id"); ?>">
+                <?php echo strtolower($this->text('Edit')); ?>
               </a>
               <?php } ?>
             </td>
@@ -162,11 +161,11 @@
           </tr>
           <?php } ?>
         </tbody>
-      </table>
+      </table>   
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12"><?php echo $pager; ?></div>
+    <?php if (!empty($pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php } ?> 
   </div>
 </form>
 <?php } else { ?>
@@ -174,7 +173,7 @@
   <div class="col-md-12">
     <?php echo $this->text('You have no reviews yet'); ?>
     <?php if ($this->access('review_add')) { ?>
-    <a href="<?php echo $this->url('admin/content/review/add'); ?>"><?php echo $this->text('Add'); ?></a>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/review/add'); ?>"><?php echo $this->text('Add'); ?></a>
     <?php } ?>
   </div>
 </div>

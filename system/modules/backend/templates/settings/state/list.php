@@ -34,11 +34,11 @@
         <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
       </a>
       <?php if ($this->access('state_add')) { ?>
-      <a href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>" class="btn btn-success add">
+      <a href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>" class="btn btn-default add">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
       <?php if($this->access('import')) { ?>
-      <a href="<?php echo $this->url('admin/tool/import/state'); ?>" class="btn btn-primary import">
+      <a href="<?php echo $this->url('admin/tool/import/state'); ?>" class="btn btn-default import">
         <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
       </a>
       <?php } ?>

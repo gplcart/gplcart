@@ -11,5 +11,5 @@
       </div>
     </div>
   </div>
-  <button class="btn btn-primary" name="install" value="1"><?php echo $this->text('Install'); ?></button>
+  <button class="btn btn-default" name="install" value="1"><?php echo $this->text('Install'); ?></button>
 </form>

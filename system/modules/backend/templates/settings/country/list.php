@@ -31,7 +31,7 @@
   <div class="col-md-6 text-right">
     <div class="btn-toolbar">
       <?php if ($this->access('country_add')) { ?>
-      <a href="<?php echo $this->url('admin/settings/country/add'); ?>" class="btn btn-success add">
+      <a href="<?php echo $this->url('admin/settings/country/add'); ?>" class="btn btn-default add">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
       <?php } ?>
