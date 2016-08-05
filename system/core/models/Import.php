@@ -329,7 +329,7 @@ class Import extends Model
 
         foreach ($images as $image) {
             if (0 === strpos($image, 'http')) {
-                $result = $this->file->download($image);
+                $result = $this->file->wget($image);
                 if ($result === true) {
                     $return['images'][] = array('path' => $this->file->path($this->file->getUploadedFile()));
                     continue;

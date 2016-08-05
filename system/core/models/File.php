@@ -441,7 +441,7 @@ class File extends Model
      * @param string $url
      * @return boolean|string
      */
-    public function download($url)
+    public function wget($url)
     {
         $this->hook->fire('file.download.before', $url);
 
