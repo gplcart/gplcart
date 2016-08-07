@@ -246,15 +246,13 @@ class Report extends Controller
         $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
         $this->analytics->setView($ga_view);
 
-        $this->data['keywords'] = $this->analytics->getKeywords();
-        $this->data['sources'] = $this->analytics->getSources();
-        $this->data['top_pages'] = $this->analytics->getTopPages();
+        $this->data['keywords'] = $this->analytics->get('keywords');
+        $this->data['sources'] = $this->analytics->get('sources');
+        $this->data['top_pages'] = $this->analytics->get('top_pages');
         $this->data['software'] = $this->getGaSoftware();
         $this->data['ga_view'] = $ga_view;
         
         $chart = $this->report->buildTrafficChart($this->analytics);
-        
-        
         $this->data['chart_traffic'] = $chart;
         
         $this->setJsSettings('chart_traffic', $chart);
@@ -269,7 +267,7 @@ class Report extends Controller
     protected function getGaSoftware()
     {
         $results = array();
-        foreach ($this->analytics->getSoftware() as $i => $result) {
+        foreach ($this->analytics->get('software') as $i => $result) {
             $os_version = ($result[1] === "(not set)") ? '' : $result[1];
             $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
             $results[$i][0] = $result[0] . " $os_version";

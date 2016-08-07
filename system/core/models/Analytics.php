@@ -11,6 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
+use core\Handler;
 use core\classes\Cache;
 
 /**
@@ -102,29 +103,6 @@ class Analytics extends Model
     }
 
     /**
-     * Returns an array of GA software statistic
-     * @param string $from
-     * @param string $to
-     * @return array
-     */
-    public function getSoftware($from = '30daysAgo', $to = 'today')
-    {
-        $dimensions = array(
-            'ga:operatingSystem',
-            'ga:operatingSystemVersion',
-            'ga:browser',
-            'ga:browserVersion'
-        );
-
-        $arguments = array($from, $to, 'ga:sessions', array(
-                'dimensions' => implode(',', $dimensions),
-                'sort' => '-ga:sessions',
-        ));
-
-        return $this->getResults($arguments);
-    }
-
-    /**
      * Caches and returns the formatted data array
      * @param array $arguments
      * @return mixed
@@ -174,77 +152,86 @@ class Analytics extends Model
     }
 
     /**
-     * Returns an array of GA popular pages statistic
-     * @param string $from
-     * @param string $to
+     * Returns an array of GA handlers
      * @return array
      */
-    public function getTopPages($from = '30daysAgo', $to = 'today')
+    protected function getHandlers()
     {
-        $fields = array(
-            'ga:pageviews',
-            'ga:uniquePageviews',
-            'ga:timeOnPage',
-            'ga:bounces',
-            'ga:entrances',
-            'ga:exits'
+        $handlers = &Cache::memory('ga.handlers');
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = array();
+
+        $handlers['traffic'] = array(
+            'handlers' => array(
+                'query' => array('core\\handlers\\ga\\Query', 'traffic')
+            ),
         );
 
-        $arguments = array($from, $to, implode(',', $fields), array(
-                'dimensions' => 'ga:hostname, ga:pagePath', 'sort' => '-ga:pageviews',
-        ));
-
-        return $this->getResults($arguments);
-    }
-
-    /**
-     * Returns an array of GA source statistic
-     * @param string $from
-     * @param string $to
-     * @return array
-     */
-    public function getSources($from = '30daysAgo', $to = 'today')
-    {
-        $fields = array(
-            'ga:sessions',
-            'ga:pageviews',
-            'ga:sessionDuration',
-            'ga:exits'
+        $handlers['keywords'] = array(
+            'handlers' => array(
+                'query' => array('core\\handlers\\ga\\Query', 'keywords')
+            ),
         );
 
-        $arguments = array($from, $to, implode(',', $fields), array(
-                'dimensions' => 'ga:source,ga:medium', 'sort' => '-ga:sessions',
-        ));
+        $handlers['sources'] = array(
+            'handlers' => array(
+                'query' => array('core\\handlers\\ga\\Query', 'sources')
+            ),
+        );
 
-        return $this->getResults($arguments);
+        $handlers['top_pages'] = array(
+            'handlers' => array(
+                'query' => array('core\\handlers\\ga\\Query', 'topPages')
+            ),
+        );
+
+        $handlers['software'] = array(
+            'handlers' => array(
+                'query' => array('core\\handlers\\ga\\Query', 'software')
+            ),
+        );
+
+        $this->hook->fire('ga.handlers', $handlers);
+
+        return $handlers;
     }
 
     /**
-     * Returns an array of GA keyword statistic
-     * @param string $from
-     * @param string $to
+     * Returns a statistic for a given handler ID
+     * @param string $handler_id
+     * @param array $arguments
      * @return array
      */
-    public function getKeywords($from = '30daysAgo', $to = 'today')
+    public function get($handler_id, array $arguments = array())
     {
-        $arguments = array($from, $to, 'ga:sessions', array(
-                'dimensions' => 'ga:keyword', 'sort' => '-ga:sessions',
-        ));
+        $this->hook->fire('ga.get.before', $handler_id, $arguments);
 
-        return $this->getResults($arguments);
-    }
+        $handlers = $this->getHandlers();
 
-    /**
-     * Returns an array of GA traffic statistic
-     * @param string $from
-     * @param string $to
-     * @return array
-     */
-    public function getTraffic($from = '30daysAgo', $to = 'today')
-    {
-        $fields = array('ga:sessions', 'ga:pageviews');
-        $arguments = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
-        return $this->getResults($arguments);
+        if (empty($handlers[$handler_id])) {
+            return array();
+        }
+
+        $arguments += array(
+            $this->config->get('ga_from', '30daysAgo'),
+            $this->config->get('ga_until', 'today'),
+            $this->config->get('ga_limit', 0)
+        );
+
+        $query = Handler::call($handlers, $handler_id, 'query', $arguments);
+
+        if (empty($query)) {
+            return array();
+        }
+
+        $results = $this->getResults($query);
+        $this->hook->fire('ga.get.after', $handler_id, $arguments, $results);
+
+        return $results;
     }
 
 }

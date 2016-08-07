@@ -201,7 +201,7 @@ class Report extends Model
      */
     public function buildTrafficChart(\core\models\Analytics $analytics)
     {
-        $results = $analytics->getTraffic();
+        $results = $analytics->get('traffic');
 
         if (empty($results)) {
             return array();

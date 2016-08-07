@@ -46,6 +46,9 @@
 # $config['field_value_image_dirname'] = 'field_value'; // Field value image upload directory
 # $config['file_upload_translit'] = 1; // Whether to transliterate names of uploaded files
 # $config['ga_cache_lifespan'] = 86400; // Lifetime of Google Analytics cache, in seconds
+# $config['ga_from'] = '30daysAgo';
+# $config['ga_until'] = 'today';
+# $config['ga_limit'] = 0;
 # $config['history_lifespan'] = 2628000;
 # $config['image_cache_lifetime'] = 31536000;
 # $config['import_lifespan'] = 86400;

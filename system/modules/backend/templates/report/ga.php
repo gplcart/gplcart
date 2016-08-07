@@ -33,69 +33,9 @@
       </div>
     </div>
     
-    <div class="panel panel-default">
-      <div class="panel-heading"><?php echo $this->text('Top keywords'); ?></div>
-      <div class="panel-body">
-        <?php if (!empty($keywords)) { ?>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th><?php echo $this->text('Keyword'); ?></th>
-              <th><?php echo $this->text('Sessions'); ?></th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($keywords as $value) { ?>
-            <tr>
-              <td>
-                <?php if (in_array($value[0], array('(not provided)', '(not set)'), true)) { ?>
-                <?php echo $this->escape($value[0]); ?>
-                <?php } else { ?>
-                <a target="_blank" href="https://google.com/search?q=<?php echo $this->escape($value[0]); ?>"><?php echo $this->escape($value[0]); ?></a>
-                <?php } ?>
-              </td>
-              <td><?php echo $this->escape($value[1]); ?></td>
-            </tr>
-            <?php } ?>
-          </tbody>
-        </table>
-        <?php } ?> 
-        
-      </div>
-    </div>
+
     
-    <div class="panel panel-default">
-      <div class="panel-heading"><?php echo $this->text('Top sources'); ?></div>
-      <div class="panel-body">
-        <?php if (!empty($sources)) { ?>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th><?php echo $this->text('Source'); ?></th>
-              <th><?php echo $this->text('Medium'); ?></th>
-              <th><?php echo $this->text('Sessions'); ?></th>
-              <th><?php echo $this->text('Page views'); ?></th>
-              <th><?php echo $this->text('Session duration'); ?></th>
-              <th><?php echo $this->text('Exits'); ?></th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($sources as $source) { ?>
-            <tr>
-              <td><?php echo $this->escape($source[0]); ?></td>
-              <td><?php echo $this->escape($source[1]); ?></td>
-              <td><?php echo $this->escape($source[2]); ?></td>
-              <td><?php echo $this->escape($source[3]); ?></td>
-              <td><?php echo $this->escape($source[4]); ?></td>
-              <td><?php echo $this->escape($source[5]); ?></td>
-            </tr>
-            <?php } ?>
-          </tbody>
-        </table>
-        <?php } ?> 
-        
-      </div>
-    </div>
+
     
     <div class="panel panel-default">
       <div class="panel-heading"><?php echo $this->text('Top pages'); ?></div>
@@ -138,6 +78,78 @@
       </div>
     </div>
     
+
+    
+  </div>
+  <div class="col-md-6">
+      
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Top keywords'); ?></div>
+      <div class="panel-body">
+        <?php if (!empty($keywords)) { ?>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th><?php echo $this->text('Keyword'); ?></th>
+              <th><?php echo $this->text('Sessions'); ?></th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($keywords as $value) { ?>
+            <tr>
+              <td>
+                <?php if (in_array($value[0], array('(not provided)', '(not set)'), true)) { ?>
+                <?php echo $this->escape($value[0]); ?>
+                <?php } else { ?>
+                <a target="_blank" href="https://google.com/search?q=<?php echo $this->escape($value[0]); ?>"><?php echo $this->escape($value[0]); ?></a>
+                <?php } ?>
+              </td>
+              <td><?php echo $this->escape($value[1]); ?></td>
+            </tr>
+            <?php } ?>
+          </tbody>
+        </table>
+        <?php } ?> 
+        
+      </div>
+    </div>
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Top sources'); ?></div>
+      <div class="panel-body">
+        <?php if (!empty($sources)) { ?>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th><?php echo $this->text('Source'); ?></th>
+              <th><?php echo $this->text('Medium'); ?></th>
+              <th><?php echo $this->text('Sessions'); ?></th>
+              <th><?php echo $this->text('Page views'); ?></th>
+              <th><?php echo $this->text('Session duration'); ?></th>
+              <th><?php echo $this->text('Exits'); ?></th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($sources as $source) { ?>
+            <tr>
+              <td><?php echo $this->escape($source[0]); ?></td>
+              <td><?php echo $this->escape($source[1]); ?></td>
+              <td><?php echo $this->escape($source[2]); ?></td>
+              <td><?php echo $this->escape($source[3]); ?></td>
+              <td><?php echo $this->escape($source[4]); ?></td>
+              <td><?php echo $this->escape($source[5]); ?></td>
+            </tr>
+            <?php } ?>
+          </tbody>
+        </table>
+        <?php } ?> 
+        
+      </div>
+    </div>
+    
+    
     <div class="panel panel-default">
       <div class="panel-heading"><?php echo $this->text('Top software'); ?></div>
       <div class="panel-body">
@@ -164,9 +176,6 @@
       </div>
     </div>
     
-  </div>
-  <div class="col-md-6">
-      
     
   </div>
 </div>
