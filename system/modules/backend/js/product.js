@@ -56,18 +56,20 @@ $(function () {
 
     /**************************************** Product class fields ****************************************/
 
-    $('form#product-class-fields .fields tbody').sortable({
+    $('.fields tbody').sortable({
         handle: '.handle',
         stop: function () {
             $('input[name$="[weight]"]').each(function (i) {
                 $(this).val(i);
+                $(this).closest('tr').find('td .weight').text(i);
             });
+
+            GplCart.theme.alert(GplCart.text('Please submit the form to save the changes you made'), 'warning');
         }
     });
 
-    $(document).on('click', 'form#product-class-fields table.fields .remove', function () {
-        $(this).closest('tr').remove();
-        return false;
+    $(document).on('click', '.fields tbody input[name$="[remove]"]', function () {
+        $(this).closest('tr').toggleClass('danger', this.checked);
     });
 
     /**************************************** Product edit form ****************************************/

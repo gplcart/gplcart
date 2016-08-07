@@ -24,7 +24,7 @@
     <?php } ?>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table fields">
+    <table class="table table-striped fields">
       <thead>
         <tr>
           <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
@@ -42,10 +42,10 @@
             <select class="form-control" name="type">
               <option value="any"><?php echo $this->text('Any'); ?></option>
               <option value="option"<?php echo ($filter_type == 'option') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Option'); ?>
+              <?php echo $this->text('Option'); ?>
               </option>
               <option value="attribute"<?php echo ($filter_type == 'attribute') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Attribute'); ?>
+              <?php echo $this->text('Attribute'); ?>
               </option>
             </select>
           </th>

@@ -145,7 +145,7 @@ class FieldValue extends Controller
      */
     protected function setTitleValues(array $field)
     {
-        $this->setTitle($this->text('Values of %s', array('%s' => $field['title'])));
+        $this->setTitle($this->text('Values of %s', array('%s' => $this->truncate($field['title']))));
     }
 
     /**
@@ -209,6 +209,15 @@ class FieldValue extends Controller
      */
     protected function action(array $selected, $action)
     {
+
+        if ($action === 'weight' && $this->access('field_value_edit')) {
+            foreach ($selected as $field_value_id => $weight) {
+                $this->field_value->update($field_value_id, array('weight' => $weight));
+            }
+
+            $this->response->json(array('success' => $this->text('Field values have been reordered')));
+        }
+
         $deleted = 0;
         foreach ($selected as $field_value_id) {
             if ($action === 'delete' && $this->access('field_value_delete')) {
@@ -240,9 +249,9 @@ class FieldValue extends Controller
     protected function setTitleEdit(array $field_value, array $field)
     {
         if (isset($field_value['field_value_id'])) {
-            $title = $this->text('Edit field value %name', array('%name' => $field_value['title']));
+            $title = $this->text('Edit field value %name', array('%name' => $this->truncate($field_value['title'])));
         } else {
-            $title = $this->text('Add value for field %name', array('%name' => $field['title']));
+            $title = $this->text('Add value for field %name', array('%name' => $this->truncate($field['title'])));
         }
 
         $this->setTitle($title);
@@ -306,6 +315,21 @@ class FieldValue extends Controller
     }
 
     /**
+     * Deletes a saved field value image
+     * @param array $field_value
+     * @param array $field
+     * @return boolean
+     */
+    protected function deleteImage(array $field_value, array $field)
+    {
+        $this->field_value->update($field_value['field_value_id'], array('file_id' => 0));
+        $file = $this->file->get($field_value['file_id']);
+        $this->file->delete($field_value['file_id']);
+
+        return $this->file->deleteFromDisk($file);
+    }
+
+    /**
      * Saves a field value
      * @param array $field_value
      * @param array $field
@@ -314,9 +338,9 @@ class FieldValue extends Controller
     protected function submit(array $field_value, array $field)
     {
         $this->submitted = $this->request->post('field_value', array());
-        $this->submitted += $field_value;
+        $this->submitted += array('field_id' => $field['field_id']);
 
-        $this->validate($field);
+        $this->validate($field_value, $field);
 
         $errors = $this->getErrors();
 
@@ -338,22 +362,25 @@ class FieldValue extends Controller
 
     /**
      * Performs validation checks on the given field value
+     * @param array $field_value
      * @param array $field
      */
-    protected function validate(array $field)
+    protected function validate(array $field_value, array $field)
     {
-        $this->validateWeight($field);
-        $this->validateColor($field);
-        $this->validateTitle($field);
-        $this->validateTranslation($field);
-        $this->validateFile($field);
+        $this->validateWeight($field_value, $field);
+        $this->validateColor($field_value, $field);
+        $this->validateTitle($field_value, $field);
+        $this->validateTranslation($field_value, $field);
+        $this->validateFile($field_value, $field);
     }
 
     /**
      * Validates weight field
+     * @param array $field_value
+     * @param array $field
      * @return boolean
      */
-    protected function validateWeight()
+    protected function validateWeight(array $field_value, array $field)
     {
         if ($this->submitted['weight']) {
             if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
@@ -369,10 +396,11 @@ class FieldValue extends Controller
 
     /**
      * Validates color field
+     * @param array $field_value
      * @param array $field
      * @return boolean
      */
-    protected function validateColor(array $field)
+    protected function validateColor(array $field_value, array $field)
     {
         if ($field['widget'] == 'color' && !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $this->submitted['color'])) {
             $this->errors['color'] = $this->text('Required field');
@@ -384,10 +412,11 @@ class FieldValue extends Controller
 
     /**
      * Validates title field
+     * @param array $field_value
      * @param array $field
      * @return boolean
      */
-    protected function validateTitle(array $field)
+    protected function validateTitle(array $field_value, array $field)
     {
         if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
             $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
@@ -399,10 +428,11 @@ class FieldValue extends Controller
 
     /**
      * Validates field value translations
+     * @param array $field_value
      * @param array $field
      * @return boolean
      */
-    protected function validateTranslation(array $field)
+    protected function validateTranslation(array $field_value, array $field)
     {
         if (empty($this->submitted['translation'])) {
             return true;
@@ -422,18 +452,20 @@ class FieldValue extends Controller
 
     /**
      * Validates field value image
+     * @param array $field_value
      * @param array $field
      * @return boolean
      */
-    protected function validateFile(array $field)
+    protected function validateFile(array $field_value, array $field)
     {
+
+        if (!empty($this->submitted['delete_image'])) {
+            $this->deleteImage($field_value, $field);
+        }
+
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            if ($field['widget'] == 'image') {
-                $this->errors['image'] = $this->text('Please upload an image');
-                return false;
-            }
             return true;
         }
 

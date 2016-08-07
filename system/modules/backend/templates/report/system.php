@@ -1,28 +1,19 @@
-<?php if ($records || $filtering) { ?>
-<div class="row">
-  <div class="col-md-6">
-    <?php foreach ($severity_count as $severity => $count) { ?>
-    <span class="label label-<?php echo $severity; ?>" style="margin-right:1em;">
-    <?php echo $this->text('@severity - @count', array('@severity' => $this->text($severity), '@count' => $count)); ?>
-    </span>
-    <?php } ?>
-  </div>
-  <div class="col-md-6 text-right">
-    <div class="btn-toolbar">
+<?php if (!empty($records) || $filtering) { ?>
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-toolbar pull-right">
       <a class="btn btn-default" href="<?php echo $this->url(false, array('clear_errors' => true)); ?>">
-      <?php echo $this->text('Clear'); ?>
+        <?php echo $this->text('Clear'); ?>
       </a>
-      <?php if($can_report) { ?>
+      <?php if ($can_report) { ?>
       <a class="btn btn-default" href="<?php echo $this->url(false, array('report' => true)); ?>">
-      <?php echo $this->text('Report PHP errors'); ?>
+        <?php echo $this->text('Report PHP errors'); ?>
       </a>
       <?php } ?>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table margin-top-20 report">
+  <div class="panel-body table-responsive">
+    <table class="table report">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Message'); ?> <i class="fa fa-sort"></i></a></th>
@@ -67,20 +58,25 @@
         </tr>
       </thead>
       <tbody>
-        <?php if($filtering && !$records) { ?>
-        <tr><td class="middle" colspan="5"><?php echo $this->text('No results'); ?></td></tr>
+        <?php if ($filtering && empty($records)) { ?>
+        <tr>
+          <td class="middle" colspan="5">
+            <?php echo $this->text('No results'); ?>
+            <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
         <?php } ?>
         <?php foreach ($records as $record) { ?>
         <tr>
           <td>
             <a href="#" onclick="return false;" data-toggle="collapse" data-target="#message-<?php echo $record['log_id']; ?>">
-            <?php echo $this->xss($record['summary'], array()); // strip tags ?>
+              <?php echo $this->xss($record['summary'], array()); // strip tags ?>
             </a>
           </td>
           <td><?php echo $this->escape($record['type']); ?></td>
           <td>
             <span class="label label-<?php echo $record['severity']; ?>">
-            <?php echo $this->escape($record['severity_text']); ?>
+              <?php echo $this->escape($record['severity_text']); ?>
             </span>
           </td>
           <td><?php echo $record['time']; ?></td>
@@ -106,11 +102,9 @@
       </tbody>
     </table>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <?php echo $pager; ?>
-  </div>
+  <?php if (!empty($pager)) { ?>
+  <div class="panel-footer text-right"><?php echo $pager; ?></div>
+  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

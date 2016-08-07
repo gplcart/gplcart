@@ -1,7 +1,7 @@
-<?php if ($values) { ?>
-<div class="row">
-  <div class="col-md-6">
-    <div class="btn-group">
+<?php if (!empty($values)) { ?>
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
@@ -14,13 +14,8 @@
         </li>
         <?php } ?>
       </ul>
-    </div>
-  </div>
-  <div class="col-md-6 text-right">
-    <div class="btn-toolbar">
-      <a href="<?php echo $this->url('admin/content/field'); ?>" class="btn btn-default cancel">
-        <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-      </a>
+    </div> 
+    <div class="btn-toolbar pull-right">
       <?php if ($this->access('field_value_add')) { ?>
       <a class="btn btn-default add" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
@@ -31,12 +26,10 @@
       </a>
       <?php } ?>
       <?php } ?>
-    </div>
+    </div> 
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table margin-top-20 field-values">
+  <div class="panel-body">
+    <table class="table table-responsive field-values table-striped">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
@@ -45,7 +38,7 @@
           <th><a href="<?php echo $sort_color; ?>"><?php echo $this->text('Color'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_weight; ?>"><?php echo $this->text('Weight'); ?> <i class="fa fa-sort"></i></a></th>
           <?php if ($this->access('field_value_edit')) { ?>
-          <th><?php echo $this->text('Action'); ?></th>
+          <th></th>
           <?php } ?>
         </tr>
       </thead>
@@ -55,42 +48,46 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $value['field_value_id']; ?>">
           </td>
-          <td class="middle title"><?php echo $this->escape($value['title']); ?></td>
+          <td class="middle title"><?php echo $this->truncate($this->escape($value['title'])); ?></td>
           <td class="middle image">
             <div class="view thumb">
               <?php if (!empty($value['thumb'])) { ?>
-              <img src="<?php echo $this->escape($value['thumb']); ?>">
-              <?php } else { ?>
-              <?php echo $this->text('None'); ?>
+              <img class="img-rounded" src="<?php echo $this->escape($value['thumb']); ?>">
               <?php } ?>
             </div>
           </td>
           <td class="middle color">
-          <?php if ($value['color']) { ?>
-          <div class="btn btn-default" style="background:<?php echo $this->escape($value['color']); ?>;"></div>
-          <?php } else { ?>
-          <div class="btn btn-default no-color"></div>
-          <?php } ?>
+            <?php if ($value['color']) { ?>
+            <div class="btn btn-default" style="background:<?php echo $this->escape($value['color']); ?>;"></div>
+            <?php } ?>
           </td>
-          <td class="middle weight"><?php echo (int) $value['weight']; ?></td>
+          <td class="middle weight">
+            <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($value['weight']); ?></span>
+          </td>
           <?php if ($this->access('field_value_edit')) { ?>
           <td class="middle">
-            <a href="<?php echo $this->url->get("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}"); ?>" class="btn btn-default edit"><i class="fa fa-edit"></i></a>
+            <a href="<?php echo $this->url->get("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}"); ?>" class="edit">
+              <?php echo strtolower($this->text('Edit')); ?>
+            </a>
           </td>
           <?php } ?>
         </tr>
         <?php } ?>
       </tbody>
-    </table>
+    </table> 
   </div>
+  <?php if (!empty($pager)) { ?>
+  <div class="panel-footer text-right"><?php echo $pager; ?></div>
+  <?php } ?>
 </div>
-<div class="row"><div class="col-md-12"><?php echo $pager; ?></div></div>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
     <?php echo $this->text('This field has no values yet'); ?>
     <?php if ($this->access('field_value_add')) { ?>
-    <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>"><?php echo $this->text('Add'); ?></a>
+    <a class="btn btn-default" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
     <?php } ?>
   </div>
 </div>

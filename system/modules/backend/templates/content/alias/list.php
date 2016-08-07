@@ -1,25 +1,23 @@
-<?php if ($aliases || $filtering) { ?>
+<?php if (!empty($aliases) || $filtering) { ?>
 <form method="post" id="aliases">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <div class="row">
-    <div class="col-md-6">
-      <div class="btn-group">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
           <li>
             <a data-action="delete" href="#">
-               <?php echo $this->text('Delete'); ?>
+              <?php echo $this->text('Delete'); ?>
             </a>
           </li>
         </ul>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <table class="table margin-top-20 aliases">
+    <div class="panel-body">
+      <table class="table table-striped aliases">
         <thead>
           <tr>
             <th>
@@ -50,9 +48,9 @@
             <th>
               <select name="id_key" class="form-control">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach($id_keys as $id_key) { ?>
+                <?php foreach ($id_keys as $id_key) { ?>
                 <option value="<?php echo $this->escape($id_key); ?>"<?php echo ($filter_id_key == $id_key) ? ' selected' : '' ?>>
-                  <?php echo $this->escape($id_key); ?>
+                <?php echo $this->escape($id_key); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -61,7 +59,7 @@
             <th>
               <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
                 <i class="fa fa-refresh"></i>
-             </button>
+              </button>
               <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
                 <i class="fa fa-search"></i>
               </button>
@@ -69,9 +67,12 @@
           </tr>
         </thead>
         <tbody>
-          <?php if($filtering && !$aliases) { ?>
+          <?php if ($filtering && empty($aliases)) { ?>
           <tr>
-            <td colspan="5"><?php echo $this->text('No results'); ?></td>
+            <td colspan="5">
+              <?php echo $this->text('No results'); ?>
+              <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+            </td>
           </tr>
           <?php } ?>
           <?php foreach ($aliases as $id => $alias) { ?>
@@ -80,7 +81,7 @@
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
             <td class="middle">
-                <?php echo $this->escape($alias['alias']); ?>
+              <?php echo $this->escape($alias['alias']); ?>
             </td>
             <td class="middle">
               <?php echo $this->escape($alias['id_key']); ?>
@@ -94,11 +95,9 @@
         </tbody>
       </table>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <?php echo $pager; ?>
-    </div>
+    <?php if (!empty($pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

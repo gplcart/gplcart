@@ -10,7 +10,7 @@
     <?php } ?>
   </div>
   <div class="panel-body">
-    <table class="table table-responsive margin-top-20 category-group">
+    <table class="table table-responsive table-striped category-group">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>

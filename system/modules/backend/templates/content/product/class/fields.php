@@ -1,4 +1,4 @@
-<form method="post" id="product-class-fields" class="form-horizontal">
+<form method="post" id="product-class-fields" class="form-horizontal" onsubmit="return confirm();">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
@@ -45,7 +45,7 @@
               <input type="checkbox" name="fields[<?php echo $field_id; ?>][multiple]" value="1"<?php echo $field['multiple'] ? ' checked' : ''; ?>>
             </td>
             <td class="middle">
-              <i class="fa fa-arrows handle"></i> <?php echo $this->escape($field['weight']); ?>
+              <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($field['weight']); ?></span>
             </td>
             <td class="middle">
               <input type="checkbox" name="fields[<?php echo $field_id; ?>][remove]" value="1">

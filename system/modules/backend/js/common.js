@@ -48,6 +48,7 @@ GplCart.theme = {
         $.bootstrapGrowl(message, {
             type: type,
             align: 'right',
+            width: 'auto',
             delay: 2000,
             offset: {from: 'bottom', amount: 20}
         });
@@ -108,6 +109,8 @@ $(function () {
 
     // Hints
     $('.hint').tooltip();
+    
+    $('.input-group.color').colorpicker();
 
     // Context help popup
     $('.help.summary a').click(function () {

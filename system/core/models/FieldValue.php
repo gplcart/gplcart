@@ -132,11 +132,11 @@ class FieldValue extends Model
         $sql = '
             SELECT fv.*, f.path, f.file_id, f.path
             FROM field_value fv
-            LEFT JOIN file f ON(fv.field_value_id = f.id_value AND f.id_key = :id_key)
+            LEFT JOIN file f ON(fv.file_id = f.file_id)
             WHERE fv.field_value_id=:field_value_id';
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array(':field_value_id' => (int) $field_value_id, ':id_key' => 'field_value_id'));
+        $sth->execute(array(':field_value_id' => (int) $field_value_id));
         $field_value = $sth->fetch(PDO::FETCH_ASSOC);
 
 
@@ -189,11 +189,14 @@ class FieldValue extends Model
         }
 
         if (!empty($data['path'])) {
-            $this->image->add(array(
+
+            $file_id = $this->image->add(array(
                 'path' => $data['path'],
                 'id_key' => 'field_value_id',
                 'id_value' => $field_value_id
             ));
+
+            $this->update($field_value_id, array('file_id' => $file_id));
         }
 
         $this->hook->fire('add.field.value.after', $data, $field_value_id);
@@ -248,11 +251,11 @@ class FieldValue extends Model
             $values['title'] = $data['title'];
         }
 
-        $result = false;
-
-        if (!empty($values)) {
-            $result = (bool) $this->db->update('field_value', $values, array('field_value_id' => (int) $field_value_id));
+        if (isset($data['file_id'])) {
+            $values['file_id'] = (int) $data['file_id'];
         }
+
+        $result = false;
 
         if (!empty($data['translation'])) {
             $this->db->delete('field_value_translation', array('field_value_id' => (int) $field_value_id));
@@ -267,6 +270,10 @@ class FieldValue extends Model
             $image = array('path' => $data['path'], 'id_value' => $field_value_id, 'id_key' => 'field_value_id');
             $values['file_id'] = $this->image->add($image);
             $result = true;
+        }
+
+        if (!empty($values)) {
+            $result = (bool) $this->db->update('field_value', $values, array('field_value_id' => (int) $field_value_id));
         }
 
         $this->hook->fire('update.field.value.after', $field_value_id, $data, $result);

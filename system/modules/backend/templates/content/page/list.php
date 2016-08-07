@@ -48,7 +48,7 @@
       </div>  
     </div>
     <div class="panel-body table-responsive">
-      <table class="table pages-list">
+      <table class="table table-striped pages-list">
         <thead>
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>

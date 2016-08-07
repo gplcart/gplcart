@@ -55,7 +55,7 @@
       </div>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table table-responsive table-editable products">
+      <table class="table table-responsive table-editable table-striped products">
         <thead>
           <tr>
             <th class="middle"><input type="checkbox" id="select-all" value="1"></th>

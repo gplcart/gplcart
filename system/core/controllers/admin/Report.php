@@ -78,8 +78,6 @@ class Report extends Controller
             'danger' => $this->text('Danger')
         );
 
-        $this->data['severity_count'] = $this->getSeverityCount();
-
         $this->setTitleSystem();
         $this->setBreadcrumbSystem();
         $this->outputSystem();
@@ -136,9 +134,6 @@ class Report extends Controller
     {
         
         $statuses = $this->report->getStatus();
-        
-        
-        
         $this->data['statuses'] = $statuses;
 
         $this->setTitleStatus();
@@ -186,16 +181,6 @@ class Report extends Controller
         }
 
         return $records;
-    }
-
-    /**
-     * Returns an array of counted by severity system events
-     * @return array
-     */
-    protected function getSeverityCount()
-    {
-        $allowed = array_flip(array('danger', 'warning', 'info'));
-        return array_filter(array_intersect_key($this->report->countSeverity(), $allowed));
     }
 
     /**

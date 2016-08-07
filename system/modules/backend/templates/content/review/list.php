@@ -38,8 +38,8 @@
       </div>
       <?php } ?>   
     </div>
-    <div class="panel-body"> 
-      <table class="table margin-top-20 reviews">
+    <div class="panel-body table-responsive"> 
+      <table class="table reviews">
         <thead>
           <tr>
             <th class="middle">
