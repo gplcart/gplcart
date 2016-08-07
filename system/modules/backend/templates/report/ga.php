@@ -1,4 +1,4 @@
-<div class="row margin-top-20">
+<div class="row">
   <?php if (empty($missing_credentials) && empty($missing_settings)) { ?>
   <div class="col-md-2">
     <select class="form-control" onchange="if (this.value) window.location.href=this.value">
@@ -23,21 +23,20 @@
   <?php } ?>
 </div>
 <?php if (empty($missing_credentials) && empty($missing_settings)) { ?>
-<div class="row margin-top-20">
-  <div class="col-md-12">
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#traffic" data-toggle="tab"><?php echo $this->text('Traffic'); ?></a></li>
-      <li><a href="#keywords" data-toggle="tab"><?php echo $this->text('Top keywords'); ?></a></li>
-      <li><a href="#sources" data-toggle="tab"><?php echo $this->text('Top sources'); ?></a></li>
-      <li><a href="#top-pages" data-toggle="tab"><?php echo $this->text('Top pages'); ?></a></li>
-      <li><a href="#software" data-toggle="tab"><?php echo $this->text('Top software'); ?></a></li>
-    </ul>
-    <div class="tab-content">
-      <div class="tab-pane active chart-traffic" id="traffic">
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Traffic'); ?></div>
+      <div class="panel-body">
         <canvas id="chart-traffic"></canvas>
       </div>
-      <div class="tab-pane" id="keywords">
-        <?php if ($keywords) { ?>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Top keywords'); ?></div>
+      <div class="panel-body">
+        <?php if (!empty($keywords)) { ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -60,10 +59,15 @@
             <?php } ?>
           </tbody>
         </table>
-        <?php } ?>
+        <?php } ?> 
+        
       </div>
-      <div class="tab-pane" id="sources">
-        <?php if ($sources) { ?>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Top sources'); ?></div>
+      <div class="panel-body">
+        <?php if (!empty($sources)) { ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -88,10 +92,16 @@
             <?php } ?>
           </tbody>
         </table>
-        <?php } ?>
+        <?php } ?> 
+        
       </div>
-      <div class="tab-pane" id="top-pages">
-        <?php if ($top_pages) { ?>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Top pages'); ?></div>
+      <div class="panel-body">
+          
+        <?php if (!empty($top_pages)) { ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -126,8 +136,12 @@
         </table>
         <?php } ?>
       </div>
-      <div class="tab-pane" id="software">
-        <?php if ($software) { ?>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?php echo $this->text('Top software'); ?></div>
+      <div class="panel-body">
+        <?php if (!empty($software)) { ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -149,9 +163,14 @@
         <?php } ?>
       </div>
     </div>
+    
+  </div>
+  <div class="col-md-6">
+      
+    
   </div>
 </div>
-<script>GplCart.theme.chart('traffic');</script>
+
 <?php } else { ?>
 <div class="row margin-top-20">
   <div class="col-md-12">

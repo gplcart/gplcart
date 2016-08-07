@@ -11,6 +11,7 @@ namespace modules\backend;
 
 use core\Route;
 use core\classes\Url;
+use core\classes\Tool;
 use core\classes\Document;
 use core\models\User as ModelsUser;
 use core\models\Store as ModelsStore;
@@ -153,14 +154,11 @@ class Backend
         $this->document->js('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $this->document->js('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
 
-        if ($this->url->isDashboard()) {
-            $this->document->js('system/modules/backend/js/dashboard.js', 'bottom');
-        }
-
-        $segments = $this->url->segments();
-
-        if (isset($segments[2])) {
-            $this->document->js("system/modules/backend/js/{$segments[2]}.js", 'bottom');
+        // Add a JS file depending on the current URL
+        $file = Tool::contextFile(GC_MODULE_DIR . '/backend/js', 'js', $this->url->segments());
+        
+        if(isset($file['filename'])){
+            $this->document->js("system/modules/backend/js/{$file['filename']}.js", 'bottom');
         }
 
         $this->document->js('files/assets/bootstrap/growl/jquery.bootstrap-growl.min.js', 'bottom');

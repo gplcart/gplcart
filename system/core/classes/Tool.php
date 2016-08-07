@@ -451,4 +451,42 @@ class Tool
         return preg_match('/^[a-z_]+$/', $string);
     }
 
+    /**
+     * Finds a best matched file for the current URL
+     * @param string $directory
+     * @param string $ext
+     * @param array|string $url An URL string or an array of URL segments
+     * @param string $delimiter
+     * @return array
+     */
+    public static function contextFile($directory, $ext, $url, $delimiter = '.')
+    {
+
+        if (!is_readable($directory)) {
+            return array();
+        }
+
+        if (is_array($url)) {
+            $expected = implode($delimiter, $url);
+        } else {
+            $expected = trim(str_replace('/', $delimiter, (string) $url), $delimiter);
+        }
+
+        $candidates = array();
+        foreach (static::scanFiles($directory, (array) $ext) as $file) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            if (0 === strpos($expected, $filename)) {
+                $candidates[strlen($filename)] = array('path' => $file, 'filename' => $filename);
+            }
+        }
+
+        if (empty($candidates)) {
+            return array();
+        }
+
+        ksort($candidates);
+        
+        return end($candidates);
+    }
+
 }

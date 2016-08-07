@@ -1,0 +1,1 @@
+GplCart.theme.chart('traffic', 'line');

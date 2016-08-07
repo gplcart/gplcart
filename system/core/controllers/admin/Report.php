@@ -251,10 +251,16 @@ class Report extends Controller
         $this->data['top_pages'] = $this->analytics->getTopPages();
         $this->data['software'] = $this->getGaSoftware();
         $this->data['ga_view'] = $ga_view;
-        $this->data['chart_traffic'] = $this->report->buildTrafficChart($this->analytics);
-        $this->setJsSettings('chart', array('traffic' => $this->data['chart_traffic']));
+        
+        $chart = $this->report->buildTrafficChart($this->analytics);
+        
+        
+        $this->data['chart_traffic'] = $chart;
+        
+        $this->setJsSettings('chart_traffic', $chart);
         $this->setJs('files/assets/chart/Chart.min.js', 'top');
     }
+    
 
     /**
      * Returns an array of software data from GA

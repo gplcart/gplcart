@@ -1308,32 +1308,20 @@ class Controller
      */
     protected function getHelp()
     {
-        $expected_filename = implode('_', $this->url->segments());
+        $segments = $this->url->segments();
         $folder = $this->langcode ? $this->langcode : 'en';
         $directory = GC_HELP_DIR . "/$folder";
 
-        if (!is_readable($directory)) {
+        $file = Tool::contextFile($directory, 'php', $segments);
+        
+        if(empty($file)){
             return '';
         }
 
-        $found = array();
-        foreach (Tool::scanFiles($directory, array('php')) as $file) {
-            $filename = pathinfo($file, PATHINFO_FILENAME);
-            if (0 === strpos($expected_filename, $filename)) {
-                $found[strlen($filename)] = array('path' => $file, 'filename' => $filename);
-            }
-        }
-
-        if (empty($found)) {
-            return '';
-        }
-
-        ksort($found);
-        $help = end($found);
-        $parts = $this->explodeText($this->render($help['path'], array(), true));
+        $parts = $this->explodeText($this->render($file['path'], array(), true));
 
         if (!empty($parts)) {
-            return $this->render('help/summary', array('content' => array_map('trim', $parts), 'file' => $help));
+            return $this->render('help/summary', array('content' => array_map('trim', $parts), 'file' => $file));
         }
 
         return '';
