@@ -13,5 +13,5 @@
   </div>
 </div>
 <script>
-GplCart.theme.job();
+GplCart.job();
 </script>

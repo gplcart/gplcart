@@ -53,47 +53,6 @@ GplCart.theme = {
             offset: {from: 'bottom', amount: 20}
         });
     },
-    job: function () {
-
-        var widget = $('div#job-widget-' + GplCart.settings.job.id);
-
-        $.ajax({
-            url: GplCart.settings.job.url,
-            data: {process_job: GplCart.settings.job.id},
-            dataType: 'json',
-            success: function (data) {
-
-                if (typeof data !== 'object' || jQuery.isEmptyObject(data)) {
-                    console.log(arguments);
-                    return false;
-                }
-
-                if ('redirect' in data && data.redirect) {
-                    window.location.replace(data.redirect);
-                }
-
-                if ('finish' in data && data.finish) {
-                    widget.find('.progress-bar').css('width', '100%')
-                    widget.hide();
-                    return false;
-                }
-
-                if ('progress' in data) {
-                    widget.find('.progress-bar').css('width', data.progress + '%');
-                }
-
-                if ('message' in data) {
-                    widget.find('.message').html(data.message);
-                }
-
-                GplCart.theme.job(widget);
-
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(arguments);
-            }
-        });
-    },
     chart: function (source, type) {
         var key = 'chart_' + source;
         if (key  in GplCart.settings && 'datasets' in GplCart.settings[key]) {

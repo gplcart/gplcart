@@ -156,8 +156,8 @@ class Backend
 
         // Add a JS file depending on the current URL
         $file = Tool::contextFile(GC_MODULE_DIR . '/backend/js', 'js', $this->url->segments());
-        
-        if(isset($file['filename'])){
+
+        if (isset($file['filename'])) {
             $this->document->js("system/modules/backend/js/{$file['filename']}.js", 'bottom');
         }
 

@@ -310,9 +310,9 @@ class Report extends Model
             $result = str_replace($_SERVER['AUTH_PASSWORD'], '***', $result);
         }
 
-        $result = preg_replace( '%^.*<body>(.*)</body>.*$%ms','$1', $result);
+        $result = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $result);
         $result = str_replace('<table', '<table class="table"', $result);
-        
+
         return $result;
     }
 
@@ -379,7 +379,7 @@ class Report extends Model
             'status' => $_SERVER['SERVER_SOFTWARE'],
             'weight' => 6
         );
-        
+
         $date_format = $this->config->get('date_prefix', 'd.m.Y');
         $date_format .= $this->config->get('date_suffix', ' H:i');
 

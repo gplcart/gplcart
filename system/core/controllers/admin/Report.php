@@ -176,7 +176,6 @@ class Report extends Controller
      */
     protected function setPanelSoftware()
     {
-
         $items = array();
         foreach ($this->analytics->get('software') as $i => $result) {
             $os_version = ($result[1] === "(not set)") ? '' : $result[1];
@@ -209,8 +208,8 @@ class Report extends Controller
     {
         $statuses = $this->report->getStatus();
         $this->data['statuses'] = $statuses;
-        
-        if($this->request->get('phpinfo')){
+
+        if ($this->request->get('phpinfo')) {
             $this->data['phpinfo'] = $this->report->phpinfo();
         }
 
