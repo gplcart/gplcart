@@ -53,15 +53,6 @@ class Report extends Controller
             $this->clearSystemErrors();
         }
 
-        $errors = $this->report->getPhpErrors();
-
-        if ($this->request->get('report') && !empty($errors)) {
-            if ($this->report->reportErrors($errors)) {
-                $this->redirect('', $this->text('Error raport has been sent'), 'success');
-            }
-            $this->redirect('', $this->text('Failed to send error report'), 'warning');
-        }
-
         $query = $this->getFilterQuery();
         $total = $this->setPager($this->getTotalSystemEvents($query), $query);
 
@@ -70,7 +61,6 @@ class Report extends Controller
 
         $this->data['records'] = $this->getEvents($total, $query);
         $this->data['types'] = $this->report->getTypes();
-        $this->data['can_report'] = (bool) $errors;
 
         $this->data['severities'] = array(
             'info' => $this->text('Info'),

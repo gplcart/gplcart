@@ -92,7 +92,6 @@
 # $config['review_deletable'] = 1; // Whether to allow to delete reviews
 # $config['review_editable'] = 1; //Whether to allow to add/edit reviews
 # $config['review_enabled'] = 1; // Whether to show product reviews
-# $config['report_errors'] = 1;
 # $config['report_log_lifespan'] = 86400;
 # $config['review_length'] = 100;
 # $config['review_limit'] = 10; // Reviews per page

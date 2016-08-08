@@ -132,20 +132,6 @@ class Cron extends Controller
      */
     protected function processLogs()
     {
-        if ($this->config->get('report_errors', 1)) {
-
-            $errors = $this->report->getPhpErrors();
-
-            $has_errors = !empty($errors);
-            $sent = ($has_errors && $this->report->reportErrors($errors));
-
-            if ($sent) {
-                $this->logger->log('cron', array('message' => 'Error raport has been sent'), 'success');
-            } elseif ($has_errors && !$sent) {
-                $this->logger->log('cron', array('message' => 'Failed to send error report'), 'warning');
-            }
-        }
-
         $this->report->clearExpired($this->config->get('report_log_lifespan', 86400));
 
         $status = $this->report->checkFilesystem();

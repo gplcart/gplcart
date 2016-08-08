@@ -5,11 +5,6 @@
       <a class="btn btn-default" href="<?php echo $this->url(false, array('clear_errors' => true)); ?>">
         <?php echo $this->text('Clear'); ?>
       </a>
-      <?php if ($can_report) { ?>
-      <a class="btn btn-default" href="<?php echo $this->url(false, array('report' => true)); ?>">
-        <?php echo $this->text('Report PHP errors'); ?>
-      </a>
-      <?php } ?>
     </div>
   </div>
   <div class="panel-body table-responsive">

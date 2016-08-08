@@ -13,7 +13,6 @@ use PDO;
 use DateTime;
 use core\Model;
 use core\classes\Tool;
-use core\classes\Curl;
 use core\classes\Cache;
 use core\models\Module as ModelsModule;
 use core\models\Language as ModelsLanguage;
@@ -37,23 +36,14 @@ class Report extends Model
     protected $language;
 
     /**
-     * CURL class instance
-     * @var \core\classes\Curl $curl
-     */
-    protected $curl;
-
-    /**
      * Constructor
      * @param ModelsModule $module
      * @param ModelsLanguage $language
-     * @param Curl $curl
      */
-    public function __construct(ModelsModule $module, ModelsLanguage $language,
-            Curl $curl)
+    public function __construct(ModelsModule $module, ModelsLanguage $language)
     {
         parent::__construct();
 
-        $this->curl = $curl;
         $this->module = $module;
         $this->language = $language;
     }
@@ -232,63 +222,6 @@ class Report extends Model
             'maintainAspectRatio' => false);
 
         return $build;
-    }
-
-    /**
-     * Returns the system environment info
-     * @return array
-     */
-    public function getEnvironmentInfo()
-    {
-        return array(
-            'php' => $this->phpinfo(),
-            'system' => array(
-                'version' => GC_VERSION,
-                'modules' => $this->module->getEnabled(),
-            ),
-        );
-    }
-
-    /**
-     * Returns an array of PHP errors
-     * @param integer $limit
-     * @return array
-     */
-    public function getPhpErrors($limit = 100)
-    {
-        $errors = $this->getList(array(
-            'limit' => array(0, $limit),
-            'sort' => 'time',
-            'order' => 'desc',
-            'type' => array('php_error', 'php_shutdown')));
-
-        return $errors;
-    }
-
-    /**
-     * Sends error reporting to remoted endpoint
-     * @param array $errors
-     * @param boolean $clear
-     * @return boolean
-     */
-    public function reportErrors(array $errors, $clear = true)
-    {
-        if (empty($errors)) {
-            return false;
-        }
-
-        $data = array(
-            'environment' => $this->getEnvironmentInfo(),
-            'errors' => $errors
-        );
-
-        $result = $this->curl->post(GC_REPORT_API_URL, array('fields' => $data));
-
-        if ($clear && !empty($result)) {
-            $this->clear(array_keys($errors));
-        }
-
-        return (boolean) $result;
     }
 
     /**

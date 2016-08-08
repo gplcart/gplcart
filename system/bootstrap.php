@@ -46,7 +46,6 @@ define('GC_SESSION_TIMEOUT', 1800);
 define('GC_COOKIE_PREFIX', 'gplcart_');
 define('GC_WIKI_URL', 'https://github.com/gplcart/gplcart/wiki');
 define('GC_DEMO_URL', 'https://gplcart.github.io/demo');
-define('GC_REPORT_API_URL', 'http://gplcart.com/api/report');
 define('GC_MARKETPLACE_API_URL', 'http://gplcart.com/api/marketplace');
 define('GC_TIME', (int) $_SERVER['REQUEST_TIME']);
 
