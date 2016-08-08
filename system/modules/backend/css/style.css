@@ -140,6 +140,16 @@ td .list-inline {
     border: none;
 }
 
+.phpinfo table {
+    margin: 0 !important;
+}
+
+.phpinfo h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .swatch {
     background: red;
     background: -moz-linear-gradient( top ,

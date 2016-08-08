@@ -1,5 +1,6 @@
 <div class="panel panel-default">
   <div class="panel-body table-responsive">
+    <?php if(empty($phpinfo)) { ?>
     <table class="table table-striped">
       <?php foreach ($statuses as $status_id => $status) { ?>
       <tr class="<?php echo ((empty($status['status']) || is_array($status['status'])) && $status['severity'] !== 'info') ? $this->escape($status['severity']) : ''; ?>">
@@ -27,10 +28,16 @@
           </div>
           <?php } else { ?>
           <?php echo $this->truncate($status['status']); ?>
+          <?php if($status_id == 'php_version') { ?>
+          <a href="<?php echo $this->url('', array('phpinfo' => 1)); ?>"><?php echo $this->text('Show info'); ?></a>
+          <?php } ?>
           <?php } ?>
         </td>
       </tr>
       <?php } ?>
     </table>
+    <?php } else { ?>
+    <div class="phpinfo"><?php echo $phpinfo; ?></div>
+    <?php } ?>
   </div>
 </div>

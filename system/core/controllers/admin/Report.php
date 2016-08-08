@@ -209,6 +209,10 @@ class Report extends Controller
     {
         $statuses = $this->report->getStatus();
         $this->data['statuses'] = $statuses;
+        
+        if($this->request->get('phpinfo')){
+            $this->data['phpinfo'] = $this->report->phpinfo();
+        }
 
         $this->setTitleStatus();
         $this->setBreadcrumbStatus();

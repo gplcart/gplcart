@@ -299,8 +299,7 @@ class Report extends Model
     {
         ob_start();
         phpinfo(INFO_MODULES);
-        $result = ob_get_contents();
-        ob_end_clean();
+        $result = ob_get_clean();
 
         // remove auth data
         if (isset($_SERVER['AUTH_USER'])) {
@@ -311,6 +310,9 @@ class Report extends Model
             $result = str_replace($_SERVER['AUTH_PASSWORD'], '***', $result);
         }
 
+        $result = preg_replace( '%^.*<body>(.*)</body>.*$%ms','$1', $result);
+        $result = str_replace('<table', '<table class="table"', $result);
+        
         return $result;
     }
 
