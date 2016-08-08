@@ -174,3 +174,15 @@ GplCart.job = function () {
         }
     });
 };
+
+/**
+ * Generates a random string
+ * @param {type} portion
+ * @returns {String}
+ */
+GplCart.randomString = function (portion) {
+
+    portion = portion || -8;
+
+    return Math.random().toString(36).slice(portion);
+}

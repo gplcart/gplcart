@@ -462,7 +462,6 @@ class User extends Model
      */
     public function getByEmail($email)
     {
-        $this->hook->fire('get.user.before', $email);
 
         $sth = $this->db->prepare('SELECT * FROM user WHERE email=:email');
         $sth->execute(array(':email' => $email));
@@ -473,7 +472,25 @@ class User extends Model
         }
 
         $user['data'] = unserialize($user['data']);
-        $this->hook->fire('get.user.after', $email, $user);
+        return $user;
+    }
+
+    /**
+     * Loads a user by a name
+     * @param string $name
+     * @return array
+     */
+    public function getByName($name)
+    {
+        $sth = $this->db->prepare('SELECT * FROM user WHERE name=:name');
+        $sth->execute(array(':name' => $name));
+        $user = $sth->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($user)) {
+            return array();
+        }
+
+        $user['data'] = unserialize($user['data']);
         return $user;
     }
 

@@ -503,6 +503,20 @@ class Route
                 'controller' => array('core\\controllers\\admin\\User', 'users')
             )
         );
+        
+        $routes['admin/user/edit/(\d+)'] = array(
+            'access' => 'user_edit',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\User', 'edit')
+            )
+        );
+        
+        $routes['admin/user/add'] = array(
+            'access' => 'user_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\User', 'edit')
+            )
+        );
 
         $routes['admin/user/role'] = array(
             'access' => 'user_role',

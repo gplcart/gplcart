@@ -436,14 +436,15 @@ class Controller
     {
         return $this->language->text($string, $arguments);
     }
-
+    
     /**
-     * Whether the current user is superadmin
+     * Whether the user is superadmin
+     * @param null|integer $user_id
      * @return boolean
      */
-    public function isSuperadmin()
+    public function isSuperadmin($user_id = null)
     {
-        return $this->user->isSuperadmin();
+        return $this->user->isSuperadmin($user_id);
     }
     
     /**
