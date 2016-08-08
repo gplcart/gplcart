@@ -91,30 +91,43 @@ class Report extends Controller
         $this->setTitleGa();
         $this->setBreadcrumbGa();
 
+        $store_id = (int) $this->request->get('store_id', $this->store->getDefault());
+        $stores = $this->store->getList();
+        $store = $this->store->get($store_id);
+
         $gapi_email = $this->config->get('gapi_email', '');
         $gapi_certificate = $this->config->get('gapi_certificate', '');
 
-        if (empty($gapi_email) || empty($gapi_certificate)) {
-            $this->data['missing_credentials'] = $this->text('<a href="!href">Google API credentials</a> are not properly set', array('!href' => $this->url('admin/settings/common')));
-            $this->outputGa();
-        }
-
-        $default_store = $this->store->getDefault();
-        $store_id = (int) $this->request->get('store_id', $default_store);
-
-        $stores = $this->store->getList();
-        $store = isset($stores[$store_id]) ? $stores[$store_id] : $stores[$default_store];
-
-        $this->data['stores'] = $stores;
         $this->data['store'] = $store;
-        $this->data['traffic'] = array();
-        $this->data['software'] = array();
+        $this->data['stores'] = $stores;
+        $this->data['missing_settings'] = empty($store['data']['ga_view']);
+        $this->data['missing_credentials'] = (empty($gapi_email) || empty($gapi_certificate));
 
-        if (empty($store['data']['ga_view'])) {
-            $this->data['missing_settings'] = $this->text('<a href="!href">Google Analytics</a> is not properly set', array('!href' => $this->url("admin/settings/store/$store_id")));
+        if ($this->data['missing_credentials'] || $this->data['missing_settings']) {
             $this->outputGa();
         }
 
+        $this->setUpdateGa($store_id);
+
+        $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
+        $this->analytics->setView($store['data']['ga_view']);
+        $this->data['ga_view'] = $store['data']['ga_view'];
+
+        $this->setPanelTraffic();
+        $this->setPanelSoftware();
+        $this->setPanelGaSources();
+        $this->setPanelGaTopPages();
+        $this->setPanelGaKeywords();
+
+        $this->outputGa();
+    }
+
+    /**
+     * Listen to URL parameter and updates cached GA data for the store ID
+     * @param integer $store_id
+     */
+    protected function setUpdateGa($store_id)
+    {
         $view = (string) $this->request->get('ga_view');
 
         if ($this->request->get('ga_update') && !empty($view)) {
@@ -122,9 +135,71 @@ class Report extends Controller
             $this->session->setMessage($this->text('Google Analytics has been updated'), 'success');
             $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
         }
+    }
 
-        $this->setGa($store, $gapi_email, $gapi_certificate);
-        $this->outputGa();
+    /**
+     * Sets Keywords statistic panel
+     */
+    protected function setPanelGaKeywords()
+    {
+        $items = $this->analytics->get('keywords');
+        $this->data['panel_keywords'] = $this->render('report/ga/panels/keywords', array('items' => $items));
+    }
+
+    /**
+     * Sets Sources statistic panel
+     */
+    protected function setPanelGaSources()
+    {
+        $items = $this->analytics->get('sources');
+        $this->data['panel_sources'] = $this->render('report/ga/panels/sources', array('items' => $items));
+    }
+
+    /**
+     * Sets Top Pages statistic panel
+     */
+    protected function setPanelGaTopPages()
+    {
+        $items = $this->analytics->get('top_pages');
+
+        foreach ($items as &$item) {
+            if (preg_match('!^[\w.]*$!', $item[0])) {
+                $item['url'] = $item[0] . $item[1];
+            }
+        }
+
+        $this->data['panel_top_pages'] = $this->render('report/ga/panels/top_pages', array('items' => $items));
+    }
+
+    /**
+     * Sets Software statistic panel
+     */
+    protected function setPanelSoftware()
+    {
+
+        $items = array();
+        foreach ($this->analytics->get('software') as $i => $result) {
+            $os_version = ($result[1] === "(not set)") ? '' : $result[1];
+            $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
+            $items[$i][0] = $result[0] . " $os_version";
+            $items[$i][1] = $result[2] . " $browser_version";
+            $items[$i][2] = $result[4];
+        }
+
+        $this->data['panel_software'] = $this->render('report/ga/panels/software', array('items' => $items));
+    }
+
+    /**
+     * Sets Traffic statistic panel
+     */
+    protected function setPanelTraffic()
+    {
+        $chart = $this->report->buildTrafficChart($this->analytics);
+
+        $this->setJsSettings('chart_traffic', $chart);
+        $this->setJs('files/assets/chart/Chart.min.js', 'top');
+
+        $this->data['panel_traffic'] = $this->render('report/ga/panels/traffic');
     }
 
     /**
@@ -132,7 +207,6 @@ class Report extends Controller
      */
     public function status()
     {
-        
         $statuses = $this->report->getStatus();
         $this->data['statuses'] = $statuses;
 
@@ -230,52 +304,7 @@ class Report extends Controller
      */
     protected function outputGa()
     {
-        $this->output('report/ga');
-    }
-
-    /**
-     * Sets Google analytics data on the page
-     * @param array $store
-     * @param string $gapi_email
-     * @param string $gapi_certificate
-     */
-    protected function setGa(array $store, $gapi_email, $gapi_certificate)
-    {
-        $ga_view = $store['data']['ga_view'];
-
-        $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
-        $this->analytics->setView($ga_view);
-
-        $this->data['keywords'] = $this->analytics->get('keywords');
-        $this->data['sources'] = $this->analytics->get('sources');
-        $this->data['top_pages'] = $this->analytics->get('top_pages');
-        $this->data['software'] = $this->getGaSoftware();
-        $this->data['ga_view'] = $ga_view;
-        
-        $chart = $this->report->buildTrafficChart($this->analytics);
-        $this->data['chart_traffic'] = $chart;
-        
-        $this->setJsSettings('chart_traffic', $chart);
-        $this->setJs('files/assets/chart/Chart.min.js', 'top');
-    }
-    
-
-    /**
-     * Returns an array of software data from GA
-     * @return array
-     */
-    protected function getGaSoftware()
-    {
-        $results = array();
-        foreach ($this->analytics->get('software') as $i => $result) {
-            $os_version = ($result[1] === "(not set)") ? '' : $result[1];
-            $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
-            $results[$i][0] = $result[0] . " $os_version";
-            $results[$i][1] = $result[2] . " $browser_version";
-            $results[$i][2] = $result[4];
-        }
-
-        return $results;
+        $this->output('report/ga/ga');
     }
 
     /**

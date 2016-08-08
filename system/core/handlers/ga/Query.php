@@ -9,6 +9,9 @@
 
 namespace core\handlers\ga;
 
+/**
+ * Query handlers for Google Analytics
+ */
 class Query
 {
 
@@ -103,13 +106,7 @@ class Query
     public function traffic($from, $to, $limit)
     {
         $fields = array('ga:sessions', 'ga:pageviews');
-        $query = array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
-
-        if (!empty($limit)) {
-            $query[3]['max-results'] = (int) $limit;
-        }
-
-        return $query;
+        return array($from, $to, implode(',', $fields), array('dimensions' => 'ga:date'));
     }
 
     /**

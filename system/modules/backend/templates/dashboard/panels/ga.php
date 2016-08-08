@@ -36,7 +36,7 @@
     <?php if ($missing_settings) { ?>
     <?php echo $this->text('<a href="!href">Google Analytics</a> is not properly set up', array('!href' => $this->url("admin/settings/store/{$store['store_id']}"))); ?>
     <?php } ?>
-    <?php if (isset($missing_credentials)) { ?>
+    <?php if ($missing_credentials) { ?>
     <br><?php echo $this->text('<a href="!href">Google API credentials</a> are not properly set up', array('!href' => $this->url('admin/settings/common'))); ?>
     <?php } ?>
     <?php } ?>

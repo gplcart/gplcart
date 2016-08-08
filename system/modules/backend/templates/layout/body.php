@@ -109,9 +109,6 @@
               <?php if ($this->access('export')) { ?>
               <li><a href="<?php echo $this->url('admin/tool/export'); ?>"><?php echo $this->text('Export'); ?></a></li>
               <?php } ?>
-              <?php if ($this->access('cron')) { ?>
-              <li><a href="<?php echo $this->url('admin/tool/cron'); ?>"><?php echo $this->text('Cron'); ?></a></li>
-              <?php } ?>
               <?php if ($this->access('search_edit')) { ?>
               <li><a href="<?php echo $this->url('admin/tool/search'); ?>"><?php echo $this->text('Search'); ?></a></li>
               <?php } ?>

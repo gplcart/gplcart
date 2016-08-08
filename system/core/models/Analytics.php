@@ -219,7 +219,7 @@ class Analytics extends Model
         $arguments += array(
             $this->config->get('ga_from', '30daysAgo'),
             $this->config->get('ga_until', 'today'),
-            $this->config->get('ga_limit', 0)
+            $this->config->get('ga_limit', 20)
         );
 
         $query = Handler::call($handlers, $handler_id, 'query', $arguments);

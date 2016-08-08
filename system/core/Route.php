@@ -351,13 +351,6 @@ class Route
             )
         );
 
-        $routes['admin/tool/cron'] = array(
-            'access' => 'cron',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Cron', 'run')
-            )
-        );
-
         $routes['admin/tool/search'] = array(
             'access' => 'search_edit',
             'handlers' => array(

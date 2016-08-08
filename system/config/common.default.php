@@ -48,7 +48,7 @@
 # $config['ga_cache_lifespan'] = 86400; // Lifetime of Google Analytics cache, in seconds
 # $config['ga_from'] = '30daysAgo';
 # $config['ga_until'] = 'today';
-# $config['ga_limit'] = 0;
+# $config['ga_limit'] = 20;
 # $config['history_lifespan'] = 2628000;
 # $config['image_cache_lifetime'] = 31536000;
 # $config['import_lifespan'] = 86400;

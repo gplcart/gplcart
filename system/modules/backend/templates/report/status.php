@@ -1,6 +1,6 @@
-<div class="row">
-  <div class="col-md-12">
-    <table class="table">
+<div class="panel panel-default">
+  <div class="panel-body table-responsive">
+    <table class="table table-striped">
       <?php foreach ($statuses as $status_id => $status) { ?>
       <tr class="<?php echo ((empty($status['status']) || is_array($status['status'])) && $status['severity'] !== 'info') ? $this->escape($status['severity']) : ''; ?>">
         <td class="col-md-3">

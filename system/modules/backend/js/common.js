@@ -112,15 +112,6 @@ $(function () {
     
     $('.input-group.color').colorpicker();
 
-    // Context help popup
-    $('.help.summary a').click(function () {
-        var content = $(this).next('.summary').html();
-        if (content) {
-            GplCart.theme.modal(content, 'help-summary', GplCart.text('Help'));
-            return false;
-        }
-    });
-
     // Bulk actions
     $('*[data-action]').click(function () {
 
