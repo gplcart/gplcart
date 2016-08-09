@@ -315,7 +315,17 @@ class Module extends Controller
             return array();
         }
 
-        return json_decode($response, true);
+        $results = json_decode($response, true);
+
+        if (empty($results['items'])) {
+            return $results;
+        }
+
+        foreach ($results['items'] as &$item) {
+            $item['price'] = floatval($item['price']);
+        }
+
+        return $results;
     }
 
     /**

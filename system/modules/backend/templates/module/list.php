@@ -1,23 +1,23 @@
-<div class="row">
-  <div class="col-md-6 col-md-offset-6 text-right">
-    <?php if($upload_access) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/module/upload'); ?>">
-      <?php echo $this->text('Upload'); ?>
-    </a>
-    <?php } ?>
-    <?php if ($this->access('marketplace')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/module/marketplace'); ?>">
-      <?php echo $this->text('Marketplace'); ?>
-    </a>
-    <?php } ?>
-  </div>
-</div>
 <?php if (!empty($modules)) { ?>
-<div class="row margin-top-20">
-  <div class="col-md-12">
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-toolbar pull-right">
+      <?php if ($upload_access) { ?>
+      <a class="btn btn-default" href="<?php echo $this->url('admin/module/upload'); ?>">
+        <?php echo $this->text('Upload'); ?>
+      </a>
+      <?php } ?>
+      <?php if ($this->access('marketplace')) { ?>
+      <a class="btn btn-default" href="<?php echo $this->url('admin/module/marketplace'); ?>">
+        <?php echo $this->text('Marketplace'); ?>
+      </a>
+      <?php } ?>
+    </div>
+  </div>
+  <div class="panel-body table-responsive">
     <table class="table modules">
       <thead>
-        <tr>
+        <tr class="active">
           <th><?php echo $this->text('Name'); ?></th>
           <th><?php echo $this->text('Description'); ?></th>
           <th><?php echo $this->text('Version'); ?></th>
@@ -31,19 +31,10 @@
         <?php foreach ($modules as $module_id => $info) { ?>
         <tr>
           <td>
-            <div class="icon-name">
-              <div class="pull-left icon">
-                <?php if ($info['image']) { ?>
-                <img src="<?php echo $this->escape($info['image']); ?>">
-                <?php } else { ?>
-                <i class="fa fa-cube fa-2x fa-border placeholder"></i>
-                <?php } ?>
-              </div>
-              <div class="name pull-left">
-                <a href="#" onclick="return false;" data-toggle="collapse" data-target="#module-details-<?php echo $module_id; ?>">
-                  <?php echo $this->truncate($this->escape($info['name'])); ?>
-                </a>
-              </div>
+            <div class="name">
+              <a href="#" onclick="return false;" data-toggle="collapse" data-target="#module-details-<?php echo $module_id; ?>">
+                <?php echo $this->truncate($this->escape($info['name'])); ?>
+              </a>
             </div>
           </td>
           <td class="middle">
@@ -70,59 +61,49 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bars"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <?php if (isset($info['status'])) { ?>
-                <?php if ($info['status']) { ?>
-                <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>
-                <li>
-                  <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $token)); ?>">
-                    <?php echo $this->text('Disable'); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <?php } else { ?>
-                <?php if ($this->access('module_enable')) { ?>
-                <li>
-                  <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo $this->text('Enable'); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <?php if ($this->access('module_uninstall') && empty($info['always_enabled'])) { ?>
-                <li>
-                  <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo $this->text('Uninstall'); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <?php } ?>
-                <?php } else { ?>
-                <?php if ($this->access('module_install')) { ?>
-                <li>
-                  <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $token)); ?>">
-                    <?php echo $this->text('Install'); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <?php } ?>
-                <?php if (isset($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
-                <li>
-                  <a href="<?php echo $this->url($info['configure']); ?>">
-                    <?php echo $this->text('Configure'); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <li>
-                  <a href="#" onclick="return false;" data-toggle="collapse" data-target="#module-details-<?php echo $module_id; ?>">
-                    <?php echo $this->text('Details'); ?>
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <ul class="list-inline">
+              <?php if (isset($info['status'])) { ?>
+              <?php if ($info['status']) { ?>
+              <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>
+              <li>
+                <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $token)); ?>">
+                  <?php echo strtolower($this->text('Disable')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php } else { ?>
+              <?php if ($this->access('module_enable')) { ?>
+              <li>
+                <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $token)); ?>">
+                  <?php echo strtolower($this->text('Enable')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('module_uninstall') && empty($info['always_enabled'])) { ?>
+              <li>
+                <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $token)); ?>">
+                  <?php echo strtolower($this->text('Uninstall')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php } ?>
+              <?php } else { ?>
+              <?php if ($this->access('module_install')) { ?>
+              <li>
+                <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $token)); ?>">
+                  <?php echo strtolower($this->text('Install')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php } ?>
+              <?php if (isset($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url($info['configure']); ?>">
+                  <?php echo strtolower($this->text('Configure')); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">

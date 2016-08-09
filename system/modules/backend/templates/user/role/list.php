@@ -1,8 +1,8 @@
-<?php if ($roles || $filtering) { ?>
-<div class="row">
-  <div class="col-md-6">
+<?php if (!empty($roles) || $filtering) { ?>
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
     <?php if ($this->access('user_role_edit') || $this->access('user_role_delete')) { ?>
-    <div class="btn-group">
+    <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
@@ -29,18 +29,16 @@
       </ul>
     </div>
     <?php } ?>
+    <div class="btn-toolbar pull-right">
+      <?php if ($this->access('user_role_add')) { ?>
+      <a href="<?php echo $this->url('admin/user/role/add'); ?>" class="btn btn-default add">
+        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
+      </a>
+      <?php } ?>
+    </div>
   </div>
-  <div class="col-md-6 text-right">
-    <?php if ($this->access('user_role_add')) { ?>  
-    <a href="<?php echo $this->url('admin/user/role/add'); ?>" class="btn btn-default add">
-      <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-    </a>
-    <?php } ?>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-responsive margin-top-20 roles">
+  <div class="panel-body table-responsive">
+    <table class="table table-striped roles">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
@@ -77,9 +75,12 @@
         </tr>
       </thead>
       <tbody>
-        <?php if ($filtering && !$roles) { ?>
+        <?php if ($filtering && empty($roles)) { ?>
         <tr>
-          <td colspan="5"><?php echo $this->text('No results'); ?></td>
+          <td colspan="5">
+            <?php echo $this->text('No results'); ?>
+            <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
         </tr>
         <?php } ?>
         <?php foreach ($roles as $role_id => $role) { ?>
@@ -96,51 +97,27 @@
           </td>
           <td>
             <?php if ($this->access('user_role_edit')) { ?>
-            <a title="<?php echo $this->text('Edit'); ?>" class="btn btn-default" href="<?php echo $this->url("admin/user/role/edit/$role_id"); ?>">
-              <i class="fa fa-edit"></i>
-            </a>
-            <?php } ?>
-            <?php if (!empty($role['permissions_list'])) { ?>
-            <a title="<?php echo $this->text('Permissions'); ?>" class="btn btn-default" href="#" onclick="return false;" data-toggle="collapse" data-target="#permissions-list-<?php echo $role_id; ?>">
-              <i class="fa fa-key"></i>
+            <a href="<?php echo $this->url("admin/user/role/edit/$role_id"); ?>">
+              <?php echo strtolower($this->text('Edit')); ?>
             </a>
             <?php } ?>
           </td>
         </tr>
-        <?php if (!empty($role['permissions_list'])) { ?>
-        <tr class="collapse active" id="permissions-list-<?php echo $role_id; ?>">
-          <td colspan="5">
-            <div class="row">
-              <?php foreach ($role['permissions_list'] as $names) { ?>
-              <div class="col-md-2">
-                <ul class="list-unstyled small">
-                  <?php foreach ($names as $name) { ?>
-                  <li><?php echo $this->escape($name); ?></li>
-                  <?php } ?>
-                </ul>
-              </div>
-              <?php } ?>
-            </div>
-          </td>
-        </tr>
-        <?php } ?>
         <?php } ?>
       </tbody>
     </table>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <?php echo $pager; ?>
-  </div>
+  <?php if (!empty($pager)) { ?>
+  <div class="panel-footer"><?php echo $pager; ?></div>
+  <?php } ?>
 </div>
 <?php } else { ?>
-<div class="row margin-top-20">
+<div class="row">
   <div class="col-md-12">
     <?php echo $this->text('You have no roles yet'); ?>
     <?php if ($this->access('user_role_add')) { ?>
-    <a href="<?php echo $this->url('admin/user/role/add'); ?>">
-    <?php echo $this->text('Add'); ?>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/user/role/add'); ?>">
+      <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
   </div>
