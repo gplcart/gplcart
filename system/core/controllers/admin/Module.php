@@ -256,7 +256,6 @@ class Module extends Controller
      */
     public function marketplace()
     {
-        $limit = $this->config->get('marketplace_limit', 12);
         $order = $this->config->get('marketplace_order', 'desc');
         $sort = $this->config->get('marketplace_sort', 'views');
         $default = array('sort' => $sort, 'order' => $order);
@@ -264,9 +263,16 @@ class Module extends Controller
         $query = $this->getFilterQuery($default);
         $total = $this->getMarketplaceTotal($query);
 
-        $query['limit'] = $this->setPager($total, $query, $limit);
+        $query['limit'] = $this->setPager($total, $query);
         $results = $this->getMarketplaceList($query);
-        $this->setFilter(array('category_id', 'price', 'views', 'rating'), $query);
+
+        $this->setFilter(array(
+            'category_id',
+            'price',
+            'views',
+            'rating',
+            'title',
+            'downloads'));
 
         $this->data['marketplace'] = $results;
 
@@ -308,6 +314,7 @@ class Module extends Controller
     protected function getMarketplaceList(array $options = array())
     {
         $options += array('core' => strtok(GC_VERSION, '.'));
+
         $response = $this->curl->post(GC_MARKETPLACE_API_URL, array('fields' => $options));
         $info = $this->curl->getInfo();
 

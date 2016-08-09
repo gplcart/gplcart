@@ -56,7 +56,6 @@
 # $config['kint'] = 0;
 # $config['language'] = ''; // Default language
 # $config['log_lifespan'] = 86400;
-# $config['marketplace_limit'] = 12;
 # $config['marketplace_sort'] = 'views';
 # $config['marketplace_order'] = 'desc';
 # $config['theme_mobile'] = 'mobile';
