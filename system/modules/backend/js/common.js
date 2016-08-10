@@ -1,7 +1,14 @@
-GplCart.theme = {
-    modal: function (content, id, header, footer) {
+/**
+ * Displays a modal popup with a custom content
+ * @param {type} content
+ * @param {type} id
+ * @param {type} header
+ * @param {type} footer
+ * @returns {undefined}
+ */
+GplCart.theme.modal = function (content, id, header, footer) {
 
-        var html = '\
+    var html = '\
         <div class="modal fade" id="' + id + '">\n\
         <div class="modal-dialog">\n\
         <div class="modal-content">\n\
@@ -9,30 +16,36 @@ GplCart.theme = {
         <button type="button" class="btn btn-default pull-right" data-dismiss="modal">\n\
         <i class="fa fa-times"></i></button>';
 
-        if (typeof header !== 'undefined') {
-            html += '<h3 class="modal-title pull-left">' + header + '</h3>';
-        }
+    if (typeof header !== 'undefined') {
+        html += '<h3 class="modal-title pull-left">' + header + '</h3>';
+    }
 
-        html += '</div><div class="modal-body">' + content + '</div>';
+    html += '</div><div class="modal-body">' + content + '</div>';
 
-        if (typeof footer !== 'undefined') {
-            html += '<div class="modal-footer">' + footer + '</div>';
-        }
+    if (typeof footer !== 'undefined') {
+        html += '<div class="modal-footer">' + footer + '</div>';
+    }
 
-        html += '</div></div>';
+    html += '</div></div>';
 
-        $('.modal').remove();
-        $('body').append(html);
-        $('#' + id).modal('show');
-    },
-    loading: function (mode) {
+    $('.modal').remove();
+    $('body').append(html);
+    $('#' + id).modal('show');
+};
 
-        if (mode === false) {
-            $('body').find('.modal.loading').remove();
-            return;
-        }
-        
-        var html = '<div class="modal loading show">\n\
+/**
+ * Displays a loading indicator
+ * @param {type} mode
+ * @returns {undefined}
+ */
+GplCart.theme.loading = function (mode) {
+
+    if (mode === false) {
+        $('body').find('.modal.loading').remove();
+        return;
+    }
+
+    var html = '<div class="modal loading show">\n\
         <div class="modal-dialog">\n\
         <div class="modal-content">\n\
         <div class="modal-body">\n\
@@ -41,25 +54,38 @@ GplCart.theme = {
         </div></div></div></div></div>\n\
         <div class="modal-backdrop fade in"></div>';
 
-        $('body').append(html);
-    },
-    alert: function (message, type) {
-        $.bootstrapGrowl(message, {
-            type: type,
-            align: 'right',
-            width: 'auto',
-            delay: 2000,
-            offset: {from: 'bottom', amount: 20}
-        });
-    },
-    chart: function (source, type) {
-        var key = 'chart_' + source;
-        if (key  in GplCart.settings && 'datasets' in GplCart.settings[key]) {
-            var settings = GplCart.settings[key];
-            var ctx = document.getElementById('chart-' + source);
-            var data = {labels: settings.labels, datasets: settings.datasets};
-            var chart = new Chart(ctx, {type: type, data: data, options: settings.options});
-        }
+    $('body').append(html);
+};
+
+/**
+ * Displays an alert popup with a custom message
+ * @param {type} message
+ * @param {type} type
+ * @returns {undefined}
+ */
+GplCart.theme.alert = function (message, type) {
+    $.bootstrapGrowl(message, {
+        type: type,
+        align: 'right',
+        width: 'auto',
+        delay: 2000,
+        offset: {from: 'bottom', amount: 20}
+    });
+};
+
+/**
+ * Creates a chart
+ * @param {type} source
+ * @param {type} type
+ * @returns {undefined}
+ */
+GplCart.theme.chart = function (source, type) {
+    var key = 'chart_' + source;
+    if (key  in GplCart.settings && 'datasets' in GplCart.settings[key]) {
+        var settings = GplCart.settings[key];
+        var ctx = document.getElementById('chart-' + source);
+        var data = {labels: settings.labels, datasets: settings.datasets};
+        var chart = new Chart(ctx, {type: type, data: data, options: settings.options});
     }
 };
 
@@ -67,7 +93,7 @@ $(function () {
 
     // Hints
     $('.hint').tooltip();
-    
+
     $('.input-group.color').colorpicker();
 
     // Bulk actions
@@ -150,18 +176,18 @@ $(function () {
     });
 
     /********************************* WYSIWYG *********************************/
-    
+
     $('textarea.summernote').summernote({
-          height: 150,
-          lang: GplCart.settings.lang_region,
-          toolbar: [
-        ['font', ['bold', 'italic', 'underline', 'clear']],
-        ['style', ['style']],
-        ['para', ['ul', 'ol']],
-        ['table', ['table']],
-        ['insert', ['link', 'picture', 'hr']],
-        ['view', ['fullscreen', 'codeview']]
-    ]});
+        height: 150,
+        lang: GplCart.settings.lang_region,
+        toolbar: [
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['style', ['style']],
+            ['para', ['ul', 'ol']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'hr']],
+            ['view', ['fullscreen', 'codeview']]
+        ]});
 
     /********************************* Images *********************************/
 
