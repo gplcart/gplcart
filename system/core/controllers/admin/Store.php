@@ -73,7 +73,7 @@ class Store extends Controller
 
         $this->data['stores'] = $this->getStores($total, $query);
 
-        $filters = array('name', 'domain', 'basepath', 'status', 'scheme');
+        $filters = array('name', 'domain', 'basepath', 'status');
         $this->setFilter($filters, $query);
 
         $this->setTitleStores();

@@ -61,19 +61,6 @@
           </div>
           <?php } ?>
           <?php if (!$is_default) { ?>
-          <div class="form-group">
-            <label class="col-md-2 control-label"><?php echo $this->text('Scheme'); ?></label>
-            <div class="col-md-2">
-              <select name="store[scheme]" class="form-control">
-                <option value="http://"<?php echo (isset($store['scheme']) && ($store['scheme'] === 'http://')) ? ' selected' : ''; ?>>
-                    <?php echo $this->text('http://'); ?>
-                </option>
-                <option value="https://"<?php echo (isset($store['scheme']) && ($store['scheme'] === 'https://')) ? ' selected' : ''; ?>>
-                    <?php echo $this->text('https://'); ?>
-                </option>
-              </select>
-            </div>
-          </div>
           <div class="form-group required<?php echo isset($this->errors['domain']) ? ' has-error' : ''; ?>">
             <label class="col-md-2 control-label">
               <span class="hint" title="<?php echo $this->text('Do not add "http://". Example: domain.com'); ?>">

@@ -375,7 +375,7 @@ class User extends Controller
             $user['url'] = '';
             if (isset($stores[$user['store_id']])) {
                 $store = $stores[$user['store_id']];
-                $user['url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/account/{$user['user_id']}";
+                $user['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/account/{$user['user_id']}";
             }
         }
 

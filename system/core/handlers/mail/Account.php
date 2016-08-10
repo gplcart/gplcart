@@ -118,7 +118,7 @@ class Account
 
         $message_text = $this->config->get('email_message_user_registered_customer', $message_default);
 
-        $base = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", '/');
+        $base = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", '/');
 
         $message_arguments = array(
             '!store' => $store_name,
@@ -158,7 +158,7 @@ class Account
 
         $message_text = $this->config->get('email_message_reset_password', $message_default);
 
-        $base = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", '/');
+        $base = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", '/');
         
         $date_format = $this->config->get('date_prefix', 'd.m.Y');
         $date_format .= $this->config->get('date_suffix', ' H:i');

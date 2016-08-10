@@ -74,6 +74,18 @@ class Controller
     protected $urn;
 
     /**
+     * Current host
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * Current HTTP scheme
+     * @var string
+     */
+    protected $scheme;
+
+    /**
      * Current query
      * @var array
      */
@@ -436,7 +448,7 @@ class Controller
     {
         return $this->language->text($string, $arguments);
     }
-    
+
     /**
      * Whether the user is superadmin
      * @param null|integer $user_id
@@ -446,7 +458,7 @@ class Controller
     {
         return $this->user->isSuperadmin($user_id);
     }
-    
+
     /**
      * Formats a local time/date
      * @param null|integer $timestamp
@@ -460,11 +472,11 @@ class Controller
         }
 
         $format = $this->config->get('date_prefix', 'd.m.y');
-        
-        if($full){
+
+        if ($full) {
             $format .= $this->config->get('date_suffix', ' H:i');
         }
-        
+
         return date($format, (int) $timestamp);
     }
 
@@ -495,12 +507,15 @@ class Controller
             $this->access = $this->current_route['access'];
         }
 
-        $this->base = $this->request->base();
-        $this->path = $this->url->path();
-        $this->uri = $this->request->scheme() . $this->request->host() . $this->request->urn();
         $this->urn = $this->request->urn();
+        $this->host = $this->request->host();
+        $this->scheme = $this->request->scheme();
+
+        $this->path = $this->url->path();
+        $this->base = $this->request->base();
         $this->query = $this->request->get();
         $this->langcode = $this->route->getLangcode();
+        $this->uri = $this->scheme . $this->host . $this->urn;
     }
 
     /**
@@ -1314,8 +1329,8 @@ class Controller
         $directory = GC_HELP_DIR . "/$folder";
 
         $file = Tool::contextFile($directory, 'php', $segments);
-        
-        if(empty($file)){
+
+        if (empty($file)) {
             return '';
         }
 

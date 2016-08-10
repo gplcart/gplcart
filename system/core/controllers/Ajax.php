@@ -158,7 +158,7 @@ class Ajax extends Controller
             $product['url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
-                $product['url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
+                $product['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
             }
 
             $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);

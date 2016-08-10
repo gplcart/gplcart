@@ -94,11 +94,6 @@ class Store extends Model
             $where[] = "%{$data['basepath']}%";
         }
 
-        if (isset($data['scheme'])) {
-            $sql .= ' AND scheme = ?';
-            $where[] = (strpos($data['scheme'], '://') === false) ? $data['scheme'] . '://' : $data['scheme'];
-        }
-
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
             $where[] = (int) $data['status'];
@@ -114,9 +109,6 @@ class Store extends Model
                     break;
                 case 'basepath':
                     $sql .= " ORDER BY basepath {$data['order']}";
-                    break;
-                case 'scheme':
-                    $sql .= " ORDER BY scheme {$data['order']}";
                     break;
                 case 'status':
                     $sql .= " ORDER BY status {$data['order']}";
@@ -279,7 +271,6 @@ class Store extends Model
             'name' => $data['name'],
             'domain' => $data['domain'],
             'status' => !empty($data['status']),
-            'scheme' => !empty($data['scheme']) ? $data['scheme'] : 'http://',
             'basepath' => !empty($data['basepath']) ? $data['basepath'] : '',
             'data' => serialize($data['data'])
         );
@@ -334,10 +325,6 @@ class Store extends Model
 
         if (!empty($data['domain'])) {
             $values['domain'] = $data['domain'];
-        }
-
-        if (!empty($data['scheme'])) {
-            $values['scheme'] = $data['scheme'];
         }
 
         if (!empty($data['basepath'])) {
@@ -466,7 +453,9 @@ class Store extends Model
      */
     public function url($store)
     {
-        return rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", '/');
+        $scheme = $this->request->scheme();
+        
+        return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');
     }
 
     /**

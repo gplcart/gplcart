@@ -303,7 +303,7 @@ class Page extends Controller
             $page['url'] = '';
             if (isset($stores[$page['store_id']])) {
                 $store = $stores[$page['store_id']];
-                $page['url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/page/{$page['page_id']}";
+                $page['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/page/{$page['page_id']}";
             }
         }
 

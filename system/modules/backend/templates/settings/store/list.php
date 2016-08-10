@@ -1,6 +1,6 @@
-<div class="row">
-  <div class="col-md-6">
-    <div class="btn-group">
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
@@ -26,29 +26,22 @@
         <?php } ?>
       </ul>
     </div>
-  </div>
-  <?php if($this->access('store_add')) { ?>
-  <div class="col-md-6 text-right">
-    <div class="btn-toolbar">
+    <?php if ($this->access('store_add')) { ?>
+    <div class="btn-toolbar pull-right">
       <a href="<?php echo $this->url('admin/settings/store/add'); ?>" class="btn btn-default add">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>
+    <?php } ?>
   </div>
-  <?php } ?>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-responsive stores margin-top-20">
+  <div class="panel-body table-responsive">
+    <table class="table table-striped stores">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th class="middle">
             <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>
-          </th>
-          <th class="middle">
-            <a href="<?php echo $sort_scheme; ?>"><?php echo $this->text('Scheme'); ?> <i class="fa fa-sort"></i></a>
           </th>
           <th class="middle">
             <a href="<?php echo $sort_domain; ?>"><?php echo $this->text('Domain'); ?> <i class="fa fa-sort"></i></a>
@@ -66,15 +59,6 @@
           <th></th>
           <th class="middle">
             <input class="form-control" maxlength="255" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
-          </th>
-          <th class="middle">
-            <select class="form-control" name="scheme">
-              <option value="any">
-              <?php echo $this->text('Any'); ?>
-              </option>
-              <option value="http"<?php echo ($filter_scheme === 'http') ? ' selected' : ''; ?>>http://</option>
-              <option value="https"<?php echo ($filter_scheme === 'https') ? ' selected' : ''; ?>>https://</option>
-            </select>
           </th>
           <th class="middle">
             <input class="form-control" maxlength="255" name="domain" value="<?php echo $filter_domain; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -106,37 +90,41 @@
         </tr>
       </thead>
       <tbody>
-        <?php if($filtering && !$stores) { ?>
-        <tr><td class="middle" colspan="8"><?php echo $this->text('No results'); ?></td></tr>
+        <?php if ($filtering && empty($stores)) { ?>
+        <tr>
+          <td class="middle" colspan="8">
+            <?php echo $this->text('No results'); ?>
+            <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
         <?php } ?>
         <?php foreach ($stores as $store_id => $store) { ?>
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $store_id; ?>"></td>
           <td class="middle"><?php echo $store_id; ?></td>
           <td class="middle"><?php echo $this->escape($store['name']); ?></td>
-          <th class="middle"><?php echo $this->escape($store['scheme']); ?></th>
           <td class="middle"><?php echo $this->escape($store['domain']); ?></td>
           <td class="middle">/<?php echo $this->escape($store['basepath']); ?></td>
           <td class="middle">
-            <?php if(empty($store['status'])) { ?>
+            <?php if (empty($store['status'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
           <td class="middle">
-          <?php if ($this->access('store_edit')) { ?>
-          <a href="<?php echo $this->url("admin/settings/store/$store_id"); ?>" title="<?php echo $this->text('Settings'); ?>" class="btn btn-default">
-            <i class="fa fa-edit"></i>
-          </a>
-          <?php } ?>
+            <?php if ($this->access('store_edit')) { ?>
+            <a href="<?php echo $this->url("admin/settings/store/$store_id"); ?>">
+              <?php echo strtolower($this->text('Settings')); ?>
+            </a>
+            <?php } ?>
           </td>
         </tr>
         <?php } ?>
       </tbody>
     </table>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12"><?php echo $pager; ?></div>
+  <?php if (!empty($pager)) { ?>
+  <div class="panel-footer"><?php echo $pager; ?></div>
+  <?php } ?>
 </div>

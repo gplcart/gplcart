@@ -155,7 +155,11 @@
         <div class="col-md-4">
           <input name="settings[cron_key]" maxlength="255" class="form-control" value="<?php echo $settings['cron_key']; ?>">
           <?php if (!empty($settings['cron_key']) && $this->access('cron')) { ?>
-          <a target="_blank" href="<?php echo $this->url('cron', array('key' => $settings['cron_key'])); ?>"><?php echo $this->text('Run cron'); ?></a>
+          <div class="help-block">
+            <a target="_blank" href="<?php echo $this->url('cron', array('key' => $settings['cron_key'])); ?>">
+              <?php echo $this->text('Run cron'); ?>
+            </a>
+          </div>
           <?php } ?>
         </div>
       </div>

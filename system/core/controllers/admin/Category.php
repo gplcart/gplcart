@@ -134,7 +134,7 @@ class Category extends Controller
         foreach ($categories as &$category) {
             $category_ids[] = $category['category_id'];
             $category['indentation'] = str_repeat('— ', $category['depth']);
-            $category['url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/category/{$category['category_id']}";
+            $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/category/{$category['category_id']}";
         }
 
         $aliases = $this->alias->getMultiple('category_id', $category_ids);
@@ -147,7 +147,7 @@ class Category extends Controller
             $category['alias'] = '';
             if (!empty($aliases[$category['category_id']])) {
                 $category['alias'] = $aliases[$category['category_id']];
-                $category['url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/{$category['alias']}";
+                $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/{$category['alias']}";
             }
         }
 

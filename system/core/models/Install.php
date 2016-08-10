@@ -252,7 +252,6 @@ class Install
         $store = array(
             'name' => $settings['store']['title'],
             'domain' => $this->request->host(),
-            'scheme' => $this->request->scheme(),
             'basepath' => trim($this->request->base(true), '/'),
             'status' => 1,
             'data' => serialize($data),
@@ -851,7 +850,6 @@ class Install
                 'status' => 'int(1) NOT NULL DEFAULT 0',
                 'domain' => 'varchar(255) NOT NULL',
                 'name' => 'varchar(255) NOT NULL',
-                'scheme' => 'varchar(50) NOT NULL DEFAULT "http://"',
                 'basepath' => 'varchar(50) NOT NULL DEFAULT ""',
                 'data' => 'blob NOT NULL'
             )

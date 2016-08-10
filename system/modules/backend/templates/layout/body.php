@@ -175,7 +175,7 @@
             <ul class="dropdown-menu dropdown-menu-right">
               <?php foreach ($store_list as $store) { ?>
               <li>
-                <a target="_blank" href="<?php echo $this->escape("{$store['scheme']}{$store['domain']}/{$store['basepath']}"); ?>">
+                <a target="_blank" href="<?php echo $this->escape("{$this->scheme}{$store['domain']}/{$store['basepath']}"); ?>">
                   <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
                 </a>
               </li>

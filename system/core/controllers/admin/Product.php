@@ -305,7 +305,7 @@ class Product extends Controller
             $product['view_url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
+                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
             }
 
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
@@ -380,7 +380,7 @@ class Product extends Controller
             $product['view_url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$store['scheme']}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
+                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
             }
         }
 
