@@ -105,13 +105,6 @@ class Settings extends Controller
         foreach ($this->getDefaultSettings() as $key => $default) {
             $this->data['settings'][$key] = $this->config->get($key, $default);
         }
-
-        $this->data['gapi_certificate'] = '';
-
-        if (!empty($this->data['settings']['gapi_certificate'])) {
-            $this->data['gapi_certificate'] = $this->text('Currently using !file', array(
-                '!file' => 'file/' . $this->data['settings']['gapi_certificate']));
-        }
     }
 
     /**
@@ -130,9 +123,7 @@ class Settings extends Controller
     protected function submit()
     {
         $this->submitted = $this->request->post('settings');
-
         $this->validate();
-
         $errors = $this->getErrors();
 
         if (!empty($errors)) {
@@ -173,8 +164,15 @@ class Settings extends Controller
      */
     protected function validateGapi()
     {
+        if (isset($this->submitted['delete_gapi_certificate'])) {
+            unlink(GC_FILE_DIR . '/' . $this->config->get('gapi_certificate'));
+            $this->config->reset('gapi_certificate');
+            unset($this->submitted['delete_gapi_certificate']);
+        }
+
         if (!empty($this->submitted['gapi_email']) && !filter_var($this->submitted['gapi_email'], FILTER_VALIDATE_EMAIL)) {
             $this->errors['gapi_email'] = $this->text('Invalid E-mail');
+            return false;
         }
 
         $file = $this->request->file('gapi_certificate');

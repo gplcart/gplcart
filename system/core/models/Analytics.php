@@ -79,16 +79,22 @@ class Analytics extends Model
 
         $key = file_get_contents($key_file);
 
-        $this->credentials = new \Google_Auth_AssertionCredentials(
-                $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
-        );
+        try {
 
-        $this->client->setAssertionCredentials($this->credentials);
-        if ($this->client->getAuth()->isAccessTokenExpired()) {
-            $this->client->getAuth()->refreshTokenWithAssertion($this->credentials);
+            $this->credentials = new \Google_Auth_AssertionCredentials(
+                    $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
+            );
+
+            $this->client->setAssertionCredentials($this->credentials);
+
+            if ($this->client->getAuth()->isAccessTokenExpired()) {
+                $this->client->getAuth()->refreshTokenWithAssertion($this->credentials);
+            }
+
+            return $this;
+        } catch (\Google_Auth_Exception $e) {
+            $this->logger->log('ga', $e->getMessage(), 'danger');
         }
-
-        return $this;
     }
 
     /**
@@ -129,7 +135,7 @@ class Analytics extends Model
                 $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
                 $rows = $results->getRows();
             } catch (\Google_IO_Exception $e) {
-                $this->logger->log('ga', $e->getMessage(), 'warning'); // Failed to connect, etc...
+                $this->logger->log('ga', $e->getMessage(), 'danger'); // Failed to connect, etc...
                 return array();
             }
 
