@@ -32,9 +32,9 @@
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_widget; ?>"><?php echo $this->text('Widget'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
-          <th></th>
         </tr>
         <tr class="filters active">
+          <th></th>
           <th class="middle">
             <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
@@ -67,7 +67,6 @@
               <i class="fa fa-search"></i>
             </button>
           </th>
-          <th></th>
         </tr>
       </thead>
       <tbody>

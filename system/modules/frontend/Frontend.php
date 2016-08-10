@@ -118,12 +118,13 @@ class Frontend
             'settings' => $this->getDefaultSettings()
         );
     }
-
+    
     /**
      * Injects a data to templates
      * @param array $data
+     * @param object $controller
      */
-    public function hookData(&$data)
+    public function hookData(array &$data, $controller)
     {
         if ($this->url->isFrontend() && !$this->url->isInstall()) {
             $uid = $this->cart->uid();

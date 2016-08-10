@@ -399,7 +399,7 @@ class Controller
             $template .= $extension;
         }
 
-        $this->hook->fire('render', $template, $data);
+        $this->hook->fire('render', $template, $data, $this);
 
         $this->setPhpErrors($data);
 
@@ -779,7 +779,7 @@ class Controller
         }
 
         $this->prepareOutput();
-        $this->hook->fire('data', $this->data);
+        $this->hook->fire('data', $this->data, $this);
 
         $templates += $this->templates;
         $layout_template = $templates['layout'];

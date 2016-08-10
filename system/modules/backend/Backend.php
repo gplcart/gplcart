@@ -100,13 +100,14 @@ class Backend
             'settings' => array()
         );
     }
-
+    
     /**
      * Implements hook data
      * @param array $data
+     * @param object $controller
      * @return null
      */
-    public function hookData(array &$data)
+    public function hookData(array &$data, $controller)
     {
         if (!$this->url->isBackend()) {
             return;
