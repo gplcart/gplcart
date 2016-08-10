@@ -161,20 +161,14 @@ class Search extends Controller
      */
     protected function submit($entity_id)
     {
-        $job_id = "index_$entity_id";
-        $this->job->delete($job_id);
-        $limit = (int) $this->request->post('limit');
 
         $job = array(
-            'id' => $job_id,
-            'total' => $this->search->total('product_id'),
-            'operations' => array($job_id => array(
-                    'arguments' => array(array(
-                            'index_limit' => $limit))))
+            'id' => "index_$entity_id",
+            'total' => $this->search->total($entity_id),
+            'data' => array('index_limit' => $this->config->get('search_index_limit', 50)),
         );
 
-        $this->job->set($job);
-        $this->url->redirect(false, array('job_id' => $job_id));
+        $this->job->submit($job);
     }
 
     /**

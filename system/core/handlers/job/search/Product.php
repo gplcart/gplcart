@@ -49,8 +49,9 @@ class Product
      * @param array $options
      * @return array
      */
-    public function process(array $job, $done, array $context, array $options)
+    public function process(array $job, $done, array $context)
     {
+        $options = $job['data'];
         $offset = isset($context['offset']) ? (int) $context['offset'] : 0;
         $items = $this->product->getList($options + array(
             'limit' => array($offset, $options['index_limit'])));

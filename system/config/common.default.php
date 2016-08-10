@@ -95,6 +95,7 @@
 # $config['review_length'] = 100;
 # $config['review_limit'] = 10; // Reviews per page
 # $config['review_status'] = 1; // Default review status if added/edited by a customer
+# $config['search_index_limit'] = 50;
 # $config['shipping_pickup_price'] = 0;
 # $config['store'] = 1; // Default store database ID
 # $config['summary_delimiter'] = '<!--summary-->';
