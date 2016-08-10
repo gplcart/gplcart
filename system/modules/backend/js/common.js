@@ -28,19 +28,18 @@ GplCart.theme = {
     loading: function (mode) {
 
         if (mode === false) {
-            $('body').find('.loading-overlay').remove();
+            $('body').find('.modal.loading').remove();
             return;
         }
-
-        var html = '\
-        <div class="loading-overlay">\n\
-        <div class="loading">\n\
+        
+        var html = '<div class="modal loading show">\n\
+        <div class="modal-dialog">\n\
+        <div class="modal-content">\n\
+        <div class="modal-body">\n\
         <div class="progress">\n\
-        <div class="progress-bar progress-bar-striped active">\n\
-        </div>\n\
-        </div>\n\
-        </div>\n\
-        </div>';
+        <div class="progress-bar progress-bar-striped active"></div>\n\
+        </div></div></div></div></div>\n\
+        <div class="modal-backdrop fade in"></div>';
 
         $('body').append(html);
     },

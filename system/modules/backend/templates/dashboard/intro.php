@@ -22,7 +22,7 @@
         <div class="row">
           <div class="col-md-10">
             <h4><?php echo $this->text('Add products'); ?></h4>
-            <p><?php echo $this->text('Add products to sell or populate your store with <a href="!href">demo content</a>', array('!href' => $this->url('admin/tool/demo'))); ?></p>
+            <p><?php echo $this->text('Add products to sell or populate your store with <a href="!href">demo content</a>', array('!href' => $this->url('admin/tool/import'))); ?></p>
           </div>
           <div class="col-md-2 text-right">
             <a class="btn btn-default btn-block" href="<?php echo $this->url('admin/content/product/add'); ?>">

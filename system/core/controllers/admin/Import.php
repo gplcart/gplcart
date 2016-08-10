@@ -10,6 +10,7 @@
 namespace core\controllers\admin;
 
 use core\Controller;
+use core\classes\Curl;
 use core\models\Job as ModelsJob;
 use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
@@ -19,6 +20,12 @@ use core\models\Import as ModelsImport;
  */
 class Import extends Controller
 {
+
+    /**
+     * Curl class instance
+     * @var \core\classes\Curl $curl
+     */
+    protected $curl;
 
     /**
      * Import model instance
@@ -43,13 +50,15 @@ class Import extends Controller
      * @param ModelsJob $job
      * @param ModelsImport $import
      * @param ModelsFile $file
+     * @param Curl $curl
      */
     public function __construct(ModelsJob $job, ModelsImport $import,
-            ModelsFile $file)
+            ModelsFile $file, Curl $curl)
     {
         parent::__construct();
 
         $this->job = $job;
+        $this->curl = $curl;
         $this->file = $file;
         $this->import = $import;
     }
@@ -59,11 +68,96 @@ class Import extends Controller
      */
     public function operations()
     {
+        $this->setImportDemo();
+
+        $this->data['job'] = $this->getJob();
         $this->data['operations'] = $this->import->getOperations();
 
         $this->setTitleOperations();
         $this->setBreadcrumbOperations();
         $this->outputOperations();
+    }
+
+    /**
+     * Imports demo content if it set in URL query
+     */
+    protected function setImportDemo()
+    {
+        if ($this->request->get('demo') && $this->isConnected()) {
+            $this->controlAccess('category_add');
+            $this->demo('category');
+        }
+
+        if ($this->request->get('demo-next') === 'product') {
+            $this->controlAccess('product_add');
+            $this->demo('product');
+        }
+    }
+
+    /**
+     * Checks demo site connected and sets warning message if not
+     * @return boolean
+     */
+    protected function isConnected()
+    {
+        $header = $this->curl->header(GC_DEMO_URL);
+
+        if (empty($header['header_size'])) {
+            $this->setMessage('Unable to connect to external server that provides demo images. Check your internet connection', 'warning');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Imports demo content from CSV files
+     * @param string $operation_id
+     * @return null
+     */
+    protected function demo($operation_id)
+    {
+        $operation = $this->import->getOperation($operation_id);
+
+        $data = array(
+            'limit' => 1,
+            'operation' => $operation,
+            'filepath' => $operation['csv']['template'],
+            'filesize' => filesize($operation['csv']['template'])
+        );
+
+        $job = array(
+            'data' => $data,
+            'id' => $operation['job_id'],
+            'total' => $data['filesize'],
+        );
+
+        if ($operation_id == 'category') {
+
+            $job['message'] = array(
+                'start' => $this->text('Starting to create product categories'),
+                'process' => $this->text('Creating categories...')
+            );
+
+            // Go to create products
+            $job['redirect']['finish'] = $this->url('', array('demo-next' => 'product'));
+        }
+
+        if ($operation_id == 'product') {
+
+            $job['message'] = array(
+                'start' => $this->text('Starting to create demo products...'),
+                'process' => $this->text('Creating demo products. It may take some time to download images from an external site.'),
+            );
+
+            $job['redirect_message'] = array(
+                'finish' => $this->text('Finished. <a href="!href">See demo products</a>', array(
+                    '!href' => $this->url('admin/content/product'))),
+                'errors' => $this->text('An error occurred while creating demo products. A possible reason might be you have duplicated category names.'),
+            );
+        }
+
+        $this->job->submit($job);
     }
 
     /**

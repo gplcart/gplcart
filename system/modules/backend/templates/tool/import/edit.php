@@ -1,6 +1,3 @@
-<?php if ($job) { ?>
-<?php echo $job; ?>
-<?php } else { ?>
 <form method="post" enctype="multipart/form-data" id="import-csv" class="form-horizontal" onsubmit="return confirm();">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
@@ -58,5 +55,6 @@
     </div>
   </div>
 </form>
+<?php if (!empty($job)) { ?>
+<?php echo $job; ?>
 <?php } ?>
-

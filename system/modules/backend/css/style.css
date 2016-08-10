@@ -150,6 +150,45 @@ td .list-inline {
     font-weight: bold;
 }
 
+.modal.loading .progress {
+    margin:0;
+}
+
+.modal.loading .progress-bar {
+    width: 100%;
+}
+
+/* Center modal */
+.modal-dialog {
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 100vh;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.modal.fade .modal-dialog {
+  -webkit-transform: translate(0, -100%);
+  transform: translate(0, -100%);
+}
+
+.modal.in .modal-dialog {
+  -webkit-transform: translate(0, 0);
+  transform: translate(0, 0);
+}
+/* End center modal */
+
 .swatch {
     background: red;
     background: -moz-linear-gradient( top ,
@@ -367,30 +406,6 @@ body.admin .panel-heading .event-severity {
     margin-bottom: 5px;
     margin-right: 5px;
     display: block;
-}
-
-.loading-overlay {
-    position: fixed;
-    width: 100%;
-    height:100%;
-    display: flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.7);
-    top: 0;
-}
-
-.loading-overlay .loading {
-    display: flex;
-    margin: 0 auto;
-    background: #fff;
-}
-
-.loading-overlay .progress {
-    width: 100px;
-}
-
-.loading-overlay .progress-bar {
-    width: 100px;
 }
 
 .product-search-suggestion img {

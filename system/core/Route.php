@@ -358,12 +358,6 @@ class Route
             )
         );
 
-        $routes['admin/tool/demo'] = array(
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Demo', 'demo')
-            )
-        );
-
         $routes['admin/sale/order'] = array(
             'access' => 'order',
             'handlers' => array(

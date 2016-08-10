@@ -112,9 +112,6 @@
               <?php if ($this->access('search_edit')) { ?>
               <li><a href="<?php echo $this->url('admin/tool/search'); ?>"><?php echo $this->text('Search'); ?></a></li>
               <?php } ?>
-              <?php if ($this->isSuperadmin()) { ?>
-              <li><a href="<?php echo $this->url('admin/tool/demo'); ?>"><?php echo $this->text('Demo'); ?></a></li>
-              <?php } ?>
             </ul>
           </li>
           <li class="dropdown">

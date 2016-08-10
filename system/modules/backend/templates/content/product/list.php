@@ -260,7 +260,7 @@
   <div class="col-md-12">
     <?php echo $this->text('You have no products yet'); ?>
     <?php if ($this->access('product_add')) { ?>
-    <a href="<?php echo $this->url('admin/content/product/add'); ?>"><?php echo $this->text('Add'); ?></a>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/add'); ?>"><?php echo $this->text('Add'); ?></a>
     <?php } ?>
   </div>
 </div>
