@@ -1,25 +1,22 @@
-<?php if ($this->access('language_add')) { ?>
-<div class="row">
-  <div class="col-md-6 col-md-offset-6 text-right">
-    <div class="btn-toolbar">
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-toolbar pull-right">
+      <?php if ($this->access('language_add')) { ?>
       <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/language/add"); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
+      <?php } ?>
     </div>
   </div>
-</div>
-<?php } ?>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-responsive margin-top-20 languages">
+  <div class="panel-body table-responsive">
+    <table class="table table-striped languages">
       <thead>
         <tr>
           <th><?php echo $this->text('Name'); ?></th>
           <th><?php echo $this->text('Native name'); ?></th>
           <th><?php echo $this->text('Code'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
-          <th><?php echo $this->text('Weight'); ?></th>
-          <th><?php echo $this->text('Action'); ?></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -27,30 +24,35 @@
         <tr data-code="<?php echo $code; ?>">
           <td class="middle">
             <?php echo $this->escape($language['name']); ?>
-            <?php if(!empty($language['default'])) { ?>
-            (<?php echo mb_strtolower($this->text('Default')); ?>)
+            <?php if (!empty($language['default'])) { ?>
+            (<?php echo strtolower($this->text('Default')); ?>)
             <?php } ?>
           </td>
           </td>
           <td class="middle"><?php echo $this->escape($language['native_name']); ?></td>
           <td class="middle"><?php echo $this->escape($code); ?></td>
           <td class="middle">
-            <?php if(empty($language['status'])) { ?>
+            <?php if (empty($language['status'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
-          <td class="middle"><?php echo $this->escape($language['weight']); ?></td>
           <td class="middle">
-            <?php if ($this->access('language_edit')) { ?>
-            <a title="<?php echo $this->text('Edit'); ?>" href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>" class="btn btn-default edit">
-              <i class="fa fa-edit"></i>
-            </a>
-            <a title="<?php echo $this->text('Refresh translations'); ?>" href="<?php echo $this->url(false, array('refresh' => $code)); ?>" class="btn btn-default refresh">
-              <i class="fa fa-refresh"></i>
-            </a>
-            <?php } ?>
+            <ul class="list-inline">
+              <?php if ($this->access('language_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>" class="edit">
+                  <?php echo strtolower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" class="refresh">
+                  <?php echo $this->text('clear cache'); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <?php } ?>

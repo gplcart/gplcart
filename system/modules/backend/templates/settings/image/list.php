@@ -1,24 +1,22 @@
-<?php if ($this->access('image_style_add')) { ?>
-<div class="row">
-  <div class="col-md-6 col-md-offset-6 text-right">
-    <div class="btn-toolbar">
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-toolbar pull-right">
+      <?php if ($this->access('image_style_add')) { ?>
       <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-default add">
-      <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
+        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
+      <?php } ?>
     </div>
   </div>
-</div>
-<?php } ?>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-responsive margin-top-20 image-styles">
+  <div class="panel-body table-responsive">
+    <table class="table table-striped image-styles">
       <thead>
         <tr>
           <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Name'); ?></th>
           <th><?php echo $this->text('Source'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
-          <th><?php echo $this->text('Action'); ?></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -29,10 +27,20 @@
           <td class="middle"><?php echo empty($style['in_code']) ? $this->text('In database') : $this->text('In code'); ?></td>
           <td class="middle"><?php echo empty($style['status']) ? '<i class="fa fa-square-o"></i>' : '<i class="fa fa-check-square-o"></i>'; ?></td>
           <td class="col-md-2 middle">
-            <?php if ($this->access('image_style_edit')) { ?>
-            <a title="<?php echo $this->text('Edit'); ?>" href="<?php echo $this->url("admin/settings/imagestyle/edit/$id"); ?>" class="btn btn-default edit"><i class="fa fa-edit"></i></a>
-            <?php } ?>
-            <a title="<?php echo $this->text('Clear cache'); ?>" href="<?php echo $this->url(false, array('clear' => $id)); ?>" class="btn btn-default clear"><i class="fa fa-refresh"></i></a>
+            <ul class="list-inline">
+              <?php if ($this->access('image_style_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/imagestyle/edit/$id"); ?>" class="edit">
+                  <?php echo strtolower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <li>
+                <a href="<?php echo $this->url('', array('clear' => $id)); ?>" class="clear">
+                  <?php echo $this->text('clear cache'); ?>
+                </a>
+              </li>
+            </ul>
           </td>
         </tr>
         <?php } ?>
