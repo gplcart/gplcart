@@ -13,7 +13,7 @@ use PDO;
 use core\Config;
 use core\classes\Request;
 use core\models\Image as ModelsImage;
-use core\models\Price as ModelsProduct;
+use core\models\Price as ModelsPrice;
 use core\models\Search as ModelsSearch;
 use core\models\Product as ModelsProduct;
 
