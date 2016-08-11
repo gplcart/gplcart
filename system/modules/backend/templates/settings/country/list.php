@@ -141,11 +141,11 @@
   <?php } ?>
 </div>
 <?php } else { ?>
-<div class="row">
+<div class="row empty">
   <div class="col-md-12">
     <?php echo $this->text('You have no countries yet'); ?>
     <?php if ($this->access('country_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/settings/country/add'); ?>">
+    <a class="btn btn-default add" href="<?php echo $this->url('admin/settings/country/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>

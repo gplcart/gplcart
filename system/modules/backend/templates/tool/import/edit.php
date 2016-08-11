@@ -43,10 +43,7 @@
           </a>
           <?php } ?>   
         </div>
-        <div class="col-md-10">
-          <a class="btn btn-default cancel" href="<?php echo $this->url('admin/tool/import'); ?>">
-            <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-          </a>
+        <div class="col-md-4 text-right">
           <button class="btn btn-default import" name="import" value="1">
             <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
           </button>

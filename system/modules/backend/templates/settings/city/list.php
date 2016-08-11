@@ -117,15 +117,17 @@
   <div class="col-md-12"><?php echo $pager; ?></div>
 </div>
 <?php } else { ?>
-<div class="row">
+<div class="row empty">
   <div class="col-md-12">
     <?php echo $this->text('This state has no cities yet'); ?>
     <?php if ($this->access('city_add')) { ?>
-    <a href="<?php echo $this->url("admin/settings/city/add/{$country['code']}/{$state['state_id']}"); ?>">
+    <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/city/add/{$country['code']}/{$state['state_id']}"); ?>">
     <?php echo $this->text('Add'); ?>
     </a>
     <?php if($this->access('import')) {?>
-    <a href="<?php echo $this->url('admin/tool/import/city'); ?>"><?php echo $this->text('Import'); ?></a>
+    <a class="btn btn-default import" href="<?php echo $this->url('admin/tool/import/city'); ?>">
+      <?php echo $this->text('Import'); ?>
+    </a>
     <?php } ?>
     <?php } ?>
   </div>

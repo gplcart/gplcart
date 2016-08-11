@@ -1,7 +1,7 @@
-<?php if ($states || $filtering) { ?>
-<div class="row">
-  <div class="col-md-6">
-    <div class="btn-group">
+<?php if (!empty($states) || $filtering) { ?>
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
@@ -27,12 +27,7 @@
         <?php } ?>
       </ul>
     </div>
-  </div>
-  <div class="col-md-6 text-right">
-    <div class="btn-toolbar">
-      <a href="<?php echo $this->url('admin/settings/country'); ?>" class="btn btn-default cancel">
-        <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-      </a>
+    <div class="btn-toolbar pull-right">
       <?php if ($this->access('state_add')) { ?>
       <a href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>" class="btn btn-default add">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
@@ -45,10 +40,8 @@
       <?php } ?>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-responsive margin-top-20 country-states">
+  <div class="panel-body table-responsive">
+    <table class="table table-striped country-states">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
@@ -89,7 +82,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if($filtering && !$states) { ?>
+        <?php if($filtering && empty($states)) { ?>
         <tr><td class="middle" colspan="6"><?php echo $this->text('No results'); ?></td></tr>
         <?php } ?>
         <?php foreach ($states as $state_id => $state) { ?>
@@ -106,50 +99,47 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bars"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-right">
+              <ul class="list-inline">
                 <?php if ($this->access('state_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/settings/state/edit/{$country['code']}/$state_id"); ?>">
-                    <?php echo $this->text('Edit'); ?>
+                    <?php echo strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>
                 <?php if ($this->access('city')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/settings/cities/{$country['code']}/$state_id"); ?>">
-                    <?php echo $this->text('Cities'); ?>
+                    <?php echo strtolower($this->text('Cities')); ?>
                   </a>
                 </li>
                 <?php } ?>
               </ul>
-            </div>
           </td>
         </tr>
         <?php } ?>
       </tbody>
     </table>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
+  <?php if(!empty($pager)) { ?>
+  <div class="panel-footer">
     <?php echo $pager; ?>
   </div>
+  <?php } ?>
 </div>
 <?php } else { ?>
-<div class="row">
+<div class="row empty">
   <div class="col-md-12">
     <?php echo $this->text('This country has no states yet'); ?>
     <?php if ($this->access('state_add')) { ?>
-    <a href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>">
+    <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>">
     <?php echo $this->text('Add'); ?>
-    <?php if($this->access('import')) { ?>
-    <a href="<?php echo $this->url('admin/tool/import/state'); ?>"><?php echo $this->text('Import'); ?></a>
-    <?php } ?>
     </a>
+    <?php if($this->access('import')) { ?>
+    <a class="btn btn-default import" href="<?php echo $this->url('admin/tool/import/state'); ?>">
+    <?php echo $this->text('Import'); ?>
+    </a>
+    <?php } ?>
     <?php } ?>
   </div>
 </div>

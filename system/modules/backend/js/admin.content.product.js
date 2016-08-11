@@ -64,7 +64,7 @@ $(function () {
                 $(this).closest('tr').find('td .weight').text(i);
             });
 
-            GplCart.theme.alert(GplCart.text('Please submit the form to save the changes you made'), 'warning');
+            GplCart.theme.alert(GplCart.text('Changes will not be saved until the form is submitted'), 'warning');
         }
     });
 

@@ -88,7 +88,7 @@ class Install extends Controller
 
         $this->submitted = $this->request->post('settings', array());
 
-        $this->validateInstall();
+        $this->validate();
 
         $errors = $this->getErrors();
 
@@ -213,7 +213,7 @@ class Install extends Controller
      * Validates an array of submitted form values
      * @return null
      */
-    protected function validateInstall()
+    protected function validate()
     {
 
         $this->validateDbHost();
