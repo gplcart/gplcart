@@ -365,6 +365,8 @@ class Controller
         $this->setData();
         $this->setScripts();
         $this->setMaintenance();
+
+        $this->hook->fire('construct', $this);
     }
 
     /**
@@ -373,6 +375,8 @@ class Controller
     public function __destruct()
     {
         $this->text();
+
+        $this->hook->fire('destruct', $this);
     }
 
     /**
