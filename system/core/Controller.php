@@ -219,6 +219,12 @@ class Controller
     protected $language;
 
     /**
+     * Validator model instance
+     * @var \core\models\Validator $validator
+     */
+    protected $validator;
+
+    /**
      * Current language code
      * @var string
      */
@@ -315,6 +321,9 @@ class Controller
 
         /* @var $language \core\models\Language */
         $this->language = Container::instance('core\\models\\Language');
+
+        /* @var $validator \core\models\Validator */
+        $this->validator = Container::instance('core\\models\\Validator');
 
         /* @var $url \core\classes\Url */
         $this->url = Container::instance('core\\classes\\Url');

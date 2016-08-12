@@ -170,8 +170,9 @@ class Settings extends Controller
             unset($this->submitted['delete_gapi_certificate']);
         }
 
-        if (!empty($this->submitted['gapi_email']) && !filter_var($this->submitted['gapi_email'], FILTER_VALIDATE_EMAIL)) {
-            $this->errors['gapi_email'] = $this->text('Invalid E-mail');
+        if (!empty($this->submitted['gapi_email'])) {
+            $result = $this->validator->check('email', $this->submitted['gapi_email']);
+            $this->errors['gapi_email'] = ($result === true) ? null : $result;
             return false;
         }
 
