@@ -325,6 +325,17 @@ class Install
             'title' => 'Brand'
         ));
 
+
+        $collection_id = $this->db->insert('collection', array(
+            'status' => 1,
+            'type' => 'file',
+            'store_id' => $store_id,
+            'title' => 'Front slideshow',
+            'description' => 'Block with rotating banners on the front page',
+        ));
+
+        $config->set('collection_front_slideshow', $collection_id);
+
         // Default pages and their aliases
         $page_id = $this->db->insert('page', array(
             'status' => 1,
@@ -521,6 +532,39 @@ class Install
                 'status' => 'int(1) NOT NULL DEFAULT 0',
                 'weight' => 'int(2) NOT NULL DEFAULT 0',
                 'format' => 'blob NOT NULL'
+            )
+        );
+
+        $tables['collection'] = array(
+            'fields' => array(
+                'collection_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
+                'title' => 'varchar(255) NOT NULL',
+                'description' => 'text NOT NULL',
+                'type' => 'varchar(50) NOT NULL',
+                'store_id' => 'int(10) NOT NULL',
+                'status' => 'int(1) NOT NULL DEFAULT 0',
+            )
+        );
+
+        $tables['collection_translation'] = array(
+            'fields' => array(
+                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
+                'collection_id' => 'int(10) NOT NULL',
+                'language' => 'varchar(4) NOT NULL',
+                'title' => 'varchar(255) NOT NULL',
+                'description' => 'text NOT NULL',
+            )
+        );
+
+        $tables['collection_item'] = array(
+            'fields' => array(
+                'collection_item_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
+                'collection_id' => 'int(10) NOT NULL',
+                'id_value' => 'int(10) NOT NULL',
+                'id_key' => 'varchar(50) NOT NULL',
+                'weight' => 'int(2) NOT NULL DEFAULT 0',
+                'status' => 'int(1) NOT NULL DEFAULT 0',
+                'data' => 'blob NOT NULL'
             )
         );
 
