@@ -31,7 +31,8 @@
       <a href="<?php echo $this->url('admin/report/ga'); ?>">
         <?php echo $this->text('See all analytics'); ?>
       </a>
-    </div> 
+    </div>
+    <script>GplCart.theme.chart('traffic', 'line');</script>
     <?php } else { ?>
     <?php if ($missing_settings) { ?>
     <?php echo $this->text('<a href="!href">Google Analytics</a> is not properly set up', array('!href' => $this->url("admin/settings/store/{$store['store_id']}"))); ?>

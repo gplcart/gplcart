@@ -1,6 +1,6 @@
-<div class="row">
-  <div class="col-md-12">
-    <h3><?php echo $this->text('Welcome to your admin area!'); ?></h3>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h1 class="h3"><?php echo $this->text('Welcome!'); ?></h1>
     <p><?php echo $this->text('Here are some extra steps to set up your store'); ?></p>
     <div class="panel panel-default">
       <div class="panel-body">
@@ -48,12 +48,9 @@
       </div>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12 text-center">
+  <div class="panel-footer text-center">
     <a href="<?php echo $this->url('', array('skip_intro' => 1)); ?>">
       <?php echo $this->text('Skip these steps'); ?>
     </a>
   </div>
 </div>
-

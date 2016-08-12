@@ -1,11 +1,8 @@
 <form method="post" id="country-format" class="form-horizontal" onsubmit="return confirm();">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <div class="row">
-    <div class="col-md-6 col-md-offset-6 text-right">
-      <div class="btn-toolbar">
-        <a href="<?php echo $this->url('admin/settings/country'); ?>" class="btn btn-default cancel">
-          <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-        </a>
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <div class="btn-toolbar pull-right">
         <?php if ($this->access('country_format_edit')) { ?>
         <button class="btn btn-default save" name="save" value="1">
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
@@ -13,35 +10,19 @@
         <?php } ?>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
+    <div class="panel-body">
       <table class="table margin-top-20 country-format">
         <thead>
           <tr>
-            <th>
-              <?php echo $this->text('Name'); ?>
-            </th>
-            <th>
-              <span class="hint" title="<?php echo $this->text('Only enabled items will be shown to users'); ?>">
-                <?php echo $this->text('Enabled'); ?>
-              </span>
-            </th>
-            <th>
-              <span class="hint" title="<?php echo $this->text('Force users to fill in form element that represents the format item'); ?>">
-                <?php echo $this->text('Required'); ?>
-              </span>
-            </th>
-            <th>
-              <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
-                <?php echo $this->text('Weight'); ?>
-              </span>
-            </th>
+            <th><?php echo $this->text('Name'); ?></th>
+            <th><?php echo $this->text('Enabled'); ?></th>
+            <th><?php echo $this->text('Required'); ?></th>
+            <th><?php echo $this->text('Weight'); ?></th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($format as $name => $item) { ?>
-          <?php if(isset($item['name'])) { ?>
+          <?php if (isset($item['name'])) { ?>
           <tr>
             <td><?php echo $this->escape($item['name']); ?></td>
             <td class="middle">

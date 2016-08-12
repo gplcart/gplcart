@@ -378,7 +378,7 @@ class Country extends Controller
      */
     protected function setTitleFormat(array $country)
     {
-        $this->setTitle($this->text('Address format of %country', array('%country' => $country['native_name'])));
+        $this->setTitle($this->text('Address format of %country', array('%country' => $country['name'])));
     }
 
     /**
