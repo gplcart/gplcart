@@ -42,7 +42,7 @@ class Country extends Controller
     {
         $action = (string) $this->request->post('action');
         $value = (int) $this->request->post('value');
-        $selected = $this->request->post('selected', array());
+        $selected = (array) $this->request->post('selected', array());
 
         if (!empty($action)) {
             $this->action($selected, $action, $value);
@@ -54,7 +54,8 @@ class Country extends Controller
         $this->data['countries'] = $this->getCountries($limit, $query);
         $this->data['default_country'] = $this->country->getDefault();
 
-        $this->setFilter(array('name', 'native_name', 'code', 'status', 'weight'), $query);
+        $allowed = array('name', 'native_name', 'code', 'status', 'weight');
+        $this->setFilter($allowed, $query);
 
         $this->setTitleCountries();
         $this->setBreadcrumbCountries();
@@ -144,7 +145,9 @@ class Country extends Controller
      */
     protected function setBreadcrumbCountries()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
     }
 
     /**
@@ -175,8 +178,13 @@ class Country extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/country'), 'text' => $this->text('Countries')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries')));
     }
 
     /**
@@ -240,6 +248,7 @@ class Country extends Controller
         $updated = $deleted = 0;
 
         foreach ($selected as $code) {
+
             if ($action === 'status' && $this->access('country_edit')) {
                 $updated += (int) $this->country->update($code, array('status' => (int) $value));
             }
@@ -269,14 +278,10 @@ class Country extends Controller
      */
     protected function submit(array $country)
     {
-        $this->submitted = $this->request->post('country', array());
-
+        $this->setSubmitted('country');
         $this->validate($country);
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['country'] = $this->submitted;
+        
+        if($this->hasErrors('country')) {
             return;
         }
 
@@ -300,68 +305,25 @@ class Country extends Controller
         $this->submitted['status'] = !empty($this->submitted['status']);
         $this->submitted['default'] = !empty($this->submitted['default']);
 
+        if (!isset($this->submitted['weight'])) {
+            $this->submitted['weight'] = 0;
+        }
+
         if (!empty($this->submitted['default'])) {
             $this->submitted['status'] = 1;
         }
 
-        $this->validateCode($country);
-        $this->validateName();
-        $this->validateWeight();
-    }
+        $this->validator->add('code', array('regexp' => array('pattern' => '/^[a-zA-Z]{2}$/'), 'country_code_unique' => array()))
+                ->add('name', array('length' => array('min' => 1, 'max' => 255)))
+                ->add('native_name', array('length' => array('min' => 1, 'max' => 255)))
+                ->add('weight', array('numeric' => array(), 'length' => array('max' => 2)))
+                ->set($this->submitted, $country);
 
-    /**
-     * Validates a country code
-     * @param array $country
-     * @return boolean
-     */
-    protected function validateCode(array $country)
-    {
-        if (!preg_match('/^[a-zA-Z]{2}$/', $this->submitted['code'])) {
-            $this->errors['code'] = $this->text('Invalid country code. You must use only 2-digit ISO 3166-2 codes');
-            return false;
+        $this->errors = $this->validator->getErrors();
+
+        if (empty($this->errors)) {
+            $this->submitted['code'] = strtoupper($this->submitted['code']);
         }
-
-        if (empty($country['code']) || $country['code'] !== $this->submitted['code']) {
-            if ($this->country->get($this->submitted['code'])) {
-                $this->errors['code'] = $this->text('This country code already exists');
-                return false;
-            }
-        }
-
-        $this->submitted['code'] = strtoupper($this->submitted['code']);
-        return true;
-    }
-
-    /**
-     * Validates country names
-     */
-    protected function validateName()
-    {
-        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-        }
-
-        if (empty($this->submitted['native_name']) || mb_strlen($this->submitted['native_name']) > 255) {
-            $this->errors['native_name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-        }
-    }
-
-    /**
-     * Validates weight field
-     * @return boolean
-     */
-    protected function validateWeight()
-    {
-        if ($this->submitted['weight']) {
-            if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
-                return false;
-            }
-            return true;
-        }
-
-        $this->submitted['weight'] = 0;
-        return true;
     }
 
     /**
@@ -378,7 +340,8 @@ class Country extends Controller
      */
     protected function setTitleFormat(array $country)
     {
-        $this->setTitle($this->text('Address format of %country', array('%country' => $country['name'])));
+        $this->setTitle($this->text('Address format of %country', array(
+                    '%country' => $country['name'])));
     }
 
     /**
@@ -386,8 +349,13 @@ class Country extends Controller
      */
     protected function setBreadcrumbFormat()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/country'), 'text' => $this->text('Countries')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries')));
     }
 
     /**

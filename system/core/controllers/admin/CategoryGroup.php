@@ -209,7 +209,7 @@ class CategoryGroup extends Controller
     {
         $this->submitted = $this->request->post('category_group', array());
 
-        $this->validate();
+        $this->validate($category_group);
 
         $errors = $this->getErrors();
 
@@ -231,59 +231,18 @@ class CategoryGroup extends Controller
 
     /**
      * Performs validation checks on the given category group
+     * @param array $category_group
      */
-    protected function validate()
+    protected function validate(array $category_group)
     {
-        $this->validateCategoryGroup();
-        $this->validateTitle();
-        $this->validateTranslations();
-    }
+        $this->validator->add('title', array('length' => array('min' => 1, 'max' => 255)))
+                ->add('translation', array('translation' => array()));
 
-    /**
-     * Validates a category group
-     * @return boolean
-     */
-    protected function validateCategoryGroup()
-    {
+        $this->errors = $this->validator->set($this->submitted, $category_group)->getErrors();
+
         if (isset($this->submitted['category_group_id']) && $this->category_group->exists($this->submitted['type'], $this->submitted['store_id'], $this->submitted['category_group_id'])) {
             $this->errors['type'] = $this->text('Wrong category group type');
-            return false;
         }
-        return true;
-    }
-
-    /**
-     * Validates a category group title
-     * @return boolean
-     */
-    protected function validateTitle()
-    {
-        if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Validates category group translations
-     * @return boolean
-     */
-    protected function validateTranslations()
-    {
-        if (empty($this->submitted['translation'])) {
-            return true;
-        }
-
-        $has_errors = false;
-        foreach ($this->submitted['translation'] as $language => $translation) {
-            if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$language]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
-            }
-        }
-
-        return !$has_errors;
     }
 
 }

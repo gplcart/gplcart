@@ -485,8 +485,74 @@ class Tool
         }
 
         ksort($candidates);
-        
+
         return end($candidates);
+    }
+
+    /**
+     * Returns file's MIME type
+     * @param string $file
+     * @return string
+     */
+    public static function mimetype($file)
+    {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimetype = finfo_file($finfo, $file);
+        finfo_close($finfo);
+        return $mimetype;
+    }
+
+    /**
+     * Returns a value from a nested array with variable depth
+     * @param array $array
+     * @param array|string $parents
+     * @param string $glue
+     * @return mixed
+     */
+    public static function getArrayValue(array &$array, $parents, $glue = '.')
+    {
+        $ref = &$array;
+
+        if (is_string($parents)) {
+            $parents = explode($glue, $parents);
+        }
+
+        foreach ($parents as $parent) {
+            if (is_array($ref) && array_key_exists($parent, $ref)) {
+                $ref = &$ref[$parent];
+            } else {
+                $null = null;
+                return $null;
+            }
+        }
+        return $ref;
+    }
+
+    /**
+     * Sets a value in a nested array with variable depth
+     * @param array $array
+     * @param array $parents
+     * @param mixed $value
+     * @param string $glue
+     */
+    public static function setArrayValue(array &$array, $parents, $value,
+            $glue = '.')
+    {
+        $ref = &$array;
+
+        if (is_string($parents)) {
+            $parents = explode($glue, $parents);
+        }
+
+        foreach ($parents as $parent) {
+            if (isset($ref) && !is_array($ref)) {
+                $ref = array();
+            }
+
+            $ref = &$ref[$parent];
+        }
+
+        $ref = $value;
     }
 
 }

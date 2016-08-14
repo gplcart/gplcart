@@ -11,12 +11,12 @@ namespace core\models;
 
 use PDO;
 use core\Model;
-use core\Handler;
 use core\classes\Url;
 use core\classes\Curl;
 use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
+use core\models\Validator as ModelsValidator;
 
 /**
  * Manages basic behaviors and data related to files
@@ -29,6 +29,12 @@ class File extends Model
      * @var \core\models\Language $language
      */
     protected $language;
+
+    /**
+     * Validator model instance
+     * @var \core\models\Validator $validator
+     */
+    protected $validator;
 
     /**
      * Url class instance
@@ -63,16 +69,19 @@ class File extends Model
     /**
      * Constructor
      * @param ModelsLanguage $language
+     * @param ModelsValidator $validator
      * @param Url $url
      * @param Curl $curl
      */
-    public function __construct(ModelsLanguage $language, Url $url, Curl $curl)
+    public function __construct(ModelsLanguage $language,
+            ModelsValidator $validator, Url $url, Curl $curl)
     {
         parent::__construct();
 
         $this->url = $url;
         $this->curl = $curl;
         $this->language = $language;
+        $this->validator = $validator;
     }
 
     /**
@@ -89,7 +98,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = $this->getMimetype(GC_FILE_DIR . '/' . $data['path']);
+            $data['mime_type'] = Tool::mimetype(GC_FILE_DIR . '/' . $data['path']);
         }
 
         if (empty($data['file_type'])) {
@@ -114,19 +123,6 @@ class File extends Model
 
         $this->hook->fire('add.file.after', $data, $file_id);
         return $file_id;
-    }
-
-    /**
-     * Returns file's MIME type
-     * @param string $file
-     * @return string
-     */
-    public function getMimetype($file)
-    {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimetype = finfo_file($finfo, $file);
-        finfo_close($finfo);
-        return $mimetype;
     }
 
     /**
@@ -302,16 +298,16 @@ class File extends Model
             return $this->language->text('Unable to upload the file');
         }
 
-        $validation_result = $this->validate($tempname, $file);
+        $valid = $this->validate($tempname, $file);
 
-        if ($validation_result !== true) {
-            return $validation_result;
+        if ($valid !== true) {
+            return $valid;
         }
 
-        $move_result = $this->move($tempname, $file);
+        $moved = $this->move($tempname, $file);
 
-        if ($move_result !== true) {
-            return $move_result;
+        if ($moved !== true) {
+            return $moved;
         }
 
         $this->hook->fire('file.upload.after', $postfile, $this->uploaded);
@@ -356,17 +352,21 @@ class File extends Model
             return $this->language->text('Missing handler');
         }
 
+        if (empty($this->handler['validator'])) {
+            return $this->language->text('Missing validator');
+        }
+
         if (isset($this->handler['filesize']) && filesize($path) > $this->handler['filesize']) {
             return $this->language->text('File size exceeds %s bytes', array('%s' => $this->handler['filesize']));
         }
 
-        $validation_result = Handler::call($this->handler, null, 'validator', array($path, $this->handler));
+        $result = $this->validator->check($this->handler['validator'], $path, $this->handler);
 
-        if ($validation_result !== true) {
-            return $validation_result ? $validation_result : $this->language->text('Failed to validate the file');
+        if ($result === true) {
+            return true;
         }
 
-        return true;
+        return $result; // Error
     }
 
     /**
@@ -735,40 +735,35 @@ class File extends Model
             return $handlers;
         }
 
-        $handlers = array(
-            'image' => array(
-                'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
-                'path' => 'image/upload/common',
-                'filesize' => null,
-                'mime_types' => array(),
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'image')
-                )
-            ),
-            'p12' => array(
-                'extensions' => array('p12'),
-                'path' => 'private/certificates',
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'p12')
-                )
-            ),
-            'csv' => array(
-                'extensions' => array('csv'),
-                'path' => 'image/upload/common',
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'csv')
-                )
-            ),
-            'zip' => array(
-                'extensions' => array('zip'),
-                'path' => 'upload',
-                'handlers' => array(
-                    'validator' => array('core\\handlers\\file\\Validator', 'zip')
-                )
-            ),
+        $handlers = array();
+
+        $handlers['image'] = array(
+            'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+            'path' => 'image/upload/common',
+            'filesize' => null,
+            'validator' => 'image'
+        );
+
+        $handlers['p12'] = array(
+            'extensions' => array('p12'),
+            'path' => 'private/certificates',
+            'validator' => 'p12'
+        );
+
+        $handlers['csv'] = array(
+            'extensions' => array('csv'),
+            'path' => 'image/upload/common',
+            'validator' => 'csv'
+        );
+
+        $handlers['zip'] = array(
+            'extensions' => array('zip'),
+            'path' => 'upload',
+            'validator' => 'zip'
         );
 
         $this->hook->fire('file.handlers', $handlers);
+
         return $handlers;
     }
 

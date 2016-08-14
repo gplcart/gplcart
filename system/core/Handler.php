@@ -22,11 +22,10 @@ class Handler
      * @param array $handlers
      * @param string $handler_id
      * @param string $method
-     * @param array $arguments
+     * @param array $args
      * @return mixed
      */
-    public static function call($handlers, $handler_id, $method,
-            $arguments = array())
+    public static function call($handlers, $handler_id, $method, $args = array())
     {
         $handler = static::get($handlers, $handler_id, $method);
 
@@ -34,7 +33,7 @@ class Handler
             return false;
         }
 
-        return call_user_func_array($handler, $arguments);
+        return call_user_func_array($handler, $args);
     }
 
     /**

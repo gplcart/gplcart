@@ -40,8 +40,8 @@ class Currency extends Controller
      */
     public function currencies()
     {
-        $this->data['default_currency'] = $this->currency->getDefault();
-        $this->data['currencies'] = $this->currency->getList();
+        $this->setData('default_currency', $this->currency->getDefault());
+        $this->setData('currencies', $this->currency->getList());
 
         $this->setTitleCurrencies();
         $this->setBreadcrumbCurrencies();
@@ -55,15 +55,23 @@ class Currency extends Controller
     public function edit($code = null)
     {
         $currency = $this->get($code);
+        $default_currency = $this->currency->getDefault();
+        
+        $this->setData('currency', $currency);
+        $this->setData('default_currency', $default_currency);
+        
+        $can_delete = (isset($currency['code'])
+                && $this->access('currency_delete')
+                && ($default_currency != $currency['code'])
+                && !$this->isSubmitted());
+        
+        $this->setdata('can_delete', $can_delete);
 
-        $this->data['currency'] = $currency;
-        $this->data['default_currency'] = $this->currency->getDefault();
-
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($currency);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($currency);
         }
 
@@ -93,7 +101,9 @@ class Currency extends Controller
      */
     protected function setBreadcrumbCurrencies()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
     }
 
     /**
@@ -124,8 +134,13 @@ class Currency extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/currency'), 'text' => $this->text('Currencies')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+        
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/currency'),
+            'text' => $this->text('Currencies')));
     }
 
     /**
@@ -136,7 +151,7 @@ class Currency extends Controller
     protected function get($code)
     {
         if (empty($code)) {
-            return array(); // Add new currency
+            return array();
         }
 
         $currency = $this->currency->get($code);
@@ -155,10 +170,6 @@ class Currency extends Controller
      */
     protected function delete(array $currency)
     {
-        if (empty($currency['code'])) {
-            return; // Nothing to delete
-        }
-
         $this->controlAccess('currency_delete');
 
         if ($this->currency->delete($currency['code'])) {
@@ -168,31 +179,30 @@ class Currency extends Controller
 
         $this->redirect('', $this->text('Unable to delete this currency. The most probable reason - it is default currency or used by modules'), 'danger');
     }
-
+    
     /**
      * Saves a currency
      * @param array $currency
+     * @return null
      */
     protected function submit(array $currency)
     {
-        $this->submitted = $this->request->post('currency', array());
+        $this->setSubmitted('currency');
         $this->validate($currency);
-        $errors = $this->getErrors();
 
-        if (!empty($errors)) {
-            $this->data['currency'] = $this->submitted;
+        if ($this->hasErrors('currency')) {
             return;
         }
 
         if (isset($currency['code'])) {
             $this->controlAccess('currency_edit');
-            $this->currency->update($currency['code'], $this->submitted);
+            $this->currency->update($currency['code'], $this->getSubmitted());
             $this->redirect('admin/settings/currency', $this->text('Currency %code has been updated', array(
                         '%code' => $currency['code'])), 'success');
         }
 
         $this->controlAccess('currency_add');
-        $this->currency->add($this->submitted);
+        $this->currency->add($this->getSubmitted());
         $this->redirect('admin/settings/currency', $this->text('Currency has been added'), 'success');
     }
 
@@ -203,182 +213,50 @@ class Currency extends Controller
     protected function validate(array $currency)
     {
         // Fix checkboxes
-        $this->submitted['status'] = !empty($this->submitted['status']);
-        $this->submitted['default'] = !empty($this->submitted['default']);
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('default');
 
         // Default currency always enabled
-        if ($this->submitted['default']) {
-            $this->submitted['status'] = 1;
+        if ($this->getSubmitted('default')) {
+            $this->setSubmitted('status', 1);
         }
 
-        $this->validateCode($currency);
-        $this->validateName($currency);
-        $this->validateNumericCode($currency);
-        $this->validateSymbol($currency);
-        $this->validateMajorUnit($currency);
-        $this->validateMinorUnit($currency);
-        $this->validateConvertionRate($currency);
-        $this->validateDecimals($currency);
-        $this->validateRoundingStep($currency);
-    }
+        // Validate fields
+        $this->addValidator('code', array(
+            'regexp' => array('pattern' => '/^[a-zA-Z]{3}$/'),
+            'currency_code_unique' => array()
+        ));
 
-    /**
-     * Validates the currency code field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateCode(array $currency)
-    {
-        if (!preg_match('/^[a-zA-Z]{3}$/', $this->submitted['code'])) {
-            $this->errors['code'] = $this->text('Invalid currency code. You must only use ISO 4217 codes');
-            return false;
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)));
+
+        $this->addValidator('numeric_code', array(
+            'regexp' => array('pattern' => '/^[0-9]{3}$/')));
+
+        $this->addValidator('symbol', array(
+            'length' => array('min' => 1)));
+
+        $this->addValidator('major_unit', array(
+            'length' => array('min' => 1)));
+
+        $this->addValidator('minor_unit', array(
+            'length' => array('min' => 1)));
+
+        $this->addValidator('convertion_rate', array(
+            'numeric' => array()));
+
+        $this->addValidator('decimals', array(
+            'numeric' => array()));
+
+        $this->addValidator('rounding_step', array(
+            'numeric' => array()));
+
+        $errors = $this->setValidators($currency);
+
+        if (empty($errors)) {
+            $this->setSubmitted('code', strtoupper($this->getSubmitted('code')));
+            $this->setSubmitted('convertion_rate', abs($this->getSubmitted('convertion_rate')));
         }
-
-        $this->submitted['code'] = strtoupper($this->submitted['code']);
-        $existsing_code = isset($currency['code']) ? $currency['code'] : null;
-
-        if ($existsing_code !== $this->submitted['code'] && $this->currency->get($this->submitted['code'])) {
-            $this->errors['code'] = $this->text('This currency code already exists');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the name field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateName(array $currency)
-    {
-        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the numeric code field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateNumericCode(array $currency)
-    {
-        if (!preg_match('/^[0-9]{3}$/', $this->submitted['numeric_code'])) {
-            $this->errors['numeric_code'] = $this->text('Numeric currency code must contain only 3 digits. See ISO 4217');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the symbol field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateSymbol(array $currency)
-    {
-        if (empty($this->submitted['symbol'])) {
-            $this->errors['symbol'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the major unit field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateMajorUnit(array $currency)
-    {
-        if (empty($this->submitted['major_unit'])) {
-            $this->errors['major_unit'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the minor unit field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateMinorUnit(array $currency)
-    {
-        if (empty($this->submitted['minor_unit'])) {
-            $this->errors['minor_unit'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the convertion rate field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateConvertionRate(array $currency)
-    {
-        if (empty($this->submitted['convertion_rate'])) {
-            $this->submitted['convertion_rate'] = 1;
-            return true;
-        }
-
-        if (!is_numeric($this->submitted['convertion_rate'])) {
-            $this->errors['convertion_rate'] = $this->text('Only numeric values allowed');
-            return false;
-        }
-
-        $this->submitted['convertion_rate'] = abs($this->submitted['convertion_rate']);
-        return true;
-    }
-
-    /**
-     * Validates the decimals field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateDecimals(array $currency)
-    {
-        if (empty($this->submitted['decimals'])) {
-            $this->submitted['decimals'] = 2;
-            return true;
-        }
-
-        if (!is_numeric($this->submitted['decimals'])) {
-            $this->errors['decimals'] = $this->text('Only numeric values allowed');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the rounding step field
-     * @param array $currency
-     * @return boolean
-     */
-    protected function validateRoundingStep(array $currency)
-    {
-        if (empty($this->submitted['rounding_step'])) {
-            $this->submitted['rounding_step'] = 0;
-            return true;
-        }
-
-        if (!is_numeric($this->submitted['rounding_step'])) {
-            $this->errors['rounding_step'] = $this->text('Only numeric values allowed');
-            return false;
-        }
-
-        return true;
     }
 
 }

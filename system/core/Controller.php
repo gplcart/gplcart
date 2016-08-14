@@ -198,7 +198,7 @@ class Controller
      * Array of validation errors
      * @var array
      */
-    public $errors = array();
+    protected $errors = array();
 
     /**
      * User model instance
@@ -363,17 +363,18 @@ class Controller
 
         $this->token = $this->config->token();
 
-        $this->setJob();
-        $this->setRoute();
-        $this->setDevice();
-        $this->setStore();
-        $this->setTheme();
-        $this->setLanguage();
-        $this->setAccess();
-        $this->setCron();
-        $this->setData();
-        $this->setScripts();
-        $this->setMaintenance();
+        $this->setJobProperties();
+        $this->setRouteProperties();
+        $this->setDeviceProperties();
+        $this->setStoreProperties();
+        $this->setThemeProperties();
+        $this->setLanguageProperties();
+        $this->setAccessProperties();
+        $this->setCronProperties();
+
+        $this->setDefaultData();
+        $this->setDefaultJs();
+        $this->controlMaintenanceMode();
 
         $this->hook->fire('construct', $this);
     }
@@ -473,6 +474,21 @@ class Controller
     }
 
     /**
+     * Whether a key is presented in the POST query
+     * @param string|null $key
+     * @return boolean
+     */
+    public function isSubmitted($key = null)
+    {
+        if (isset($key)) {
+            $value = $this->request->post($key, null);
+            return isset($value);
+        }
+
+        return ($this->request->method() === 'POST');
+    }
+
+    /**
      * Formats a local time/date
      * @param null|integer $timestamp
      * @param bool $full
@@ -511,7 +527,7 @@ class Controller
     /**
      * Sets the current route data
      */
-    protected function setRoute()
+    protected function setRouteProperties()
     {
         // Set access for the route
         $this->current_route = $this->route->getCurrent();
@@ -535,7 +551,7 @@ class Controller
      * Defines the current user device
      * @return null
      */
-    protected function setDevice()
+    protected function setDeviceProperties()
     {
         $device = $this->session->get('device');
 
@@ -557,7 +573,7 @@ class Controller
     /**
      * Sets the current store data
      */
-    protected function setStore()
+    protected function setStoreProperties()
     {
         $this->current_store = $this->store->current();
         if (isset($this->current_store['store_id'])) {
@@ -567,30 +583,25 @@ class Controller
 
     /**
      * Sets theme data
-     * @param null|string $theme
      */
-    protected function setTheme($theme = null)
+    protected function setThemeProperties()
     {
         $this->theme_frontend = $this->config->get('theme', 'frontend');
         $this->theme_backend = $this->config->get('theme_backend', 'backend');
 
-        if (isset($theme)) {
-            $this->theme = $theme;
-        } else {
-            if ($this->url->isBackend()) {
-                $this->theme = $this->theme_backend;
-            } elseif ($this->url->isInstall()) {
-                $this->theme = $this->theme_frontend;
-            } elseif (!empty($this->current_store)) {
-                $this->theme_frontend = $this->theme = $this->store->config('theme');
+        if ($this->url->isBackend()) {
+            $this->theme = $this->theme_backend;
+        } elseif ($this->url->isInstall()) {
+            $this->theme = $this->theme_frontend;
+        } elseif (!empty($this->current_store)) {
+            $this->theme_frontend = $this->theme = $this->store->config('theme');
 
-                if ($this->current_device === 'mobile') {
-                    $this->theme_frontend = $this->theme = $this->store->config('theme_mobile');
-                }
+            if ($this->current_device === 'mobile') {
+                $this->theme_frontend = $this->theme = $this->store->config('theme_mobile');
+            }
 
-                if ($this->current_device === 'tablet') {
-                    $this->theme_frontend = $this->theme = $this->store->config('theme_tablet');
-                }
+            if ($this->current_device === 'tablet') {
+                $this->theme_frontend = $this->theme = $this->store->config('theme_tablet');
             }
         }
 
@@ -622,9 +633,93 @@ class Controller
     }
 
     /**
+     * Sets the current working theme
+     * @param string $theme
+     */
+    public function setTheme($theme)
+    {
+        $this->theme = $theme;
+    }
+
+    /**
+     * Sets a template variable
+     * @param string|array $key
+     * @param mixed $value
+     */
+    public function setData($key, $value)
+    {
+        Tool::setArrayValue($this->data, $key, $value);
+    }
+
+    /**
+     * Sets an error
+     * @param string|array $key
+     * @param mixed $value
+     */
+    public function setError($key, $value)
+    {
+        Tool::setArrayValue($this->errors, $key, $value);
+    }
+
+    /**
+     * Sets an array of posted data
+     * @param string|array $key
+     * @param mixed $value
+     */
+    public function setSubmitted($key, $value = null)
+    {
+        if (isset($value)) {
+            Tool::setArrayValue($this->submitted, $key, $value);
+        } else {
+            $this->submitted = (array) $this->request->post($key, array());
+        }
+    }
+    
+    /**
+     * 
+     * @param type $key
+     */
+    public function setSubmittedBool($key)
+    {
+        $original = $this->getSubmitted($key);
+        $this->setSubmitted($key, (bool) $original);
+    }
+
+    /**
+     * Returns an error or a custom value
+     * @param string|array $key
+     * @param mixed $return_on_error
+     * @return mixed
+     */
+    public function error($key, $return_on_error = null)
+    {
+        $error = Tool::getArrayValue($this->errors, $key);
+
+        if (isset($error)) {
+            return isset($return_on_error) ? $return_on_error : $error;
+        }
+
+        return '';
+    }
+
+    /**
+     * Returns a submitted value
+     * @param string|array $key
+     * @return mixed
+     */
+    public function getSubmitted($key = null)
+    {
+        if (isset($key)) {
+            return Tool::getArrayValue($this->submitted, $key);
+        }
+
+        return $this->submitted;
+    }
+
+    /**
      * Loads translations, available languages etc
      */
-    protected function setLanguage()
+    protected function setLanguageProperties()
     {
         $this->language->load();
         $this->languages = $this->language->getList(true);
@@ -634,7 +729,7 @@ class Controller
      * Sets access to the current page
      * @return boolean
      */
-    protected function setAccess()
+    protected function setAccessProperties()
     {
         if ($this->url->isInstall()) {
             return;
@@ -653,7 +748,8 @@ class Controller
         }
 
         // Prevent Cross-Site Request Forgery (CSRF)
-        if ($this->request->method() === 'POST') {
+        if ($this->isSubmitted()) {
+            
             if (!Tool::hashEquals($this->request->post('token'), $this->token)) {
                 $this->response->error403();
             }
@@ -755,12 +851,84 @@ class Controller
     }
 
     /**
+     * Contols access to account pages
+     * @return null
+     */
+    protected function controlAccessAccount()
+    {
+        $account_id = $this->url->isAccount();
+
+        if (empty($account_id)) {
+            return; // This is not an account, exit
+        }
+
+        // Allow customers to see their accounts
+        if ($this->uid === $account_id) {
+            return;
+        }
+
+        if ($this->access('user')) {
+            return;
+        }
+
+        $this->outputError(403);
+    }
+
+    /**
+     * Switches the site to maintenance mode
+     */
+    protected function controlMaintenanceMode()
+    {
+        if (!$this->url->isInstall() && !$this->url->isBackend() && empty($this->current_store['status'])) {
+            $this->maintenance = true;
+            $this->outputMaintenance();
+        }
+    }
+
+    /**
+     * Displays 403 access denied to unwanted users
+     * @param string $permission
+     * @param string $redirect
+     */
+    public function controlAccess($permission, $redirect = '')
+    {
+        if (!$this->access($permission)) {
+            $this->redirect($redirect, $this->text('You are not permitted to perform this operation'), 'danger');
+        }
+    }
+
+    /**
+     * "Honey pot" submission protection
+     * @param string $type
+     * @return null
+     */
+    public function controlSpam($type)
+    {
+        $honeypot = $this->request->request('url', '');
+
+        if ($honeypot === '') {
+            return;
+        }
+
+        $ip = $this->request->ip();
+
+        $message = array(
+            'ip' => $ip,
+            'message' => 'Spam submit from IP %address',
+            'variables' => array('%address' => $ip)
+        );
+
+        $this->logger->log($type, $message, 'warning');
+        $this->response->error403(false);
+    }
+
+    /**
      * Redirects to a new location
      * @param string $url
      * @param string $message
      * @param string $severity
      */
-    protected function redirect($url = '', $message = '', $severity = 'info')
+    public function redirect($url = '', $message = '', $severity = 'info')
     {
         if ($message !== '') {
             $this->session->setMessage($message, $severity);
@@ -770,27 +938,12 @@ class Controller
     }
 
     /**
-     * Displsys an error page
-     * @param integer $code
-     */
-    protected function outputError($code = 403)
-    {
-        $title = (string) $this->response->statuses($code);
-
-        if ($title !== '') {
-            $this->setTitle($title, false);
-        }
-
-        $this->output("common/error/$code", array('headers' => $code));
-    }
-
-    /**
      * Sets page <title> tag
      * @param string $title
      * @param boolean $both
      * @return string
      */
-    protected function setTitle($title, $both = true)
+    public function setTitle($title, $both = true)
     {
         return $this->document->title($title, $both);
     }
@@ -800,7 +953,7 @@ class Controller
      * @param array|string $templates
      * @param array $options
      */
-    protected function output($templates, array $options = array())
+    public function output($templates, array $options = array())
     {
         if (is_string($templates)) {
             $templates = array('region_content' => $templates);
@@ -825,6 +978,30 @@ class Controller
         $layout_data['region_body'] = $this->render($templates['region_body'], $body_data);
 
         $this->response->html($this->render($layout_template, $layout_data), $options);
+    }
+
+    /**
+     * Displsys an error page
+     * @param integer $code
+     */
+    public function outputError($code = 403)
+    {
+        $title = (string) $this->response->statuses($code);
+
+        if ($title !== '') {
+            $this->setTitle($title, false);
+        }
+
+        $this->output("common/error/$code", array('headers' => $code));
+    }
+
+    /**
+     * Displays site maintenance page
+     */
+    public function outputMaintenance()
+    {
+        $this->setTitle('Site maintenance', false);
+        $this->output(array('layout' => 'common/maintenance'), array('headers' => 503));
     }
 
     /**
@@ -858,7 +1035,7 @@ class Controller
      * @param string|array $item Expected array format:
      * first item - template, second - variables for $this->render()
      */
-    protected function addRegionItem($region, $item)
+    public function addRegionItem($region, $item)
     {
         if (is_array($item)) {
             $template = array_shift($item);
@@ -870,6 +1047,27 @@ class Controller
 
         $weight = isset($this->data[$region]) ? count($this->data[$region]) : 0;
         $this->data[$region][] = array('content' => $content, 'weight' => $weight++);
+    }
+    
+    /**
+     * Adds validators for a submitted field
+     * @param string $field
+     * @param array $validators
+     */
+    protected function addValidator($field, array $validators = array())
+    {
+        $this->validator->add($field, $validators);
+    }
+    
+    /**
+     * Starts validation and sets validation errors (if any)
+     * @param array $data
+     * @return array
+     */
+    protected function setValidators(array $data = array())
+    {
+        $this->errors = $this->validator->set($this->getSubmitted(), $data)->getErrors();
+        return $this->errors;
     }
 
     /**
@@ -938,20 +1136,19 @@ class Controller
 
     /**
      * Renders TWIG templates
-     * @param string $template_path
+     * @param string $template
      * @param array $data
      * @param array $options
      * @return string
      */
-    protected function renderTwig($template_path, array $data,
-            array $options = array())
+    public function renderTwig($template, array $data, array $options = array())
     {
-        $parts = explode('/', $template_path);
-        $template_file = array_pop($parts);
-        $template_dir = implode('/', $parts);
+        $parts = explode('/', $template);
+        $file = array_pop($parts);
+        $directory = implode('/', $parts);
 
-        $this->twig->set($template_dir, $this, $options);
-        return $this->twig->render($template_file, $data);
+        $this->twig->set($directory, $this, $options);
+        return $this->twig->render($file, $data);
     }
 
     /**
@@ -960,7 +1157,7 @@ class Controller
      * @param array $data
      * @return string
      */
-    protected function renderPhp($template, array $data)
+    public function renderPhp($template, array $data)
     {
         extract($data, EXTR_SKIP);
         ob_start();
@@ -969,33 +1166,9 @@ class Controller
     }
 
     /**
-     * Contols access to account pages
-     * @return null
-     */
-    protected function controlAccessAccount()
-    {
-        $account_id = $this->url->isAccount();
-
-        if (empty($account_id)) {
-            return; // This is not an account, exit
-        }
-
-        // Allow customers to see their accounts
-        if ($this->uid === $account_id) {
-            return;
-        }
-
-        if ($this->access('user')) {
-            return;
-        }
-
-        $this->outputError(403);
-    }
-
-    /**
      * Sets cron properties
      */
-    protected function setCron()
+    protected function setCronProperties()
     {
         $this->cron_interval = (int) $this->config->get('cron_interval', 86400);
         $this->cron_last_run = (int) $this->config->get('cron_last_run', 0);
@@ -1011,7 +1184,7 @@ class Controller
      * Sets a batch job from the current URL
      * @return null
      */
-    protected function setJob()
+    protected function setJobProperties()
     {
         $job_id = (string) $this->request->get('job_id');
 
@@ -1038,7 +1211,7 @@ class Controller
     /**
      * Adds required javascripts
      */
-    protected function setScripts()
+    protected function setDefaultJs()
     {
         // Libraries
         $this->document->js('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -100);
@@ -1093,7 +1266,7 @@ class Controller
     /**
      * Sets default template variables
      */
-    protected function setData()
+    protected function setDefaultData()
     {
         $this->data['token'] = $this->token;
         $this->data['base'] = $this->base;
@@ -1121,33 +1294,13 @@ class Controller
     }
 
     /**
-     * Switches the site to maintenance mode
-     */
-    protected function setMaintenance()
-    {
-        if (!$this->url->isInstall() && !$this->url->isBackend() && empty($this->current_store['status'])) {
-            $this->maintenance = true;
-            $this->outputMaintenance();
-        }
-    }
-
-    /**
-     * Displays site maintenance page
-     */
-    protected function outputMaintenance()
-    {
-        $this->setTitle('Site maintenance', false);
-        $this->output(array('layout' => 'common/maintenance'), array('headers' => 503));
-    }
-
-    /**
      * Adds a JS on the page
      * @param string $script
      * @param string $position
      * @param integer $weight
      * @return array
      */
-    protected function setJs($script, $position, $weight = null)
+    public function setJs($script, $position, $weight = null)
     {
         return $this->document->js($script, $position, $weight);
     }
@@ -1158,7 +1311,7 @@ class Controller
      * @param integer $weight
      * @return array
      */
-    protected function setCss($css, $weight = null)
+    public function setCss($css, $weight = null)
     {
         return $this->document->css($css, $weight);
     }
@@ -1168,7 +1321,7 @@ class Controller
      * @param array $content
      * @return array
      */
-    protected function setMeta($content)
+    public function setMeta($content)
     {
         return $this->document->meta($content);
     }
@@ -1178,7 +1331,7 @@ class Controller
      * @param array $breadcrumb
      * @return array
      */
-    protected function setBreadcrumb(array $breadcrumb)
+    public function setBreadcrumb(array $breadcrumb)
     {
         return $this->document->breadcrumb($breadcrumb);
     }
@@ -1188,7 +1341,7 @@ class Controller
      * @param string $title
      * @return string
      */
-    protected function setPageTitle($title)
+    public function setPageTitle($title)
     {
         return $this->document->ptitle($title);
     }
@@ -1198,7 +1351,7 @@ class Controller
      * @param string $description
      * @return string
      */
-    protected function setPageDescription($description)
+    public function setPageDescription($description)
     {
         return $this->document->pdescription($description);
     }
@@ -1208,7 +1361,7 @@ class Controller
      * @param string $string
      * @return string
      */
-    protected function escape($string)
+    public function escape($string)
     {
         return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
     }
@@ -1218,7 +1371,7 @@ class Controller
      * @param string $string
      * @return string
      */
-    protected function filter($string)
+    public function filter($string)
     {
         return filter_var($string, FILTER_SANITIZE_STRING);
     }
@@ -1230,7 +1383,7 @@ class Controller
      * @param string $trimmarker
      * @return string
      */
-    protected function truncate($string, $length = 100, $trimmarker = '...')
+    public function truncate($string, $length = 100, $trimmarker = '...')
     {
         return mb_strimwidth($string, 0, $length, $trimmarker, 'UTF-8');
     }
@@ -1242,46 +1395,9 @@ class Controller
      * @param array|null $protocols
      * @return string
      */
-    protected function xss($string, $tags = null, $protocols = null)
+    public function xss($string, $tags = null, $protocols = null)
     {
         return $this->filter->xss($string, $tags, $protocols);
-    }
-
-    /**
-     * Displays 403 access denied to unwanted users
-     * @param string $permission
-     * @param string $redirect
-     */
-    protected function controlAccess($permission, $redirect = '')
-    {
-        if (!$this->access($permission)) {
-            $this->redirect($redirect, $this->text('You are not permitted to perform this operation'), 'danger');
-        }
-    }
-
-    /**
-     * "Honey pot" submission protection
-     * @param string $type
-     * @return null
-     */
-    protected function controlSpam($type)
-    {
-        $honeypot = $this->request->request('url', '');
-
-        if ($honeypot === '') {
-            return;
-        }
-
-        $ip = $this->request->ip();
-
-        $message = array(
-            'ip' => $ip,
-            'message' => 'Spam submit from IP %address',
-            'variables' => array('%address' => $ip)
-        );
-
-        $this->logger->log($type, $message, 'warning');
-        $this->response->error403(false);
     }
 
     /**
@@ -1289,7 +1405,7 @@ class Controller
      * @param boolean $message
      * @return array
      */
-    protected function getErrors($message = true)
+    public function getErrors($message = true)
     {
         if (empty($this->errors)) {
             return array();
@@ -1301,13 +1417,31 @@ class Controller
 
         return $this->errors;
     }
+    
+    /**
+     * Returns true if an error occurred
+     * and passes back to template the submitted data
+     * @param string $key
+     * @return boolean
+     */
+    public function hasErrors($key)
+    {
+        $errors = $this->getErrors();
+        
+        if(empty($errors)){
+            return false;
+        }
+
+        $this->setData($key, $this->getSubmitted());
+        return true;
+    }
 
     /**
      * Sets an array of messages
      * @param array|string $messages
      * @param string $severity
      */
-    protected function setMessage($messages, $severity = 'info')
+    public function setMessage($messages, $severity = 'info')
     {
         foreach ((array) $messages as $message) {
             $this->data['messages'][$severity][] = $message;
@@ -1318,7 +1452,7 @@ class Controller
      * Returns a rendered job widget
      * @return string
      */
-    protected function getJob()
+    public function getJob()
     {
         if (empty($this->current_job['status'])) {
             return '';
@@ -1335,7 +1469,7 @@ class Controller
      * Returns a rendered help link depending on the current URL
      * @return string
      */
-    protected function getHelp()
+    public function getHelp()
     {
         $segments = $this->url->segments();
         $folder = $this->langcode ? $this->langcode : 'en';
@@ -1370,7 +1504,7 @@ class Controller
      * Returns a string used to separate summary and rest of text
      * @return string
      */
-    protected function getSummaryDelimiter()
+    public function getSummaryDelimiter()
     {
         return $this->config->get('summary_delimiter', '<!--summary-->');
     }
@@ -1383,7 +1517,7 @@ class Controller
      * @param array|null $allowed_protocols
      * @return string
      */
-    protected function summary($text, $filter_xss = false, $allowed_tags = null,
+    public function summary($text, $filter_xss = false, $allowed_tags = null,
             $allowed_protocols = null)
     {
         $summary = '';
@@ -1405,7 +1539,7 @@ class Controller
      * @param array $allowed_filters
      * @param array $query
      */
-    protected function setFilter(array $allowed_filters, $query = null)
+    public function setFilter(array $allowed_filters, $query = null)
     {
         if (!isset($query)) {
             $query = $this->getFilterQuery();
@@ -1440,7 +1574,7 @@ class Controller
      * @param array $default
      * @return array
      */
-    protected function getFilterQuery(array $default = array())
+    public function getFilterQuery(array $default = array())
     {
         $query = $this->query;
 
@@ -1469,7 +1603,7 @@ class Controller
      * @param null|integer $limit
      * @return array Array of SQL limit values
      */
-    protected function setPager($total, $query = null, $limit = null)
+    public function setPager($total, $query = null, $limit = null)
     {
         if (!isset($limit)) {
             $limit = $this->config->get('admin_list_limit', 20);
@@ -1499,7 +1633,7 @@ class Controller
      * Returns a rendered pager from data array
      * @return string
      */
-    protected function getPager()
+    public function getPager()
     {
         return isset($this->data['pager']) ? $this->data['pager'] : '';
     }
@@ -1510,7 +1644,7 @@ class Controller
      * @param mixed $default
      * @return mixed
      */
-    protected function getSettings($key = null, $default = null)
+    public function getSettings($key = null, $default = null)
     {
         if (isset($key)) {
             return array_key_exists($key, $this->theme_settings) ? $this->theme_settings[$key] : $default;

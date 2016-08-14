@@ -28,7 +28,6 @@
           <?php } ?>
         </div>
       </div>
-      <?php if (empty($currency['code'])) { ?>
       <div class="required form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('3-letter ISO 4217 code , i.e USD for US dollar'); ?>">
@@ -42,9 +41,6 @@
           <?php } ?>
         </div>
       </div>
-      <?php } else { ?>
-      <input type="hidden" name="currency[code]" value="<?php echo $currency['code']; ?>">
-      <?php } ?>
       <div class="required form-group<?php echo isset($this->errors['symbol']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Currency sign, i.e $ for US dollar'); ?>">
@@ -253,7 +249,7 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
-          <?php if (isset($currency['code']) && $this->access('currency_delete') && ($default_currency != $currency['code'])) { ?>
+          <?php if ($can_delete) { ?>
           <button class="btn btn-danger delete-currency" name="delete" value="1">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
@@ -261,11 +257,6 @@
         </div>
         <div class="col-md-4 text-right">
           <div class="btn-toolbar">
-            <?php if (isset($currency['code']) && $this->access('currency_delete') && ($default_currency != $currency['code'])) { ?>
-            <button class="btn btn-danger delete-currency" name="delete" value="1">
-              <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
-            </button>
-            <?php } ?>
             <a href="<?php echo $this->url('admin/settings/currency'); ?>" class="btn btn-default"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
             <?php if ($this->access('currency_edit') || $this->access('currency_add')) { ?>
             <button class="btn btn-default save" name="save" value="1"><i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?></button>

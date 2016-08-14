@@ -94,13 +94,13 @@ class City extends Controller
      */
     public function edit($country_code, $state_id, $city_id = null)
     {
-        $country = $this->getCountry($country_code);
-        $state = $this->getState($state_id);
         $city = $this->get($city_id);
+        $state = $this->getState($state_id);
+        $country = $this->getCountry($country_code);
 
-        $this->data['country'] = $country;
-        $this->data['state'] = $state;
         $this->data['city'] = $city;
+        $this->data['state'] = $state;
+        $this->data['country'] = $country;
 
         if ($this->request->post('delete')) {
             $this->delete($country, $state, $city);
@@ -234,8 +234,13 @@ class City extends Controller
      */
     protected function setBreadcrumbCity()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/country'), 'text' => $this->text('Countries')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries')));
     }
 
     /**
@@ -267,11 +272,8 @@ class City extends Controller
      */
     protected function delete(array $country, array $state, array $city)
     {
-        if (empty($city['city_id'])) {
-            return;
-        }
-
         $this->controlAccess('city_delete');
+
         if ($this->city->delete($city['city_id'])) {
             $this->redirect("admin/settings/cities/{$country['code']}/{$state['state_id']}", $this->text('City %name has been deleted', array(
                         '%name' => $city['name'])), 'success');
@@ -352,17 +354,8 @@ class City extends Controller
      */
     protected function validate()
     {
-        $this->validateTitle();
-    }
-
-    /**
-     * Validates a city name
-     */
-    protected function validateTitle()
-    {
-        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-        }
+        $this->validator->add('name', array('length' => array('min' => 1, 'max' => 255)));
+        $this->errors = $this->validator->set($this->submitted)->getErrors();
     }
 
 }
