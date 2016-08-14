@@ -23,7 +23,7 @@ class Alias extends Controller
      * @var \core\models\Alias $alias
      */
     protected $alias;
-    
+
     /**
      * Constructor
      * @param ModelsAlias $alias
@@ -43,17 +43,14 @@ class Alias extends Controller
         $query = $this->getFilterQuery();
         $limit = $this->setPager($this->alias->getList(array('count' => true) + $query), $query);
 
-        $this->data['aliases'] = $this->getAliases($limit, $query);
-        $this->data['id_keys'] = $this->alias->getIdKeys();
+        $this->setData('aliases', $this->getAliases($limit, $query));
+        $this->setData('id_keys', $this->alias->getIdKeys());
 
         $filters = array('id_value', 'id_key', 'alias');
         $this->setFilter($filters, $query);
 
-        $action = (string) $this->request->post('action');
-        $selected = $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $this->setTitleAliases();
@@ -84,7 +81,7 @@ class Alias extends Controller
     {
         $this->output('content/alias/list');
     }
-    
+
     /**
      * Returns an array of aliases
      * @param integer $limit
@@ -98,12 +95,13 @@ class Alias extends Controller
 
     /**
      * Applies an action to the selected aliases
-     * @param array $selected
-     * @param string $action
      * @return boolean
      */
-    protected function action(array $selected, $action)
+    protected function action()
     {
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
         $deleted = 0;
         foreach ($selected as $id) {
             $alias = $this->alias->get($id);
@@ -130,4 +128,5 @@ class Alias extends Controller
 
         return false;
     }
+
 }

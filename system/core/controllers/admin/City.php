@@ -64,22 +64,19 @@ class City extends Controller
         $country = $this->getCountry($country_code);
         $state = $this->getState($state_id);
 
-        $action = (string) $this->request->post('action');
-        $value = (int) $this->request->post('value');
-        $selected = $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $query = $this->getFilterQuery();
         $limit = $this->setPager($this->getTotalCities($state_id, $query), $query);
 
-        $this->data['country'] = $country;
-        $this->data['state'] = $state;
-        $this->data['cities'] = $this->getCities($limit, $query, $state_id);
+        $this->setData('country', $country);
+        $this->setData('state', $state);
+        $this->setData('cities', $this->getCities($limit, $query, $state_id));
 
-        $this->setFilter(array('city_id', 'name', 'status'), $query);
+        $allowed = array('city_id', 'name', 'status');
+        $this->setFilter($allowed, $query);
 
         $this->setTitleCities($state);
         $this->setBreadcrumbCities($country);
@@ -98,15 +95,15 @@ class City extends Controller
         $state = $this->getState($state_id);
         $country = $this->getCountry($country_code);
 
-        $this->data['city'] = $city;
-        $this->data['state'] = $state;
-        $this->data['country'] = $country;
+        $this->setData('city', $city);
+        $this->setData('state', $state);
+        $this->setData('country', $country);
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($country, $state, $city);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($country, $state, $city);
         }
 
@@ -123,7 +120,8 @@ class City extends Controller
      */
     protected function getTotalCities($state_id, array $query)
     {
-        return $this->city->getList(array('count' => true, 'state_id' => $state_id) + $query);
+        return $this->city->getList(array(
+                    'count' => true, 'state_id' => $state_id) + $query);
     }
 
     /**
@@ -175,7 +173,8 @@ class City extends Controller
      */
     protected function getCities(array $limit, array $query, $state_id)
     {
-        return $this->city->getList(array('limit' => $limit, 'state_id' => $state_id) + $query);
+        return $this->city->getList(array(
+                    'limit' => $limit, 'state_id' => $state_id) + $query);
     }
 
     /**
@@ -184,7 +183,8 @@ class City extends Controller
      */
     protected function setTitleCities(array $state)
     {
-        $this->setTitle($this->text('Cities of state %state', array('%state' => $state['name'])));
+        $this->setTitle($this->text('Cities of state %state', array(
+                    '%state' => $state['name'])));
     }
 
     /**
@@ -279,19 +279,20 @@ class City extends Controller
                         '%name' => $city['name'])), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete city %name. The most probable reason - it is already used in addresses', array(
+        $this->redirect('', $this->text('Cannot delete city %name.', array(
                     '%name' => $city['name'])), 'warning');
     }
 
     /**
      * Applies an action to the selected cities
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $action = (string) $this->request->post('action');
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
+
         $deleted = $updated = 0;
         foreach ($selected as $id) {
             if ($action === 'status' && $this->access('city_edit')) {
@@ -325,37 +326,44 @@ class City extends Controller
      */
     protected function submit(array $country, array $state, array $city)
     {
-        $this->submitted = $this->request->post('city', array());
-        $this->validate();
+        $this->setSubmitted('city');
+        $this->validate($country, $state, $city);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['city'] = $this->submitted;
+        if ($this->hasErrors('city')) {
             return;
         }
 
-        $this->submitted += array('country' => $country['code'], 'state_id' => $state['state_id']);
-
         if (isset($city['city_id'])) {
             $this->controlAccess('city_edit');
-            $this->city->update($city['city_id'], $this->submitted);
+            $this->city->update($city['city_id'], $this->getSubmitted());
             $this->redirect("admin/settings/cities/{$country['code']}/{$state['state_id']}", $this->text('City %name has been updated', array(
                         '%name' => $city['name'])), 'success');
         }
 
         $this->controlAccess('city_add');
-        $this->city->add($this->submitted);
+        $this->city->add($this->getSubmitted());
         $this->redirect("admin/settings/cities/{$country['code']}/{$state['state_id']}", $this->text('City has been added'), 'success');
     }
 
     /**
      * Validates an array of submitted city data
+     * @param array $country
+     * @param array $state
+     * @param array $city
      */
-    protected function validate()
+    protected function validate(array $country, array $state, array $city)
     {
-        $this->validator->add('name', array('length' => array('min' => 1, 'max' => 255)));
-        $this->errors = $this->validator->set($this->submitted)->getErrors();
+        $this->setSubmittedBool('status');
+
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)));
+
+        $errors = $this->setValidators();
+
+        if (empty($errors)) {
+            $this->setSubmitted('country', $country['code']);
+            $this->setSubmitted('state_id', $state['state_id']);
+        }
     }
 
 }

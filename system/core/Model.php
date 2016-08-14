@@ -45,4 +45,13 @@ class Model
         $this->db = $this->config->getDb();
     }
 
+    /**
+     * Returns config instance
+     * @return \core\Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
 }

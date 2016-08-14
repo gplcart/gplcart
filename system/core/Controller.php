@@ -665,16 +665,20 @@ class Controller
      * Sets an array of posted data
      * @param string|array $key
      * @param mixed $value
+     * @param boolean $filter
+     * @return array
      */
-    public function setSubmitted($key, $value = null)
+    public function setSubmitted($key, $value = null, $filter = true)
     {
         if (isset($value)) {
             Tool::setArrayValue($this->submitted, $key, $value);
         } else {
-            $this->submitted = (array) $this->request->post($key, array());
+            $this->submitted = (array) $this->request->post($key, array(), $filter);
         }
+        
+        return $this->submitted;
     }
-    
+
     /**
      * 
      * @param type $key
@@ -717,6 +721,16 @@ class Controller
     }
 
     /**
+     * Returns a value from an array of template variables
+     * @param string|array $key
+     * @return mixed
+     */
+    public function getData($key)
+    {
+        return Tool::getArrayValue($this->data, $key);
+    }
+
+    /**
      * Loads translations, available languages etc
      */
     protected function setLanguageProperties()
@@ -749,7 +763,7 @@ class Controller
 
         // Prevent Cross-Site Request Forgery (CSRF)
         if ($this->isSubmitted()) {
-            
+
             if (!Tool::hashEquals($this->request->post('token'), $this->token)) {
                 $this->response->error403();
             }
@@ -1048,7 +1062,7 @@ class Controller
         $weight = isset($this->data[$region]) ? count($this->data[$region]) : 0;
         $this->data[$region][] = array('content' => $content, 'weight' => $weight++);
     }
-    
+
     /**
      * Adds validators for a submitted field
      * @param string $field
@@ -1058,7 +1072,7 @@ class Controller
     {
         $this->validator->add($field, $validators);
     }
-    
+
     /**
      * Starts validation and sets validation errors (if any)
      * @param array $data
@@ -1251,7 +1265,7 @@ class Controller
      * @param array $data
      * @param integer|null $weight
      */
-    protected function setJsSettings($key, array $data, $weight = null)
+    public function setJsSettings($key, array $data, $weight = null)
     {
         $json = json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
@@ -1417,22 +1431,26 @@ class Controller
 
         return $this->errors;
     }
-    
+
     /**
      * Returns true if an error occurred
      * and passes back to template the submitted data
      * @param string $key
      * @return boolean
      */
-    public function hasErrors($key)
+    public function hasErrors($key, array $data = array())
     {
         $errors = $this->getErrors();
-        
-        if(empty($errors)){
+
+        if (empty($errors)) {
             return false;
         }
+        
+        if(!empty($data)){
+           $this->submitted += $data;
+        }
 
-        $this->setData($key, $this->getSubmitted());
+        $this->setData($key, $this->submitted);
         return true;
     }
 

@@ -43,8 +43,8 @@ class CategoryGroup extends Controller
         $query = $this->getFilterQuery();
         $limit = $this->setPager($this->getTotalGroups($query), $query);
 
-        $this->data['groups'] = $this->getGroups($limit, $query);
-        $this->data['stores'] = $this->store->getNames();
+        $this->setData('groups', $this->getGroups($limit, $query));
+        $this->setData('stores', $this->store->getNames());
 
         $filters = array('title', 'store_id', 'type');
         $this->setFilter($filters, $query);
@@ -61,15 +61,19 @@ class CategoryGroup extends Controller
     public function edit($category_group_id = null)
     {
         $category_group = $this->get($category_group_id);
-        $this->data['category_group'] = $category_group;
-        $this->data['stores'] = $this->store->getNames();
-        $this->data['can_delete'] = (isset($category_group['category_group_id']) && $this->category_group->canDelete($category_group_id));
 
-        if ($this->request->post('delete')) {
+        $this->setData('category_group', $category_group);
+        $this->setData('stores', $this->store->getNames());
+
+        $can_delete = (isset($category_group['category_group_id']) && $this->category_group->canDelete($category_group_id) && $this->access('category_group_delete'));
+
+        $this->setData('can_delete', $can_delete);
+
+        if ($this->isSubmitted('delete')) {
             $this->delete($category_group);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($category_group);
         }
 
@@ -207,25 +211,21 @@ class CategoryGroup extends Controller
      */
     protected function submit(array $category_group)
     {
-        $this->submitted = $this->request->post('category_group', array());
-
+        $this->setSubmitted('category_group');
         $this->validate($category_group);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['category_group'] = $this->submitted + $category_group;
+        if ($this->hasErrors('category_group')) {
             return;
         }
 
         if (isset($category_group['category_group_id'])) {
             $this->controlAccess('category_group_edit');
-            $this->category_group->update($category_group['category_group_id'], $this->submitted);
+            $this->category_group->update($category_group['category_group_id'], $this->getSubmitted());
             $this->redirect('admin/content/category/group', $this->text('Category group has been updated'), 'success');
         }
 
         $this->controlAccess('category_group_add');
-        $this->category_group->add($this->submitted);
+        $this->category_group->add($this->getSubmitted());
         $this->redirect('admin/content/category/group', $this->text('Category group has been added'), 'success');
     }
 
@@ -235,14 +235,19 @@ class CategoryGroup extends Controller
      */
     protected function validate(array $category_group)
     {
-        $this->validator->add('title', array('length' => array('min' => 1, 'max' => 255)))
-                ->add('translation', array('translation' => array()));
+        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
+        $this->addValidator('translation', array('translation' => array()));
 
-        $this->errors = $this->validator->set($this->submitted, $category_group)->getErrors();
-
-        if (isset($this->submitted['category_group_id']) && $this->category_group->exists($this->submitted['type'], $this->submitted['store_id'], $this->submitted['category_group_id'])) {
-            $this->errors['type'] = $this->text('Wrong category group type');
+        $category_group_id = null;
+        if (isset($category_group['category_group_id'])) {
+            $category_group_id = $category_group['category_group_id'];
         }
+
+        $this->addValidator('type', array('category_group_type' => array(
+                'store_id' => $this->getSubmitted('store_id'),
+                'category_group_id' => $category_group_id)));
+
+        $this->setValidators($category_group);
     }
 
 }

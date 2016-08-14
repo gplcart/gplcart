@@ -72,7 +72,7 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
-          <?php if (isset($category_group['category_group_id']) && $this->access('category_group_delete') && $can_delete) { ?>
+          <?php if ($can_delete) { ?>
           <button class="btn btn-danger delete" name="delete" value="1">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>

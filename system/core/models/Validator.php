@@ -209,6 +209,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Database', 'currencyCodeUnique')
             ),
         );
+        
+        $handlers['category_group_type'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Database', 'categoryGroupType')
+            ),
+        );
 
         $this->hook->fire('validator.handlers', $handlers);
 

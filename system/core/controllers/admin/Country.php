@@ -40,19 +40,17 @@ class Country extends Controller
      */
     public function countries()
     {
-        $action = (string) $this->request->post('action');
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
 
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $query = $this->getFilterQuery();
-        $limit = $this->setPager($this->getTotalCountries($query), $query);
+        $total = $this->getTotalCountries($query);
+        $limit = $this->setPager($total, $query);
 
-        $this->data['countries'] = $this->getCountries($limit, $query);
-        $this->data['default_country'] = $this->country->getDefault();
+        $this->setData('countries', $this->getCountries($limit, $query));
+        $this->setData('default_country', $this->country->getDefault());
 
         $allowed = array('name', 'native_name', 'code', 'status', 'weight');
         $this->setFilter($allowed, $query);
@@ -70,13 +68,13 @@ class Country extends Controller
     {
         $country = $this->get($country_code);
 
-        $this->data['country'] = $country;
+        $this->setData('country', $country);
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($country);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($country);
         }
 
@@ -92,9 +90,9 @@ class Country extends Controller
     public function format($country_code)
     {
         $country = $this->get($country_code);
-        $this->data['format'] = $country['format'];
+        $this->setData('format', $country['format']);
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submitFormat($country);
         }
 
@@ -210,33 +208,30 @@ class Country extends Controller
     /**
      * Deletes a country
      * @param array $country
-     * @return null
      */
     protected function delete(array $country)
     {
-        if (empty($country['code'])) {
-            return;
-        }
-
         $this->controlAccess('country_delete');
 
-        if (!empty($country['default'])) {
-            $this->redirect('', $this->text('You cannot delete default country'), 'danger');
+        $deleted = $this->country->delete($country['code']);
+
+        if ($deleted) {
+            $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
         }
 
-        $this->country->delete($country['code']);
-        $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
+        $this->redirect('', $this->text('Cannot delete this country'), 'danger');
     }
 
     /**
      * Applies an action to the selected countries
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
         if ($action === 'weight' && $this->access('country_edit')) {
             foreach ($selected as $code => $weight) {
                 $this->country->update($code, array('weight' => $weight));
@@ -280,19 +275,19 @@ class Country extends Controller
     {
         $this->setSubmitted('country');
         $this->validate($country);
-        
-        if($this->hasErrors('country')) {
+
+        if ($this->hasErrors('country')) {
             return;
         }
 
         if (isset($country['code'])) {
             $this->controlAccess('country_edit');
-            $this->country->update($country['code'], $this->submitted);
+            $this->country->update($country['code'], $this->getSubmitted());
             $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
         }
 
         $this->controlAccess('country_add');
-        $this->country->add($this->submitted);
+        $this->country->add($this->getSubmitted());
         $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
     }
 
@@ -302,27 +297,31 @@ class Country extends Controller
      */
     protected function validate(array $country)
     {
-        $this->submitted['status'] = !empty($this->submitted['status']);
-        $this->submitted['default'] = !empty($this->submitted['default']);
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('default');
 
-        if (!isset($this->submitted['weight'])) {
-            $this->submitted['weight'] = 0;
+        if ($this->getSubmitted('default')) {
+            $this->setSubmitted('status', 1);
         }
 
-        if (!empty($this->submitted['default'])) {
-            $this->submitted['status'] = 1;
-        }
+        $this->addValidator('code', array(
+            'regexp' => array('pattern' => '/^[a-zA-Z]{2}$/'),
+            'country_code_unique' => array()));
 
-        $this->validator->add('code', array('regexp' => array('pattern' => '/^[a-zA-Z]{2}$/'), 'country_code_unique' => array()))
-                ->add('name', array('length' => array('min' => 1, 'max' => 255)))
-                ->add('native_name', array('length' => array('min' => 1, 'max' => 255)))
-                ->add('weight', array('numeric' => array(), 'length' => array('max' => 2)))
-                ->set($this->submitted, $country);
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)));
 
-        $this->errors = $this->validator->getErrors();
+        $this->addValidator('native_name', array(
+            'length' => array('min' => 1, 'max' => 255)));
 
-        if (empty($this->errors)) {
-            $this->submitted['code'] = strtoupper($this->submitted['code']);
+        $this->addValidator('weight', array(
+            'numeric' => array(),
+            'length' => array('max' => 2)));
+
+        $errors = $this->setValidators($country);
+
+        if (empty($errors)) {
+            $this->setSubmitted('code', strtoupper($this->getSubmitted('code')));
         }
     }
 
@@ -365,15 +364,17 @@ class Country extends Controller
     protected function submitFormat(array $country)
     {
         $this->controlAccess('country_format_edit');
-        $format = (array) $this->request->post('format');
+
+        $format = $this->setSubmitted('format');
 
         // Fix checkboxes, enable required fields
         foreach ($format as &$item) {
+
             $item['required'] = isset($item['required']);
             $item['status'] = isset($item['status']);
 
             if ($item['required']) {
-                $item['status'] = 1;
+                $item['status'] = 1; // Required fields are always enabled
             }
         }
 

@@ -71,16 +71,12 @@ class Category extends Controller
     {
         $category_group = $this->getCategoryGroup($category_group_id);
 
-        $action = (string) $this->request->post('action');
-        $value = (int) $this->request->post('value');
-        $selected = $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
-        $this->data['category_group_id'] = $category_group_id;
-        $this->data['categories'] = $this->getCategories($category_group);
+        $this->setData('category_group_id', $category_group_id);
+        $this->setData('categories', $this->getCategories($category_group));
 
         $this->setBreadcrumbCategories();
         $this->setTitleCategories($category_group);
@@ -94,22 +90,24 @@ class Category extends Controller
      */
     public function edit($category_group_id, $category_id = null)
     {
-        $category_group = $this->getCategoryGroup($category_group_id);
         $category = $this->get($category_id);
+        $category_group = $this->getCategoryGroup($category_group_id);
 
-        $this->data['category'] = $category;
-        $this->data['category_group'] = $category_group;
-        $this->data['categories'] = $this->category->getOptionList($category_group_id, 0);
-        $this->data['parent_id'] = (int) $this->request->get('parent_id');
-        $this->data['can_delete'] = (isset($category['category_id']) && $this->category->canDelete($category_id));
+        $this->setData('category', $category);
+        $this->setData('category_group', $category_group);
+        $this->setData('categories', $this->category->getOptionList($category_group_id, 0));
+        $this->setData('parent_id', (int) $this->request->get('parent_id'));
+
+        $can_delete = (isset($category['category_id']) && $this->category->canDelete($category_id));
+        $this->setData('can_delete', $can_delete);
 
         $this->setCategories();
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($category_group, $category);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($category_group, $category);
         }
 
@@ -182,7 +180,8 @@ class Category extends Controller
      */
     protected function setTitleCategories(array $category_group)
     {
-        $this->setTitle($this->text('Categories of group %name', array('%name' => $category_group['title'])));
+        $this->setTitle($this->text('Categories of group %name', array(
+                    '%name' => $category_group['title'])));
     }
 
     /**
@@ -199,20 +198,26 @@ class Category extends Controller
      */
     protected function setImages()
     {
-        if (empty($this->data['category']['images'])) {
+        $images = $this->getData('category.images');
+
+        if (empty($images)) {
             return;
         }
 
-        foreach ($this->data['category']['images'] as &$image) {
-            $image['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $image['path']);
+        $preset = $this->config->get('admin_image_preset', 2);
+
+        foreach ($images as &$image) {
+            $image['thumb'] = $this->image->url($preset, $image['path']);
             $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
         }
 
-        $this->data['attached_images'] = $this->render('common/image/attache', array(
+        $attached = $this->render('common/image/attache', array(
+            'images' => $images,
             'name_prefix' => 'category',
             'languages' => $this->languages,
-            'images' => $this->data['category']['images'])
-        );
+        ));
+
+        $this->setData('attached_images', $attached);
     }
 
     /**
@@ -221,20 +226,28 @@ class Category extends Controller
      */
     protected function setCategories()
     {
-        if (!isset($this->data['category']['category_id'])) {
+
+        $category_id = $this->getData('category.category_id');
+
+        if (!isset($category_id)) {
             return;
         }
 
-        $category_id = $this->data['category']['category_id'];
-        $category_group_id = $this->data['category_group']['category_group_id'];
-        $children = $this->category->getTree(array('category_group_id' => $category_group_id, 'parent_id' => $category_id));
+        $categories = $this->getData('categories');
+        $category_group_id = $this->getData('category_group.category_group_id');
+
+        $children = $this->category->getTree(array(
+            'parent_id' => $category_id,
+            'category_group_id' => $category_group_id
+        ));
 
         $exclude = array($category_id);
         foreach ($children as $child) {
             $exclude[] = $child['category_id'];
         }
 
-        $this->data['categories'] = array_diff_key($this->data['categories'], array_flip($exclude));
+        $categories = array_diff_key($categories, array_flip($exclude));
+        $this->setData('categories', $categories);
     }
 
     /**
@@ -329,14 +342,17 @@ class Category extends Controller
 
     /**
      * Applies an action to selected categories
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+
+        $action = $this->request->post('action');
+        $value = $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
+
         if ($action === 'weight' && $this->access('category_edit')) {
+
             foreach ($selected as $category_id => $weight) {
                 $this->category->update($category_id, array('weight' => $weight));
             }
@@ -346,6 +362,7 @@ class Category extends Controller
 
         $updated = $deleted = 0;
         foreach ($selected as $category_id) {
+
             if ($action === 'status' && $this->access('category_edit')) {
                 $updated += (int) $this->category->update($category_id, array('status' => (int) $value));
             }
@@ -376,13 +393,10 @@ class Category extends Controller
      */
     protected function submit(array $category_group, array $category)
     {
-        $this->submitted = $this->request->post('category', array(), false);
+        $this->setSubmitted('category', null, false);
         $this->validate($category);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['category'] = $this->submitted;
+        if ($this->hasErrors('category')) {
             return;
         }
 
@@ -403,44 +417,51 @@ class Category extends Controller
      */
     protected function validate(array $category)
     {
-        $this->submitted['status'] = !empty($this->submitted['status']);
+        // Fix checkbox
+        $this->setSubmittedBool('status');
 
-        if (!isset($this->submitted['parent_id'])) {
-            $this->submitted['parent_id'] = 0;
+        // Validate fields
+        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
+        $this->addValidator('meta_title', array('length' => array('max' => 255)));
+        $this->addValidator('meta_description', array('length' => array('max' => 255)));
+        $this->addValidator('translation', array());
+
+        $alias = $this->getSubmitted('alias');
+        if (empty($alias) && isset($category['category_id'])) {
+            // Generate an alias for existing category if the field was empty
+            $this->setSubmitted('alias', $this->category->createAlias($this->getSubmitted()));
         }
 
-        $this->validator->add('title', array('length' => array('min' => 1, 'max' => 255)))
-                ->add('meta_title', array('length' => array('max' => 255)))
-                ->add('meta_description', array('length' => array('max' => 255)))
-                ->add('translation', array('translation' => array()));
+        $this->addValidator('alias', array(
+            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
+            'alias_unique' => array()));
 
-        if (empty($this->submitted['alias']) && isset($category['category_id'])) {
-            $this->submitted['alias'] = $this->category->createAlias($this->submitted);
-        }
+        $this->setValidators($category);
 
-        $this->validator->add('alias', array('alias_unique' => array()));
-
+        // Modify images
         $this->validateImages();
-        $this->errors = $this->validator->set($this->submitted, $category)->getErrors();
     }
 
     /**
-     * Validates category images
-     * @return boolean
+     * Validates / prepares category images
      */
     protected function validateImages()
     {
-        if (empty($this->submitted['images'])) {
-            return true;
+        $images = $this->getSubmitted('images');
+        $title = $this->getSubmitted('title');
+
+        if (empty($images)) {
+            return;
         }
 
-        foreach ($this->submitted['images'] as &$image) {
-            if (empty($image['title']) && isset($this->submitted['title'])) {
-                $image['title'] = $this->submitted['title'];
+        foreach ($images as &$image) {
+
+            if (empty($image['title']) && isset($title)) {
+                $image['title'] = $title;
             }
 
-            if (empty($image['description']) && isset($this->submitted['title'])) {
-                $image['description'] = $this->submitted['title'];
+            if (empty($image['description']) && isset($title)) {
+                $image['description'] = $title;
             }
 
             $image['title'] = $this->truncate($image['title'], 255);
@@ -453,6 +474,8 @@ class Category extends Controller
                 $translation['title'] = $this->truncate($translation['title'], 255);
             }
         }
+
+        $this->setSubmitted('images', $images);
     }
 
 }

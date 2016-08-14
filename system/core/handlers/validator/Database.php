@@ -13,6 +13,7 @@ use core\models\Alias as ModelsAlias;
 use core\models\Country as ModelsCountry;
 use core\models\Language as ModelsLanguage;
 use core\models\Currency as ModelsCurrency;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 
 /**
  * Provides methods to validate various database related data
@@ -37,27 +38,36 @@ class Database
      * @var \core\models\Country $country
      */
     protected $country;
-    
+
     /**
      * Currency model instance
      * @var \core\models\Currency $currency
      */
     protected $currency;
-    
+
+    /**
+     * Category group model instance
+     * @var \core\models\CategoryGroup $category_group
+     */
+    protected $category_group;
+
     /**
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsAlias $alias
      * @param ModelsCountry $country
      * @param ModelsCurrency $currency
+     * @param ModelsCategoryGroup $category_group
      */
     public function __construct(ModelsLanguage $language, ModelsAlias $alias,
-            ModelsCountry $country, ModelsCurrency $currency)
+            ModelsCountry $country, ModelsCurrency $currency,
+            ModelsCategoryGroup $category_group)
     {
         $this->alias = $alias;
         $this->country = $country;
         $this->language = $language;
         $this->currency = $currency;
+        $this->category_group = $category_group;
     }
 
     /**
@@ -103,17 +113,17 @@ class Database
 
         return true;
     }
-    
+
     /**
-     * 
-     * @param type $code
+     * Validates currency code uniqueness
+     * @param string $code
      * @param array $options
      * @return boolean
      */
     public function currencyCodeUnique($code, array $options = array())
     {
         $code = strtoupper($code);
-        
+
         $check = true;
         if (isset($options['data']['code']) && ($options['data']['code'] === $code)) {
             $check = false;
@@ -124,6 +134,31 @@ class Database
         }
 
         return true;
+    }
+
+    /**
+     * Validates category group type
+     * @param string $value
+     * @param array $options
+     * @return boolean
+     */
+    public function categoryGroupType($value, array $options = array())
+    {
+        if (empty($value)) {
+            return true;
+        }
+
+        $category_groups = $this->category_group->getList(array(
+            'type' => $value,
+            'store_id' => $options['store_id']));
+
+        unset($category_groups[$options['category_group_id']]);
+
+        if (empty($category_groups)) {
+            return true;
+        }
+
+        return $this->language->text('Category group with this type already exists for this store');
     }
 
 }

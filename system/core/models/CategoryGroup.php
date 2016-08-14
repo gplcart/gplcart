@@ -253,7 +253,7 @@ class CategoryGroup extends Model
             $values['data'] = serialize((array) $data['data']);
         }
 
-        if (!empty($data['type'])) {
+        if (isset($data['type'])) {
             $values['type'] = $data['type'];
         }
 
@@ -274,31 +274,6 @@ class CategoryGroup extends Model
 
         $this->hook->fire('update.category.group.after', $category_group_id, $data);
         return true;
-    }
-
-    /**
-     * Returns true if the category group exists
-     * @param string $type
-     * @param integer $store_id
-     * @param integer $exclude_id
-     * @return boolean
-     */
-    public function exists($type, $store_id, $exclude_id)
-    {
-        $sql = '
-            SELECT category_group_id
-            FROM category_group
-            WHERE store_id=:store_id AND type=:type AND category_group_id<>:category_group_id';
-
-        $sth = $this->db->prepare($sql);
-
-        $sth->execute(array(
-            ':store_id' => (int) $store_id,
-            ':type' => $type,
-            ':category_group_id' => (int) $exclude_id
-        ));
-
-        return (bool) $sth->fetchColumn();
     }
 
 }

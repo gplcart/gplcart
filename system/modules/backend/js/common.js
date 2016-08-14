@@ -41,7 +41,7 @@ GplCart.theme.modal = function (content, id, header, footer) {
 GplCart.theme.loading = function (mode) {
 
     if (mode === false) {
-        $('body').find('.modal.loading').remove();
+        $('body').find('.loading').remove();
         return;
     }
 
@@ -52,7 +52,7 @@ GplCart.theme.loading = function (mode) {
         <div class="progress">\n\
         <div class="progress-bar progress-bar-striped active"></div>\n\
         </div></div></div></div></div>\n\
-        <div class="modal-backdrop fade in"></div>';
+        <div class="modal-backdrop loading fade in"></div>';
 
     $('body').append(html);
 };
