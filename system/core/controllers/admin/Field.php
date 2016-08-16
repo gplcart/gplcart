@@ -40,22 +40,21 @@ class Field extends Controller
      */
     public function fields()
     {
-
-        $action = (string) $this->request->post('action');
-        $value = (int) $this->request->post('value');
-        $selected = $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $query = $this->getFilterQuery();
-        $limit = $this->setPager($this->getTotalFields($query), $query);
+        $total = $this->getTotalFields($query);
+        $limit = $this->setPager($total, $query);
+        $fields = $this->getFields($limit, $query);
+        $widget_types = $this->field->widgetTypes();
 
-        $this->data['fields'] = $this->getFields($limit, $query);
-        $this->data['widget_types'] = $this->field->widgetTypes();
+        $this->setData('fields', $fields);
+        $this->setData('widget_types', $widget_types);
 
-        $this->setFilter(array('title', 'type', 'widget'), $query);
+        $allowed = array('title', 'type', 'widget');
+        $this->setFilter($allowed, $query);
 
         $this->setTitleFields();
         $this->setBreadcrumbFields();
@@ -69,15 +68,16 @@ class Field extends Controller
     public function edit($field_id = null)
     {
         $field = $this->get($field_id);
+        $widget_types = $this->field->widgetTypes();
 
-        $this->data['field'] = $field;
-        $this->data['widget_types'] = $this->field->widgetTypes();
+        $this->setData('field', $field);
+        $this->setData('widget_types', $widget_types);
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($field);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($field);
         }
 
@@ -128,7 +128,9 @@ class Field extends Controller
      */
     protected function setBreadcrumbFields()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
     }
 
     /**
@@ -159,8 +161,13 @@ class Field extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/content/field'), 'text' => $this->text('Fields')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/content/field'),
+            'text' => $this->text('Fields')));
     }
 
     /**
@@ -200,13 +207,12 @@ class Field extends Controller
 
     /**
      * Applies an action to the selected fields
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = 0;
         foreach ($selected as $field_id) {
@@ -230,73 +236,34 @@ class Field extends Controller
      */
     protected function submit(array $field)
     {
-        $this->submitted = $this->request->post('field', array());
-        $this->validate();
 
-        $errors = $this->getErrors();
+        $this->setSubmitted('field');
+        $this->validate($field);
 
-        if (!empty($errors)) {
-            $this->data['field'] = $this->submitted + $field;
+        if ($this->hasErrors('field')) {
             return;
         }
 
         if (isset($field['field_id'])) {
             $this->controlAccess('field_edit');
-            $this->field->update($field['field_id'], $this->submitted);
+            $this->field->update($field['field_id'], $this->getSubmitted());
             $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
         }
 
         $this->controlAccess('field_add');
-        $this->field->add($this->submitted);
+        $this->field->add($this->getSubmitted());
         $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
     }
 
     /**
      * Performs validation checks on the given field
+     * @param array $field
      */
-    protected function validate()
+    protected function validate(array $field)
     {
-        $this->validateTitle();
-        $this->validateTranslation();
-    }
-
-    /**
-     * Validates field title
-     * @return boolean
-     */
-    protected function validateTitle()
-    {
-        if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Validates field translations
-     * @return boolean
-     */
-    protected function validateTranslation()
-    {
-        if (empty($this->submitted['translation'])) {
-            return true;
-        }
-
-        $has_errors = false;
-
-        foreach ($this->submitted['translation'] as $code => $translation) {
-            if (empty($translation['title'])) {
-                continue;
-            }
-
-            if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
-            }
-        }
-
-        return !$has_errors;
+        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
+        $this->addValidator('translation', array());
+        $this->setValidators($field);
     }
 
 }

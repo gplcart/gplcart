@@ -98,7 +98,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = Tool::mimetype(GC_FILE_DIR . '/' . $data['path']);
+            $data['mime_type'] = $this->getMimeType(GC_FILE_DIR . '/' . $data['path']);
         }
 
         if (empty($data['file_type'])) {
@@ -284,7 +284,7 @@ class File extends Model
         $this->hook->fire('file.upload.before', $postfile);
 
         if (empty($postfile)) {
-            return false;
+            return $this->language->text('Nothing to upload');
         }
 
         if (!empty($postfile['error']) || empty($postfile['tmp_name']) || empty($postfile['name'])) {
@@ -305,6 +305,8 @@ class File extends Model
         }
 
         $moved = $this->move($tempname, $file);
+
+
 
         if ($moved !== true) {
             return $moved;
@@ -816,6 +818,19 @@ class File extends Model
 
         $this->uploaded = $destination;
         return true;
+    }
+
+    /**
+     * Returns file's MIME type
+     * @param string $file
+     * @return string
+     */
+    public function getMimeType($file)
+    {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimetype = finfo_file($finfo, $file);
+        finfo_close($finfo);
+        return $mimetype;
     }
 
 }

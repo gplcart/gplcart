@@ -214,10 +214,11 @@ class Image extends Model
 
         foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
             $imagestyle['imagestyle_id'] = $imagestyle_id;
-            $imagestyle['in_code'] = isset($default_imagestyles[$imagestyle_id]);
+            $imagestyle['default'] = isset($default_imagestyles[$imagestyle_id]);
         }
 
         $this->hook->fire('imagestyles', $imagestyles);
+
         return $imagestyles;
     }
 

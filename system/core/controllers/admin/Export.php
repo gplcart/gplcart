@@ -60,7 +60,7 @@ class Export extends Controller
      */
     public function operations()
     {
-        $this->data['operations'] = $this->export->getOperations();
+        $this->setData('operations', $this->export->getOperations());
 
         $this->setTitleOperatios();
         $this->setBreadcrumbOperatios();
@@ -75,17 +75,17 @@ class Export extends Controller
     {
         $operation = $this->get($operation_id);
 
-        if ($this->request->get('download')) {
+        if ($this->isSubmitted('download')) {
             $this->download($operation);
         }
 
-        if ($this->request->post('export')) {
+        if ($this->isSubmitted('export')) {
             $this->submit($operation);
         }
-
-        $this->data['job'] = $this->getJob();
-        $this->data['limit'] = $this->export->getLimit();
-        $this->data['stores'] = $this->store->getNames();
+        
+        $this->setData('job', $this->getJob());
+        $this->setData('limit', $this->export->getLimit());
+        $this->setData('stores', $this->store->getNames());
 
         $this->setTitleExport($operation);
         $this->setBreadcrumbExport();
@@ -105,7 +105,9 @@ class Export extends Controller
      */
     protected function setBreadcrumbOperatios()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -130,7 +132,8 @@ class Export extends Controller
      */
     protected function setTitleExport(array $operation)
     {
-        $this->setTitle($this->text('Export %operation', array('%operation' => $operation['name'])));
+        $this->setTitle($this->text('Export %operation', array(
+            '%operation' => $operation['name'])));
     }
 
     /**
@@ -138,8 +141,13 @@ class Export extends Controller
      */
     protected function setBreadcrumbExport()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Operations'), 'url' => $this->url('admin/tool/export')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
+        
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Operations'),
+            'url' => $this->url('admin/tool/export')));
     }
 
     /**
@@ -176,22 +184,21 @@ class Export extends Controller
      */
     protected function submit(array $operation)
     {
-        $this->submitted = $this->request->post();
+        $this->setSubmitted();
         $this->validate($operation);
-        $errors = $this->getErrors(false);
-
-        if (!empty($errors)) {
+        
+        if($this->hasErrors()){
             return;
         }
 
         $job = array(
-            'data' => $this->submitted,
+            'data' => $this->getSubmitted(),
             'id' => $operation['job_id'],
-            'total' => $this->submitted['total'],
+            'total' => $this->getSubmitted('total'),
             'redirect_message' => array(
                 'finish' => $this->text('Successfully exported %count items. <a href="!href">Download</a>', array(
                     '!href' => $this->url(false, array('download' => 1)),
-                    '%count' => $this->submitted['total']))),
+                    '%count' => $this->getSubmitted('total')))),
         );
 
         if (!empty($operation['log']['errors'])) {
@@ -205,27 +212,32 @@ class Export extends Controller
     /**
      * Validates an array of csv export data
      * @param array $operation
-     * @return boolean
+     * @return null
      */
     protected function validate(array $operation)
     {
-        $this->submitted['total'] = $this->product->getList($this->submitted + array('count' => true));
+        $options = $this->getSubmitted();
+        $options['count'] = true;
+        $total = $this->product->getList($options); // TODO: fix
 
-        if (empty($this->submitted['total'])) {
-            $this->setMessage($this->text('Nothing to export'), 'danger');
-            $this->errors = true;
-            return false;
+        $this->setSubmitted('total', $total);
+
+        if (empty($total)) {
+            $this->setError('error', $this->text('Nothing to export'));
+            return;
         }
 
         if (file_put_contents($operation['file'], '') === false) {
-            $this->setMessage($this->text('Failed to create file %path', array('%path' => $operation['file'])), 'danger');
-            $this->errors = true;
-            return false;
+            
+            $message = $this->text('Failed to create file %path', array(
+                '%path' => $operation['file']));
+            
+            $this->setError('error', $message);
+            return;
         }
 
         Tool::writeCsv($operation['file'], $operation['csv']['header'], $this->export->getCsvDelimiter());
-        $this->submitted['operation'] = $operation;
-        return true;
+        $this->setSubmitted('operation', $operation);
     }
 
 }

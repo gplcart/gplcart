@@ -44,27 +44,27 @@
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['image']) ? ' has-error' : ''; ?>">
+      <?php if ($this->access('file_upload')) { ?>
+      <div class="form-group<?php echo isset($this->errors['file']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Upload an image for the field value. It\'s applicable only for fields with image widgets'); ?>">
             <?php echo $this->text('Image'); ?>
           </span>
         </label>
         <div class="col-md-3">
-          <?php if ($this->access('file_upload')) { ?>
           <input type="file" name="file" accept="image/*" class="form-control">
-          <?php } ?>
-          <?php if (isset($this->errors['image'])) { ?>
-          <div class="help-block"><?php echo $this->errors['image']; ?></div>
+          <?php if (isset($this->errors['file'])) { ?>
+          <div class="help-block"><?php echo $this->errors['file']; ?></div>
           <?php } ?>
         </div>
       </div>
+      <?php } ?>
       <?php if (isset($field_value['thumb'])) { ?>
       <div class="form-group">
         <div class="col-md-2 col-md-offset-2">
           <div class="checkbox">
             <label>
-              <input type="checkbox" name="field_value[delete_image]" value="1"> <?php echo $this->text('Delete existing <a target="_blank" href="@href">image</a>', array('@href' => $field_value['thumb'])); ?>
+              <input type="checkbox" name="delete_image" value="1"> <?php echo $this->text('Delete existing <a target="_blank" href="@href">image</a>', array('@href' => $field_value['thumb'])); ?>
             </label>
           </div>
         </div>

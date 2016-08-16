@@ -50,13 +50,14 @@ class Image extends Controller
      */
     public function styles()
     {
-        $this->data['styles'] = $this->image->getImageStyleList();
 
         $style_id = (string) $this->request->get('clear');
-
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }
+
+        $imagestyles = $this->image->getImageStyleList();
+        $this->setData('styles', $imagestyles);
 
         $this->setTitleStyles();
         $this->setBreadcrumbStyles();
@@ -70,17 +71,18 @@ class Image extends Controller
     public function edit($style_id = null)
     {
         $imagestyle = $this->get($style_id);
-        $this->data['imagestyle'] = $imagestyle;
 
-        if ($this->request->post('delete')) {
+        $this->setData('imagestyle', $imagestyle);
+
+        if ($this->isSubmitted('delete')) {
             $this->delete($imagestyle);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($imagestyle);
         }
 
-        $this->prepareActions();
+        $this->setDataActions();
 
         $this->setTitleEdit($imagestyle);
         $this->setBreadcrumbEdit();
@@ -108,7 +110,9 @@ class Image extends Controller
      */
     protected function setBreadcrumbStyles()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
     }
 
     /**
@@ -139,8 +143,13 @@ class Image extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/imagestyle'), 'text' => $this->text('Image styles')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/imagestyle'),
+            'text' => $this->text('Image styles')));
     }
 
     /**
@@ -170,13 +179,11 @@ class Image extends Controller
      */
     protected function delete(array $imagestyle)
     {
-        if (empty($imagestyle['imagestyle_id'])) {
-            return false;
-        }
-
         $this->controlAccess('image_style_delete');
+
         $this->image->deleteImageStyle($imagestyle['imagestyle_id']);
         $this->image->clearCache($imagestyle['imagestyle_id']);
+
         $this->redirect('admin/settings/imagestyle', $this->text('Image style has been deleted'), 'success');
     }
 
@@ -187,13 +194,10 @@ class Image extends Controller
      */
     protected function submit(array $imagestyle)
     {
-        $this->submitted = $this->request->post('imagestyle');
-        $this->validate();
+        $this->setSubmitted('imagestyle');
+        $this->validate($imagestyle);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['imagestyle'] = $this->submitted;
+        if ($this->hasErrors('imagestyle')) {
             return;
         }
 
@@ -211,25 +215,12 @@ class Image extends Controller
 
     /**
      * Validates an image style
+     * @param array $imagestyle
      */
-    protected function validate()
+    protected function validate(array $imagestyle)
     {
-        $this->validateName();
+        $this->addValidator('name', array('length' => array('min' => 1, 'max' => 255)));
         $this->validateActions();
-    }
-
-    /**
-     * Validates name field
-     * @return boolean
-     */
-    protected function validateName()
-    {
-        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -238,15 +229,17 @@ class Image extends Controller
      */
     protected function validateActions()
     {
-        if (empty($this->submitted['actions'])) {
-            $this->errors['actions'] = $this->text('Required field');
+        $actions = $this->getSubmitted('actions');
+
+        if (empty($actions)) {
+            $this->setError('actions', $this->text('Required field'));
             return false;
         }
 
         $modified_actions = $error_lines = array();
-        $actions = Tool::stringToArray($this->submitted['actions']);
+        $array_actions = Tool::stringToArray($actions);
 
-        foreach ($actions as $line => $action) {
+        foreach ($array_actions as $line => $action) {
             $valid = false;
 
             $parts = array_map('trim', explode(' ', trim($action)));
@@ -316,12 +309,14 @@ class Image extends Controller
         }
 
         if (!empty($error_lines)) {
-            $this->errors['actions'] = $this->text('Something wrong on lines %num', array(
+            $message = $this->text('Error on lines %num', array(
                 '%num' => implode(',', $error_lines)));
+
+            $this->setError('actions', $message);
             return false;
         }
 
-        $this->submitted['actions'] = $modified_actions;
+        $this->setSubmitted('actions', $modified_actions);
     }
 
     /**
@@ -446,26 +441,29 @@ class Image extends Controller
 
     /**
      * Modifies imagestyle actions
-     * @return array
+     * @return null
      */
-    protected function prepareActions()
+    protected function setDataActions()
     {
-        if (!is_array($this->data['imagestyle']['actions'])) {
+
+        $actions = $this->getData('imagestyle.actions');
+
+        if (!is_array($actions)) {
             return;
         }
 
-        Tool::sortWeight($this->data['imagestyle']['actions']);
+        Tool::sortWeight($actions);
 
-        $actions = array();
-        foreach ($this->data['imagestyle']['actions'] as $action_id => $info) {
+        $modified_actions = array();
+        foreach ($actions as $action_id => $info) {
             $action = $action_id;
             if (!empty($info['value'])) {
                 $action .= ' ' . implode(',', $info['value']);
             }
-            $actions[] = $action;
+            $modified_actions[] = $action;
         }
 
-        $this->data['imagestyle']['actions'] = implode("\n", $actions);
+        $this->setData('imagestyle.actions', implode("\n", $modified_actions));
     }
 
 }

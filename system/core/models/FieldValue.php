@@ -243,7 +243,7 @@ class FieldValue extends Model
             $values['weight'] = (int) $data['weight'];
         }
 
-        if (!empty($data['color'])) {
+        if (isset($data['color'])) {
             $values['color'] = $data['color'];
         }
 

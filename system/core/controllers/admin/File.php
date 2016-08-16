@@ -44,17 +44,15 @@ class File extends Controller
 
         $query = $this->getFilterQuery();
         $limit = $this->setPager($this->getTotalFiles($query), $query);
+        $files = $this->getFiles($limit, $query);
 
-        $this->data['files'] = $this->getFiles($limit, $query);
+        $this->setData('files', $files);
 
         $allowed = array('title', 'mime_type', 'created', 'path');
         $this->setFilter($allowed, $query);
 
-        $action = (string) $this->request->post('action');
-        $selected = (array) $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $this->setTitleFiles();
@@ -92,7 +90,9 @@ class File extends Controller
      */
     protected function setBreadcrumbFiles()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -115,12 +115,12 @@ class File extends Controller
 
     /**
      * Applies an action to the selected files
-     * @param array $selected
-     * @param string $action
-     * @return boolean
      */
-    protected function action(array $selected, $action)
+    protected function action()
     {
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
         $deleted_disk = $deleted_database = 0;
 
         foreach ($selected as $file_id) {
@@ -147,7 +147,6 @@ class File extends Controller
             '%db' => $deleted_database, '%disk' => $deleted_disk));
 
         $this->session->setMessage($message, 'success');
-        return true;
     }
 
     /**
@@ -157,13 +156,17 @@ class File extends Controller
     {
         $file_id = (int) $this->request->get('download');
 
-        if (!empty($file_id)) {
-            $file = $this->file->get($file_id);
-
-            if (!empty($file['path'])) {
-                $this->response->download(GC_FILE_DIR . '/' . $file['path']);
-            }
+        if (empty($file_id)) {
+            return;
         }
+
+        $file = $this->file->get($file_id);
+
+        if (empty($file['path'])) {
+            return;
+        }
+
+        $this->response->download(GC_FILE_DIR . '/' . $file['path']);
     }
 
 }

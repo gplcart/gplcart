@@ -361,7 +361,7 @@ class Ajax extends Controller
 
         $response = array();
         foreach ($results as $result) {
-            $response[] = $this->render("backend:search/suggestion/$entityname", array($entityname => $result), true);
+            $response[] = $this->render("backend|search/suggestion/$entityname", array($entityname => $result), true);
         }
 
         return $response;
@@ -404,7 +404,7 @@ class Ajax extends Controller
         $key = uniqid(); // Random array key to prevent merging items in the array
 
         $response['files'][] = array(
-            'html' => $this->render('backend:common/image/attache', array(
+            'html' => $this->render('backend|common/image/attache', array(
                 'name_prefix' => $type,
                 'languages' => $this->languages,
                 'images' => array(

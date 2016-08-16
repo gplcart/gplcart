@@ -459,7 +459,7 @@ class Tool
      * @param string $delimiter
      * @return array
      */
-    public static function contextFile($directory, $ext, $url, $delimiter = '.')
+    public static function contextFile($directory, $ext, $url, $delimiter = '-')
     {
 
         if (!is_readable($directory)) {
@@ -490,19 +490,6 @@ class Tool
     }
 
     /**
-     * Returns file's MIME type
-     * @param string $file
-     * @return string
-     */
-    public static function mimetype($file)
-    {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimetype = finfo_file($finfo, $file);
-        finfo_close($finfo);
-        return $mimetype;
-    }
-
-    /**
      * Returns a value from a nested array with variable depth
      * @param array $array
      * @param array|string $parents
@@ -521,8 +508,7 @@ class Tool
             if (is_array($ref) && array_key_exists($parent, $ref)) {
                 $ref = &$ref[$parent];
             } else {
-                $null = null;
-                return $null;
+                return null;
             }
         }
         return $ref;

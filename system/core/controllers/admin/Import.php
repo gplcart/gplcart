@@ -70,8 +70,11 @@ class Import extends Controller
     {
         $this->setImportDemo();
 
-        $this->data['job'] = $this->getJob();
-        $this->data['operations'] = $this->import->getOperations();
+        $job = $this->getJob();
+        $operations = $this->import->getOperations();
+
+        $this->setData('job', $job);
+        $this->setData('operations', $operations);
 
         $this->setTitleOperations();
         $this->setBreadcrumbOperations();
@@ -178,13 +181,14 @@ class Import extends Controller
             $this->response->download($operation['log']['errors']);
         }
 
-        if ($this->request->post('import')) {
+        if ($this->isSubmitted('import')) {
             $this->submit($operation);
         }
 
-        $this->data['job'] = $this->getJob();
-        $this->data['operation'] = $operation;
-        $this->data['limit'] = $this->import->getLimit();
+        $job = $this->getJob();
+
+        $this->setData('job', $job);
+        $this->setData('operation', $operation);
 
         $this->setTitleImport($operation);
         $this->setBreadcrumbImport();
@@ -204,7 +208,9 @@ class Import extends Controller
      */
     protected function setBreadcrumbOperations()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -221,7 +227,8 @@ class Import extends Controller
      */
     protected function setTitleImport(array $operation)
     {
-        $this->setTitle($this->text('Import %operation', array('%operation' => $operation['name'])));
+        $this->setTitle($this->text('Import %operation', array(
+                    '%operation' => $operation['name'])));
     }
 
     /**
@@ -229,8 +236,13 @@ class Import extends Controller
      */
     protected function setBreadcrumbImport()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Import'), 'url' => $this->url('admin/tool/import')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
+
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Import'),
+            'url' => $this->url('admin/tool/import')));
     }
 
     /**
@@ -264,20 +276,19 @@ class Import extends Controller
      */
     protected function submit(array $operation)
     {
-        $this->submitted = $this->request->post();
-        $this->submitted['operation'] = $operation;
+        $this->setSubmitted();
+        $this->validate($operation);
 
-        $this->validate();
-        $errors = $this->getErrors(false);
-
-        if (!empty($errors)) {
+        if ($this->hasErrors()) {
             return;
         }
 
+        $submitted = $this->getSubmitted();
+
         $job = array(
-            'data' => $this->submitted,
+            'data' => $submitted,
             'id' => $operation['job_id'],
-            'total' => $this->submitted['filesize'],
+            'total' => $submitted['filesize'],
             'redirect_message' => array(
                 'finish' => 'Data has been successfully imported. Inserted: %inserted, updated: %updated'
             ),
@@ -293,52 +304,39 @@ class Import extends Controller
 
     /**
      * Validates import data
+     * @param array $operation
+     * @return null
      */
-    protected function validate()
+    protected function validate(array $operation)
     {
-        $this->validateFile();
-        $this->validateCsv();
-    }
+        $this->setSubmitted('operation', $operation);
+        $this->setSubmitted('limit', $this->import->getLimit());
 
-    /**
-     * Validates uploaded CSV file
-     * @return boolean
-     */
-    protected function validateFile()
-    {
-        $file = $this->request->file('file');
+        $this->addValidator('file', array(
+            'upload' => array(
+                'path' => 'private/import',
+                'handler' => 'csv',
+                'file' => $this->request->file('file')
+        )));
 
-        if (empty($file)) {
-            $this->errors['file'] = $this->text('Required field');
-            return false;
+        $errors = $this->setValidators($operation);
+
+        if (!empty($errors)) {
+            return;
         }
 
-        $this->file->setUploadPath('private/import')->setHandler('csv');
+        $uploaded = $this->getValidatorResult('file');
+        $filepath = GC_FILE_DIR . "/$uploaded";
+        $filesize = filesize($filepath);
 
-        if ($this->file->upload($file) !== true) {
-            $this->errors['file'] = $this->text('Unable to upload the file');
-            return false;
+        $this->setSubmitted('filepath', $filepath);
+        $this->setSubmitted('filesize', $filesize);
+
+        $result = $this->import->validateCsvHeader($filepath, $operation);
+
+        if ($result !== true) {
+            $this->setError('file', $result);
         }
-
-        $this->submitted['filepath'] = $this->file->getUploadedFile();
-        $this->submitted['filesize'] = filesize($this->submitted['filepath']);
-        return true;
-    }
-
-    /**
-     * Validates data in the CSV file
-     * @return boolean
-     */
-    protected function validateCsv()
-    {
-        $header_result = $this->import->validateCsvHeader($this->submitted['filepath'], $this->submitted['operation']);
-
-        if ($header_result !== true) {
-            $this->errors['file'] = $header_result;
-            return false;
-        }
-
-        return true;
     }
 
 }

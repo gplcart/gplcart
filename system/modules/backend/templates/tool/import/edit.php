@@ -17,12 +17,6 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Limit'); ?></label>
-        <div class="col-md-1">
-          <input type="number" name="limit" class="form-control" value="<?php echo $limit; ?>">
-        </div>
-      </div>
-      <div class="form-group">
         <div class="col-md-4 col-md-offset-2">
           <div class="checkbox">
             <label>

@@ -34,6 +34,9 @@ $(function () {
                 }
             });
         }
-    });
+    }); 
+
+    $('.input-group.color').colorpicker();
+    
 });
 

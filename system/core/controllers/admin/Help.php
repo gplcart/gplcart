@@ -44,7 +44,7 @@ class Help extends Controller
      */
     protected function index()
     {
-        $this->data['help_list'] = $this->getList();
+        $this->setData('help_list', $this->getList());
 
         $this->setTitleIndex();
         $this->setBreadcrumbIndex();
@@ -85,7 +85,8 @@ class Help extends Controller
     {
         $contents = $this->getPageContents($filename);
         $text = end($contents);
-        $this->data['text'] = $this->removeHeader($text);
+
+        $this->setData('text', $this->removeHeader($text));
 
         $this->setTitlePage($text);
         $this->setBreadcrumbPage();
@@ -109,10 +110,10 @@ class Help extends Controller
         $header = $this->getHeader($text);
 
         if (empty($header)) {
-            $this->setTitle('Help');
-        } else {
-            $this->setTitle($header);
+            return $this->setTitle('Help');
         }
+
+        $this->setTitle($header);
     }
 
     /**

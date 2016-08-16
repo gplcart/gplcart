@@ -28,16 +28,22 @@ class Validator extends Model
     protected $language;
 
     /**
-     * An array of validation errors
+     * Array of validation errors
      * @var array
      */
     protected $errors = array();
 
     /**
-     * An array of fields to be validated
+     * Array of fields to be validated
      * @var array
      */
     protected $fields = array();
+
+    /**
+     * Array of validation results
+     * @var array
+     */
+    protected $results = array();
 
     /**
      * Constructor
@@ -81,7 +87,7 @@ class Validator extends Model
         }
 
         if (empty($result)) {
-            return $this->language->text('Failed to validate');
+            return $this->language->text('Failed to pass validation');
         }
 
         return $result;
@@ -98,6 +104,10 @@ class Validator extends Model
         foreach ($this->fields as $field => $validators) {
             foreach ($validators as $handler_id => $options) {
 
+                if (!empty($options['control_errors']) && !empty($this->errors)) {
+                    return $this;
+                }
+
                 if (!isset($options['data'])) {
                     $options['data'] = $data;
                 }
@@ -105,10 +115,17 @@ class Validator extends Model
                 $value = Tool::getArrayValue($submitted, $field);
                 $result = $this->check($handler_id, $value, $options);
 
-                if ($result !== true) {
-                    Tool::setArrayValue($this->errors, $field, $result);
-                    break;
+                if ($result === true) {
+                    continue;
                 }
+
+                if (isset($result['result'])) {
+                    $this->results[$field] = $result['result'];
+                    continue;
+                }
+
+                Tool::setArrayValue($this->errors, $field, $result);
+                break;
             }
         }
 
@@ -116,12 +133,31 @@ class Validator extends Model
     }
 
     /**
-     * Returns an array of validation errors
-     * @return array
+     * Returns validation error(s)
+     * @param string $field
+     * @return mixed
      */
-    public function getErrors()
+    public function getError($field = null)
     {
+        if (isset($field)) {
+            return Tool::getArrayValue($this->errors, $field);
+        }
+
         return $this->errors;
+    }
+
+    /**
+     * Retuns validation result(s)
+     * @param string $field
+     * @return mixed
+     */
+    public function getResult($field = null)
+    {
+        if (isset($field)) {
+            return Tool::getArrayValue($this->results, $field);
+        }
+
+        return $this->results;
     }
 
     /**
@@ -143,7 +179,7 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Common', 'length')
             ),
         );
-        
+
         $handlers['numeric'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Common', 'numeric')
@@ -186,30 +222,36 @@ class Validator extends Model
             ),
         );
 
+        $handlers['upload'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\File', 'upload')
+            ),
+        );
+
         $handlers['alias_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Database', 'aliasUnique')
             ),
         );
-        
+
         $handlers['regexp'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Common', 'regexp')
             ),
         );
-        
+
         $handlers['country_code_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Database', 'countryCodeUnique')
             ),
         );
-        
+
         $handlers['currency_code_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Database', 'currencyCodeUnique')
             ),
         );
-        
+
         $handlers['category_group_type'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Database', 'categoryGroupType')

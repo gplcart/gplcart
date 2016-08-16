@@ -94,8 +94,6 @@ $(function () {
     // Hints
     $('.hint').tooltip();
 
-    $('.input-group.color').colorpicker();
-
     // Bulk actions
     $('*[data-action]').click(function () {
 

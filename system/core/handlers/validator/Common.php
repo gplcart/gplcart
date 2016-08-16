@@ -79,6 +79,7 @@ class Common
      */
     public function numeric($subject, array $options = array())
     {
+        
         if (is_numeric($subject)) {
             return true;
         }
@@ -141,6 +142,10 @@ class Common
      * @return boolean
      */
     public function regexp($subject, array $options = array()){
+        
+        if((!isset($subject) || $subject === '') && empty($options['required'])){
+            return true;
+        }
         
         if(empty($options['pattern'])){
             return false;

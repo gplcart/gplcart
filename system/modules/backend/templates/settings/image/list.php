@@ -14,7 +14,7 @@
         <tr>
           <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Name'); ?></th>
-          <th><?php echo $this->text('Source'); ?></th>
+          <th><?php echo $this->text('Default'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
           <th></th>
         </tr>
@@ -24,8 +24,20 @@
         <tr>
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->escape($style['name']); ?></td>
-          <td class="middle"><?php echo empty($style['in_code']) ? $this->text('In database') : $this->text('In code'); ?></td>
-          <td class="middle"><?php echo empty($style['status']) ? '<i class="fa fa-square-o"></i>' : '<i class="fa fa-check-square-o"></i>'; ?></td>
+          <td class="middle">
+            <?php if(empty($style['default'])) { ?>
+            <i class="fa fa-square-o"></i>
+            <?php } else { ?>
+            <i class="fa fa-check-square-o"></i>
+            <?php } ?>
+          </td>
+          <td class="middle">
+            <?php if(empty($style['status'])) { ?>
+            <i class="fa fa-square-o"></i>
+            <?php } else { ?>
+            <i class="fa fa-check-square-o"></i>
+            <?php } ?>
+          </td>
           <td class="col-md-2 middle">
             <ul class="list-inline">
               <?php if ($this->access('image_style_edit')) { ?>

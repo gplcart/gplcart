@@ -784,7 +784,7 @@ class Route
             )
         );
 
-        $routes['admin/help/(\w+)'] = array(
+        $routes['admin/help/([a-z0-9_-]+)'] = array(
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Help', 'help')
             )

@@ -363,6 +363,8 @@ class Controller
 
         $this->token = $this->config->token();
 
+
+
         $this->setJobProperties();
         $this->setRouteProperties();
         $this->setDeviceProperties();
@@ -410,12 +412,12 @@ class Controller
     {
         $module = $this->theme;
 
-        if (strpos($file, ':') !== false) {
+        if (strpos($file, '|') !== false) {
             $fullpath = false;
-            $parts = explode(':', $file, 2);
-            $property = $parts[0];
-            $module = isset($this->{"theme_$property"}) ? $this->{"theme_$property"} : $this->theme;
+            $parts = explode('|', $file, 2);
+            $type = $parts[0];
             $file = $parts[1];
+            $module = isset($this->{"theme_$type"}) ? $this->{"theme_$type"} : $this->theme;
         }
 
         $template = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
@@ -663,19 +665,24 @@ class Controller
 
     /**
      * Sets an array of posted data
-     * @param string|array $key
+     * @param string|array|null $key
      * @param mixed $value
      * @param boolean $filter
      * @return array
      */
-    public function setSubmitted($key, $value = null, $filter = true)
+    public function setSubmitted($key = null, $value = null, $filter = true)
     {
-        if (isset($value)) {
-            Tool::setArrayValue($this->submitted, $key, $value);
-        } else {
-            $this->submitted = (array) $this->request->post($key, array(), $filter);
+        if (!isset($key)) {
+            $this->submitted = (array) $this->request->post(null, array(), $filter);
+            return $this->submitted;
         }
-        
+
+        if (!isset($value) && empty($this->submitted)) {
+            $this->submitted = (array) $this->request->post($key, array(), $filter);
+            return $this->submitted;
+        }
+
+        Tool::setArrayValue($this->submitted, $key, $value);
         return $this->submitted;
     }
 
@@ -1080,8 +1087,18 @@ class Controller
      */
     protected function setValidators(array $data = array())
     {
-        $this->errors = $this->validator->set($this->getSubmitted(), $data)->getErrors();
+        $this->errors = $this->validator->set($this->getSubmitted(), $data)->getError();
         return $this->errors;
+    }
+
+    /**
+     * Returns validation result(s)
+     * @param string $field
+     * @return mixed
+     */
+    protected function getValidatorResult($field = null)
+    {
+        return $this->validator->getResult($field);
     }
 
     /**
@@ -1232,7 +1249,11 @@ class Controller
         $this->document->js('files/assets/system/js/common.js', 'top', -90);
 
         // Settings
-        $allowed = array('token', 'base', 'lang', 'lang_region', 'urn', 'uri', 'path', 'last_activity', 'session_limit');
+        $allowed = array(
+            'token', 'base', 'lang',
+            'lang_region', 'urn', 'uri',
+            'path', 'last_activity', 'session_limit');
+
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, -80);
 
@@ -1303,7 +1324,7 @@ class Controller
         $this->data['current_store'] = $this->current_store;
 
         if ($this->url->isBackend()) {
-            $this->data['help'] = $this->getHelp();
+            $this->data['help_summary'] = $this->getHelpSummary();
         }
     }
 
@@ -1403,6 +1424,17 @@ class Controller
     }
 
     /**
+     * Returns a config item
+     * @param string|null $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function config($key = null, $default = null)
+    {
+        return $this->config->get($key, $default);
+    }
+
+    /**
      * Removes dangerous stuff from a string
      * @param string $string
      * @param array|null $tags
@@ -1438,19 +1470,18 @@ class Controller
      * @param string $key
      * @return boolean
      */
-    public function hasErrors($key, array $data = array())
+    public function hasErrors($key = null)
     {
         $errors = $this->getErrors();
 
         if (empty($errors)) {
             return false;
         }
-        
-        if(!empty($data)){
-           $this->submitted += $data;
+
+        if (isset($key)) {
+            $this->setData($key, $this->submitted);
         }
 
-        $this->setData($key, $this->submitted);
         return true;
     }
 
@@ -1487,25 +1518,29 @@ class Controller
      * Returns a rendered help link depending on the current URL
      * @return string
      */
-    public function getHelp()
+    public function getHelpSummary()
     {
-        $segments = $this->url->segments();
         $folder = $this->langcode ? $this->langcode : 'en';
         $directory = GC_HELP_DIR . "/$folder";
 
-        $file = Tool::contextFile($directory, 'php', $segments);
+        $file = Tool::contextFile($directory, 'php', $this->path);
 
         if (empty($file)) {
             return '';
         }
 
-        $parts = $this->explodeText($this->render($file['path'], array(), true));
+        //ddd($file['path']);
 
-        if (!empty($parts)) {
-            return $this->render('help/summary', array('content' => array_map('trim', $parts), 'file' => $file));
+        $content = $this->render($file['path'], array(), true);
+        $parts = $this->explodeText($content);
+
+        if (empty($parts)) {
+            return '';
         }
 
-        return '';
+        return $this->render('help/summary', array(
+                    'content' => array_map('trim', $parts),
+                    'file' => $file));
     }
 
     /**
@@ -1515,7 +1550,8 @@ class Controller
      */
     protected function explodeText($text)
     {
-        return array_filter(explode($this->getSummaryDelimiter(), $text, 2));
+        $delimiter = $this->getSummaryDelimiter();
+        return array_filter(explode($delimiter, $text, 2));
     }
 
     /**
@@ -1530,13 +1566,12 @@ class Controller
     /**
      * Returns a string from a text before the summary delimiter
      * @param string $text
-     * @param boolean $filter_xss
-     * @param array|null $allowed_tags
-     * @param array|null $allowed_protocols
+     * @param boolean $xss
+     * @param array|null $tags
+     * @param array|null $protocols
      * @return string
      */
-    public function summary($text, $filter_xss = false, $allowed_tags = null,
-            $allowed_protocols = null)
+    public function summary($text, $xss = false, $tags = null, $protocols = null)
     {
         $summary = '';
 
@@ -1545,8 +1580,8 @@ class Controller
             $summary = trim(reset($parts));
         }
 
-        if ($summary !== '' && $filter_xss) {
-            $summary = $this->xss($summary, $allowed_tags, $allowed_protocols);
+        if ($summary !== '' && $xss) {
+            $summary = $this->xss($summary, $tags, $protocols);
         }
 
         return $summary;

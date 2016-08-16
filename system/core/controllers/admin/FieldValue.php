@@ -78,18 +78,18 @@ class FieldValue extends Controller
         $field = $this->getField($field_id);
 
         $query = $this->getFilterQuery();
-        $limit = $this->setPager($this->getTotalFieldValues($field_id, $query), $query);
+        $total = $this->getTotalFieldValues($field_id, $query);
+        $limit = $this->setPager($total, $query);
+        $values = $this->getFieldValues($limit, $field_id, $query);
 
-        $this->data['field'] = $field;
-        $this->data['values'] = $this->getFieldValues($limit, $field_id, $query);
+        $this->setData('field', $field);
+        $this->setData('values', $values);
 
-        $this->setFilter(array('title', 'color', 'weight', 'image'), $query);
+        $allowed = array('title', 'color', 'weight', 'image');
+        $this->setFilter($allowed, $query);
 
-        $action = (string) $this->request->post('action');
-        $selected = (array) $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $this->setTitleValues($field);
@@ -105,23 +105,24 @@ class FieldValue extends Controller
     public function edit($field_id, $field_value_id = null)
     {
         $field = $this->getField($field_id);
-
         $field_value = $this->get($field_value_id);
+        $widget_types = $this->field->widgetTypes();
+
         $field_value['field_id'] = $field_id;
 
-        $this->data['field'] = $field;
-        $this->data['field_value'] = $field_value;
-        $this->data['widget_types'] = $this->field->widgetTypes();
+        $this->setData('field', $field);
+        $this->setData('field_value', $field_value);
+        $this->setData('widget_types', $widget_types);
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($field_value, $field);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($field_value, $field);
         }
 
-        $this->prepareFieldValue();
+        $this->setDataFieldValue();
 
         $this->setTitleEdit($field_value, $field);
         $this->setBreadcrumbEdit($field);
@@ -136,7 +137,13 @@ class FieldValue extends Controller
      */
     protected function getTotalFieldValues($field_id, array $query)
     {
-        return $this->field_value->getList(array('count' => true, 'field_id' => $field_id) + $query);
+        $options = array(
+            'count' => true,
+            'field_id' => $field_id
+        );
+
+        $options += $query;
+        return $this->field_value->getList($options);
     }
 
     /**
@@ -145,7 +152,8 @@ class FieldValue extends Controller
      */
     protected function setTitleValues(array $field)
     {
-        $this->setTitle($this->text('Values of %s', array('%s' => $this->truncate($field['title']))));
+        $this->setTitle($this->text('Values of %s', array(
+                    '%s' => $this->truncate($field['title']))));
     }
 
     /**
@@ -153,8 +161,13 @@ class FieldValue extends Controller
      */
     protected function setBreadcrumbValues()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/content/field'), 'text' => $this->text('Fields')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/content/field'),
+            'text' => $this->text('Fields')));
     }
 
     /**
@@ -190,11 +203,18 @@ class FieldValue extends Controller
      */
     protected function getFieldValues(array $limit, $field_id, array $query)
     {
-        $values = $this->field_value->getList(array('limit' => $limit, 'field_id' => $field_id) + $query);
+        $options = array(
+            'limit' => $limit,
+            'field_id' => $field_id
+        );
+
+        $options += $query;
+        $values = $this->field_value->getList($options);
+        $preset = $this->config->get('admin_image_preset', 2);
 
         foreach ($values as &$value) {
             if (!empty($value['path'])) {
-                $value['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $value['path']);
+                $value['thumb'] = $this->image->url($preset, $value['path']);
             }
         }
 
@@ -203,12 +223,12 @@ class FieldValue extends Controller
 
     /**
      * Applies anaction to the selected field values
-     * @param array $selected
-     * @param string $action
      * @return boolean
      */
-    protected function action(array $selected, $action)
+    protected function action()
     {
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('field_value_edit')) {
             foreach ($selected as $field_value_id => $weight) {
@@ -249,9 +269,11 @@ class FieldValue extends Controller
     protected function setTitleEdit(array $field_value, array $field)
     {
         if (isset($field_value['field_value_id'])) {
-            $title = $this->text('Edit field value %name', array('%name' => $this->truncate($field_value['title'])));
+            $title = $this->text('Edit field value %name', array(
+                '%name' => $this->truncate($field_value['title'])));
         } else {
-            $title = $this->text('Add value for field %name', array('%name' => $this->truncate($field['title'])));
+            $title = $this->text('Add value for field %name', array(
+                '%name' => $this->truncate($field['title'])));
         }
 
         $this->setTitle($title);
@@ -323,6 +345,7 @@ class FieldValue extends Controller
     protected function deleteImage(array $field_value, array $field)
     {
         $this->field_value->update($field_value['field_value_id'], array('file_id' => 0));
+
         $file = $this->file->get($field_value['file_id']);
         $this->file->delete($field_value['file_id']);
 
@@ -337,26 +360,22 @@ class FieldValue extends Controller
      */
     protected function submit(array $field_value, array $field)
     {
-        $this->submitted = $this->request->post('field_value', array());
-        $this->submitted += array('field_id' => $field['field_id']);
+        $this->setSubmitted('field_value');
 
         $this->validate($field_value, $field);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['field_value'] = $this->submitted;
+        if ($this->hasErrors('field_value')) {
             return;
         }
 
         if (isset($field_value['field_value_id'])) {
             $this->controlAccess('field_value_edit');
-            $this->field_value->update($field_value['field_value_id'], $this->submitted);
+            $this->field_value->update($field_value['field_value_id'], $this->getSubmitted());
             $this->redirect("admin/content/field/value/{$field['field_id']}", $this->text('Field value %name has been updated', array('%name' => $field_value['title'])), 'success');
         }
 
         $this->controlAccess('field_value_add');
-        $this->field_value->add($this->submitted);
+        $this->field_value->add($this->getSubmitted());
         $this->redirect("admin/content/field/value/{$field['field_id']}", $this->text('Field value has been added'), 'success');
     }
 
@@ -367,126 +386,49 @@ class FieldValue extends Controller
      */
     protected function validate(array $field_value, array $field)
     {
-        $this->validateWeight($field_value, $field);
-        $this->validateColor($field_value, $field);
-        $this->validateTitle($field_value, $field);
-        $this->validateTranslation($field_value, $field);
-        $this->validateFile($field_value, $field);
-    }
+        $this->setSubmitted('field_id', $field['field_id']);
 
-    /**
-     * Validates weight field
-     * @param array $field_value
-     * @param array $field
-     * @return boolean
-     */
-    protected function validateWeight(array $field_value, array $field)
-    {
-        if ($this->submitted['weight']) {
-            if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
-                return false;
+        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
+        $this->addValidator('weight', array('numeric' => array(), 'length' => array('max' => 2)));
+        $this->addValidator('translation', array('translation' => array()));
+
+        $this->addValidator('color', array(
+            'regexp' => array(
+                'pattern' => '/#([a-fA-F0-9]{3}){1,2}\b/',
+                'required' => ($field['widget'] === 'color')
+        )));
+
+        $this->addValidator('file', array(
+            'upload' => array(
+                'control_errors' => true,
+                'path' => 'image/upload/field_value',
+                'file' => $this->request->file('file')
+        )));
+
+        $errors = $this->setValidators($field_value);
+
+        if (empty($errors)) {
+
+            if ($this->isSubmitted('delete_image')) {
+                $this->deleteImage($field_value, $field);
             }
-            return true;
+
+            $uploaded = $this->getValidatorResult('file');
+            $this->setSubmitted('path', $uploaded);
         }
-
-        $this->submitted['weight'] = 0;
-        return true;
-    }
-
-    /**
-     * Validates color field
-     * @param array $field_value
-     * @param array $field
-     * @return boolean
-     */
-    protected function validateColor(array $field_value, array $field)
-    {
-        if ($field['widget'] == 'color' && !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $this->submitted['color'])) {
-            $this->errors['color'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates title field
-     * @param array $field_value
-     * @param array $field
-     * @return boolean
-     */
-    protected function validateTitle(array $field_value, array $field)
-    {
-        if (empty($this->submitted['title']) || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates field value translations
-     * @param array $field_value
-     * @param array $field
-     * @return boolean
-     */
-    protected function validateTranslation(array $field_value, array $field)
-    {
-        if (empty($this->submitted['translation'])) {
-            return true;
-        }
-
-        $has_errors = false;
-
-        foreach ($this->submitted['translation'] as $code => $translation) {
-            if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$code]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
-            }
-        }
-
-        return !$has_errors;
-    }
-
-    /**
-     * Validates field value image
-     * @param array $field_value
-     * @param array $field
-     * @return boolean
-     */
-    protected function validateFile(array $field_value, array $field)
-    {
-
-        if (!empty($this->submitted['delete_image'])) {
-            $this->deleteImage($field_value, $field);
-        }
-
-        $file = $this->request->file('file');
-
-        if (empty($file)) {
-            return true;
-        }
-
-        $this->file->setUploadPath('image/upload/field_value');
-
-        if ($this->file->upload($file) !== true) {
-            $this->errors['image'] = $this->text('Unable to upload the file');
-            return false;
-        }
-
-        $this->submitted['path'] = $this->file->path($this->file->getUploadedFile());
-        return true;
     }
 
     /**
      * Modifies the field values array
      */
-    protected function prepareFieldValue()
+    protected function setDataFieldValue()
     {
-        if (!empty($this->data['field_value']['path'])) {
-            $this->data['field_value']['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $this->data['field_value']['path']);
+        $path = $this->getData('field_value.path');
+
+        if (!empty($path)) {
+            $preset = $this->config->get('admin_image_preset', 2);
+            $thumb = $this->image->url($preset, $path);
+            $this->setData('field_value.thumb', $thumb);
         }
     }
 
