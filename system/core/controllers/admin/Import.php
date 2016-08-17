@@ -82,7 +82,7 @@ class Import extends Controller
     }
 
     /**
-     * Imports demo content if it set in URL query
+     * Checks the current URL and access and imports a demo content if needed
      */
     protected function setImportDemo()
     {
@@ -98,7 +98,7 @@ class Import extends Controller
     }
 
     /**
-     * Checks demo site connected and sets warning message if not
+     * Checks if demo site is connected and sets a warning message if not
      * @return boolean
      */
     protected function isConnected()
@@ -114,7 +114,7 @@ class Import extends Controller
     }
 
     /**
-     * Imports demo content from CSV files
+     * Imports a demo content from CSV files
      * @param string $operation_id
      * @return null
      */
@@ -254,7 +254,7 @@ class Import extends Controller
     }
 
     /**
-     * Returns an operation
+     * Loads an operation
      * @param string $operation_id
      * @return array
      */
@@ -303,7 +303,7 @@ class Import extends Controller
     }
 
     /**
-     * Validates import data
+     * Validates submitted import data
      * @param array $operation
      * @return null
      */

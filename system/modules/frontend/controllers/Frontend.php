@@ -132,7 +132,7 @@ class Frontend extends Controller
      */
     protected function outputSettings()
     {
-        $this->output('frontend:admin/settings');
+        $this->output('frontend|admin/settings');
     }
 
     /**
