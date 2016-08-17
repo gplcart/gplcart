@@ -9,16 +9,18 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Tool;
 use core\models\Alias as ModelsAlias;
 use core\models\Country as ModelsCountry;
 use core\models\Language as ModelsLanguage;
 use core\models\Currency as ModelsCurrency;
+use core\models\PriceRule as ModelsPriceRule;
 use core\models\CategoryGroup as ModelsCategoryGroup;
 
 /**
  * Provides methods to validate various database related data
  */
-class Database
+class Model
 {
 
     /**
@@ -52,17 +54,25 @@ class Database
     protected $category_group;
 
     /**
+     * Price rule model instance
+     * @var \core\models\PriceRule $rule
+     */
+    protected $rule;
+
+    /**
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsAlias $alias
      * @param ModelsCountry $country
      * @param ModelsCurrency $currency
      * @param ModelsCategoryGroup $category_group
+     * @param ModelsPriceRule $rule
      */
     public function __construct(ModelsLanguage $language, ModelsAlias $alias,
             ModelsCountry $country, ModelsCurrency $currency,
-            ModelsCategoryGroup $category_group)
+            ModelsCategoryGroup $category_group, ModelsPriceRule $rule)
     {
+        $this->rule = $rule;
         $this->alias = $alias;
         $this->country = $country;
         $this->language = $language;
@@ -159,6 +169,71 @@ class Database
         }
 
         return $this->language->text('Category group with this type already exists for this store');
+    }
+
+    /**
+     * Validates price rule conditions
+     * @return boolean|array
+     */
+    public function priceRuleConditions($value, array $options = array())
+    {
+        if (empty($value)) {
+            return true;
+        }
+
+        $modified = $errors = array();
+        $operators = array_map('htmlspecialchars', $this->rule->getConditionOperators());
+        $conditions = Tool::stringToArray($value);
+
+        foreach ($conditions as $line => $condition) {
+            $line++;
+
+            $condition = trim($condition);
+            $parts = array_map('trim', explode(' ', $condition));
+
+            $condition_id = array_shift($parts);
+            $operator = array_shift($parts);
+
+            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
+                return ($value !== "");
+            });
+
+            if (empty($parameters)) {
+                $errors[] = $line;
+                continue;
+            }
+
+            if (!in_array(htmlspecialchars($operator), $operators)) {
+                $errors[] = $line;
+                continue;
+            }
+
+            $validator = $this->rule->getConditionHandler($condition_id, 'validate');
+
+            if (empty($validator)) {
+                $errors[] = $line;
+                continue;
+            }
+
+            if (call_user_func_array($validator, array(&$parameters, $options['submitted'])) !== true) {
+                $errors[] = $line;
+                continue;
+            }
+
+            $modified[] = array(
+                'id' => $condition_id,
+                'operator' => $operator,
+                'value' => $parameters,
+                'original' => $condition,
+                'weight' => $line,
+            );
+        }
+
+        if (!empty($errors)) {
+            return $this->text('Error on lines %num', array('%num' => implode(',', $errors)));
+        }
+
+        return array('result' => $modified);
     }
 
 }

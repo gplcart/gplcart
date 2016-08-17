@@ -8,7 +8,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\pricerule;
+namespace core\handlers\validator;
 
 use core\Config;
 use core\models\Price;
@@ -22,7 +22,7 @@ use core\models\Currency;
 use core\models\Shipping;
 use core\models\UserRole;
 
-class Validate
+class PriceRule
 {
 
     /**
@@ -111,7 +111,10 @@ class Validate
      * @param State $state
      * @param Config $config
      */
-    public function __construct(Currency $currency, Price $price, Payment $payment, Shipping $shipping, Product $product, Category $category, UserRole $role, Address $address, Country $country, State $state, Config $config)
+    public function __construct(Currency $currency, Price $price,
+            Payment $payment, Shipping $shipping, Product $product,
+            Category $category, UserRole $role, Address $address,
+            Country $country, State $state, Config $config)
     {
         $this->role = $role;
         $this->price = $price;
@@ -406,4 +409,5 @@ class Validate
 
         return ($count === count($exists));
     }
+
 }

@@ -232,7 +232,7 @@ class Validator extends Model
 
         $handlers['alias_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Database', 'aliasUnique')
+                'validate' => array('core\\handlers\\validator\\Model', 'aliasUnique')
             ),
         );
 
@@ -241,22 +241,34 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Common', 'regexp')
             ),
         );
+        
+        $handlers['images'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Common', 'images')
+            ),
+        );
 
         $handlers['country_code_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Database', 'countryCodeUnique')
+                'validate' => array('core\\handlers\\validator\\Model', 'countryCodeUnique')
             ),
         );
 
         $handlers['currency_code_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Database', 'currencyCodeUnique')
+                'validate' => array('core\\handlers\\validator\\Model', 'currencyCodeUnique')
             ),
         );
 
         $handlers['category_group_type'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Database', 'categoryGroupType')
+                'validate' => array('core\\handlers\\validator\\Model', 'categoryGroupType')
+            ),
+        );
+        
+        $handlers['pricerule_conditions'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Model', 'priceRuleConditions')
             ),
         );
 

@@ -360,48 +360,44 @@ class Page extends Controller
     {
         $this->setSubmitted('page', null, false);
         $this->validate($page);
-        
-        if($this->hasErrors('page')){
+
+        if ($this->hasErrors('page')) {
             return;
         }
-        
+
         $this->deleteImages();
-        
-        $submitted = $this->getSubmitted();
 
         if (isset($page['page_id'])) {
             $this->controlAccess('page_edit');
-            $this->page->update($page['page_id'], $submitted);
+            $this->page->update($page['page_id'], $this->getSubmitted());
             $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
         }
-        
-        $submitted['user_id'] = $this->uid;
 
         $this->controlAccess('page_add');
-        $this->page->add($submitted);
+        $this->page->add($this->getSubmitted());
         $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
     }
-    
+
     /**
      * Deletes an array of submitted images
      * @return int
      */
-    protected function deleteImages() {
-        
+    protected function deleteImages()
+    {
+
         $images = (array) $this->request->post('delete_image');
         $has_access = ($this->access('page_add') || $this->access('page_edit'));
-        
-        if(!$has_access || empty($images)){
+
+        if (!$has_access || empty($images)) {
             return 0;
         }
-        
+
         $deleted = 0;
         foreach ($images as $file_id) {
             $deleted += (int) $this->image->delete($file_id);
         }
-        
-        return $deleted;
 
+        return $deleted;
     }
 
     /**
@@ -413,13 +409,17 @@ class Page extends Controller
         // Fix checkbox
         $this->setSubmittedBool('status');
 
+        if (empty($page['page_id'])) {
+            $this->setSubmitted('user_id', $this->uid);
+        }
+
         // Validate fields
         $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
         $this->addValidator('description', array('length' => array('min' => 1)));
         $this->addValidator('meta_title', array('length' => array('max' => 255)));
         $this->addValidator('meta_description', array('length' => array('max' => 255)));
         $this->addValidator('translation', array('translation' => array()));
-        
+
         $alias = $this->getSubmitted('alias');
         if (empty($alias) && isset($page['page_id'])) {
             $this->setSubmitted('alias', $this->page->createAlias($this->getSubmitted()));
@@ -428,12 +428,12 @@ class Page extends Controller
         $this->addValidator('alias', array(
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
             'alias_unique' => array()));
-        
+
         $this->addValidator('images', array('images' => array()));
         $this->setValidators($page);
-        
+
         $images = $this->getValidatorResult('images');
-        $this->setData('images', $images);
+        $this->setSubmitted('images', $images);
     }
 
 }

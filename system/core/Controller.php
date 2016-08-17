@@ -379,6 +379,8 @@ class Controller
         $this->controlMaintenanceMode();
 
         $this->hook->fire('construct', $this);
+        
+        
     }
 
     /**

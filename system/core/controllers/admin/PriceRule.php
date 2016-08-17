@@ -61,20 +61,21 @@ class PriceRule extends Controller
     public function rules()
     {
         $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalRules($query), $query);
+        $total = $this->getTotalRules($query);
+        $limit = $this->setPager($total, $query);
+        $rules = $this->getRules($limit, $query);
+        $stores = $this->store->getNames();
 
-        $this->data['price_rules'] = $this->getRules($total, $query);
-        $this->data['stores'] = $this->store->getNames();
+        $this->setData('price_rules', $rules);
+        $this->setData('stores', $stores);
 
-        $filters = array('name', 'code', 'value', 'value_type', 'weight', 'status', 'store_id', 'type');
+        $filters = array('name', 'code', 'value', 'value_type',
+            'weight', 'status', 'store_id', 'type');
+
         $this->setFilter($filters, $query);
 
-        $action = (string) $this->request->post('action');
-        $selected = (array) $this->request->post('selected', array());
-        $value = (int) $this->request->post('value');
-
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $this->setTitleRules();
@@ -104,7 +105,7 @@ class PriceRule extends Controller
             $this->submit($rule);
         }
 
-        $this->prepareConditions();
+        $this->setDataConditions();
 
         $this->setTitleEdit($rule);
         $this->setBreadcrumbEdit();
@@ -118,20 +119,23 @@ class PriceRule extends Controller
      */
     protected function getTotalRules(array $query)
     {
-        return $this->rule->getList(array('count' => true) + $query);
+        $query['count'] = true;
+        return $this->rule->getList($query);
     }
 
     /**
      * Applies an action to the selected price rules
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {
+
             if ($action == 'status' && $this->access('price_rule_edit')) {
                 $updated += (int) $this->rule->update($rule_id, array('status' => $value));
             }
@@ -142,12 +146,14 @@ class PriceRule extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num price rules', array('%num' => $updated)), 'success');
+            $this->session->setMessage($this->text('Updated %num price rules', array(
+                        '%num' => $updated)), 'success');
             return true;
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num price rules', array('%num' => $deleted)), 'success');
+            $this->session->setMessage($this->text('Deleted %num price rules', array(
+                        '%num' => $deleted)), 'success');
             return true;
         }
 
@@ -167,7 +173,9 @@ class PriceRule extends Controller
      */
     protected function setBreadcrumbRules()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -186,7 +194,10 @@ class PriceRule extends Controller
      */
     protected function getRules(array $limit, array $query)
     {
-        $rules = $this->rule->getList(array('limit' => $limit) + $query);
+        $options = array('limit' => $limit);
+        $options += $query;
+
+        $rules = $this->rule->getList($options);
 
         foreach ($rules as &$rule) {
             if ($rule['value_type'] == 'fixed') {
@@ -217,8 +228,13 @@ class PriceRule extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Price rules'), 'url' => $this->url('admin/sale/price')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
+
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Price rules'),
+            'url' => $this->url('admin/sale/price')));
     }
 
     /**
@@ -271,29 +287,22 @@ class PriceRule extends Controller
      */
     protected function submit(array $rule = array())
     {
-        $this->submitted = $this->request->post('price_rule', '', false);
+        $this->setSubmitted('price_rule', null, false);
 
         $this->validate($rule);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['price_rule'] = $this->submitted;
+        if ($this->hasErrors('price_rule')) {
             return;
-        }
-
-        if ($this->submitted['value_type'] == 'fixed') {
-            $this->submitted['value'] = $this->price->amount((float) $this->submitted['value'], $this->submitted['currency'], false);
         }
 
         if (isset($rule['price_rule_id'])) {
             $this->controlAccess('price_rule_edit');
-            $this->rule->update($rule['price_rule_id'], $this->submitted);
+            $this->rule->update($rule['price_rule_id'], $this->getSubmitted());
             $this->redirect('admin/sale/price', $this->text('Price rule has been updated'), 'success');
         }
 
         $this->controlAccess('price_rule_add');
-        $this->rule->add($this->submitted);
+        $this->rule->add($this->getSubmitted());
         $this->redirect('admin/sale/price', $this->text('Price rule has been added'), 'success');
     }
 
@@ -303,40 +312,44 @@ class PriceRule extends Controller
      */
     protected function validate(array $rule = array())
     {
+        $this->setSubmittedBool('status');
+
         if (isset($rule['price_rule_id'])) {
-            $this->submitted['price_rule_id'] = $rule['price_rule_id'];
+            $this->setSubmitted('price_rule_id', $rule['price_rule_id']);
         }
 
-        // Fix checkboxes
-        $this->submitted['status'] = !empty($this->submitted['status']);
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)));
 
-        if (!isset($this->submitted['store_id'])) {
-            $this->submitted['store_id'] = $this->store->getDefault();
-        }
+        $this->addValidator('value', array(
+            'numeric' => array(),
+            'length' => array('max' => 10)));
 
-        $this->validateName();
+        $this->addValidator('weight', array(
+            'numeric' => array(),
+            'length' => array('max' => 2)));
+
+        $this->addValidator('data.conditions', array(
+            'pricerule_conditions' => array()));
+
         $this->validateCode();
-        $this->validateValue();
-        $this->validateWeight();
-        $this->validateConditions();
-    }
 
-    /**
-     * Validates a rule name
-     * @return boolean
-     */
-    protected function validateName()
-    {
-        if (!isset($this->submitted['name'])) {
-            return true;
+        $errors = $this->setValidators($rule);
+
+        if (empty($errors)) {
+
+            $value_type = $this->getSubmitted('value_type');
+            
+            if ($value_type === 'fixed') {
+                $value = $this->getSubmitted('value');
+                $currency = $this->getSubmitted('currency');
+                $amount = $this->price->amount((float) $value, $currency, false);
+                $this->setSubmitted('value', $amount);
+            }
+
+            $conditions = $this->getValidatorResult('data.conditions');
+            $this->setSubmitted('data.conditions', $conditions);
         }
-
-        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -365,139 +378,25 @@ class PriceRule extends Controller
     }
 
     /**
-     * Validates a price value
-     * @return boolean
-     */
-    protected function validateValue()
-    {
-        if (!is_numeric($this->submitted['value'])) {
-            $this->errors['value'] = $this->text('Only numeric values allowed');
-            return false;
-        }
-
-        if ($this->submitted['value_type'] == 'percent') {
-            if (abs($this->submitted['value']) > 100) {
-                $this->errors['value'] = $this->text('Percent value must not be greater than 100');
-                return false;
-            }
-            return true;
-        }
-
-        if (strlen($this->submitted['value']) > 10) {
-            $this->errors['value'] = $this->text('Content must not exceed %s characters', array('%s' => 10));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the rule weight
-     * @return boolean
-     */
-    protected function validateWeight()
-    {
-        if ($this->submitted['weight']) {
-            if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
-                return false;
-            }
-            return true;
-        }
-
-        $this->submitted['weight'] = 0;
-        return true;
-    }
-
-    /**
-     * Validates rule conditions
-     * @return boolean
-     */
-    protected function validateConditions()
-    {
-        if (empty($this->submitted['data']['conditions'])) {
-            return true;
-        }
-
-        $modified_conditions = $error_lines = array();
-        $existing_operators = array_map('htmlspecialchars', $this->rule->getConditionOperators());
-        $conditions = Tool::stringToArray($this->submitted['data']['conditions']);
-
-        foreach ($conditions as $line => $condition) {
-            $line++;
-
-            $condition = trim($condition);
-            $parts = array_map('trim', explode(' ', $condition));
-
-            $condition_id = array_shift($parts);
-            $operator = array_shift($parts);
-
-            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
-                return ($value !== "");
-            });
-
-            if (empty($parameters)) {
-                $error_lines[] = $line;
-                continue;
-            }
-
-            if (!in_array(htmlspecialchars($operator), $existing_operators)) {
-                $error_lines[] = $line;
-                continue;
-            }
-
-            $validator = $this->rule->getConditionHandler($condition_id, 'validate');
-
-            if (empty($validator)) {
-                $error_lines[] = $line;
-                continue;
-            }
-
-            if (call_user_func_array($validator, array(&$parameters, $this->submitted)) !== true) {
-                $error_lines[] = $line;
-                continue;
-            }
-
-            $modified_conditions[] = array(
-                'id' => $condition_id,
-                'operator' => $operator,
-                'value' => $parameters,
-                'original' => $condition,
-                'weight' => $line,
-            );
-        }
-
-        if (!empty($error_lines)) {
-            $this->errors['conditions'] = $this->text('Something wrong on lines %num', array('%num' => implode(',', $error_lines)));
-            return false;
-        }
-
-        $this->submitted['data']['conditions'] = $modified_conditions;
-        return true;
-    }
-
-    /**
      * Converts an array of conditions into multiline string
      * @return null
      */
-    protected function prepareConditions()
+    protected function setDataConditions()
     {
-        if (empty($this->data['price_rule']['data']['conditions'])) {
+        $conditions = $this->getData('price_rule.data.conditions');
+        
+        if(empty($conditions) || !is_array($conditions)){
             return;
         }
 
-        if (!is_array($this->data['price_rule']['data']['conditions'])) {
-            return;
+        Tool::sortWeight($conditions);
+
+        $modified = array();
+        foreach ($conditions as $i => $info) {
+            $modified[] = $info['original'];
         }
-
-        Tool::sortWeight($this->data['price_rule']['data']['conditions']);
-
-        $conditions = array();
-        foreach ($this->data['price_rule']['data']['conditions'] as $i => $info) {
-            $conditions[] = $info['original'];
-        }
-
-        $this->data['price_rule']['data']['conditions'] = implode("\n", $conditions);
+        
+        $this->setData('price_rule.data.conditions', implode("\n", $modified));
     }
 
 }
