@@ -107,6 +107,8 @@ class Validator extends Model
                 if (!empty($options['control_errors']) && !empty($this->errors)) {
                     return $this;
                 }
+                
+                $options['submitted'] = $submitted;
 
                 if (!isset($options['data'])) {
                     $options['data'] = $data;

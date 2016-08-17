@@ -60,30 +60,29 @@ class Module extends Controller
      */
     public function modules()
     {
-        $type = (string) $this->request->get('type');
-        $action = (string) $this->request->get('action');
-        $module_id = (string) $this->request->get('module_id');
-
-        if (!empty($module_id) && !empty($action)) {
-            $this->action($module_id, $action);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
-        $this->data['modules'] = $this->getModules($type);
-        $this->data['upload_access'] = ($this->access('module_upload'));
+        $modules = $this->getModules();
+        $this->setData('modules', $modules);
 
         $this->setTitleModules();
-        $this->setBreadcrumbModules($type);
+        $this->setBreadcrumbModules();
         $this->outputModules();
     }
 
     /**
      * Applies an action to the module
-     * @param string $module_id
-     * @param string $action
      */
-    protected function action($module_id, $action)
+    protected function action()
     {
         $this->controlToken();
+        $module_id = (string) $this->request->get('module_id');
+
+        if (empty($module_id)) {
+            $this->redirect();
+        }
 
         $module = $this->module->get($module_id);
 
@@ -91,7 +90,10 @@ class Module extends Controller
             $this->redirect();
         }
 
-        if (!in_array($action, array('enable', 'disable', 'install', 'uninstall'), true)) {
+        $action = (string) $this->request->get('action');
+        $allowed = array('enable', 'disable', 'install', 'uninstall');
+
+        if (!in_array($action, $allowed)) {
             $this->redirect();
         }
 
@@ -100,7 +102,7 @@ class Module extends Controller
         $result = $this->module->{$action}($module_id);
 
         if ($result === true) {
-            $this->redirect('', $this->text('Modules have been updated'), 'success');
+            $this->redirect('', $this->text('Module has been updated'), 'success');
         }
 
         if (is_string($result)) {
@@ -117,22 +119,14 @@ class Module extends Controller
 
     /**
      * Returns an array of modules
-     * @param string|null $type
      * @return array
      */
-    protected function getModules($type = null)
+    protected function getModules()
     {
-        if (empty($type)) {
-            $modules = $this->module->getList();
-        } else {
-            $modules = $this->module->getByType($type);
-        }
+        $modules = $this->module->getList();
 
         foreach ($modules as &$module) {
-            if ($this->module->isActiveTheme($module['id'])) {
-                $module['always_enabled'] = true;
-            }
-
+            $module['always_enabled'] = $this->module->isActiveTheme($module['id']);
             $module['type_name'] = $this->text(ucfirst($module['type']));
         }
 
@@ -149,15 +143,12 @@ class Module extends Controller
 
     /**
      * Sets breadcrumbs on the module overview page
-     * @param string $type
      */
-    protected function setBreadcrumbModules($type)
+    protected function setBreadcrumbModules()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-
-        if (!empty($type)) {
-            $this->setBreadcrumb(array('text' => $this->text('All modules'), 'url' => $this->url('admin/module')));
-        }
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -175,7 +166,7 @@ class Module extends Controller
     {
         $this->controlAccess('module_install');
 
-        if ($this->request->post('install')) {
+        if ($this->isSubmitted('install')) {
             $this->submitUpload();
         }
 
@@ -190,13 +181,13 @@ class Module extends Controller
     protected function submitUpload()
     {
         $this->validateUpload();
-        $errors = $this->getErrors();
 
-        if (!empty($errors)) {
-            return false;
+        if ($this->hasErrors()) {
+            return;
         }
 
-        $result = $this->module->installFromZip($this->submitted['destination']);
+        $uploaded = $this->getSubmitted('destination');
+        $result = $this->module->installFromZip($uploaded);
 
         if ($result === true) {
             $message = $this->text('The module has been <a href="!href">uploaded and installed</a>. You have to enable it manually', array(
@@ -214,16 +205,18 @@ class Module extends Controller
      */
     protected function validateUpload()
     {
-        $this->submitted = $this->request->file('file');
-        $this->file->setHandler('zip')->setUploadPath('private/modules');
-        $result = $this->file->upload($this->submitted);
+        $options = array(
+            'handler' => 'zip',
+            'path' => 'private/modules',
+            'file' => $this->request->file('file'),
+        );
 
-        if ($result !== true) {
-            $this->errors['file'] = $this->text('Unable to upload the file');
-            return false;
-        }
+        $this->addValidator('file', array('upload' => $options));
 
-        $this->submitted['destination'] = $this->file->getUploadedFile();
+        $this->setValidators();
+        $path = $this->getValidatorResult('file');
+
+        $this->setSubmitted('destination', GC_FILE_DIR . "/$path");
     }
 
     /**
@@ -231,8 +224,13 @@ class Module extends Controller
      */
     protected function setBreadcrumbUpload()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Modules'), 'url' => $this->url('admin/module')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
+
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Modules'),
+            'url' => $this->url('admin/module')));
     }
 
     /**
@@ -256,9 +254,10 @@ class Module extends Controller
      */
     public function marketplace()
     {
-        $order = $this->config->get('marketplace_order', 'desc');
-        $sort = $this->config->get('marketplace_sort', 'views');
-        $default = array('sort' => $sort, 'order' => $order);
+        $default = array(
+            'sort' => $this->config('marketplace_sort', 'views'),
+            'order' => $this->config('marketplace_order', 'desc')
+        );
 
         $query = $this->getFilterQuery($default);
         $total = $this->getMarketplaceTotal($query);
@@ -266,15 +265,11 @@ class Module extends Controller
         $query['limit'] = $this->setPager($total, $query);
         $results = $this->getMarketplaceList($query);
 
-        $this->setFilter(array(
-            'category_id',
-            'price',
-            'views',
-            'rating',
-            'title',
-            'downloads'));
+        $fields = array('category_id', 'price', 'views',
+            'rating', 'title', 'downloads');
 
-        $this->data['marketplace'] = $results;
+        $this->setFilter($fields);
+        $this->setData('marketplace', $results);
 
         $this->setTitleMarketplace();
         $this->setBreadcrumbMarketplace();
@@ -294,8 +289,13 @@ class Module extends Controller
      */
     protected function setBreadcrumbMarketplace()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/module'), 'text' => $this->text('Modules')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/module'),
+            'text' => $this->text('Modules')));
     }
 
     /**
@@ -344,6 +344,7 @@ class Module extends Controller
     {
         $options['count'] = true;
         $result = $this->getMarketplaceList($options);
+
         return empty($result['total']) ? 0 : (int) $result['total'];
     }
 

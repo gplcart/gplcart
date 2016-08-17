@@ -104,7 +104,7 @@ class Common
 
     /**
      * 
-     * @param type $subject
+     * @param array|null $subject
      * @param array $options
      * @return type
      */
@@ -156,6 +156,43 @@ class Common
         }
         
         return $this->language->text('Invalid format');
+    }
+    
+    /**
+     * Validates images
+     * @param array|null $subject
+     * @param array $options
+     */
+    public function images($subject, array $options = array()){
+        
+        if (empty($subject)) {
+            return true;
+        }
+        
+        $title = $options['submitted']['title'];
+
+        foreach ($subject as &$image) {
+
+            if (empty($image['title'])) {
+                $image['title'] = $title;
+            }
+
+            if (empty($image['description'])) {
+                $image['description'] = $title;
+            }
+
+            $image['title'] = mb_strimwidth($image['title'], 0, 255, '');
+
+            if (empty($image['translation'])) {
+                continue;
+            }
+
+            foreach ($image['translation'] as &$translation) {
+                $translation['title'] = mb_strimwidth($translation['title'], 0, 255, '');
+            }
+        }
+
+        return array('result' => $subject);
     }
 
 }

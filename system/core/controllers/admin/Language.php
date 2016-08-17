@@ -42,15 +42,16 @@ class Language extends Controller
     public function edit($code = null)
     {
         $language = $this->get($code);
+        $default = $this->language->getDefault();
 
-        $this->data['language'] = $language;
-        $this->data['default_language'] = $this->language->getDefault();
+        $this->setData('language', $language);
+        $this->setData('default_language', $default);
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($language);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit($language);
         }
 
@@ -64,17 +65,26 @@ class Language extends Controller
      */
     public function languages()
     {
+        $this->setRefresh();
+
+        $languages = $this->language->getList();
+        $this->setData('languages', $languages);
+
+        $this->setTitleLanguages();
+        $this->setBreadcrumbLanguages();
+        $this->outputLanguages();
+    }
+
+    /**
+     * Controls the current URL and refreshes a language if needed
+     */
+    protected function setRefresh()
+    {
         $code = (string) $this->request->get('refresh');
 
         if (!empty($code)) {
             $this->refresh($code);
         }
-
-        $this->data['languages'] = $this->language->getList();
-
-        $this->setTitleLanguages();
-        $this->setBreadcrumbLanguages();
-        $this->outputLanguages();
     }
 
     /**
@@ -97,8 +107,13 @@ class Language extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/language'), 'text' => $this->text('Languages')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/language'),
+            'text' => $this->text('Languages')));
     }
 
     /**
@@ -116,24 +131,21 @@ class Language extends Controller
      */
     protected function submit(array $language)
     {
-        $this->submitted = $this->request->post('language', array());
-        $this->validate();
+        $this->setSubmitted('language');
+        $this->validate($language);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['language'] = $this->submitted;
+        if ($this->hasErrors('language')) {
             return;
         }
 
         if (isset($language['code'])) {
             $this->controlAccess('language_edit');
-            $this->language->update($language['code'], $this->submitted);
+            $this->language->update($language['code'], $this->getSubmitted());
             $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success');
         }
 
         $this->controlAccess('language_add');
-        $this->language->add($this->submitted);
+        $this->language->add($this->getSubmitted());
         $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
     }
 
@@ -150,7 +162,9 @@ class Language extends Controller
      */
     protected function setBreadcrumbLanguages()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
     }
 
     /**
@@ -168,7 +182,6 @@ class Language extends Controller
     protected function refresh($code)
     {
         $this->language->refresh($code);
-        // TODO: exit() issue. Cannot use redirect message. The current page translation file will only have the message
         $this->redirect();
     }
 
@@ -199,13 +212,11 @@ class Language extends Controller
      */
     protected function delete(array $language)
     {
-        if (empty($language['code'])) {
-            return;
-        }
-
         $this->controlAccess('language_delete');
 
-        if ($this->language->delete($language['code'])) {
+        $deleted = $this->language->delete($language['code']);
+
+        if ($deleted) {
             $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
         }
 
@@ -214,73 +225,24 @@ class Language extends Controller
 
     /**
      * Validates a language
-     * @param boolean $data
+     * @param array $language
      */
-    protected function validate()
+    protected function validate(array $language)
     {
-        $this->validateCode();
-        $this->validateName();
-        $this->validateNativeName();
-        $this->validateWeight();
-    }
 
-    /**
-     * Validates ISO 639-1 compliance
-     * @return boolean
-     */
-    protected function validateCode()
-    {
-        if (preg_match('/^[a-z]{2}$/', $this->submitted['code'])) {
-            return true;
-        }
+        $this->addValidator('code', array(
+            'regexp' => array('pattern' => '/^[a-z]{2}$/', 'required' => true)));
 
-        $this->errors['code'] = $this->text('Invalid language code. Use only ISO 639-1 codes');
-        return false;
-    }
+        $this->addValidator('name', array(
+            'regexp' => array('pattern' => '/^[A-Za-z]{1,50}$/', 'required' => true)));
 
-    /**
-     * Validates name field
-     * @return boolean
-     */
-    protected function validateName()
-    {
-        if (preg_match('/^[A-Za-z]{1,50}$/', $this->submitted['name'])) {
-            return true;
-        }
+        $this->addValidator('native_name', array(
+            'length' => array('min' => 1, 'max' => 255)));
 
-        $this->errors['name'] = $this->text('Invalid language name. It must be 1 - 50 long and contain only latin characters');
-        return false;
-    }
+        $this->addValidator('weight', array(
+            'regexp' => array('pattern' => '/^\d{1,2}$/', 'required' => true)));
 
-    /**
-     * Validates native name field
-     * @return boolean
-     */
-    protected function validateNativeName()
-    {
-        if (empty($this->submitted['native_name']) || mb_strlen($this->submitted['native_name']) > 255) {
-            $this->errors['native_name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Validates weight field
-     * @return boolean
-     */
-    protected function validateWeight()
-    {
-        if ($this->submitted['weight']) {
-            if (!is_numeric($this->submitted['weight']) || strlen($this->submitted['weight']) > 2) {
-                $this->errors['weight'] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
-                return false;
-            }
-            return true;
-        }
-
-        $this->submitted['weight'] = 0;
-        return true;
+        $this->setValidators($language);
     }
 
 }

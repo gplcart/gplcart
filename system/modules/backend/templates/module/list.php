@@ -2,7 +2,7 @@
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
-      <?php if ($upload_access) { ?>
+      <?php if ($this->access('module_upload')) { ?>
       <a class="btn btn-default" href="<?php echo $this->url('admin/module/upload'); ?>">
         <?php echo $this->text('Upload'); ?>
       </a>

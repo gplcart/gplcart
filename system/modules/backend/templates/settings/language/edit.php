@@ -9,7 +9,7 @@
           </span>
         </label>
         <div class="col-md-2">
-          <input name="language[code]" maxlength="2" class="form-control" value="<?php echo isset($language['code']) ? $this->escape($language['code']) : ''; ?>" required>
+          <input name="language[code]" maxlength="2" class="form-control" value="<?php echo isset($language['code']) ? $this->escape($language['code']) : ''; ?>">
         </div>
         <?php if (isset($this->errors['code'])) { ?>
         <div class="help-block col-md-6"><?php echo $this->errors['code']; ?></div>
@@ -22,7 +22,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input name="language[name]" class="form-control" maxlength="32" value="<?php echo isset($language['name']) ? $this->escape($language['name']) : ''; ?>" required>
+          <input name="language[name]" class="form-control" maxlength="32" value="<?php echo isset($language['name']) ? $this->escape($language['name']) : ''; ?>">
           <?php if (isset($this->errors['name'])) { ?>
           <div class="help-block"><?php echo $this->errors['name']; ?></div>
           <?php } ?>
@@ -35,7 +35,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input name="language[native_name]" maxlength="255" class="form-control" value="<?php echo isset($language['native_name']) ? $this->escape($language['native_name']) : ''; ?>" required>
+          <input name="language[native_name]" maxlength="255" class="form-control" value="<?php echo isset($language['native_name']) ? $this->escape($language['native_name']) : ''; ?>">
           <?php if (isset($this->errors['native_name'])) { ?>
           <div class="help-block"><?php echo $this->errors['native_name']; ?></div>
           <?php } ?>

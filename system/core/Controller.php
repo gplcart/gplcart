@@ -730,11 +730,13 @@ class Controller
     /**
      * Returns a value from an array of template variables
      * @param string|array $key
+     * @param mixed
      * @return mixed
      */
-    public function getData($key)
+    public function getData($key, $default = null)
     {
-        return Tool::getArrayValue($this->data, $key);
+        $result = Tool::getArrayValue($this->data, $key);
+        return isset($result) ? $result : $default;
     }
 
     /**
@@ -1087,7 +1089,7 @@ class Controller
      */
     protected function setValidators(array $data = array())
     {
-        $this->errors = $this->validator->set($this->getSubmitted(), $data)->getError();
+        $this->errors = $this->validator->set($this->submitted, $data)->getError();
         return $this->errors;
     }
 

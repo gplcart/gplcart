@@ -68,24 +68,25 @@ class Page extends Controller
      */
     public function pages()
     {
-        $action = (string) $this->request->post('action');
-        $selected = (array) $this->request->post('selected', array());
-        $value = (int) $this->request->post('value');
-
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
         $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalPages($query), $query);
+        $total = $this->getTotalPages($query);
+        $limit = $this->setPager($total, $query);
+        $pages = $this->getPages($limit, $query);
+        $stores = $this->store->getNames();
 
-        $this->data['pages'] = $this->getPages($total, $query);
-        $this->data['stores'] = $this->store->getNames();
+        $this->setData('pages', $pages);
+        $this->setData('stores', $stores);
 
-        $filters = array('title', 'store_id', 'status', 'created', 'email', 'front');
+        $filters = array('title', 'store_id',
+            'status', 'created', 'email', 'front');
+
         $this->setFilter($filters, $query);
 
-        if ($this->request->post('save')) {
+        if ($this->isSubmitted('save')) {
             $this->submit();
         }
 
@@ -101,25 +102,26 @@ class Page extends Controller
     public function edit($page_id = null)
     {
         $page = $this->get($page_id);
-        $action = (string) $this->request->post('action');
 
-        if ($action === 'categories') {
-            $store_id = (int) $this->request->post('store_id', $this->store->getDefault());
-            $this->response->json($this->category->getOptionListByStore($store_id));
+        if ($this->isSubmitted('action')) {
+            $this->action();
         }
 
-        if ($this->request->post('delete')) {
+        if ($this->isSubmitted('delete')) {
             $this->delete($page);
         }
 
-        $this->data['page'] = $page;
-        $this->data['stores'] = $this->store->getNames();
+        $stores = $this->store->getNames();
 
-        if ($this->request->post('save')) {
+        $this->setData('page', $page);
+        $this->setData('stores', $stores);
+
+        if ($this->isSubmitted('save')) {
             $this->submit($page);
         }
 
-        $this->preparePage();
+        $this->setDataPage();
+
         $this->setTitleEdit($page);
         $this->setBreadcrumbEdit();
         $this->outputEdit();
@@ -132,7 +134,10 @@ class Page extends Controller
      */
     protected function getTotalPages(array $query)
     {
-        return $this->page->getList(array('count' => true) + $query);
+        $options = array('count' => true);
+        $options += $query;
+
+        return $this->page->getList($options);
     }
 
     /**
@@ -148,7 +153,9 @@ class Page extends Controller
      */
     protected function setBreadcrumbPages()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -161,15 +168,22 @@ class Page extends Controller
 
     /**
      * Applies an action to the selected pages
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
+        if ($action === 'categories') {
+            $store_id = (int) $this->request->post('store_id', $this->store->getDefault());
+            $this->response->json($this->category->getOptionListByStore($store_id));
+        }
+
         $deleted = $updated = 0;
         foreach ($selected as $page_id) {
+
             if ($action == 'status' && $this->access('page_edit')) {
                 $updated += (int) $this->page->update($page_id, array('status' => $value));
             }
@@ -215,8 +229,13 @@ class Page extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Pages'), 'url' => $this->url('admin/content/page')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
+
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Pages'),
+            'url' => $this->url('admin/content/page')));
     }
 
     /**
@@ -228,32 +247,38 @@ class Page extends Controller
     }
 
     /**
-     * Modifies a page data
-     * @return null
+     * Modifies page data before sending to templates
      */
-    protected function preparePage()
+    protected function setDataPage()
     {
-        $store_id = $this->store->getDefault();
-        if (isset($this->data['page']['store_id'])) {
-            $store_id = $this->data['page']['store_id'];
+        $default = $this->store->getDefault();
+        $store_id = $this->getData('page.store_id', $default);
+
+        $categories = $this->category->getOptionListByStore($store_id);
+        $this->setdata('categories', $categories);
+
+        $images = $this->getData('page.images');
+
+        if (!empty($images)) {
+
+            $preset = $this->config('admin_image_preset', 2);
+
+            foreach ($images as &$image) {
+                $image['thumb'] = $this->image->url($preset, $image['path']);
+                $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
+            }
+
+            $this->setData('page.images', $images);
+
+            $options = array(
+                'images' => $images,
+                'name_prefix' => 'page',
+                'languages' => $this->languages
+            );
+
+            $attached = $this->render('common/image/attache', $options);
+            $this->setData('attached_images', $attached);
         }
-
-        $this->data['categories'] = $this->category->getOptionListByStore($store_id);
-
-        if (empty($this->data['page']['images'])) {
-            return;
-        }
-
-        foreach ($this->data['page']['images'] as &$image) {
-            $image['thumb'] = $this->image->url($this->config->get('admin_image_preset', 2), $image['path']);
-            $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
-        }
-
-        $this->data['attached_images'] = $this->render('common/image/attache', array(
-            'name_prefix' => 'page',
-            'languages' => $this->languages,
-            'images' => $this->data['page']['images'])
-        );
     }
 
     /**
@@ -297,13 +322,18 @@ class Page extends Controller
     protected function getPages(array $limit, array $query)
     {
         $stores = $this->store->getList();
-        $pages = $this->page->getList(array('limit' => $limit) + $query);
+
+        $options = array('limit' => $limit);
+        $options += $query;
+        $pages = $this->page->getList($options);
 
         foreach ($pages as &$page) {
+
             $page['url'] = '';
             if (isset($stores[$page['store_id']])) {
                 $store = $stores[$page['store_id']];
-                $page['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/page/{$page['page_id']}";
+                $page['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
+                        . "/page/{$page['page_id']}";
             }
         }
 
@@ -328,34 +358,50 @@ class Page extends Controller
      */
     protected function submit(array $page = array())
     {
-        $images = (array) $this->request->post('delete_image');
-
-        if (!empty($images) && ($this->access('page_add') || $this->access('page_edit'))) {
-            foreach ($images as $file_id) {
-                $this->image->delete($file_id);
-            }
-        }
-
-        $this->submitted = $this->request->post('page', array(), false);
+        $this->setSubmitted('page', null, false);
         $this->validate($page);
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['page'] = $this->submitted;
+        
+        if($this->hasErrors('page')){
             return;
         }
+        
+        $this->deleteImages();
+        
+        $submitted = $this->getSubmitted();
 
         if (isset($page['page_id'])) {
             $this->controlAccess('page_edit');
-            $this->page->update($page['page_id'], $this->submitted);
+            $this->page->update($page['page_id'], $submitted);
             $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
         }
+        
+        $submitted['user_id'] = $this->uid;
 
         $this->controlAccess('page_add');
-        $this->submitted += array('user_id' => $this->uid);
-        $this->page->add($this->submitted);
+        $this->page->add($submitted);
         $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
+    }
+    
+    /**
+     * Deletes an array of submitted images
+     * @return int
+     */
+    protected function deleteImages() {
+        
+        $images = (array) $this->request->post('delete_image');
+        $has_access = ($this->access('page_add') || $this->access('page_edit'));
+        
+        if(!$has_access || empty($images)){
+            return 0;
+        }
+        
+        $deleted = 0;
+        foreach ($images as $file_id) {
+            $deleted += (int) $this->image->delete($file_id);
+        }
+        
+        return $deleted;
+
     }
 
     /**
@@ -364,166 +410,30 @@ class Page extends Controller
      */
     protected function validate(array $page = array())
     {
-        $this->validateAlias($page);
-        $this->validateTitle();
-        $this->validateDescription();
-        $this->validateMetaTitle();
-        $this->validateMetaDescription();
-        $this->validateTranslation();
-        $this->validateImages();
+        // Fix checkbox
+        $this->setSubmittedBool('status');
 
-        $this->submitted['status'] = !empty($this->submitted['status']);
-    }
-
-    /**
-     * Validates alias field
-     * @param array $page
-     * @return boolean
-     */
-    protected function validateAlias(array $page)
-    {
-        if (empty($this->submitted['alias'])) {
-            if (isset($page['page_id'])) {
-                $this->submitted['alias'] = $this->page->generateAlias($page);
-                return true;
-            }
-            return true;
+        // Validate fields
+        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
+        $this->addValidator('description', array('length' => array('min' => 1)));
+        $this->addValidator('meta_title', array('length' => array('max' => 255)));
+        $this->addValidator('meta_description', array('length' => array('max' => 255)));
+        $this->addValidator('translation', array('translation' => array()));
+        
+        $alias = $this->getSubmitted('alias');
+        if (empty($alias) && isset($page['page_id'])) {
+            $this->setSubmitted('alias', $this->page->createAlias($this->getSubmitted()));
         }
 
-        $check_alias = true;
-        if (isset($page['alias'])) {
-            $check_alias = ($page['alias'] !== $this->submitted['alias']);
-        }
-
-        if ($check_alias && $this->alias->exists($this->submitted['alias'])) {
-            $this->errors['alias'] = $this->text('URL alias already exists');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates title field
-     * @return boolean
-     */
-    protected function validateTitle()
-    {
-        if (!isset($this->submitted['title'])) {
-            return true;
-        }
-
-        if (!$this->submitted['title'] || mb_strlen($this->submitted['title']) > 255) {
-            $this->errors['title'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates description field
-     * @return boolean
-     */
-    protected function validateDescription()
-    {
-        if (isset($this->submitted['description']) && !$this->submitted['description']) {
-            $this->errors['description'] = $this->text('Required field');
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Validates meta title field
-     * @return boolean
-     */
-    protected function validateMetaTitle()
-    {
-        if (isset($this->submitted['meta_title']) && mb_strlen($this->submitted['meta_title']) > 255) {
-            $this->errors['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates meta description field
-     * @return boolean
-     */
-    protected function validateMetaDescription()
-    {
-        if (isset($this->submitted['meta_description']) && mb_strlen($this->submitted['meta_description']) > 255) {
-            $this->errors['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates page translation fields
-     * @return boolean
-     */
-    protected function validateTranslation()
-    {
-        if (empty($this->submitted['translation'])) {
-            return false;
-        }
-
-        $has_errors = false;
-        foreach ((array) $this->submitted['translation'] as $lang => &$translation) {
-            if (mb_strlen($translation['title']) > 255) {
-                $this->errors['translation'][$lang]['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
-            }
-
-            if (mb_strlen($translation['meta_title']) > 255) {
-                $this->errors['translation'][$lang]['meta_title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
-            }
-
-            if (mb_strlen($translation['meta_description']) > 255) {
-                $this->errors['translation'][$lang]['meta_description'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $has_errors = true;
-            }
-        }
-
-        return !$has_errors;
-    }
-
-    /**
-     * Validates submitted images
-     * @return boolean
-     */
-    protected function validateImages()
-    {
-        if (empty($this->submitted['images'])) {
-            return true;
-        }
-
-        foreach ($this->submitted['images'] as &$image) {
-            if (empty($image['title']) && isset($this->submitted['title'])) {
-                $image['title'] = $this->submitted['title'];
-            }
-
-            if (empty($image['description']) && isset($this->submitted['title'])) {
-                $image['description'] = $this->submitted['title'];
-            }
-
-            $image['title'] = $this->truncate($image['title'], 255);
-
-            if (empty($image['translation'])) {
-                continue;
-            }
-
-            foreach ($image['translation'] as &$translation) {
-                $translation['title'] = $this->truncate($translation['title'], 255);
-            }
-        }
-
-        return true;
+        $this->addValidator('alias', array(
+            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
+            'alias_unique' => array()));
+        
+        $this->addValidator('images', array('images' => array()));
+        $this->setValidators($page);
+        
+        $images = $this->getValidatorResult('images');
+        $this->setData('images', $images);
     }
 
 }

@@ -132,7 +132,7 @@ class Page extends Model
 
         if (empty($data['alias'])) {
             $data['page_id'] = $page_id;
-            $data['alias'] = $this->generateAlias($data);
+            $data['alias'] = $this->createAlias($data);
         }
 
         if ($data['alias']) {
@@ -182,7 +182,7 @@ class Page extends Model
      * @param array $data
      * @return string
      */
-    public function generateAlias(array $data)
+    public function createAlias(array $data)
     {
         $pattern = $this->config->get('page_alias_pattern', '%t.html');
         $placeholders = $this->config->get('page_alias_placeholder', array('%t' => 'title'));

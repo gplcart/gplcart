@@ -424,7 +424,7 @@ class Category extends Controller
         $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
         $this->addValidator('meta_title', array('length' => array('max' => 255)));
         $this->addValidator('meta_description', array('length' => array('max' => 255)));
-        $this->addValidator('translation', array());
+        $this->addValidator('translation', array('translation' => array()));
 
         $alias = $this->getSubmitted('alias');
         if (empty($alias) && isset($category['category_id'])) {
@@ -436,46 +436,11 @@ class Category extends Controller
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
             'alias_unique' => array()));
 
+        $this->addValidator('images', array('images' => array()));
         $this->setValidators($category);
-
-        // Modify images
-        $this->validateImages();
-    }
-
-    /**
-     * Validates / prepares category images
-     */
-    protected function validateImages()
-    {
-        $images = $this->getSubmitted('images');
-        $title = $this->getSubmitted('title');
-
-        if (empty($images)) {
-            return;
-        }
-
-        foreach ($images as &$image) {
-
-            if (empty($image['title']) && isset($title)) {
-                $image['title'] = $title;
-            }
-
-            if (empty($image['description']) && isset($title)) {
-                $image['description'] = $title;
-            }
-
-            $image['title'] = $this->truncate($image['title'], 255);
-
-            if (empty($image['translation'])) {
-                continue;
-            }
-
-            foreach ($image['translation'] as &$translation) {
-                $translation['title'] = $this->truncate($translation['title'], 255);
-            }
-        }
-
-        $this->setSubmitted('images', $images);
+        
+        $images = $this->getValidatorResult('images');
+        $this->setData('images', $images);
     }
 
 }
