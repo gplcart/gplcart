@@ -225,7 +225,7 @@ class PriceRule
         $count = count($values);
         $ids = array_filter($values, 'is_numeric');
 
-        if ($count !== count($ids)) {
+        if ($count != count($ids)) {
             return false;
         }
 
@@ -234,7 +234,7 @@ class PriceRule
             return !empty($product['status']);
         });
 
-        return ($count === count($exists));
+        return ($count == count($exists));
     }
 
     /**
@@ -251,7 +251,7 @@ class PriceRule
         $count = count($values);
         $ids = array_filter($values, 'is_numeric');
 
-        if ($count !== count($ids)) {
+        if ($count != count($ids)) {
             return false;
         }
 
@@ -260,7 +260,7 @@ class PriceRule
             return !empty($category['status']);
         });
 
-        return ($count === count($exists));
+        return ($count == count($exists));
     }
 
     /**
@@ -274,7 +274,7 @@ class PriceRule
             return false;
         }
 
-        return (count($values) === count(array_filter($values, 'is_numeric')));
+        return (count($values) == count(array_filter($values, 'is_numeric')));
     }
 
     /**
@@ -291,7 +291,7 @@ class PriceRule
         $count = count($values);
         $ids = array_filter($values, 'is_numeric');
 
-        if ($count !== count($ids)) {
+        if ($count != count($ids)) {
             return false;
         }
 
@@ -300,7 +300,7 @@ class PriceRule
             return !empty($role['status']);
         });
 
-        return ($count === count($exists));
+        return ($count == count($exists));
     }
 
     /**
@@ -318,7 +318,7 @@ class PriceRule
             return (bool) $this->shipping->getService($service);
         });
 
-        return (count($values) === count($exists));
+        return (count($values) == count($exists));
     }
 
     /**
@@ -336,7 +336,7 @@ class PriceRule
             return (bool) $this->payment->getService($service);
         });
 
-        return (count($values) === count($exists));
+        return (count($values) == count($exists));
     }
 
     /**
@@ -353,7 +353,7 @@ class PriceRule
         $count = count($values);
         $ids = array_filter($values, 'is_numeric');
 
-        if ($count !== count($ids)) {
+        if ($count != count($ids)) {
             return false;
         }
 
@@ -362,7 +362,7 @@ class PriceRule
             return (isset($address['type']) && $address['type'] === 'shipping');
         });
 
-        return ($count === count($exists));
+        return ($count == count($exists));
     }
 
     /**
@@ -381,7 +381,7 @@ class PriceRule
             return !empty($country['status']);
         });
 
-        return (count($values) === count($exists));
+        return (count($values) == count($exists));
     }
 
     /**
@@ -398,7 +398,7 @@ class PriceRule
         $count = count($values);
         $ids = array_filter($values, 'is_numeric');
 
-        if ($count !== count($ids)) {
+        if ($count != count($ids)) {
             return false;
         }
 
@@ -407,7 +407,7 @@ class PriceRule
             return !empty($state['status']);
         });
 
-        return ($count === count($exists));
+        return ($count == count($exists));
     }
 
 }

@@ -340,35 +340,6 @@ class PriceRule extends Model
     }
 
     /**
-     * Whether a price rule code exists
-     * @param string $code
-     * @param null|integer $store_id
-     * @param null|integer $exclude
-     * @return boolean
-     */
-    public function codeExists($code, $store_id = null, $exclude = null)
-    {
-        $sql = 'SELECT price_rule_id FROM price_rule WHERE code=:code';
-
-        $where = array(':code' => $code);
-
-        if (isset($store_id)) {
-            $sql .= ' AND store_id=:store_id';
-            $where[':store_id'] = (int) $store_id;
-        }
-
-        if (isset($exclude)) {
-            $sql .= ' AND price_rule_id <> :price_rule_id';
-            $where[':price_rule_id'] = (int) $exclude;
-        }
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
-        return (bool) $sth->fetchColumn();
-    }
-
-    /**
      * Adds a price rule
      * @param array $data
      * @return boolean|integer

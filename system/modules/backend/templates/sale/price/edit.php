@@ -148,7 +148,7 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
-          <div class="form-group required<?php echo isset($this->errors['conditions']) ? ' has-error' : ''; ?>">
+          <div class="form-group<?php echo isset($this->errors['data']['conditions']) ? ' has-error' : ''; ?>">
             <label class="col-md-3 control-label">
               <span class="hint" title="<?php echo $this->text('What conditions must be met to apply the price rule. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>">
                 <?php echo $this->text('Conditions'); ?>
@@ -156,8 +156,8 @@
             </label>
             <div class="col-md-9">
               <textarea name="price_rule[data][conditions]" rows="4" class="form-control" placeholder="<?php echo $this->text('User is logged in: user_id > 0'); ?>"><?php echo!empty($price_rule['data']['conditions']) ? $this->escape($price_rule['data']['conditions']) : ''; ?></textarea>
-              <?php if (isset($this->errors['conditions'])) { ?>
-              <div class="help-block"><?php echo $this->errors['conditions']; ?></div>
+              <?php if (isset($this->errors['data']['conditions'])) { ?>
+              <div class="help-block"><?php echo $this->errors['data']['conditions']; ?></div>
               <?php } ?>
             </div>
           </div>

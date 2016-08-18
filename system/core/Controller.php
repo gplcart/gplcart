@@ -379,8 +379,6 @@ class Controller
         $this->controlMaintenanceMode();
 
         $this->hook->fire('construct', $this);
-        
-        
     }
 
     /**
@@ -490,6 +488,17 @@ class Controller
         }
 
         return ($this->request->method() === 'POST');
+    }
+
+    /**
+     * Whether an error(s) exist
+     * @param string|array|null $key
+     * @return boolean
+     */
+    public function isError($key = null)
+    {
+        $result = $this->getError($key);
+        return !empty($result);
     }
 
     /**
@@ -699,31 +708,32 @@ class Controller
     }
 
     /**
-     * Returns an error or a custom value
-     * @param string|array $key
-     * @param mixed $return_on_error
+     * Returns an error
+     * @param string|null $key
+     * @param mixed $default
      * @return mixed
      */
-    public function error($key, $return_on_error = null)
+    public function getError($key = null, $default = null)
     {
-        $error = Tool::getArrayValue($this->errors, $key);
-
-        if (isset($error)) {
-            return isset($return_on_error) ? $return_on_error : $error;
+        if (isset($key)) {
+            $result = Tool::getArrayValue($this->errors, $key);
+            return isset($result) ? $result : $default;
         }
 
-        return '';
+        return $this->errors;
     }
 
     /**
      * Returns a submitted value
      * @param string|array $key
+     * @param mixed $default
      * @return mixed
      */
-    public function getSubmitted($key = null)
+    public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            return Tool::getArrayValue($this->submitted, $key);
+            $result = Tool::getArrayValue($this->submitted, $key);
+            return isset($result) ? $result : $default;
         }
 
         return $this->submitted;
@@ -1451,24 +1461,6 @@ class Controller
     }
 
     /**
-     * Returns form errors (if any)
-     * @param boolean $message
-     * @return array
-     */
-    public function getErrors($message = true)
-    {
-        if (empty($this->errors)) {
-            return array();
-        }
-
-        if ($message) {
-            $this->setMessage($this->text('One or more errors occurred'), 'danger');
-        }
-
-        return $this->errors;
-    }
-
-    /**
      * Returns true if an error occurred
      * and passes back to template the submitted data
      * @param string $key
@@ -1476,11 +1468,13 @@ class Controller
      */
     public function hasErrors($key = null)
     {
-        $errors = $this->getErrors();
+        $errors = $this->getError();
 
         if (empty($errors)) {
             return false;
         }
+
+        $this->setMessage($this->text('One or more errors occurred'), 'danger');
 
         if (isset($key)) {
             $this->setData($key, $this->submitted);

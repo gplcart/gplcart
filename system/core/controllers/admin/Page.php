@@ -427,7 +427,7 @@ class Page extends Controller
 
         $this->addValidator('alias', array(
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias_unique' => array()));
+            'alias' => array()));
 
         $this->addValidator('images', array('images' => array()));
         $this->setValidators($page);

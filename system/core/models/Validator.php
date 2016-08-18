@@ -107,7 +107,7 @@ class Validator extends Model
                 if (!empty($options['control_errors']) && !empty($this->errors)) {
                     return $this;
                 }
-                
+
                 $options['submitted'] = $submitted;
 
                 if (!isset($options['data'])) {
@@ -122,7 +122,7 @@ class Validator extends Model
                 }
 
                 if (isset($result['result'])) {
-                    $this->results[$field] = $result['result'];
+                    Tool::setArrayValue($this->results, $field, $result['result']);
                     continue;
                 }
 
@@ -230,9 +230,9 @@ class Validator extends Model
             ),
         );
 
-        $handlers['alias_unique'] = array(
+        $handlers['alias'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'aliasUnique')
+                'validate' => array('core\\handlers\\validator\\Model', 'alias')
             ),
         );
 
@@ -241,22 +241,22 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Common', 'regexp')
             ),
         );
-        
+
         $handlers['images'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Common', 'images')
             ),
         );
 
-        $handlers['country_code_unique'] = array(
+        $handlers['country_code'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'countryCodeUnique')
+                'validate' => array('core\\handlers\\validator\\Model', 'countryCode')
             ),
         );
 
-        $handlers['currency_code_unique'] = array(
+        $handlers['currency_code'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'currencyCodeUnique')
+                'validate' => array('core\\handlers\\validator\\Model', 'currencyCode')
             ),
         );
 
@@ -265,7 +265,13 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Model', 'categoryGroupType')
             ),
         );
-        
+
+        $handlers['price_rule_code'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Model', 'priceRuleCode')
+            ),
+        );
+
         $handlers['pricerule_conditions'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Model', 'priceRuleConditions')

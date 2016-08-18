@@ -306,7 +306,7 @@ class Country extends Controller
 
         $this->addValidator('code', array(
             'regexp' => array('pattern' => '/^[a-zA-Z]{2}$/'),
-            'country_code_unique' => array()));
+            'country_code' => array()));
 
         $this->addValidator('name', array(
             'length' => array('min' => 1, 'max' => 255)));

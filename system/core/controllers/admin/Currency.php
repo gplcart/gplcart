@@ -224,7 +224,7 @@ class Currency extends Controller
         // Validate fields
         $this->addValidator('code', array(
             'regexp' => array('pattern' => '/^[a-zA-Z]{3}$/'),
-            'currency_code_unique' => array()
+            'currency_code' => array()
         ));
 
         $this->addValidator('name', array(

@@ -246,8 +246,8 @@ class Category extends Controller
             $exclude[] = $child['category_id'];
         }
 
-        $categories = array_diff_key($categories, array_flip($exclude));
-        $this->setData('categories', $categories);
+        $modified = array_diff_key($categories, array_flip($exclude));
+        $this->setData('categories', $modified);
     }
 
     /**
@@ -434,7 +434,7 @@ class Category extends Controller
 
         $this->addValidator('alias', array(
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias_unique' => array()));
+            'alias' => array()));
 
         $this->addValidator('images', array('images' => array()));
         $this->setValidators($category);

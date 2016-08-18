@@ -504,7 +504,7 @@ class Product extends Controller
         $is_ajax = $this->request->isAjax();
 
         $this->validateAddToCart();
-        $errors = $this->getErrors(false);
+        $errors = $this->getError();
 
         if (!empty($errors)) {
             if ($is_ajax) {

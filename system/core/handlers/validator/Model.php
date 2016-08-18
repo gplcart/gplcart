@@ -86,9 +86,9 @@ class Model
      * @param array $options
      * @return boolean|string
      */
-    public function aliasUnique($alias, array $options = array())
+    public function alias($alias, array $options = array())
     {
-        if (empty($alias)) {
+        if (!isset($alias) || $alias === '') {
             return true;
         }
 
@@ -110,7 +110,7 @@ class Model
      * @param array $options
      * @return boolean|string
      */
-    public function countryCodeUnique($code, array $options = array())
+    public function countryCode($code, array $options = array())
     {
         $check = true;
         if (isset($options['data']['code']) && ($options['data']['code'] === $code)) {
@@ -130,7 +130,7 @@ class Model
      * @param array $options
      * @return boolean
      */
-    public function currencyCodeUnique($code, array $options = array())
+    public function currencyCode($code, array $options = array())
     {
         $code = strtoupper($code);
 
@@ -158,11 +158,15 @@ class Model
             return true;
         }
 
-        $category_groups = $this->category_group->getList(array(
+        $arguments = array(
             'type' => $value,
-            'store_id' => $options['store_id']));
+            'store_id' => $options['store_id']);
 
-        unset($category_groups[$options['category_group_id']]);
+        $category_groups = $this->category_group->getList($arguments);
+
+        if (isset($options['category_group_id'])) {
+            unset($category_groups[$options['category_group_id']]);
+        }
 
         if (empty($category_groups)) {
             return true;
@@ -172,7 +176,7 @@ class Model
     }
 
     /**
-     * Validates price rule conditions
+     * Validates and modifies price rule conditions
      * @return boolean|array
      */
     public function priceRuleConditions($value, array $options = array())
@@ -215,7 +219,9 @@ class Model
                 continue;
             }
 
-            if (call_user_func_array($validator, array(&$parameters, $options['submitted'])) !== true) {
+            $result = call_user_func_array($validator, array(&$parameters, $options['submitted']));
+
+            if ($result !== true) {
                 $errors[] = $line;
                 continue;
             }
@@ -229,11 +235,51 @@ class Model
             );
         }
 
-        if (!empty($errors)) {
-            return $this->text('Error on lines %num', array('%num' => implode(',', $errors)));
+        if (empty($errors)) {
+            return array('result' => $modified);
         }
 
-        return array('result' => $modified);
+        return $this->language->text('Error on lines %num', array(
+                    '%num' => implode(',', $errors)));
+    }
+
+    /**
+     * Validates price rule code uniqueness
+     * @param string $value
+     * @param array $options
+     * @return boolean
+     */
+    public function priceRuleCode($value, array $options = array())
+    {
+        if (empty($value)) {
+            return true;
+        }
+
+        $arguments = array(
+            'code' => $value,
+            'store_id' => $options['store_id']);
+
+        $rules = $this->rule->getList($arguments);
+
+        if (isset($options['price_rule_id'])) {
+            // Editing, exclude it from the results
+            unset($rules[$options['price_rule_id']]);
+        }
+
+        if (empty($rules)) {
+            return true; // No similar code found, passed validation
+        }
+
+        // Search for exact match
+        // because $this->rule->getList() uses LIKE for "code" field
+        foreach ($rules as $rule) {
+            if ($rule['code'] === $value) {
+                return $this->language->text('Code %code already exists for this store', array(
+                            '%code' => $value));
+            }
+        }
+
+        return true;
     }
 
 }
