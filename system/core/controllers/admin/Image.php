@@ -74,11 +74,11 @@ class Image extends Controller
 
         $this->setData('imagestyle', $imagestyle);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($imagestyle);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($imagestyle);
         }
 

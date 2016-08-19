@@ -64,7 +64,7 @@ class City extends Controller
         $country = $this->getCountry($country_code);
         $state = $this->getState($state_id);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -99,11 +99,11 @@ class City extends Controller
         $this->setData('state', $state);
         $this->setData('country', $country);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($country, $state, $city);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($country, $state, $city);
         }
 

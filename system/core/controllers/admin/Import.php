@@ -181,7 +181,7 @@ class Import extends Controller
             $this->response->download($operation['log']['errors']);
         }
 
-        if ($this->isSubmitted('import')) {
+        if ($this->isPosted('import')) {
             $this->submit($operation);
         }
 

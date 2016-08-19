@@ -75,11 +75,11 @@ class Export extends Controller
     {
         $operation = $this->get($operation_id);
 
-        if ($this->isSubmitted('download')) {
+        if ($this->isPosted('download')) {
             $this->download($operation);
         }
 
-        if ($this->isSubmitted('export')) {
+        if ($this->isPosted('export')) {
             $this->submit($operation);
         }
         

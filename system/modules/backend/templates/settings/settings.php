@@ -36,7 +36,7 @@
           <div class="col-md-4 col-md-offset-2">
             <div class="checkbox">
               <label>
-                <input type="checkbox" name="settings[delete_gapi_certificate]" value="1">
+                <input type="checkbox" name="delete_gapi_certificate" value="1">
                 <?php echo $this->text('Delete %file', array('%file' => $settings['gapi_certificate'])); ?>
               </label>
             </div>

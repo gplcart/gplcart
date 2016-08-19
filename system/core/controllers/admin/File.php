@@ -51,7 +51,7 @@ class File extends Controller
         $allowed = array('title', 'mime_type', 'created', 'path');
         $this->setFilter($allowed, $query);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 

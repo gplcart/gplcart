@@ -47,11 +47,11 @@ class Language extends Controller
         $this->setData('language', $language);
         $this->setData('default_language', $default);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($language);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($language);
         }
 

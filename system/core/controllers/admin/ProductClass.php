@@ -50,7 +50,7 @@ class ProductClass extends Controller
      */
     public function classes()
     {
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -89,11 +89,11 @@ class ProductClass extends Controller
         $product_class = $this->get($product_class_id);
         $this->setData('product_class', $product_class);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($product_class);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($product_class);
         }
 
@@ -114,7 +114,7 @@ class ProductClass extends Controller
         $this->setData('fields', $fields);
         $this->setData('product_class', $product_class);
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submitFields($product_class);
         }
 
@@ -135,7 +135,7 @@ class ProductClass extends Controller
         $this->setData('fields', $fields);
         $this->setData('product_class', $product_class);
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submitField($product_class);
         }
 

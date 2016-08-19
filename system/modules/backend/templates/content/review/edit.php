@@ -19,14 +19,14 @@
           </div>
         </div>
       </div>         
-      <div class="form-group<?php echo isset($this->errors['created']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['created']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Date when the review was created. Leave empty for the current date'); ?>">
+          <span class="hint" title="<?php echo $this->text('Date when the review was created'); ?>">
             <?php echo $this->text('Created'); ?>
           </span>
         </label>
         <div class="col-md-4">
-          <input name="review[created]" class="form-control" placeholder="<?php echo $this->text('Current time'); ?>" value="<?php echo empty($review['created']) ? '' : $this->date($review['created'], false); ?>">
+          <input name="review[created]" class="form-control" value="<?php echo empty($review['created']) ? $this->date(null, false) : $this->date($review['created'], false); ?>">
           <?php if (isset($this->errors['created'])) { ?>
           <div class="help-block"><?php echo $this->errors['created']; ?></div>
           <?php } ?>
@@ -36,7 +36,7 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['product']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['product_id']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Autocomplete field. Select a product that is related to the review'); ?>">
             <?php echo $this->text('Product'); ?>
@@ -44,8 +44,8 @@
         </label>
         <div class="col-md-6">
           <input name="review[product]" class="form-control" value="<?php echo isset($review['product']) ? $this->escape($review['product']) : ''; ?>">
-          <?php if (isset($this->errors['product'])) { ?>
-          <div class="help-block"><?php echo $this->errors['product']; ?></div>
+          <?php if (isset($this->errors['product_id'])) { ?>
+          <div class="help-block"><?php echo $this->errors['product_id']; ?></div>
           <?php } ?>
         </div>
       </div>

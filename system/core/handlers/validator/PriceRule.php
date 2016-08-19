@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,404 +9,144 @@
 
 namespace core\handlers\validator;
 
-use core\Config;
-use core\models\Price;
-use core\models\State;
-use core\models\Payment;
-use core\models\Product;
-use core\models\Address;
-use core\models\Country;
-use core\models\Category;
-use core\models\Currency;
-use core\models\Shipping;
-use core\models\UserRole;
+use core\classes\Tool;
+use core\models\Language as ModelsLanguage;
+use core\models\PriceRule as ModelsPriceRule;
 
+/**
+ * Provides methods to validate various database related data
+ */
 class PriceRule
 {
 
     /**
-     * Currency model instance
-     * @var \core\models\Currency $currency
+     * Language model instance
+     * @var \core\models\Language $language
      */
-    protected $currency;
+    protected $language;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
+     * Price rule model instance
+     * @var \core\models\PriceRule $rule
      */
-    protected $price;
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
-
-    /**
-     * Address model instance
-     * @var \core\models\Address $address
-     */
-    protected $address;
-
-    /**
-     * Country model instance
-     * @var \core\models\Country $country
-     */
-    protected $country;
-
-    /**
-     * Category model instance
-     * @var \core\models\Category $category
-     */
-    protected $category;
-
-    /**
-     * Payment model instance
-     * @var \core\models\Payment $payment
-     */
-    protected $payment;
-
-    /**
-     * Shipping model instance
-     * @var \core\models\Shipping $shipping
-     */
-    protected $shipping;
-
-    /**
-     * State model instance
-     * @var \core\models\State $state
-     */
-    protected $state;
-
-    /**
-     * User role model instance
-     * @var \core\models\UserRole $role
-     */
-    protected $role;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
-     * PDO instance
-     * @var \core\classes\Database $db
-     */
-    protected $db;
+    protected $rule;
 
     /**
      * Constructor
-     * @param Currency $currency
-     * @param Price $price
-     * @param Payment $payment
-     * @param Shipping $shipping
-     * @param Product $product
-     * @param Category $category
-     * @param UserRole $role
-     * @param Address $address
-     * @param Country $country
-     * @param State $state
-     * @param Config $config
+     * @param ModelsLanguage $language
+     * @param ModelsPriceRule $rule
      */
-    public function __construct(Currency $currency, Price $price,
-            Payment $payment, Shipping $shipping, Product $product,
-            Category $category, UserRole $role, Address $address,
-            Country $country, State $state, Config $config)
+    public function __construct(ModelsLanguage $language, ModelsPriceRule $rule)
     {
-        $this->role = $role;
-        $this->price = $price;
-        $this->state = $state;
-        $this->config = $config;
-        $this->address = $address;
-        $this->product = $product;
-        $this->payment = $payment;
-        $this->country = $country;
-        $this->shipping = $shipping;
-        $this->currency = $currency;
-        $this->category = $category;
-        $this->db = $this->config->getDb();
+        $this->rule = $rule;
+        $this->language = $language;
     }
 
     /**
-     * Validates the date condition
-     * @param array $values
-     * @return boolean
+     * Validates and modifies price rule conditions
+     * @return boolean|array
      */
-    public function date(&$values)
+    public function conditions($value, array $options = array())
     {
-        if (count($values) !== 1) {
-            return false;
-        }
-
-        $timestamp = strtotime(reset($values));
-
-        if (!empty($timestamp)) {
-            $values = array($timestamp);
+        if (empty($value)) {
             return true;
         }
 
-        return false;
+        $modified = $errors = array();
+        $operators = array_map('htmlspecialchars', $this->rule->getConditionOperators());
+        $conditions = Tool::stringToArray($value);
+
+        foreach ($conditions as $line => $condition) {
+            $line++;
+
+            $condition = trim($condition);
+            $parts = array_map('trim', explode(' ', $condition));
+
+            $condition_id = array_shift($parts);
+            $operator = array_shift($parts);
+
+            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
+                return ($value !== "");
+            });
+
+            if (empty($parameters)) {
+                $errors[] = $line;
+                continue;
+            }
+
+            if (!in_array(htmlspecialchars($operator), $operators)) {
+                $errors[] = $line;
+                continue;
+            }
+
+            $validator = $this->rule->getConditionHandler($condition_id, 'validate');
+
+            if (empty($validator)) {
+                $errors[] = $line;
+                continue;
+            }
+
+            $result = call_user_func_array($validator, array(&$parameters, $options['submitted']));
+
+            if ($result !== true) {
+                $errors[] = $line;
+                continue;
+            }
+
+            $modified[] = array(
+                'id' => $condition_id,
+                'operator' => $operator,
+                'value' => $parameters,
+                'original' => $condition,
+                'weight' => $line,
+            );
+        }
+
+        if (empty($errors)) {
+            return array('result' => $modified);
+        }
+
+        return $this->language->text('Error on lines %num', array(
+                    '%num' => implode(',', $errors)));
     }
 
     /**
-     * Validates the number of usage condition
-     * @param array $values
+     * Validates price rule code uniqueness
+     * @param string $value
+     * @param array $options
      * @return boolean
      */
-    public function used(&$values)
+    public function code($value, array $options = array())
     {
-        if (count($values) !== 1) {
-            return false;
-        }
-
-        $value = reset($values);
-
-        if (is_numeric($value)) {
-            $values = array((int) $value);
+        if (empty($value)) {
             return true;
         }
 
-        return false;
-    }
+        $arguments = array(
+            'code' => $value,
+            'store_id' => $options['store_id']);
 
-    /**
-     * Validates the price condition
-     * @param array $values
-     * @return boolean
-     */
-    public function price(&$values, $rule)
-    {
-        if (count($values) !== 1) {
-            return false;
+        $rules = $this->rule->getList($arguments);
+
+        if (isset($options['price_rule_id'])) {
+            // Editing, exclude it from the results
+            unset($rules[$options['price_rule_id']]);
         }
 
-        $components = array_map('trim', explode('|', reset($values)));
-
-        if (count($components) > 2) {
-            return false;
+        if (empty($rules)) {
+            return true; // No similar code found, passed validation
         }
 
-        if (!is_numeric($components[0])) {
-            return false;
-        }
-
-        $price = $components[0];
-
-        if (isset($components[1])) {
-            $currency = $components[1];
-            if (!$this->currency->get($currency)) {
-                return false;
+        // Search for exact match
+        // because $this->rule->getList() uses LIKE for "code" field
+        foreach ($rules as $rule) {
+            if ($rule['code'] === $value) {
+                return $this->language->text('Code %code already exists for this store', array(
+                            '%code' => $value));
             }
         }
 
-        if (!isset($currency)) {
-            $currency = $rule['currency'];
-        }
-
-        $new_components = array($this->price->amount($price, $currency), $currency);
-        $values = array(implode('|', $new_components));
         return true;
-    }
-
-    /**
-     * Validates the product ID condition
-     * @param array $values
-     * @return boolean
-     */
-    public function productId($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
-
-        if ($count != count($ids)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($product_id) {
-            $product = $this->product->get($product_id);
-            return !empty($product['status']);
-        });
-
-        return ($count == count($exists));
-    }
-
-    /**
-     * Validates the product category ID condition
-     * @param array $values
-     * @return boolean
-     */
-    public function categoryId($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
-
-        if ($count != count($ids)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($category_id) {
-            $category = $this->category->get($category_id);
-            return !empty($category['status']);
-        });
-
-        return ($count == count($exists));
-    }
-
-    /**
-     * Validates the user ID condition
-     * @param array $values
-     * @return boolean
-     */
-    public function userId($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        return (count($values) == count(array_filter($values, 'is_numeric')));
-    }
-
-    /**
-     * Validates the role ID condition
-     * @param array $values
-     * @return boolean
-     */
-    public function userRole($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
-
-        if ($count != count($ids)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($role_id) {
-            $role = $this->role->get($role_id);
-            return !empty($role['status']);
-        });
-
-        return ($count == count($exists));
-    }
-
-    /**
-     * Validates the shipping method condition
-     * @param array $values
-     * @return boolean
-     */
-    public function shipping($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($service) {
-            return (bool) $this->shipping->getService($service);
-        });
-
-        return (count($values) == count($exists));
-    }
-
-    /**
-     * Validates the payment method condition
-     * @param array $values
-     * @return boolean
-     */
-    public function payment($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($service) {
-            return (bool) $this->payment->getService($service);
-        });
-
-        return (count($values) == count($exists));
-    }
-
-    /**
-     * Validates the shipping address ID condition
-     * @param array $values
-     * @return boolean
-     */
-    public function shippingAddressId($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
-
-        if ($count != count($ids)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($address_id) {
-            $address = $this->address->get($address_id);
-            return (isset($address['type']) && $address['type'] === 'shipping');
-        });
-
-        return ($count == count($exists));
-    }
-
-    /**
-     * Validates the country code condition
-     * @param array $values
-     * @return boolean
-     */
-    public function country($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($code) {
-            $country = $this->country->get($code);
-            return !empty($country['status']);
-        });
-
-        return (count($values) == count($exists));
-    }
-
-    /**
-     * Validates the country state condition
-     * @param array $values
-     * @return boolean
-     */
-    public function state($values)
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
-
-        if ($count != count($ids)) {
-            return false;
-        }
-
-        $exists = array_filter($values, function ($state_id) {
-            $state = $this->state->get($state_id);
-            return !empty($state['status']);
-        });
-
-        return ($count == count($exists));
     }
 
 }

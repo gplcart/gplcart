@@ -97,7 +97,7 @@ class Review extends Controller
         $this->data['review'] = $review;
         $this->data['product'] = $product;
         $this->data['deletable'] = $deletable;
-        $this->data['max_length'] = $this->config->get('review_length', 1000);
+        $this->data['max_length'] = $this->config->get('review_max_length', 1000);
         $this->data['price'] = $this->price->format($product['price'], $product['currency']);
 
         $this->setEditForm($review, $product);
@@ -213,7 +213,7 @@ class Review extends Controller
         }
 
         $status = (bool) $this->config->get('review_status', 1);
-        $length = (int) $this->config->get('review_length', 1000);
+        $length = (int) $this->config->get('review_max_length', 1000);
 
         $this->submitted['status'] = $status;
         $this->submitted['text'] = $this->truncate($this->submitted['text'], $length);

@@ -88,7 +88,7 @@ class FieldValue extends Controller
         $allowed = array('title', 'color', 'weight', 'image');
         $this->setFilter($allowed, $query);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -114,11 +114,11 @@ class FieldValue extends Controller
         $this->setData('field_value', $field_value);
         $this->setData('widget_types', $widget_types);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($field_value, $field);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($field_value, $field);
         }
 
@@ -326,8 +326,10 @@ class FieldValue extends Controller
     protected function delete(array $field_value, array $field)
     {
         $this->controlAccess('field_value_delete');
+        
+        $deleted = $this->field_value->delete($field_value['field_value_id']);
 
-        if ($this->field_value->delete($field_value['field_value_id'])) {
+        if ($deleted) {
             $this->redirect("admin/content/field/value/{$field['field_id']}", $this->text('Field value %name has been deleted', array(
                         '%name' => $field_value['title'])), 'success');
         }
@@ -409,7 +411,7 @@ class FieldValue extends Controller
 
         if (empty($errors)) {
 
-            if ($this->isSubmitted('delete_image')) {
+            if ($this->isPosted('delete_image')) {
                 $this->deleteImage($field_value, $field);
             }
 

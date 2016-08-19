@@ -93,7 +93,8 @@
 # $config['review_editable'] = 1; //Whether to allow to add/edit reviews
 # $config['review_enabled'] = 1; // Whether to show product reviews
 # $config['report_log_lifespan'] = 86400;
-# $config['review_length'] = 100;
+# $config['review_max_length'] = 1000;
+# $config['review_min_length'] = 10;
 # $config['review_limit'] = 10; // Reviews per page
 # $config['review_status'] = 1; // Default review status if added/edited by a customer
 # $config['search_index_limit'] = 50;

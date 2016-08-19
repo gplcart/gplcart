@@ -49,24 +49,22 @@ class Report extends Controller
      */
     public function system()
     {
-        if ($this->request->get('clear_errors')) {
-            $this->clearSystemErrors();
-        }
+        $this->clearSystemErrors();
 
         $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalSystemEvents($query), $query);
+        $total = $this->getTotalSystemEvents($query);
+        $limit = $this->setPager($total, $query);
 
         $filters = array('severity', 'type', 'time', 'text');
         $this->setFilter($filters, $query);
 
-        $this->data['records'] = $this->getEvents($total, $query);
-        $this->data['types'] = $this->report->getTypes();
+        $types = $this->report->getTypes();
+        $events = $this->getEvents($limit, $query);
+        $severities = $this->report->getSeverities();
 
-        $this->data['severities'] = array(
-            'info' => $this->text('Info'),
-            'warning' => $this->text('Warning'),
-            'danger' => $this->text('Danger')
-        );
+        $this->setData('types', $types);
+        $this->setData('records', $events);
+        $this->setData('severities', $severities);
 
         $this->setTitleSystem();
         $this->setBreadcrumbSystem();
@@ -81,33 +79,38 @@ class Report extends Controller
         $this->setTitleGa();
         $this->setBreadcrumbGa();
 
-        $store_id = (int) $this->request->get('store_id', $this->store->getDefault());
+        $default_store = $this->store->getDefault();
+        $store_id = (int) $this->request->get('store_id', $default_store);
         $stores = $this->store->getList();
         $store = $this->store->get($store_id);
 
-        $gapi_email = $this->config->get('gapi_email', '');
-        $gapi_certificate = $this->config->get('gapi_certificate', '');
+        $email = $this->config('gapi_email', '');
+        $certificate = $this->config('gapi_certificate', '');
+        $missing_settings = empty($store['data']['ga_view']);
+        $missing_credentials = (empty($email) || empty($certificate));
 
-        $this->data['store'] = $store;
-        $this->data['stores'] = $stores;
-        $this->data['missing_settings'] = empty($store['data']['ga_view']);
-        $this->data['missing_credentials'] = (empty($gapi_email) || empty($gapi_certificate));
+        $this->setData('store', $store);
+        $this->setData('stores', $stores);
+        $this->setData('missing_settings', $missing_settings);
+        $this->setData('missing_credentials', $missing_credentials);
 
-        if ($this->data['missing_credentials'] || $this->data['missing_settings']) {
+        if ($missing_settings || $missing_credentials) {
             $this->outputGa();
         }
 
-        $this->setUpdateGa($store_id);
+        $this->updateGa($store_id);
 
-        $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
-        $this->analytics->setView($store['data']['ga_view']);
-        $this->data['ga_view'] = $store['data']['ga_view'];
+        $view = $store['data']['ga_view'];
+        $this->analytics->setCredentials($email, $certificate, "Analytics for {$store['domain']}");
+        $this->analytics->setView($view);
 
-        $this->setPanelTraffic();
-        $this->setPanelSoftware();
-        $this->setPanelGaSources();
-        $this->setPanelGaTopPages();
-        $this->setPanelGaKeywords();
+        $this->setData('ga_view', $view);
+
+        $this->setDataPanelTraffic();
+        $this->setDataPanelSoftware();
+        $this->setDataPanelSources();
+        $this->setDataPanelTopPages();
+        $this->setDataPanelKeywords();
 
         $this->outputGa();
     }
@@ -116,7 +119,7 @@ class Report extends Controller
      * Listen to URL parameter and updates cached GA data for the store ID
      * @param integer $store_id
      */
-    protected function setUpdateGa($store_id)
+    protected function updateGa($store_id)
     {
         $view = (string) $this->request->get('ga_view');
 
@@ -130,25 +133,29 @@ class Report extends Controller
     /**
      * Sets Keywords statistic panel
      */
-    protected function setPanelGaKeywords()
+    protected function setDataPanelKeywords()
     {
         $items = $this->analytics->get('keywords');
-        $this->data['panel_keywords'] = $this->render('report/ga/panels/keywords', array('items' => $items));
+        $html = $this->render('report/ga/panels/keywords', array('items' => $items));
+
+        $this->setData('panel_keywords', $html);
     }
 
     /**
      * Sets Sources statistic panel
      */
-    protected function setPanelGaSources()
+    protected function setDataPanelSources()
     {
         $items = $this->analytics->get('sources');
-        $this->data['panel_sources'] = $this->render('report/ga/panels/sources', array('items' => $items));
+        $html = $this->render('report/ga/panels/sources', array('items' => $items));
+
+        $this->setData('panel_sources', $html);
     }
 
     /**
      * Sets Top Pages statistic panel
      */
-    protected function setPanelGaTopPages()
+    protected function setDataPanelTopPages()
     {
         $items = $this->analytics->get('top_pages');
 
@@ -158,37 +165,42 @@ class Report extends Controller
             }
         }
 
-        $this->data['panel_top_pages'] = $this->render('report/ga/panels/top_pages', array('items' => $items));
+        $html = $this->render('report/ga/panels/top_pages', array('items' => $items));
+        $this->setData('panel_top_pages', $html);
     }
 
     /**
      * Sets Software statistic panel
      */
-    protected function setPanelSoftware()
+    protected function setDataPanelSoftware()
     {
         $items = array();
         foreach ($this->analytics->get('software') as $i => $result) {
+
             $os_version = ($result[1] === "(not set)") ? '' : $result[1];
             $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
+
             $items[$i][0] = $result[0] . " $os_version";
             $items[$i][1] = $result[2] . " $browser_version";
             $items[$i][2] = $result[4];
         }
 
-        $this->data['panel_software'] = $this->render('report/ga/panels/software', array('items' => $items));
+        $html = $this->render('report/ga/panels/software', array('items' => $items));
+        $this->setData('panel_software', $html);
     }
 
     /**
      * Sets Traffic statistic panel
      */
-    protected function setPanelTraffic()
+    protected function setDataPanelTraffic()
     {
         $chart = $this->report->buildTrafficChart($this->analytics);
 
         $this->setJsSettings('chart_traffic', $chart);
         $this->setJs('files/assets/chart/Chart.min.js', 'top');
 
-        $this->data['panel_traffic'] = $this->render('report/ga/panels/traffic');
+        $html = $this->render('report/ga/panels/traffic');
+        $this->setData('panel_traffic', $html);
     }
 
     /**
@@ -197,10 +209,11 @@ class Report extends Controller
     public function status()
     {
         $statuses = $this->report->getStatus();
-        $this->data['statuses'] = $statuses;
+        $this->setData('statuses', $statuses);
 
         if ($this->request->get('phpinfo')) {
-            $this->data['phpinfo'] = $this->report->phpinfo();
+            $phpinfo = $this->report->phpinfo();
+            $this->setData('phpinfo', $phpinfo);
         }
 
         $this->setTitleStatus();
@@ -215,7 +228,8 @@ class Report extends Controller
      */
     protected function getTotalSystemEvents(array $query)
     {
-        return $this->report->getList(array('count' => true) + $query);
+        $query['count'] = true;
+        return $this->report->getList($query);
     }
 
     /**
@@ -223,8 +237,10 @@ class Report extends Controller
      */
     protected function clearSystemErrors()
     {
-        $this->report->clear();
-        $this->redirect('admin/report/system');
+        if ($this->request->get('clear_errors')) {
+            $this->report->clear();
+            $this->redirect('admin/report/system');
+        }
     }
 
     /**
@@ -235,16 +251,21 @@ class Report extends Controller
      */
     protected function getEvents(array $limit, array $query)
     {
-        $records = $this->report->getList(array('limit' => $limit) + $query);
+        $query['limit'] = $limit;
+        $records = $this->report->getList($query);
 
         foreach ($records as &$record) {
-            $record['summary'] = '';
-            $message_variables = isset($record['data']['variables']) ? $record['data']['variables'] : array();
-            $record['text'] = $this->text($record['text'], $message_variables);
-            $record['summary'] = $this->truncate($record['text']);
-            $record['severity_text'] = $this->text($record['severity']);
+
+            $variables = array();
+            if (!empty($record['data']['variables'])) {
+                $variables = $record['data']['variables'];
+            }
+
             $record['time'] = $this->date($record['time']);
             $record['type'] = $this->text($record['type']);
+            $record['text'] = $this->text($record['text'], $variables);
+            $record['summary'] = $this->truncate($record['text']);
+            $record['severity_text'] = $this->text($record['severity']);
         }
 
         return $records;
@@ -263,8 +284,13 @@ class Report extends Controller
      */
     protected function setBreadcrumbSystem()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/report/ga'), 'text' => $this->text('Google Analytics')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/report/ga'),
+            'text' => $this->text('Google Analytics')));
     }
 
     /**
@@ -288,8 +314,13 @@ class Report extends Controller
      */
     protected function setBreadcrumbGa()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/report/system'), 'text' => $this->text('System events')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/report/system'),
+            'text' => $this->text('System events')));
     }
 
     /**
@@ -313,7 +344,9 @@ class Report extends Controller
      */
     protected function setBreadcrumbStatus()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**

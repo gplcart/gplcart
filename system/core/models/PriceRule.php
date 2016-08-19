@@ -87,91 +87,91 @@ class PriceRule extends Model
                 'description' => $this->language->text('User ID. Parameters: list of numeric IDs, separated by comma'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'userId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'userId'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditionsConditions', 'userId'),
                 ),
             ),
             'user_role_id' => array(
                 'description' => $this->language->text('User role ID. Parameters: list of numeric IDs, separated by comma'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'userRole'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'userRole'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'userRole'),
                 ),
             ),
             'date' => array(
                 'description' => $this->language->text('Date. Parameters: One value in time format'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'date'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'date'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'date'),
                 ),
             ),
             'product_id' => array(
                 'description' => $this->language->text('Product ID. Parameters: list of numeric IDs, separated by comma'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'productId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'productId'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'productId'),
                 ),
             ),
             'product_category_id' => array(
                 'description' => $this->language->text('Product catalog category ID. Parameters: list of numeric IDs, separated by comma'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'categoryId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'categoryId'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'categoryId'),
                 ),
             ),
             'product_brand_category_id' => array(
                 'description' => $this->language->text('Product brand category ID. Parameters: list of numeric IDs, separated by comma'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'brandCategoryId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'categoryId'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'categoryId'),
                 ),
             ),
             'used' => array(
                 'description' => $this->language->text('Times used. Parameters: One numeric value'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'used'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'used'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'used'),
                 ),
             ),
             'shipping' => array(
                 'description' => $this->language->text('Order shipping method. Parameters: Shipping service ID'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'shipping'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'shipping'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'shipping'),
                 ),
             ),
             'payment' => array(
                 'description' => $this->language->text('Order payment method. Parameters: Payment service ID'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'payment'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'payment'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'payment'),
                 ),
             ),
             'shipping_address_id' => array(
                 'description' => $this->language->text('Order shipping address ID. Parameters: list of numeric IDs, separated by comma'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'shippingAddressId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'shippingAddressId'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'shippingAddressId'),
                 ),
             ),
             'country' => array(
                 'description' => $this->language->text('Order country code. Parameters: Country code'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'country'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'country'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'country'),
                 ),
             ),
             'state' => array(
                 'description' => $this->language->text('Order state code. Parameters: State code'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'state'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'state'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'state'),
                 ),
             ),
             'cart_total' => array(
                 'description' => $this->language->text('Cart total (order subtotal). Parameters: numeric value'),
                 'handlers' => array(
                     'condition' => array('core\\handlers\\pricerule\\Condition', 'cartTotal'),
-                    'validate' => array('core\\handlers\\validator\\PriceRule', 'price'),
+                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'price'),
                 ),
             ),
         );

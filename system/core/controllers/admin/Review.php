@@ -49,22 +49,22 @@ class Review extends Controller
      */
     public function reviews()
     {
-        $value = (int) $this->request->post('value');
-        $action = (string) $this->request->post('action');
-        $selected = (array) $this->request->post('selected', array());
-
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if ($this->isPosted('action')) {
+            $this->action();
         }
 
         $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalReviews($query), $query);
+        $total = $this->getTotalReviews($query);
+        $limit = $this->setPager($total, $query);
+        $reviews = $this->getReviews($limit, $query);
 
-        $this->data['reviews'] = $this->getReviews($total, $query);
+        $this->setData('reviews', $reviews);
 
-        $filters = array('product_id', 'user_id', 'status', 'created', 'text');
+        $filters = array('product_id', 'user_id',
+            'status', 'created', 'text');
+
         $this->setFilter($filters, $query);
-        $this->prepareFilter($query);
+        $this->setDataReviewsFilter($query);
 
         $this->setTitleReviews();
         $this->setBreadcrumbReviews();
@@ -79,29 +79,40 @@ class Review extends Controller
     {
         $review = $this->get($review_id);
 
-        $this->data['review'] = $review;
+        $this->setData('review', $review);
 
-        if ($this->request->post('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($review);
         }
 
-        if ($this->request->post('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($review);
         }
 
-        if (isset($review['user_id'])) {
-            $user = $this->user->get($review['user_id']);
-            $this->data['review']['email'] = $user ? $user['email'] : '';
-        }
-
-        if (isset($review['product_id'])) {
-            $product = $this->product->get($review['product_id']);
-            $this->data['review']['product'] = $product ? $product['title'] : '';
-        }
+        $this->setDataReview($review);
 
         $this->setTitleEdit($review);
         $this->setBreadcrumbEdit();
         $this->outputEdit();
+    }
+
+    /**
+     * Sets an additional data to be passed to templates
+     * @param array $review
+     */
+    protected function setDataReview(array $review)
+    {
+        if (isset($review['user_id'])) {
+            $user = $this->user->get($review['user_id']);
+            $email = isset($user['email']) ? $user['email'] : '';
+            $this->setData('review.email', $email);
+        }
+
+        if (isset($review['product_id'])) {
+            $product = $this->product->get($review['product_id']);
+            $title = isset($product['title']) ? $product['title'] : '';
+            $this->setData('review.product', $title);
+        }
     }
 
     /**
@@ -111,7 +122,8 @@ class Review extends Controller
      */
     protected function getTotalReviews(array $query)
     {
-        return $this->review->getList(array('count' => true) + $query);
+        $query['count'] = true;
+        return $this->review->getList($query);
     }
 
     /**
@@ -122,7 +134,8 @@ class Review extends Controller
      */
     protected function getReviews(array $limit, array $query)
     {
-        $reviews = $this->review->getList(array('limit' => $limit) + $query);
+        $query['limit'] = $limit;
+        $reviews = $this->review->getList($query);
 
         foreach ($reviews as &$review) {
             $review['product'] = '';
@@ -137,15 +150,17 @@ class Review extends Controller
 
     /**
      * Applies an action to the selected reviews
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
+
             if ($action == 'status' && $this->access('review_edit')) {
                 $updated += (int) $this->review->update($review_id, array('status' => $value));
             }
@@ -155,14 +170,15 @@ class Review extends Controller
             }
         }
 
-
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num reviews', array('%num' => $updated)), 'success');
+            $this->session->setMessage($this->text('Updated %num reviews', array(
+                        '%num' => $updated)), 'success');
             return true;
         }
 
         if ($deleted > 1) {
-            $this->session->setMessage($this->text('Deleted %num reviews', array('%num' => $deleted)), 'success');
+            $this->session->setMessage($this->text('Deleted %num reviews', array(
+                        '%num' => $deleted)), 'success');
             return true;
         }
 
@@ -173,20 +189,22 @@ class Review extends Controller
      * Modifies filter values
      * @param array $query
      */
-    protected function prepareFilter(array $query)
+    protected function setDataReviewsFilter(array $query)
     {
-        $this->data['product'] = '';
-        $this->data['user'] = '';
+        $email = $title = '';
 
         if (isset($query['product_id'])) {
             $product = $this->product->get($query['product_id']);
-            $this->data['product'] = $product ? $product['title'] : '';
+            $title = isset($product['title']) ? $product['title'] : '';
         }
 
         if (isset($query['user_id'])) {
             $user = $this->user->get($query['user_id']);
-            $this->data['user'] = $user ? "{$user['name']} ({$user['email']})" : '';
+            $email = isset($user['email']) ? "{$user['name']} ({$user['email']})" : '';
         }
+
+        $this->setData('user', $email);
+        $this->setData('product', $title);
     }
 
     /**
@@ -202,7 +220,9 @@ class Review extends Controller
      */
     protected function setBreadcrumbReviews()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
     }
 
     /**
@@ -240,12 +260,9 @@ class Review extends Controller
      */
     protected function delete(array $review)
     {
-        if (empty($review['review_id'])) {
-            return;
-        }
-
         $this->controlAccess('review_delete');
         $this->review->delete($review['review_id']);
+
         $this->redirect('admin/content/review', $this->text('Review has been deleted'), 'success');
     }
 
@@ -256,114 +273,60 @@ class Review extends Controller
      */
     protected function submit(array $review)
     {
-        $this->submitted = $this->request->post('review');
+        $this->setSubmitted('review');
 
-        $this->validate();
+        $this->validate($review);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['review'] = $this->submitted;
+        if ($this->hasErrors('review')) {
             return;
         }
 
         if (isset($review['review_id'])) {
             $this->controlAccess('review_edit');
-            $this->review->update($review['review_id'], $this->submitted);
+            $this->review->update($review['review_id'], $this->getSubmitted());
             $this->redirect('admin/content/review', $this->text('Review has been updated'), 'success');
         }
 
         $this->controlAccess('review_add');
-        $this->review->add($this->submitted);
+        $this->review->add($this->getSubmitted());
         $this->redirect('admin/content/review', $this->text('Review has been added'), 'success');
     }
 
     /**
      * Validates a review
+     * @param array $review
      */
-    protected function validate()
+    protected function validate(array $review)
     {
-        $this->validateText();
-        $this->validateCreated();
-        $this->validateProduct();
-        $this->validateUser();
-    }
+        $this->addValidator('text', array(
+            'length' => array(
+                'required' => true,
+                'min' => $this->config('review_min_length', 10),
+                'max' => $this->config('review_max_length', 1000)
+        )));
 
-    /**
-     * Validates review text
-     * @return boolean
-     */
-    protected function validateText()
-    {
-        if (empty($this->submitted['text'])) {
-            $this->errors['text'] = $this->text('Required field');
-            return false;
-        }
+        $this->addValidator('created', array(
+            'date' => array(
+                'required' => true
+        )));
 
-        $limit = (int) $this->config->get('review_length', 1000);
+        $this->addValidator('product_id', array(
+            'product_exists' => array(
+                'required' => true
+        )));
 
-        if (!empty($limit)) {
-            $this->submitted['text'] = $this->truncate($this->submitted['text'], $limit);
-        }
+        $this->addValidator('email', array(
+            'user_email_exists' => array(
+                'required' => true
+        )));
 
-        return true;
-    }
+        $this->setValidators($review);
 
-    /**
-     * Validates the review created date
-     * @return boolean
-     */
-    protected function validateCreated()
-    {
-        if (empty($this->submitted['created'])) {
-            $this->submitted['created'] = GC_TIME;
-            return true;
-        }
+        $user = $this->getValidatorResult('email');
+        $timestamp = $this->getValidatorResult('created');
 
-        $this->submitted['created'] = strtotime($this->submitted['created']);
-
-        if (empty($this->submitted['created'])) {
-            $this->errors['created'] = $this->text('Only valid English textual datetime allowed');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates a product
-     * @return boolean
-     */
-    protected function validateProduct()
-    {
-        if (isset($this->submitted['product_id']) && !$this->product->get($this->submitted['product_id'])) {
-            $this->errors['product'] = $this->text('Product does not exist');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates a user
-     * @return boolean
-     */
-    protected function validateUser()
-    {
-        if (empty($this->submitted['email'])) {
-            $this->errors['email'] = $this->text('Required field');
-            return false;
-        }
-
-        $user = $this->user->getByEmail($this->submitted['email']);
-
-        if (isset($user['user_id'])) {
-            $this->submitted['user_id'] = $user['user_id'];
-            return true;
-        }
-
-        $this->errors['email'] = $this->text('User does not exist');
-        return false;
+        $this->setSubmitted('created', $timestamp);
+        $this->setSubmitted('user_id', $user['user_id']);
     }
 
     /**
@@ -386,8 +349,13 @@ class Review extends Controller
      */
     protected function setBreadcrumbEdit()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Reviews'), 'url' => $this->url('admin/content/review')));
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')));
+
+        $this->setBreadcrumb(array(
+            'text' => $this->text('Reviews'),
+            'url' => $this->url('admin/content/review')));
     }
 
     /**

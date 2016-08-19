@@ -74,7 +74,7 @@ class PriceRule extends Controller
 
         $this->setFilter($filters, $query);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -101,11 +101,11 @@ class PriceRule extends Controller
         $this->setData('currencies', $currencies);
         $this->setData('conditions', $conditions);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($rule);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($rule);
         }
 

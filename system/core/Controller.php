@@ -363,8 +363,6 @@ class Controller
 
         $this->token = $this->config->token();
 
-
-
         $this->setJobProperties();
         $this->setRouteProperties();
         $this->setDeviceProperties();
@@ -480,7 +478,7 @@ class Controller
      * @param string|null $key
      * @return boolean
      */
-    public function isSubmitted($key = null)
+    public function isPosted($key = null)
     {
         if (isset($key)) {
             $value = $this->request->post($key, null);
@@ -488,6 +486,17 @@ class Controller
         }
 
         return ($this->request->method() === 'POST');
+    }
+
+    /**
+     * Whether a key is presented in the submitted values array
+     * @param string|array $key
+     * @return boolean
+     */
+    public function isSubmitted($key)
+    {
+        $result = $this->getSubmitted($key);
+        return isset($result);
     }
 
     /**
@@ -675,7 +684,7 @@ class Controller
     }
 
     /**
-     * Sets an array of posted data
+     * Sets an array of submitted data
      * @param string|array|null $key
      * @param mixed $value
      * @param boolean $filter
@@ -783,7 +792,7 @@ class Controller
         }
 
         // Prevent Cross-Site Request Forgery (CSRF)
-        if ($this->isSubmitted()) {
+        if ($this->isPosted()) {
 
             if (!Tool::hashEquals($this->request->post('token'), $this->token)) {
                 $this->response->error403();

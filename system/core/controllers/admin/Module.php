@@ -60,7 +60,7 @@ class Module extends Controller
      */
     public function modules()
     {
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -166,7 +166,7 @@ class Module extends Controller
     {
         $this->controlAccess('module_install');
 
-        if ($this->isSubmitted('install')) {
+        if ($this->isPosted('install')) {
             $this->submitUpload();
         }
 

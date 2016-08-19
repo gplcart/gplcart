@@ -63,15 +63,15 @@ class Currency extends Controller
         $can_delete = (isset($currency['code'])
                 && $this->access('currency_delete')
                 && ($default_currency != $currency['code'])
-                && !$this->isSubmitted());
+                && !$this->isPosted());
         
         $this->setdata('can_delete', $can_delete);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($currency);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($currency);
         }
 

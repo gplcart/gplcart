@@ -133,7 +133,7 @@ class Product extends Controller
      */
     public function products()
     {
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -154,7 +154,7 @@ class Product extends Controller
 
         $this->setFilter($filters, $query);
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit();
         }
 
@@ -179,11 +179,11 @@ class Product extends Controller
             $this->setData('related', $related);
         }
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($product);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($product);
         }
 

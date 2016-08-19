@@ -69,11 +69,11 @@ class CategoryGroup extends Controller
 
         $this->setData('can_delete', $can_delete);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($category_group);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($category_group);
         }
 

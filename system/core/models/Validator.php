@@ -232,13 +232,19 @@ class Validator extends Model
 
         $handlers['alias'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'alias')
+                'validate' => array('core\\handlers\\validator\\Alias', 'unique')
             ),
         );
 
         $handlers['regexp'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Common', 'regexp')
+            ),
+        );
+
+        $handlers['date'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Common', 'date')
             ),
         );
 
@@ -250,31 +256,43 @@ class Validator extends Model
 
         $handlers['country_code'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'countryCode')
+                'validate' => array('core\\handlers\\validator\\Country', 'code')
             ),
         );
 
         $handlers['currency_code'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'currencyCode')
+                'validate' => array('core\\handlers\\validator\\Currency', 'code')
             ),
         );
 
         $handlers['category_group_type'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'categoryGroupType')
+                'validate' => array('core\\handlers\\validator\\Category', 'groupType')
             ),
         );
 
         $handlers['price_rule_code'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'priceRuleCode')
+                'validate' => array('core\\handlers\\validator\\PriceRule', 'code')
             ),
         );
 
         $handlers['pricerule_conditions'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Model', 'priceRuleConditions')
+                'validate' => array('core\\handlers\\validator\\PriceRule', 'conditions')
+            ),
+        );
+
+        $handlers['product_exists'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Product', 'exists')
+            ),
+        );
+
+        $handlers['user_email_exists'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\User', 'emailExists')
             ),
         );
 

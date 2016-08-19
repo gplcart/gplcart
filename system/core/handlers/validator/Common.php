@@ -66,7 +66,7 @@ class Common
         if (isset($max) && isset($min)) {
             if ($length > $max || $length < $min) {
                 return $this->language->text('Content must be %min - %max characters long', array(
-                            '%min' => 1, '%max' => 255));
+                            '%min' => $min, '%max' => $max));
             }
 
             return true;
@@ -102,7 +102,7 @@ class Common
      */
     public function email($subject, array $options = array())
     {
-        if (!isset($subject) && empty($options['required'])) {
+        if ((!isset($subject) || $subject === '') && empty($options['required'])) {
             return true;
         }
 
@@ -134,7 +134,7 @@ class Common
                 if (!in_array($name, $fields)) {
                     continue;
                 }
-                
+
                 $result = $this->length($value, array('max' => 255));
 
                 if ($result !== true) {
@@ -168,6 +168,27 @@ class Common
         }
 
         return $this->language->text('Invalid format');
+    }
+
+    /**
+     * Validates a date
+     * @param type $subject
+     * @param array $options
+     * @return boolean
+     */
+    public function date($subject, array $options = array())
+    {
+        if ((!isset($subject) || $subject === '') && empty($options['required'])) {
+            return true;
+        }
+
+        $timestamp = strtotime($subject);
+
+        if (empty($timestamp)) {
+            return $this->text('Date is not valid English textual datetime');
+        }
+
+        return array('result' => $timestamp);
     }
 
     /**

@@ -53,12 +53,17 @@ class Search extends Controller
         $term = isset($query['q']) ? $query['q'] : '';
 
         $search_id = (string) $this->request->get('search_id');
-        $total = $this->setPager($this->getTotalResults($search_id, $term), $query);
 
-        $this->data['query'] = $term;
-        $this->data['search_id'] = $search_id;
-        $this->data['handlers'] = $handlers = $this->getHandlers();
-        $this->data['results'] = $this->getResults($search_id, $term, $total);
+        $total = $this->getTotalResults($search_id, $term);
+        $limit = $this->setPager($total, $query);
+
+        $handlers = $this->getHandlers();
+        $results = $this->getResults($search_id, $term, $limit);
+
+        $this->setData('query', $term);
+        $this->setData('results', $results);
+        $this->setData('handlers', $handlers);
+        $this->setData('search_id', $search_id);
 
         $this->setTitleSearch($handlers, $search_id);
         $this->setBreadcrumbSearch();
@@ -70,13 +75,14 @@ class Search extends Controller
      */
     public function index()
     {
-        $this->data['job'] = $this->getJob();
-        $this->data['handlers'] = $this->getHandlers();
+        $job = $this->getJob();
+        $handlers = $this->getHandlers();
 
-        $entity_id = (string) $this->request->post('index');
+        $this->setData('job', $job);
+        $this->setData('handlers', $handlers);
 
-        if (!empty($entity_id)) {
-            $this->submit($entity_id);
+        if ($this->isPosted('index')) {
+            $this->submit();
         }
 
         $this->setTitleIndex();
@@ -92,11 +98,12 @@ class Search extends Controller
      */
     protected function getTotalResults($search_id, $query)
     {
-        $total = $this->search->search($search_id, $query, array(
+        $options = array(
             'count' => true,
-            'language' => $this->langcode));
+            'language' => $this->langcode
+        );
 
-        return (int) $total;
+        return (int) $this->search->search($search_id, $query, $options);
     }
 
     /**
@@ -107,17 +114,19 @@ class Search extends Controller
      */
     protected function getResults($search_id, $query, $total)
     {
-        $results = $this->search->search($search_id, $query, array(
-            'language' => $this->langcode,
+        $options = array(
             'prepare' => true,
-            'imagestyle' => $this->config->get('admin_image_style', 2),
-            'limit' => $total));
+            'limit' => $total,
+            'language' => $this->langcode,
+            'imagestyle' => $this->config('admin_image_style', 2));
 
         $entityname = preg_replace('/_id$/', '', $search_id);
+        $results = $this->search->search($search_id, $query, $options);
 
         $items = array();
         foreach ($results as $result) {
-            $items[] = $this->render("search/results/$entityname", array($entityname => $result));
+            $items[] = $this->render("search/results/$entityname", array(
+                $entityname => $result));
         }
 
         return $items;
@@ -128,10 +137,11 @@ class Search extends Controller
      */
     protected function setTitleSearch($handlers, $search_id)
     {
-        if (!empty($handlers[$search_id]['name'])) {
-            $title = $this->text('Search %type', array('%type' => $handlers[$search_id]['name']));
-        } else {
+        if (empty($handlers[$search_id]['name'])) {
             $title = $this->text('Search');
+        } else {
+            $title = $this->text('Search %type', array(
+                '%type' => $handlers[$search_id]['name']));
         }
 
         $this->setTitle($title);
@@ -157,16 +167,17 @@ class Search extends Controller
 
     /**
      * Processes indexing
-     * @param string $entity_id
      */
-    protected function submit($entity_id)
+    protected function submit()
     {
+        $entity_id = (string) $this->request->post('index');
 
         $job = array(
             'id' => "index_$entity_id",
             'total' => $this->search->total($entity_id),
-            'data' => array('index_limit' => $this->config->get('search_index_limit', 50)),
-        );
+            'data' => array(
+                'index_limit' => $this->config('search_index_limit', 50)
+        ));
 
         $this->job->submit($job);
     }

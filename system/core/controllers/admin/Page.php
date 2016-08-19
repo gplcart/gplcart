@@ -68,7 +68,7 @@ class Page extends Controller
      */
     public function pages()
     {
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -86,7 +86,7 @@ class Page extends Controller
 
         $this->setFilter($filters, $query);
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit();
         }
 
@@ -103,11 +103,11 @@ class Page extends Controller
     {
         $page = $this->get($page_id);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($page);
         }
 
@@ -116,7 +116,7 @@ class Page extends Controller
         $this->setData('page', $page);
         $this->setData('stores', $stores);
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($page);
         }
 

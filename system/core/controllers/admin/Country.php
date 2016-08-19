@@ -41,7 +41,7 @@ class Country extends Controller
     public function countries()
     {
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -70,11 +70,11 @@ class Country extends Controller
 
         $this->setData('country', $country);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($country);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($country);
         }
 
@@ -92,7 +92,7 @@ class Country extends Controller
         $country = $this->get($country_code);
         $this->setData('format', $country['format']);
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submitFormat($country);
         }
 

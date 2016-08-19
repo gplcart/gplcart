@@ -49,7 +49,7 @@ class Alias extends Controller
         $filters = array('id_value', 'id_key', 'alias');
         $this->setFilter($filters, $query);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 

@@ -11,25 +11,16 @@ namespace core\controllers\admin;
 
 use core\Controller;
 use core\classes\Tool;
-use core\models\File as ModelsFile;
 
 class Settings extends Controller
 {
 
     /**
-     * File model instance
-     * @var \core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Constructor
-     * @param ModelsFile $file
      */
-    public function __construct(ModelsFile $file)
+    public function __construct()
     {
         parent::__construct();
-        $this->file = $file;
     }
 
     /**
@@ -39,13 +30,17 @@ class Settings extends Controller
     {
         $this->controlAccessSuperAdmin();
 
-        $this->setSettings();
+        $default = $this->getDefaultSettings();
 
-        if ($this->request->post('save')) {
+        foreach ($default as $key => $value) {
+            $this->setData("settings.$key", $this->config($key, $value));
+        }
+
+        if ($this->isPosted('save')) {
             $this->submit();
         }
 
-        $this->prepareSettings();
+        $this->setDataSettings();
 
         $this->setTitleSettings();
         $this->setBreadcrumbSettings();
@@ -65,7 +60,9 @@ class Settings extends Controller
      */
     protected function setBreadcrumbSettings()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
     }
 
     /**
@@ -98,22 +95,14 @@ class Settings extends Controller
     }
 
     /**
-     * Sets settings values to be send to the template
-     */
-    protected function setSettings()
-    {
-        foreach ($this->getDefaultSettings() as $key => $default) {
-            $this->data['settings'][$key] = $this->config->get($key, $default);
-        }
-    }
-
-    /**
      * Prepares settings values before passing them to template
      */
-    protected function prepareSettings()
+    protected function setDataSettings()
     {
-        if (isset($this->data['settings']['smtp_host'])) {
-            $this->data['settings']['smtp_host'] = implode("\n", (array) $this->data['settings']['smtp_host']);
+        $smtp_host = $this->getData('settings.smtp_host');
+
+        if (isset($smtp_host)) {
+            $this->setData('settings.smtp_host', implode("\n", (array) $smtp_host));
         }
     }
 
@@ -122,16 +111,21 @@ class Settings extends Controller
      */
     protected function submit()
     {
-        $this->submitted = $this->request->post('settings');
+        $this->setSubmitted('settings');
         $this->validate();
-        $errors = $this->getErrors();
 
-        if (!empty($errors)) {
-            $this->data['settings'] = $this->submitted;
+        if ($this->hasErrors('settings')) {
             return;
         }
 
-        foreach ($this->submitted as $key => $value) {
+        if ($this->isPosted('delete_gapi_certificate')) {
+            unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
+            $this->config->reset('gapi_certificate');
+        }
+
+        $submitted = $this->getSubmitted();
+
+        foreach ($submitted as $key => $value) {
             $this->config->set($key, $value);
         }
 
@@ -139,72 +133,37 @@ class Settings extends Controller
     }
 
     /**
-     * Validates settings
+     * Validates submitted settings
      */
     protected function validate()
     {
-        $this->validateCron();
-        $this->validateGapi();
-        $this->validateSmtp();
-    }
+        $smtp_host = $this->getSubmitted('smtp_host');
+        $this->setSubmitted('smtp_host', Tool::stringToArray($smtp_host));
 
-    /**
-     * Validates / prepares submitted SMTP settings
-     * @return boolean
-     */
-    protected function validateSmtp()
-    {
-        $this->submitted['smtp_host'] = Tool::stringToArray($this->submitted['smtp_host']);
-        return true;
-    }
-
-    /**
-     * Validates / prepares submitted GAPI settings
-     * @return boolean
-     */
-    protected function validateGapi()
-    {
-        if (isset($this->submitted['delete_gapi_certificate'])) {
-            unlink(GC_FILE_DIR . '/' . $this->config->get('gapi_certificate'));
-            $this->config->reset('gapi_certificate');
-            unset($this->submitted['delete_gapi_certificate']);
+        $cron_key = $this->getSubmitted('cron_key');
+        if (empty($cron_key)) {
+            $this->setSubmitted('cron_key', Tool::randomString());
         }
 
-        if (!empty($this->submitted['gapi_email'])) {
-            $result = $this->validator->check('email', $this->submitted['gapi_email']);
-            $this->errors['gapi_email'] = ($result === true) ? null : $result;
-            return false;
+        $this->addValidator('gapi_email', array(
+            'email' => array()));
+
+        $this->addValidator('gapi_certificate', array(
+            'upload' => array(
+                'file' => $this->request->file('gapi_certificate')
+        )));
+
+        $errors = $this->setValidators();
+
+        if (!empty($errors)) {
+            return;
         }
 
-        $file = $this->request->file('gapi_certificate');
+        $uploaded = $this->getValidatorResult('gapi_certificate');
 
-        if (empty($file)) {
-            return empty($this->errors);
+        if (!empty($uploaded)) {
+            $this->setSubmitted('gapi_certificate', $uploaded);
         }
-
-        $this->file->setHandler('p12');
-
-        if ($this->file->upload($file) === true) {
-            $destination = $this->file->getUploadedFile();
-            $this->submitted['gapi_certificate'] = $this->file->path($destination);
-        } else {
-            $this->errors['gapi_certificate'] = $this->text('Unable to upload the file');
-        }
-
-        return empty($this->errors);
-    }
-
-    /**
-     * Validates/prepares submitted cron settings
-     * @return boolean
-     */
-    protected function validateCron()
-    {
-        if (empty($this->submitted['cron_key'])) {
-            $this->submitted['cron_key'] = Tool::randomString();
-        }
-
-        return true;
     }
 
 }

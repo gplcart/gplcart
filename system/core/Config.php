@@ -106,6 +106,10 @@ class Config
      */
     public function set($key, $value)
     {
+        if(empty($key)){
+            return false;
+        }
+        
         if (empty($this->db)) {
             return false;
         }

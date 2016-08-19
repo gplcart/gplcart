@@ -71,7 +71,7 @@ class Category extends Controller
     {
         $category_group = $this->getCategoryGroup($category_group_id);
 
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -103,11 +103,11 @@ class Category extends Controller
 
         $this->setCategories();
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($category_group, $category);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($category_group, $category);
         }
 

@@ -4,7 +4,9 @@ $(function () {
 
     $('form#edit-review input[name$="[created]"]').datepicker({dateFormat: 'dd.mm.yy'});
 
-    $('form#edit-review input[name$="[email]"]').autocomplete({
+    var email_input = $('form#edit-review input[name$="[email]"]');
+
+    email_input.autocomplete({
         minLength: 2,
         source: function (request, response) {
 
@@ -22,14 +24,17 @@ $(function () {
             });
         },
         select: function (event, ui) {
-            $('form#edit-review input[name$="[email]"]').val(ui.item.value);
+            email_input.val(ui.item.value);
             return false;
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
     };
 
-    $('form#edit-review input[name$="[product]"]').autocomplete({
+    var product_input = $('form#edit-review input[name$="[product]"]');
+    var product_id_input = $('form#edit-review input[name$="[product_id]"]');
+
+    product_input.autocomplete({
         minLength: 2,
         source: function (request, response) {
 
@@ -47,9 +52,12 @@ $(function () {
             });
         },
         select: function (event, ui) {
-            $('form#edit-review input[name$="[product]"]').val(ui.item.label);
-            $('form#edit-review input[name$="[product_id]"]').val(ui.item.value);
+            product_input.val(ui.item.label);
+            product_id_input.val(ui.item.value);
             return false;
+        },
+        search: function (event, ui) {
+            product_id_input.val('');
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);

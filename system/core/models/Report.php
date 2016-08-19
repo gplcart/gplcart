@@ -129,7 +129,21 @@ class Report extends Model
      */
     public function getTypes()
     {
-        return $this->db->query('SELECT DISTINCT type FROM log')->fetchAll(PDO::FETCH_COLUMN);
+        return $this->db->query('SELECT DISTINCT type FROM log')
+                        ->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Returns an array of severities
+     * @return array
+     */
+    public function getSeverities()
+    {
+        return array(
+            'info' => $this->language->text('Info'),
+            'danger' => $this->language->text('Danger'),
+            'warning' => $this->language->text('Warning')
+        );
     }
 
     /**

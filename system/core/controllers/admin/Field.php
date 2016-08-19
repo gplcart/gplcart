@@ -40,7 +40,7 @@ class Field extends Controller
      */
     public function fields()
     {
-        if ($this->isSubmitted('action')) {
+        if ($this->isPosted('action')) {
             $this->action();
         }
 
@@ -73,11 +73,11 @@ class Field extends Controller
         $this->setData('field', $field);
         $this->setData('widget_types', $widget_types);
 
-        if ($this->isSubmitted('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($field);
         }
 
-        if ($this->isSubmitted('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($field);
         }
 
