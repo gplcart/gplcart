@@ -41,12 +41,13 @@ class File
     public function image($file, array $options)
     {
         $allowed = array('image/jpeg', 'image/gif', 'image/png');
+        $mimetype = $this->file->getMimeType($file);
 
-        if (in_array($this->file->getMimeType($file), $allowed)) {
-            return (bool) getimagesize($file);
+        if (!in_array($mimetype, $allowed)) {
+            return false;
         }
 
-        return false;
+        return (bool) getimagesize($file);
     }
 
     /**
@@ -76,7 +77,9 @@ class File
     public function csv($file, array $options)
     {
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
-        return in_array($this->file->getMimeType($file), $allowed);
+        $mimetype = $this->file->getMimeType($file);
+        
+        return in_array($mimetype, $allowed);
     }
 
     /**
@@ -88,7 +91,14 @@ class File
     public function zip($file, array $options)
     {
         $allowed = array('application/zip', 'multipart/x-zip');
-        return in_array($this->file->getMimeType($file), $allowed);
+        $mimetype = $this->file->getMimeType($file);
+
+        if (!in_array($mimetype, $allowed)) {
+            return false;
+        }
+
+        $zip = zip_open($file);
+        return is_resource($zip);
     }
 
     /**
@@ -106,8 +116,8 @@ class File
         if (!empty($options['path'])) {
             $this->file->setUploadPath($options['path']);
         }
-        
-        if(!empty($options['handler'])){
+
+        if (!empty($options['handler'])) {
             $this->file->setHandler($options['handler']);
         }
 

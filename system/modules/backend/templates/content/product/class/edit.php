@@ -26,7 +26,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->escape($product_class['title']) : ''; ?>" required>
+          <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->escape($product_class['title']) : ''; ?>">
           <?php if (isset($this->errors['title'])) { ?>
           <div class="help-block"><?php echo $this->errors['title']; ?></div>
           <?php } ?>

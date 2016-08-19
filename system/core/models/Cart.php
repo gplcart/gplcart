@@ -349,43 +349,22 @@ class Cart extends Model
         if (empty($cart_id)) {
             return false;
         }
+  
+        $data += array('modified' => GC_TIME);
+        
+        $values = $this->getDbSchemeValues('cart', $data);
 
-        $values = array(
-            'modified' => isset($data['modified']) ? (int) $data['modified'] : GC_TIME
-        );
-
-        if (isset($data['created'])) {
-            $values['created'] = (int) $data['created'];
+        if (empty($values)) {
+            return false;
         }
-
-        if (isset($data['user_id'])) {
-            $values['user_id'] = $data['user_id'];
-        }
-
-        if (isset($data['store_id'])) {
-            $values['store_id'] = (int) $data['store_id'];
-        }
-
-        if (isset($data['order_id'])) {
-            $values['order_id'] = (int) $data['order_id'];
-        }
-
-        if (isset($data['quantity'])) {
-            $values['quantity'] = (int) $data['quantity'];
-        }
-
-        if (isset($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        $result = false;
-
-        if (!empty($values)) {
-            $result = $this->db->update('cart', $values, array('cart_id' => $cart_id));
-            $cart = $this->get($cart_id);
-            $this->deleteCache($cart['user_id']);
-            $this->hook->fire('update.cart.after', $cart_id, $data, $result);
-        }
+        
+        $result = $this->db->update('cart', $values, array('cart_id' => $cart_id));
+        
+        // Clear cached data
+        $cart = $this->get($cart_id);
+        $this->deleteCache($cart['user_id']);
+        
+        $this->hook->fire('update.cart.after', $cart_id, $data, $result);
 
         return (bool) $result;
     }

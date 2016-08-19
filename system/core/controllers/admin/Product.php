@@ -708,14 +708,14 @@ class Product extends Controller
     /**
      * Validates product SKU
      * @param array $product
-     * @return boolean
+     * @return null
      */
     protected function validateSku(array $product)
     {
         $sku = $this->getSubmitted('sku');
 
         if (!isset($sku)) {
-            return true;
+            return;
         }
 
         $default_store_id = $this->store->getDefault();
@@ -728,16 +728,16 @@ class Product extends Controller
 
             if (!empty($existing)) {
                 $this->setError('sku', $this->text('SKU must be unique per store'));
-                return false;
+                return;
             }
 
             if (mb_strlen($sku) > 255) {
                 $message = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $this->setError('sku', $message);
-                return false;
+                return;
             }
 
-            return true;
+            return;
         }
 
         if (!empty($product_id)) {
@@ -749,40 +749,33 @@ class Product extends Controller
         }
 
         $this->setSubmitted('sku', $sku);
-        return true;
     }
 
     /**
      * Validates attributes
-     * @return boolean
+     * @return null
      */
     protected function validateAttributes()
     {
         $product_class_id = $this->getSubmitted('product_class_id');
 
         if (!isset($product_class_id)) {
-            return true;
+            return;
         }
 
         $product_fields = $this->product_class->getFieldData($product_class_id);
         $this->setSubmitted('product_fields', $product_fields);
 
         if (empty($product_fields['attribute'])) {
-            return true;
+            return;
         }
 
-        $has_errors = false;
         foreach ($product_fields['attribute'] as $field_id => $field) {
-
             $value = $this->getSubmitted("field.attribute.$field_id");
-
             if (!empty($field['required']) && empty($value)) {
                 $this->setError("attribute.$field_id", $this->text('Required field'));
-                $has_errors = true;
             }
         }
-
-        return !$has_errors;
     }
 
     /**
@@ -866,12 +859,12 @@ class Product extends Controller
      * Validates combination SKU
      * @param string $index
      * @param array $combination
-     * @return boolean
+     * @return null
      */
     protected function validateCombinationSku($index, &$combination, $product)
     {
         if (!isset($combination['sku'])) {
-            return true;
+            return;
         }
 
         $store_id = $this->getSubmitted('store_id');
@@ -883,38 +876,36 @@ class Product extends Controller
             if (mb_strlen($combination['sku']) > 255) {
                 $error = $this->text('Content must not exceed %s characters', array('%s' => 255));
                 $this->setError("combination.$index.sku", $error);
-                return false;
+                return;
             }
 
             if (isset(static::$processed_skus[$combination['sku']])) {
                 $error = $this->text('SKU must be unique per store');
                 $this->setError("combination.$index.sku", $error);
-                return false;
+                return;
             }
 
             if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
                 $error = $this->text('SKU must be unique per store');
                 $this->setError("combination.$index.sku", $error);
-                return false;
+                return;
             }
 
             static::$processed_skus[$combination['sku']] = true;
-            return true;
+            return;
         }
 
         if (!$this->isError('sku') && !empty($product_id)) {
             $sku = $this->getSubmitted('sku');
             $combination['sku'] = $this->sku->generate("$sku-$index", false, array('store_id' => $store_id));
         }
-
-        return true;
     }
 
     /**
      * Validates combination stock price
      * @param string $index
      * @param array $combination
-     * @return boolean
+     * @return null
      */
     protected function validateCombinationPrice($index, array &$combination)
     {
@@ -923,43 +914,41 @@ class Product extends Controller
         }
 
         if (is_numeric($combination['price']) && strlen($combination['price']) <= 10) {
-            return true;
+            return;
         }
 
         $message = $this->text('Only numeric values allowed');
         $message .= $this->text('Content must not exceed %s characters', array('%s' => 10));
 
         $this->setError("combination.$index.price", $message);
-        return false;
     }
 
     /**
      * Validates combination stock level
      * @param string $index
      * @param array $combination
-     * @return boolean
+     * @return null
      */
     protected function validateCombinationStock($index, array &$combination)
     {
         if (empty($combination['stock'])) {
-            return true;
+            return;
         }
 
         if (is_numeric($combination['stock']) && strlen($combination['stock']) <= 10) {
-            return true;
+            return;
         }
 
         $message = $this->text('Only numeric values allowed');
         $message .= $this->text('Content must not exceed %s characters', array('%s' => 10));
 
         $this->setError("combination.$index.stock", $message);
-        return false;
     }
 
     /**
      * Validates related products
      * @param array $product
-     * @return boolean
+     * @return null
      */
     protected function validateRelated(array $product)
     {
@@ -967,7 +956,7 @@ class Product extends Controller
 
         if (empty($related)) {
             $this->setSubmitted('related', array()); // Need on update
-            return true;
+            return;
         }
 
         // Remove duplicates
@@ -979,7 +968,6 @@ class Product extends Controller
         }
 
         $this->setSubmitted('related', array_flip($modified));
-        return true;
     }
 
 }

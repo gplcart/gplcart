@@ -85,15 +85,12 @@ class Install extends Controller
     {
 
         ini_set('max_execution_time', 0);
-
-        $this->submitted = $this->request->post('settings', array());
+        
+        $this->setSubmitted('settings');
 
         $this->validate();
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['settings'] = $this->submitted;
+        
+        if($this->hasErrors('settings')){
             return;
         }
 
@@ -225,9 +222,7 @@ class Install extends Controller
         $this->validateStoreTitle();
         $this->validateStoreCountry();
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
+        if ($this->isError()) {
             return false;
         }
 
