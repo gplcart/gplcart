@@ -54,7 +54,7 @@ class Frontend extends Controller
     /**
      * Displays the module settings page
      */
-    public function settings()
+    public function setting()
     {
         $this->data['imagestyles'] = $this->image->getImageStyleNames();
         $this->data['settings'] = $this->config->module('frontend');

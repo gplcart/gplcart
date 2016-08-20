@@ -26,7 +26,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->escape($state['name']) : ''; ?>" required>
+          <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->escape($state['name']) : ''; ?>">
           <?php if (isset($this->errors['name'])) { ?>
           <div class="help-block"><?php echo $this->errors['name']; ?></div>
           <?php } ?>
@@ -39,7 +39,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->escape($state['code']) : ''; ?>" required>
+          <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->escape($state['code']) : ''; ?>">
           <?php if (isset($this->errors['code'])) { ?>
           <div class="help-block"><?php echo $this->errors['code']; ?></div>
           <?php } ?>

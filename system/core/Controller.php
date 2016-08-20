@@ -522,10 +522,10 @@ class Controller
             $timestamp = GC_TIME;
         }
 
-        $format = $this->config->get('date_prefix', 'd.m.y');
+        $format = $this->config('date_prefix', 'd.m.y');
 
         if ($full) {
-            $format .= $this->config->get('date_suffix', ' H:i');
+            $format .= $this->config('date_suffix', ' H:i');
         }
 
         return date($format, (int) $timestamp);
@@ -608,8 +608,8 @@ class Controller
      */
     protected function setThemeProperties()
     {
-        $this->theme_frontend = $this->config->get('theme', 'frontend');
-        $this->theme_backend = $this->config->get('theme_backend', 'backend');
+        $this->theme_frontend = $this->config('theme', 'frontend');
+        $this->theme_backend = $this->config('theme_backend', 'backend');
 
         if ($this->url->isBackend()) {
             $this->theme = $this->theme_backend;
@@ -1224,9 +1224,9 @@ class Controller
      */
     protected function setCronProperties()
     {
-        $this->cron_interval = (int) $this->config->get('cron_interval', 86400);
-        $this->cron_last_run = (int) $this->config->get('cron_last_run', 0);
-        $this->cron_key = $this->config->get('cron_key', '');
+        $this->cron_interval = (int) $this->config('cron_interval', 86400);
+        $this->cron_last_run = (int) $this->config('cron_last_run', 0);
+        $this->cron_key = $this->config('cron_key', '');
 
         if (empty($this->cron_key)) {
             $this->cron_key = Tool::randomString();
@@ -1458,6 +1458,21 @@ class Controller
     }
 
     /**
+     * Returns a setting from the current theme settings
+     * @param mixed $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function setting($key = null, $default = null)
+    {
+        if (isset($key)) {
+            return array_key_exists($key, $this->theme_settings) ? $this->theme_settings[$key] : $default;
+        }
+
+        return $this->theme_settings;
+    }
+
+    /**
      * Removes dangerous stuff from a string
      * @param string $string
      * @param array|null $tags
@@ -1557,17 +1572,9 @@ class Controller
      */
     protected function explodeText($text)
     {
-        $delimiter = $this->getSummaryDelimiter();
-        return array_filter(explode($delimiter, $text, 2));
-    }
+        $delimiter = $this->config('summary_delimiter', '<!--summary-->');
 
-    /**
-     * Returns a string used to separate summary and rest of text
-     * @return string
-     */
-    public function getSummaryDelimiter()
-    {
-        return $this->config->get('summary_delimiter', '<!--summary-->');
+        return array_filter(explode($delimiter, $text, 2));
     }
 
     /**
@@ -1666,7 +1673,7 @@ class Controller
     public function setPager($total, $query = null, $limit = null)
     {
         if (!isset($limit)) {
-            $limit = $this->config->get('admin_list_limit', 20);
+            $limit = $this->config('admin_list_limit', 20);
         }
 
         if (!isset($query)) {
@@ -1696,21 +1703,6 @@ class Controller
     public function getPager()
     {
         return isset($this->data['pager']) ? $this->data['pager'] : '';
-    }
-
-    /**
-     * Returns current theme settings
-     * @param mixed $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getSettings($key = null, $default = null)
-    {
-        if (isset($key)) {
-            return array_key_exists($key, $this->theme_settings) ? $this->theme_settings[$key] : $default;
-        }
-
-        return $this->theme_settings;
     }
 
 }

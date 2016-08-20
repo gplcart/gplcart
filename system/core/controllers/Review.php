@@ -134,7 +134,7 @@ class Review extends Controller
 
         if (!empty($product['images'])) {
             $image = reset($product['images']);
-            $imagestyle = $this->getSettings('image_style_product', 5);
+            $imagestyle = $this->setting('image_style_product', 5);
             $image['thumb'] = $this->image->url($imagestyle, $image['path']);
             $this->data['image'] = $image;
         }

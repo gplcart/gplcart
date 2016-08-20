@@ -255,7 +255,7 @@ class Ajax extends Controller
 
         $preview = array(
             'preview' => $this->render('cart/preview', array(
-                'cart' => $this->cart->prepareCartItems($cart, $this->getSettings()),
+                'cart' => $this->cart->prepareCartItems($cart, $this->setting()),
                 'limit' => $this->config->get('cart_preview_limit', 5)
         )));
 

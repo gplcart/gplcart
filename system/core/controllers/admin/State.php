@@ -51,22 +51,22 @@ class State extends Controller
     public function states($code)
     {
         $country = $this->getCountry($code);
-        
-        $value = (int) $this->request->post('value');
-        $action = (string) $this->request->post('action');
-        $selected = (array) $this->request->post('selected', array());
 
-        if (!empty($action)) {
-            $this->action($selected, $action, $value);
+        if (!$this->isPosted('action')) {
+            $this->action();
         }
 
         $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalStates($code, $query), $query);
+        $total = $this->getTotalStates($code, $query);
+        $limit = $this->setPager($total, $query);
+        $states = $this->getStates($limit, $query, $code);
 
-        $this->data['country'] = $country;
-        $this->data['states'] = $this->getStates($total, $query, $code);
+        $this->setData('states', $states);
+        $this->setData('country', $country);
 
-        $this->setFilter(array('name', 'code', 'status', 'state_id'), $query);
+        $filters = array('name', 'code', 'status', 'state_id');
+
+        $this->setFilter($filters, $query);
         $this->setTitleStates($country);
         $this->setBreadcrumbStates();
         $this->outputStates();
@@ -79,17 +79,17 @@ class State extends Controller
      */
     public function edit($country_code, $state_id = null)
     {
-        $country = $this->getCountry($country_code);
         $state = $this->get($state_id);
+        $country = $this->getCountry($country_code);
 
-        $this->data['state'] = $state;
-        $this->data['country'] = $country;
+        $this->setData('state', $state);
+        $this->setData('country', $country);
 
-        if ($this->request->post('save')) {
+        if ($this->isPosted('save')) {
             $this->submit($country, $state);
         }
 
-        if ($this->request->post('delete')) {
+        if ($this->isPosted('delete')) {
             $this->delete($country, $state);
         }
 
@@ -106,7 +106,13 @@ class State extends Controller
      */
     protected function getTotalStates($code, array $query)
     {
-        return $this->state->getList(array('count' => true, 'country' => $code) + $query);
+        $options = array(
+            'count' => true,
+            'country' => $code);
+
+        $options += $query;
+
+        return $this->state->getList($options);
     }
 
     /**
@@ -118,7 +124,14 @@ class State extends Controller
      */
     protected function getStates(array $limit, array $query, $country)
     {
-        return $this->state->getList(array('country' => $country, 'limit' => $limit) + $query);
+        $options = array(
+            'limit' => $limit,
+            'country' => $country
+        );
+
+        $options += $query;
+
+        return $this->state->getList($options);
     }
 
     /**
@@ -135,7 +148,8 @@ class State extends Controller
      */
     protected function setTitleStates(array $country)
     {
-        $this->setTitle($this->text('States of %country', array('%country' => $country['name'])));
+        $this->setTitle($this->text('States of %country', array(
+                    '%country' => $country['name'])));
     }
 
     /**
@@ -143,8 +157,13 @@ class State extends Controller
      */
     protected function setBreadcrumbStates()
     {
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
-        $this->setBreadcrumb(array('url' => $this->url('admin/settings/country'), 'text' => $this->text('Countries')));
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')));
+
+        $this->setBreadcrumb(array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries')));
     }
 
     /**
@@ -187,7 +206,8 @@ class State extends Controller
 
         $this->setBreadcrumb(array(
             'url' => $this->url("admin/settings/states/{$country['code']}"),
-            'text' => $this->text('States of %country', array('%country' => $country['code']))));
+            'text' => $this->text('States of %country', array(
+                '%country' => $country['code']))));
     }
 
     /**
@@ -198,9 +218,11 @@ class State extends Controller
     protected function setTitleEdit(array $country, array $state)
     {
         if (isset($state['state_id'])) {
-            $title = $this->text('Edit state %name', array('%name' => $state['name']));
+            $title = $this->text('Edit state %name', array(
+                '%name' => $state['name']));
         } else {
-            $title = $this->text('Add state for %country', array('%country' => $country['name']));
+            $title = $this->text('Add state for %country', array(
+                '%country' => $country['name']));
         }
 
         $this->setTitle($title);
@@ -214,10 +236,6 @@ class State extends Controller
      */
     protected function delete(array $country, array $state)
     {
-        if (empty($state['state_id'])) {
-            return;
-        }
-
         $this->controlAccess('state_delete');
         $this->state->delete($state['state_id']);
         $this->redirect("admin/settings/states/{$country['code']}", $this->text('Country state has been deleted'), 'success');
@@ -225,15 +243,17 @@ class State extends Controller
 
     /**
      * Applies an action to the selected country states
-     * @param array $selected
-     * @param string $action
-     * @param string $value
      * @return boolean
      */
-    protected function action(array $selected, $action, $value)
+    protected function action()
     {
+        $value = (int) $this->request->post('value');
+        $action = (string) $this->request->post('action');
+        $selected = (array) $this->request->post('selected', array());
+
         $deleted = $updated = 0;
         foreach ($selected as $id) {
+
             if ($action == 'status' && $this->access('state_edit')) {
                 $updated += (int) $this->state->update($id, array('status' => $value));
             }
@@ -264,25 +284,23 @@ class State extends Controller
      */
     protected function submit(array $country, array $state)
     {
-        $this->submitted = $this->request->post('state');
+
+        $this->setSubmitted('state');
 
         $this->validate($country, $state);
 
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['state'] = $this->submitted;
+        if ($this->hasErrors('state')) {
             return;
         }
 
         if (isset($state['state_id'])) {
             $this->controlAccess('state_edit');
-            $this->state->update($state['state_id'], $this->submitted);
+            $this->state->update($state['state_id'], $this->getSubmitted());
             $this->redirect("admin/settings/states/{$country['code']}", $this->text('Country state has been updated'), 'success');
         }
 
         $this->controlAccess('state_add');
-        $this->state->add($this->submitted);
+        $this->state->add($this->getSubmitted());
         $this->redirect("admin/settings/states/{$country['code']}", $this->text('Country state has been added'), 'success');
     }
 
@@ -313,46 +331,26 @@ class State extends Controller
      */
     protected function validate(array $country, array $state)
     {
-        $this->validateName();
-        $this->validateCode($country, $state);
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('country', $country['code']);
 
-        $this->submitted['status'] = !empty($this->submitted['status']);
-        $this->submitted['country'] = $country['code'];
-    }
+        $this->addValidator('name', array(
+            'length' => array(
+                'min' => 1,
+                'max' => 255,
+                'required' => true
+        )));
 
-    /**
-     * Validates a state name
-     * @return boolean
-     */
-    protected function validateName()
-    {
-        if (empty($this->submitted['name']) || mb_strlen($this->submitted['name']) > 255) {
-            $this->errors['name'] = $this->text('Content must be %min - %max characters long', array('%min' => 1, '%max' => 255));
-            return false;
-        }
+        $this->addValidator('code', array(
+            'length' => array(
+                'min' => 1,
+                'max' => 255,
+                'required' => true
+            ),
+            'state_code_unique' => array()
+        ));
 
-        return true;
-    }
-
-    /**
-     * Validates a state code
-     * @param array $country
-     * @param array $state
-     * @return boolean
-     */
-    protected function validateCode(array $country, array $state)
-    {
-        $check = true;
-        if (isset($state['code'])) {
-            $check = ($state['code'] !== $this->submitted['code']);
-        }
-
-        if ($check && $this->state->getByCode($this->submitted['code'], $country['code'])) {
-            $this->errors['code'] = $this->text('This state code already exists for this country');
-            return false;
-        }
-
-        return true;
+        $this->setValidators(array($country, $state));
     }
 
 }

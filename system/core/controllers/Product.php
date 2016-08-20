@@ -473,7 +473,7 @@ class Product extends Controller
 
         $pricerules = $this->store->config('catalog_pricerule');
         $products = $this->product->getList(array('product_id' => $product_ids));
-        $imagestyle = $this->getSettings('image_style_product_grid', 3);
+        $imagestyle = $this->setting('image_style_product_grid', 3);
 
         foreach ($products as $product_id => &$product) {
 
@@ -525,7 +525,7 @@ class Product extends Controller
             $response = array(
                 'quantity' => $cart['quantity'],
                 'preview' => $this->render('cart/preview', array(
-                    'cart' => $this->cart->prepareCartItems($cart, $this->getSettings()),
+                    'cart' => $this->cart->prepareCartItems($cart, $this->setting()),
                     'limit' => $this->config->get('cart_preview_limit', 5)
             )));
 
@@ -590,8 +590,8 @@ class Product extends Controller
             return array();
         }
 
-        $imagestyle = $this->getSettings('image_style_product', 5);
-        $imagestyle_extra = $this->getSettings('image_style_product_extra', 3);
+        $imagestyle = $this->setting('image_style_product', 5);
+        $imagestyle_extra = $this->setting('image_style_product_extra', 3);
 
         $images = array();
         foreach ($product['images'] as $image) {

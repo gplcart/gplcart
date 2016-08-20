@@ -259,6 +259,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Country', 'code')
             ),
         );
+        
+        $handlers['state_code_unique'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\State', 'codeUnique')
+            ),
+        );
 
         $handlers['currency_code'] = array(
             'handlers' => array(

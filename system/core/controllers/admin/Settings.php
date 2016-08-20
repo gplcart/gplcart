@@ -26,7 +26,7 @@ class Settings extends Controller
     /**
      * Displays edit settings form
      */
-    public function settings()
+    public function setting()
     {
         $this->controlAccessSuperAdmin();
 
@@ -119,8 +119,7 @@ class Settings extends Controller
         }
 
         if ($this->isPosted('delete_gapi_certificate')) {
-            unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
-            $this->config->reset('gapi_certificate');
+            $this->deleteCertificate();
         }
 
         $submitted = $this->getSubmitted();
@@ -164,6 +163,15 @@ class Settings extends Controller
         if (!empty($uploaded)) {
             $this->setSubmitted('gapi_certificate', $uploaded);
         }
+    }
+
+    /**
+     * Deletes a certificate file from the disk and removes the path from settings
+     */
+    protected function deleteCertificate()
+    {
+        unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
+        $this->config->reset('gapi_certificate');
     }
 
 }
