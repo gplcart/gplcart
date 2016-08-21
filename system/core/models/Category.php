@@ -391,15 +391,15 @@ class Category extends Model
         }
 
         $values = array(
+            'title' => $data['title'],
             'status' => !empty($data['status']),
             'category_group_id' => (int) $data['category_group_id'],
-            'parent_id' => !empty($data['parent_id']) ? (int) $data['parent_id'] : 0,
-            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array()),
-            'title' => $data['title'],
-            'meta_title' => !empty($data['meta_title']) ? $data['meta_title'] : '',
-            'description_1' => !empty($data['description_1']) ? $data['description_1'] : '',
-            'description_2' => !empty($data['description_2']) ? $data['description_2'] : '',
-            'meta_description' => !empty($data['meta_description']) ? $data['meta_description'] : ''
+            'meta_title' => empty($data['meta_title']) ? '' : $data['meta_title'],
+            'parent_id' => empty($data['parent_id']) ? 0 : (int) $data['parent_id'],
+            'description_1' => empty($data['description_1']) ? '' : $data['description_1'],
+            'description_2' => empty($data['description_2']) ? '' : $data['description_2'],
+            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data']),
+            'meta_description' => empty($data['meta_description']) ? '' : $data['meta_description']
         );
 
         $category_id = $this->db->insert('category', $values);

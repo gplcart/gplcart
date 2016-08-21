@@ -26,7 +26,7 @@ class Settings extends Controller
     /**
      * Displays edit settings form
      */
-    public function setting()
+    public function common()
     {
         $this->controlAccessSuperAdmin();
 
@@ -40,17 +40,17 @@ class Settings extends Controller
             $this->submit();
         }
 
-        $this->setDataSettings();
+        $this->setDataCommon();
 
-        $this->setTitleSettings();
-        $this->setBreadcrumbSettings();
-        $this->outputSettings();
+        $this->setTitleCommon();
+        $this->setBreadcrumbCommon();
+        $this->outputCommon();
     }
 
     /**
      * Sets titles on the settings form page
      */
-    protected function setTitleSettings()
+    protected function setTitleCommon()
     {
         $this->setTitle($this->text('Settings'));
     }
@@ -58,7 +58,7 @@ class Settings extends Controller
     /**
      * Sets breadcrumbs on the settings form page
      */
-    protected function setBreadcrumbSettings()
+    protected function setBreadcrumbCommon()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -68,7 +68,7 @@ class Settings extends Controller
     /**
      * Renders settings page
      */
-    protected function outputSettings()
+    protected function outputCommon()
     {
         $this->output('settings/settings');
     }
@@ -97,7 +97,7 @@ class Settings extends Controller
     /**
      * Prepares settings values before passing them to template
      */
-    protected function setDataSettings()
+    protected function setDataCommon()
     {
         $smtp_host = $this->getData('settings.smtp_host');
 

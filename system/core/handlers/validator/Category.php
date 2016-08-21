@@ -48,7 +48,7 @@ class Category
      * @param array $options
      * @return boolean
      */
-    public function groupType($value, array $options = array())
+    public function groupTypeUnique($value, array $options = array())
     {
         if (empty($value)) {
             return true;

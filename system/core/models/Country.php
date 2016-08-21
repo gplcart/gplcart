@@ -209,9 +209,9 @@ class Country extends Model
         }
 
         $values = array(
-            'format' => !empty($data['format']) ? serialize($data['format']) : serialize(array()),
+            'format' => empty($data['format']) ? serialize(array()) : serialize($data['format']),
             'status' => !empty($data['status']),
-            'weight' => !empty($data['weight']) ? (int) $data['weight'] : 0,
+            'weight' => empty($data['weight']) ? 0 : (int) $data['weight'],
             'name' => $data['name'],
             'native_name' => $data['native_name'],
             'code' => $data['code'],

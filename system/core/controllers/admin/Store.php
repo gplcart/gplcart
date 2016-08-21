@@ -10,7 +10,6 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\classes\Tool;
 use core\models\Image as ModelsImage;
 use core\models\Module as ModelsModule;
 
@@ -95,10 +94,23 @@ class Store extends Controller
         }
 
         $this->setDataStore();
+        
+        $this->setJsEdit($store);
 
         $this->seTitleEdit($store);
         $this->setBreadcrumbEdit();
         $this->outputEdit();
+    }
+    
+    /**
+     * Sets JS on the store edit page
+     * @param array $store
+     */
+    protected function setJsEdit(array $store)
+    {
+        if (!empty($store['data']['map'])) {
+            $this->setJsSettings('map', $store['data']['map']);
+        }
     }
 
     /**
@@ -209,11 +221,6 @@ class Store extends Controller
             if (!empty($value)) {
                 $this->setData("store.data.$field", implode("\n", (array) $value));
             }
-        }
-
-        $map = $this->getData('store.data.map');
-        if (!empty($map)) {
-            $this->setJsSettings('map', $map);
         }
     }
 
@@ -433,19 +440,19 @@ class Store extends Controller
         $errors = $this->setValidators($store);
 
         if (empty($errors)) {
+            
             $logo = $this->getValidatorResult('logo');
             $favicon = $this->getValidatorResult('favicon');
 
             $this->setSubmitted('data.logo', $logo);
             $this->setSubmitted('data.favicon', $favicon);
+
+            $emails = $this->getValidatorResult('data.email');
+            $map = array_slice($this->getValidatorResult('data.map'), 0, 2);
+
+            $this->setSubmitted('data.map', $map);
+            $this->setSubmitted('data.email', $emails);
         }
-
-
-        $emails = $this->getValidatorResult('data.email');
-        $map = array_slice($this->getValidatorResult('data.map'), 0, 2);
-
-        $this->setSubmitted('data.map', $map);
-        $this->setSubmitted('data.email', $emails);
 
         $this->setSubmittedArray('data.fax');
         $this->setSubmittedArray('data.phone');

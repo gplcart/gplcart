@@ -181,6 +181,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Common', 'length')
             ),
         );
+        
+        $handlers['required'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Common', 'required')
+            ),
+        );
 
         $handlers['numeric'] = array(
             'handlers' => array(
@@ -254,9 +260,9 @@ class Validator extends Model
             ),
         );
 
-        $handlers['country_code'] = array(
+        $handlers['country_code_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Country', 'code')
+                'validate' => array('core\\handlers\\validator\\Country', 'codeUnique')
             ),
         );
         
@@ -284,9 +290,9 @@ class Validator extends Model
             ),
         );
 
-        $handlers['category_group_type'] = array(
+        $handlers['category_group_type_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Category', 'groupType')
+                'validate' => array('core\\handlers\\validator\\Category', 'groupTypeUnique')
             ),
         );
 

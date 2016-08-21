@@ -276,16 +276,4 @@ $(function () {
         Cookies.set('search-id', $(this).val(), {expires: 365, path: '/'});
     });
 
-    /********************************* Google map *********************************/
-
-    $(document).on('shown.bs.tab', 'a[href="#contact"]', function (e) {
-        if ('map' in GplCart.settings) {
-            GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1]);
-        }
-    });
-
-    if ('map' in GplCart.settings && 'address' in GplCart.settings.map) {
-        GplCart.gmap(GplCart.settings.map.address, false);
-    }
-
 });

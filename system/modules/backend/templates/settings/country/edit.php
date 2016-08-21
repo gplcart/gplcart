@@ -2,9 +2,9 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Short alphabetic geographical code according to ISO 3166-2 standard'); ?>">
+          <span class="hint" title="<?php echo $this->text('Two-letter alphabetic uppercase code according to ISO 3166-2 standard, e.g US'); ?>">
             <?php echo $this->text('Code'); ?>
           </span>
         </label>
@@ -15,7 +15,7 @@
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('International name of the country in english according to ISO 3166-2 standard'); ?>">
             <?php echo $this->text('Name'); ?>
@@ -28,7 +28,7 @@
           <?php } ?>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Local name of the country'); ?>">
             <?php echo $this->text('Native name'); ?>

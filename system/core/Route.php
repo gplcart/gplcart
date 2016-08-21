@@ -452,42 +452,42 @@ class Route
         $routes['admin/content/category/group'] = array(
             'access' => 'category_group',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'groups')
+                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'listCategoryGroup')
             )
         );
 
         $routes['admin/content/category/group/edit/(\d+)'] = array(
             'access' => 'category_group_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'edit')
+                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'editCategoryGroup')
             )
         );
 
         $routes['admin/content/category/group/add'] = array(
             'access' => 'category_group_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'edit')
+                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'editCategoryGroup')
             )
         );
 
         $routes['admin/content/category/(\d+)'] = array(
             'access' => 'category',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Category', 'categories')
+                'controller' => array('core\\controllers\\admin\\Category', 'listCategory')
             )
         );
 
         $routes['admin/content/category/add/(\d+)'] = array(
             'access' => 'category_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Category', 'edit')
+                'controller' => array('core\\controllers\\admin\\Category', 'editCategory')
             )
         );
 
         $routes['admin/content/category/edit/(\d+)/(\d+)'] = array(
             'access' => 'category_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Category', 'edit')
+                'controller' => array('core\\controllers\\admin\\Category', 'editCategory')
             )
         );
 
@@ -571,7 +571,7 @@ class Route
         $routes['admin/content/alias'] = array(
             'access' => 'alias',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Alias', 'aliases')
+                'controller' => array('core\\controllers\\admin\\Alias', 'listAlias')
             )
         );
 
@@ -599,7 +599,7 @@ class Route
         $routes['admin/settings/common'] = array(
             'access' => 'settings',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Settings', 'settings')
+                'controller' => array('core\\controllers\\admin\\Settings', 'common')
             )
         );
 
@@ -676,28 +676,28 @@ class Route
         $routes['admin/settings/country'] = array(
             'access' => 'country',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'countries')
+                'controller' => array('core\\controllers\\admin\\Country', 'listCountry')
             )
         );
 
         $routes['admin/settings/country/edit/(\w+)'] = array(
             'access' => 'country_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'edit')
+                'controller' => array('core\\controllers\\admin\\Country', 'editCountry')
             )
         );
 
         $routes['admin/settings/country/add'] = array(
             'access' => 'country_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'edit')
+                'controller' => array('core\\controllers\\admin\\Country', 'editCountry')
             )
         );
 
         $routes['admin/settings/country/format/(\w+)'] = array(
             'access' => 'country_format',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'format')
+                'controller' => array('core\\controllers\\admin\\Country', 'formatCountry')
             )
         );
 
@@ -725,21 +725,21 @@ class Route
         $routes['admin/settings/cities/(\w+)/(\d+)'] = array(
             'access' => 'city',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\City', 'cities')
+                'controller' => array('core\\controllers\\admin\\City', 'listCity')
             )
         );
 
         $routes['admin/settings/city/add/(\w+)/(\d+)'] = array(
             'access' => 'city_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\City', 'edit')
+                'controller' => array('core\\controllers\\admin\\City', 'editCity')
             )
         );
 
         $routes['admin/settings/city/edit/(\w+)/(\d+)/(\d+)'] = array(
             'access' => 'city_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\City', 'edit')
+                'controller' => array('core\\controllers\\admin\\City', 'editCity')
             )
         );
 

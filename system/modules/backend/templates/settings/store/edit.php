@@ -162,60 +162,69 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Contact'); ?></div>
     <div class="panel-body">
-      <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Physical address of the store'); ?>">
-            <?php echo $this->text('Address'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][address]" class="form-control"><?php echo isset($store['data']['address']) ? $this->escape($store['data']['address']) : ''; ?></textarea>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="col-md-4 control-label">
+              <span class="hint" title="<?php echo $this->text('Physical address of the store'); ?>">
+                <?php echo $this->text('Address'); ?>
+              </span>
+            </label>
+            <div class="col-md-8">
+              <textarea name="store[data][address]" class="form-control"><?php echo isset($store['data']['address']) ? $this->escape($store['data']['address']) : ''; ?></textarea>
+            </div>
+          </div>
+          <div class="form-group<?php echo isset($this->errors['data']['map']) ? ' has-error' : ''; ?>">
+            <label class="col-md-4 control-label">
+              <span class="hint" title="<?php echo $this->text('Latitude and longitude of the store, one value per line'); ?>">
+                <?php echo $this->text('Map'); ?>
+              </span>
+            </label>
+            <div class="col-md-8">
+              <textarea name="store[data][map]" class="form-control"><?php echo empty($store['data']['map']) ? '' : $this->escape($store['data']['map']); ?></textarea>
+              <?php if (isset($this->errors['data']['map'])) { ?>
+              <div class="help-block"><?php echo $this->errors['data']['map']; ?></div>
+              <?php } ?>
+            </div>
+          </div>
+          <div class="form-group<?php echo isset($this->errors['data']['email']) ? ' has-error' : ''; ?>">
+            <label class="col-md-4 control-label">
+              <span class="hint" title="<?php echo $this->text('List of store e-mails, one per line. The very first address will be main and used for notifications'); ?>">
+                <?php echo $this->text('E-mail'); ?>
+              </span>
+            </label>
+            <div class="col-md-8">
+              <textarea name="store[data][email]" class="form-control"><?php echo!empty($store['data']['email']) ? $this->escape($store['data']['email']) : ''; ?></textarea>
+              <?php if (isset($this->errors['data']['email'])) { ?>
+              <div class="help-block"><?php echo $this->errors['data']['email']; ?></div>
+              <?php } ?>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label">
+              <span class="hint" title="<?php echo $this->text('List of store phone numbers, one per line'); ?>">
+                <?php echo $this->text('Phone'); ?>
+              </span>
+            </label>
+            <div class="col-md-8">
+              <textarea name="store[data][phone]" class="form-control"><?php echo!empty($store['data']['phone']) ? $this->escape($store['data']['phone']) : ''; ?></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label">
+              <span class="hint" title="<?php echo $this->text('List of store fax numbers, one per line'); ?>">
+                <?php echo $this->text('Fax'); ?>
+              </span>
+            </label>
+            <div class="col-md-8">
+              <textarea name="store[data][fax]" class="form-control"><?php echo !empty($store['data']['fax']) ? $this->escape($store['data']['fax']) : ''; ?></textarea>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="form-group<?php echo isset($this->errors['data']['map']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Latitude and longitude of the store, one value per line'); ?>">
-            <?php echo $this->text('Map'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][map]" class="form-control"><?php echo empty($store['data']['map']) ? '' : $this->escape($store['data']['map']); ?></textarea>
-          <?php if (isset($this->errors['data']['map'])) { ?>
-          <div class="help-block"><?php echo $this->errors['data']['map']; ?></div>
-          <?php } ?>
-        </div>
-      </div>
-      <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('List of store e-mails, one per line. The very first address will be main and used for notifications'); ?>">
-            <?php echo $this->text('E-mail'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][email]" class="form-control"><?php echo!empty($store['data']['email']) ? $this->escape($store['data']['email']) : ''; ?></textarea>
-          <?php if (isset($this->errors['email'])) { ?>
-          <div class="help-block"><?php echo $this->errors['email']; ?></div>
-          <?php } ?>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('List of store phone numbers, one per line'); ?>">
-            <?php echo $this->text('Phone'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][phone]" class="form-control"><?php echo!empty($store['data']['phone']) ? $this->escape($store['data']['phone']) : ''; ?></textarea>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('List of store fax numbers, one per line'); ?>">
-            <?php echo $this->text('Fax'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][fax]" class="form-control"><?php echo!empty($store['data']['fax']) ? $this->escape($store['data']['fax']) : ''; ?></textarea>
+        <div class="col-md-6">
+          <div class="embed-responsive embed-responsive-4by3">
+          <div id="map-container"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -391,3 +400,8 @@
     </div>
   </div>
 </form>
+<script>
+    if ('map' in GplCart.settings) {
+        GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1]);
+    }
+</script>

@@ -40,13 +40,14 @@ class Common
      */
     public function length($subject, array $options = array())
     {
-        if (!isset($subject) && empty($options['required'])) {
+        $min = isset($options['min']) ? (int) $options['min'] : null;
+        $max = isset($options['max']) ? (int) $options['max'] : null;
+
+        if (!isset($subject) && !isset($min)) {
             return true;
         }
 
-        $length = mb_strlen($subject);
-        $min = isset($options['min']) ? (int) $options['min'] : null;
-        $max = isset($options['max']) ? (int) $options['max'] : null;
+        $length = mb_strlen((string) $subject);
 
         if (isset($min) && !isset($max)) {
             if ($length < $min) {
@@ -149,13 +150,13 @@ class Common
             return true;
         }
 
-        $fields = array('title', 'meta_title', 'meta_description');
+        $allowed = array('title', 'meta_title', 'meta_description');
 
         $errors = array();
         foreach ($subject as $lang => $fields) {
             foreach ($fields as $name => $value) {
 
-                if (!in_array($name, $fields)) {
+                if (!in_array($name, $allowed)) {
                     continue;
                 }
 
@@ -178,7 +179,6 @@ class Common
      */
     public function regexp($subject, array $options = array())
     {
-
         if ((!isset($subject) || $subject === '') && empty($options['required'])) {
             return true;
         }
@@ -192,6 +192,21 @@ class Common
         }
 
         return $this->language->text('Invalid format');
+    }
+
+    /**
+     * Validates the subject is not empty
+     * @param mixed $subject
+     * @param array $options
+     * @return boolean
+     */
+    public function required($subject, array $options = array())
+    {
+        if (empty($subject)) {
+            return $this->language->text('Required field');
+        }
+
+        return true;
     }
 
     /**

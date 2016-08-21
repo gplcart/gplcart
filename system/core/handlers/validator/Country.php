@@ -47,18 +47,19 @@ class Country
      * @param array $options
      * @return boolean|string
      */
-    public function code($code, array $options = array())
+    public function codeUnique($code, array $options = array())
     {
-        $check = true;
         if (isset($options['data']['code']) && ($options['data']['code'] === $code)) {
-            $check = false;
+            return true;
         }
 
-        if ($check && $this->country->get($code)) {
-            return $this->language->text('Country code %code already exists', array('%code' => $code));
+        $existing = $this->country->get($code);
+
+        if (empty($existing)) {
+            return true;
         }
 
-        return true;
+        return $this->language->text('Country code %code already exists', array('%code' => $code));
     }
 
 }

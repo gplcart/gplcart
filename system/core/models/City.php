@@ -120,7 +120,7 @@ class City extends Model
 
         $city_id = $this->db->insert('city', array(
             'status' => !empty($data['status']),
-            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array()),
+            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data']),
             'state_id' => $data['state_id'],
             'country' => $data['country'],
             'name' => $data['name'],

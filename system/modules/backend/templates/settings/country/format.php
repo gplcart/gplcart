@@ -33,7 +33,7 @@
               <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo!empty($item['required']) ? ' checked' : ''; ?>>
             </td>
             <td class="middle">
-              <i class="fa fa-arrows handle"></i> <?php echo $this->escape($item['weight']); ?>
+              <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($item['weight']); ?></span>
             </td>
           </tr>
           <?php } ?>
