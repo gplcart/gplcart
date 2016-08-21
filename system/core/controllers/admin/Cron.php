@@ -38,19 +38,16 @@ class Cron extends Controller
     /**
      * Processes cron requests
      */
-    public function cron()
+    public function executeCron()
     {
-        $this->checkKey();
-        $this->checkAccess();
+        $this->controlAccessExecuteCron();
 
-        register_shutdown_function(array($this, 'shutdownHandler'));
+        register_shutdown_function(array($this, 'shutdownHandlerCron'));
         ini_set('max_execution_time', 0);
 
         $this->logger->log('cron', 'Cron has started');
 
-        $this->processFiles();
-        $this->processLogs();
-        $this->processHistory();
+        $this->processTasksCron();
 
         $this->hook->fire('cron');
         $this->config->set('cron_last_run', GC_TIME);
@@ -61,39 +58,29 @@ class Cron extends Controller
     /**
      * Handles PHP shutdown
      */
-    public function shutdownHandler()
+    public function shutdownHandlerCron()
     {
         $this->config->set('cron_last_run', GC_TIME);
     }
 
     /**
-     * Checks the current cron key
+     * Controls access to execute cron
+     * @return null
      */
-    protected function checkKey()
+    protected function controlAccessExecuteCron()
     {
-        $key = $this->request->get('key', '');
+        $key = (string) $this->request->get('key', '');
 
-        if (!is_string($key)) {
+        if (strcmp($key, $this->cron_key) !== 0) {
             exit;
         }
 
-        if (empty($key) || (strcmp($key, $this->cron_key) !== 0)) {
-            exit;
-        }
-    }
-
-    /**
-     * Checks whether to abort cron execution
-     * @return boolean
-     */
-    protected function checkAccess()
-    {
         if ($this->access('cron')) {
-            return true;
+            return;
         }
 
         if (!empty($this->cron_interval) && ((GC_TIME - $this->cron_last_run) > $this->cron_interval)) {
-            return true;
+            return;
         }
 
         exit;
@@ -102,46 +89,38 @@ class Cron extends Controller
     /**
      * Deletes expired records from the history table
      */
-    protected function processHistory()
+    protected function processTasksCron()
     {
+        // Delete expired records from history table
         $sth = $this->config->getDb()->prepare('DELETE FROM history WHERE time < :time');
-        $sth->execute(array(':time' => (GC_TIME - (int) $this->config->get('history_lifespan', 2628000))));
-    }
+        $sth->execute(array(':time' => (GC_TIME - (int) $this->config('history_lifespan', 2628000))));
 
-    /**
-     * Processes files (delete expired etc)
-     * @return integer
-     */
-    protected function processFiles()
-    {
+        // Delete old files
+        $dirs = array(
+            'log' => GC_PRIVATE_LOGS_DIR,
+            'import' => GC_PRIVATE_IMPORT_DIR,
+            'export' => GC_PRIVATE_DOWNLOAD_DIR
+        );
+
         $deleted = 0;
-        $deleted += Tool::deleteFiles(GC_PRIVATE_DOWNLOAD_DIR, array('csv'), $this->config->get('export_lifespan', 86400));
-        $deleted += Tool::deleteFiles(GC_PRIVATE_IMPORT_DIR, array('csv'), $this->config->get('import_lifespan', 86400));
-        $deleted += Tool::deleteFiles(GC_PRIVATE_LOGS_DIR, array('csv'), $this->config->get('log_lifespan', 86400));
-
-        if ($deleted > 0) {
-            $this->logger->log('cron', array('message' => 'Deleted @num expired files', 'variables' => array('@num' => $deleted)));
+        foreach ($dirs as $key => $path) {
+            $deleted += Tool::deleteFiles($path, array('csv'), $this->config("{$key}_lifespan", 86400));
         }
 
-        return $deleted;
-    }
+        if ($deleted > 0) {
+            $this->logger->log('cron', array(
+                'message' => 'Deleted @num expired files',
+                'variables' => array('@num' => $deleted)));
+        }
 
-    /**
-     * Process saved logs
-     * @return boolean
-     */
-    protected function processLogs()
-    {
-        $this->report->clearExpired($this->config->get('report_log_lifespan', 86400));
-
+        // Delete expired log records
+        $this->report->clearExpired($this->config('report_log_lifespan', 86400));
         $status = $this->report->checkFilesystem();
 
         if ($status !== true) {
             $this->logger->log('system_status', array(
                 'message' => implode('<br>', (array) $status)), 'warning');
         }
-
-        return true;
     }
 
 }

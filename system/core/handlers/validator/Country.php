@@ -49,6 +49,8 @@ class Country
      */
     public function codeUnique($code, array $options = array())
     {
+        $code = strtoupper($code);
+        
         if (isset($options['data']['code']) && ($options['data']['code'] === $code)) {
             return true;
         }

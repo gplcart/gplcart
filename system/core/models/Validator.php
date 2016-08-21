@@ -284,9 +284,9 @@ class Validator extends Model
             ),
         );
 
-        $handlers['currency_code'] = array(
+        $handlers['currency_code_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\Currency', 'code')
+                'validate' => array('core\\handlers\\validator\\Currency', 'codeUnique')
             ),
         );
 

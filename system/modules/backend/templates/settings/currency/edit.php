@@ -4,7 +4,7 @@
     <div class="panel-body">
       <div class="form-group<?php echo isset($this->errors['convertion_rate']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('An exchange rate against default (base) currency. Only numeric values'); ?>">
+          <span class="hint" title="<?php echo $this->text('An exchange rate against default (base) currency. Only numeric positive values'); ?>">
             <?php echo $this->text('Convertion rate'); ?>
           </span>
         </label>
@@ -22,7 +22,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input maxlength="32" name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->escape($currency['name']) : ''; ?>">
+          <input name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->escape($currency['name']) : ''; ?>">
           <?php if (isset($this->errors['name'])) { ?>
           <div class="help-block"><?php echo $this->errors['name']; ?></div>
           <?php } ?>
@@ -30,12 +30,12 @@
       </div>
       <div class="required form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('3-letter ISO 4217 code , i.e USD for US dollar'); ?>">
+          <span class="hint" title="<?php echo $this->text('Three-letter upper-case ISO 4217 code , i.e USD for US dollar'); ?>">
             <?php echo $this->text('Code'); ?>
           </span>
         </label>
         <div class="col-md-4">
-          <input maxlength="3" name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->escape($currency['code']) : ''; ?>">
+          <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->escape($currency['code']) : ''; ?>">
           <?php if (isset($this->errors['code'])) { ?>
           <div class="help-block"><?php echo $this->errors['code']; ?></div>
           <?php } ?>
@@ -48,7 +48,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input maxlength="32" name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->escape($currency['symbol']) : ''; ?>">
+          <input name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->escape($currency['symbol']) : ''; ?>">
           <?php if (isset($this->errors['symbol'])) { ?>
             <div class="help-block"><?php echo $this->errors['symbol']; ?></div>
           <?php } ?>
@@ -107,7 +107,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input maxlength="3" name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->escape($currency['numeric_code']) : ''; ?>">
+          <input name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->escape($currency['numeric_code']) : ''; ?>">
           <?php if (isset($this->errors['numeric_code'])) { ?>
           <div class="help-block"><?php echo $this->errors['numeric_code']; ?></div>
           <?php } ?>
@@ -120,7 +120,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input maxlength="32" name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->escape($currency['major_unit']) : ''; ?>">
+          <input name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->escape($currency['major_unit']) : ''; ?>">
           <?php if (isset($this->errors['major_unit'])) { ?>
             <div class="help-block"><?php echo $this->errors['major_unit']; ?></div>
           <?php } ?>
@@ -133,7 +133,7 @@
           </span>
         </label>
         <div class="col-md-4">
-          <input maxlength="32" name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->escape($currency['minor_unit']) : ''; ?>">
+          <input name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->escape($currency['minor_unit']) : ''; ?>">
           <?php if (isset($this->errors['minor_unit'])) { ?>
           <div class="help-block"><?php echo $this->errors['minor_unit']; ?></div>
           <?php } ?>
@@ -184,7 +184,7 @@
           </span>
         </label>
         <div class="col-md-1">
-          <input maxlength="1" name="currency[decimals]" class="form-control" value="<?php echo (isset($currency['decimals'])) ? $this->escape($currency['decimals']) : 2; ?>">
+          <input name="currency[decimals]" class="form-control" value="<?php echo (isset($currency['decimals'])) ? $this->escape($currency['decimals']) : 2; ?>">
           <?php if (isset($this->errors['decimals'])) { ?>
           <div class="help-block"><?php echo $this->errors['decimals']; ?></div>
           <?php } ?>
@@ -197,7 +197,7 @@
           </span>
         </label>
         <div class="col-md-1">
-          <input maxlength="1" name="currency[rounding_step]" class="form-control" value="<?php echo (isset($currency['rounding_step'])) ? $this->escape($currency['rounding_step']) : 0; ?>">
+          <input name="currency[rounding_step]" class="form-control" value="<?php echo (isset($currency['rounding_step'])) ? $this->escape($currency['rounding_step']) : 0; ?>">
           <?php if (isset($this->errors['rounding_step'])) { ?>
           <div class="help-block"><?php echo $this->errors['rounding_step']; ?></div>
           <?php } ?>
@@ -210,7 +210,7 @@
           </span>
         </label>
         <div class="col-md-1">
-          <input maxlength="1" name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->escape($currency['thousands_separator']) : ','; ?>">
+          <input name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->escape($currency['thousands_separator']) : ','; ?>">
         </div>
       </div>
       <div class="form-group">
@@ -220,7 +220,7 @@
           </span>
         </label>
         <div class="col-md-1">
-          <input maxlength="1" name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->escape($currency['decimal_separator']) : '.'; ?>">
+          <input name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->escape($currency['decimal_separator']) : '.'; ?>">
         </div>
       </div>
       <div class="form-group">
@@ -230,7 +230,7 @@
           </span>
         </label>
         <div class="col-md-1">
-          <input maxlength="2" name="currency[symbol_spacer]" class="form-control" value="<?php echo (isset($currency['symbol_spacer'])) ? $this->escape($currency['symbol_spacer']) : ' '; ?>">
+          <input name="currency[symbol_spacer]" class="form-control" value="<?php echo (isset($currency['symbol_spacer'])) ? $this->escape($currency['symbol_spacer']) : ' '; ?>">
         </div>
       </div>
       <div class="form-group">
@@ -240,7 +240,7 @@
           </span>
         </label>
         <div class="col-md-1">
-          <input maxlength="2" name="currency[code_spacer]" class="form-control" value="<?php echo (isset($currency['code_spacer'])) ? $this->escape($currency['code_spacer']) : ' '; ?>">
+          <input name="currency[code_spacer]" class="form-control" value="<?php echo (isset($currency['code_spacer'])) ? $this->escape($currency['code_spacer']) : ' '; ?>">
         </div>
       </div>
     </div>

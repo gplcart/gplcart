@@ -132,7 +132,7 @@ class Route
 
         $routes['cron'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Cron', 'cron')
+                'controller' => array('core\\controllers\\admin\\Cron', 'executeCron')
             )
         );
 
@@ -655,21 +655,21 @@ class Route
         $routes['admin/settings/currency'] = array(
             'access' => 'currency',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Currency', 'currencies')
+                'controller' => array('core\\controllers\\admin\\Currency', 'listCurrency')
             )
         );
 
         $routes['admin/settings/currency/edit/(\w+)'] = array(
             'access' => 'currency_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Currency', 'edit')
+                'controller' => array('core\\controllers\\admin\\Currency', 'editCurrency')
             )
         );
 
         $routes['admin/settings/currency/add'] = array(
             'access' => 'currency_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Currency', 'edit')
+                'controller' => array('core\\controllers\\admin\\Currency', 'editCurrency')
             )
         );
 

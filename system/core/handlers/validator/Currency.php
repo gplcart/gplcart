@@ -48,20 +48,21 @@ class Currency
      * @param array $options
      * @return boolean
      */
-    public function code($code, array $options = array())
+    public function codeUnique($code, array $options = array())
     {
         $code = strtoupper($code);
 
-        $check = true;
         if (isset($options['data']['code']) && ($options['data']['code'] === $code)) {
-            $check = false;
+            return true;
+        }
+        
+        $existing = $this->currency->get($code);
+
+        if (empty($existing)) {
+            return true;
         }
 
-        if ($check && $this->currency->get($code)) {
-            return $this->language->text('Currency code %code already exists', array('%code' => $code));
-        }
-
-        return true;
+        return $this->language->text('Currency code %code already exists', array('%code' => $code));
     }
 
 }
