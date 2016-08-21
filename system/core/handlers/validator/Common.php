@@ -9,6 +9,7 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Tool;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -79,7 +80,7 @@ class Common
      * Validates a numeric value
      * @param string|integer|float $subject
      * @param array $options
-     * @return boolean|string
+     * @return mixed
      */
     public function numeric($subject, array $options = array())
     {
@@ -87,8 +88,18 @@ class Common
             return true;
         }
 
-        if (is_numeric($subject)) {
+        if (empty($options['explode']) && is_numeric($subject)) {
             return true;
+        }
+
+        if (!empty($options['explode'])) {
+
+            $array = Tool::stringToArray($subject);
+            $filtered = array_filter($array, 'is_numeric');
+
+            if (count($filtered) == count($array)) {
+                return array('result' => $array);
+            }
         }
 
         return $this->language->text('Only numeric values allowed');
@@ -98,7 +109,7 @@ class Common
      * Validates an E-mail
      * @param string $subject
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function email($subject, array $options = array())
     {
@@ -106,8 +117,21 @@ class Common
             return true;
         }
 
-        if (filter_var($subject, FILTER_VALIDATE_EMAIL)) {
+        if (empty($options['explode']) && filter_var($subject, FILTER_VALIDATE_EMAIL)) {
             return true;
+        }
+
+        if (!empty($options['explode'])) {
+
+            $array = Tool::stringToArray($subject);
+
+            $filtered = array_filter($array, function ($email) {
+                return filter_var($email, FILTER_VALIDATE_EMAIL);
+            });
+
+            if (count($filtered) == count($array)) {
+                return array('result' => $array);
+            }
         }
 
         return $this->language->text('Invalid E-mail');

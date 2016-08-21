@@ -707,13 +707,27 @@ class Controller
     }
 
     /**
-     * 
-     * @param type $key
+     * Converts a submitted value to boolean
+     * If no value is set, it becomes FALSE
+     * @param string|array $key
      */
     public function setSubmittedBool($key)
     {
         $original = $this->getSubmitted($key);
         $this->setSubmitted($key, (bool) $original);
+    }
+    
+    /**
+     * Converts a submitted value to array using multiline delimiter
+     * @param string|array $key
+     */
+    public function setSubmittedArray($key)
+    {
+        $value = $this->getSubmitted($key);
+        
+        if(isset($value) && is_string($value)){
+            $this->setSubmitted($key, Tool::stringToArray($value));
+        }
     }
 
     /**

@@ -103,7 +103,7 @@ class Frontend extends Controller
     protected function validateNumeric()
     {
         $has_errors = false;
-        foreach (array('catalog_limit', 'catalog_front_limit') as $name) {
+        foreach (array('catalog_limit') as $name) {
             if (empty($this->submitted[$name])) {
                 $this->submitted[$name] = 0;
                 continue;

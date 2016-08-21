@@ -51,7 +51,7 @@
       </div>
       <div class="form-group<?php echo isset($this->errors['basepath']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('An optional forder name if the store not installed in the domain root directory'); ?>">
+          <span class="hint" title="<?php echo $this->text('An optional forder name if the store not installed in the domain root directory. Use alphanumeric lowercase letters no longer than 50 characters'); ?>">
             <?php echo $this->text('Base path'); ?>
           </span>
         </label>
@@ -216,32 +216,6 @@
         </label>
         <div class="col-md-4">
           <textarea name="store[data][fax]" class="form-control"><?php echo!empty($store['data']['fax']) ? $this->escape($store['data']['fax']) : ''; ?></textarea>
-        </div>
-      </div>
-      <div class="form-group<?php echo isset($this->errors['data']['hours']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Opening hours for the store, one day per line, starting from Monday. Separate values by dash, eg "09:00 AM - 05:00 PM". Enter single dash for day-off'); ?>">
-            <?php echo $this->text('Opening hours'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][hours]" rows="8" class="form-control"><?php echo!empty($store['data']['hours']) ? $this->escape($store['data']['hours']) : ''; ?></textarea>
-          <?php if (isset($this->errors['data']['hours'])) { ?>
-          <div class="help-block"><?php echo $this->errors['data']['hours']; ?></div>
-          <?php } ?>
-        </div>
-      </div>
-      <div class="form-group<?php echo isset($this->errors['data']['social']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('List of social network pages, one per line'); ?>">
-            <?php echo $this->text('Social networks'); ?>
-          </span>
-        </label>
-        <div class="col-md-4">
-          <textarea name="store[data][social]" class="form-control" placeholder="http://facebook.com/yourstore"><?php echo!empty($store['data']['social']) ? $this->escape($store['data']['social']) : ''; ?></textarea>
-          <?php if (isset($this->errors['data']['social'])) { ?>
-            <div class="help-block"><?php echo $this->errors['data']['social']; ?></div>
-          <?php } ?>
         </div>
       </div>
     </div>

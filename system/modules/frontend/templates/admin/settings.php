@@ -25,19 +25,6 @@
       <?php } ?>
     </div>
   </div>
-  <div class="form-group<?php echo isset($this->errors['catalog_front_limit']) ? ' has-error' : ''; ?>">
-    <label class="col-md-2 control-label">
-      <span class="hint" title="<?php echo $this->text('Number of products to be shown on the front page'); ?>">
-        <?php echo $this->text('Front page product limit'); ?>
-      </span>
-    </label>
-    <div class="col-md-4">
-      <input name="settings[catalog_front_limit]" class="form-control" value="<?php echo $this->escape($settings['catalog_front_limit']); ?>">
-      <?php if (isset($this->errors['catalog_front_limit'])) { ?>
-      <div class="help-block"><?php echo $this->errors['catalog_front_limit']; ?></div>
-      <?php } ?>
-    </div>
-  </div>
   <div class="form-group">
     <div class="col-md-10 col-md-offset-2"><h4><?php echo $this->text('Image styles'); ?></h4></div>
   </div>

@@ -327,7 +327,7 @@ class Store extends Model
             $values['domain'] = $data['domain'];
         }
 
-        if (!empty($data['basepath'])) {
+        if (isset($data['basepath'])) {
             $values['basepath'] = $data['basepath'];
         }
 

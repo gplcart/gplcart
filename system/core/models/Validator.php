@@ -265,6 +265,18 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\State', 'codeUnique')
             ),
         );
+        
+        $handlers['store_domain_unique'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Store', 'domainUnique')
+            ),
+        );
+        
+        $handlers['store_basepath_unique'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Store', 'basepathUnique')
+            ),
+        );
 
         $handlers['currency_code'] = array(
             'handlers' => array(

@@ -340,35 +340,6 @@ class Tool
     }
 
     /**
-     * Checks if a timestamp is in a given time range
-     * @param array $ranges An array of ranges,
-     * e.g $ranges = ['Mon' => ['09:00 AM' => '12:00 AM']]
-     * @param mixed $timestamp a UNIX-timestamp or null for the current time
-     * @return boolean Returns true if in the range, false otherwise
-     */
-    public static function inTimeRange(array $ranges, $timestamp = null)
-    {
-
-        if (!isset($timestamp)) {
-            $timestamp = GC_TIME;
-        }
-
-        $date = date_create();
-        $current = date_timestamp_set($date, $timestamp);
-
-        foreach ($ranges[date('D', $timestamp)] as $start => $end) {
-            $start = date_create_from_format('h:i A', $start);
-            $end = date_create_from_format('h:i A', $end);
-
-            if (($start < $current) && ($current < $end)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Splits a text by new lines
      * @param string $string A text
      * @limit integer $limit If set the returned array will contain a maximum of

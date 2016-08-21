@@ -102,7 +102,7 @@ class Front extends Controller
             'store_id' => $this->store_id,
             'sort' => $this->config->module($this->theme, 'catalog_front_sort', 'price'),
             'order' => $this->config->module($this->theme, 'catalog_front_order', 'asc'),
-            'limit' => array(0, $this->config->module($this->theme, 'catalog_front_limit', 12))
+            'limit' => array(0, 12)
         ));
 
         return $products;

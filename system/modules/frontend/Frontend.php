@@ -215,7 +215,6 @@ class Frontend
     {
         return array(
             'catalog_limit' => 20,
-            'catalog_front_limit' => 12,
             'catalog_front_sort' => 'price',
             'catalog_front_order' => 'asc',
             'catalog_sort' => 'price',
