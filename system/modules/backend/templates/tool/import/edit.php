@@ -20,7 +20,7 @@
         <div class="col-md-4 col-md-offset-2">
           <div class="checkbox">
             <label>
-              <input name="unique" type="checkbox" autocomplete="off" value="1" checked> <?php echo $this->text('Check uniqueness'); ?>
+              <input name="import[unique]" type="checkbox" autocomplete="off" value="1" checked> <?php echo $this->text('Check uniqueness'); ?>
             </label>
           </div>
         </div>
@@ -38,7 +38,7 @@
           <?php } ?>   
         </div>
         <div class="col-md-4 text-right">
-          <button class="btn btn-default import" name="import" value="1">
+          <button class="btn btn-default import" name="save" value="1">
             <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
           </button>
         </div>

@@ -191,10 +191,10 @@ class Image extends Model
      * Returns an array of image style names
      * @return array
      */
-    public function getImageStyleNames()
+    public function getStyleNames()
     {
         $names = array();
-        foreach ($this->getImageStyleList() as $imagestyle_id => $imagestyle) {
+        foreach ($this->getStyleList() as $imagestyle_id => $imagestyle) {
             $names[$imagestyle_id] = $imagestyle['name'];
         }
 
@@ -205,10 +205,10 @@ class Image extends Model
      * Returns an array of image styles
      * @return array
      */
-    public function getImageStyleList()
+    public function getStyleList()
     {
         $saved_imagestyles = $this->config->get('imagestyles', array());
-        $default_imagestyles = $this->defaultImageStyle();
+        $default_imagestyles = $this->defaultStyles();
 
         $imagestyles = Tool::merge($default_imagestyles, $saved_imagestyles);
 
@@ -227,9 +227,9 @@ class Image extends Model
      * @param integer $imagestyle_id
      * @return array
      */
-    public function getImageStyleActions($imagestyle_id)
+    public function getStyleActions($imagestyle_id)
     {
-        $styles = $this->getImageStyleList();
+        $styles = $this->getStyleList();
 
         if (empty($styles[$imagestyle_id]['actions'])) {
             return array();
@@ -247,9 +247,9 @@ class Image extends Model
      * @param  integer $imagestyle_id
      * @return array
      */
-    public function getImageStyle($imagestyle_id)
+    public function getStyle($imagestyle_id)
     {
-        $imagestyles = $this->getImageStyleList();
+        $imagestyles = $this->getStyleList();
         return isset($imagestyles[$imagestyle_id]) ? $imagestyles[$imagestyle_id] : array();
     }
 
@@ -258,17 +258,19 @@ class Image extends Model
      * @param array $data
      * @return integer
      */
-    public function addImageStyle(array $data)
+    public function addStyle(array $data)
     {
         $this->hook->fire('add.imagestyle.before', $data);
 
-        $imagestyles = $this->getImageStyleList();
+        $imagestyles = $this->getStyleList();
         $imagestyle_id = $imagestyles ? (int) max(array_keys($imagestyles)) : 0;
         $imagestyle_id++;
 
         $imagestyles[$imagestyle_id] = $data;
+
         $this->config->set('imagestyles', $imagestyles);
         $this->hook->fire('add.imagestyle.after', $data, $imagestyle_id);
+
         return $imagestyle_id;
     }
 
@@ -278,11 +280,11 @@ class Image extends Model
      * @param array $data
      * @return boolean
      */
-    public function updateImageStyle($imagestyle_id, array $data)
+    public function updateStyle($imagestyle_id, array $data)
     {
         $this->hook->fire('update.imagestyle.before', $imagestyle_id, $data);
 
-        $imagestyles = $this->getImageStyleList();
+        $imagestyles = $this->getStyleList();
 
         if (empty($imagestyles[$imagestyle_id])) {
             return false;
@@ -299,11 +301,11 @@ class Image extends Model
      * @param integer $imagestyle_id
      * @return boolean
      */
-    public function deleteImageStyle($imagestyle_id)
+    public function deleteStyle($imagestyle_id)
     {
         $this->hook->fire('delete.imagestyle.before', $imagestyle_id);
 
-        $imagestyles = $this->getImageStyleList();
+        $imagestyles = $this->getStyleList();
 
         if (empty($imagestyles[$imagestyle_id])) {
             return false;
@@ -366,6 +368,7 @@ class Image extends Model
         $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $image);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
         $path = "files/image/cache/$imagestyle_id/$image";
+
         return $this->url->get($path, $options, $absolute);
     }
 
@@ -391,7 +394,8 @@ class Image extends Model
         $this->imagestyle->setFile($file);
 
         foreach ($actions as $action_id => $action) {
-            if (method_exists($this->imagestyle, $action_id) && $this->validateAction($action_id, $action)) {
+            $is_valid = $this->validateAction($file, $action_id, $action);
+            if (method_exists($this->imagestyle, $action_id) && $is_valid) {
                 call_user_func_array(array($this->imagestyle, $action_id), (array) $action['value']);
             }
         }
@@ -399,19 +403,21 @@ class Image extends Model
 
     /**
      * Returns true if the action is valid
+     * @param string $file
      * @param integer $action_id
      * @param array $action
      * @return boolean
      */
-    protected function validateAction($action_id, array &$action)
+    protected function validateAction($file, $action_id, array &$action)
     {
         if ($action_id == 'overlay') {
+
             $action['value'][0] = GC_FILE_DIR . '/' . $action['value'][0];
             $overlay_pathinfo = pathinfo($action['value'][0]);
             $fileinfo = pathinfo($file);
 
             if ($overlay_pathinfo['extension'] != $fileinfo['extension']) {
-                $action['value'][0] = GC_FILE_DIR . '/' . $overlay_pathinfo['filename'] . '.' . $fileinfo['extension'];
+                $action['value'][0] = GC_FILE_DIR . "/{$overlay_pathinfo['filename']}.{$fileinfo['extension']}";
             }
 
             if (!file_exists($action['value'][0])) {
@@ -433,7 +439,7 @@ class Image extends Model
      * Returns default image styles
      * @return array
      */
-    protected function defaultImageStyle()
+    protected function defaultStyles()
     {
         $styles = array();
 

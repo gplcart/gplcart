@@ -326,28 +326,28 @@ class Route
         $routes['admin/tool/import'] = array(
             'access' => 'import',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Import', 'operations')
+                'controller' => array('core\\controllers\\admin\\Import', 'listImport')
             )
         );
 
         $routes['admin/tool/import/(\w+)'] = array(
             'access' => 'import',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Import', 'import')
+                'controller' => array('core\\controllers\\admin\\Import', 'editImport')
             )
         );
 
         $routes['admin/tool/export'] = array(
             'access' => 'export',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Export', 'operations')
+                'controller' => array('core\\controllers\\admin\\Export', 'listExport')
             )
         );
 
         $routes['admin/tool/export/(\w+)'] = array(
             'access' => 'export',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Export', 'export')
+                'controller' => array('core\\controllers\\admin\\Export', 'editExport')
             )
         );
 
@@ -445,7 +445,7 @@ class Route
         $routes['admin/content/file'] = array(
             'access' => 'file',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\File', 'files')
+                'controller' => array('core\\controllers\\admin\\File', 'listFile')
             )
         );
 
@@ -536,35 +536,35 @@ class Route
         $routes['admin/content/field'] = array(
             'access' => 'field',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Field', 'fields')
+                'controller' => array('core\\controllers\\admin\\Field', 'listField')
             )
         );
 
         $routes['admin/content/field/value/(\d+)'] = array(
             'access' => 'field_value',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\FieldValue', 'values')
+                'controller' => array('core\\controllers\\admin\\FieldValue', 'listFieldValue')
             )
         );
 
         $routes['admin/content/field/value/(\d+)/(\w+)'] = array(
             'access' => 'field_value',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\FieldValue', 'edit')
+                'controller' => array('core\\controllers\\admin\\FieldValue', 'editFieldValue')
             )
         );
 
         $routes['admin/content/field/edit/(\d+)'] = array(
             'access' => 'field_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Field', 'edit')
+                'controller' => array('core\\controllers\\admin\\Field', 'editField')
             )
         );
 
         $routes['admin/content/field/add'] = array(
             'access' => 'field_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Field', 'edit')
+                'controller' => array('core\\controllers\\admin\\Field', 'editField')
             )
         );
 
@@ -627,7 +627,7 @@ class Route
         $routes['admin/settings/imagestyle'] = array(
             'access' => 'image_style',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Image', 'styles')
+                'controller' => array('core\\controllers\\admin\\ImageStyle', 'listImageStyle')
             )
         );
 
@@ -641,14 +641,14 @@ class Route
         $routes['admin/settings/imagestyle/edit/(\d+)'] = array(
             'access' => 'image_style_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Image', 'edit')
+                'controller' => array('core\\controllers\\admin\\ImageStyle', 'editImageStyle')
             )
         );
 
         $routes['admin/settings/imagestyle/add'] = array(
             'access' => 'image_style_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Image', 'edit')
+                'controller' => array('core\\controllers\\admin\\ImageStyle', 'editImageStyle')
             )
         );
 
@@ -780,13 +780,13 @@ class Route
 
         $routes['admin/help'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Help', 'help')
+                'controller' => array('core\\controllers\\admin\\Help', 'listHelp')
             )
         );
 
         $routes['admin/help/([a-z0-9_-]+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Help', 'help')
+                'controller' => array('core\\controllers\\admin\\Help', 'pageHelp')
             )
         );
 

@@ -221,7 +221,6 @@ class ProductClass extends Controller
 
     /**
      * Applies an action to the selected product classes
-     * @return boolean
      */
     protected function action()
     {
@@ -242,16 +241,16 @@ class ProductClass extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num product classes', array('%num' => $updated)), 'success');
-            return true;
+            $text = $this->text('Updated %num product classes', array(
+                '%num' => $updated));
+            $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num product classes', array('%num' => $deleted)), 'success');
-            return true;
+            $text = $this->text('Deleted %num product classes', array(
+                '%num' => $deleted));
+            $this->setMessage($text, 'success', true);
         }
-
-        return false;
     }
 
     /**

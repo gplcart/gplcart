@@ -319,6 +319,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\User', 'emailExists')
             ),
         );
+        
+        $handlers['imagestyle_actions'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\ImageStyle', 'actions')
+            ),
+        );
 
         $this->hook->fire('validator.handlers', $handlers);
 

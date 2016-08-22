@@ -94,7 +94,7 @@ class Image extends Controller
             $this->response->error404(false);
         }
 
-        $actions = $this->image->getImageStyleActions($imagestyle_id, true);
+        $actions = $this->image->getStyleActions($imagestyle_id, true);
 
         if (empty($actions)) {
             $this->response->error404(false);

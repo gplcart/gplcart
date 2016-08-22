@@ -198,12 +198,12 @@ class Page extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Pages have been updated'), 'success');
+            $this->setMessage($this->text('Pages have been updated'), 'success', true);
             return true;
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Pages have been deleted'), 'success');
+            $this->setMessage($this->text('Pages have been deleted'), 'success', true);
             return true;
         }
 

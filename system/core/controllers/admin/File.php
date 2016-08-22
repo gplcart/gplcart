@@ -38,41 +38,45 @@ class File extends Controller
     /**
      * Displays the file admin overview page
      */
-    public function files()
+    public function listFile()
     {
-        $this->setDownload();
+        if ($this->isQuery('download')) {
+            $this->downloadFile();
+        }
+
+        if ($this->isPosted('action')) {
+            $this->actionFile();
+        }
 
         $query = $this->getFilterQuery();
-        $limit = $this->setPager($this->getTotalFiles($query), $query);
-        $files = $this->getFiles($limit, $query);
+        $total = $this->getTotalFile($query);
+        $limit = $this->setPager($total, $query);
+        $files = $this->getListFile($limit, $query);
 
         $this->setData('files', $files);
 
         $allowed = array('title', 'mime_type', 'created', 'path');
         $this->setFilter($allowed, $query);
 
-        if ($this->isPosted('action')) {
-            $this->action();
-        }
-
-        $this->setTitleFiles();
-        $this->setBreadcrumbFiles();
-        $this->outputFiles();
+        $this->setTitleListFile();
+        $this->setBreadcrumbListFile();
+        $this->outputListFile();
     }
 
     /**
-     * Returns total number of files for pager
+     * Returns total number of files depending on the current conditions
      * @param array $query
      */
-    protected function getTotalFiles(array $query)
+    protected function getTotalFile(array $query)
     {
-        return $this->file->getList(array('count' => true) + $query);
+        $query['count'] = true;
+        return $this->file->getList($query);
     }
 
     /**
      * Renders the files overview page
      */
-    protected function outputFiles()
+    protected function outputListFile()
     {
         $this->output('content/file/list');
     }
@@ -80,7 +84,7 @@ class File extends Controller
     /**
      * Sets titles on the files overview page
      */
-    protected function setTitleFiles()
+    protected function setTitleListFile()
     {
         $this->setTitle($this->text('Files'));
     }
@@ -88,7 +92,7 @@ class File extends Controller
     /**
      * Sets breadcrumbs on the files overview page
      */
-    protected function setBreadcrumbFiles()
+    protected function setBreadcrumbListFile()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -101,13 +105,19 @@ class File extends Controller
      * @param array $query
      * @return array
      */
-    protected function getFiles(array $limit, array $query)
+    protected function getListFile(array $limit, array $query)
     {
-        $files = $this->file->getList(array('limit' => $limit) + $query);
+        $query['limit'] = $limit;
+        $files = $this->file->getList($query);
 
         foreach ($files as &$file) {
-            $path = strval(str_replace("\0", "", $file['path'])); // Prevent php errors for invalid/empty paths
-            $file['url'] = ($path && file_exists(GC_FILE_DIR . '/' . $path)) ? $this->file->url($file['path']) : '';
+            $file['url'] = '';
+            // Prevent php errors for invalid/empty paths
+            $path = strval(str_replace("\0", "", $file['path']));
+
+            if ($path && file_exists(GC_FILE_DIR . '/' . $path)) {
+                $file['url'] = $this->file->url($file['path']);
+            }
         }
 
         return $files;
@@ -116,7 +126,7 @@ class File extends Controller
     /**
      * Applies an action to the selected files
      */
-    protected function action()
+    protected function actionFile()
     {
         $action = (string) $this->request->post('action');
         $selected = (array) $this->request->post('selected', array());
@@ -124,49 +134,29 @@ class File extends Controller
         $deleted_disk = $deleted_database = 0;
 
         foreach ($selected as $file_id) {
-
-            if ($action !== 'delete') {
-                continue;
+            if ($action === 'delete' && $this->access('file_delete')) {
+                $file = $this->file->get($file_id);
+                $deleted_database += (int) $this->file->delete($file_id);
+                $deleted_disk += (int) $this->file->deleteFromDisk($file);
             }
-
-            if (!$this->access('file_delete')) {
-                continue;
-            }
-
-            $file = $this->file->get($file_id);
-
-            if (empty($file)) {
-                continue;
-            }
-
-            $deleted_database += (int) $this->file->delete($file_id);
-            $deleted_disk += (int) $this->file->deleteFromDisk($file);
         }
 
         $message = $this->text('Deleted from database: %db, disk: %disk', array(
             '%db' => $deleted_database, '%disk' => $deleted_disk));
 
-        $this->session->setMessage($message, 'success');
+        $this->setMessage($message, 'success', true);
     }
 
     /**
      * Downloads a file using a file id from the URL
      */
-    protected function setDownload()
+    protected function downloadFile()
     {
         $file_id = (int) $this->request->get('download');
-
-        if (empty($file_id)) {
-            return;
-        }
-
         $file = $this->file->get($file_id);
 
-        if (empty($file['path'])) {
-            return;
-        }
-
-        $this->response->download(GC_FILE_DIR . '/' . $file['path']);
+        $filepath = GC_FILE_DIR . '/' . $file['path'];
+        $this->response->download($filepath);
     }
 
 }

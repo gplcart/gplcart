@@ -535,7 +535,7 @@ class Product extends Controller
         foreach ($add_result as &$error) {
             $error = $this->text($error);
             if (!$is_ajax) {
-                $this->session->setMessage($error, 'danger');
+                $this->setMessage($error, 'danger', true);
             }
         }
 

@@ -56,7 +56,7 @@ class Frontend extends Controller
      */
     public function settings()
     {
-        $this->data['imagestyles'] = $this->image->getImageStyleNames();
+        $this->data['imagestyles'] = $this->image->getStyleNames();
         $this->data['settings'] = $this->config->module('frontend');
 
         if ($this->request->post('save')) {

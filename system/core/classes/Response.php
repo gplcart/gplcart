@@ -163,7 +163,7 @@ class Response
 
     /**
      * Downloads a file
-     * @param string $file Absolute path to file
+     * @param string $file Absolute path to the file
      * @param string $filename An alternative filename
      * @param array $options
      */

@@ -140,7 +140,7 @@ class Alias extends Controller
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num aliases', array('%num' => $deleted)), 'success');
+            $this->setMessage($this->text('Deleted %num aliases', array('%num' => $deleted)), 'success', true);
             return true;
         }
 

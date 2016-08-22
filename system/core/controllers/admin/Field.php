@@ -38,16 +38,16 @@ class Field extends Controller
     /**
      * Displays the field overview page
      */
-    public function fields()
+    public function listField()
     {
         if ($this->isPosted('action')) {
-            $this->action();
+            $this->actionField();
         }
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalFields($query);
+        $total = $this->getTotalField($query);
         $limit = $this->setPager($total, $query);
-        $fields = $this->getFields($limit, $query);
+        $fields = $this->getListField($limit, $query);
         $widget_types = $this->field->widgetTypes();
 
         $this->setData('fields', $fields);
@@ -56,34 +56,34 @@ class Field extends Controller
         $allowed = array('title', 'type', 'widget');
         $this->setFilter($allowed, $query);
 
-        $this->setTitleFields();
-        $this->setBreadcrumbFields();
-        $this->outputFields();
+        $this->setTitleListField();
+        $this->setBreadcrumbListField();
+        $this->outputListField();
     }
 
     /**
      * Displays the field edit form
      * @param integer|null $field_id
      */
-    public function edit($field_id = null)
+    public function editField($field_id = null)
     {
-        $field = $this->get($field_id);
+        $field = $this->getField($field_id);
         $widget_types = $this->field->widgetTypes();
 
         $this->setData('field', $field);
         $this->setData('widget_types', $widget_types);
 
         if ($this->isPosted('delete')) {
-            $this->delete($field);
+            $this->deleteField($field);
         }
 
         if ($this->isPosted('save')) {
-            $this->submit($field);
+            $this->submitField($field);
         }
 
-        $this->setTitleEdit($field);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
+        $this->setTitleEditField($field);
+        $this->setBreadcrumbEditField();
+        $this->outputEditField();
     }
 
     /**
@@ -92,9 +92,10 @@ class Field extends Controller
      * @param array $query
      * @return array
      */
-    protected function getFields(array $limit, array $query)
+    protected function getListField(array $limit, array $query)
     {
-        return $this->field->getList(array('limit' => $limit) + $query);
+        $query['limit'] = $limit;
+        return $this->field->getList($query);
     }
 
     /**
@@ -102,15 +103,16 @@ class Field extends Controller
      * @param array $query
      * @return array
      */
-    protected function getTotalFields(array $query)
+    protected function getTotalField(array $query)
     {
-        return $this->field->getList(array('count' => true) + $query);
+        $query['count'] = true;
+        return $this->field->getList($query);
     }
 
     /**
      * Renders the field overview page
      */
-    protected function outputFields()
+    protected function outputListField()
     {
         $this->output('content/field/list');
     }
@@ -118,7 +120,7 @@ class Field extends Controller
     /**
      * Sets titles on the field overview page
      */
-    protected function setTitleFields()
+    protected function setTitleListField()
     {
         $this->setTitle($this->text('Fields'));
     }
@@ -126,7 +128,7 @@ class Field extends Controller
     /**
      * Sets breadcrumbs on the field overview page
      */
-    protected function setBreadcrumbFields()
+    protected function setBreadcrumbListField()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -136,7 +138,7 @@ class Field extends Controller
     /**
      * Renders the field edit page
      */
-    protected function outputEdit()
+    protected function outputEditField()
     {
         $this->output('content/field/edit');
     }
@@ -145,7 +147,7 @@ class Field extends Controller
      * Sets titles on the field edit form
      * @param array $field
      */
-    protected function setTitleEdit(array $field)
+    protected function setTitleEditField(array $field)
     {
         if (isset($field['field_id'])) {
             $title = $this->text('Edit field %name', array('%name' => $field['title']));
@@ -159,7 +161,7 @@ class Field extends Controller
     /**
      * Sets breadcrumbs on the field edit form
      */
-    protected function setBreadcrumbEdit()
+    protected function setBreadcrumbEditField()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -175,7 +177,7 @@ class Field extends Controller
      * @param integer $field_id
      * @return array
      */
-    protected function get($field_id)
+    protected function getField($field_id)
     {
         if (!is_numeric($field_id)) {
             return array();
@@ -194,22 +196,26 @@ class Field extends Controller
      * Deletes a field
      * @param array $field
      */
-    protected function delete(array $field)
+    protected function deleteField(array $field)
     {
         $this->controlAccess('field_delete');
 
-        if ($this->field->delete($field['field_id'])) {
+        $deleted = $this->field->delete($field['field_id']);
+
+        if ($deleted) {
             $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete this field. The most probable reason - it is used by one or more products'), 'danger');
+        $text = $this->text('Unable to delete this field.'
+                . ' The most probable reason - it is used by one or more products');
+
+        $this->redirect('', $text, 'danger');
     }
 
     /**
      * Applies an action to the selected fields
-     * @return boolean
      */
-    protected function action()
+    protected function actionField()
     {
         $action = (string) $this->request->post('action');
         $selected = (array) $this->request->post('selected', array());
@@ -222,11 +228,8 @@ class Field extends Controller
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Fields have been deleted'), 'success');
-            return true;
+            $this->setMessage($this->text('Fields have been deleted'), 'success', true);
         }
-
-        return false;
     }
 
     /**
@@ -234,24 +237,42 @@ class Field extends Controller
      * @param array $field
      * @return null
      */
-    protected function submit(array $field)
+    protected function submitField(array $field)
     {
-
         $this->setSubmitted('field');
-        $this->validate($field);
+        $this->validateField($field);
 
         if ($this->hasErrors('field')) {
             return;
         }
 
         if (isset($field['field_id'])) {
-            $this->controlAccess('field_edit');
-            $this->field->update($field['field_id'], $this->getSubmitted());
-            $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
+            $this->updateField($field);
         }
 
+        $this->addField();
+    }
+
+    /**
+     * Updates a field
+     * @param array $field
+     */
+    protected function updateField(array $field)
+    {
+        $this->controlAccess('field_edit');
+        $values = $this->getSubmitted();
+        $this->field->update($field['field_id'], $values);
+        $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
+    }
+
+    /**
+     * Adds a new field
+     */
+    protected function addField()
+    {
         $this->controlAccess('field_add');
-        $this->field->add($this->getSubmitted());
+        $values = $this->getSubmitted();
+        $this->field->add($values);
         $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
     }
 
@@ -259,10 +280,32 @@ class Field extends Controller
      * Performs validation checks on the given field
      * @param array $field
      */
-    protected function validate(array $field)
+    protected function validateField(array $field)
     {
-        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
-        $this->addValidator('translation', array());
+        $this->addValidator('title', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('weight', array(
+            'numeric' => array(),
+            'length' => array('max' => 2)
+        ));
+
+        if (empty($field['field_id'])) {
+
+            $this->addValidator('type', array(
+                'required' => array()
+            ));
+        }
+
+        $this->addValidator('widget', array(
+            'required' => array()
+        ));
+
+        $this->addValidator('translation', array(
+            'translation' => array()
+        ));
+
         $this->setValidators($field);
     }
 

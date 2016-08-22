@@ -260,12 +260,12 @@ class Country extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Countries have been updated'), 'success');
+            $this->setMessage($this->text('Countries have been updated'), 'success', true);
             return true;
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Countries have been deleted'), 'success');
+            $this->setMessage($this->text('Countries have been deleted'), 'success', true);
             return true;
         }
 
@@ -335,14 +335,17 @@ class Country extends Controller
         ));
 
         $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
         $this->addValidator('native_name', array(
-            'length' => array('min' => 1, 'max' => 255)));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
         $this->addValidator('weight', array(
             'numeric' => array(),
-            'length' => array('max' => 2)));
+            'length' => array('max' => 2)
+        ));
 
         $this->setValidators($country);
     }

@@ -265,7 +265,10 @@ class Job extends Model
     {
         $error = error_get_last();
         if (isset($error['type']) && $error['type'] === E_ERROR) {
-            $this->session->setMessage($this->language->text('An unexpected error has occurred. The job has not been properly completed'), 'danger');
+            $text = $this->language->text('An unexpected error has occurred.'
+                    . ' The job has not been properly completed');
+            
+            $this->session->setMessage($text, 'danger');
         }
     }
 

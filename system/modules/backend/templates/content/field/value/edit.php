@@ -36,7 +36,7 @@
         </label>
         <div class="col-md-3">
           <div class="input-group color">
-            <input class="form-control" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '' : $this->escape($field_value['color']); ?>">
+            <input class="form-control" maxlength="7" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '' : $this->escape($field_value['color']); ?>">
             <span class="input-group-addon"><span class="btn btn-default swatch"></span></span>
           </div>
           <?php if (isset($this->errors['color'])) { ?>

@@ -27,34 +27,22 @@ class Help extends Controller
     }
 
     /**
-     * Displays help page(s)
-     * @param null|string $filename
-     */
-    public function help($filename = null)
-    {
-        if (empty($filename)) {
-            $this->index();
-        }
-
-        $this->page($filename);
-    }
-
-    /**
      * Displays the help sections overview page
      */
-    protected function index()
+    public function listHelp()
     {
-        $this->setData('help_list', $this->getList());
+        $items = $this->getListHelp();
+        $this->setData('help_list', $items);
 
-        $this->setTitleIndex();
-        $this->setBreadcrumbIndex();
-        $this->outputIndex();
+        $this->setTitleListHelp();
+        $this->setBreadcrumbListHelp();
+        $this->outputListHelp();
     }
 
     /**
      * Renders the help sections overview page
      */
-    protected function outputIndex()
+    protected function outputListHelp()
     {
         $this->output('help/list');
     }
@@ -62,7 +50,7 @@ class Help extends Controller
     /**
      * Sets breadcrumbs on the help sections overview page
      */
-    protected function setBreadcrumbIndex()
+    protected function setBreadcrumbListHelp()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -72,7 +60,7 @@ class Help extends Controller
     /**
      * Sets titles on the help sections overview page
      */
-    protected function setTitleIndex()
+    protected function setTitleListHelp()
     {
         $this->setTitle('Help');
     }
@@ -81,23 +69,24 @@ class Help extends Controller
      * Displays the help page
      * @param string $filename
      */
-    protected function page($filename)
+    public function pageHelp($filename)
     {
-        $contents = $this->getPageContents($filename);
+        $contents = $this->getPageContentsHelp($filename);
         $text = end($contents);
+        $body = $this->getBodyHelp($text);
 
-        $this->setData('text', $this->removeHeader($text));
+        $this->setData('text', $body);
 
-        $this->setTitlePage($text);
-        $this->setBreadcrumbPage();
-        $this->outputPage($text);
+        $this->setTitlePageHelp($text);
+        $this->setBreadcrumbPageHelp();
+        $this->outputPageHelp($text);
     }
 
     /**
      * Renders a help page
      * @param string $text
      */
-    protected function outputPage($text)
+    protected function outputPageHelp($text)
     {
         $this->output('help/page');
     }
@@ -105,9 +94,9 @@ class Help extends Controller
     /**
      * Sets titles on the help page
      */
-    protected function setTitlePage($text)
+    protected function setTitlePageHelp($text)
     {
-        $header = $this->getHeader($text);
+        $header = $this->getHeaderHelp($text);
 
         if (empty($header)) {
             return $this->setTitle('Help');
@@ -119,7 +108,7 @@ class Help extends Controller
     /**
      * Sets breadcrumbs on the help page
      */
-    protected function setBreadcrumbPage()
+    protected function setBreadcrumbPageHelp()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -135,7 +124,7 @@ class Help extends Controller
      * @param string $filename
      * @return array
      */
-    protected function getPageContents($filename)
+    protected function getPageContentsHelp($filename)
     {
         $folder = $this->langcode ? $this->langcode : 'en';
         $file = GC_HELP_DIR . "/$folder/$filename.php";
@@ -144,7 +133,7 @@ class Help extends Controller
             $this->outputError(404);
         }
 
-        $contents = $this->getContents($file);
+        $contents = $this->getContentsHelp($file);
 
         if (empty($contents)) {
             $this->outputError(404);
@@ -158,7 +147,7 @@ class Help extends Controller
      * @param string $text
      * @return string
      */
-    protected function getHeader($text)
+    protected function getHeaderHelp($text)
     {
         preg_match('#<h1[^>]*>(.*?)</h1>#i', $text, $match);
         return isset($match[1]) ? trim($match[1]) : '';
@@ -169,7 +158,7 @@ class Help extends Controller
      * @param string $text
      * @return string
      */
-    protected function removeHeader($text)
+    protected function getBodyHelp($text)
     {
         return preg_replace('~<h1>.*?</h1>~is', '', $text, 1);
     }
@@ -179,16 +168,17 @@ class Help extends Controller
      * @param string $file
      * @return array
      */
-    protected function getContents($file)
+    protected function getContentsHelp($file)
     {
-        return array_filter(array_map('trim', explode('<!--summary-->', $this->render($file, array(), true), 2)));
+        $text = $this->render($file, array(), true);
+        return $this->explodeText($text);
     }
 
     /**
      * Scans files in the current help directory and returns an array of headers
      * @return array
      */
-    protected function getList()
+    protected function getListHelp()
     {
         $folder = $this->langcode ? $this->langcode : 'en';
         $directory = GC_HELP_DIR . "/$folder";
@@ -197,21 +187,27 @@ class Help extends Controller
             return array();
         }
 
+        $files = Tool::scanFiles($directory, array('php'));
+
+        if (empty($files)) {
+            return array();
+        }
+
         $list = array();
 
         $i = 1;
-        foreach (Tool::scanFiles($directory, array('php')) as $file) {
-            $contents = $this->getContents($file);
+        foreach ($files as $file) {
+            $contents = $this->getContentsHelp($file);
 
             if (empty($contents)) {
                 continue;
             }
 
             $text = end($contents);
-            $header = $this->getHeader($text);
+            $header = $this->getHeaderHelp($text);
 
             if (empty($header)) {
-                $header = $this->text('Section @num', array('@num' => $i));
+                $header = $this->text('Page @num', array('@num' => $i));
             }
 
             $filename = pathinfo($file, PATHINFO_FILENAME);

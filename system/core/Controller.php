@@ -475,6 +475,7 @@ class Controller
 
     /**
      * Whether a key is presented in the POST query
+     * If no key is set it returns TRUE if the request is POST type
      * @param string|null $key
      * @return boolean
      */
@@ -486,6 +487,17 @@ class Controller
         }
 
         return ($this->request->method() === 'POST');
+    }
+
+    /**
+     * Whether a key is presented in the GET query
+     * @param string|null $key
+     * @return boolean
+     */
+    public function isQuery($key = null)
+    {
+        $value = $this->request->get($key);
+        return !empty($value);
     }
 
     /**
@@ -716,7 +728,7 @@ class Controller
         $original = $this->getSubmitted($key);
         $this->setSubmitted($key, (bool) $original);
     }
-    
+
     /**
      * Converts a submitted value to array using multiline delimiter
      * @param string|array $key
@@ -724,8 +736,8 @@ class Controller
     public function setSubmittedArray($key)
     {
         $value = $this->getSubmitted($key);
-        
-        if(isset($value) && is_string($value)){
+
+        if (isset($value) && is_string($value)) {
             $this->setSubmitted($key, Tool::stringToArray($value));
         }
     }
@@ -989,7 +1001,7 @@ class Controller
     public function redirect($url = '', $message = '', $severity = 'info')
     {
         if ($message !== '') {
-            $this->session->setMessage($message, $severity);
+            $this->setMessage($message, $severity, true);
         }
 
         $this->url->redirect($url);
@@ -1522,14 +1534,19 @@ class Controller
     }
 
     /**
-     * Sets an array of messages
-     * @param array|string $messages
+     * Sets a message or an array of messages
+     * @param string|array $messages
      * @param string $severity
+     * @param bool $once
      */
-    public function setMessage($messages, $severity = 'info')
+    public function setMessage($messages, $severity = 'info', $once = false)
     {
         foreach ((array) $messages as $message) {
-            $this->data['messages'][$severity][] = $message;
+            if ($once) {
+                $this->session->setMessage($message, $severity);
+            } else {
+                $this->data['messages'][$severity][] = $message;
+            }
         }
     }
 
@@ -1565,8 +1582,6 @@ class Controller
             return '';
         }
 
-        //ddd($file['path']);
-
         $content = $this->render($file['path'], array(), true);
         $parts = $this->explodeText($content);
 
@@ -1587,8 +1602,7 @@ class Controller
     protected function explodeText($text)
     {
         $delimiter = $this->config('summary_delimiter', '<!--summary-->');
-
-        return array_filter(explode($delimiter, $text, 2));
+        return array_filter(array_map('trim', explode($delimiter, $text, 2)));
     }
 
     /**

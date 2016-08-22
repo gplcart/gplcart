@@ -13,7 +13,7 @@ use core\models\Alias as ModelsAlias;
 use core\models\Language as ModelsLanguage;
 
 /**
- * Provides methods to validate various database related data
+ * Provides methods to validate url alias data
  */
 class Alias
 {

@@ -149,6 +149,7 @@ class Currency extends Controller
 
     /**
      * Returns a currency
+     * or displays a 404 error on invalid code
      * @param string $code
      * @return array
      */
@@ -178,12 +179,13 @@ class Currency extends Controller
 
         $deleted = $this->currency->delete($currency['code']);
 
-        if ($deleted) {
-            $this->redirect('admin/settings/currency', $this->text('Currency %code has been deleted', array(
-                        '%code' => $currency['code'])), 'success');
+        if (!$deleted) {
+            $this->redirect('', $this->text('Cannot delete this currency'), 'danger');
         }
-
-        $this->redirect('', $this->text('Cannot delete this currency'), 'danger');
+        
+        $message = $this->text('Currency %code has been deleted', array(
+            '%code' => $currency['code']));
+        $this->redirect('admin/settings/currency', $message, 'success');
     }
 
     /**
@@ -215,8 +217,11 @@ class Currency extends Controller
     {
         $this->controlAccess('currency_edit');
         $this->currency->update($currency['code'], $this->getSubmitted());
-        $this->redirect('admin/settings/currency', $this->text('Currency %code has been updated', array(
-                    '%code' => $currency['code'])), 'success');
+        
+        $message = $this->text('Currency %code has been updated', array(
+                    '%code' => $currency['code']));
+        
+        $this->redirect('admin/settings/currency', $message, 'success');
     }
 
     /**
@@ -226,7 +231,9 @@ class Currency extends Controller
     {
         $this->controlAccess('currency_add');
         $this->currency->add($this->getSubmitted());
-        $this->redirect('admin/settings/currency', $this->text('Currency has been added'), 'success');
+        
+        $message = $this->text('Currency has been added');
+        $this->redirect('admin/settings/currency', $message, 'success');
     }
 
     /**
@@ -246,7 +253,7 @@ class Currency extends Controller
         // Validate fields
         $this->addValidator('code', array(
             'regexp' => array(
-                'pattern' => '/^[A-Z]{3}$/',
+                'pattern' => '/^[A-Z]{3}$/', // latin upper-case, 3 chars
                 'required' => true
             ),
             'currency_code_unique' => array()
@@ -257,7 +264,7 @@ class Currency extends Controller
 
         $this->addValidator('numeric_code', array(
             'regexp' => array(
-                'pattern' => '/^[0-9]{3}$/',
+                'pattern' => '/^[0-9]{3}$/', // numeric, 3 chars
                 'required' => true
         )));
 
@@ -274,19 +281,19 @@ class Currency extends Controller
             'length' => array('min' => 1, 'max' => 10),
             'regexp' => array(
                 'required' => true,
-                'pattern' => '/^[0-9]\d*(\.\d+)?$/' // decimal or integer positive values
+                'pattern' => '/^[0-9]\d*(\.\d+)?$/' // decimal or integer positive
         )));
 
         $this->addValidator('decimals', array(
             'regexp' => array(
-                'pattern' => '/^[0-2]+$/', // 0, 1, 2
+                'pattern' => '/^[0-2]+$/', // numeric positive, 0-2
                 'required' => true)));
 
         $this->addValidator('rounding_step', array(
             'length' => array('min' => 1, 'max' => 10),
             'regexp' => array(
                 'required' => true,
-                'pattern' => '/^[0-9]\d*(\.\d+)?$/' // decimal or integer positive values
+                'pattern' => '/^[0-9]\d*(\.\d+)?$/' // decimal or integer positive
         )));
 
         $this->setValidators($currency);

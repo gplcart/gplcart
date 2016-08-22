@@ -219,7 +219,7 @@ class Review extends Controller
         $this->submitted['text'] = $this->truncate($this->submitted['text'], $length);
 
         if (empty($this->submitted['status'])) {
-            $this->session->setMessage($this->text('Your review will be visible after approval'));
+            $this->setMessage($this->text('Your review will be visible after approval'), 'info', true);
         }
     }
     

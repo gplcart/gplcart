@@ -238,12 +238,15 @@ class State extends Controller
     {
         $this->controlAccess('state_delete');
         $this->state->delete($state['state_id']);
-        $this->redirect("admin/settings/states/{$country['code']}", $this->text('Country state has been deleted'), 'success');
+        
+        $url = "admin/settings/states/{$country['code']}";
+        $message = $this->text('Country state has been deleted');
+        
+        $this->redirect($url, $message, 'success');
     }
 
     /**
      * Applies an action to the selected country states
-     * @return boolean
      */
     protected function action()
     {
@@ -264,16 +267,16 @@ class State extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num country states', array('%num' => $updated)), 'success');
-            return true;
+            $text = $this->text('Updated %num country states', array(
+                '%num' => $updated));
+            $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num country states', array('%num' => $deleted)), 'success');
-            return true;
+            $text = $this->text('Deleted %num country states', array(
+                '%num' => $deleted));
+            $this->setMessage($text, 'success', true);
         }
-
-        return false;
     }
 
     /**

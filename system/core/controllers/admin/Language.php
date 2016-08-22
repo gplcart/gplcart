@@ -240,7 +240,8 @@ class Language extends Controller
             'length' => array('min' => 1, 'max' => 255)));
 
         $this->addValidator('weight', array(
-            'regexp' => array('pattern' => '/^\d{1,2}$/', 'required' => true)));
+            'numeric' => array(),
+            'length' => array('max' => 2, 'required' => true)));
 
         $this->setValidators($language);
     }

@@ -306,12 +306,12 @@ class Product extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num products', array('%num' => $updated)), 'success');
+            $this->setMessage($this->text('Updated %num products', array('%num' => $updated)), 'success', true);
             $this->response->json(array('success' => 1));
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num products', array('%num' => $deleted)), 'success');
+            $this->setMessage($this->text('Deleted %num products', array('%num' => $deleted)), 'success', true);
             $this->response->json(array('success' => 1));
         }
 
@@ -680,7 +680,8 @@ class Product extends Controller
 
         $this->addValidator('weight', array(
             'numeric' => array(),
-            'length' => array('max' => 10)));
+            'length' => array('max' => 10)
+        ));
 
         $this->addValidator('images', array(
             'images' => array()));

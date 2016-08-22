@@ -58,44 +58,47 @@ class Export extends Controller
     /**
      * Displays the export operations overview page
      */
-    public function operations()
+    public function listExport()
     {
-        $this->setData('operations', $this->export->getOperations());
+        $operations = $this->getOperationsExport();
+        $this->setData('operations', $operations);
 
-        $this->setTitleOperatios();
-        $this->setBreadcrumbOperatios();
-        $this->outputOperatios();
+        $this->setTitleListExport();
+        $this->setBreadcrumbListExport();
+        $this->outputListExport();
     }
 
     /**
      * Displays the csv export page
      * @param string $operation_id
      */
-    public function export($operation_id)
+    public function editExport($operation_id)
     {
-        $operation = $this->get($operation_id);
+        $operation = $this->getExport($operation_id);
 
-        if ($this->isPosted('download')) {
-            $this->download($operation);
+        if ($this->isQuery('download')) {
+            $this->downloadExport($operation);
         }
 
         if ($this->isPosted('export')) {
-            $this->submit($operation);
+            $this->submitExport($operation);
         }
-        
-        $this->setData('job', $this->getJob());
-        $this->setData('limit', $this->export->getLimit());
-        $this->setData('stores', $this->store->getNames());
 
-        $this->setTitleExport($operation);
-        $this->setBreadcrumbExport();
-        $this->outputExport();
+        $job = $this->getJob();
+        $stores = $this->store->getNames();
+
+        $this->setData('job', $job);
+        $this->setData('stores', $stores);
+
+        $this->setTitleEditExport($operation);
+        $this->setBreadcrumbEditExport();
+        $this->outputEditExport();
     }
 
     /**
      * Sets titles on the operations overview page
      */
-    protected function setTitleOperatios()
+    protected function setTitleListExport()
     {
         $this->setTitle($this->text('Export'));
     }
@@ -103,7 +106,7 @@ class Export extends Controller
     /**
      * Sets breadcrumbs on the operations overview page
      */
-    protected function setBreadcrumbOperatios()
+    protected function setBreadcrumbListExport()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -113,7 +116,7 @@ class Export extends Controller
     /**
      * Renders the operations overview page
      */
-    protected function outputOperatios()
+    protected function outputListExport()
     {
         $this->output('tool/export/list');
     }
@@ -121,7 +124,7 @@ class Export extends Controller
     /**
      * Renders the export page
      */
-    protected function outputExport()
+    protected function outputEditExport()
     {
         $this->output('tool/export/edit');
     }
@@ -130,21 +133,21 @@ class Export extends Controller
      * Sets titles on the export page
      * @param array $operation
      */
-    protected function setTitleExport(array $operation)
+    protected function setTitleEditExport(array $operation)
     {
         $this->setTitle($this->text('Export %operation', array(
-            '%operation' => $operation['name'])));
+                    '%operation' => $operation['name'])));
     }
 
     /**
      * Sets breadcrumbs on the export page
      */
-    protected function setBreadcrumbExport()
+    protected function setBreadcrumbEditExport()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')));
-        
+
         $this->setBreadcrumb(array(
             'text' => $this->text('Operations'),
             'url' => $this->url('admin/tool/export')));
@@ -155,7 +158,7 @@ class Export extends Controller
      * @param string $operation_id
      * @return array
      */
-    protected function get($operation_id)
+    protected function getExport($operation_id)
     {
         $operation = $this->export->getOperation($operation_id);
 
@@ -167,10 +170,19 @@ class Export extends Controller
     }
 
     /**
+     * Returns an array of export operations
+     * @return array
+     */
+    protected function getOperationsExport()
+    {
+        return $this->export->getOperations();
+    }
+
+    /**
      * Outputs export file to download
      * @param array $operation
      */
-    protected function download(array $operation)
+    protected function downloadExport(array $operation)
     {
         if (!empty($operation['file']) && file_exists($operation['file'])) {
             $this->response->download($operation['file']);
@@ -182,28 +194,40 @@ class Export extends Controller
      * @param array $operation
      * @return null
      */
-    protected function submit(array $operation)
+    protected function submitExport(array $operation)
     {
-        $this->setSubmitted();
-        $this->validate($operation);
-        
-        if($this->hasErrors()){
-            return;
+        $this->setSubmitted('export');
+        $this->validateExport($operation);
+
+        if (!$this->hasErrors('export')) {
+            $this->setJobExport($operation);
         }
+    }
+
+    /**
+     * Sets and performs export job
+     * @param array $operation
+     */
+    protected function setJobExport(array $operation)
+    {
+        $submitted = $this->getSubmitted();
+
+        $finish_message = $this->text('Successfully exported %count items. <a href="!href">Download</a>', array(
+            '!href' => $this->url(false, array('download' => 1)),
+            '%count' => $submitted['total']));
+
+        $redirect_error_message = $this->text('Errors: %errors. <a href="!url">See error log</a>', array(
+            '!url' => $this->url(false, array('download_errors' => 1))));
 
         $job = array(
-            'data' => $this->getSubmitted(),
             'id' => $operation['job_id'],
-            'total' => $this->getSubmitted('total'),
-            'redirect_message' => array(
-                'finish' => $this->text('Successfully exported %count items. <a href="!href">Download</a>', array(
-                    '!href' => $this->url(false, array('download' => 1)),
-                    '%count' => $this->getSubmitted('total')))),
+            'data' => $submitted,
+            'total' => $submitted['total'],
+            'redirect_message' => array('finish' => $finish_message)
         );
 
         if (!empty($operation['log']['errors'])) {
-            $job['redirect_message']['errors'] = $this->text('Errors: %errors. <a href="!url">See error log</a>', array(
-                '!url' => $this->url(false, array('download_errors' => 1))));
+            $job['redirect_message']['errors'] = $redirect_error_message;
         }
 
         $this->job->submit($job);
@@ -214,13 +238,16 @@ class Export extends Controller
      * @param array $operation
      * @return null
      */
-    protected function validate(array $operation)
+    protected function validateExport(array $operation)
     {
         $options = $this->getSubmitted();
         $options['count'] = true;
+
+        $limit = $this->export->getLimit();
         $total = $this->product->getList($options); // TODO: fix
 
         $this->setSubmitted('total', $total);
+        $this->setSubmitted('export_limit', $limit);
 
         if (empty($total)) {
             $this->setError('error', $this->text('Nothing to export'));
@@ -228,15 +255,16 @@ class Export extends Controller
         }
 
         if (file_put_contents($operation['file'], '') === false) {
-            
+
             $message = $this->text('Failed to create file %path', array(
                 '%path' => $operation['file']));
-            
+
             $this->setError('error', $message);
             return;
         }
 
-        Tool::writeCsv($operation['file'], $operation['csv']['header'], $this->export->getCsvDelimiter());
+        $delimiter = $this->export->getCsvDelimiter();
+        Tool::writeCsv($operation['file'], $operation['csv']['header'], $delimiter);
         $this->setSubmitted('operation', $operation);
     }
 

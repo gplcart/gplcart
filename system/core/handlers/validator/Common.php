@@ -202,6 +202,7 @@ class Common
      */
     public function required($subject, array $options = array())
     {
+        
         if (empty($subject)) {
             return $this->language->text('Required field');
         }

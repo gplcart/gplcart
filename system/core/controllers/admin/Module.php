@@ -111,7 +111,7 @@ class Module extends Controller
         }
 
         foreach ((array) $result as $error) {
-            $this->session->setMessage((string) $error, 'danger');
+            $this->setMessage((string) $error, 'danger', true);
         }
 
         $this->redirect();

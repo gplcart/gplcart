@@ -150,7 +150,6 @@ class Review extends Controller
 
     /**
      * Applies an action to the selected reviews
-     * @return boolean
      */
     protected function action()
     {
@@ -171,18 +170,14 @@ class Review extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num reviews', array(
-                        '%num' => $updated)), 'success');
-            return true;
+            $this->setMessage($this->text('Updated %num reviews', array(
+                        '%num' => $updated)), 'success', true);
         }
 
         if ($deleted > 1) {
-            $this->session->setMessage($this->text('Deleted %num reviews', array(
-                        '%num' => $deleted)), 'success');
-            return true;
+            $this->setMessage($this->text('Deleted %num reviews', array(
+                        '%num' => $deleted)), 'success', true);
         }
-
-        return false;
     }
 
     /**

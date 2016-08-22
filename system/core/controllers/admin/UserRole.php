@@ -296,16 +296,16 @@ class UserRole extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num user roles', array('%num' => $updated)), 'success');
-            return true;
+            $text = $this->text('Updated %num user roles', array(
+                '%num' => $updated));
+            $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num user roles', array('%num' => $deleted)), 'success');
-            return true;
+            $text = $this->text('Deleted %num user roles', array(
+                '%num' => $deleted));
+            $this->setMessage($text, 'success', true);
         }
-
-        return false;
     }
 
 }

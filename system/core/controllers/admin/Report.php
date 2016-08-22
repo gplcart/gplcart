@@ -125,7 +125,7 @@ class Report extends Controller
 
         if ($this->request->get('ga_update') && !empty($view)) {
             $this->report->clearGaCache($view);
-            $this->session->setMessage($this->text('Google Analytics has been updated'), 'success');
+            $this->setMessage($this->text('Google Analytics has been updated'), 'success', true);
             $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
         }
     }

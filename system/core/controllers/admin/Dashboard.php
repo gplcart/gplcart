@@ -87,7 +87,7 @@ class Dashboard extends Controller
         $this->product = $product;
         $this->analytics = $analytics;
 
-        $this->dashboard_limit = (int) $this->config->get('dashboard_limit', 10);
+        $this->dashboard_limit = (int) $this->config('dashboard_limit', 10);
     }
 
     /**
@@ -95,16 +95,17 @@ class Dashboard extends Controller
      */
     public function dashboard()
     {
-        if ($this->request->get('skip_intro')) {
+
+        if ($this->isQuery('skip_intro')) {
             $this->config->reset('intro');
             $this->redirect();
         }
 
-        $this->setPanelGa();
-        $this->setPanelUsers();
-        $this->setPanelOrders();
-        $this->setPanelEvents();
-        $this->setPanelSummary();
+        $this->setDataGaDashboard();
+        $this->setDataUsersDashboard();
+        $this->setDataOrdersDashboard();
+        $this->setDataEventsDashboard();
+        $this->setDataSummaryDashboard();
 
         $this->setJsDashboard();
 
@@ -125,7 +126,7 @@ class Dashboard extends Controller
      */
     protected function outputDashboard()
     {
-        $intro = (bool) $this->config->get('intro', 0);
+        $intro = (bool) $this->config('intro', 0);
 
         if ($intro && $this->isSuperadmin()) {
             $this->output('dashboard/intro');
@@ -146,18 +147,20 @@ class Dashboard extends Controller
      * Sets Google Analytics panel
      * @return null
      */
-    protected function setPanelGa()
+    protected function setDataGaDashboard()
     {
-        $gapi_email = $this->config->get('gapi_email', '');
-        $gapi_certificate = $this->config->get('gapi_certificate', '');
+        $gapi_email = $this->config('gapi_email', '');
+        $gapi_certificate = $this->config('gapi_certificate', '');
 
-        $store_id = $this->request->get('store_id', $this->store->getDefault());
+        $default = $this->store->getDefault();
+        $store_id = $this->request->get('store_id', $default);
         $store = $this->store->get($store_id);
+        $stores = $this->store->getList();
 
         $data = array(
-            'chart_traffic' => array(),
-            'stores' => $this->store->getList(),
             'store' => $store,
+            'stores' => $stores,
+            'chart_traffic' => array(),
             'missing_settings' => empty($store['data']['ga_view']),
             'missing_credentials' => (empty($gapi_email) || empty($gapi_certificate))
         );
@@ -166,7 +169,7 @@ class Dashboard extends Controller
             $data['ga_view'] = $store['data']['ga_view'];
         }
 
-        if ($this->request->get('ga_update') && $this->access('report_ga') && !empty($data['ga_view'])) {
+        if ($this->isQuery('ga_update') && $this->access('report_ga') && !empty($data['ga_view'])) {
             $this->report->clearGaCache($data['ga_view']);
             $this->redirect();
         }
@@ -178,13 +181,14 @@ class Dashboard extends Controller
             $this->setJsSettings('chart_traffic', $chart);
         }
 
-        $this->data['dashboard_panel_ga_chart'] = $this->render('dashboard/panels/ga', $data);
+        $html = $this->render('dashboard/panels/ga', $data);
+        $this->setData('dashboard_panel_ga_chart', $html);
     }
 
     /**
      * Sets summary panel
      */
-    protected function setPanelSummary()
+    protected function setDataSummaryDashboard()
     {
         $data = array(
             'user_total' => $this->user->getList(array('count' => true)),
@@ -193,44 +197,58 @@ class Dashboard extends Controller
             'product_total' => $this->product->getList(array('count' => true))
         );
 
-        $this->data['dashboard_panel_summary'] = $this->render('dashboard/panels/summary', $data);
+        $html = $this->render('dashboard/panels/summary', $data);
+        $this->setData('dashboard_panel_summary', $html);
     }
 
     /**
      * Sets recent users panel
      */
-    protected function setPanelUsers()
+    protected function setDataUsersDashboard()
     {
-        $users = $this->user->getList(array('limit' => array(0, $this->dashboard_limit)));
-        $this->data['dashboard_panel_users'] = $this->render('dashboard/panels/users', array('users' => $users));
+        $options = array(
+            'limit' => array(0, $this->dashboard_limit));
+
+        $users = $this->user->getList($options);
+
+        $html = $this->render('dashboard/panels/users', array('users' => $users));
+        $this->setData('dashboard_panel_users', $html);
     }
 
     /**
      * Sets recent orders panel
      */
-    protected function setPanelOrders()
+    protected function setDataOrdersDashboard()
     {
-        $orders = $this->order->getList(array('limit' => array(0, $this->dashboard_limit)));
+        $options = array('limit' => array(0, $this->dashboard_limit));
+
+        $orders = $this->order->getList($options);
 
         array_walk($orders, function (&$order) {
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-            $order['html'] = $this->render('settings/search/suggestion/order', array('order' => $order));
+            $order['render'] = $this->render('settings/search/suggestion/order', array('order' => $order));
         });
 
-        $this->data['dashboard_panel_orders'] = $this->render('dashboard/panels/orders', array('orders' => $orders));
+        $html = $this->render('dashboard/panels/orders', array('orders' => $orders));
+        $this->setData('dashboard_panel_orders', $html);
     }
 
     /**
      * Sets recent events panel
      */
-    protected function setPanelEvents()
+    protected function setDataEventsDashboard()
     {
         $events = array();
-        foreach (array('info', 'warning', 'danger') as $severity) {
+        $severities = $this->report->getSeverities();
 
-            $items = $this->report->getList(array(
-                'limit' => array(0, $this->dashboard_limit),
-                'severity' => $severity));
+        foreach (array_keys($severities) as $severity) {
+
+            $options = array(
+                'severity' => $severity,
+                'limit' => array(0, $this->dashboard_limit)
+            );
+
+            $items = $this->report->getList($options);
 
             foreach ($items as $i => &$item) {
                 $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
@@ -238,25 +256,38 @@ class Dashboard extends Controller
                 $item['message'] = strip_tags($message);
             }
 
-            if (!empty($items)) {
-                $events[$severity] = $items;
+            if (empty($items)) {
+                continue;
             }
+
+            $events[$severity] = $items;
         }
 
-        $this->setJsChartEvents();
+        $this->setJsChartEventsDashboard();
 
-        $this->data['dashboard_panel_events'] = $this->render('dashboard/panels/events', array('events' => $events));
+        $html = $this->render('dashboard/panels/events', array('events' => $events));
+        $this->setData('dashboard_panel_events', $html);
     }
 
     /**
      * Sets JS settings for events chart
      */
-    protected function setJsChartEvents()
+    protected function setJsChartEventsDashboard()
     {
-        $allowed = array('danger' => '#FF6384', 'warning' => '#FFCE56', 'info' => '#36A2EB');
-        $results = array_filter(array_intersect_key($this->report->countSeverity(), $allowed));
+        $allowed = array(
+            'info' => '#36A2EB',
+            'danger' => '#FF6384',
+            'warning' => '#FFCE56'
+        );
 
-        $chart = array('options' => array('maintainAspectRatio' => false, 'responsive' => true));
+        $counted = $this->report->countSeverity();
+        $results = array_filter(array_intersect_key($counted, $allowed));
+
+        $chart = array(
+            'options' => array(
+                'responsive' => true,
+                'maintainAspectRatio' => false
+        ));
 
         $i = 0;
         foreach ($results as $severity => $count) {

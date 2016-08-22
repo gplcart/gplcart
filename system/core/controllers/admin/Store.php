@@ -280,7 +280,6 @@ class Store extends Controller
 
     /**
      * Applies an action to the selected stores
-     * @return boolean
      */
     protected function action()
     {
@@ -301,16 +300,12 @@ class Store extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Stores have been updated'), 'success');
-            return true;
+            $this->setMessage($this->text('Stores have been updated'), 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Stores have been deleted'), 'success');
-            return true;
+            $this->setMessage($this->text('Stores have been deleted'), 'success', true);
         }
-
-        return false;
     }
 
     /**

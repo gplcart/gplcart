@@ -150,14 +150,14 @@ class PriceRule extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num price rules', array(
-                        '%num' => $updated)), 'success');
+            $this->setMessage($this->text('Updated %num price rules', array(
+                        '%num' => $updated)), 'success', true);
             return true;
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num price rules', array(
-                        '%num' => $deleted)), 'success');
+            $this->setMessage($this->text('Deleted %num price rules', array(
+                        '%num' => $deleted)), 'success', true);
             return true;
         }
 
@@ -329,7 +329,8 @@ class PriceRule extends Controller
 
         $this->addValidator('weight', array(
             'numeric' => array(),
-            'length' => array('max' => 2)));
+            'length' => array('max' => 2)
+        ));
 
         $this->addValidator('data.conditions', array(
             'pricerule_conditions' => array()));

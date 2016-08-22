@@ -65,7 +65,20 @@
             <?php } ?>
           </select>
         </div>
-      </div> 
+      </div>
+      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
+        <label class="col-md-2 control-label">
+          <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
+            <?php echo $this->text('Weight'); ?>
+          </span>
+        </label>
+        <div class="col-md-1">
+          <input name="field[weight]" class="form-control" value="<?php echo isset($field['weight']) ? $this->escape($field['weight']) : 0; ?>">
+        </div>
+        <?php if (isset($this->errors['weight'])) { ?>
+        <div class="help-block col-md-6"><?php echo $this->errors['weight']; ?></div>
+        <?php } ?>
+      </div>
     </div>
   </div>
   <div class="panel panel-default">

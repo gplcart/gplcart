@@ -92,7 +92,6 @@ class User extends Controller
      * @param array $selected
      * @param string $action
      * @param string $value
-     * @return boolean
      */
     protected function action(array $selected, $action, $value)
     {
@@ -113,16 +112,14 @@ class User extends Controller
         }
 
         if ($updated > 0) {
-            $this->session->setMessage($this->text('Updated %num users', array('%num' => $updated)), 'success');
-            return true;
+            $text = $this->text('Updated %num users', array('%num' => $updated));
+            $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num users', array('%num' => $deleted)), 'success');
-            return true;
+            $text = $this->text('Deleted %num users', array('%num' => $deleted));
+            $this->setMessage($text, 'success', true);
         }
-
-        return false;
     }
 
     /**

@@ -73,14 +73,14 @@ class FieldValue extends Controller
      * Displays the field values overview page
      * @param integer $field_id
      */
-    public function values($field_id)
+    public function listFieldValue($field_id)
     {
         $field = $this->getField($field_id);
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalFieldValues($field_id, $query);
+        $total = $this->getTotalFieldValue($field_id, $query);
         $limit = $this->setPager($total, $query);
-        $values = $this->getFieldValues($limit, $field_id, $query);
+        $values = $this->getListFieldValue($limit, $field_id, $query);
 
         $this->setData('field', $field);
         $this->setData('values', $values);
@@ -89,12 +89,12 @@ class FieldValue extends Controller
         $this->setFilter($allowed, $query);
 
         if ($this->isPosted('action')) {
-            $this->action();
+            $this->actionFieldValue();
         }
 
-        $this->setTitleValues($field);
-        $this->setBreadcrumbValues();
-        $this->outputValues();
+        $this->setTitleListFieldValue($field);
+        $this->setBreadcrumbListFieldValue();
+        $this->outputListFieldValue();
     }
 
     /**
@@ -102,31 +102,33 @@ class FieldValue extends Controller
      * @param integer $field_id
      * @param integer|null $field_value_id
      */
-    public function edit($field_id, $field_value_id = null)
+    public function editFieldValue($field_id, $field_value_id = null)
     {
         $field = $this->getField($field_id);
-        $field_value = $this->get($field_value_id);
+        $field_value = $this->getFieldValue($field_value_id);
         $widget_types = $this->field->widgetTypes();
-
-        $field_value['field_id'] = $field_id;
 
         $this->setData('field', $field);
         $this->setData('field_value', $field_value);
         $this->setData('widget_types', $widget_types);
 
         if ($this->isPosted('delete')) {
-            $this->delete($field_value, $field);
+            $this->deleteFieldValue($field_value, $field);
+        }
+
+        if ($this->isPosted('delete_image')) {
+            $this->deleteImageFieldValue($field_value, $field);
         }
 
         if ($this->isPosted('save')) {
-            $this->submit($field_value, $field);
+            $this->submitFieldValue($field_value, $field);
         }
 
-        $this->setDataFieldValue();
+        $this->setDataEditFieldValue();
 
-        $this->setTitleEdit($field_value, $field);
-        $this->setBreadcrumbEdit($field);
-        $this->outputEdit();
+        $this->setTitleEditFieldValue($field_value, $field);
+        $this->setBreadcrumbEditFieldValue($field);
+        $this->outputEditFieldValue();
     }
 
     /**
@@ -135,7 +137,7 @@ class FieldValue extends Controller
      * @param array $query
      * @return array
      */
-    protected function getTotalFieldValues($field_id, array $query)
+    protected function getTotalFieldValue($field_id, array $query)
     {
         $options = array(
             'count' => true,
@@ -150,16 +152,18 @@ class FieldValue extends Controller
      * Sets titles on the field values overview page
      * @param array $field
      */
-    protected function setTitleValues(array $field)
+    protected function setTitleListFieldValue(array $field)
     {
-        $this->setTitle($this->text('Values of %s', array(
-                    '%s' => $this->truncate($field['title']))));
+        $text = $this->text('Values of %field', array(
+            '%field' => $this->truncate($field['title'])));
+
+        $this->setTitle($text);
     }
 
     /**
      * Sets breadcrumbs on the field values overview page
      */
-    protected function setBreadcrumbValues()
+    protected function setBreadcrumbListFieldValue()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -173,7 +177,7 @@ class FieldValue extends Controller
     /**
      * Renders the field values overview page
      */
-    protected function outputValues()
+    protected function outputListFieldValue()
     {
         $this->output('content/field/value/list');
     }
@@ -201,7 +205,7 @@ class FieldValue extends Controller
      * @param array $query
      * @return array
      */
-    protected function getFieldValues(array $limit, $field_id, array $query)
+    protected function getListFieldValue(array $limit, $field_id, array $query)
     {
         $options = array(
             'limit' => $limit,
@@ -210,7 +214,7 @@ class FieldValue extends Controller
 
         $options += $query;
         $values = $this->field_value->getList($options);
-        $preset = $this->config->get('admin_image_preset', 2);
+        $preset = $this->config('admin_image_preset', 2);
 
         foreach ($values as &$value) {
             if (!empty($value['path'])) {
@@ -223,9 +227,8 @@ class FieldValue extends Controller
 
     /**
      * Applies anaction to the selected field values
-     * @return boolean
      */
-    protected function action()
+    protected function actionFieldValue()
     {
         $action = (string) $this->request->post('action');
         $selected = (array) $this->request->post('selected', array());
@@ -235,7 +238,8 @@ class FieldValue extends Controller
                 $this->field_value->update($field_value_id, array('weight' => $weight));
             }
 
-            $this->response->json(array('success' => $this->text('Field values have been reordered')));
+            $this->response->json(array(
+                'success' => $this->text('Field values have been reordered')));
         }
 
         $deleted = 0;
@@ -246,17 +250,16 @@ class FieldValue extends Controller
         }
 
         if ($deleted > 0) {
-            $this->session->setMessage($this->text('Deleted %num field values', array('%num' => $deleted)), 'success');
-            return true;
+            $message = $this->text('Deleted %num field values', array(
+                '%num' => $deleted));
+            $this->setMessage($message, 'success', true);
         }
-
-        return false;
     }
 
     /**
      * Renders the edit field value page
      */
-    protected function outputEdit()
+    protected function outputEditFieldValue()
     {
         $this->output('content/field/value/edit');
     }
@@ -266,7 +269,7 @@ class FieldValue extends Controller
      * @param array $field_value
      * @param array $field
      */
-    protected function setTitleEdit(array $field_value, array $field)
+    protected function setTitleEditFieldValue(array $field_value, array $field)
     {
         if (isset($field_value['field_value_id'])) {
             $title = $this->text('Edit field value %name', array(
@@ -283,7 +286,7 @@ class FieldValue extends Controller
      * Sets breadcrumbs on the edit field value page
      * @param array $field
      */
-    protected function setBreadcrumbEdit(array $field)
+    protected function setBreadcrumbEditFieldValue(array $field)
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -303,7 +306,7 @@ class FieldValue extends Controller
      * @param integer $field_value_id
      * @return array
      */
-    protected function get($field_value_id)
+    protected function getFieldValue($field_value_id)
     {
         if (!is_numeric($field_value_id)) {
             return array();
@@ -323,19 +326,25 @@ class FieldValue extends Controller
      * @param array $field_value
      * @param array $field
      */
-    protected function delete(array $field_value, array $field)
+    protected function deleteFieldValue(array $field_value, array $field)
     {
         $this->controlAccess('field_value_delete');
-        
+
         $deleted = $this->field_value->delete($field_value['field_value_id']);
 
         if ($deleted) {
-            $this->redirect("admin/content/field/value/{$field['field_id']}", $this->text('Field value %name has been deleted', array(
-                        '%name' => $field_value['title'])), 'success');
+            $url = "admin/content/field/value/{$field['field_id']}";
+            $message = $this->text('Field value %name has been deleted', array(
+                '%name' => $field_value['title']));
+
+            $this->redirect($url, $message, 'success');
         }
 
-        $this->redirect('', $this->text('Failed to delete field value %name. The most probable reason - it is used somewhere', array(
-                    '%name' => $field_value['title'])), 'warning');
+        $message = $this->text('Failed to delete field value %name.'
+                . ' The most probable reason - it is used somewhere', array(
+            '%name' => $field_value['title']));
+
+        $this->redirect('', $message, 'warning');
     }
 
     /**
@@ -344,10 +353,9 @@ class FieldValue extends Controller
      * @param array $field
      * @return boolean
      */
-    protected function deleteImage(array $field_value, array $field)
+    protected function deleteImageFieldValue(array $field_value, array $field)
     {
         $this->field_value->update($field_value['field_value_id'], array('file_id' => 0));
-
         $file = $this->file->get($field_value['file_id']);
         $this->file->delete($field_value['file_id']);
 
@@ -360,25 +368,57 @@ class FieldValue extends Controller
      * @param array $field
      * @return null
      */
-    protected function submit(array $field_value, array $field)
+    protected function submitFieldValue(array $field_value, array $field)
     {
         $this->setSubmitted('field_value');
 
-        $this->validate($field_value, $field);
+        $this->validateFieldValue($field_value, $field);
 
         if ($this->hasErrors('field_value')) {
             return;
         }
 
         if (isset($field_value['field_value_id'])) {
-            $this->controlAccess('field_value_edit');
-            $this->field_value->update($field_value['field_value_id'], $this->getSubmitted());
-            $this->redirect("admin/content/field/value/{$field['field_id']}", $this->text('Field value %name has been updated', array('%name' => $field_value['title'])), 'success');
+            $this->updateFieldValue($field_value, $field);
         }
 
+        $this->addFieldValue($field);
+    }
+
+    /**
+     * Updates a field value with submitted data
+     * @param array $field_value
+     * @param array $field
+     */
+    protected function updateFieldValue(array $field_value, array $field)
+    {
+        $this->controlAccess('field_value_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->field_value->update($field_value['field_value_id'], $submitted);
+
+        $url = "admin/content/field/value/{$field['field_id']}";
+        $message = $this->text('Field value %name has been updated', array(
+            '%name' => $field_value['title']));
+
+        $this->redirect($url, $message, 'success');
+    }
+
+    /**
+     * Adds a new field value using a submitted data
+     * @param array $field
+     */
+    protected function addFieldValue(array $field)
+    {
         $this->controlAccess('field_value_add');
-        $this->field_value->add($this->getSubmitted());
-        $this->redirect("admin/content/field/value/{$field['field_id']}", $this->text('Field value has been added'), 'success');
+
+        $submitted = $this->getSubmitted();
+        $this->field_value->add($submitted);
+
+        $url = "admin/content/field/value/{$field['field_id']}";
+        $message = $this->text('Field value has been added');
+
+        $this->redirect($url, $message, 'success');
     }
 
     /**
@@ -386,13 +426,22 @@ class FieldValue extends Controller
      * @param array $field_value
      * @param array $field
      */
-    protected function validate(array $field_value, array $field)
+    protected function validateFieldValue(array $field_value, array $field)
     {
         $this->setSubmitted('field_id', $field['field_id']);
 
-        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
-        $this->addValidator('weight', array('numeric' => array(), 'length' => array('max' => 2)));
-        $this->addValidator('translation', array('translation' => array()));
+        $this->addValidator('title', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('weight', array(
+            'numeric' => array(),
+            'length' => array('max' => 2)
+        ));
+
+        $this->addValidator('translation', array(
+            'translation' => array()
+        ));
 
         $this->addValidator('color', array(
             'regexp' => array(
@@ -410,11 +459,6 @@ class FieldValue extends Controller
         $errors = $this->setValidators($field_value);
 
         if (empty($errors)) {
-
-            if ($this->isPosted('delete_image')) {
-                $this->deleteImage($field_value, $field);
-            }
-
             $uploaded = $this->getValidatorResult('file');
             $this->setSubmitted('path', $uploaded);
         }
@@ -423,12 +467,12 @@ class FieldValue extends Controller
     /**
      * Modifies the field values array
      */
-    protected function setDataFieldValue()
+    protected function setDataEditFieldValue()
     {
         $path = $this->getData('field_value.path');
 
         if (!empty($path)) {
-            $preset = $this->config->get('admin_image_preset', 2);
+            $preset = $this->config('admin_image_preset', 2);
             $thumb = $this->image->url($preset, $path);
             $this->setData('field_value.thumb', $thumb);
         }
