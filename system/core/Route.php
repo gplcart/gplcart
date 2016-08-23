@@ -267,8 +267,16 @@ class Route
             )
         );
 
+        $routes['admin/content'] = array(
+            'menu' => array('admin' => 'Content'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
         $routes['admin/content/product'] = array(
             'access' => 'product',
+            'menu' => array('admin' => 'Products'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Product', 'products')
             )
@@ -288,43 +296,52 @@ class Route
             )
         );
 
-        $routes['admin/content/product/class'] = array(
+        $routes['admin/content/product-class'] = array(
             'access' => 'product_class',
+            'menu' => array('admin' => 'Product classes'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ProductClass', 'classes')
             )
         );
 
-        $routes['admin/content/product/class/edit/(\d+)'] = array(
+        $routes['admin/content/product-class/edit/(\d+)'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ProductClass', 'edit')
             )
         );
 
-        $routes['admin/content/product/class/add'] = array(
+        $routes['admin/content/product-class/add'] = array(
             'access' => 'product_class_add',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ProductClass', 'edit')
             )
         );
 
-        $routes['admin/content/product/class/field/(\d+)'] = array(
+        $routes['admin/content/product-class/field/(\d+)'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ProductClass', 'fields')
             )
         );
 
-        $routes['admin/content/product/class/field/(\d+)/add'] = array(
+        $routes['admin/content/product-class/field/(\d+)/add'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ProductClass', 'addField')
             )
         );
 
+        $routes['admin/tool'] = array(
+            'menu' => array('admin' => 'Tools'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
         $routes['admin/tool/import'] = array(
             'access' => 'import',
+            'menu' => array('admin' => 'Import'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Import', 'listImport')
             )
@@ -339,6 +356,7 @@ class Route
 
         $routes['admin/tool/export'] = array(
             'access' => 'export',
+            'menu' => array('admin' => 'Export'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Export', 'listExport')
             )
@@ -353,13 +371,22 @@ class Route
 
         $routes['admin/tool/search'] = array(
             'access' => 'search_edit',
+            'menu' => array('admin' => 'Search'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Search', 'index')
             )
         );
 
+        $routes['admin/sale'] = array(
+            'menu' => array('admin' => 'Sales'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
         $routes['admin/sale/order'] = array(
             'access' => 'order',
+            'menu' => array('admin' => 'Orders'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Order', 'orders')
             )
@@ -374,6 +401,7 @@ class Route
 
         $routes['admin/sale/price'] = array(
             'access' => 'price_rule',
+            'menu' => array('admin' => 'Prices'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\PriceRule', 'rules')
             )
@@ -402,6 +430,7 @@ class Route
 
         $routes['admin/content/page'] = array(
             'access' => 'page',
+            'menu' => array('admin' => 'Pages'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Page', 'pages')
             )
@@ -423,6 +452,7 @@ class Route
 
         $routes['admin/content/review'] = array(
             'access' => 'review',
+            'menu' => array('admin' => 'Reviews'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Review', 'reviews')
             )
@@ -444,26 +474,28 @@ class Route
 
         $routes['admin/content/file'] = array(
             'access' => 'file',
+            'menu' => array('admin' => 'Files'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\File', 'listFile')
             )
         );
 
-        $routes['admin/content/category/group'] = array(
+        $routes['admin/content/category-group'] = array(
             'access' => 'category_group',
+            'menu' => array('admin' => 'Categories'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\CategoryGroup', 'listCategoryGroup')
             )
         );
 
-        $routes['admin/content/category/group/edit/(\d+)'] = array(
+        $routes['admin/content/category-group/edit/(\d+)'] = array(
             'access' => 'category_group_edit',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\CategoryGroup', 'editCategoryGroup')
             )
         );
 
-        $routes['admin/content/category/group/add'] = array(
+        $routes['admin/content/category-group/add'] = array(
             'access' => 'category_group_add',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\CategoryGroup', 'editCategoryGroup')
@@ -492,19 +524,27 @@ class Route
         );
 
         $routes['admin/user'] = array(
+            'menu' => array('admin' => 'Users'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
+        $routes['admin/user/list'] = array(
             'access' => 'user',
+            'menu' => array('admin' => 'Users'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\User', 'users')
             )
         );
-        
+
         $routes['admin/user/edit/(\d+)'] = array(
             'access' => 'user_edit',
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\User', 'edit')
             )
         );
-        
+
         $routes['admin/user/add'] = array(
             'access' => 'user_add',
             'handlers' => array(
@@ -514,6 +554,7 @@ class Route
 
         $routes['admin/user/role'] = array(
             'access' => 'user_role',
+            'menu' => array('admin' => 'Roles'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\UserRole', 'roles')
             )
@@ -535,6 +576,7 @@ class Route
 
         $routes['admin/content/field'] = array(
             'access' => 'field',
+            'menu' => array('admin' => 'Fields'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Field', 'listField')
             )
@@ -570,13 +612,22 @@ class Route
 
         $routes['admin/content/alias'] = array(
             'access' => 'alias',
+            'menu' => array('admin' => 'Aliases'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Alias', 'listAlias')
             )
         );
 
         $routes['admin/module'] = array(
+            'menu' => array('admin' => 'Modules'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
+        $routes['admin/module/list'] = array(
             'access' => 'module',
+            'menu' => array('admin' => 'Local'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Module', 'modules')
             )
@@ -591,13 +642,22 @@ class Route
 
         $routes['admin/module/marketplace'] = array(
             'access' => 'marketplace',
+            'menu' => array('admin' => 'Marketplace'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Module', 'marketplace')
             )
         );
 
+        $routes['admin/settings'] = array(
+            'menu' => array('admin' => 'Settings'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
         $routes['admin/settings/common'] = array(
             'access' => 'settings',
+            'menu' => array('admin' => 'Common'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Settings', 'common')
             )
@@ -605,6 +665,7 @@ class Route
 
         $routes['admin/settings/language'] = array(
             'access' => 'language',
+            'menu' => array('admin' => 'Languages'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Language', 'languages')
             )
@@ -626,6 +687,7 @@ class Route
 
         $routes['admin/settings/imagestyle'] = array(
             'access' => 'image_style',
+            'menu' => array('admin' => 'Images'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ImageStyle', 'listImageStyle')
             )
@@ -633,6 +695,7 @@ class Route
 
         $routes['admin/settings/search'] = array(
             'access' => 'search_edit',
+            'menu' => array('admin' => 'Search'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Search', 'settings')
             )
@@ -654,6 +717,7 @@ class Route
 
         $routes['admin/settings/currency'] = array(
             'access' => 'currency',
+            'menu' => array('admin' => 'Currencies'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Currency', 'listCurrency')
             )
@@ -675,6 +739,7 @@ class Route
 
         $routes['admin/settings/country'] = array(
             'access' => 'country',
+            'menu' => array('admin' => 'Countries'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Country', 'listCountry')
             )
@@ -745,6 +810,7 @@ class Route
 
         $routes['admin/settings/store'] = array(
             'access' => 'store',
+            'menu' => array('admin' => 'Store'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Store', 'stores')
             )
@@ -757,8 +823,16 @@ class Route
             )
         );
 
+        $routes['admin/report'] = array(
+            'menu' => array('admin' => 'Reports'),
+            'handlers' => array(
+                'controller' => array('core\\Controller', 'adminSections')
+            )
+        );
+
         $routes['admin/report/system'] = array(
             'access' => 'report_system',
+            'menu' => array('admin' => 'Events'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Report', 'system')
             )
@@ -766,6 +840,7 @@ class Route
 
         $routes['admin/report/status'] = array(
             'access' => 'report_status',
+            'menu' => array('admin' => 'Status'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Report', 'status')
             )
@@ -773,6 +848,7 @@ class Route
 
         $routes['admin/report/ga'] = array(
             'access' => 'report_ga',
+            'menu' => array('admin' => 'Analytics'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Report', 'ga')
             )

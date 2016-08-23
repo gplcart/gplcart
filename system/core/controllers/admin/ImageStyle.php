@@ -196,7 +196,14 @@ class ImageStyle extends Controller
         $this->image->deleteStyle($imagestyle['imagestyle_id']);
         $this->image->clearCache($imagestyle['imagestyle_id']);
 
-        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been deleted'), 'success');
+        if(empty($imagestyle['default'])){
+            $message = $this->text('Image style has been deleted');
+        } else {
+            $message = $this->text('Image style has been reverted to default settings');
+        }
+        
+        $this->redirect('admin/settings/imagestyle', $message, 'success');
+
     }
 
     /**

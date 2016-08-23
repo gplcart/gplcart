@@ -25,7 +25,7 @@
         <div class="col-md-2"></div>
         <div class="col-md-4 text-right">
           <div class="btn-toolbar">
-            <a class="btn btn-default" href="<?php echo $this->url("admin/content/product/class/field/{$product_class['product_class_id']}"); ?>">
+            <a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}"); ?>">
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
             </a>
             <button class="btn btn-default" name="save" value="1">

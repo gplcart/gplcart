@@ -8,7 +8,7 @@
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>
-        <a class="btn btn-default" href="<?php echo $this->url("admin/content/product/class/field/{$product_class['product_class_id']}/add"); ?>">
+        <a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
       </div>

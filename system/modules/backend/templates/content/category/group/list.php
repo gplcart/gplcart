@@ -3,7 +3,7 @@
   <div class="panel-heading clearfix">
     <?php if ($this->access('category_group_add')) { ?>
     <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('admin/content/category/group/add'); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>
@@ -68,7 +68,7 @@
             <ul class="list-inline">
               <?php if ($this->access('category_group_edit')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/category/group/edit/$id"); ?>">
+                <a href="<?php echo $this->url("admin/content/category-group/edit/$id"); ?>">
                   <?php echo strtolower($this->text('Edit')); ?>
                 </a>
               </li>
@@ -99,7 +99,7 @@
   <div class="col-md-12">
     <?php echo $this->text('You have no category groups yet'); ?>
     <?php if ($this->access('category_group_add')) { ?>
-    <a href="<?php echo $this->url('admin/content/category/group/add'); ?>">
+    <a href="<?php echo $this->url('admin/content/category-group/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>

@@ -158,7 +158,7 @@ class CategoryGroup extends Controller
             'text' => $this->text('Dashboard')));
 
         $this->setBreadcrumb(array(
-            'url' => $this->url('admin/content/category/group'),
+            'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')));
     }
 
@@ -207,7 +207,7 @@ class CategoryGroup extends Controller
         $deleted = $this->category_group->delete($category_group_id);
 
         if ($deleted) {
-            $this->redirect('admin/content/category/group', $this->text('Category group has been deleted'), 'success');
+            $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete this category group'), 'danger');
@@ -242,7 +242,7 @@ class CategoryGroup extends Controller
     {
         $this->controlAccess('category_group_edit');
         $this->category_group->update($category_group['category_group_id'], $this->getSubmitted());
-        $this->redirect('admin/content/category/group', $this->text('Category group has been updated'), 'success');
+        $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
     }
 
     /**
@@ -252,7 +252,7 @@ class CategoryGroup extends Controller
     {
         $this->controlAccess('category_group_add');
         $this->category_group->add($this->getSubmitted());
-        $this->redirect('admin/content/category/group', $this->text('Category group has been added'), 'success');
+        $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
     }
 
     /**

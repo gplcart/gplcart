@@ -46,7 +46,7 @@
         </div>
         <div class="col-md-4">
       <div class="btn-toolbar">
-        <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/class'); ?>"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
+        <a class="btn btn-default" href="<?php echo $this->url('admin/content/product-class'); ?>"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
         <?php if ($this->access('product_class_edit') || $this->access('product_class_add')) { ?>
         <button class="btn btn-default" name="save" value="1">
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>

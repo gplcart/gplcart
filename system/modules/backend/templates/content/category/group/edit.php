@@ -80,7 +80,7 @@
         </div>
         <div class="col-md-4">
           <div class="btn-toolbar">
-            <a class="btn btn-default" href="<?php echo $this->url('admin/content/category/group'); ?>">
+            <a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group'); ?>">
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
             </a>
             <?php if ($this->access('category_group_add') || $this->access('category_group_edit')) { ?>

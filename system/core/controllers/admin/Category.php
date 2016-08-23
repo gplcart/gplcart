@@ -176,7 +176,7 @@ class Category extends Controller
             'text' => $this->text('Dashboard')));
 
         $this->setBreadcrumb(array(
-            'url' => $this->url('admin/content/category/group'),
+            'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')));
     }
 
@@ -286,7 +286,7 @@ class Category extends Controller
             'text' => $this->text('Dashboard')));
 
         $this->setBreadcrumb(array(
-            'url' => $this->url('admin/content/category/group'),
+            'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')));
 
         $this->setBreadcrumb(array(

@@ -31,7 +31,7 @@
     <?php } ?>
     <?php if ($this->access('product_class_add')) { ?>    
     <div class="btn-group pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/class/add'); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url('admin/content/product-class/add'); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>
@@ -65,14 +65,14 @@
               <ul class="list-inline">
                 <?php if ($this->access('product_class_edit')) { ?>
                 <li>
-                  <a href="<?php echo $this->url("admin/content/product/class/edit/{$class['product_class_id']}"); ?>">
+                  <a href="<?php echo $this->url("admin/content/product-class/edit/{$class['product_class_id']}"); ?>">
                     <?php echo strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>
                 <?php if ($this->access('product_class_field')) { ?>
                 <li>
-                  <a href="<?php echo $this->url("admin/content/product/class/field/{$class['product_class_id']}"); ?>">
+                  <a href="<?php echo $this->url("admin/content/product-class/field/{$class['product_class_id']}"); ?>">
                     <?php echo strtolower($this->text('Fields')); ?>
                   </a>
                 </li>
@@ -93,7 +93,7 @@
   <div class="col-md-12">
     <?php echo $this->text('You have no product classes yet'); ?>
     <?php if ($this->access('product_class_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/class/add'); ?>">
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/product-class/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>

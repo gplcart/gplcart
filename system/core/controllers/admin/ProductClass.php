@@ -213,7 +213,7 @@ class ProductClass extends Controller
         $deleted = $this->product_class->delete($product_class['product_class_id']);
 
         if ($deleted) {
-            $this->redirect('admin/content/product/class', $this->text('Product class has been deleted'), 'success');
+            $this->redirect('admin/content/product-class', $this->text('Product class has been deleted'), 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete this product class. The most probable reason - it is used by one or more products'), 'danger');
@@ -269,12 +269,12 @@ class ProductClass extends Controller
         if (isset($product_class['product_class_id'])) {
             $this->controlAccess('product_class_edit');
             $this->product_class->update($product_class['product_class_id'], $this->getSubmitted());
-            $this->redirect('admin/content/product/class', $this->text('Product class has been updated'), 'success');
+            $this->redirect('admin/content/product-class', $this->text('Product class has been updated'), 'success');
         }
 
         $this->controlAccess('product_class_add');
         $this->product_class->add($this->getSubmitted());
-        $this->redirect('admin/content/product/class', $this->text('Product class has been added'), 'success');
+        $this->redirect('admin/content/product-class', $this->text('Product class has been added'), 'success');
     }
 
     /**
@@ -316,7 +316,7 @@ class ProductClass extends Controller
 
         $this->setBreadcrumb(array(
             'text' => $this->text('Product classes'),
-            'url' => $this->url('admin/content/product/class')));
+            'url' => $this->url('admin/content/product-class')));
     }
 
     /**
@@ -405,7 +405,7 @@ class ProductClass extends Controller
 
         $this->setBreadcrumb(array(
             'text' => $this->text('Product classes'),
-            'url' => $this->url('admin/content/product/class')));
+            'url' => $this->url('admin/content/product-class')));
     }
 
     /**
@@ -436,7 +436,7 @@ class ProductClass extends Controller
             $this->product_class->addField($field);
         }
 
-        $path = "admin/content/product/class/field/{$product_class['product_class_id']}";
+        $path = "admin/content/product-class/field/{$product_class['product_class_id']}";
         $this->redirect($path, $this->text('Product class has been updated'), 'success');
     }
 
@@ -464,11 +464,11 @@ class ProductClass extends Controller
 
         $this->setBreadcrumb(array(
             'text' => $this->text('Product classes'),
-            'url' => $this->url('admin/content/product/class')));
+            'url' => $this->url('admin/content/product-class')));
 
         $this->setBreadcrumb(array(
             'text' => $this->text('Fields of %s', array('%s' => $product_class['title'])),
-            'url' => $this->url("admin/content/product/class/field/{$product_class['product_class_id']}")));
+            'url' => $this->url("admin/content/product-class/field/{$product_class['product_class_id']}")));
     }
 
     /**

@@ -311,7 +311,7 @@ class Controller
     /**
      * Constructor
      */
-    protected function __construct()
+    public function __construct()
     {
         /* @var $user \core\models\User */
         $this->user = Container::instance('core\\models\\User');
@@ -1373,6 +1373,7 @@ class Controller
         $this->data['current_store'] = $this->current_store;
 
         if ($this->url->isBackend()) {
+            $this->data['admin_menu'] = $this->getAdminMenu();
             $this->data['help_summary'] = $this->getHelpSummary();
         }
     }
@@ -1731,6 +1732,66 @@ class Controller
     public function getPager()
     {
         return isset($this->data['pager']) ? $this->data['pager'] : '';
+    }
+
+    /**
+     * Displays nesated admin categories
+     */
+    public function adminSections()
+    {
+        $this->redirect('admin'); // TODO: replace with real content
+    }
+
+    /**
+     * Returns an array of admin menu items
+     * @return array
+     */
+    protected function getAdminMenuArray()
+    {
+        $routes = $this->route->getList();
+
+        $array = array();
+        foreach ($routes as $path => $route) {
+
+            // Exclude non-admin routes
+            if (0 !== strpos($path, 'admin/')) {
+                continue;
+            }
+
+            // Exclude hidden items
+            if (empty($route['menu']['admin'])) {
+                continue;
+            }
+
+            // Check access
+            if (isset($route['access']) && !$this->access($route['access'])) {
+                continue;
+            }
+
+            $data = array(
+                'url' => $this->url($path),
+                'depth' => (substr_count($path, '/') - 1),
+                'text' => $this->text($route['menu']['admin']),
+                'weight' => isset($route['weight']) ? $route['weight'] : 0
+            );
+
+            $array[$path] = $data;
+        }
+
+        Tool::sortWeight($array);
+
+        ksort($array);
+        return $array;
+    }
+
+    /**
+     * Returns rendered admin menu
+     * @return string
+     */
+    public function getAdminMenu()
+    {
+        $items = $this->getAdminMenuArray();
+        return $this->render('common/menu', array('items' => $items));
     }
 
 }
