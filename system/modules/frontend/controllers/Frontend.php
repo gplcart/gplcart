@@ -85,7 +85,7 @@ class Frontend extends Controller
 
         $this->controlAccess('module_edit');
         $this->module->setSettings('frontend', $this->submitted);
-        $this->redirect('admin/module/theme', $this->text('Settings have been updated'), 'success');
+        $this->redirect('admin/module/list', $this->text('Settings have been updated'), 'success');
     }
 
     /**
@@ -124,7 +124,7 @@ class Frontend extends Controller
     protected function setBreadcrumbSettings()
     {
         $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Modules'), 'url' => $this->url('admin/module')));
+        $this->setBreadcrumb(array('text' => $this->text('Modules'), 'url' => $this->url('admin/module/list')));
     }
 
     /**

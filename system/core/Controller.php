@@ -13,7 +13,7 @@ use core\Container;
 use core\classes\Tool;
 
 /**
- * Base controller class. Provides methods to be used in the child classes and
+ * Base controller class. Contents methods to be used in the child classes and
  * some basic system functions such as access control etc.
  */
 class Controller

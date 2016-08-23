@@ -181,6 +181,7 @@ class Language extends Model
     {
         $languages = array();
         foreach (glob(GC_LOCALE_DIR . '/*', GLOB_ONLYDIR) as $directory) {
+
             $langcode = basename($directory);
 
             // Skip invalid language codes
@@ -236,11 +237,11 @@ class Language extends Model
 
         $values = array(
             'code' => $data['code'],
-            'name' => !empty($data['name']) ? $data['name'] : $data['code'],
-            'native_name' => !empty($data['native_name']) ? $data['native_name'] : $data['code'],
             'status' => !empty($data['status']),
             'default' => !empty($data['default']),
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0
+            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
+            'name' => empty($data['name']) ? $data['code'] : $data['name'],
+            'native_name' => empty($data['native_name']) ? $data['code'] : $data['native_name']
         );
 
         $languages = $this->getAll();
@@ -431,7 +432,7 @@ class Language extends Model
     }
 
     /**
-     * Resets cached translations
+     * Removes cached translation files
      * @param string $langcode
      */
     public function refresh($langcode)

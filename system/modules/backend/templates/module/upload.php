@@ -4,7 +4,7 @@
     <div class="panel-body">
       <div class="form-group<?php echo isset($this->errors['file']) ? ' has-error' : ''; ?>">
         <div class="col-md-4">
-          <input type="file" accept=".zip" name="file" class="form-control" required>
+          <input type="file" accept=".zip" name="file" class="form-control">
           <div class="help-block">
             <?php echo $this->text('Select a zip file containing module files'); ?>
             <?php if (isset($this->errors['file'])) { ?>

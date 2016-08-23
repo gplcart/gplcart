@@ -58,43 +58,44 @@ class Module extends Controller
      * Displays the module admin overview page
      * @param null|string $type
      */
-    public function modules()
+    public function listModule()
     {
-        if ($this->isPosted('action')) {
-            $this->action();
+        if ($this->isQuery('action')) {
+            $this->actionModule();
         }
 
-        $modules = $this->getModules();
+        $modules = $this->getListModule();
         $this->setData('modules', $modules);
 
-        $this->setTitleModules();
-        $this->setBreadcrumbModules();
-        $this->outputModules();
+        $this->setTitleListModule();
+        $this->setBreadcrumbListModule();
+        $this->outputListModule();
     }
 
     /**
      * Applies an action to the module
      */
-    protected function action()
+    protected function actionModule()
     {
         $this->controlToken();
+
         $module_id = (string) $this->request->get('module_id');
 
         if (empty($module_id)) {
-            $this->redirect();
+            $this->outputError(403);
         }
 
         $module = $this->module->get($module_id);
 
         if (empty($module)) {
-            $this->redirect();
+            $this->outputError(403);
         }
 
         $action = (string) $this->request->get('action');
-        $allowed = array('enable', 'disable', 'install', 'uninstall');
+        $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete');
 
         if (!in_array($action, $allowed)) {
-            $this->redirect();
+            $this->outputError(403);
         }
 
         $this->controlAccess("module_$action");
@@ -121,7 +122,7 @@ class Module extends Controller
      * Returns an array of modules
      * @return array
      */
-    protected function getModules()
+    protected function getListModule()
     {
         $modules = $this->module->getList();
 
@@ -136,7 +137,7 @@ class Module extends Controller
     /**
      * Sets titles on the module overview page
      */
-    protected function setTitleModules()
+    protected function setTitleListModule()
     {
         $this->setTitle($this->text('Modules'));
     }
@@ -144,7 +145,7 @@ class Module extends Controller
     /**
      * Sets breadcrumbs on the module overview page
      */
-    protected function setBreadcrumbModules()
+    protected function setBreadcrumbListModule()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -154,7 +155,7 @@ class Module extends Controller
     /**
      * Renders the module overview page templates
      */
-    protected function outputModules()
+    protected function outputListModule()
     {
         $this->output('module/list');
     }
@@ -162,25 +163,25 @@ class Module extends Controller
     /**
      * Displays upload module page
      */
-    public function upload()
+    public function uploadModule()
     {
         $this->controlAccess('module_install');
 
         if ($this->isPosted('install')) {
-            $this->submitUpload();
+            $this->submitUploadModule();
         }
 
-        $this->setBreadcrumbUpload();
-        $this->setTitleUpload();
-        $this->outputUpload();
+        $this->setBreadcrumbUploadModule();
+        $this->setTitleUploadModule();
+        $this->outputUploadModule();
     }
 
     /**
      * Installs a uploaded module
      */
-    protected function submitUpload()
+    protected function submitUploadModule()
     {
-        $this->validateUpload();
+        $this->validateUploadModule();
 
         if ($this->hasErrors()) {
             return;
@@ -190,8 +191,8 @@ class Module extends Controller
         $result = $this->module->installFromZip($uploaded);
 
         if ($result === true) {
-            $message = $this->text('The module has been <a href="!href">uploaded and installed</a>. You have to enable it manually', array(
-                '!href' => $this->url('admin/module')));
+            $message = $this->text('The module has been <a href="!href">uploaded and installed</a>.'
+                    . ' You have to enable it manually', array('!href' => $this->url('admin/module/list')));
 
             $this->redirect('', $message, 'success');
         }
@@ -203,9 +204,10 @@ class Module extends Controller
      * Validates and uploads a zip archive
      * @return boolean
      */
-    protected function validateUpload()
+    protected function validateUploadModule()
     {
         $options = array(
+            'required' => true,
             'handler' => 'zip',
             'path' => 'private/modules',
             'file' => $this->request->file('file'),
@@ -222,7 +224,7 @@ class Module extends Controller
     /**
      * Sets breadcrumbs on the module upload page
      */
-    protected function setBreadcrumbUpload()
+    protected function setBreadcrumbUploadModule()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -230,13 +232,13 @@ class Module extends Controller
 
         $this->setBreadcrumb(array(
             'text' => $this->text('Modules'),
-            'url' => $this->url('admin/module')));
+            'url' => $this->url('admin/module/list')));
     }
 
     /**
      * Sets titles on the module upload page
      */
-    protected function setTitleUpload()
+    protected function setTitleUploadModule()
     {
         $this->setTitle($this->text('Upload module'));
     }
@@ -244,7 +246,7 @@ class Module extends Controller
     /**
      * Renders the module upload page
      */
-    protected function outputUpload()
+    protected function outputUploadModule()
     {
         $this->output('module/upload');
     }
@@ -252,7 +254,7 @@ class Module extends Controller
     /**
      * Displays the marketplace overview page
      */
-    public function marketplace()
+    public function marketplaceModule()
     {
         $default = array(
             'sort' => $this->config('marketplace_sort', 'views'),
@@ -260,10 +262,10 @@ class Module extends Controller
         );
 
         $query = $this->getFilterQuery($default);
-        $total = $this->getMarketplaceTotal($query);
+        $total = $this->getTotalMarketplaceModule($query);
 
         $query['limit'] = $this->setPager($total, $query);
-        $results = $this->getMarketplaceList($query);
+        $results = $this->getListMarketplaceModule($query);
 
         $fields = array('category_id', 'price', 'views',
             'rating', 'title', 'downloads');
@@ -271,15 +273,15 @@ class Module extends Controller
         $this->setFilter($fields);
         $this->setData('marketplace', $results);
 
-        $this->setTitleMarketplace();
-        $this->setBreadcrumbMarketplace();
-        $this->outputMarketplace();
+        $this->setTitleMarketplaceModule();
+        $this->setBreadcrumbMarketplaceModule();
+        $this->outputMarketplaceModule();
     }
 
     /**
      * Sets titles on the marketplace overview page
      */
-    protected function setTitleMarketplace()
+    protected function setTitleMarketplaceModule()
     {
         $this->setTitle($this->text('Marketplace'));
     }
@@ -287,21 +289,21 @@ class Module extends Controller
     /**
      * Sets breadcrumbs on the marketplace overview page
      */
-    protected function setBreadcrumbMarketplace()
+    protected function setBreadcrumbMarketplaceModule()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')));
 
         $this->setBreadcrumb(array(
-            'url' => $this->url('admin/module'),
+            'url' => $this->url('admin/module/list'),
             'text' => $this->text('Modules')));
     }
 
     /**
      * Renders an outputs the marketplace overview page
      */
-    protected function outputMarketplace()
+    protected function outputMarketplaceModule()
     {
         $this->output('module/marketplace');
     }
@@ -311,7 +313,7 @@ class Module extends Controller
      * @param array $options
      * @return array|null
      */
-    protected function getMarketplaceList(array $options = array())
+    protected function getListMarketplaceModule(array $options = array())
     {
         $options += array('core' => strtok(GC_VERSION, '.'));
 
@@ -340,10 +342,10 @@ class Module extends Controller
      * @param array $options
      * @return integer
      */
-    protected function getMarketplaceTotal(array $options = array())
+    protected function getTotalMarketplaceModule(array $options = array())
     {
         $options['count'] = true;
-        $result = $this->getMarketplaceList($options);
+        $result = $this->getListMarketplaceModule($options);
 
         return empty($result['total']) ? 0 : (int) $result['total'];
     }

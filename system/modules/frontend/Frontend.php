@@ -114,7 +114,7 @@ class Frontend
             'author' => 'IURII MAKUKH',
             'core' => '1.0',
             'type' => 'theme',
-            'configure' => 'admin/module/frontend/settings',
+            'configure' => 'admin/module/settings/frontend',
             'settings' => $this->getDefaultSettings()
         );
     }
@@ -141,7 +141,7 @@ class Frontend
      */
     public function hookRoute(&$routes)
     {
-        $routes['admin/module/frontend/settings'] = array(
+        $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
             'handlers' => array(
                 'controller' => array('modules\\frontend\\controllers\\Frontend', 'settings')

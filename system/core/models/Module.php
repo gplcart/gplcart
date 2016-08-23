@@ -458,9 +458,12 @@ class Module extends Model
      */
     public function install($module_id, $status = true)
     {
+        // Clear static cache to see available modules.
+        // Important when uploading a module!
+        Cache::clearMemory('modules');
+
         $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
-
 
         if (is_callable(array($module['class'], 'beforeInstall'))) {
             try {
@@ -481,6 +484,20 @@ class Module extends Model
         }
 
         return $result;
+    }
+
+    /**
+     * Deletes a module from disk
+     * @param string $module_id
+     * @return boolean
+     */
+    public function delete($module_id)
+    {
+        if ($this->isInstalled($module_id) || $this->isEnabled($module_id)) {
+            return false;
+        }
+
+        return Tool::deleteDirecoryRecursive(GC_MODULE_DIR . "/$module_id");
     }
 
     /**
@@ -666,18 +683,20 @@ class Module extends Model
 
         // Only disabled existing modules can by updated
         if ($this->isEnabled($module_id)) {
-            return $this->language->text('Module %id already installed and enabled. Disable it before updating.', array('%id' => $module_id));
+            return $this->language->text('Module %id already installed and enabled.'
+                            . ' Disable it before updating.', array('%id' => $module_id));
         }
 
         $backup = $this->backup($module_id);
 
         if (empty($backup)) {
-            return $this->language->text('Failed to backup module %id', array('%id' => $module_id));
+            return $this->language->text('Failed to backup module %id', array(
+                        '%id' => $module_id));
         }
 
-        $result = $this->zip->extractTo(GC_MODULE_DIR);
+        $extracted = $this->zip->extractTo(GC_MODULE_DIR);
 
-        if (!$result) {
+        if (!$extracted) {
             return $this->language->text('Failed to extract module files');
         }
 
@@ -696,14 +715,14 @@ class Module extends Model
     protected function backup($module_id)
     {
         $suffix = $this->getBackupKey();
-        $oldname = GC_MODULE_DIR . "/$module_id";
-        $newname = $oldname . $suffix . date("Y-m-d-H-i-s");
+        $source = GC_MODULE_DIR . "/$module_id";
+        $target = $source . $suffix . date("Y-m-d-H-i-s");
 
-        if (!file_exists($oldname)) {
+        if (!file_exists($source)) {
             return true;
         }
 
-        return rename($oldname, $newname) ? $newname : false;
+        return rename($source, $target) ? $target : false;
     }
 
     /**

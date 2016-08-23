@@ -502,38 +502,6 @@ class File extends Model
     }
 
     /**
-     * Recursive deletes files and directories
-     * @param string $directory
-     * @return boolean
-     */
-    public function deleteDirecoryRecursive($directory)
-    {
-        if (!file_exists($directory)) {
-            return false;
-        }
-
-        if (!is_dir($directory)) {
-            return false;
-        }
-
-        foreach (scandir($directory) as $object) {
-            if ($object == '.' || $object == '..') {
-                continue;
-            }
-
-            $path = $directory . '/' . $object;
-            if (is_dir($path)) {
-                $this->deleteDirecoryRecursive($path);
-                continue;
-            }
-
-            unlink($path);
-        }
-
-        return rmdir($directory);
-    }
-
-    /**
      * Returns an array of files
      * @param array $data
      * @return array|integer

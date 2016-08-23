@@ -15,7 +15,7 @@
         <div class="help-block col-md-6"><?php echo $this->errors['code']; ?></div>
         <?php } ?>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('International name of the language in english according to ISO 639'); ?>">
             <?php echo $this->text('Name'); ?>
@@ -28,14 +28,14 @@
           <?php } ?>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Local name of the language'); ?>">
             <?php echo $this->text('Native name'); ?>
           </span>
         </label>
         <div class="col-md-4">
-          <input name="language[native_name]" maxlength="255" class="form-control" value="<?php echo isset($language['native_name']) ? $this->escape($language['native_name']) : ''; ?>">
+          <input name="language[native_name]" maxlength="50" class="form-control" value="<?php echo isset($language['native_name']) ? $this->escape($language['native_name']) : ''; ?>">
           <?php if (isset($this->errors['native_name'])) { ?>
           <div class="help-block"><?php echo $this->errors['native_name']; ?></div>
           <?php } ?>
@@ -78,7 +78,7 @@
           <?php } ?>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
             <?php echo $this->text('Weight'); ?>

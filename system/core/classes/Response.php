@@ -9,8 +9,6 @@
 
 namespace core\classes;
 
-use core\classes\Tool;
-
 /**
  * Provides methods to output a data to the user
  */
@@ -187,7 +185,7 @@ class Response
 
         $this->addOptionalHeaders($options);
         $this->sendHeaders();
-        Tool::readfile($file);
+        readfile($file);
         exit;
     }
 

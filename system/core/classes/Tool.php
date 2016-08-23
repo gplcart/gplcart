@@ -135,6 +135,38 @@ class Tool
     }
 
     /**
+     * Recursive deletes files and directories
+     * @param string $directory
+     * @return boolean
+     */
+    public static function deleteDirecoryRecursive($directory)
+    {
+        if (!file_exists($directory)) {
+            return false;
+        }
+
+        if (!is_dir($directory)) {
+            return false;
+        }
+
+        foreach (scandir($directory) as $object) {
+            if ($object == '.' || $object == '..') {
+                continue;
+            }
+
+            $path = $directory . '/' . $object;
+            if (is_dir($path)) {
+                static::deleteDirecoryRecursive($path);
+                continue;
+            }
+
+            unlink($path);
+        }
+
+        return rmdir($directory);
+    }
+
+    /**
      * Finds all files matching a given pattern in a given directory
      * @param string $path
      * @param string $pattern Either an array of allowed extensions or a pattern for glob()
@@ -151,43 +183,20 @@ class Tool
     }
 
     /**
-     * Allows to read a large file. Replacement of readfile()
-     * @param string $filename
-     * @param bool $retbytes
-     * @param type $chunksize
-     * @return boolean
+     * Recursive scans files
+     * @param string $pattern
+     * @param integer $flags
+     * @return array
      */
-    public static function readfile($filename, $retbytes = true,
-            $chunksize = 1048576)
+    public static function scanFilesRecursive($pattern, $flags = 0)
     {
-        $cnt = 0;
-        $buffer = '';
+        $files = glob($pattern, $flags);
 
-        $handle = fopen($filename, 'rb');
-
-        if ($handle === false) {
-            return false;
+        foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
+            $files = array_merge($files, static::scanFilesRecursive($dir . '/' . basename($pattern), $flags));
         }
 
-        while (!feof($handle)) {
-            $buffer = fread($handle, $chunksize);
-            echo $buffer;
-
-            ob_flush();
-            flush();
-
-            if ($retbytes) {
-                $cnt += strlen($buffer);
-            }
-        }
-
-        $status = fclose($handle);
-
-        if ($retbytes && $status) {
-            return $cnt;
-        }
-
-        return $status;
+        return $files;
     }
 
     /**

@@ -629,14 +629,14 @@ class Route
             'access' => 'module',
             'menu' => array('admin' => 'Local'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'modules')
+                'controller' => array('core\\controllers\\admin\\Module', 'listModule')
             )
         );
 
         $routes['admin/module/upload'] = array(
             'access' => 'module_upload',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'upload')
+                'controller' => array('core\\controllers\\admin\\Module', 'uploadModule')
             )
         );
 
@@ -644,7 +644,7 @@ class Route
             'access' => 'marketplace',
             'menu' => array('admin' => 'Marketplace'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'marketplace')
+                'controller' => array('core\\controllers\\admin\\Module', 'marketplaceModule')
             )
         );
 
@@ -667,21 +667,21 @@ class Route
             'access' => 'language',
             'menu' => array('admin' => 'Languages'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Language', 'languages')
+                'controller' => array('core\\controllers\\admin\\Language', 'listLanguage')
             )
         );
 
         $routes['admin/settings/language/edit/(\w+)'] = array(
             'access' => 'language_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Language', 'edit')
+                'controller' => array('core\\controllers\\admin\\Language', 'editLanguage')
             )
         );
 
         $routes['admin/settings/language/add'] = array(
             'access' => 'language_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Language', 'edit')
+                'controller' => array('core\\controllers\\admin\\Language', 'editLanguage')
             )
         );
 

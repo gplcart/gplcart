@@ -39,59 +39,59 @@ class Language extends Controller
      * Displays the language edit form
      * @param string|null $code
      */
-    public function edit($code = null)
+    public function editLanguage($code = null)
     {
-        $language = $this->get($code);
+        $language = $this->getLanguage($code);
         $default = $this->language->getDefault();
 
         $this->setData('language', $language);
         $this->setData('default_language', $default);
 
         if ($this->isPosted('delete')) {
-            $this->delete($language);
+            $this->deleteLanguage($language);
         }
 
         if ($this->isPosted('save')) {
-            $this->submit($language);
+            $this->submitLanguage($language);
         }
 
-        $this->setTitleEdit($language);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
+        $this->setTitleEditLanguage($language);
+        $this->setBreadcrumbEditLanguage();
+        $this->outputEditLanguage();
     }
 
     /**
      * Displays the language overview page
      */
-    public function languages()
+    public function listLanguage()
     {
-        $this->setRefresh();
+        if ($this->isQuery('refresh')) {
+            $this->refreshLanguage();
+        }
 
         $languages = $this->language->getList();
         $this->setData('languages', $languages);
 
-        $this->setTitleLanguages();
-        $this->setBreadcrumbLanguages();
-        $this->outputLanguages();
+        $this->setTitleListLanguage();
+        $this->setBreadcrumbListLanguage();
+        $this->outputListLanguage();
     }
 
     /**
-     * Controls the current URL and refreshes a language if needed
+     * Removes cached translations for the given language
      */
-    protected function setRefresh()
+    protected function refreshLanguage()
     {
         $code = (string) $this->request->get('refresh');
-
-        if (!empty($code)) {
-            $this->refresh($code);
-        }
+        $this->language->refresh($code);
+        $this->redirect();
     }
 
     /**
      * Sets titles on the edit language page
      * @param array $language
      */
-    protected function setTitleEdit(array $language)
+    protected function setTitleEditLanguage(array $language)
     {
         if (isset($language['code'])) {
             $title = $this->text('Edit language %name', array('%name' => $language['native_name']));
@@ -105,7 +105,7 @@ class Language extends Controller
     /**
      * Sets breadcrumbs on the edit language page
      */
-    protected function setBreadcrumbEdit()
+    protected function setBreadcrumbEditLanguage()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -119,7 +119,7 @@ class Language extends Controller
     /**
      * Renders the edit language page templates
      */
-    protected function outputEdit()
+    protected function outputEditLanguage()
     {
         $this->output('settings/language/edit');
     }
@@ -129,30 +129,73 @@ class Language extends Controller
      * @param array $language
      * @return null
      */
-    protected function submit(array $language)
+    protected function submitLanguage(array $language)
     {
         $this->setSubmitted('language');
-        $this->validate($language);
+        $this->validateLanguage($language);
 
         if ($this->hasErrors('language')) {
             return;
         }
 
         if (isset($language['code'])) {
-            $this->controlAccess('language_edit');
-            $this->language->update($language['code'], $this->getSubmitted());
-            $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success');
+            $this->updateLanguage($language);
         }
 
+        $this->addLanguage();
+    }
+
+    /**
+     * Adds a new language
+     */
+    protected function addLanguage()
+    {
         $this->controlAccess('language_add');
-        $this->language->add($this->getSubmitted());
+
+        $submitted = $this->getSubmitted();
+        $this->language->add($submitted);
         $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
+    }
+
+    /**
+     * Updates a language
+     * @param array $language
+     */
+    protected function updateLanguage(array $language)
+    {
+        $this->controlAccess('language_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->language->update($language['code'], $submitted);
+        $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success');
+    }
+
+    /**
+     * Deletes a language
+     * @param array $language
+     * @return null
+     */
+    protected function deleteLanguage(array $language)
+    {
+        $this->controlAccess('language_delete');
+
+        $deleted = $this->language->delete($language['code']);
+
+        if ($deleted) {
+            $message = $this->text('Language has been deleted');
+            $this->redirect('admin/settings/language', $message, 'success');
+        }
+
+        $message = $this->text('Unable to delete this language.'
+                . ' The most probable reason - it is default language or blocked by a module');
+
+        $this->redirect('', $message, 'danger');
     }
 
     /**
      * Sets titles on the language overview page
      */
-    protected function setTitleLanguages()
+    protected function setTitleListLanguage()
     {
         $this->setTitle($this->text('Languages'));
     }
@@ -160,7 +203,7 @@ class Language extends Controller
     /**
      * Sets breadcrumbs on the language overview page
      */
-    protected function setBreadcrumbLanguages()
+    protected function setBreadcrumbListLanguage()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -170,19 +213,9 @@ class Language extends Controller
     /**
      * Renders the language overview page templates
      */
-    protected function outputLanguages()
+    protected function outputListLanguage()
     {
         $this->output('settings/language/list');
-    }
-
-    /**
-     * Refreshes translation files for a given language
-     * @param string $code
-     */
-    protected function refresh($code)
-    {
-        $this->language->refresh($code);
-        $this->redirect();
     }
 
     /**
@@ -190,7 +223,7 @@ class Language extends Controller
      * @param string $code
      * @return array
      */
-    protected function get($code)
+    protected function getLanguage($code)
     {
         if (empty($code)) {
             return array();
@@ -206,42 +239,28 @@ class Language extends Controller
     }
 
     /**
-     * Deletes a language
-     * @param array $language
-     * @return null
-     */
-    protected function delete(array $language)
-    {
-        $this->controlAccess('language_delete');
-
-        $deleted = $this->language->delete($language['code']);
-
-        if ($deleted) {
-            $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
-        }
-
-        $this->redirect('', $this->text('Unable to delete this language. The most probable reason - it is default language or blocked by modules'), 'danger');
-    }
-
-    /**
      * Validates a language
      * @param array $language
      */
-    protected function validate(array $language)
+    protected function validateLanguage(array $language)
     {
 
         $this->addValidator('code', array(
-            'regexp' => array('pattern' => '/^[a-z]{2}$/', 'required' => true)));
+            'regexp' => array('pattern' => '/^[a-z]{2}$/', 'required' => true)
+        ));
 
         $this->addValidator('name', array(
-            'regexp' => array('pattern' => '/^[A-Za-z]{1,50}$/', 'required' => true)));
+            'regexp' => array('pattern' => '/^[A-Za-z]{1,50}$/')
+        ));
 
         $this->addValidator('native_name', array(
-            'length' => array('min' => 1, 'max' => 255)));
+            'length' => array('max' => 50)
+        ));
 
         $this->addValidator('weight', array(
             'numeric' => array(),
-            'length' => array('max' => 2, 'required' => true)));
+            'length' => array('max' => 2)
+        ));
 
         $this->setValidators($language);
     }

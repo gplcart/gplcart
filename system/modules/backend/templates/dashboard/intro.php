@@ -40,7 +40,7 @@
             <p><?php echo $this->text('Extend your store by installing new modules and themes'); ?></p>
           </div>
           <div class="col-md-2 text-right">
-            <a class="btn btn-default btn-block" href="<?php echo $this->url('admin/module'); ?>">
+            <a class="btn btn-default btn-block" href="<?php echo $this->url('admin/module/list'); ?>">
               <?php echo $this->text('Manage modules'); ?>
             </a>
           </div>

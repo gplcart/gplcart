@@ -333,7 +333,7 @@ class Image extends Model
             $directory = "$directory/$imagestyle_id";
         }
 
-        $result = $this->file->deleteDirecoryRecursive($directory);
+        $result = Tool::deleteDirecoryRecursive($directory);
         $this->hook->fire('clear.imagestyle.cache.after', $imagestyle_id, $result);
         return $result;
     }

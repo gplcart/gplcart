@@ -3,7 +3,7 @@
   <div class="row">
     <div class="col-md-12 text-right">
       <div class="btn-toolbar">
-        <a href="<?php echo $this->url('admin/module/theme'); ?>" class="btn btn-default cancel">
+        <a href="<?php echo $this->url('admin/module/list'); ?>" class="btn btn-default cancel">
           <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
         </a>
         <button class="btn btn-primary save" name="save" value="1">

@@ -318,6 +318,7 @@ class UserRole extends Model
             'module_enable' => $this->language->text('Module: enable'),
             'module_disable' => $this->language->text('Module: disable'),
             'module_upload' => $this->language->text('Module: upload'),
+            'module_delete' => $this->language->text('Module: delete'),
             'store' => $this->language->text('Store: access'),
             'store_edit' => $this->language->text('Store: edit'),
             'store_add' => $this->language->text('Store: add'),

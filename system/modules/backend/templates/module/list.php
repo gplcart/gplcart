@@ -38,7 +38,7 @@
             </div>
           </td>
           <td class="middle">
-            <?php echo $info['description'] ? $this->truncate($this->xss($info['description'])) : ''; ?>
+            <?php echo $info['description'] ? $this->truncate($this->xss($info['description']), 50) : ''; ?>
           </td>
           <td class="middle">
             <?php echo $info['version'] ? $this->escape($info['version']) : $this->text('Unknown'); ?>
@@ -91,10 +91,15 @@
               <?php if ($this->access('module_install')) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo strtolower($this->text('Install')); ?>
+                  <?php echo strtolower($this->text('Install and enable')); ?>
                 </a>
               </li>
               <?php } ?>
+              <li>
+                <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id, 'token' => $token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure you want to remove this module from disk? It cannot be undone!'); ?>');">
+                  <?php echo strtolower($this->text('Delete')); ?>
+                </a>
+              </li>
               <?php } ?>
               <?php if (isset($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
               <li>
