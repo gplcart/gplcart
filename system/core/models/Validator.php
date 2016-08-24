@@ -236,7 +236,7 @@ class Validator extends Model
             ),
         );
 
-        $handlers['alias'] = array(
+        $handlers['alias_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Alias', 'unique')
             ),

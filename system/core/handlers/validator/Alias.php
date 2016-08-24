@@ -53,16 +53,17 @@ class Alias
             return true;
         }
 
-        $check_alias = true;
         if (isset($options['data']['alias']) && ($options['data']['alias'] === $alias)) {
-            $check_alias = false;
+            return true;
+        }
+        
+        $exists = $this->alias->exists($alias);
+
+        if (empty($exists)) {
+            return true;
         }
 
-        if ($check_alias && $this->alias->exists($alias)) {
-            return $this->language->text('URL alias already exists');
-        }
-
-        return true;
+        return $this->language->text('URL alias already exists');
     }
 
 }

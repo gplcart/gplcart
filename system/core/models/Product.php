@@ -133,7 +133,6 @@ class Product extends Model
             'currency' => !empty($data['currency']) ? $data['currency'] : $this->config->get('currency', 'USD'),
             'price' => !empty($data['price']) ? $this->price->amount($data['price'], $data['currency']) : 0,
             'status' => !empty($data['status']),
-            'front' => !empty($data['front']),
             'product_class_id' => !empty($data['product_class_id']) ? (int) $data['product_class_id'] : 0,
             'subtract' => !empty($data['subtract']),
             'stock' => !empty($data['stock']) ? (int) $data['stock'] : 0,
@@ -217,10 +216,6 @@ class Product extends Model
 
         if (isset($data['status'])) {
             $values['status'] = (int) $data['status'];
-        }
-
-        if (isset($data['front'])) {
-            $values['front'] = (int) $data['front'];
         }
 
         if (!empty($data['sku']) && isset($data['store_id'])) {
@@ -981,11 +976,6 @@ class Product extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['front'])) {
-            $sql .= ' AND p.front = ?';
-            $where[] = (int) $data['front'];
-        }
-
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id = ?';
             $where[] = (int) $data['store_id'];
@@ -1016,9 +1006,6 @@ class Product extends Model
                     break;
                 case 'status':
                     $sql .= " ORDER BY p.status $order";
-                    break;
-                case 'front':
-                    $sql .= " ORDER BY p.front $order";
                     break;
                 case 'store_id':
                     $sql .= " ORDER BY p.store_id $order";

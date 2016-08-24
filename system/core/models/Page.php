@@ -108,16 +108,15 @@ class Page extends Model
         $values = array(
             'modified' => 0,
             'title' => $data['title'],
-            'description' => $data['description'],
             'user_id' => (int) $data['user_id'],
             'status' => !empty($data['status']),
-            'front' => !empty($data['front']),
-            'created' => !empty($data['created']) ? (int) $data['created'] : GC_TIME,
-            'data' => !empty($data['data']) ? serialize($data['data']) : serialize(array()),
-            'meta_title' => !empty($data['meta_title']) ? $data['meta_title'] : '',
-            'meta_description' => !empty($data['meta_description']) ? $data['meta_description'] : '',
-            'store_id' => !empty($data['store_id']) ? (int) $data['store_id'] : $this->config->get('store', 1),
-            'category_id' => !empty($data['category_id']) ? (int) $data['category_id'] : 0,
+            'description' => $data['description'],
+            'meta_title' => empty($data['meta_title']) ? '' : $data['meta_title'],
+            'created' => empty($data['created']) ? GC_TIME : (int) $data['created'],
+            'category_id' => empty($data['category_id']) ? 0 : (int) $data['category_id'],
+            'data' => empty($data['data']) ? serialize(array()) : serialize($data['data']),
+            'meta_description' => empty($data['meta_description']) ? '' : $data['meta_description'],
+            'store_id' => empty($data['store_id']) ? $this->config->get('store', 1) : (int) $data['store_id']
         );
 
         $page_id = $this->db->insert('page', $values);
@@ -153,12 +152,12 @@ class Page extends Model
     public function addTranslation($page_id, $language, array $translation)
     {
         $values = array(
-            'page_id' => (int) $page_id,
             'language' => $language,
-            'title' => !empty($translation['title']) ? $translation['title'] : '',
-            'description' => !empty($translation['description']) ? $translation['description'] : '',
-            'meta_description' => !empty($translation['meta_description']) ? $translation['meta_description'] : '',
-            'meta_title' => !empty($translation['meta_title']) ? $translation['meta_title'] : '',
+            'page_id' => (int) $page_id,
+            'title' => empty($translation['title']) ? '' : $translation['title'],
+            'meta_title' => empty($translation['meta_title']) ? '' : $translation['meta_title'],
+            'description' => empty($translation['description']) ? '' : $translation['description'],
+            'meta_description' => empty($translation['meta_description']) ? '' : $translation['meta_description']
         );
 
         return $this->db->insert('page_translation', $values);
@@ -208,10 +207,6 @@ class Page extends Model
 
         if (isset($data['status'])) {
             $values['status'] = (int) $data['status'];
-        }
-
-        if (isset($data['front'])) {
-            $values['front'] = (int) $data['front'];
         }
 
         if (!empty($data['created'])) {
@@ -290,6 +285,7 @@ class Page extends Model
         $this->db->delete('page_translation', array('page_id' => (int) $page_id));
         $this->db->delete('alias', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
         $this->db->delete('file', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
+        $this->db->delete('collection_item', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
 
         $this->hook->fire('delete.page.after', $page_id);
         return true;
@@ -341,11 +337,6 @@ class Page extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['front'])) {
-            $sql .= ' AND p.front = ?';
-            $where[] = (int) $data['front'];
-        }
-
         if (isset($data['email'])) {
             $sql .= ' AND u.email LIKE ?';
             $where[] = "%{$data['email']}%";
@@ -361,9 +352,6 @@ class Page extends Model
                     break;
                 case 'status':
                     $sql .= " ORDER BY p.status {$data['order']}";
-                    break;
-                case 'front':
-                    $sql .= " ORDER BY p.front {$data['order']}";
                     break;
                 case 'created':
                     $sql .= " ORDER BY p.created {$data['order']}";

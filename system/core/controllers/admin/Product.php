@@ -131,14 +131,14 @@ class Product extends Controller
     /**
      * Displays the product overview page
      */
-    public function products()
+    public function listProduct()
     {
         if ($this->isPosted('action')) {
-            $this->action();
+            $this->actionProduct();
         }
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalProducts($query);
+        $total = $this->getTotalProduct($query);
         $limit = $this->setPager($total, $query);
 
         $products = $this->getProducts($limit, $query);
@@ -150,45 +150,44 @@ class Product extends Controller
         $this->setData('currencies', $currencies);
 
         $filters = array('title', 'sku', 'price', 'stock', 'status',
-            'store_id', 'currency', 'front');
+            'store_id', 'currency');
 
         $this->setFilter($filters, $query);
 
         if ($this->isPosted('save')) {
-            $this->submit();
+            $this->submitProduct();
         }
 
-        $this->setTitleProducts();
-        $this->setBreadcrumbProducts();
-        $this->outputProducts();
+        $this->setTitleListProduct();
+        $this->setBreadcrumbListProduct();
+        $this->outputListProduct();
     }
 
     /**
      * Displays the product edit form
      * @param integer|null $product_id
      */
-    public function edit($product_id = null)
+    public function editProduct($product_id = null)
     {
-        $this->outputCategories();
+        $this->outputCategoriesProduct();
 
-        $product = $this->get($product_id);
+        $product = $this->getProduct($product_id);
         $this->setData('product', $product);
 
         if (!empty($product)) {
-            $related = $this->getRelated($product);
+            $related = $this->getRelatedProduct($product);
             $this->setData('related', $related);
         }
 
         if ($this->isPosted('delete')) {
-            $this->delete($product);
+            $this->deleteProduct($product);
         }
 
         if ($this->isPosted('save')) {
-            $this->submit($product);
+            $this->submitProduct($product);
         }
 
-        $this->setDataFieldForm();
-        $this->setDataImages();
+        $this->setDataEditProduct();
 
         $stores = $this->store->getNames();
         $currency = $this->currency->getDefault();
@@ -198,24 +197,33 @@ class Product extends Controller
         $this->setData('classes', $classes);
         $this->setData('default_currency', $currency);
 
-        $this->setJsSettings('product', $product);
+        $this->setJsEditProduct($product);
 
-        $this->setTitleEdit($product);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
+        $this->setTitleEditProduct($product);
+        $this->setBreadcrumbEditProduct();
+        $this->outputEditProduct();
+    }
+    
+    /**
+     * Sets Java scripts on the edit product page
+     * @param array $product
+     */
+    protected function setJsEditProduct(array $product)
+    {
+        $this->setJsSettings('product', $product);
     }
 
     /**
      * Outputs a JSON string containing brand and catalog categories
      */
-    protected function outputCategories()
+    protected function outputCategoriesProduct()
     {
         $store_id = (int) $this->request->get('store_id');
 
         if (!empty($store_id) && $this->request->isAjax()) {
 
-            $catalog = $this->category->getOptionListByStore($store_id, 'catalog');
             $brand = $this->category->getOptionListByStore($store_id, 'brand');
+            $catalog = $this->category->getOptionListByStore($store_id, 'catalog');
 
             $response = array(
                 'brand' => reset($brand),
@@ -231,7 +239,7 @@ class Product extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalProducts(array $query)
+    protected function getTotalProduct(array $query)
     {
         $query['count'] = true;
         return $this->product->getList($query);
@@ -240,7 +248,7 @@ class Product extends Controller
     /**
      * Sets titles on the product overview page
      */
-    protected function setTitleProducts()
+    protected function setTitleListProduct()
     {
         $this->setTitle($this->text('Products'));
     }
@@ -248,7 +256,7 @@ class Product extends Controller
     /**
      * Sets breadcrumbs on the product overview page
      */
-    protected function setBreadcrumbProducts()
+    protected function setBreadcrumbListProduct()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -258,7 +266,7 @@ class Product extends Controller
     /**
      * Renders product overview page templates
      */
-    protected function outputProducts()
+    protected function outputListProduct()
     {
         $this->output('content/product/list');
     }
@@ -266,13 +274,14 @@ class Product extends Controller
     /**
      * Applies an action to products
      */
-    protected function action()
+    protected function actionProduct()
     {
         $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
         $selected = (array) $this->request->post('selected', array());
 
         if ($action == 'get_options') {
+            
             $product_id = (int) $this->request->post('product_id');
             $product = $this->product->get($product_id);
 
@@ -306,12 +315,14 @@ class Product extends Controller
         }
 
         if ($updated > 0) {
-            $this->setMessage($this->text('Updated %num products', array('%num' => $updated)), 'success', true);
+            $message = $this->text('Updated %num products', array('%num' => $updated));
+            $this->setMessage($message, 'success', true);
             $this->response->json(array('success' => 1));
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Deleted %num products', array('%num' => $deleted)), 'success', true);
+            $message = $this->text('Deleted %num products', array('%num' => $deleted));
+            $this->setMessage($message, 'success', true);
             $this->response->json(array('success' => 1));
         }
 
@@ -324,7 +335,7 @@ class Product extends Controller
      * @param array $query
      * @return array
      */
-    protected function getProducts(array $limit, array $query)
+    protected function getListProduct(array $limit, array $query)
     {
 
         $query['limit'] = $limit;
@@ -336,7 +347,8 @@ class Product extends Controller
             $product['view_url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
+                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
+                        . "/product/{$product['product_id']}";
             }
 
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
@@ -350,7 +362,7 @@ class Product extends Controller
      * @param array $product
      * @return integer
      */
-    protected function updateCombination(array $product)
+    protected function updateCombinationProduct(array $product)
     {
         if (empty($product['combination'])) {
             return 0;
@@ -368,7 +380,7 @@ class Product extends Controller
      * Sets titles on the product edit form
      * @param array $product
      */
-    protected function setTitleEdit(array $product)
+    protected function setTitleEditProduct(array $product)
     {
         if (isset($product['product_id'])) {
             $title = $this->text('Edit %title', array('%title' => $product['title']));
@@ -382,7 +394,7 @@ class Product extends Controller
     /**
      * Sets breadcrumbs on the product edit page
      */
-    protected function setBreadcrumbEdit()
+    protected function setBreadcrumbEditProduct()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -396,7 +408,7 @@ class Product extends Controller
     /**
      * Renders product edit page templates
      */
-    protected function outputEdit()
+    protected function outputEditProduct()
     {
         $this->output('content/product/edit');
     }
@@ -406,7 +418,7 @@ class Product extends Controller
      * @param array $product
      * @return array
      */
-    protected function getRelated(array $product)
+    protected function getRelatedProduct(array $product)
     {
         $stores = $this->store->getList();
         $products = $this->product->getRelated($product['product_id'], true, array(
@@ -429,7 +441,7 @@ class Product extends Controller
      * @param integer $product_id
      * @return array
      */
-    protected function get($product_id)
+    protected function getProduct($product_id)
     {
         if (!is_numeric($product_id)) {
             return array();
@@ -479,7 +491,7 @@ class Product extends Controller
      * @param array $product
      * @return null
      */
-    protected function delete(array $product)
+    protected function deleteProduct(array $product)
     {
         $this->controlAccess('product_delete');
 
@@ -493,7 +505,7 @@ class Product extends Controller
     /**
      * Renders the product field forms
      */
-    protected function setDataFieldForm()
+    protected function setDataEditProduct()
     {
         $output_field_form = false;
 
@@ -519,13 +531,7 @@ class Product extends Controller
         if ($output_field_form) {
             $this->response->html($attributes . $options);
         }
-    }
-
-    /**
-     * Adds rendered product images form
-     */
-    protected function setDataImages()
-    {
+        
         $images = $this->getData('product.images');
 
         if (!empty($images)) {
@@ -545,7 +551,8 @@ class Product extends Controller
 
             $attached = $this->render('common/image/attache', $data);
             $this->setData('attached_images', $attached);
-        }
+        } 
+        
     }
 
     /**
@@ -553,12 +560,11 @@ class Product extends Controller
      * @param array $product
      * @return null
      */
-    protected function submit(array $product = array())
+    protected function submitProduct(array $product = array())
     {
-
         $this->setSubmitted('product', null, false);
 
-        $this->validate($product);
+        $this->validateProduct($product);
 
         if ($this->hasErrors('product')) {
 
@@ -569,7 +575,7 @@ class Product extends Controller
             $related = $this->getSubmitted('related');
 
             if (!empty($related)) {
-                $products = $this->getProducts(null, array('product_id' => $related));
+                $products = $this->getListProduct(null, array('product_id' => $related));
                 $this->setData('related', $products);
             }
             return;
@@ -580,27 +586,31 @@ class Product extends Controller
         if ($this->request->isAjax()) {
 
             if (!$this->access('product_edit')) {
-                $this->response->json(array('error' => $this->text('You are not permitted to perform this operation')));
+                $message = $this->text('You are not permitted to perform this operation');
+                $this->response->json(array('error' => $message));
             }
 
             $product_id = $this->getSubmitted('product_id');
             $update_combinations = $this->getSubmitted('update_combinations');
 
             if ($update_combinations) {
-                $this->updateCombination($this->submitted);
-                $this->response->json(array('success' => $this->text('Product has been updated')));
+                $this->updateCombination($submitted);
+                $message  = $this->text('Product has been updated');
+                $this->response->json(array('success' => $message));
             }
 
             if (empty($product_id)) {
-                $this->response->json(array('error' => $this->text('You are not permitted to perform this operation')));
+                $message = $this->text('You are not permitted to perform this operation');
+                $this->response->json(array('error' => $message));
             }
 
             $this->product->update($product_id, $submitted);
-            $this->response->json(array('success' => $this->text('Product has been updated')));
+            $message = $this->text('Product has been updated');
+            $this->response->json(array('success' => $message));
         }
 
         if (isset($product['product_id'])) {
-            $this->deleteImages();
+            $this->deleteImagesProduct();
             $this->product->update($product['product_id'], $submitted);
             $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
         }
@@ -620,21 +630,19 @@ class Product extends Controller
      * Deletes submitted images
      * @return int
      */
-    protected function deleteImages()
+    protected function deleteImagesProduct()
     {
+        $this->controlAccess('product_edit');
         $images = (array) $this->request->post('delete_image', array());
 
-        if (empty($images)) {
-            return 0;
-        }
-
-        $this->controlAccess('product_edit');
-
         $deleted = 0;
-        foreach (array_values($images) as $file_id) {
-            $deleted += (int) $this->image->delete($file_id);
+        
+        if (!empty($images)) {
+            foreach (array_values($images) as $file_id) {
+                $deleted += (int) $this->image->delete($file_id);
+            }
         }
-
+        
         return $deleted;
     }
 
@@ -642,7 +650,7 @@ class Product extends Controller
      * Validates an array of submitted product data
      * @param array $product
      */
-    protected function validate(array $product = array())
+    protected function validateProduct(array $product = array())
     {
         $this->setSubmittedBool('status');
 
@@ -695,7 +703,7 @@ class Product extends Controller
 
         $this->addValidator('alias', array(
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias' => array()));
+            'alias_unique' => array()));
 
 
         $this->setValidators($product);

@@ -19,16 +19,6 @@
               <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
             </a>
           </li>
-          <li>
-            <a data-action="front" data-action-value="1" href="#">
-              <?php echo $this->text('Front page'); ?>: <?php echo $this->text('Add'); ?>
-            </a>
-          </li>
-          <li>
-            <a data-action="front" data-action-value="0" href="#">
-              <?php echo $this->text('Front page'); ?>: <?php echo $this->text('Remove'); ?>
-            </a>
-          </li>
           <?php } ?>
           <?php if ($this->access('page_delete')) { ?>
           <li>
@@ -72,11 +62,6 @@
                 <?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
-            <th class="middle">
-              <a href="<?php echo $sort_front; ?>">
-                <?php echo $this->text('Front'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
             <th>
               <a href="<?php echo $sort_created; ?>">
                 <?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i>
@@ -112,19 +97,6 @@
                 </option>
                 <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
-                </option>
-              </select>
-            </th>
-            <th class="middle">
-              <select class="form-control" name="front">
-                <option value="any">
-                <?php echo $this->text('Any'); ?>
-                </option>
-                <option value="1"<?php echo ($filter_front === '1') ? ' selected' : ''; ?>>
-                <?php echo $this->text('Yes'); ?>
-                </option>
-                <option value="0"<?php echo ($filter_front === '0') ? ' selected' : ''; ?>>
-                <?php echo $this->text('No'); ?>
                 </option>
               </select>
             </th>
@@ -166,13 +138,6 @@
             </td>
             <td class="middle">
               <?php if (empty($page['status'])) { ?>
-              <i class="fa fa-square-o"></i>
-              <?php } else { ?>
-              <i class="fa fa-check-square-o"></i>
-              <?php } ?>
-            </td>
-            <td class="middle">
-              <?php if (empty($page['front'])) { ?>
               <i class="fa fa-square-o"></i>
               <?php } else { ?>
               <i class="fa fa-check-square-o"></i>

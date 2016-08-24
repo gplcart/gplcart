@@ -346,7 +346,6 @@ class Module extends Controller
     {
         $options['count'] = true;
         $result = $this->getListMarketplaceModule($options);
-
         return empty($result['total']) ? 0 : (int) $result['total'];
     }
 

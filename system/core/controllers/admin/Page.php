@@ -66,49 +66,50 @@ class Page extends Controller
     /**
      * Displays the page overview page
      */
-    public function pages()
+    public function listPage()
     {
         if ($this->isPosted('action')) {
-            $this->action();
+            $this->actionPage();
         }
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalPages($query);
+        $total = $this->getTotalPage($query);
+
         $limit = $this->setPager($total, $query);
-        $pages = $this->getPages($limit, $query);
+        $pages = $this->getListPage($limit, $query);
         $stores = $this->store->getNames();
 
         $this->setData('pages', $pages);
         $this->setData('stores', $stores);
 
         $filters = array('title', 'store_id',
-            'status', 'created', 'email', 'front');
+            'status', 'created', 'email');
 
         $this->setFilter($filters, $query);
 
         if ($this->isPosted('save')) {
-            $this->submit();
+            $this->submitPage();
         }
 
-        $this->setTitlePages();
-        $this->setBreadcrumbPages();
-        $this->outputPages();
+        $this->setTitleListPage();
+        $this->setBreadcrumbListPage();
+        $this->outputListPage();
     }
 
     /**
      * Displays the page edit form
      * @param integer|null $page_id
      */
-    public function edit($page_id = null)
+    public function editPage($page_id = null)
     {
-        $page = $this->get($page_id);
+        $page = $this->getPage($page_id);
 
         if ($this->isPosted('action')) {
-            $this->action();
+            $this->actionPage();
         }
 
         if ($this->isPosted('delete')) {
-            $this->delete($page);
+            $this->deletePage($page);
         }
 
         $stores = $this->store->getNames();
@@ -117,14 +118,14 @@ class Page extends Controller
         $this->setData('stores', $stores);
 
         if ($this->isPosted('save')) {
-            $this->submit($page);
+            $this->submitPage($page);
         }
 
-        $this->setDataPage();
+        $this->setDataEditPage();
 
-        $this->setTitleEdit($page);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
+        $this->setTitleEditPage($page);
+        $this->setBreadcrumbEditPage();
+        $this->outputEditPage();
     }
 
     /**
@@ -132,18 +133,16 @@ class Page extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalPages(array $query)
+    protected function getTotalPage(array $query)
     {
-        $options = array('count' => true);
-        $options += $query;
-
-        return $this->page->getList($options);
+        $query['count'] = true;
+        return $this->page->getList($query);
     }
 
     /**
      * Sets titles on the page overview page
      */
-    protected function setTitlePages()
+    protected function setTitleListPage()
     {
         $this->setTitle($this->text('Pages'));
     }
@@ -151,7 +150,7 @@ class Page extends Controller
     /**
      * Sets breadcrumbs on the page overview page
      */
-    protected function setBreadcrumbPages()
+    protected function setBreadcrumbListPage()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -161,24 +160,25 @@ class Page extends Controller
     /**
      * Renders templates for the pages overview page
      */
-    protected function outputPages()
+    protected function outputListPage()
     {
         $this->output('content/page/list');
     }
 
     /**
      * Applies an action to the selected pages
-     * @return boolean
      */
-    protected function action()
+    protected function actionPage()
     {
         $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
         $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'categories') {
-            $store_id = (int) $this->request->post('store_id', $this->store->getDefault());
-            $this->response->json($this->category->getOptionListByStore($store_id));
+            $default = $this->store->getDefault();
+            $store_id = (int) $this->request->post('store_id', $default);
+            $categories = $this->category->getOptionListByStore($store_id);
+            $this->response->json($categories);
         }
 
         $deleted = $updated = 0;
@@ -188,10 +188,6 @@ class Page extends Controller
                 $updated += (int) $this->page->update($page_id, array('status' => $value));
             }
 
-            if ($action == 'front' && $this->access('page_edit')) {
-                $updated += (int) $this->page->update($page_id, array('front' => $value));
-            }
-
             if ($action == 'delete' && $this->access('page_delete')) {
                 $deleted += (int) $this->page->delete($page_id);
             }
@@ -199,26 +195,23 @@ class Page extends Controller
 
         if ($updated > 0) {
             $this->setMessage($this->text('Pages have been updated'), 'success', true);
-            return true;
         }
 
         if ($deleted > 0) {
             $this->setMessage($this->text('Pages have been deleted'), 'success', true);
-            return true;
         }
-
-        return false;
     }
 
     /**
      * Sets titles on the page edit page
      */
-    protected function setTitleEdit($page)
+    protected function setTitleEditPage($page)
     {
-        $title = $this->text('Add page');
-
         if (isset($page['page_id'])) {
-            $title = $this->text('Edit page %title', array('%title' => $page['title']));
+            $title = $this->text('Edit page %title', array(
+                '%title' => $page['title']));
+        } else {
+            $title = $this->text('Add page');
         }
 
         $this->setTitle($title);
@@ -227,7 +220,7 @@ class Page extends Controller
     /**
      * Sets breadcrumbs on the page edit page
      */
-    protected function setBreadcrumbEdit()
+    protected function setBreadcrumbEditPage()
     {
         $this->setBreadcrumb(array(
             'text' => $this->text('Dashboard'),
@@ -241,7 +234,7 @@ class Page extends Controller
     /**
      * Renders the page edit templates
      */
-    protected function outputEdit()
+    protected function outputEditPage()
     {
         $this->output('content/page/edit');
     }
@@ -249,7 +242,7 @@ class Page extends Controller
     /**
      * Modifies page data before sending to templates
      */
-    protected function setDataPage()
+    protected function setDataEditPage()
     {
         $default = $this->store->getDefault();
         $store_id = $this->getData('page.store_id', $default);
@@ -286,7 +279,7 @@ class Page extends Controller
      * @param integer $page_id
      * @return array
      */
-    protected function get($page_id)
+    protected function getPage($page_id)
     {
         if (!is_numeric($page_id)) {
             return array();
@@ -299,6 +292,7 @@ class Page extends Controller
         }
 
         $user = $this->user->get($page['user_id']);
+
         $page['author'] = $user['email'];
         $page['alias'] = $this->alias->get('page_id', $page['page_id']);
 
@@ -319,13 +313,12 @@ class Page extends Controller
      * @param array $query
      * @return array
      */
-    protected function getPages(array $limit, array $query)
+    protected function getListPage(array $limit, array $query)
     {
         $stores = $this->store->getList();
 
-        $options = array('limit' => $limit);
-        $options += $query;
-        $pages = $this->page->getList($options);
+        $query['limit'] = $limit;
+        $pages = $this->page->getList($query);
 
         foreach ($pages as &$page) {
 
@@ -344,7 +337,7 @@ class Page extends Controller
      * Deletes a page
      * @param array $page
      */
-    protected function delete(array $page)
+    protected function deletePage(array $page)
     {
         $this->controlAccess('page_delete');
         $this->page->delete($page['page_id']);
@@ -356,35 +349,57 @@ class Page extends Controller
      * @param array $page
      * @return null
      */
-    protected function submit(array $page = array())
+    protected function submitPage(array $page = array())
     {
         $this->setSubmitted('page', null, false);
-        $this->validate($page);
+        $this->validatePage($page);
 
         if ($this->hasErrors('page')) {
             return;
         }
 
-        $this->deleteImages();
+        $this->deleteImagesPage();
 
         if (isset($page['page_id'])) {
-            $this->controlAccess('page_edit');
-            $this->page->update($page['page_id'], $this->getSubmitted());
-            $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
+            $this->updatePage($page);
         }
 
+        $this->addPage();
+    }
+
+    /**
+     * Updates a page with submitted values
+     * @param array $page
+     */
+    protected function updatePage(array $page)
+    {
+        $this->controlAccess('page_edit');
+
+        $submitted = $this->getSubmitted();
+
+        $this->page->update($page['page_id'], $submitted);
+        $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
+    }
+
+    /**
+     * Adds a new page using an array of submitted values
+     */
+    protected function addPage()
+    {
         $this->controlAccess('page_add');
-        $this->page->add($this->getSubmitted());
+
+        $submitted = $this->getSubmitted();
+
+        $this->page->add($submitted);
         $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
     }
 
     /**
      * Deletes an array of submitted images
-     * @return int
+     * @return integer
      */
-    protected function deleteImages()
+    protected function deleteImagesPage()
     {
-
         $images = (array) $this->request->post('delete_image');
         $has_access = ($this->access('page_add') || $this->access('page_edit'));
 
@@ -404,32 +419,50 @@ class Page extends Controller
      * Validates a single page
      * @param array $page
      */
-    protected function validate(array $page = array())
+    protected function validatePage(array $page = array())
     {
-        // Fix checkbox
         $this->setSubmittedBool('status');
 
         if (empty($page['page_id'])) {
             $this->setSubmitted('user_id', $this->uid);
         }
 
-        // Validate fields
-        $this->addValidator('title', array('length' => array('min' => 1, 'max' => 255)));
-        $this->addValidator('description', array('length' => array('min' => 1)));
-        $this->addValidator('meta_title', array('length' => array('max' => 255)));
-        $this->addValidator('meta_description', array('length' => array('max' => 255)));
-        $this->addValidator('translation', array('translation' => array()));
+        $this->addValidator('title', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('description', array(
+            'length' => array('min' => 1, 'max' => 65535)
+        ));
+
+        $this->addValidator('meta_title', array(
+            'length' => array('max' => 255)
+        ));
+
+        $this->addValidator('meta_description', array(
+            'length' => array('max' => 255)
+        ));
+
+        $this->addValidator('translation', array(
+            'translation' => array()
+        ));
 
         $alias = $this->getSubmitted('alias');
+
         if (empty($alias) && isset($page['page_id'])) {
-            $this->setSubmitted('alias', $this->page->createAlias($this->getSubmitted()));
+            $submitted = $this->getSubmitted();
+            $alias = $this->page->createAlias($submitted);
+            $this->setSubmitted('alias', $alias);
         }
 
         $this->addValidator('alias', array(
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias' => array()));
+            'alias_unique' => array()));
 
-        $this->addValidator('images', array('images' => array()));
+        $this->addValidator('images', array(
+            'images' => array()
+        ));
+
         $this->setValidators($page);
 
         $images = $this->getValidatorResult('images');

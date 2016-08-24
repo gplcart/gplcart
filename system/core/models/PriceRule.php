@@ -354,15 +354,15 @@ class PriceRule extends Model
 
         $values = array(
             'name' => $data['name'],
-            'code' => $data['code'],
-            'store_id' => !empty($data['store_id']) ? (int) $data['store_id'] : $this->config->get('store', 1),
-            'status' => !empty($data['status']),
-            'weight' => !empty($data['weight']) ? (int) $data['weight'] : 0,
-            'data' => !empty($data['data']) ? serialize($data['data']) : serialize(array()),
+            'type' => $data['type'],
+            'currency' => $data['currency'],
             'value' => (int) $data['value'],
             'value_type' => $data['value_type'],
-            'type' => $data['type'],
-            'currency' => $data['currency']
+            'status' => !empty($data['status']),
+            'code' => empty($data['code']) ? '' : $data['code'],
+            'weight' => empty($data['weight']) ? 0 : (int) $data['weight'],
+            'data' => empty($data['data']) ? serialize(array()) : serialize($data['data']),
+            'store_id' => empty($data['store_id']) ? (int) $this->config->get('store', 1) : (int) $data['store_id']
         );
 
         $price_rule_id = $this->db->insert('price_rule', $values);

@@ -403,21 +403,21 @@ class Route
             'access' => 'price_rule',
             'menu' => array('admin' => 'Prices'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\PriceRule', 'rules')
+                'controller' => array('core\\controllers\\admin\\PriceRule', 'listPriceRule')
             )
         );
 
         $routes['admin/sale/price/add'] = array(
             'access' => 'price_rule_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\PriceRule', 'edit')
+                'controller' => array('core\\controllers\\admin\\PriceRule', 'editPriceRule')
             )
         );
 
         $routes['admin/sale/price/edit/(\d+)'] = array(
             'access' => 'price_rule_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\PriceRule', 'edit')
+                'controller' => array('core\\controllers\\admin\\PriceRule', 'editPriceRule')
             )
         );
 
@@ -432,21 +432,21 @@ class Route
             'access' => 'page',
             'menu' => array('admin' => 'Pages'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Page', 'pages')
+                'controller' => array('core\\controllers\\admin\\Page', 'listPage')
             )
         );
 
         $routes['admin/content/page/add'] = array(
             'access' => 'page_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Page', 'edit')
+                'controller' => array('core\\controllers\\admin\\Page', 'editPage')
             )
         );
 
         $routes['admin/content/page/edit/(\d+)'] = array(
             'access' => 'page_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Page', 'edit')
+                'controller' => array('core\\controllers\\admin\\Page', 'editPage')
             )
         );
 

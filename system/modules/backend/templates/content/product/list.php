@@ -20,16 +20,6 @@
               <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
             </a>
           </li>
-          <li>
-            <a data-action="front" data-action-value="1" href="#">
-              <?php echo $this->text('Front page'); ?>: <?php echo $this->text('Add'); ?>
-            </a>
-          </li>
-          <li>
-            <a data-action="front" data-action-value="0" href="#">
-              <?php echo $this->text('Front page'); ?>: <?php echo $this->text('Remove'); ?>
-            </a>
-          </li>
           <?php } ?>
           <?php if ($this->access('product_delete')) { ?>
           <li>
@@ -94,11 +84,6 @@
                 <?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
-            <th class="middle">
-              <a href="<?php echo $sort_front; ?>">
-                <?php echo $this->text('Front'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
             <th></th>
           </tr>
           <tr class="filters active">
@@ -136,24 +121,11 @@
                 <option value="any">
                 <?php echo $this->text('Any'); ?>
                 </option>
-                <option value="1"<?php echo ($filter_front === '1') ? ' selected' : ''; ?>>
+                <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
                 <?php echo $this->text('Enabled'); ?>
                 </option>
-                <option value="0"<?php echo ($filter_front === '0') ? ' selected' : ''; ?>>
+                <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
-                </option>
-              </select>
-            </th>
-            <th class="text-center middle">
-              <select class="form-control" name="front">
-                <option value="any">
-                <?php echo $this->text('Any'); ?>
-                </option>
-                <option value="1"<?php echo ($filter_front === '1') ? ' selected' : ''; ?>>
-                <?php echo $this->text('Yes'); ?>
-                </option>
-                <option value="0"<?php echo ($filter_front === '0') ? ' selected' : ''; ?>>
-                <?php echo $this->text('No'); ?>
                 </option>
               </select>
             </th>
@@ -209,9 +181,6 @@
             </td>
             <td class="middle text-center">
               <input type="checkbox" name="product[status]" value="1" <?php echo empty($product['status']) ? '' : ' checked'; ?><?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
-            </td>
-            <td class="middle text-center">
-              <input type="checkbox" name="product[front]" value="1" <?php echo empty($product['front']) ? '' : ' checked'; ?><?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
             </td>
             <td class="middle">
               <?php if ($this->access('product_edit')) { ?>

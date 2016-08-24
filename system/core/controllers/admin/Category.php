@@ -477,6 +477,14 @@ class Category extends Controller
         $this->addValidator('meta_description', array(
             'length' => array('max' => 255)
         ));
+        
+        $this->addValidator('description_1', array(
+            'length' => array('max' => 65535)
+        ));
+        
+        $this->addValidator('description_2', array(
+            'length' => array('max' => 65535)
+        ));
 
         $this->addValidator('translation', array(
             'translation' => array()
@@ -491,7 +499,7 @@ class Category extends Controller
         $this->addValidator('alias', array(
             'regexp' => array(
                 'pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias' => array()
+            'alias_unique' => array()
         ));
 
         $this->addValidator('images', array(
