@@ -241,12 +241,6 @@ td div.view div {
     cursor: n-resize;
 }
 
-.table-editable tbody tr:not(:hover) .form-control {
-    border-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
 body.admin .panel tr:first-child td {
     padding-top: 0 !important;
     border-top: 0 !important;

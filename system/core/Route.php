@@ -278,21 +278,21 @@ class Route
             'access' => 'product',
             'menu' => array('admin' => 'Products'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Product', 'products')
+                'controller' => array('core\\controllers\\admin\\Product', 'listProduct')
             )
         );
 
         $routes['admin/content/product/add'] = array(
             'access' => 'product_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Product', 'edit')
+                'controller' => array('core\\controllers\\admin\\Product', 'editProduct')
             )
         );
 
         $routes['admin/content/product/edit/(\d+)'] = array(
             'access' => 'product_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Product', 'edit')
+                'controller' => array('core\\controllers\\admin\\Product', 'editProduct')
             )
         );
 

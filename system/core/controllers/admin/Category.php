@@ -186,8 +186,10 @@ class Category extends Controller
      */
     protected function setTitleListCategory(array $category_group)
     {
-        $this->setTitle($this->text('Categories of group %name', array(
-                    '%name' => $category_group['title'])));
+        $text = $this->text('Categories of group %name', array(
+            '%name' => $category_group['title']));
+
+        $this->setTitle($text);
     }
 
     /**
@@ -199,62 +201,51 @@ class Category extends Controller
     }
 
     /**
-     * Adds category images
-     * @return null
-     */
-    protected function setDataEditCategoryImages()
-    {
-        $images = $this->getData('category.images');
-
-        if (empty($images)) {
-            return;
-        }
-
-        $preset = $this->config('admin_image_preset', 2);
-
-        foreach ($images as &$image) {
-            $image['thumb'] = $this->image->url($preset, $image['path']);
-            $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
-        }
-
-        $attached = $this->render('common/image/attache', array(
-            'images' => $images,
-            'name_prefix' => 'category',
-            'languages' => $this->languages,
-        ));
-
-        $this->setData('attached_images', $attached);
-    }
-
-    /**
      * Modifies categories
      * @return null
      */
     protected function setDataEditCategory()
     {
-        $this->setDataEditCategoryImages();
-
         $category_id = $this->getData('category.category_id');
 
-        if (!isset($category_id)) {
-            return;
+        if (isset($category_id)) {
+
+            $categories = $this->getData('categories');
+            $category_group_id = $this->getData('category_group.category_group_id');
+
+            $children = $this->category->getTree(array(
+                'parent_id' => $category_id,
+                'category_group_id' => $category_group_id
+            ));
+
+            $exclude = array($category_id);
+            foreach ($children as $child) {
+                $exclude[] = $child['category_id'];
+            }
+
+            $modified = array_diff_key($categories, array_flip($exclude));
+            $this->setData('categories', $modified);
         }
 
-        $categories = $this->getData('categories');
-        $category_group_id = $this->getData('category_group.category_group_id');
+        $images = $this->getData('category.images');
 
-        $children = $this->category->getTree(array(
-            'parent_id' => $category_id,
-            'category_group_id' => $category_group_id
-        ));
+        if (!empty($images)) {
 
-        $exclude = array($category_id);
-        foreach ($children as $child) {
-            $exclude[] = $child['category_id'];
+            $preset = $this->config('admin_image_preset', 2);
+
+            foreach ($images as &$image) {
+                $image['thumb'] = $this->image->url($preset, $image['path']);
+                $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
+            }
+
+            $attached = $this->render('common/image/attache', array(
+                'images' => $images,
+                'name_prefix' => 'category',
+                'languages' => $this->languages,
+            ));
+
+            $this->setData('attached_images', $attached);
         }
-
-        $modified = array_diff_key($categories, array_flip($exclude));
-        $this->setData('categories', $modified);
     }
 
     /**
@@ -308,7 +299,7 @@ class Category extends Controller
         $category = $this->category->get($category_id);
 
         if (!empty($category)) {
-            $category['alias'] = $this->alias->get('category_id', $category['category_id']);
+            $category['alias'] = $this->alias->get('category_id', $category_id);
             return $category;
         }
 
@@ -356,7 +347,6 @@ class Category extends Controller
 
     /**
      * Applies an action to selected categories
-     * @return boolean
      */
     protected function actionCategory()
     {
@@ -370,8 +360,8 @@ class Category extends Controller
                 $this->category->update($category_id, array('weight' => $weight));
             }
 
-            $this->response->json(array(
-                'success' => $this->text('Categories have been reordered')));
+            $message = $this->text('Categories have been reordered');
+            $this->response->json(array('success' => $message));
         }
 
         $updated = $deleted = 0;
@@ -388,16 +378,14 @@ class Category extends Controller
         }
 
         if ($updated > 0) {
-            $this->setMessage($this->text('Categories have been updated'), 'success', true);
-            return true;
+            $message = $this->text('Categories have been updated');
+            $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Categories have been deleted'), 'success', true);
-            return true;
+            $message = $this->text('Categories have been deleted');
+            $this->setMessage($message, 'success', true);
         }
-
-        return false;
     }
 
     /**
@@ -430,10 +418,13 @@ class Category extends Controller
     protected function updateCategory(array $category_group, array $category)
     {
         $this->controlAccess('category_edit');
-        $this->category->update($category['category_id'], $this->getSubmitted());
+
+        $submitted = $this->getSubmitted();
+        $this->category->update($category['category_id'], $submitted);
 
         $message = $this->text('Category has been updated');
         $url = "admin/content/category/{$category_group['category_group_id']}";
+
         $this->redirect($url, $message, 'success');
     }
 
@@ -444,10 +435,13 @@ class Category extends Controller
     protected function addCategory(array $category_group)
     {
         $this->controlAccess('category_add');
-        $this->category->add($this->getSubmitted());
+
+        $submitted = $this->getSubmitted();
+        $this->category->add($submitted);
 
         $message = $this->text('Category has been added');
         $url = "admin/content/category/{$category_group['category_group_id']}";
+
         $this->redirect($url, $message, 'success');
     }
 
@@ -477,11 +471,11 @@ class Category extends Controller
         $this->addValidator('meta_description', array(
             'length' => array('max' => 255)
         ));
-        
+
         $this->addValidator('description_1', array(
             'length' => array('max' => 65535)
         ));
-        
+
         $this->addValidator('description_2', array(
             'length' => array('max' => 65535)
         ));
@@ -493,12 +487,14 @@ class Category extends Controller
         $alias = $this->getSubmitted('alias');
 
         if (empty($alias) && isset($category['category_id'])) {
-            $this->setSubmitted('alias', $this->category->createAlias($this->getSubmitted()));
+            $submitted = $this->getSubmitted();
+            $alias = $this->category->createAlias($submitted);
+            $this->setSubmitted('alias', $alias);
         }
 
         $this->addValidator('alias', array(
-            'regexp' => array(
-                'pattern' => '/^[A-Za-z0-9_.-]+$/'),
+            'length' => array('max' => 255),
+            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
             'alias_unique' => array()
         ));
 

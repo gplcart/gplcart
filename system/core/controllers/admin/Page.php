@@ -456,6 +456,7 @@ class Page extends Controller
         }
 
         $this->addValidator('alias', array(
+            'length' => array('max' => 255),
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
             'alias_unique' => array()));
 

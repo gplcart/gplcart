@@ -45,7 +45,7 @@
       </div>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table table-responsive table-editable table-striped products">
+      <table class="table table-responsive table-striped products">
         <thead>
           <tr>
             <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
@@ -163,36 +163,30 @@
               <?php echo $this->escape($product['sku']); ?>
             </td>
             <td class="middle">
-              <input name="product[price]" maxlength="8" class="form-control" value="<?php echo $this->escape($product['price']); ?>"<?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
+              <?php echo $this->escape($product['price']); ?>
             </td>
             <td class="middle">
               <?php echo $this->escape($product['currency']); ?>
-              <input type="hidden" name="product[currency]" value="<?php echo $this->escape($product['currency']); ?>">
             </td>
             <td class="middle">
-              <input name="product[stock]" maxlength="10" class="form-control" value="<?php echo $this->escape($product['stock']); ?>"<?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
+              <?php echo $this->escape($product['stock']); ?>
             </td>
             <td class="middle">
-              <select class="form-control" name="product[store_id]"<?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
-                <?php foreach ($stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo ($product['store_id'] == $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store); ?></option>
-                <?php } ?>
-              </select>
+              <?php if(empty($stores[$product['store_id']])) { ?>
+              <?php echo $this->text('Unknown'); ?>
+              <?php } else { ?>
+              <?php echo $this->escape($stores[$product['store_id']]); ?>
+              <?php } ?>
             </td>
             <td class="middle text-center">
-              <input type="checkbox" name="product[status]" value="1" <?php echo empty($product['status']) ? '' : ' checked'; ?><?php echo $this->access('product_edit') ? '' : ' disabled'; ?>>
+              <?php if(empty($product['status'])) { ?>
+              <i class="fa fa-square-o"></i>
+              <?php } else { ?>
+              <i class="fa fa-check-square-o"></i>
+              <?php } ?>
             </td>
             <td class="middle">
-              <?php if ($this->access('product_edit')) { ?>
-              <button type="button" class="btn btn-default save-row disabled">
-                <i class="fa fa-floppy-o"></i>
-              </button>
-              <?php } ?>
-              <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-bars"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right">
+                <ul class="list-inline">
                   <li>
                     <a href="<?php echo $product['view_url']; ?>">
                       <?php echo $this->text('View'); ?>
@@ -205,13 +199,7 @@
                     </a>
                   </li>
                   <?php } ?>
-                  <li>
-                    <a href="#" class="load-options" onclick="return false;">
-                      <?php echo $this->text('Options'); ?>
-                    </a>
-                  </li>
                 </ul>
-              </div>
             </td>
           </tr>
           <?php } ?>

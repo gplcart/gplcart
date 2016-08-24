@@ -27,24 +27,6 @@ class Product extends Controller
 {
 
     /**
-     * Processed during validation SKUs
-     * @var array
-     */
-    protected static $processed_skus = array();
-
-    /**
-     * Option combination amounts
-     * @var array
-     */
-    protected static $stock_amount = array();
-
-    /**
-     * Validated option combinations
-     * @var array
-     */
-    protected static $processed_combinations = array();
-
-    /**
      * Product model instance
      * @var \core\models\Product $product
      */
@@ -141,7 +123,7 @@ class Product extends Controller
         $total = $this->getTotalProduct($query);
         $limit = $this->setPager($total, $query);
 
-        $products = $this->getProducts($limit, $query);
+        $products = $this->getListProduct($limit, $query);
         $stores = $this->store->getNames();
         $currencies = $this->currency->getList();
 
@@ -203,7 +185,7 @@ class Product extends Controller
         $this->setBreadcrumbEditProduct();
         $this->outputEditProduct();
     }
-    
+
     /**
      * Sets Java scripts on the edit product page
      * @param array $product
@@ -280,33 +262,11 @@ class Product extends Controller
         $action = (string) $this->request->post('action');
         $selected = (array) $this->request->post('selected', array());
 
-        if ($action == 'get_options') {
-            
-            $product_id = (int) $this->request->post('product_id');
-            $product = $this->product->get($product_id);
-
-            $data = array();
-            $data['product'] = $product;
-            $combinations = $this->product->getCombinations($product_id);
-            foreach ($combinations as &$combination) {
-                $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
-            }
-
-            $data['combinations'] = $combinations;
-            $data['fields'] = $this->product_class->getFieldData($product['product_class_id']);
-            $html = $this->render('content/product/combinations', $data);
-            $this->response->html($html);
-        }
-
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
             if ($action == 'status' && $this->access('product_edit')) {
                 $updated += (int) $this->product->update($id, array('status' => $value));
-            }
-
-            if ($action == 'front' && $this->access('product_edit')) {
-                $updated += (int) $this->product->update($id, array('front' => $value));
             }
 
             if ($action == 'delete' && $this->access('product_delete')) {
@@ -317,16 +277,12 @@ class Product extends Controller
         if ($updated > 0) {
             $message = $this->text('Updated %num products', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
-            $this->response->json(array('success' => 1));
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num products', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
-            $this->response->json(array('success' => 1));
         }
-
-        $this->response->json(array('success' => 1));
     }
 
     /**
@@ -495,7 +451,9 @@ class Product extends Controller
     {
         $this->controlAccess('product_delete');
 
-        if ($this->product->delete($product['product_id'])) {
+        $deleted = $this->product->delete($product['product_id']);
+
+        if ($deleted) {
             $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
         }
 
@@ -531,7 +489,14 @@ class Product extends Controller
         if ($output_field_form) {
             $this->response->html($attributes . $options);
         }
-        
+
+        $related = $this->getData('product.related');
+
+        if (!empty($related)) {
+            $products = $this->product->getList(array('product_id' => $related));
+            $this->setData('related', $products);
+        }
+
         $images = $this->getData('product.images');
 
         if (!empty($images)) {
@@ -551,8 +516,7 @@ class Product extends Controller
 
             $attached = $this->render('common/image/attache', $data);
             $this->setData('attached_images', $attached);
-        } 
-        
+        }
     }
 
     /**
@@ -567,55 +531,47 @@ class Product extends Controller
         $this->validateProduct($product);
 
         if ($this->hasErrors('product')) {
-
-            if ($this->request->isAjax()) {
-                $this->response->json(array('error' => $this->getError()));
-            }
-
-            $related = $this->getSubmitted('related');
-
-            if (!empty($related)) {
-                $products = $this->getListProduct(null, array('product_id' => $related));
-                $this->setData('related', $products);
-            }
             return;
         }
 
-        $submitted = $this->getSubmitted();
-
-        if ($this->request->isAjax()) {
-
-            if (!$this->access('product_edit')) {
-                $message = $this->text('You are not permitted to perform this operation');
-                $this->response->json(array('error' => $message));
-            }
-
-            $product_id = $this->getSubmitted('product_id');
-            $update_combinations = $this->getSubmitted('update_combinations');
-
-            if ($update_combinations) {
-                $this->updateCombination($submitted);
-                $message  = $this->text('Product has been updated');
-                $this->response->json(array('success' => $message));
-            }
-
-            if (empty($product_id)) {
-                $message = $this->text('You are not permitted to perform this operation');
-                $this->response->json(array('error' => $message));
-            }
-
-            $this->product->update($product_id, $submitted);
-            $message = $this->text('Product has been updated');
-            $this->response->json(array('success' => $message));
-        }
-
         if (isset($product['product_id'])) {
-            $this->deleteImagesProduct();
-            $this->product->update($product['product_id'], $submitted);
-            $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
+            $this->updateProduct($product);
         }
 
+        $this->addProduct();
+    }
+
+    /**
+     * Updates a product with submitted values
+     * @param array $product
+     */
+    protected function updateProduct(array $product)
+    {
+        $this->controlAccess('product_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->product->update($product['product_id'], $submitted);
+
+        $images = (array) $this->request->post('delete_image', array());
+
+        if (!empty($images)) {
+            foreach (array_values($images) as $file_id) {
+                $this->image->delete($file_id);
+            }
+        }
+
+        $message = $this->text('Product has been updated');
+        $this->redirect('admin/content/product', $message, 'success');
+    }
+
+    /**
+     * Adds a new product using an array of submitted values
+     */
+    protected function addProduct()
+    {
         $this->controlAccess('product_add');
+
+        $submitted = $this->getSubmitted();
 
         $submitted += array(
             'user_id' => $this->uid,
@@ -623,27 +579,9 @@ class Product extends Controller
         );
 
         $this->product->add($submitted);
-        $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
-    }
 
-    /**
-     * Deletes submitted images
-     * @return int
-     */
-    protected function deleteImagesProduct()
-    {
-        $this->controlAccess('product_edit');
-        $images = (array) $this->request->post('delete_image', array());
-
-        $deleted = 0;
-        
-        if (!empty($images)) {
-            foreach (array_values($images) as $file_id) {
-                $deleted += (int) $this->image->delete($file_id);
-            }
-        }
-        
-        return $deleted;
+        $message = $this->text('Product has been added');
+        $this->redirect('admin/content/product', $message, 'success');
     }
 
     /**
@@ -656,35 +594,48 @@ class Product extends Controller
 
         $this->addValidator('price', array(
             'numeric' => array(),
-            'length' => array('max' => 10)));
+            'length' => array('max' => 10)
+        ));
 
         $this->addValidator('stock', array(
             'numeric' => array(),
-            'length' => array('max' => 10)));
+            'length' => array('max' => 10)
+        ));
 
         $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('description', array(
+            'length' => array('max' => 65535)
+        ));
 
         $this->addValidator('meta_title', array(
-            'length' => array('max' => 255)));
+            'length' => array('max' => 255)
+        ));
 
         $this->addValidator('meta_description', array(
-            'length' => array('max' => 255)));
+            'length' => array('max' => 255)
+        ));
 
         $this->addValidator('translation', array(
-            'translation' => array()));
+            'translation' => array()
+        ));
 
         $this->addValidator('width', array(
             'numeric' => array(),
-            'length' => array('max' => 10)));
+            'length' => array('max' => 10)
+        ));
 
         $this->addValidator('height', array(
             'numeric' => array(),
-            'length' => array('max' => 10)));
+            'length' => array('max' => 10)
+        ));
 
         $this->addValidator('length', array(
             'numeric' => array(),
-            'length' => array('max' => 10)));
+            'length' => array('max' => 10)
+        ));
 
         $this->addValidator('weight', array(
             'numeric' => array(),
@@ -692,291 +643,81 @@ class Product extends Controller
         ));
 
         $this->addValidator('images', array(
-            'images' => array()));
+            'images' => array()
+        ));
 
         $alias = $this->getSubmitted('alias');
 
-        if (isset($alias) && $alias === '' && isset($product['product_id'])) {
-            $generated = $this->product->createAlias($this->getSubmitted());
-            $this->setSubmitted('alias', $generated);
+        if (empty($alias) && isset($product['product_id'])) {
+            $submitted = $this->getSubmitted();
+            $alias = $this->product->createAlias($submitted);
+            $this->setSubmitted('alias', $alias);
         }
 
         $this->addValidator('alias', array(
+            'length' => array('max' => 255),
             'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias_unique' => array()));
+            'alias_unique' => array()
+        ));
 
+        $this->addValidator('store_id', array(
+            'required' => array()
+        ));
 
-        $this->setValidators($product);
-
-        $this->validateSku($product);
-        $this->validateAttributes();
-        $this->validateCombinations($product);
-        $this->validateRelated($product);
-    }
-
-    /**
-     * Validates product SKU
-     * @param array $product
-     * @return null
-     */
-    protected function validateSku(array $product)
-    {
         $sku = $this->getSubmitted('sku');
 
-        if (!isset($sku)) {
-            return;
+        if (empty($sku) && isset($product['product_id'])) {
+            $submitted = $this->getSubmitted();
+            $sku = $this->product->createSku($submitted);
+            $this->setSubmitted('sku', $sku);
         }
 
-        $default_store_id = $this->store->getDefault();
-        $store_id = $this->getSubmitted('store_id', $default_store_id);
-        $product_id = isset($product['product_id']) ? $product['product_id'] : null;
+        $this->addValidator('sku', array(
+            'length' => array('max' => 255),
+            'product_sku_unique' => array('control_errors' => true) // Make sure that store ID is set
+        ));
 
-        if ($sku !== '') {
-
-            $existing = $this->sku->get($sku, $store_id, $product_id);
-
-            if (!empty($existing)) {
-                $this->setError('sku', $this->text('SKU must be unique per store'));
-                return;
-            }
-
-            if (mb_strlen($sku) > 255) {
-                $message = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $this->setError('sku', $message);
-                return;
-            }
-
-            return;
-        }
-
-        if (!empty($product_id)) {
-            $sku = $this->product->createSku($product);
-        }
-
-        if ($sku !== '') {
-            static::$processed_skus[$sku] = true;
-        }
-
-        $this->setSubmitted('sku', $sku);
-    }
-
-    /**
-     * Validates attributes
-     * @return null
-     */
-    protected function validateAttributes()
-    {
         $product_class_id = $this->getSubmitted('product_class_id');
 
-        if (!isset($product_class_id)) {
-            return;
+        if (isset($product_class_id)) {
+
+            $fields = $this->product_class->getFieldData($product_class_id);
+
+            $this->addValidator('attribute', array(
+                'product_attributes' => array('fields' => $fields)
+            ));
+
+            $this->addValidator('combination', array(
+                'product_combinations' => array(
+                    'fields' => $fields, 'control_errors' => true)
+            ));
         }
 
-        $product_fields = $this->product_class->getFieldData($product_class_id);
-        $this->setSubmitted('product_fields', $product_fields);
+        $errors = $this->setValidators($product);
 
-        if (empty($product_fields['attribute'])) {
-            return;
-        }
-
-        foreach ($product_fields['attribute'] as $field_id => $field) {
-            $value = $this->getSubmitted("field.attribute.$field_id");
-            if (!empty($field['required']) && empty($value)) {
-                $this->setError("attribute.$field_id", $this->text('Required field'));
-            }
-        }
-    }
-
-    /**
-     * Validates option combinations
-     * @return boolean
-     */
-    protected function validateCombinations($product)
-    {
-        $combinations = $this->getSubmitted('combination');
-
-        if (empty($combinations)) {
-            return true;
-        }
-
-        foreach ($combinations as $index => &$combination) {
-            if (empty($combination['fields'])) {
-                unset($combinations[$index]);
-                continue;
-            }
-
-            if (!$this->validateCombinationOptions($index, $combination)) {
-                continue;
-            }
-
-            $combination_id = $this->product->getCombinationId($combination['fields']);
-            $repeating_combinations = isset(static::$processed_combinations[$combination_id]);
-
-            $this->validateCombinationSku($index, $combination, $product);
-            $this->validateCombinationPrice($index, $combination);
-            $this->validateCombinationStock($index, $combination);
-
-            foreach ($combination['fields'] as $field_value_id) {
-                if (!isset(static::$stock_amount[$field_value_id])) {
-                    static::$stock_amount[$field_value_id] = (int) $combination['stock'];
-                }
-            }
-
-            static::$processed_combinations[$combination_id] = true;
-        }
-
-        $stock = array_sum(static::$stock_amount);
-
-        $this->setSubmitted('stock', $stock);
-        $this->getSubmitted('combination', $combinations);
-
-        if (empty($repeating_combinations)) {
-            return true;
-        }
-
-        $this->setError('combination.repeating_options', true);
-        $this->setMessage($this->text('Option combinations must be unique'), 'danger');
-        return false;
-    }
-
-    /**
-     * Validates combination fields
-     * @param string $index
-     * @param array $combination
-     * @return boolean
-     */
-    protected function validateCombinationOptions($index, $combination)
-    {
-        $options = $this->getSubmitted('product_fields.option');
-
-        if (!isset($options)) {
-            return true;
-        }
-
-        $has_errors = false;
-        foreach ($options as $field_id => $field) {
-            if (!empty($field['required']) && !isset($combination['fields'][$field_id])) {
-                $this->setError("combination.$index.fields.$field_id", $this->text('Required field'));
-                $has_errors = true;
+        if (empty($errors)) {
+            $result = $this->getValidatorResult('combination');
+            if (isset($result['stock']) && isset($result['combination'])) {
+                $this->setSubmitted('stock', $result['stock']);
+                $this->setSubmitted('combination', $result['combination']);
             }
         }
 
-        return !$has_errors;
-    }
-
-    /**
-     * Validates combination SKU
-     * @param string $index
-     * @param array $combination
-     * @return null
-     */
-    protected function validateCombinationSku($index, &$combination, $product)
-    {
-        if (!isset($combination['sku'])) {
-            return;
-        }
-
-        $store_id = $this->getSubmitted('store_id');
-        $existing_product_id = isset($product['product_id']) ? $product['product_id'] : null;
-        $product_id = $this->getSubmitted('product_id', $existing_product_id);
-
-        if (!empty($combination['sku'])) {
-
-            if (mb_strlen($combination['sku']) > 255) {
-                $error = $this->text('Content must not exceed %s characters', array('%s' => 255));
-                $this->setError("combination.$index.sku", $error);
-                return;
-            }
-
-            if (isset(static::$processed_skus[$combination['sku']])) {
-                $error = $this->text('SKU must be unique per store');
-                $this->setError("combination.$index.sku", $error);
-                return;
-            }
-
-            if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
-                $error = $this->text('SKU must be unique per store');
-                $this->setError("combination.$index.sku", $error);
-                return;
-            }
-
-            static::$processed_skus[$combination['sku']] = true;
-            return;
-        }
-
-        if (!$this->isError('sku') && !empty($product_id)) {
-            $sku = $this->getSubmitted('sku');
-            $combination['sku'] = $this->sku->generate("$sku-$index", false, array('store_id' => $store_id));
-        }
-    }
-
-    /**
-     * Validates combination stock price
-     * @param string $index
-     * @param array $combination
-     * @return null
-     */
-    protected function validateCombinationPrice($index, array &$combination)
-    {
-        if (empty($combination['price']) && !$this->isError('price')) {
-            $combination['price'] = $this->getSubmitted('price');
-        }
-
-        if (is_numeric($combination['price']) && strlen($combination['price']) <= 10) {
-            return;
-        }
-
-        $message = $this->text('Only numeric values allowed');
-        $message .= $this->text('Content must not exceed %s characters', array('%s' => 10));
-
-        $this->setError("combination.$index.price", $message);
-    }
-
-    /**
-     * Validates combination stock level
-     * @param string $index
-     * @param array $combination
-     * @return null
-     */
-    protected function validateCombinationStock($index, array &$combination)
-    {
-        if (empty($combination['stock'])) {
-            return;
-        }
-
-        if (is_numeric($combination['stock']) && strlen($combination['stock']) <= 10) {
-            return;
-        }
-
-        $message = $this->text('Only numeric values allowed');
-        $message .= $this->text('Content must not exceed %s characters', array('%s' => 10));
-
-        $this->setError("combination.$index.stock", $message);
-    }
-
-    /**
-     * Validates related products
-     * @param array $product
-     * @return null
-     */
-    protected function validateRelated(array $product)
-    {
         $related = $this->getSubmitted('related');
 
         if (empty($related)) {
             $this->setSubmitted('related', array()); // Need on update
-            return;
+        } else {
+            // Remove duplicates
+            $modified = array_flip($related);
+
+            if (isset($product['product_id'])) {
+                // Exclude the current product from related products
+                unset($modified[$product['product_id']]);
+            }
+
+            $this->setSubmitted('related', array_flip($modified));
         }
-
-        // Remove duplicates
-        $modified = array_flip($related);
-
-        if (isset($product['product_id'])) {
-            // Exclude the current product from related products
-            unset($modified[$product['product_id']]);
-        }
-
-        $this->setSubmitted('related', array_flip($modified));
     }
 
 }

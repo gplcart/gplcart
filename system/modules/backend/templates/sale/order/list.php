@@ -42,7 +42,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table class="table table-striped table-editable margin-top-20 order-list">
+      <table class="table table-striped margin-top-20 order-list">
         <thead>
           <tr>
             <th>

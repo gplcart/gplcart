@@ -313,6 +313,24 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Product', 'exists')
             ),
         );
+        
+        $handlers['product_sku_unique'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Product', 'skuUnique')
+            ),
+        );
+        
+        $handlers['product_attributes'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Product', 'attributes')
+            ),
+        );
+        
+        $handlers['product_combinations'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Product', 'combinations')
+            ),
+        );
 
         $handlers['user_email_exists'] = array(
             'handlers' => array(

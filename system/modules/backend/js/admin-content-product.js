@@ -301,44 +301,4 @@ $(function () {
 
         return false;
     });
-
-    // Load inline combinations
-    $('form#products .load-options').click(function () {
-
-        var row = $(this).closest('tr');
-        var productId = row.attr('data-product-id');
-
-        $('tr.product-options-' + productId).remove();
-        row.after('<tr class="product-options-' + productId + '"><td colspan="10"></td></tr>');
-
-        $.ajax({
-            method: 'POST',
-            dataType: 'html',
-            url: GplCart.settings.urn,
-            data: {
-                action: 'get_options',
-                'product_id': productId,
-                token: GplCart.settings.token
-            },
-            success: function (data) {
-                if ($(data).find('td').length) {
-                    $('tr.product-options-' + productId).replaceWith(data);
-                    return false;
-                }
-
-                $('tr.product-options-' + productId).replaceWith('\
-                <tr class="hidden product-options-' + productId + '">\n\
-                <td colspan="10"></td></tr>');
-            },
-            error: function () {
-                alert(GplCart.text('An error occurred'));
-            },
-            beforeSend: function () {
-                GplCart.theme.loading(true);
-            },
-            complete: function () {
-                GplCart.theme.loading(false);
-            }
-        });
-    });
 });
