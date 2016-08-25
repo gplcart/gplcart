@@ -135,40 +135,13 @@ class User extends Model
         if (empty($user_id)) {
             return false;
         }
-
-        $values = array('modified' => isset($data['modified']) ? $data['modified'] : GC_TIME);
-
-        if (isset($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (isset($data['created'])) {
-            $values['created'] = $data['created'];
-        }
-
-        if (isset($data['name'])) {
-            $values['name'] = $data['name'];
-        }
-
-        if (isset($data['email'])) {
-            $values['email'] = $data['email'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = $data['status'];
-        }
-
+        
         if (!empty($data['password'])) { // not isset()!
-            $values['hash'] = Tool::hash($data['password']);
+            $data['hash'] = Tool::hash($data['password']);
         }
-
-        if (isset($data['role_id'])) {
-            $values['role_id'] = (int) $data['role_id'];
-        }
-
-        if (isset($data['store_id'])) {
-            $values['store_id'] = (int) $data['store_id'];
-        }
+        
+        $data += array('modified' => GC_TIME);
+        $values = $this->getDbSchemeValues('user', $data);
 
         if (isset($data['addresses'])) {
             foreach ((array) $data['addresses'] as $address) {
