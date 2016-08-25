@@ -182,7 +182,7 @@ class Field extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $field) {
