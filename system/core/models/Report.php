@@ -109,7 +109,7 @@ class Report extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         $list = array();
