@@ -384,47 +384,7 @@ class PriceRule extends Model
             return false;
         }
 
-        $values = array();
-
-        if (isset($data['name'])) {
-            $values['name'] = $data['name'];
-        }
-
-        if (isset($data['store_id'])) {
-            $values['store_id'] = (int) $data['store_id'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (isset($data['weight'])) {
-            $values['weight'] = (int) $data['weight'];
-        }
-
-        if (isset($data['code'])) {
-            $values['code'] = $data['code'];
-        }
-
-        if (isset($data['currency'])) {
-            $values['currency'] = $data['currency'];
-        }
-
-        if (isset($data['type'])) {
-            $values['type'] = $data['type'];
-        }
-
-        if (isset($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (isset($data['value'])) {
-            $values['value'] = (int) $data['value'];
-        }
-
-        if (isset($data['value_type'])) {
-            $values['value_type'] = $data['value_type'];
-        }
+        $values = $this->getDbSchemeValues('price_rule', $data);
 
         $result = false;
 
