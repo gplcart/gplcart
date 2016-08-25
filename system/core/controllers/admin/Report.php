@@ -47,37 +47,37 @@ class Report extends Controller
     /**
      * Displays the system events overview page
      */
-    public function system()
+    public function listEventReport()
     {
-        $this->clearSystemErrors();
+        $this->clearEventReport();
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalSystemEvents($query);
+        $total = $this->getTotalEventReport($query);
         $limit = $this->setPager($total, $query);
 
         $filters = array('severity', 'type', 'time', 'text');
         $this->setFilter($filters, $query);
 
         $types = $this->report->getTypes();
-        $events = $this->getEvents($limit, $query);
+        $events = $this->getListEventReport($limit, $query);
         $severities = $this->report->getSeverities();
 
         $this->setData('types', $types);
         $this->setData('records', $events);
         $this->setData('severities', $severities);
 
-        $this->setTitleSystem();
-        $this->setBreadcrumbSystem();
-        $this->outputSystem();
+        $this->setTitleListEventReport();
+        $this->setBreadcrumbListEventReport();
+        $this->outputListEventReport();
     }
 
     /**
      * Displays Google Analytics page
      */
-    public function ga()
+    public function listGaReport()
     {
-        $this->setTitleGa();
-        $this->setBreadcrumbGa();
+        $this->setTitleListGaReport();
+        $this->setBreadcrumbListGaReport();
 
         $default_store = $this->store->getDefault();
         $store_id = (int) $this->request->get('store_id', $default_store);
@@ -95,10 +95,10 @@ class Report extends Controller
         $this->setData('missing_credentials', $missing_credentials);
 
         if ($missing_settings || $missing_credentials) {
-            $this->outputGa();
+            $this->outputListGaReport();
         }
 
-        $this->updateGa($store_id);
+        $this->updateGaReport($store_id);
 
         $view = $store['data']['ga_view'];
         $this->analytics->setCredentials($email, $certificate, "Analytics for {$store['domain']}");
@@ -106,24 +106,24 @@ class Report extends Controller
 
         $this->setData('ga_view', $view);
 
-        $this->setDataPanelTraffic();
-        $this->setDataPanelSoftware();
-        $this->setDataPanelSources();
-        $this->setDataPanelTopPages();
-        $this->setDataPanelKeywords();
+        $this->setDataGaTrafficReport();
+        $this->setDataGaSoftwareReport();
+        $this->setDataGaSourcesReport();
+        $this->setDataGaTopPagesReport();
+        $this->setDataGaKeywordsReport();
 
-        $this->outputGa();
+        $this->outputListGaReport();
     }
 
     /**
      * Listen to URL parameter and updates cached GA data for the store ID
      * @param integer $store_id
      */
-    protected function updateGa($store_id)
+    protected function updateGaReport($store_id)
     {
         $view = (string) $this->request->get('ga_view');
 
-        if ($this->request->get('ga_update') && !empty($view)) {
+        if ($this->isQuery('ga_update') && !empty($view)) {
             $this->report->clearGaCache($view);
             $this->setMessage($this->text('Google Analytics has been updated'), 'success', true);
             $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
@@ -133,7 +133,7 @@ class Report extends Controller
     /**
      * Sets Keywords statistic panel
      */
-    protected function setDataPanelKeywords()
+    protected function setDataGaKeywordsReport()
     {
         $items = $this->analytics->get('keywords');
         $html = $this->render('report/ga/panels/keywords', array('items' => $items));
@@ -144,7 +144,7 @@ class Report extends Controller
     /**
      * Sets Sources statistic panel
      */
-    protected function setDataPanelSources()
+    protected function setDataGaSourcesReport()
     {
         $items = $this->analytics->get('sources');
         $html = $this->render('report/ga/panels/sources', array('items' => $items));
@@ -155,7 +155,7 @@ class Report extends Controller
     /**
      * Sets Top Pages statistic panel
      */
-    protected function setDataPanelTopPages()
+    protected function setDataGaTopPagesReport()
     {
         $items = $this->analytics->get('top_pages');
 
@@ -172,7 +172,7 @@ class Report extends Controller
     /**
      * Sets Software statistic panel
      */
-    protected function setDataPanelSoftware()
+    protected function setDataGaSoftwareReport()
     {
         $items = array();
         foreach ($this->analytics->get('software') as $i => $result) {
@@ -192,7 +192,7 @@ class Report extends Controller
     /**
      * Sets Traffic statistic panel
      */
-    protected function setDataPanelTraffic()
+    protected function setDataGaTrafficReport()
     {
         $chart = $this->report->buildTrafficChart($this->analytics);
 
@@ -206,19 +206,27 @@ class Report extends Controller
     /**
      * Displays the system status page
      */
-    public function status()
+    public function listStatusReport()
     {
         $statuses = $this->report->getStatus();
         $this->setData('statuses', $statuses);
 
-        if ($this->request->get('phpinfo')) {
+        $this->setDataStatusReport();
+
+        $this->setTitleListStatusReport();
+        $this->setBreadcrumbListStatusReport();
+        $this->outputListStatusReport();
+    }
+
+    /**
+     * Sets an additional data on the status report page
+     */
+    protected function setDataStatusReport()
+    {
+        if ($this->isQuery('phpinfo')) {
             $phpinfo = $this->report->phpinfo();
             $this->setData('phpinfo', $phpinfo);
         }
-
-        $this->setTitleStatus();
-        $this->setBreadcrumbStatus();
-        $this->outputStatus();
     }
 
     /**
@@ -226,7 +234,7 @@ class Report extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalSystemEvents(array $query)
+    protected function getTotalEventReport(array $query)
     {
         $query['count'] = true;
         return $this->report->getList($query);
@@ -235,11 +243,11 @@ class Report extends Controller
     /**
      * Deletes all system events from the database
      */
-    protected function clearSystemErrors()
+    protected function clearEventReport()
     {
-        if ($this->request->get('clear_errors')) {
+        if ($this->isQuery('clear')) {
             $this->report->clear();
-            $this->redirect('admin/report/system');
+            $this->redirect('admin/report/events');
         }
     }
 
@@ -249,7 +257,7 @@ class Report extends Controller
      * @param array $query
      * @return array
      */
-    protected function getEvents(array $limit, array $query)
+    protected function getListEventReport(array $limit, array $query)
     {
         $query['limit'] = $limit;
         $records = $this->report->getList($query);
@@ -274,7 +282,7 @@ class Report extends Controller
     /**
      * Sets titles on the system events overview page
      */
-    protected function setTitleSystem()
+    protected function setTitleListEventReport()
     {
         $this->setTitle($this->text('System events'));
     }
@@ -282,29 +290,31 @@ class Report extends Controller
     /**
      * Sets breadcrumbs on the system events overview page
      */
-    protected function setBreadcrumbSystem()
+    protected function setBreadcrumbListEventReport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/report/ga'),
-            'text' => $this->text('Google Analytics')));
+            'text' => $this->text('Google Analytics'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders the system events overview page
      */
-    protected function outputSystem()
+    protected function outputListEventReport()
     {
-        $this->output('report/system');
+        $this->output('report/events');
     }
 
     /**
      * Sets titles on the GA page
      */
-    protected function setTitleGa()
+    protected function setTitleListGaReport()
     {
         $this->setTitle($this->text('Google Analytics'));
     }
@@ -312,21 +322,23 @@ class Report extends Controller
     /**
      * Sets breadcrumbs on the GA page
      */
-    protected function setBreadcrumbGa()
+    protected function setBreadcrumbListGaReport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
-            'url' => $this->url('admin/report/system'),
-            'text' => $this->text('System events')));
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/report/events'),
+            'text' => $this->text('System events'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders the GA page templates
      */
-    protected function outputGa()
+    protected function outputListGaReport()
     {
         $this->output('report/ga/ga');
     }
@@ -334,7 +346,7 @@ class Report extends Controller
     /**
      * Sets titles on the system status page
      */
-    protected function setTitleStatus()
+    protected function setTitleListStatusReport()
     {
         $this->setTitle('System status');
     }
@@ -342,17 +354,19 @@ class Report extends Controller
     /**
      * Sets breadcrumbs on the system status page
      */
-    protected function setBreadcrumbStatus()
+    protected function setBreadcrumbListStatusReport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders the system status templates
      */
-    protected function outputStatus()
+    protected function outputListStatusReport()
     {
         $this->output('report/status');
     }

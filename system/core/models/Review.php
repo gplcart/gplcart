@@ -42,10 +42,10 @@ class Review extends Model
         $values = array(
             'text' => (string) $data['text'],
             'status' => !empty($data['status']),
-            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array()),
-            'created' => !empty($data['created']) ? (int) $data['created'] : GC_TIME,
             'user_id' => (int) $data['user_id'],
             'product_id' => (int) $data['product_id'],
+            'created' => empty($data['created']) ? GC_TIME : (int) $data['created'],
+            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data'])
         );
 
         $review_id = $this->db->insert('review', $values);

@@ -11,7 +11,6 @@ namespace core\controllers\admin;
 
 use core\Controller;
 use core\classes\Curl;
-use core\models\File as ModelsFile;
 use core\models\Module as ModelsModule;
 
 /**
@@ -27,12 +26,6 @@ class Module extends Controller
     protected $module;
 
     /**
-     * File model instance
-     * @var \core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Curl class instance
      * @var \core\classes\Curl $curl
      */
@@ -41,16 +34,13 @@ class Module extends Controller
     /**
      * Constructor
      * @param ModelsModule $module
-     * @param ModelsFile $file
      * @param Curl $curl
      */
-    public function __construct(ModelsModule $module, ModelsFile $file,
-            Curl $curl)
+    public function __construct(ModelsModule $module, Curl $curl)
     {
         parent::__construct();
 
         $this->curl = $curl;
-        $this->file = $file;
         $this->module = $module;
     }
 
@@ -60,9 +50,7 @@ class Module extends Controller
      */
     public function listModule()
     {
-        if ($this->isQuery('action')) {
-            $this->actionModule();
-        }
+        $this->actionModule();
 
         $modules = $this->getListModule();
         $this->setData('modules', $modules);
@@ -77,6 +65,12 @@ class Module extends Controller
      */
     protected function actionModule()
     {
+        $action = (string) $this->request->get('action');
+        
+        if(empty($action)){
+            return;
+        }
+        
         $this->controlToken();
 
         $module_id = (string) $this->request->get('module_id');
@@ -90,8 +84,7 @@ class Module extends Controller
         if (empty($module)) {
             $this->outputError(403);
         }
-
-        $action = (string) $this->request->get('action');
+        
         $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete');
 
         if (!in_array($action, $allowed)) {
@@ -147,9 +140,11 @@ class Module extends Controller
      */
     protected function setBreadcrumbListModule()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+        
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -166,10 +161,8 @@ class Module extends Controller
     public function uploadModule()
     {
         $this->controlAccess('module_install');
-
-        if ($this->isPosted('install')) {
-            $this->submitUploadModule();
-        }
+        
+        $this->submitUploadModule();
 
         $this->setBreadcrumbUploadModule();
         $this->setTitleUploadModule();
@@ -181,6 +174,10 @@ class Module extends Controller
      */
     protected function submitUploadModule()
     {
+        if (!$this->isPosted('install')) {
+            return;
+        }
+        
         $this->validateUploadModule();
 
         if ($this->hasErrors()) {
@@ -226,13 +223,15 @@ class Module extends Controller
      */
     protected function setBreadcrumbUploadModule()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
-
-        $this->setBreadcrumb(array(
+            'url' => $this->url('admin'));
+        
+        $breadcrumbs[] = array(
             'text' => $this->text('Modules'),
-            'url' => $this->url('admin/module/list')));
+            'url' => $this->url('admin/module/list'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -291,13 +290,15 @@ class Module extends Controller
      */
     protected function setBreadcrumbMarketplaceModule()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
-
-        $this->setBreadcrumb(array(
+            'text' => $this->text('Dashboard'));
+        
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/module/list'),
-            'text' => $this->text('Modules')));
+            'text' => $this->text('Modules'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -346,6 +347,7 @@ class Module extends Controller
     {
         $options['count'] = true;
         $result = $this->getListMarketplaceModule($options);
+        
         return empty($result['total']) ? 0 : (int) $result['total'];
     }
 

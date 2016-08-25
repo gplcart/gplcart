@@ -77,6 +77,8 @@ class FieldValue extends Controller
     {
         $field = $this->getField($field_id);
 
+        $this->actionFieldValue();
+
         $query = $this->getFilterQuery();
         $total = $this->getTotalFieldValue($field_id, $query);
         $limit = $this->setPager($total, $query);
@@ -87,10 +89,6 @@ class FieldValue extends Controller
 
         $allowed = array('title', 'color', 'weight', 'image');
         $this->setFilter($allowed, $query);
-
-        if ($this->isPosted('action')) {
-            $this->actionFieldValue();
-        }
 
         $this->setTitleListFieldValue($field);
         $this->setBreadcrumbListFieldValue();
@@ -112,20 +110,10 @@ class FieldValue extends Controller
         $this->setData('field_value', $field_value);
         $this->setData('widget_types', $widget_types);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteFieldValue($field_value, $field);
-        }
-
-        if ($this->isPosted('delete_image')) {
-            $this->deleteImageFieldValue($field_value, $field);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitFieldValue($field_value, $field);
-        }
+        $this->submitFieldValue($field_value, $field);
 
         $this->setDataEditFieldValue();
-
+        
         $this->setTitleEditFieldValue($field_value, $field);
         $this->setBreadcrumbEditFieldValue($field);
         $this->outputEditFieldValue();
@@ -165,13 +153,15 @@ class FieldValue extends Controller
      */
     protected function setBreadcrumbListFieldValue()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),
-            'text' => $this->text('Fields')));
+            'text' => $this->text('Fields'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -231,9 +221,15 @@ class FieldValue extends Controller
     protected function actionFieldValue()
     {
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
         $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('field_value_edit')) {
+
             foreach ($selected as $field_value_id => $weight) {
                 $this->field_value->update($field_value_id, array('weight' => $weight));
             }
@@ -288,17 +284,19 @@ class FieldValue extends Controller
      */
     protected function setBreadcrumbEditFieldValue(array $field)
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),
-            'text' => $this->text('Fields')));
+            'text' => $this->text('Fields'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url("admin/content/field/value/{$field['field_id']}"),
-            'text' => $this->text('Values of %s', array('%s' => $field['title']))));
+            'text' => $this->text('Values of %s', array('%s' => $field['title'])));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -355,6 +353,8 @@ class FieldValue extends Controller
      */
     protected function deleteImageFieldValue(array $field_value, array $field)
     {
+        $this->controlAccess('field_value_edit');
+
         $this->field_value->update($field_value['field_value_id'], array('file_id' => 0));
         $file = $this->file->get($field_value['file_id']);
         $this->file->delete($field_value['file_id']);
@@ -370,6 +370,18 @@ class FieldValue extends Controller
      */
     protected function submitFieldValue(array $field_value, array $field)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteFieldValue($field_value, $field);
+        }
+
+        if ($this->isPosted('delete_image')) {
+            return $this->deleteImageFieldValue($field_value, $field);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('field_value');
 
         $this->validateFieldValue($field_value, $field);
@@ -379,7 +391,7 @@ class FieldValue extends Controller
         }
 
         if (isset($field_value['field_value_id'])) {
-            $this->updateFieldValue($field_value, $field);
+            return $this->updateFieldValue($field_value, $field);
         }
 
         $this->addFieldValue($field);

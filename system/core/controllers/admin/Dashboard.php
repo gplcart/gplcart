@@ -95,11 +95,7 @@ class Dashboard extends Controller
      */
     public function dashboard()
     {
-
-        if ($this->isQuery('skip_intro')) {
-            $this->config->reset('intro');
-            $this->redirect();
-        }
+        $this->toggleIntroDashboard();
 
         $this->setDataGaDashboard();
         $this->setDataUsersDashboard();
@@ -111,6 +107,17 @@ class Dashboard extends Controller
 
         $this->setTitleDashboard();
         $this->outputDashboard();
+    }
+
+    /**
+     * Toggles dashboard page from post-installation intro to normal view
+     */
+    protected function toggleIntroDashboard()
+    {
+        if ($this->isQuery('skip_intro')) {
+            $this->config->reset('intro');
+            $this->redirect();
+        }
     }
 
     /**

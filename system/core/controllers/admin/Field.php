@@ -40,9 +40,7 @@ class Field extends Controller
      */
     public function listField()
     {
-        if ($this->isPosted('action')) {
-            $this->actionField();
-        }
+        $this->actionField();
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalField($query);
@@ -73,13 +71,7 @@ class Field extends Controller
         $this->setData('field', $field);
         $this->setData('widget_types', $widget_types);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteField($field);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitField($field);
-        }
+        $this->submitField($field);
 
         $this->setTitleEditField($field);
         $this->setBreadcrumbEditField();
@@ -130,9 +122,11 @@ class Field extends Controller
      */
     protected function setBreadcrumbListField()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -163,13 +157,15 @@ class Field extends Controller
      */
     protected function setBreadcrumbEditField()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),
-            'text' => $this->text('Fields')));
+            'text' => $this->text('Fields'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -203,13 +199,14 @@ class Field extends Controller
         $deleted = $this->field->delete($field['field_id']);
 
         if ($deleted) {
-            $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
+            $message = $this->text('Field has been deleted');
+            $this->redirect('admin/content/field', $message, 'success');
         }
 
-        $text = $this->text('Unable to delete this field.'
+        $message = $this->text('Unable to delete this field.'
                 . ' The most probable reason - it is used by one or more products');
 
-        $this->redirect('', $text, 'danger');
+        $this->redirect('', $message, 'danger');
     }
 
     /**
@@ -218,6 +215,11 @@ class Field extends Controller
     protected function actionField()
     {
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = 0;
@@ -228,17 +230,25 @@ class Field extends Controller
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Fields have been deleted'), 'success', true);
+            $message = $this->text('Fields have been deleted');
+            $this->setMessage($message, 'success', true);
         }
     }
 
     /**
      * Saves a submitted field values
      * @param array $field
-     * @return null
      */
     protected function submitField(array $field)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteField($field);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('field');
         $this->validateField($field);
 
@@ -247,7 +257,7 @@ class Field extends Controller
         }
 
         if (isset($field['field_id'])) {
-            $this->updateField($field);
+            return $this->updateField($field);
         }
 
         $this->addField();
@@ -260,9 +270,12 @@ class Field extends Controller
     protected function updateField(array $field)
     {
         $this->controlAccess('field_edit');
+
         $values = $this->getSubmitted();
         $this->field->update($field['field_id'], $values);
-        $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
+
+        $message = $this->text('Field has been updated');
+        $this->redirect('admin/content/field', $message, 'success');
     }
 
     /**
@@ -271,9 +284,12 @@ class Field extends Controller
     protected function addField()
     {
         $this->controlAccess('field_add');
+
         $values = $this->getSubmitted();
         $this->field->add($values);
-        $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
+
+        $message = $this->text('Field has been added');
+        $this->redirect('admin/content/field', $message, 'success');
     }
 
     /**

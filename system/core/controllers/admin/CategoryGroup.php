@@ -79,9 +79,11 @@ class CategoryGroup extends Controller
      */
     protected function setBreadcrumbListCategoryGroup()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -93,20 +95,13 @@ class CategoryGroup extends Controller
         $stores = $this->store->getNames();
         $category_group = $this->getCategoryGroup($category_group_id);
 
-        $this->setData('stores', $stores);
-        $this->setData('category_group', $category_group);
-
         $can_delete = (isset($category_group['category_group_id']) && $this->category_group->canDelete($category_group_id) && $this->access('category_group_delete'));
 
+        $this->setData('stores', $stores);
         $this->setData('can_delete', $can_delete);
+        $this->setData('category_group', $category_group);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteCategoryGroup($category_group);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitCategoryGroup($category_group);
-        }
+        $this->submitCategoryGroup($category_group);
 
         $this->setTitleEditCategoryGroup($category_group);
         $this->setBreadcrumbEditCategoryGroup();
@@ -153,13 +148,15 @@ class CategoryGroup extends Controller
      */
     protected function setBreadcrumbEditCategoryGroup()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
-            'text' => $this->text('Category groups')));
+            'text' => $this->text('Category groups'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -200,17 +197,18 @@ class CategoryGroup extends Controller
      */
     protected function deleteCategoryGroup(array $category_group)
     {
-        $category_group_id = $category_group['category_group_id'];
-
         $this->controlAccess('category_group_delete');
 
+        $category_group_id = $category_group['category_group_id'];
         $deleted = $this->category_group->delete($category_group_id);
 
         if ($deleted) {
-            $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
+            $message = $this->text('Category group has been deleted');
+            $this->redirect('admin/content/category-group', $message, 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete this category group'), 'danger');
+        $message = $this->text('Unable to delete this category group');
+        $this->redirect('', $message, 'danger');
     }
 
     /**
@@ -220,6 +218,14 @@ class CategoryGroup extends Controller
      */
     protected function submitCategoryGroup(array $category_group)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteCategoryGroup($category_group);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('category_group');
         $this->validateCategoryGroup($category_group);
 
@@ -228,7 +234,7 @@ class CategoryGroup extends Controller
         }
 
         if (isset($category_group['category_group_id'])) {
-            $this->updateCategoryGroup($category_group);
+            return $this->updateCategoryGroup($category_group);
         }
 
         $this->addCategoryGroup();
@@ -241,8 +247,12 @@ class CategoryGroup extends Controller
     protected function updateCategoryGroup(array $category_group)
     {
         $this->controlAccess('category_group_edit');
-        $this->category_group->update($category_group['category_group_id'], $this->getSubmitted());
-        $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
+
+        $values = $this->getSubmitted();
+        $this->category_group->update($category_group['category_group_id'], $values);
+
+        $message = $this->text('Category group has been updated');
+        $this->redirect('admin/content/category-group', $message, 'success');
     }
 
     /**
@@ -251,8 +261,12 @@ class CategoryGroup extends Controller
     protected function addCategoryGroup()
     {
         $this->controlAccess('category_group_add');
-        $this->category_group->add($this->getSubmitted());
-        $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
+
+        $values = $this->getSubmitted();
+        $this->category_group->add($values);
+
+        $message = $this->text('Category group has been added');
+        $this->redirect('admin/content/category-group', $message, 'success');
     }
 
     /**
@@ -262,10 +276,8 @@ class CategoryGroup extends Controller
     protected function validateCategoryGroup(array $category_group)
     {
         $this->addValidator('title', array(
-            'length' => array(
-                'min' => 1,
-                'max' => 255
-        )));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
         $this->addValidator('translation', array(
             'translation' => array()

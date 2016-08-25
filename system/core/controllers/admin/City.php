@@ -61,12 +61,10 @@ class City extends Controller
      */
     public function listCity($country_code, $state_id)
     {
-        $country = $this->getCountry($country_code);
-        $state = $this->getState($state_id);
+        $state = $this->getStateCity($state_id);
+        $country = $this->getCountryCity($country_code);
 
-        if ($this->isPosted('action')) {
-            $this->actionCity();
-        }
+        $this->actionCity();
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalCity($state_id, $query);
@@ -94,20 +92,14 @@ class City extends Controller
     public function editCity($country_code, $state_id, $city_id = null)
     {
         $city = $this->getCity($city_id);
-        $state = $this->getState($state_id);
-        $country = $this->getCountry($country_code);
+        $state = $this->getStateCity($state_id);
+        $country = $this->getCountryCity($country_code);
 
         $this->setData('city', $city);
         $this->setData('state', $state);
         $this->setData('country', $country);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteCity($country, $state, $city);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitCity($country, $state, $city);
-        }
+        $this->submitCity($country, $state, $city);
 
         $this->setTitleEditCity($city);
         $this->setBreadcrumbEditCity();
@@ -145,7 +137,7 @@ class City extends Controller
      * @param string $country_code
      * @return array
      */
-    protected function getCountry($country_code)
+    protected function getCountryCity($country_code)
     {
         $country = $this->country->get($country_code);
 
@@ -161,7 +153,7 @@ class City extends Controller
      * @param integer $state_id
      * @return array
      */
-    protected function getState($state_id)
+    protected function getStateCity($state_id)
     {
         $state = $this->state->get($state_id);
 
@@ -208,18 +200,20 @@ class City extends Controller
      */
     protected function setBreadcrumbListCity(array $country)
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries')));
+            'text' => $this->text('Countries'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$country['code']}"),
             'text' => $this->text('States of %country', array(
-                '%country' => $country['name']))));
+                '%country' => $country['name'])));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -250,13 +244,15 @@ class City extends Controller
      */
     protected function setBreadcrumbEditCity()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries')));
+            'text' => $this->text('Countries'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -301,21 +297,29 @@ class City extends Controller
             $this->redirect($url, $message, 'success');
         }
 
-        $this->redirect('', $this->text('Cannot delete city %name.', array(
-                    '%name' => $city['name'])), 'warning');
+        $message = $this->text('Cannot delete city %name.', array(
+            '%name' => $city['name']));
+
+        $this->redirect('', $message, 'warning');
     }
 
     /**
      * Applies an action to the selected cities
-     * @return boolean
+     * @return null
      */
     protected function actionCity()
     {
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
         $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
+
         foreach ($selected as $id) {
             if ($action === 'status' && $this->access('city_edit')) {
                 $updated += (int) $this->city->update($id, array('status' => $value));
@@ -327,16 +331,14 @@ class City extends Controller
         }
 
         if ($updated > 0) {
-            $this->setMessage($this->text('Cities have been updated'), 'success', true);
-            return true;
+            $message = $this->text('Cities have been updated');
+            $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Cities have been deleted'), 'success', true);
-            return true;
+            $message = $this->text('Cities have been deleted');
+            $this->setMessage($message, 'success', true);
         }
-
-        return false;
     }
 
     /**
@@ -348,6 +350,14 @@ class City extends Controller
      */
     protected function submitCity(array $country, array $state, array $city)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteCity($country, $state, $city);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('city');
         $this->validateCity($country, $state, $city);
 
@@ -356,7 +366,7 @@ class City extends Controller
         }
 
         if (isset($city['city_id'])) {
-            $this->updateCity($country, $state, $city);
+            return $this->updateCity($country, $state, $city);
         }
 
         $this->addCity($country, $state);
@@ -371,7 +381,9 @@ class City extends Controller
     protected function updateCity(array $country, array $state, array $city)
     {
         $this->controlAccess('city_edit');
-        $this->city->update($city['city_id'], $this->getSubmitted());
+
+        $submitted = $this->getSubmitted();
+        $this->city->update($city['city_id'], $submitted);
 
         $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
         $message = $this->text('City %name has been updated', array(
@@ -388,7 +400,9 @@ class City extends Controller
     protected function addCity(array $country, array $state)
     {
         $this->controlAccess('city_add');
-        $this->city->add($this->getSubmitted());
+
+        $submitted = $this->getSubmitted();
+        $this->city->add($submitted);
 
         $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
         $message = $this->text('City has been added');
@@ -409,12 +423,10 @@ class City extends Controller
         $this->setSubmitted('state_id', $state['state_id']);
 
         $this->addValidator('name', array(
-            'length' => array(
-                'min' => 1,
-                'max' => 255
-        )));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
-        $this->setValidators();
+        $this->setValidators($city);
     }
 
 }

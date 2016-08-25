@@ -40,9 +40,7 @@ class Country extends Controller
      */
     public function listCountry()
     {
-        if ($this->isPosted('action')) {
-            $this->actionCountry();
-        }
+        $this->actionCountry();
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalCountry($query);
@@ -72,13 +70,7 @@ class Country extends Controller
 
         $this->setData('country', $country);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteCountry($country);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitCountry($country);
-        }
+        $this->submitCountry($country);
 
         $this->setTitleEditCountry($country);
         $this->setBreadcrumbEditCountry();
@@ -94,9 +86,7 @@ class Country extends Controller
         $country = $this->getCountry($country_code);
         $this->setData('format', $country['format']);
 
-        if ($this->isPosted('save')) {
-            $this->submitFormatCountry($country);
-        }
+        $this->submitFormatCountry($country);
 
         $this->setTitleFormatCountry($country);
         $this->setBreadcrumbFormatCountry();
@@ -147,9 +137,11 @@ class Country extends Controller
      */
     protected function setBreadcrumbListCountry()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -181,13 +173,15 @@ class Country extends Controller
      */
     protected function setBreadcrumbEditCountry()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries')));
+            'text' => $this->text('Countries'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -221,10 +215,12 @@ class Country extends Controller
         $deleted = $this->country->delete($country['code']);
 
         if ($deleted) {
-            $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
+            $message = $this->text('Country has been deleted');
+            $this->redirect('admin/settings/country', $message, 'success');
         }
 
-        $this->redirect('', $this->text('Cannot delete this country'), 'danger');
+        $message = $this->text('Cannot delete this country');
+        $this->redirect('', $message, 'danger');
     }
 
     /**
@@ -233,8 +229,13 @@ class Country extends Controller
      */
     protected function actionCountry()
     {
-        $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('country_edit')) {
@@ -260,16 +261,14 @@ class Country extends Controller
         }
 
         if ($updated > 0) {
-            $this->setMessage($this->text('Countries have been updated'), 'success', true);
-            return true;
+            $message = $this->text('Countries have been updated');
+            $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Countries have been deleted'), 'success', true);
-            return true;
+            $message = $this->text('Countries have been deleted');
+            $this->setMessage($message, 'success', true);
         }
-
-        return false;
     }
 
     /**
@@ -279,6 +278,14 @@ class Country extends Controller
      */
     protected function submitCountry(array $country)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteCountry($country);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('country');
         $this->validateCountry($country);
 
@@ -287,7 +294,7 @@ class Country extends Controller
         }
 
         if (isset($country['code'])) {
-            $this->updateCountry($country);
+            return $this->updateCountry($country);
         }
 
         $this->addCountry();
@@ -300,8 +307,12 @@ class Country extends Controller
     protected function updateCountry(array $country)
     {
         $this->controlAccess('country_edit');
-        $this->country->update($country['code'], $this->getSubmitted());
-        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+
+        $submitted = $this->getSubmitted();
+        $this->country->update($country['code'], $submitted);
+
+        $message = $this->text('Country has been updated');
+        $this->redirect('admin/settings/country', $message, 'success');
     }
 
     /**
@@ -310,8 +321,12 @@ class Country extends Controller
     protected function addCountry()
     {
         $this->controlAccess('country_add');
-        $this->country->add($this->getSubmitted());
-        $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
+
+        $values = $this->getSubmitted();
+        $this->country->add($values);
+
+        $message = $this->text('Country has been added');
+        $this->redirect('admin/settings/country', $message, 'success');
     }
 
     /**
@@ -375,13 +390,15 @@ class Country extends Controller
      */
     protected function setBreadcrumbFormatCountry()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries')));
+            'text' => $this->text('Countries'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -390,9 +407,20 @@ class Country extends Controller
      */
     protected function submitFormatCountry(array $country)
     {
-        $this->controlAccess('country_format_edit');
+        if ($this->isPosted('save')) {
+            $this->controlAccess('country_format_edit');
+            $this->setSubmitted('format');
+            $this->updateFormatCountry($country);
+        }
+    }
 
-        $format = $this->setSubmitted('format');
+    /**
+     * Updates a country format
+     * @param array $country
+     */
+    protected function updateFormatCountry(array $country)
+    {
+        $format = $this->getSubmitted();
 
         // Fix checkboxes, enable required fields
         foreach ($format as &$item) {

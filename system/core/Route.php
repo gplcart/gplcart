@@ -145,13 +145,13 @@ class Route
 
         $routes['review/add/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Review', 'edit')
+                'controller' => array('core\\controllers\\Review', 'editReview')
             )
         );
 
         $routes['review/edit/(\d+)/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Review', 'edit')
+                'controller' => array('core\\controllers\\Review', 'editReview')
             )
         );
 
@@ -300,35 +300,35 @@ class Route
             'access' => 'product_class',
             'menu' => array('admin' => 'Product classes'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'classes')
+                'controller' => array('core\\controllers\\admin\\ProductClass', 'listProductClass')
             )
         );
 
         $routes['admin/content/product-class/edit/(\d+)'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'edit')
+                'controller' => array('core\\controllers\\admin\\ProductClass', 'editProductClass')
             )
         );
 
         $routes['admin/content/product-class/add'] = array(
             'access' => 'product_class_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'edit')
+                'controller' => array('core\\controllers\\admin\\ProductClass', 'editProductClass')
             )
         );
 
         $routes['admin/content/product-class/field/(\d+)'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'fields')
+                'controller' => array('core\\controllers\\admin\\ProductClass', 'fieldsProductClass')
             )
         );
 
         $routes['admin/content/product-class/field/(\d+)/add'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'addField')
+                'controller' => array('core\\controllers\\admin\\ProductClass', 'editFieldProductClass')
             )
         );
 
@@ -454,21 +454,21 @@ class Route
             'access' => 'review',
             'menu' => array('admin' => 'Reviews'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Review', 'reviews')
+                'controller' => array('core\\controllers\\admin\\Review', 'listReview')
             )
         );
 
         $routes['admin/content/review/add'] = array(
             'access' => 'review_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Review', 'edit')
+                'controller' => array('core\\controllers\\admin\\Review', 'editReview')
             )
         );
 
         $routes['admin/content/review/edit/(\d+)'] = array(
             'access' => 'review_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Review', 'edit')
+                'controller' => array('core\\controllers\\admin\\Review', 'editReview')
             )
         );
 
@@ -830,11 +830,11 @@ class Route
             )
         );
 
-        $routes['admin/report/system'] = array(
-            'access' => 'report_system',
+        $routes['admin/report/events'] = array(
+            'access' => 'report_events',
             'menu' => array('admin' => 'Events'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'system')
+                'controller' => array('core\\controllers\\admin\\Report', 'listEventReport')
             )
         );
 
@@ -842,7 +842,7 @@ class Route
             'access' => 'report_status',
             'menu' => array('admin' => 'Status'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'status')
+                'controller' => array('core\\controllers\\admin\\Report', 'listStatusReport')
             )
         );
 
@@ -850,7 +850,7 @@ class Route
             'access' => 'report_ga',
             'menu' => array('admin' => 'Analytics'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'ga')
+                'controller' => array('core\\controllers\\admin\\Report', 'listGaReport')
             )
         );
 

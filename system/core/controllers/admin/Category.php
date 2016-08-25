@@ -71,9 +71,7 @@ class Category extends Controller
     {
         $category_group = $this->getCategoryGroup($category_group_id);
 
-        if ($this->isPosted('action')) {
-            $this->actionCategory();
-        }
+        $this->actionCategory();
 
         $categories = $this->getListCategory($category_group);
 
@@ -105,13 +103,7 @@ class Category extends Controller
         $this->setData('parent_id', $parent_category);
         $this->setData('category_group', $category_group);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteCategory($category_group, $category);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitCategory($category_group, $category);
-        }
+        $this->submitCategory($category_group, $category);
 
         $this->setDataEditCategory();
 
@@ -171,13 +163,15 @@ class Category extends Controller
      */
     protected function setBreadcrumbListCategory()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
-            'text' => $this->text('Category groups')));
+            'text' => $this->text('Category groups'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -213,10 +207,12 @@ class Category extends Controller
             $categories = $this->getData('categories');
             $category_group_id = $this->getData('category_group.category_group_id');
 
-            $children = $this->category->getTree(array(
+            $options = array(
                 'parent_id' => $category_id,
                 'category_group_id' => $category_group_id
-            ));
+            );
+
+            $children = $this->category->getTree($options);
 
             $exclude = array($category_id);
             foreach ($children as $child) {
@@ -272,17 +268,20 @@ class Category extends Controller
      */
     protected function setBreadcrumbEditCategory(array $category_group)
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
-            'text' => $this->text('Category groups')));
+            'text' => $this->text('Category groups'));
 
-        $this->setBreadcrumb(array(
+
+        $breadcrumbs[] = array(
             'url' => $this->url("admin/content/category/{$category_group['category_group_id']}"),
-            'text' => $this->text('Categories')));
+            'text' => $this->text('Categories'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -338,11 +337,11 @@ class Category extends Controller
     {
         $category_group = $this->category_group->get($category_group_id);
 
-        if (!empty($category_group)) {
-            return $category_group;
+        if (empty($category_group)) {
+            $this->outputError(404);
         }
 
-        $this->outputError(404);
+        return $category_group;
     }
 
     /**
@@ -350,8 +349,13 @@ class Category extends Controller
      */
     protected function actionCategory()
     {
-        $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
@@ -396,6 +400,14 @@ class Category extends Controller
      */
     protected function submitCategory(array $category_group, array $category)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteCategory($category_group, $category);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('category', null, false);
         $this->validateCategory($category);
 
@@ -404,7 +416,7 @@ class Category extends Controller
         }
 
         if (isset($category['category_id'])) {
-            $this->updateCategory($category_group, $category);
+            return $this->updateCategory($category_group, $category);
         }
 
         $this->addCategory($category_group);

@@ -47,13 +47,7 @@ class Language extends Controller
         $this->setData('language', $language);
         $this->setData('default_language', $default);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteLanguage($language);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitLanguage($language);
-        }
+        $this->submitLanguage($language);
 
         $this->setTitleEditLanguage($language);
         $this->setBreadcrumbEditLanguage();
@@ -65,9 +59,7 @@ class Language extends Controller
      */
     public function listLanguage()
     {
-        if ($this->isQuery('refresh')) {
-            $this->refreshLanguage();
-        }
+        $this->refreshLanguage();
 
         $languages = $this->language->getList();
         $this->setData('languages', $languages);
@@ -83,8 +75,11 @@ class Language extends Controller
     protected function refreshLanguage()
     {
         $code = (string) $this->request->get('refresh');
-        $this->language->refresh($code);
-        $this->redirect();
+
+        if (!empty($code)) {
+            $this->language->refresh($code);
+            $this->redirect();
+        }
     }
 
     /**
@@ -94,7 +89,8 @@ class Language extends Controller
     protected function setTitleEditLanguage(array $language)
     {
         if (isset($language['code'])) {
-            $title = $this->text('Edit language %name', array('%name' => $language['native_name']));
+            $title = $this->text('Edit language %name', array(
+                '%name' => $language['native_name']));
         } else {
             $title = $this->text('Add language');
         }
@@ -107,13 +103,15 @@ class Language extends Controller
      */
     protected function setBreadcrumbEditLanguage()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/language'),
-            'text' => $this->text('Languages')));
+            'text' => $this->text('Languages'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -127,10 +125,17 @@ class Language extends Controller
     /**
      * Saves a submitted language
      * @param array $language
-     * @return null
      */
     protected function submitLanguage(array $language)
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteLanguage($language);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('language');
         $this->validateLanguage($language);
 
@@ -139,7 +144,7 @@ class Language extends Controller
         }
 
         if (isset($language['code'])) {
-            $this->updateLanguage($language);
+            return $this->updateLanguage($language);
         }
 
         $this->addLanguage();
@@ -152,9 +157,11 @@ class Language extends Controller
     {
         $this->controlAccess('language_add');
 
-        $submitted = $this->getSubmitted();
-        $this->language->add($submitted);
-        $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
+        $values = $this->getSubmitted();
+        $this->language->add($values);
+
+        $message = $this->text('Language has been added');
+        $this->redirect('admin/settings/language', $message, 'success');
     }
 
     /**
@@ -167,7 +174,9 @@ class Language extends Controller
 
         $submitted = $this->getSubmitted();
         $this->language->update($language['code'], $submitted);
-        $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success');
+
+        $message = $this->text('Language has been updated');
+        $this->redirect('admin/settings/language', $message, 'success');
     }
 
     /**
@@ -205,9 +214,11 @@ class Language extends Controller
      */
     protected function setBreadcrumbListLanguage()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

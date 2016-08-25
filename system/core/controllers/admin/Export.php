@@ -76,13 +76,8 @@ class Export extends Controller
     {
         $operation = $this->getExport($operation_id);
 
-        if ($this->isQuery('download')) {
-            $this->downloadExport($operation);
-        }
-
-        if ($this->isPosted('export')) {
-            $this->submitExport($operation);
-        }
+        $this->downloadExport($operation);
+        $this->submitExport($operation);
 
         $job = $this->getJob();
         $stores = $this->store->getNames();
@@ -108,9 +103,11 @@ class Export extends Controller
      */
     protected function setBreadcrumbListExport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -135,8 +132,10 @@ class Export extends Controller
      */
     protected function setTitleEditExport(array $operation)
     {
-        $this->setTitle($this->text('Export %operation', array(
-                    '%operation' => $operation['name'])));
+        $text = $this->text('Export %operation', array(
+            '%operation' => $operation['name']));
+
+        $this->setTitle($text);
     }
 
     /**
@@ -144,13 +143,15 @@ class Export extends Controller
      */
     protected function setBreadcrumbEditExport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Operations'),
-            'url' => $this->url('admin/tool/export')));
+            'url' => $this->url('admin/tool/export'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -184,7 +185,7 @@ class Export extends Controller
      */
     protected function downloadExport(array $operation)
     {
-        if (!empty($operation['file']) && file_exists($operation['file'])) {
+        if ($this->isQuery('download') && !empty($operation['file']) && file_exists($operation['file'])) {
             $this->response->download($operation['file']);
         }
     }
@@ -196,6 +197,10 @@ class Export extends Controller
      */
     protected function submitExport(array $operation)
     {
+        if (!$this->isPosted('export')) {
+            return;
+        }
+
         $this->setSubmitted('export');
         $this->validateExport($operation);
 
@@ -265,6 +270,7 @@ class Export extends Controller
 
         $delimiter = $this->export->getCsvDelimiter();
         Tool::writeCsv($operation['file'], $operation['csv']['header'], $delimiter);
+
         $this->setSubmitted('operation', $operation);
     }
 

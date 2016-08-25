@@ -68,9 +68,7 @@ class Page extends Controller
      */
     public function listPage()
     {
-        if ($this->isPosted('action')) {
-            $this->actionPage();
-        }
+        $this->actionPage();
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalPage($query);
@@ -87,10 +85,6 @@ class Page extends Controller
 
         $this->setFilter($filters, $query);
 
-        if ($this->isPosted('save')) {
-            $this->submitPage();
-        }
-
         $this->setTitleListPage();
         $this->setBreadcrumbListPage();
         $this->outputListPage();
@@ -104,23 +98,14 @@ class Page extends Controller
     {
         $page = $this->getPage($page_id);
 
-        if ($this->isPosted('action')) {
-            $this->actionPage();
-        }
-
-        if ($this->isPosted('delete')) {
-            $this->deletePage($page);
-        }
+        $this->actionPage();
 
         $stores = $this->store->getNames();
 
         $this->setData('page', $page);
         $this->setData('stores', $stores);
 
-        if ($this->isPosted('save')) {
-            $this->submitPage($page);
-        }
-
+        $this->submitPage($page);
         $this->setDataEditPage();
 
         $this->setTitleEditPage($page);
@@ -152,9 +137,11 @@ class Page extends Controller
      */
     protected function setBreadcrumbListPage()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -170,8 +157,13 @@ class Page extends Controller
      */
     protected function actionPage()
     {
-        $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'categories') {
@@ -222,13 +214,15 @@ class Page extends Controller
      */
     protected function setBreadcrumbEditPage()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Pages'),
-            'url' => $this->url('admin/content/page')));
+            'url' => $this->url('admin/content/page'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -341,16 +335,25 @@ class Page extends Controller
     {
         $this->controlAccess('page_delete');
         $this->page->delete($page['page_id']);
-        $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
+
+        $message = $this->text('Page has been deleted');
+        $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
      * Saves a submitted page
      * @param array $page
-     * @return null
      */
     protected function submitPage(array $page = array())
     {
+        if ($this->isPosted('delete')) {
+            return $this->deletePage($page);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('page', null, false);
         $this->validatePage($page);
 
@@ -361,7 +364,7 @@ class Page extends Controller
         $this->deleteImagesPage();
 
         if (isset($page['page_id'])) {
-            $this->updatePage($page);
+            return $this->updatePage($page);
         }
 
         $this->addPage();
@@ -376,9 +379,10 @@ class Page extends Controller
         $this->controlAccess('page_edit');
 
         $submitted = $this->getSubmitted();
-
         $this->page->update($page['page_id'], $submitted);
-        $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
+
+        $message = $this->text('Page has been updated');
+        $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
@@ -389,14 +393,14 @@ class Page extends Controller
         $this->controlAccess('page_add');
 
         $submitted = $this->getSubmitted();
-
         $this->page->add($submitted);
-        $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
+
+        $message = $this->text('Page has been added');
+        $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
      * Deletes an array of submitted images
-     * @return integer
      */
     protected function deleteImagesPage()
     {
@@ -404,15 +408,12 @@ class Page extends Controller
         $has_access = ($this->access('page_add') || $this->access('page_edit'));
 
         if (!$has_access || empty($images)) {
-            return 0;
+            return;
         }
 
-        $deleted = 0;
         foreach ($images as $file_id) {
-            $deleted += (int) $this->image->delete($file_id);
+            $this->image->delete($file_id);
         }
-
-        return $deleted;
     }
 
     /**

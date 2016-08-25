@@ -70,13 +70,7 @@ class Currency extends Controller
 
         $this->setdata('can_delete', $can_delete);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteCurrency($currency);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitCurrency($currency);
-        }
+        $this->submitCurrency($currency);
 
         $this->setTitleEditCurrency($currency);
         $this->setBreadcrumbEditCurrency();
@@ -104,9 +98,11 @@ class Currency extends Controller
      */
     protected function setBreadcrumbListCurrency()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+        
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -138,13 +134,15 @@ class Currency extends Controller
      */
     protected function setBreadcrumbEditCurrency()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/currency'),
-            'text' => $this->text('Currencies')));
+            'text' => $this->text('Currencies'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -179,13 +177,14 @@ class Currency extends Controller
 
         $deleted = $this->currency->delete($currency['code']);
 
-        if (!$deleted) {
-            $this->redirect('', $this->text('Cannot delete this currency'), 'danger');
+        if ($deleted) {
+            $message = $this->text('Currency %code has been deleted', array(
+                '%code' => $currency['code']));
+            $this->redirect('admin/settings/currency', $message, 'success');
         }
-        
-        $message = $this->text('Currency %code has been deleted', array(
-            '%code' => $currency['code']));
-        $this->redirect('admin/settings/currency', $message, 'success');
+
+        $message = $this->text('Cannot delete this currency');
+        $this->redirect('', $message, 'danger');
     }
 
     /**
@@ -195,6 +194,14 @@ class Currency extends Controller
      */
     protected function submitCurrency(array $currency)
     {
+        if ($this->isPosted('delete') && isset($currency['code'])) {
+            return $this->deleteCurrency($currency);
+        }
+        
+        if (!$this->isPosted('save')) {
+            return;
+        }
+        
         $this->setSubmitted('currency');
         $this->validateCurrency($currency);
 
@@ -203,7 +210,7 @@ class Currency extends Controller
         }
 
         if (isset($currency['code'])) {
-            $this->updateCurrency($currency);
+            return $this->updateCurrency($currency);
         }
 
         $this->addCurrency();
@@ -216,7 +223,9 @@ class Currency extends Controller
     protected function updateCurrency(array $currency)
     {
         $this->controlAccess('currency_edit');
-        $this->currency->update($currency['code'], $this->getSubmitted());
+        
+        $values = $this->getSubmitted();
+        $this->currency->update($currency['code'], $values);
         
         $message = $this->text('Currency %code has been updated', array(
                     '%code' => $currency['code']));
@@ -230,7 +239,9 @@ class Currency extends Controller
     protected function addCurrency()
     {
         $this->controlAccess('currency_add');
-        $this->currency->add($this->getSubmitted());
+        
+        $values = $this->getSubmitted();
+        $this->currency->add($values);
         
         $message = $this->text('Currency has been added');
         $this->redirect('admin/settings/currency', $message, 'success');
@@ -260,7 +271,8 @@ class Currency extends Controller
         ));
 
         $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 50)));
+            'length' => array('min' => 1, 'max' => 50)
+        ));
 
         $this->addValidator('numeric_code', array(
             'regexp' => array(
@@ -269,13 +281,16 @@ class Currency extends Controller
         )));
 
         $this->addValidator('symbol', array(
-            'length' => array('min' => 1, 'max' => 10)));
+            'length' => array('min' => 1, 'max' => 10)
+        ));
 
         $this->addValidator('major_unit', array(
-            'length' => array('min' => 1, 'max' => 50)));
+            'length' => array('min' => 1, 'max' => 50)
+        ));
 
         $this->addValidator('minor_unit', array(
-            'length' => array('min' => 1, 'max' => 50)));
+            'length' => array('min' => 1, 'max' => 50)
+        ));
 
         $this->addValidator('convertion_rate', array(
             'length' => array('min' => 1, 'max' => 10),

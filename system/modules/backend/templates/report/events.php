@@ -2,7 +2,7 @@
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url(false, array('clear_errors' => true)); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url(false, array('clear' => true)); ?>">
         <?php echo $this->text('Clear'); ?>
       </a>
     </div>

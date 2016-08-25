@@ -189,11 +189,8 @@ class Import extends Controller
 
         $operation = $this->getOperationImport($operation_id);
 
-        $this->setDownloadImport($operation);
-
-        if ($this->isPosted('save')) {
-            $this->submitImport($operation);
-        }
+        $this->downloadImport($operation);
+        $this->submitImport($operation);
 
         $job = $this->getJob();
 
@@ -209,7 +206,7 @@ class Import extends Controller
      * Listening to the current URL and outputs files to download if needed
      * @param array $operation
      */
-    protected function setDownloadImport(array $operation)
+    protected function downloadImport(array $operation)
     {
         if ($this->isQuery('download_template') && isset($operation['csv']['template'])) {
             $this->response->download($operation['csv']['template']);
@@ -233,9 +230,12 @@ class Import extends Controller
      */
     protected function setBreadcrumbListImport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -263,13 +263,15 @@ class Import extends Controller
      */
     protected function setBreadcrumbEditImport()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Import'),
-            'url' => $this->url('admin/tool/import')));
+            'url' => $this->url('admin/tool/import'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -299,10 +301,13 @@ class Import extends Controller
     /**
      * Starts import
      * @param array $operation
-     * @return null
      */
     protected function submitImport(array $operation)
     {
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('import');
         $this->validateImport($operation);
 
@@ -344,6 +349,7 @@ class Import extends Controller
     protected function validateImport(array $operation)
     {
         $limit = $this->import->getLimit();
+
         $this->setSubmitted('limit', $limit);
         $this->setSubmitted('operation', $operation);
 

@@ -50,9 +50,7 @@ class ImageStyle extends Controller
      */
     public function listImageStyle()
     {
-        if ($this->isQuery('clear')) {
-            $this->clearCacheImageStyle();
-        }
+        $this->clearCacheImageStyle();
 
         $imagestyles = $this->image->getStyleList();
 
@@ -85,13 +83,7 @@ class ImageStyle extends Controller
 
         $this->setData('imagestyle', $imagestyle);
 
-        if ($this->isPosted('delete')) {
-            $this->deleteImageStyle($imagestyle);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitImageStyle($imagestyle);
-        }
+        $this->submitImageStyle($imagestyle);
 
         $this->setDataEditImageStyle();
 
@@ -121,9 +113,11 @@ class ImageStyle extends Controller
      */
     protected function setBreadcrumbListImageStyle()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -155,13 +149,15 @@ class ImageStyle extends Controller
      */
     protected function setBreadcrumbEditImageStyle()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/imagestyle'),
-            'text' => $this->text('Image styles')));
+            'text' => $this->text('Image styles'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -196,23 +192,29 @@ class ImageStyle extends Controller
         $this->image->deleteStyle($imagestyle['imagestyle_id']);
         $this->image->clearCache($imagestyle['imagestyle_id']);
 
-        if(empty($imagestyle['default'])){
+        if (empty($imagestyle['default'])) {
             $message = $this->text('Image style has been deleted');
         } else {
             $message = $this->text('Image style has been reverted to default settings');
         }
-        
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
 
+        $this->redirect('admin/settings/imagestyle', $message, 'success');
     }
 
     /**
      * Saves an imagestyle
      * @param array $imagestyle
-     * @return null
      */
     protected function submitImageStyle(array $imagestyle)
     {
+        if ($this->isPosted('delete') && isset($imagestyle['imagestyle_id'])) {
+            return $this->deleteImageStyle($imagestyle);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('imagestyle');
         $this->validateImageStyle($imagestyle);
 
@@ -221,7 +223,7 @@ class ImageStyle extends Controller
         }
 
         if (isset($imagestyle['imagestyle_id'])) {
-            $this->updateImageStyle($imagestyle);
+            return $this->updateImageStyle($imagestyle);
         }
 
         $this->addImageStyle();
@@ -239,7 +241,8 @@ class ImageStyle extends Controller
         $this->image->updateStyle($imagestyle['imagestyle_id'], $submitted);
         $this->image->clearCache($imagestyle['imagestyle_id']);
 
-        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
+        $message = $this->text('Image style has been updated');
+        $this->redirect('admin/settings/imagestyle', $message, 'success');
     }
 
     /**
@@ -251,7 +254,9 @@ class ImageStyle extends Controller
 
         $submitted = $this->getSubmitted();
         $this->image->addStyle($submitted);
-        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
+
+        $message = $this->text('Image style has been added');
+        $this->redirect('admin/settings/imagestyle', $message, 'success');
     }
 
     /**

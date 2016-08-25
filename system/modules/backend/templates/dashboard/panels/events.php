@@ -1,4 +1,4 @@
-<?php if ($this->access('report_system')) { ?>
+<?php if ($this->access('report_events')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
     <?php echo $this->text('System events'); ?>
@@ -33,7 +33,7 @@
           <?php } ?>
         </ul>
         <div class="text-right">
-          <a href="<?php echo $this->url('admin/report/system', array('severity' => $severity)); ?>">
+          <a href="<?php echo $this->url('admin/report/events', array('severity' => $severity)); ?>">
             <?php echo $this->text('See all'); ?>
           </a>
         </div>

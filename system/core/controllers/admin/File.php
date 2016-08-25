@@ -40,13 +40,8 @@ class File extends Controller
      */
     public function listFile()
     {
-        if ($this->isQuery('download')) {
-            $this->downloadFile();
-        }
-
-        if ($this->isPosted('action')) {
-            $this->actionFile();
-        }
+        $this->downloadFile();
+        $this->actionFile();
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalFile($query);
@@ -94,9 +89,11 @@ class File extends Controller
      */
     protected function setBreadcrumbListFile()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -129,6 +126,11 @@ class File extends Controller
     protected function actionFile()
     {
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
         $selected = (array) $this->request->post('selected', array());
 
         $deleted_disk = $deleted_database = 0;
@@ -152,11 +154,14 @@ class File extends Controller
      */
     protected function downloadFile()
     {
-        $file_id = (int) $this->request->get('download');
-        $file = $this->file->get($file_id);
+        if ($this->isQuery('download')) {
 
-        $filepath = GC_FILE_DIR . '/' . $file['path'];
-        $this->response->download($filepath);
+            $file_id = (int) $this->request->get('download');
+            $file = $this->file->get($file_id);
+
+            $filepath = GC_FILE_DIR . '/' . $file['path'];
+            $this->response->download($filepath);
+        }
     }
 
 }

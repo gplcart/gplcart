@@ -60,6 +60,8 @@ class PriceRule extends Controller
      */
     public function listPriceRule()
     {
+        $this->actionPriceRule();
+
         $query = $this->getFilterQuery();
         $total = $this->getTotalPriceRule($query);
         $limit = $this->setPager($total, $query);
@@ -73,10 +75,6 @@ class PriceRule extends Controller
             'weight', 'status', 'store_id', 'type');
 
         $this->setFilter($filters, $query);
-
-        if ($this->isPosted('action')) {
-            $this->actionPriceRule();
-        }
 
         $this->setTitleListPriceRule();
         $this->setBreadcrumbListPriceRule();
@@ -101,13 +99,7 @@ class PriceRule extends Controller
         $this->setData('currencies', $currencies);
         $this->setData('conditions', $conditions);
 
-        if ($this->isPosted('delete')) {
-            $this->deletePriceRule($rule);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitPriceRule($rule);
-        }
+        $this->submitPriceRule($rule);
 
         $this->setDataEditPriceRule();
 
@@ -132,8 +124,13 @@ class PriceRule extends Controller
      */
     protected function actionPriceRule()
     {
-        $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
@@ -174,9 +171,11 @@ class PriceRule extends Controller
      */
     protected function setBreadcrumbListPriceRule()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -227,13 +226,15 @@ class PriceRule extends Controller
      */
     protected function setBreadcrumbEditPriceRule()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Price rules'),
-            'url' => $this->url('admin/sale/price')));
+            'url' => $this->url('admin/sale/price'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -288,6 +289,14 @@ class PriceRule extends Controller
      */
     protected function submitPriceRule(array $rule = array())
     {
+        if ($this->isPosted('delete')) {
+            return $this->deletePriceRule($rule);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('price_rule', null, false);
 
         $this->validatePriceRule($rule);
@@ -297,7 +306,7 @@ class PriceRule extends Controller
         }
 
         if (isset($rule['price_rule_id'])) {
-            $this->updatePriceRule($rule);
+            return $this->updatePriceRule($rule);
         }
 
         $this->addPriceRule();

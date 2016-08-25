@@ -275,25 +275,6 @@
           </div>
           <div class="form-group">
             <label class="col-md-4 control-label">
-              <span class="hint" title="<?php echo $this->text('Show this product on the front page'); ?>">
-              <?php echo $this->text('Front page'); ?>
-              </span>
-            </label>
-            <div class="col-md-8">
-              <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-default<?php echo empty($product['front']) ? '' : ' active'; ?>">
-                  <input name="product[front]" type="radio" autocomplete="off" value="1"<?php echo empty($product['front']) ? '' : ' checked'; ?>>
-                  <?php echo $this->text('Yes'); ?>
-                </label>
-                <label class="btn btn-default<?php echo empty($product['front']) ? ' active' : ''; ?>">
-                  <input name="product[front]" type="radio" autocomplete="off" value="0"<?php echo empty($product['front']) ? ' checked' : ''; ?>>
-                  <?php echo $this->text('No'); ?>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-4 control-label">
               <span class="hint" title="<?php echo $this->text('This product will be displayed only in the selected store'); ?>">
               <?php echo $this->text('Store'); ?>
               </span>

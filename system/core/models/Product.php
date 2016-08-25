@@ -670,20 +670,27 @@ class Product extends Model
         if (!$this->canDelete($product_id)) {
             return false;
         }
-
-        $this->db->delete('product', array('product_id' => $product_id));
-        $this->db->delete('option_combination', array('product_id' => $product_id));
-        $this->db->delete('product_translation', array('product_id' => $product_id));
-        $this->db->delete('product_field', array('product_id' => $product_id));
-        $this->db->delete('review', array('product_id' => $product_id));
-        $this->db->delete('wishlist', array('product_id' => $product_id));
-        $this->db->delete('alias', array('id_key' => 'product_id', 'id_value' => $product_id));
-        $this->db->delete('file', array('id_key' => 'product_id', 'id_value' => $product_id));
-        $this->db->delete('product_sku', array('product_id' => $product_id));
-        $this->db->delete('cart', array('product_id' => $product_id));
-        $this->db->delete('rating', array('product_id' => $product_id));
-        $this->db->delete('rating_user', array('product_id' => $product_id));
-        $this->db->delete('search_index', array('id_key' => 'product_id', 'id_value' => $product_id));
+        
+        $data = array(
+            'cart' => array('product_id' => $product_id),
+            'review' => array('product_id' => $product_id),
+            'rating' => array('product_id' => $product_id),
+            'product' => array('product_id' => $product_id),
+            'wishlist' => array('product_id' => $product_id),
+            'product_sku' => array('product_id' => $product_id),
+            'rating_user' => array('product_id' => $product_id),
+            'product_field' => array('product_id' => $product_id),
+            'option_combination' => array('product_id' => $product_id),
+            'product_translation' => array('product_id' => $product_id),
+            'file' => array('id_key' => 'product_id', 'id_value' => $product_id),
+            'alias' => array('id_key' => 'product_id', 'id_value' => $product_id),
+            'search_index' => array('id_key' => 'product_id', 'id_value' => $product_id),
+            'collection_item' => array('id_key' => 'product_id', 'id_value' => $product_id)
+        );
+        
+        foreach($data as $table => $conditions){
+            $this->db->delete($table, $conditions);
+        }
 
         //Cache::clear('cart', '*');
 

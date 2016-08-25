@@ -10,11 +10,9 @@
 namespace core\controllers\admin;
 
 use core\Controller;
-use core\models\Sku as ModelsSku;
 use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Alias as ModelsAlias;
-use core\models\Field as ModelsField;
 use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;
 use core\models\Category as ModelsCategory;
@@ -69,18 +67,6 @@ class Product extends Controller
     protected $alias;
 
     /**
-     * Field model instance
-     * @var \core\models\Field $field
-     */
-    protected $field;
-
-    /**
-     * Sku model instance
-     * @var \core\models\Sku $sku
-     */
-    protected $sku;
-
-    /**
      * Constructor
      * @param ModelsProduct $product
      * @param ModelsProductClass $product_class
@@ -89,20 +75,17 @@ class Product extends Controller
      * @param ModelsCurrency $currency
      * @param ModelsImage $image
      * @param ModelsAlias $alias
-     * @param ModelsField $field
-     * @param ModelsSku $sku
      */
     public function __construct(ModelsProduct $product,
             ModelsProductClass $product_class, ModelsCategory $category,
             ModelsPrice $price, ModelsCurrency $currency, ModelsImage $image,
-            ModelsAlias $alias, ModelsField $field, ModelsSku $sku)
+            ModelsAlias $alias)
     {
         parent::__construct();
 
-        $this->sku = $sku;
+
         $this->alias = $alias;
         $this->image = $image;
-        $this->field = $field;
         $this->price = $price;
         $this->product = $product;
         $this->category = $category;
@@ -115,9 +98,7 @@ class Product extends Controller
      */
     public function listProduct()
     {
-        if ($this->isPosted('action')) {
-            $this->actionProduct();
-        }
+        $this->actionProduct();
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalProduct($query);
@@ -136,10 +117,6 @@ class Product extends Controller
 
         $this->setFilter($filters, $query);
 
-        if ($this->isPosted('save')) {
-            $this->submitProduct();
-        }
-
         $this->setTitleListProduct();
         $this->setBreadcrumbListProduct();
         $this->outputListProduct();
@@ -154,30 +131,20 @@ class Product extends Controller
         $this->outputCategoriesProduct();
 
         $product = $this->getProduct($product_id);
-        $this->setData('product', $product);
-
-        if (!empty($product)) {
-            $related = $this->getRelatedProduct($product);
-            $this->setData('related', $related);
-        }
-
-        if ($this->isPosted('delete')) {
-            $this->deleteProduct($product);
-        }
-
-        if ($this->isPosted('save')) {
-            $this->submitProduct($product);
-        }
-
-        $this->setDataEditProduct();
 
         $stores = $this->store->getNames();
         $currency = $this->currency->getDefault();
+        $related = $this->getRelatedProduct($product);
         $classes = $this->product_class->getList(array('status' => 1));
 
         $this->setData('stores', $stores);
+        $this->setData('product', $product);
+        $this->setData('related', $related);
         $this->setData('classes', $classes);
         $this->setData('default_currency', $currency);
+
+        $this->submitProduct($product);
+        $this->setDataEditProduct();
 
         $this->setJsEditProduct($product);
 
@@ -240,9 +207,11 @@ class Product extends Controller
      */
     protected function setBreadcrumbListProduct()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -258,8 +227,13 @@ class Product extends Controller
      */
     protected function actionProduct()
     {
-        $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
@@ -293,7 +267,6 @@ class Product extends Controller
      */
     protected function getListProduct(array $limit, array $query)
     {
-
         $query['limit'] = $limit;
 
         $stores = $this->store->getList();
@@ -311,25 +284,6 @@ class Product extends Controller
         }
 
         return $products;
-    }
-
-    /**
-     * Updates option combination
-     * @param array $product
-     * @return integer
-     */
-    protected function updateCombinationProduct(array $product)
-    {
-        if (empty($product['combination'])) {
-            return 0;
-        }
-
-        $updated = 0;
-        foreach ($product['combination'] as $combination_id => $combination) {
-            $updated += (int) $this->product->updateCombination($combination_id, $combination);
-        }
-
-        return $updated;
     }
 
     /**
@@ -352,13 +306,15 @@ class Product extends Controller
      */
     protected function setBreadcrumbEditProduct()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Products'),
-            'url' => $this->url('admin/content/product')));
+            'url' => $this->url('admin/content/product'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -376,6 +332,10 @@ class Product extends Controller
      */
     protected function getRelatedProduct(array $product)
     {
+        if (empty($product['product_id'])) {
+            return array();
+        }
+
         $stores = $this->store->getList();
         $products = $this->product->getRelated($product['product_id'], true, array(
             'store_id' => $product['store_id']));
@@ -454,10 +414,12 @@ class Product extends Controller
         $deleted = $this->product->delete($product['product_id']);
 
         if ($deleted) {
-            $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
+            $message = $this->text('Product has been deleted');
+            $this->redirect('admin/content/product', $message, 'success');
         }
 
-        $this->redirect('admin/content/product', $this->text('Unable to delete this product. The most probable reason - it is used by one or more orders or modules'), 'danger');
+        $message = $this->text('Unable to delete this product');
+        $this->redirect('admin/content/product', $message, 'danger');
     }
 
     /**
@@ -466,7 +428,6 @@ class Product extends Controller
     protected function setDataEditProduct()
     {
         $output_field_form = false;
-
         $product_class_id = $this->getData('product.product_class_id', 0);
         $get_product_class_id = (int) $this->request->get('product_class_id');
 
@@ -522,10 +483,17 @@ class Product extends Controller
     /**
      * Saves a product
      * @param array $product
-     * @return null
      */
     protected function submitProduct(array $product = array())
     {
+        if ($this->isPosted('delete')) {
+            return $this->deleteProduct($product);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('product', null, false);
 
         $this->validateProduct($product);
@@ -535,7 +503,7 @@ class Product extends Controller
         }
 
         if (isset($product['product_id'])) {
-            $this->updateProduct($product);
+            return $this->updateProduct($product);
         }
 
         $this->addProduct();
@@ -552,6 +520,17 @@ class Product extends Controller
         $submitted = $this->getSubmitted();
         $this->product->update($product['product_id'], $submitted);
 
+        $this->deleteImagesProduct();
+
+        $message = $this->text('Product has been updated');
+        $this->redirect('admin/content/product', $message, 'success');
+    }
+
+    /**
+     * Deletes product images
+     */
+    protected function deleteImagesProduct()
+    {
         $images = (array) $this->request->post('delete_image', array());
 
         if (!empty($images)) {
@@ -559,9 +538,6 @@ class Product extends Controller
                 $this->image->delete($file_id);
             }
         }
-
-        $message = $this->text('Product has been updated');
-        $this->redirect('admin/content/product', $message, 'success');
     }
 
     /**

@@ -1412,13 +1412,24 @@ class Controller
     }
 
     /**
-     * Sets page breadcrumb
+     * Sets a single page breadcrumb
      * @param array $breadcrumb
      * @return array
      */
     public function setBreadcrumb(array $breadcrumb)
     {
         return $this->document->breadcrumb($breadcrumb);
+    }
+
+    /**
+     * Sets an array of page breadcrumbs
+     * @param array $breadcrumbs
+     */
+    public function setBreadcrumbs(array $breadcrumbs)
+    {
+        foreach ($breadcrumbs as $breadcrumb) {
+            $this->setBreadcrumb($breadcrumb);
+        }
     }
 
     /**

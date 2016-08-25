@@ -352,7 +352,7 @@ class UserRole extends Model
             'city_add' => $this->language->text('City: add'),
             'city_edit' => $this->language->text('City: edit'),
             'city_delete' => $this->language->text('City: delete'),
-            'report_system' => $this->language->text('Report: system events'),
+            'report_events' => $this->language->text('Report: system events'),
             'report_ga' => $this->language->text('Report: Google Analytics'),
             'report_status' => $this->language->text('Report: System status'),
             'file' => $this->language->text('File: access'),

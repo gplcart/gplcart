@@ -52,9 +52,11 @@ class Help extends Controller
      */
     protected function setBreadcrumbListHelp()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -110,13 +112,15 @@ class Help extends Controller
      */
     protected function setBreadcrumbPageHelp()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Help'),
-            'url' => $this->url('admin/help')));
+            'url' => $this->url('admin/help'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

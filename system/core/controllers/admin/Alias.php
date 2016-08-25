@@ -40,6 +40,8 @@ class Alias extends Controller
      */
     public function listAlias()
     {
+        $this->actionAlias();
+        
         $query = $this->getFilterQuery();
         $total = $this->getTotalAlias($query);
         $limit = $this->setPager($total, $query);
@@ -52,10 +54,6 @@ class Alias extends Controller
 
         $filters = array('id_value', 'id_key', 'alias');
         $this->setFilter($filters, $query);
-
-        if ($this->isPosted('action')) {
-            $this->actionAlias();
-        }
 
         $this->setTitleListAlias();
         $this->setBreadcrumbListAlias();
@@ -86,9 +84,11 @@ class Alias extends Controller
      */
     protected function setBreadcrumbListAlias()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')));
+            'url' => $this->url('admin'));
+        
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -118,6 +118,11 @@ class Alias extends Controller
     protected function actionAlias()
     {
         $action = (string) $this->request->post('action');
+        
+        if(empty($action)){
+           return; 
+        }
+
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = 0;
@@ -140,11 +145,9 @@ class Alias extends Controller
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Deleted %num aliases', array('%num' => $deleted)), 'success', true);
-            return true;
+            $message = $this->text('Deleted %num aliases', array('%num' => $deleted));
+            $this->setMessage($message, 'success', true);
         }
-
-        return false;
     }
 
 }
