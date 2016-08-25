@@ -88,34 +88,9 @@ class Review extends Model
         if (empty($review_id)) {
             return false;
         }
-
-        $values = array(
-            'modified' => isset($data['modified']) ? (int) $data['modified'] : GC_TIME
-        );
-
-        if (!empty($data['created'])) {
-            $values['created'] = (int) $data['created'];
-        }
-
-        if (isset($data['user_id'])) {
-            $values['user_id'] = (int) $data['user_id'];
-        }
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (!empty($data['text'])) {
-            $values['text'] = $data['text'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (!empty($data['product_id'])) {
-            $values['product_id'] = (int) $data['product_id'];
-        }
+        
+        $data += array('modified' => GC_TIME);
+        $values = $this->getDbSchemeValues('review', $data);
 
         $result = false;
 
