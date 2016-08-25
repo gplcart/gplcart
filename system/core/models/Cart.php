@@ -29,6 +29,11 @@ use core\models\Language as ModelsLanguage;
  */
 class Cart extends Model
 {
+    /**
+     * Store model instance
+     * @var \core\models\Store $store
+     */
+    protected $store;
 
     /**
      * Product model instance
