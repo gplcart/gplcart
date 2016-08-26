@@ -9,16 +9,16 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Tool;
 use core\models\Price as ModelsPrice;
 use core\models\Currency as ModelsCurrency;
 use core\models\PriceRule as ModelsPriceRule;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to price rules
  */
-class PriceRule extends Controller
+class PriceRule extends BackendController
 {
 
     /**

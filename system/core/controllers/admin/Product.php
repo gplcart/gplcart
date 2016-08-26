@@ -9,7 +9,6 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Alias as ModelsAlias;
@@ -17,11 +16,12 @@ use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;
 use core\models\Category as ModelsCategory;
 use core\models\ProductClass as ModelsProductClass;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to products
  */
-class Product extends Controller
+class Product extends BackendController
 {
 
     /**

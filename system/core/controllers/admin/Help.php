@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Tool;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to help documentation
  */
-class Help extends Controller
+class Help extends BackendController
 {
 
     /**

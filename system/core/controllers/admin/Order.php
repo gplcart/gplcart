@@ -9,7 +9,6 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Cart as ModelsCart;
 use core\models\State as ModelsState;
 use core\models\Price as ModelsPrice;
@@ -19,11 +18,12 @@ use core\models\Product as ModelsProduct;
 use core\models\Country as ModelsCountry;
 use core\models\Currency as ModelsCurrency;
 use core\models\PriceRule as ModelsPriceRule;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Provides data to the view and interprets user actions related to orders
  */
-class Order extends Controller
+class Order extends BackendController
 {
 
     /**
@@ -79,7 +79,7 @@ class Order extends Controller
      * @var \core\models\Product $product
      */
     protected $product;
-    
+
     /**
      * Constructor
      * @param ModelsOrder $order
@@ -92,10 +92,10 @@ class Order extends Controller
      * @param ModelsProduct $product
      * @param ModelsPriceRule $pricerule
      */
-    public function __construct(ModelsOrder $order, ModelsCountry $country, ModelsState $state,
-                                ModelsAddress $address, ModelsPrice $price,
-                                ModelsCurrency $currency, ModelsCart $cart,
-                                ModelsProduct $product, ModelsPriceRule $pricerule)
+    public function __construct(ModelsOrder $order, ModelsCountry $country,
+            ModelsState $state, ModelsAddress $address, ModelsPrice $price,
+            ModelsCurrency $currency, ModelsCart $cart, ModelsProduct $product,
+            ModelsPriceRule $pricerule)
     {
         parent::__construct();
 
@@ -284,7 +284,7 @@ class Order extends Controller
      * @return string
      */
     protected function renderComponentService($type, $component, array $cart,
-                                              array $order)
+            array $order)
     {
         $service = $this->order->getService($order[$type], $type, $cart, $order);
         $service['name'] = isset($service['name']) ? $service['name'] : $this->text('Unknown');
@@ -303,7 +303,7 @@ class Order extends Controller
      * @return string
      */
     protected function renderComponentCart($type, array $component, array $cart,
-                                           array $order)
+            array $order)
     {
         $products = array();
         foreach ($component as $cart_id => $price) {
@@ -327,7 +327,7 @@ class Order extends Controller
      * @return string
      */
     protected function renderComponentRule($rule_id, $price, array $cart,
-                                           array $order)
+            array $order)
     {
         $rule = $this->pricerule->get($rule_id);
         return $this->render('sale/order/panes/components/rule', array('rule' => $rule, 'price' => $price));
@@ -407,7 +407,7 @@ class Order extends Controller
     {
         return $this->address->get($address_id);
     }
-    
+
     /**
      * Returns an array of orders
      * @param array $limit
@@ -442,4 +442,5 @@ class Order extends Controller
     {
         return $this->order->getList(array('count' => true) + $query);
     }
+
 }

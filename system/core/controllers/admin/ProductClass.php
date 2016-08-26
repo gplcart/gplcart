@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Field as ModelsField;
 use core\models\ProductClass as ModelsProductClass;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to product classes
  */
-class ProductClass extends Controller
+class ProductClass extends BackendController
 {
 
     /**

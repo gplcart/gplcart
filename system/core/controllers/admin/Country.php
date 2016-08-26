@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Country as ModelsCountry;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to countries
  */
-class Country extends Controller
+class Country extends BackendController
 {
 
     /**

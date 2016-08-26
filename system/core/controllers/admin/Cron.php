@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Tool;
 use core\models\Report as ModelsReport;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to cron jobs
  */
-class Cron extends Controller
+class Cron extends BackendController
 {
 
     /**

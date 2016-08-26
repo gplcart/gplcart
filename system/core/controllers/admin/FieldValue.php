@@ -9,16 +9,16 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\File as ModelsFile;
 use core\models\Field as ModelsField;
 use core\models\Image as ModelsImage;
 use core\models\FieldValue as ModelsFieldValue;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to field values
  */
-class FieldValue extends Controller
+class FieldValue extends BackendController
 {
 
     /**

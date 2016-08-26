@@ -270,7 +270,7 @@ class Route
         $routes['admin/content'] = array(
             'menu' => array('admin' => 'Content'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 
@@ -335,7 +335,7 @@ class Route
         $routes['admin/tool'] = array(
             'menu' => array('admin' => 'Tools'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 
@@ -380,7 +380,7 @@ class Route
         $routes['admin/sale'] = array(
             'menu' => array('admin' => 'Sales'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 
@@ -526,7 +526,7 @@ class Route
         $routes['admin/user'] = array(
             'menu' => array('admin' => 'Users'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 
@@ -621,7 +621,7 @@ class Route
         $routes['admin/module'] = array(
             'menu' => array('admin' => 'Modules'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 
@@ -651,7 +651,7 @@ class Route
         $routes['admin/settings'] = array(
             'menu' => array('admin' => 'Settings'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 
@@ -818,7 +818,7 @@ class Route
         $routes['admin/report'] = array(
             'menu' => array('admin' => 'Reports'),
             'handlers' => array(
-                'controller' => array('core\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
             )
         );
 

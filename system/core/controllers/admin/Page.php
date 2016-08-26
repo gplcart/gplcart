@@ -9,16 +9,16 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Page as ModelsPage;
 use core\models\Alias as ModelsAlias;
 use core\models\Image as ModelsImage;
 use core\models\Category as ModelsCategory;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to pages
  */
-class Page extends Controller
+class Page extends BackendController
 {
 
     /**

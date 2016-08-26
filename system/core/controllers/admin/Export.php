@@ -9,16 +9,16 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Tool;
 use core\models\Job as ModelsJob;
 use core\models\Export as ModelsExport;
 use core\models\Product as ModelsProduct;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to export operations
  */
-class Export extends Controller
+class Export extends BackendController
 {
 
     /**

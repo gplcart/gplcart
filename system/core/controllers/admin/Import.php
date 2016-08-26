@@ -9,16 +9,16 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Curl;
 use core\models\Job as ModelsJob;
 use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to import operations
  */
-class Import extends Controller
+class Import extends BackendController
 {
 
     /**

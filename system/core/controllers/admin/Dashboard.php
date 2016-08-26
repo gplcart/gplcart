@@ -9,18 +9,18 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Price as ModelsPrice;
 use core\models\Order as ModelsOrder;
 use core\models\Report as ModelsReport;
 use core\models\Review as ModelsReview;
 use core\models\Product as ModelsProduct;
 use core\models\Analytics as ModelsAnalytics;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to admin dashboard
  */
-class Dashboard extends Controller
+class Dashboard extends BackendController
 {
 
     /**

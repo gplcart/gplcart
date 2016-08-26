@@ -9,15 +9,15 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Tool;
 use core\models\File as ModelsFile;
 use core\models\Image as ModelsImage;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to images
  */
-class ImageStyle extends Controller
+class ImageStyle extends BackendController
 {
 
     /**

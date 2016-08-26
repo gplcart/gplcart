@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Image as ModelsImage;
 use core\models\Module as ModelsModule;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to multistore functionality
  */
-class Store extends Controller
+class Store extends BackendController
 {
 
     /**

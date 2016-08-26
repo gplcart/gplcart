@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Job as ModelsJob;
 use core\models\Search as ModelsSearch;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to search functionality
  */
-class Search extends Controller
+class Search extends BackendController
 {
 
     /**

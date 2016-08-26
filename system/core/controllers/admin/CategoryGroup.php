@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to category groups
  */
-class CategoryGroup extends Controller
+class CategoryGroup extends BackendController
 {
 
     /**

@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\UserRole as ModelsUserRole;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to user management
  */
-class User extends Controller
+class User extends BackendController
 {
 
     /**

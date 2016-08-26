@@ -9,15 +9,15 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\City as ModelsCity;
 use core\models\State as ModelsState;
 use core\models\Country as ModelsCountry;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to cities
  */
-class City extends Controller
+class City extends BackendController
 {
 
     /**

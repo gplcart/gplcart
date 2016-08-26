@@ -9,10 +9,10 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Tool;
+use core\controllers\admin\Controller as BackendController;
 
-class Settings extends Controller
+class Settings extends BackendController
 {
 
     /**

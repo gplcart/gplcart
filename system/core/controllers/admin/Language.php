@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Language as ModelsLanguage;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to languages
  */
-class Language extends Controller
+class Language extends BackendController
 {
 
     /**

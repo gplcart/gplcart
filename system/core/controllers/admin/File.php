@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use Core\Controller;
 use core\models\File as ModelsFile;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to files
  */
-class File extends Controller
+class File extends BackendController
 {
 
     /**

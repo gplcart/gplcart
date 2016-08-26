@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\classes\Curl;
 use core\models\Module as ModelsModule;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to modules
  */
-class Module extends Controller
+class Module extends BackendController
 {
 
     /**
@@ -66,11 +66,11 @@ class Module extends Controller
     protected function actionModule()
     {
         $action = (string) $this->request->get('action');
-        
-        if(empty($action)){
+
+        if (empty($action)) {
             return;
         }
-        
+
         $this->controlToken();
 
         $module_id = (string) $this->request->get('module_id');
@@ -84,7 +84,7 @@ class Module extends Controller
         if (empty($module)) {
             $this->outputError(403);
         }
-        
+
         $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete');
 
         if (!in_array($action, $allowed)) {
@@ -143,7 +143,7 @@ class Module extends Controller
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin'));
-        
+
         $this->setBreadcrumbs($breadcrumbs);
     }
 
@@ -161,7 +161,7 @@ class Module extends Controller
     public function uploadModule()
     {
         $this->controlAccess('module_install');
-        
+
         $this->submitUploadModule();
 
         $this->setBreadcrumbUploadModule();
@@ -177,7 +177,7 @@ class Module extends Controller
         if (!$this->isPosted('install')) {
             return;
         }
-        
+
         $this->validateUploadModule();
 
         if ($this->hasErrors()) {
@@ -226,7 +226,7 @@ class Module extends Controller
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin'));
-        
+
         $breadcrumbs[] = array(
             'text' => $this->text('Modules'),
             'url' => $this->url('admin/module/list'));
@@ -293,7 +293,7 @@ class Module extends Controller
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin/module/list'),
             'text' => $this->text('Modules'));
@@ -347,7 +347,7 @@ class Module extends Controller
     {
         $options['count'] = true;
         $result = $this->getListMarketplaceModule($options);
-        
+
         return empty($result['total']) ? 0 : (int) $result['total'];
     }
 

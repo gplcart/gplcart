@@ -9,16 +9,16 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Alias as ModelsAlias;
 use core\models\Image as ModelsImage;
 use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to categories
  */
-class Category extends Controller
+class Category extends BackendController
 {
 
     /**

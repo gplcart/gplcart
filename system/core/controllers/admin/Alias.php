@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Alias as ModelsAlias;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to the URL aliases
  */
-class Alias extends Controller
+class Alias extends BackendController
 {
 
     /**

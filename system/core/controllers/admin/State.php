@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\State as ModelsState;
 use core\models\Country as ModelsCountry;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to country states
  */
-class State extends Controller
+class State extends BackendController
 {
 
     /**
@@ -233,7 +233,7 @@ class State extends Controller
     protected function deleteState(array $country, array $state)
     {
         $this->controlAccess('state_delete');
-        
+
         $deleted = $this->state->delete($state['state_id']);
 
         $url = "admin/settings/states/{$country['code']}";

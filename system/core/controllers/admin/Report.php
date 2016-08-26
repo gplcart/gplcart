@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Report as ModelsReport;
 use core\models\Analytics as ModelsAnalytics;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to system reports
  */
-class Report extends Controller
+class Report extends BackendController
 {
 
     /**

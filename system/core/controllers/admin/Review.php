@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Review as ModelsReview;
 use core\models\Product as ModelsProduct;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to user reviews
  */
-class Review extends Controller
+class Review extends BackendController
 {
 
     /**

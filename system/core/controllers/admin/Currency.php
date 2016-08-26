@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\Controller;
 use core\models\Currency as ModelsCurrency;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to currency
  */
-class Currency extends Controller
+class Currency extends BackendController
 {
 
     /**
