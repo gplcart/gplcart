@@ -84,52 +84,19 @@ class City extends Controller
     }
 
     /**
-     * Displays the city edit page
-     * @param string $country_code
+     * Returns an array of state data
      * @param integer $state_id
-     * @param null|integer $city_id
+     * @return array
      */
-    public function editCity($country_code, $state_id, $city_id = null)
+    protected function getStateCity($state_id)
     {
-        $city = $this->getCity($city_id);
-        $state = $this->getStateCity($state_id);
-        $country = $this->getCountryCity($country_code);
+        $state = $this->state->get($state_id);
 
-        $this->setData('city', $city);
-        $this->setData('state', $state);
-        $this->setData('country', $country);
+        if (empty($state)) {
+            $this->outputError(404);
+        }
 
-        $this->submitCity($country, $state, $city);
-
-        $this->setTitleEditCity($city);
-        $this->setBreadcrumbEditCity();
-        $this->outputEditCity();
-    }
-
-    /**
-     * Returns total number of cities depending on various conditions
-     * @param integer $state_id
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalCity($state_id, array $query)
-    {
-        $options = array(
-            'count' => true,
-            'state_id' => $state_id
-        );
-
-        $options += $query;
-
-        return $this->city->getList($options);
-    }
-
-    /**
-     * Renders the city overview page
-     */
-    protected function outputListCity()
-    {
-        $this->output('settings/city/list');
+        return $state;
     }
 
     /**
@@ -149,19 +116,59 @@ class City extends Controller
     }
 
     /**
-     * Returns an array of state data
-     * @param integer $state_id
-     * @return array
+     * Applies an action to the selected cities
+     * @return null
      */
-    protected function getStateCity($state_id)
+    protected function actionCity()
     {
-        $state = $this->state->get($state_id);
+        $action = (string) $this->request->post('action');
 
-        if (empty($state)) {
-            $this->outputError(404);
+        if (empty($action)) {
+            return;
         }
 
-        return $state;
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
+
+        $deleted = $updated = 0;
+
+        foreach ($selected as $id) {
+            if ($action === 'status' && $this->access('city_edit')) {
+                $updated += (int) $this->city->update($id, array('status' => $value));
+            }
+
+            if ($action === 'delete' && $this->access('city_delete')) {
+                $deleted += (int) $this->city->delete($id);
+            }
+        }
+
+        if ($updated > 0) {
+            $message = $this->text('Cities have been updated');
+            $this->setMessage($message, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $message = $this->text('Cities have been deleted');
+            $this->setMessage($message, 'success', true);
+        }
+    }
+
+    /**
+     * Returns total number of cities depending on various conditions
+     * @param integer $state_id
+     * @param array $query
+     * @return integer
+     */
+    protected function getTotalCity($state_id, array $query)
+    {
+        $options = array(
+            'count' => true,
+            'state_id' => $state_id
+        );
+
+        $options += $query;
+
+        return $this->city->getList($options);
     }
 
     /**
@@ -217,42 +224,34 @@ class City extends Controller
     }
 
     /**
-     * Renders the city edit page
+     * Renders the city overview page
      */
-    protected function outputEditCity()
+    protected function outputListCity()
     {
-        $this->output('settings/city/edit');
+        $this->output('settings/city/list');
     }
 
     /**
-     * Sets titles on the city edit page
-     * @param array $city
+     * Displays the city edit page
+     * @param string $country_code
+     * @param integer $state_id
+     * @param null|integer $city_id
      */
-    protected function setTitleEditCity(array $city)
+    public function editCity($country_code, $state_id, $city_id = null)
     {
-        if (isset($city['city_id'])) {
-            $title = $this->text('Edit city %name', array('%name' => $city['name']));
-        } else {
-            $title = $this->text('Add city');
-        }
+        $city = $this->getCity($city_id);
+        $state = $this->getStateCity($state_id);
+        $country = $this->getCountryCity($country_code);
 
-        $this->setTitle($title);
-    }
+        $this->setData('city', $city);
+        $this->setData('state', $state);
+        $this->setData('country', $country);
 
-    /**
-     * Sets breadcrumbs on the city edit page
-     */
-    protected function setBreadcrumbEditCity()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+        $this->submitCity($country, $state, $city);
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setTitleEditCity($city);
+        $this->setBreadcrumbEditCity();
+        $this->outputEditCity();
     }
 
     /**
@@ -273,72 +272,6 @@ class City extends Controller
         }
 
         return $city;
-    }
-
-    /**
-     * Deletes a city
-     * @param array $country
-     * @param array $state
-     * @param array $city
-     * @return null
-     */
-    protected function deleteCity(array $country, array $state, array $city)
-    {
-        $this->controlAccess('city_delete');
-
-        $deleted = $this->city->delete($city['city_id']);
-
-        if ($deleted) {
-
-            $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
-            $message = $this->text('City %name has been deleted', array(
-                '%name' => $city['name']));
-
-            $this->redirect($url, $message, 'success');
-        }
-
-        $message = $this->text('Cannot delete city %name.', array(
-            '%name' => $city['name']));
-
-        $this->redirect('', $message, 'warning');
-    }
-
-    /**
-     * Applies an action to the selected cities
-     * @return null
-     */
-    protected function actionCity()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        $deleted = $updated = 0;
-
-        foreach ($selected as $id) {
-            if ($action === 'status' && $this->access('city_edit')) {
-                $updated += (int) $this->city->update($id, array('status' => $value));
-            }
-
-            if ($action === 'delete' && $this->access('city_delete')) {
-                $deleted += (int) $this->city->delete($id);
-            }
-        }
-
-        if ($updated > 0) {
-            $message = $this->text('Cities have been updated');
-            $this->setMessage($message, 'success', true);
-        }
-
-        if ($deleted > 0) {
-            $message = $this->text('Cities have been deleted');
-            $this->setMessage($message, 'success', true);
-        }
     }
 
     /**
@@ -370,6 +303,53 @@ class City extends Controller
         }
 
         $this->addCity($country, $state);
+    }
+
+    /**
+     * Deletes a city
+     * @param array $country
+     * @param array $state
+     * @param array $city
+     * @return null
+     */
+    protected function deleteCity(array $country, array $state, array $city)
+    {
+        $this->controlAccess('city_delete');
+
+        $deleted = $this->city->delete($city['city_id']);
+
+        if ($deleted) {
+
+            $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
+            $message = $this->text('City %name has been deleted', array(
+                '%name' => $city['name']));
+
+            $this->redirect($url, $message, 'success');
+        }
+
+        $message = $this->text('Cannot delete city %name.', array(
+            '%name' => $city['name']));
+
+        $this->redirect('', $message, 'warning');
+    }
+
+    /**
+     * Validates an array of submitted city data
+     * @param array $country
+     * @param array $state
+     * @param array $city
+     */
+    protected function validateCity(array $country, array $state, array $city)
+    {
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('country', $country['code']);
+        $this->setSubmitted('state_id', $state['state_id']);
+
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->setValidators($city);
     }
 
     /**
@@ -411,22 +391,42 @@ class City extends Controller
     }
 
     /**
-     * Validates an array of submitted city data
-     * @param array $country
-     * @param array $state
+     * Sets titles on the city edit page
      * @param array $city
      */
-    protected function validateCity(array $country, array $state, array $city)
+    protected function setTitleEditCity(array $city)
     {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('country', $country['code']);
-        $this->setSubmitted('state_id', $state['state_id']);
+        if (isset($city['city_id'])) {
+            $title = $this->text('Edit city %name', array('%name' => $city['name']));
+        } else {
+            $title = $this->text('Add city');
+        }
 
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
+        $this->setTitle($title);
+    }
 
-        $this->setValidators($city);
+    /**
+     * Sets breadcrumbs on the city edit page
+     */
+    protected function setBreadcrumbEditCity()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard'));
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries'));
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the city edit page
+     */
+    protected function outputEditCity()
+    {
+        $this->output('settings/city/edit');
     }
 
 }

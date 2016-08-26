@@ -106,7 +106,7 @@ class Config
      */
     public function set($key, $value)
     {
-        if(empty($key)){
+        if(empty($key) || !isset($value)){
             return false;
         }
         
@@ -122,7 +122,14 @@ class Config
             $serialized = true;
         }
 
-        $values = array('id' => $key, 'value' => $value, 'created' => GC_TIME, 'serialized' => $serialized);
+        $values = array(
+            'id' => $key,
+            'value' => $value,
+            'created' => GC_TIME,
+            'serialized' => $serialized
+        );
+        
+        
         $this->db->insert('settings', $values);
         return true;
     }

@@ -84,32 +84,67 @@ class Category extends Controller
     }
 
     /**
-     * Displays the add/edit category form
+     * Returns an array of category group data
      * @param integer $category_group_id
-     * @param integer|null $category_id
+     * @return array
      */
-    public function editCategory($category_group_id, $category_id = null)
+    protected function getCategoryGroup($category_group_id)
     {
-        $category = $this->getCategory($category_id);
-        $category_group = $this->getCategoryGroup($category_group_id);
-        $categories = $this->category->getOptionList($category_group_id, 0);
+        $category_group = $this->category_group->get($category_group_id);
 
-        $parent_category = (int) $this->request->get('parent_id');
-        $can_delete = (isset($category['category_id']) && $this->category->canDelete($category_id));
+        if (empty($category_group)) {
+            $this->outputError(404);
+        }
 
-        $this->setData('category', $category);
-        $this->setData('can_delete', $can_delete);
-        $this->setData('categories', $categories);
-        $this->setData('parent_id', $parent_category);
-        $this->setData('category_group', $category_group);
+        return $category_group;
+    }
 
-        $this->submitCategory($category_group, $category);
+    /**
+     * Applies an action to selected categories
+     */
+    protected function actionCategory()
+    {
+        $action = (string) $this->request->post('action');
 
-        $this->setDataEditCategory();
+        if (empty($action)) {
+            return;
+        }
 
-        $this->setTitleEditCategory($category_group, $category);
-        $this->setBreadcrumbEditCategory($category_group);
-        $this->outputEditCategory();
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
+
+        if ($action === 'weight' && $this->access('category_edit')) {
+
+            foreach ($selected as $category_id => $weight) {
+                $this->category->update($category_id, array('weight' => $weight));
+            }
+
+            $message = $this->text('Categories have been reordered');
+            $this->response->json(array('success' => $message));
+        }
+
+        $updated = $deleted = 0;
+        foreach ($selected as $category_id) {
+
+            if ($action === 'status' && $this->access('category_edit')) {
+                $updated += (int) $this->category->update($category_id, array(
+                            'status' => $value));
+            }
+
+            if ($action === 'delete' && $this->access('category_delete')) {
+                $deleted += (int) $this->category->delete($category_id);
+            }
+        }
+
+        if ($updated > 0) {
+            $message = $this->text('Categories have been updated');
+            $this->setMessage($message, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $message = $this->text('Categories have been deleted');
+            $this->setMessage($message, 'success', true);
+        }
     }
 
     /**
@@ -151,14 +186,6 @@ class Category extends Controller
     }
 
     /**
-     * Renders the category overview page
-     */
-    protected function outputListCategory()
-    {
-        $this->output('content/category/list');
-    }
-
-    /**
      * Sets breadcrumbs to the category overview page
      */
     protected function setBreadcrumbListCategory()
@@ -187,11 +214,212 @@ class Category extends Controller
     }
 
     /**
-     * Renders the category edit page
+     * Renders the category overview page
      */
-    protected function outputEditCategory()
+    protected function outputListCategory()
     {
-        $this->output('content/category/edit');
+        $this->output('content/category/list');
+    }
+
+    /**
+     * Displays the add/edit category form
+     * @param integer $category_group_id
+     * @param integer|null $category_id
+     */
+    public function editCategory($category_group_id, $category_id = null)
+    {
+        $category = $this->getCategory($category_id);
+        $category_group = $this->getCategoryGroup($category_group_id);
+        $categories = $this->category->getOptionList($category_group_id, 0);
+
+        $parent_category = (int) $this->request->get('parent_id');
+        $can_delete = (isset($category['category_id']) && $this->category->canDelete($category_id));
+
+        $this->setData('category', $category);
+        $this->setData('can_delete', $can_delete);
+        $this->setData('categories', $categories);
+        $this->setData('parent_id', $parent_category);
+        $this->setData('category_group', $category_group);
+
+        $this->submitCategory($category_group, $category);
+
+        $this->setDataEditCategory();
+
+        $this->setTitleEditCategory($category_group, $category);
+        $this->setBreadcrumbEditCategory($category_group);
+        $this->outputEditCategory();
+    }
+
+    /**
+     * Returns an array of category data
+     * @param integer $category_id
+     * @return array
+     */
+    protected function getCategory($category_id)
+    {
+        if (!is_numeric($category_id)) {
+            return array();
+        }
+
+        $category = $this->category->get($category_id);
+
+        if (!empty($category)) {
+            $category['alias'] = $this->alias->get('category_id', $category_id);
+            return $category;
+        }
+
+        $this->outputError(404);
+    }
+
+    /**
+     * Saves a submitted category
+     * @param array $category_group
+     * @param array $category
+     * @return null
+     */
+    protected function submitCategory(array $category_group, array $category)
+    {
+        if ($this->isPosted('delete')) {
+            return $this->deleteCategory($category_group, $category);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
+        $this->setSubmitted('category', null, false);
+        $this->validateCategory($category);
+
+        if ($this->hasErrors('category')) {
+            return;
+        }
+
+        if (isset($category['category_id'])) {
+            return $this->updateCategory($category_group, $category);
+        }
+
+        $this->addCategory($category_group);
+    }
+
+    /**
+     * Deletes a category
+     * @param array $category_group
+     * @param array $category
+     */
+    protected function deleteCategory(array $category_group, array $category)
+    {
+        $this->controlAccess('category_delete');
+
+        $deleted = $this->category->delete($category['category_id']);
+
+        if ($deleted) {
+            $message = $this->text('Category has been deleted');
+            $url = "admin/content/category/{$category_group['category_group_id']}";
+            $this->redirect($url, $message, 'success');
+        }
+
+        $message = $this->text('Unable to delete this category.'
+                . 'The most probable reason - it is used by one or more products');
+
+        $this->redirect('', $message, 'danger');
+    }
+
+    /**
+     * Performs validation checks on the given category
+     * @param array $category
+     */
+    protected function validateCategory(array $category)
+    {
+        $this->setSubmittedBool('status');
+
+        $this->addValidator('category_group_id', array(
+            'required' => array()
+        ));
+
+        $this->addValidator('title', array(
+            'length' => array(
+                'min' => 1,
+                'max' => 255,
+                'required' => true
+        )));
+
+        $this->addValidator('meta_title', array(
+            'length' => array('max' => 255)
+        ));
+
+        $this->addValidator('meta_description', array(
+            'length' => array('max' => 255)
+        ));
+
+        $this->addValidator('description_1', array(
+            'length' => array('max' => 65535)
+        ));
+
+        $this->addValidator('description_2', array(
+            'length' => array('max' => 65535)
+        ));
+
+        $this->addValidator('translation', array(
+            'translation' => array()
+        ));
+
+        $alias = $this->getSubmitted('alias');
+
+        if (empty($alias) && isset($category['category_id'])) {
+            $submitted = $this->getSubmitted();
+            $alias = $this->category->createAlias($submitted);
+            $this->setSubmitted('alias', $alias);
+        }
+
+        $this->addValidator('alias', array(
+            'length' => array('max' => 255),
+            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
+            'alias_unique' => array()
+        ));
+
+        $this->addValidator('images', array(
+            'images' => array()
+        ));
+
+        $this->setValidators($category);
+
+        $images = $this->getValidatorResult('images');
+        $this->setSubmitted('images', $images);
+    }
+
+    /**
+     * Updates a category
+     * @param array $category_group
+     * @param array $category
+     */
+    protected function updateCategory(array $category_group, array $category)
+    {
+        $this->controlAccess('category_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->category->update($category['category_id'], $submitted);
+
+        $message = $this->text('Category has been updated');
+        $url = "admin/content/category/{$category_group['category_group_id']}";
+
+        $this->redirect($url, $message, 'success');
+    }
+
+    /**
+     * Adds a new category
+     * @param array $category_group
+     */
+    protected function addCategory(array $category_group)
+    {
+        $this->controlAccess('category_add');
+
+        $submitted = $this->getSubmitted();
+        $this->category->add($submitted);
+
+        $message = $this->text('Category has been added');
+        $url = "admin/content/category/{$category_group['category_group_id']}";
+
+        $this->redirect($url, $message, 'success');
     }
 
     /**
@@ -285,239 +513,11 @@ class Category extends Controller
     }
 
     /**
-     * Returns an array of category data
-     * @param integer $category_id
-     * @return array
+     * Renders the category edit page
      */
-    protected function getCategory($category_id)
+    protected function outputEditCategory()
     {
-        if (!is_numeric($category_id)) {
-            return array();
-        }
-
-        $category = $this->category->get($category_id);
-
-        if (!empty($category)) {
-            $category['alias'] = $this->alias->get('category_id', $category_id);
-            return $category;
-        }
-
-        $this->outputError(404);
-    }
-
-    /**
-     * Deletes a category
-     * @param array $category_group
-     * @param array $category
-     */
-    protected function deleteCategory(array $category_group, array $category)
-    {
-        $this->controlAccess('category_delete');
-
-        $deleted = $this->category->delete($category['category_id']);
-
-        if ($deleted) {
-            $message = $this->text('Category has been deleted');
-            $url = "admin/content/category/{$category_group['category_group_id']}";
-            $this->redirect($url, $message, 'success');
-        }
-
-        $message = $this->text('Unable to delete this category.'
-                . 'The most probable reason - it is used by one or more products');
-
-        $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Returns an array of category group data
-     * @param integer $category_group_id
-     * @return array
-     */
-    protected function getCategoryGroup($category_group_id)
-    {
-        $category_group = $this->category_group->get($category_group_id);
-
-        if (empty($category_group)) {
-            $this->outputError(404);
-        }
-
-        return $category_group;
-    }
-
-    /**
-     * Applies an action to selected categories
-     */
-    protected function actionCategory()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        if ($action === 'weight' && $this->access('category_edit')) {
-
-            foreach ($selected as $category_id => $weight) {
-                $this->category->update($category_id, array('weight' => $weight));
-            }
-
-            $message = $this->text('Categories have been reordered');
-            $this->response->json(array('success' => $message));
-        }
-
-        $updated = $deleted = 0;
-        foreach ($selected as $category_id) {
-
-            if ($action === 'status' && $this->access('category_edit')) {
-                $updated += (int) $this->category->update($category_id, array(
-                            'status' => $value));
-            }
-
-            if ($action === 'delete' && $this->access('category_delete')) {
-                $deleted += (int) $this->category->delete($category_id);
-            }
-        }
-
-        if ($updated > 0) {
-            $message = $this->text('Categories have been updated');
-            $this->setMessage($message, 'success', true);
-        }
-
-        if ($deleted > 0) {
-            $message = $this->text('Categories have been deleted');
-            $this->setMessage($message, 'success', true);
-        }
-    }
-
-    /**
-     * Saves a submitted category
-     * @param array $category_group
-     * @param array $category
-     * @return null
-     */
-    protected function submitCategory(array $category_group, array $category)
-    {
-        if ($this->isPosted('delete')) {
-            return $this->deleteCategory($category_group, $category);
-        }
-
-        if (!$this->isPosted('save')) {
-            return;
-        }
-
-        $this->setSubmitted('category', null, false);
-        $this->validateCategory($category);
-
-        if ($this->hasErrors('category')) {
-            return;
-        }
-
-        if (isset($category['category_id'])) {
-            return $this->updateCategory($category_group, $category);
-        }
-
-        $this->addCategory($category_group);
-    }
-
-    /**
-     * Updates a category
-     * @param array $category_group
-     * @param array $category
-     */
-    protected function updateCategory(array $category_group, array $category)
-    {
-        $this->controlAccess('category_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->category->update($category['category_id'], $submitted);
-
-        $message = $this->text('Category has been updated');
-        $url = "admin/content/category/{$category_group['category_group_id']}";
-
-        $this->redirect($url, $message, 'success');
-    }
-
-    /**
-     * Adds a new category
-     * @param array $category_group
-     */
-    protected function addCategory(array $category_group)
-    {
-        $this->controlAccess('category_add');
-
-        $submitted = $this->getSubmitted();
-        $this->category->add($submitted);
-
-        $message = $this->text('Category has been added');
-        $url = "admin/content/category/{$category_group['category_group_id']}";
-
-        $this->redirect($url, $message, 'success');
-    }
-
-    /**
-     * Performs validation checks on the given category
-     * @param array $category
-     */
-    protected function validateCategory(array $category)
-    {
-        $this->setSubmittedBool('status');
-
-        $this->addValidator('category_group_id', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('title', array(
-            'length' => array(
-                'min' => 1,
-                'max' => 255,
-                'required' => true
-        )));
-
-        $this->addValidator('meta_title', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('meta_description', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('description_1', array(
-            'length' => array('max' => 65535)
-        ));
-
-        $this->addValidator('description_2', array(
-            'length' => array('max' => 65535)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $alias = $this->getSubmitted('alias');
-
-        if (empty($alias) && isset($category['category_id'])) {
-            $submitted = $this->getSubmitted();
-            $alias = $this->category->createAlias($submitted);
-            $this->setSubmitted('alias', $alias);
-        }
-
-        $this->addValidator('alias', array(
-            'length' => array('max' => 255),
-            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias_unique' => array()
-        ));
-
-        $this->addValidator('images', array(
-            'images' => array()
-        ));
-
-        $this->setValidators($category);
-
-        $images = $this->getValidatorResult('images');
-        $this->setSubmitted('images', $images);
+        $this->output('content/category/edit');
     }
 
 }

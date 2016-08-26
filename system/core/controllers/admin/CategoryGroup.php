@@ -59,11 +59,26 @@ class CategoryGroup extends Controller
     }
 
     /**
-     * Renders the category group overview page
+     * Returns total number of category groups for pager
+     * @param array $query
+     * @return integer
      */
-    protected function outputListCategoryGroup()
+    protected function getTotalCategoryGroup(array $query)
     {
-        $this->output('content/category/group/list');
+        $query['count'] = true;
+        return $this->category_group->getList($query);
+    }
+
+    /**
+     * Returns an array of category groups
+     * @param array $limit
+     * @param array $query
+     * @return array
+     */
+    protected function getListCategoryGroup(array $limit, array $query)
+    {
+        $query['limit'] = $limit;
+        return $this->category_group->getList($query);
     }
 
     /**
@@ -84,6 +99,14 @@ class CategoryGroup extends Controller
             'text' => $this->text('Dashboard'));
 
         $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the category group overview page
+     */
+    protected function outputListCategoryGroup()
+    {
+        $this->output('content/category/group/list');
     }
 
     /**
@@ -109,22 +132,130 @@ class CategoryGroup extends Controller
     }
 
     /**
-     * Returns total number of category groups for pager
-     * @param array $query
-     * @return integer
+     * Returns an array of category group
+     * @param integer $category_group_id
+     * @return array
      */
-    protected function getTotalCategoryGroup(array $query)
+    protected function getCategoryGroup($category_group_id)
     {
-        $query['count'] = true;
-        return $this->category_group->getList($query);
+        if (!is_numeric($category_group_id)) {
+            return array();
+        }
+
+        $category_group = $this->category_group->get($category_group_id);
+
+        if (empty($category_group)) {
+            $this->outputError(404);
+        }
+
+        return $category_group;
     }
 
     /**
-     * Renders the category group edit page
+     * Saves a submitted category group
+     * @param array $category_group
+     * @return null
      */
-    protected function outputEditCategoryGroup()
+    protected function submitCategoryGroup(array $category_group)
     {
-        $this->output('content/category/group/edit');
+        if ($this->isPosted('delete')) {
+            return $this->deleteCategoryGroup($category_group);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
+        $this->setSubmitted('category_group');
+        $this->validateCategoryGroup($category_group);
+
+        if ($this->hasErrors('category_group')) {
+            return;
+        }
+
+        if (isset($category_group['category_group_id'])) {
+            return $this->updateCategoryGroup($category_group);
+        }
+
+        $this->addCategoryGroup();
+    }
+
+    /**
+     * Deletes a category group
+     * @param array $category_group
+     */
+    protected function deleteCategoryGroup(array $category_group)
+    {
+        $this->controlAccess('category_group_delete');
+
+        $category_group_id = $category_group['category_group_id'];
+        $deleted = $this->category_group->delete($category_group_id);
+
+        if ($deleted) {
+            $message = $this->text('Category group has been deleted');
+            $this->redirect('admin/content/category-group', $message, 'success');
+        }
+
+        $message = $this->text('Unable to delete this category group');
+        $this->redirect('', $message, 'danger');
+    }
+
+    /**
+     * Performs validation checks on the given category group
+     * @param array $category_group
+     */
+    protected function validateCategoryGroup(array $category_group)
+    {
+        $this->addValidator('title', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('translation', array(
+            'translation' => array()
+        ));
+
+        $category_group_id = null;
+        if (isset($category_group['category_group_id'])) {
+            $category_group_id = $category_group['category_group_id'];
+        }
+
+        $this->addValidator('type', array(
+            'required' => array(),
+            'category_group_type_unique' => array(
+                'store_id' => $this->getSubmitted('store_id'),
+                'category_group_id' => $category_group_id)
+        ));
+
+        $this->setValidators($category_group);
+    }
+
+    /**
+     * Updates a category group
+     * @param array $category_group
+     */
+    protected function updateCategoryGroup(array $category_group)
+    {
+        $this->controlAccess('category_group_edit');
+
+        $values = $this->getSubmitted();
+        $this->category_group->update($category_group['category_group_id'], $values);
+
+        $message = $this->text('Category group has been updated');
+        $this->redirect('admin/content/category-group', $message, 'success');
+    }
+
+    /**
+     * Adds a new category group
+     */
+    protected function addCategoryGroup()
+    {
+        $this->controlAccess('category_group_add');
+
+        $values = $this->getSubmitted();
+        $this->category_group->add($values);
+
+        $message = $this->text('Category group has been added');
+        $this->redirect('admin/content/category-group', $message, 'success');
     }
 
     /**
@@ -160,142 +291,11 @@ class CategoryGroup extends Controller
     }
 
     /**
-     * Returns an array of category group
-     * @param integer $category_group_id
-     * @return array
+     * Renders the category group edit page
      */
-    protected function getCategoryGroup($category_group_id)
+    protected function outputEditCategoryGroup()
     {
-        if (!is_numeric($category_group_id)) {
-            return array();
-        }
-
-        $category_group = $this->category_group->get($category_group_id);
-
-        if (empty($category_group)) {
-            $this->outputError(404);
-        }
-
-        return $category_group;
-    }
-
-    /**
-     * Returns an array of category groups
-     * @param array $limit
-     * @param array $query
-     * @return array
-     */
-    protected function getListCategoryGroup(array $limit, array $query)
-    {
-        $query['limit'] = $limit;
-        return $this->category_group->getList($query);
-    }
-
-    /**
-     * Deletes a category group
-     * @param array $category_group
-     */
-    protected function deleteCategoryGroup(array $category_group)
-    {
-        $this->controlAccess('category_group_delete');
-
-        $category_group_id = $category_group['category_group_id'];
-        $deleted = $this->category_group->delete($category_group_id);
-
-        if ($deleted) {
-            $message = $this->text('Category group has been deleted');
-            $this->redirect('admin/content/category-group', $message, 'success');
-        }
-
-        $message = $this->text('Unable to delete this category group');
-        $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Saves a submitted category group
-     * @param array $category_group
-     * @return null
-     */
-    protected function submitCategoryGroup(array $category_group)
-    {
-        if ($this->isPosted('delete')) {
-            return $this->deleteCategoryGroup($category_group);
-        }
-
-        if (!$this->isPosted('save')) {
-            return;
-        }
-
-        $this->setSubmitted('category_group');
-        $this->validateCategoryGroup($category_group);
-
-        if ($this->hasErrors('category_group')) {
-            return;
-        }
-
-        if (isset($category_group['category_group_id'])) {
-            return $this->updateCategoryGroup($category_group);
-        }
-
-        $this->addCategoryGroup();
-    }
-
-    /**
-     * Updates a category group
-     * @param array $category_group
-     */
-    protected function updateCategoryGroup(array $category_group)
-    {
-        $this->controlAccess('category_group_edit');
-
-        $values = $this->getSubmitted();
-        $this->category_group->update($category_group['category_group_id'], $values);
-
-        $message = $this->text('Category group has been updated');
-        $this->redirect('admin/content/category-group', $message, 'success');
-    }
-
-    /**
-     * Adds a new category group
-     */
-    protected function addCategoryGroup()
-    {
-        $this->controlAccess('category_group_add');
-
-        $values = $this->getSubmitted();
-        $this->category_group->add($values);
-
-        $message = $this->text('Category group has been added');
-        $this->redirect('admin/content/category-group', $message, 'success');
-    }
-
-    /**
-     * Performs validation checks on the given category group
-     * @param array $category_group
-     */
-    protected function validateCategoryGroup(array $category_group)
-    {
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $category_group_id = null;
-        if (isset($category_group['category_group_id'])) {
-            $category_group_id = $category_group['category_group_id'];
-        }
-
-        $this->addValidator('type', array(
-            'required' => array(),
-            'category_group_type_unique' => array(
-                'store_id' => $this->getSubmitted('store_id'),
-                'category_group_id' => $category_group_id)
-        ));
-
-        $this->setValidators($category_group);
+        $this->output('content/category/group/edit');
     }
 
 }

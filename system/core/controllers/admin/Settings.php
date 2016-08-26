@@ -26,7 +26,7 @@ class Settings extends Controller
     /**
      * Displays edit settings form
      */
-    public function common()
+    public function editSettings()
     {
         $this->controlAccessSuperAdmin();
 
@@ -36,21 +36,18 @@ class Settings extends Controller
             $this->setData("settings.$key", $this->config($key, $value));
         }
 
-        if ($this->isPosted('save')) {
-            $this->submit();
-        }
+        $this->submitSettings();
+        $this->setDataEditSettings();
 
-        $this->setDataCommon();
-
-        $this->setTitleCommon();
-        $this->setBreadcrumbCommon();
-        $this->outputCommon();
+        $this->setTitleEditSettings();
+        $this->setBreadcrumbEditSettings();
+        $this->outputEditSettings();
     }
 
     /**
      * Sets titles on the settings form page
      */
-    protected function setTitleCommon()
+    protected function setTitleEditSettings()
     {
         $this->setTitle($this->text('Settings'));
     }
@@ -58,17 +55,19 @@ class Settings extends Controller
     /**
      * Sets breadcrumbs on the settings form page
      */
-    protected function setBreadcrumbCommon()
+    protected function setBreadcrumbEditSettings()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders settings page
      */
-    protected function outputCommon()
+    protected function outputEditSettings()
     {
         $this->output('settings/settings');
     }
@@ -97,47 +96,61 @@ class Settings extends Controller
     /**
      * Prepares settings values before passing them to template
      */
-    protected function setDataCommon()
+    protected function setDataEditSettings()
     {
         $smtp_host = $this->getData('settings.smtp_host');
-
-        if (isset($smtp_host)) {
-            $this->setData('settings.smtp_host', implode("\n", (array) $smtp_host));
-        }
+        $this->setData('settings.smtp_host', implode("\n", (array) $smtp_host));
     }
 
     /**
-     * Saves settings
+     * Saves submitted settings
      */
-    protected function submit()
+    protected function submitSettings()
     {
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('settings');
-        $this->validate();
+        $this->validateSettings();
 
         if ($this->hasErrors('settings')) {
             return;
         }
 
+        $this->updateSettings();
+    }
+
+    /**
+     * Updates common setting with submitted values
+     */
+    protected function updateSettings()
+    {
+        $this->controlAccess('settings_edit');
+
         if ($this->isPosted('delete_gapi_certificate')) {
-            $this->deleteCertificate();
+            unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
+            $this->config->reset('gapi_certificate');
         }
 
+        $allowed = $this->config->get();
         $submitted = $this->getSubmitted();
+        $save = array_intersect_key($submitted, $allowed);
 
-        foreach ($submitted as $key => $value) {
+        foreach ($save as $key => $value) {
             $this->config->set($key, $value);
         }
 
-        $this->redirect('', $this->text('Settings have been updated'), 'success');
+        $message = $this->text('Settings have been updated');
+        $this->redirect('', $message, 'success');
     }
 
     /**
      * Validates submitted settings
      */
-    protected function validate()
+    protected function validateSettings()
     {
-        $smtp_host = $this->getSubmitted('smtp_host');
-        $this->setSubmitted('smtp_host', Tool::stringToArray($smtp_host));
+        $this->setSubmittedArray('smtp_host');
 
         $cron_key = $this->getSubmitted('cron_key');
         if (empty($cron_key)) {
@@ -145,33 +158,19 @@ class Settings extends Controller
         }
 
         $this->addValidator('gapi_email', array(
-            'email' => array()));
+            'email' => array()
+        ));
+
+        $file = $this->request->file('gapi_certificate');
 
         $this->addValidator('gapi_certificate', array(
-            'upload' => array(
-                'file' => $this->request->file('gapi_certificate')
-        )));
+            'upload' => array('file' => $file)
+        ));
 
-        $errors = $this->setValidators();
-
-        if (!empty($errors)) {
-            return;
-        }
+        $this->setValidators();
 
         $uploaded = $this->getValidatorResult('gapi_certificate');
-
-        if (!empty($uploaded)) {
-            $this->setSubmitted('gapi_certificate', $uploaded);
-        }
-    }
-
-    /**
-     * Deletes a certificate file from the disk and removes the path from settings
-     */
-    protected function deleteCertificate()
-    {
-        unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
-        $this->config->reset('gapi_certificate');
+        $this->setSubmitted('gapi_certificate', $uploaded);
     }
 
 }

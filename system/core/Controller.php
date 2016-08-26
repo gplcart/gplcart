@@ -1783,13 +1783,13 @@ class Controller
                 'url' => $this->url($path),
                 'depth' => (substr_count($path, '/') - 1),
                 'text' => $this->text($route['menu']['admin']),
-                'weight' => isset($route['weight']) ? $route['weight'] : 0
+                //'weight' => isset($route['weight']) ? $route['weight'] : 0
             );
 
             $array[$path] = $data;
         }
 
-        Tool::sortWeight($array);
+        //Tool::sortWeight($array);
 
         ksort($array);
         return $array;

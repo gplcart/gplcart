@@ -61,66 +61,15 @@ class Alias extends Controller
     }
 
     /**
-     * Sets titles on the aliases overview page
-     */
-    protected function setTitleListAlias()
-    {
-        $this->setTitle($this->text('Aliases'));
-    }
-
-    /**
-     * Returns total aliases found depending on some conditions
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalAlias(array $query)
-    {
-        $query['count'] = true;
-        return (int) $this->alias->getList($query);
-    }
-
-    /**
-     * Sets breadcrumbs on the aliases overview page
-     */
-    protected function setBreadcrumbListAlias()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-        
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the aliases overview page
-     */
-    protected function outputListAlias()
-    {
-        $this->output('content/alias/list');
-    }
-
-    /**
-     * Returns an array of aliases
-     * @param integer $limit
-     * @param array $query
-     * @return array
-     */
-    protected function getListAlias($limit, array $query)
-    {
-        $query['limit'] = $limit;
-        return $this->alias->getList($query);
-    }
-
-    /**
      * Applies an action to the selected aliases
      * @return boolean
      */
     protected function actionAlias()
     {
         $action = (string) $this->request->post('action');
-        
+
         if(empty($action)){
-           return; 
+           return;
         }
 
         $selected = (array) $this->request->post('selected', array());
@@ -148,6 +97,57 @@ class Alias extends Controller
             $message = $this->text('Deleted %num aliases', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
+    }
+
+    /**
+     * Returns total aliases found depending on some conditions
+     * @param array $query
+     * @return integer
+     */
+    protected function getTotalAlias(array $query)
+    {
+        $query['count'] = true;
+        return (int) $this->alias->getList($query);
+    }
+
+    /**
+     * Returns an array of aliases
+     * @param integer $limit
+     * @param array $query
+     * @return array
+     */
+    protected function getListAlias($limit, array $query)
+    {
+        $query['limit'] = $limit;
+        return $this->alias->getList($query);
+    }
+
+    /**
+     * Sets titles on the aliases overview page
+     */
+    protected function setTitleListAlias()
+    {
+        $this->setTitle($this->text('Aliases'));
+    }
+
+    /**
+     * Sets breadcrumbs on the aliases overview page
+     */
+    protected function setBreadcrumbListAlias()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin'));
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the aliases overview page
+     */
+    protected function outputListAlias()
+    {
+        $this->output('content/alias/list');
     }
 
 }

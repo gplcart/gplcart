@@ -373,7 +373,7 @@ class Route
             'access' => 'search_edit',
             'menu' => array('admin' => 'Search'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Search', 'index')
+                'controller' => array('core\\controllers\\admin\\Search', 'indexSearch')
             )
         );
 
@@ -424,7 +424,7 @@ class Route
         $routes['admin/search'] = array(
             'access' => 'search',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Search', 'search')
+                'controller' => array('core\\controllers\\admin\\Search', 'listSearch')
             )
         );
 
@@ -659,7 +659,7 @@ class Route
             'access' => 'settings',
             'menu' => array('admin' => 'Common'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Settings', 'common')
+                'controller' => array('core\\controllers\\admin\\Settings', 'editSettings')
             )
         );
 
@@ -690,14 +690,6 @@ class Route
             'menu' => array('admin' => 'Images'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\ImageStyle', 'listImageStyle')
-            )
-        );
-
-        $routes['admin/settings/search'] = array(
-            'access' => 'search_edit',
-            'menu' => array('admin' => 'Search'),
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Search', 'settings')
             )
         );
 
@@ -769,21 +761,21 @@ class Route
         $routes['admin/settings/states/(\w+)'] = array(
             'access' => 'state',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\State', 'states')
+                'controller' => array('core\\controllers\\admin\\State', 'listState')
             )
         );
 
         $routes['admin/settings/state/add/(\w+)'] = array(
             'access' => 'state_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\State', 'edit')
+                'controller' => array('core\\controllers\\admin\\State', 'editState')
             )
         );
 
         $routes['admin/settings/state/edit/(\w+)/(\d+)'] = array(
             'access' => 'state_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\State', 'edit')
+                'controller' => array('core\\controllers\\admin\\State', 'editState')
             )
         );
 
@@ -812,14 +804,14 @@ class Route
             'access' => 'store',
             'menu' => array('admin' => 'Store'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Store', 'stores')
+                'controller' => array('core\\controllers\\admin\\Store', 'listStore')
             )
         );
 
         $routes['admin/settings/store/(\w+)'] = array(
             'access' => 'store_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Store', 'edit')
+                'controller' => array('core\\controllers\\admin\\Store', 'editStore')
             )
         );
 

@@ -49,10 +49,10 @@ class State
      */
     public function codeUnique($code, array $options = array())
     {
-        $country = array_shift($options['data']);
-        $state = $options['data'];
+        $state = $options['data']['state'];
+        $country = $options['data']['country'];
 
-        if (isset($state['code']) && ($state['code'] === $code)) {
+        if (isset($state['code']) && $state['code'] === $code) {
             return true;
         }
 

@@ -116,7 +116,7 @@ class Search extends Model
      * @param string $id_key
      * @param string $query
      * @param array $options
-     * @return array
+     * @return mixed
      */
     public function search($id_key, $query, array $options = array())
     {

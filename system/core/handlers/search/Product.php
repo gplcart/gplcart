@@ -99,7 +99,8 @@ class Product
      */
     public function total($options)
     {
-        return $this->product->getList(array('count' => true) + $options);
+        $options['count'] = true;
+        return $this->product->getList($options);
     }
 
     /**

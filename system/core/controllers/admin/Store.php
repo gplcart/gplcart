@@ -47,40 +47,36 @@ class Store extends Controller
     /**
      * Displays the store overview page
      */
-    public function stores()
+    public function listStore()
     {
-        if ($this->isPosted('action')) {
-            $this->action();
-        }
+        $this->actionStore();
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalStores($query);
+        $total = $this->getTotalStore($query);
         $limit = $this->setPager($total, $query);
-        $stores = $this->getStores($limit, $query);
+        $stores = $this->getListStore($limit, $query);
 
         $this->setData('stores', $stores);
 
         $filters = array('name', 'domain', 'basepath', 'status');
         $this->setFilter($filters, $query);
 
-        $this->setTitleStores();
-        $this->setBreadcrumbStores();
-        $this->outputStores();
+        $this->setTitleListStore();
+        $this->setBreadcrumbListStore();
+        $this->outputListStore();
     }
 
     /**
      * Displays the store settings form
      * @param integer|null $store_id
      */
-    public function edit($store_id = null)
+    public function editStore($store_id = null)
     {
-        $store = $this->get($store_id);
+        $store = $this->getStore($store_id);
 
-        if ($this->isPosted('delete')) {
-            $this->delete($store);
-        }
+        $themes = $this->module->getByType('theme', true);
+        unset($themes[$this->theme_backend]);
 
-        $themes = $this->getThemes();
         $is_default = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
         $can_delete = (isset($store['store_id']) && $this->store->canDelete($store['store_id']));
 
@@ -89,24 +85,21 @@ class Store extends Controller
         $this->setData('is_default', $is_default);
         $this->setData('can_delete', $can_delete);
 
-        if ($this->isPosted('save')) {
-            $this->submit($store);
-        }
+        $this->submitStore($store);
+        $this->setDataEditStore();
 
-        $this->setDataStore();
-        
-        $this->setJsEdit($store);
+        $this->setJsEditStore($store);
 
-        $this->seTitleEdit($store);
-        $this->setBreadcrumbEdit();
-        $this->outputEdit();
+        $this->seTitleEditStore($store);
+        $this->setBreadcrumbEditStore();
+        $this->outputEditStore();
     }
-    
+
     /**
      * Sets JS on the store edit page
      * @param array $store
      */
-    protected function setJsEdit(array $store)
+    protected function setJsEditStore(array $store)
     {
         if (!empty($store['data']['map'])) {
             $this->setJsSettings('map', $store['data']['map']);
@@ -118,7 +111,7 @@ class Store extends Controller
      * @param array $query
      * @return integer
      */
-    protected function getTotalStores(array $query)
+    protected function getTotalStore(array $query)
     {
         $query['count'] = true;
         return $this->store->getList($query);
@@ -127,7 +120,7 @@ class Store extends Controller
     /**
      * Renders the store overview page
      */
-    protected function outputStores()
+    protected function outputListStore()
     {
         $this->output('settings/store/list');
     }
@@ -135,7 +128,7 @@ class Store extends Controller
     /**
      * Sets breadcrumbs on the stores overview page
      */
-    protected function setBreadcrumbStores()
+    protected function setBreadcrumbListStore()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -145,7 +138,7 @@ class Store extends Controller
     /**
      * Sets titles on the stores overview page
      */
-    protected function setTitleStores()
+    protected function setTitleListStore()
     {
         $this->setTitle($this->text('Stores'));
     }
@@ -156,7 +149,7 @@ class Store extends Controller
      * @param array $query
      * @return array
      */
-    protected function getStores(array $limit, array $query)
+    protected function getListStore(array $limit, array $query)
     {
         $query['limit'] = $limit;
         return $this->store->getList($query);
@@ -165,7 +158,7 @@ class Store extends Controller
     /**
      * Renders the store edit page templates
      */
-    protected function outputEdit()
+    protected function outputEditStore()
     {
         $this->output('settings/store/edit');
     }
@@ -173,7 +166,7 @@ class Store extends Controller
     /**
      * Sets breadcrumbs on the store edit page
      */
-    protected function setBreadcrumbEdit()
+    protected function setBreadcrumbEditStore()
     {
         $this->setBreadcrumb(array(
             'url' => $this->url('admin'),
@@ -188,7 +181,7 @@ class Store extends Controller
      * Sets titles on the store edit page
      * @param array $store
      */
-    protected function seTitleEdit(array $store)
+    protected function seTitleEditStore(array $store)
     {
         if (isset($store['store_id'])) {
             $title = $this->text('Edit store %name', array(
@@ -203,9 +196,8 @@ class Store extends Controller
     /**
      * Prepares store data before sending to templates
      */
-    protected function setDataStore()
+    protected function setDataEditStore()
     {
-
         foreach (array('logo', 'favicon') as $field) {
             $value = $this->getData("store.data.$field");
             if (!empty($value)) {
@@ -225,26 +217,12 @@ class Store extends Controller
     }
 
     /**
-     * Returns an array of theme modules
-     * @return array
-     */
-    protected function getThemes()
-    {
-        $themes = $this->module->getByType('theme', true);
-        $backend_theme = $this->config('theme_backend', 'backend');
-
-        unset($themes[$backend_theme]);
-        return $themes;
-    }
-
-    /**
      * Returns a store
      * @param integer $store_id
      * @return array
      */
-    protected function get($store_id)
+    protected function getStore($store_id)
     {
-
         if (!is_numeric($store_id)) {
             return array('data' => $this->store->defaultConfig());
         }
@@ -263,28 +241,35 @@ class Store extends Controller
      * @param array $store
      * @return null
      */
-    protected function delete(array $store)
+    protected function deleteStore(array $store)
     {
         $this->controlAccess('store_delete');
 
         $deleted = (isset($store['store_id']) && $this->store->delete($store['store_id']));
 
         if ($deleted) {
-            $this->redirect('admin/settings/store', $this->text('Store %s has been deleted', array(
-                        '%s' => $store['name'])), 'success');
+            $message = $this->text('Store %s has been deleted', array(
+                '%s' => $store['name']));
+            $this->redirect('admin/settings/store', $message, 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete store %name', array(
-                    '%name' => $store['name'])), 'danger');
+        $message = $this->text('Unable to delete store %name', array(
+            '%name' => $store['name']));
+        $this->redirect('', $message, 'danger');
     }
 
     /**
      * Applies an action to the selected stores
      */
-    protected function action()
+    protected function actionStore()
     {
-        $value = (int) $this->request->post('value');
         $action = (string) $this->request->post('action');
+
+        if ($action) {
+            return;
+        }
+
+        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
         $updated = $deleted = 0;
@@ -300,45 +285,81 @@ class Store extends Controller
         }
 
         if ($updated > 0) {
-            $this->setMessage($this->text('Stores have been updated'), 'success', true);
+            $message = $this->text('Stores have been updated');
+            $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Stores have been deleted'), 'success', true);
+            $message = $this->text('Stores have been deleted');
+            $this->setMessage($message, 'success', true);
         }
     }
 
     /**
      * Saves a submitted store data
      * @param array $store
-     * @return null
      */
-    protected function submit(array $store)
+    protected function submitStore(array $store)
     {
+
+        if ($this->isPosted('delete')) {
+            $this->deleteStore($store);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
         $this->setSubmitted('store');
 
-        $this->validate($store);
+        $this->validateStore($store);
 
         if ($this->hasErrors('store')) {
             return;
         }
 
         if (isset($store['store_id'])) {
-            $this->controlAccess('store_edit');
-            $this->store->update($store['store_id'], $this->getSubmitted());
-            $this->redirect('admin/settings/store', $this->text('Store %name has been updated', array('%name' => $store['name'])), 'success');
+            return $this->updateStore($store);
         }
 
+        $this->addStore();
+    }
+
+    /**
+     * Updates a store
+     * @param array $store
+     */
+    protected function updateStore(array $store)
+    {
+        $this->controlAccess('store_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->store->update($store['store_id'], $submitted);
+
+        $message = $this->text('Store %name has been updated', array(
+            '%name' => $store['name']));
+        $this->redirect('admin/settings/store', $message, 'success');
+    }
+
+    /**
+     * Adds a new store using an array of submitted values
+     */
+    protected function addStore()
+    {
         $this->controlAccess('store_add');
-        $this->store->add($this->getSubmitted());
-        $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
+
+        $submitted = $this->getSubmitted();
+        $this->store->add($submitted);
+
+        $message = $this->text('Store has been added');
+        $this->redirect('admin/settings/store', $message, 'success');
     }
 
     /**
      * Validates a store
      * @param array $store
      */
-    protected function validate(array $store)
+    protected function validateStore(array $store)
     {
         $is_default = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
 
@@ -361,15 +382,6 @@ class Store extends Controller
                 . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
                 . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
 
-        /**
-         * The domain regexp pattern ensures that:
-         *  - each label/level (splitted by a dot) may contain up to 63 characters.
-         *  - the full domain name may have up to 127 levels.
-         *  - the full domain name may not exceed the length of 253 characters in its textual representation.
-         *  - each label can consist of letters, digits and hyphens.
-         *  - labels cannot start or end with a hyphen.
-         *  - the top-level domain (extension) cannot be all-numeric.
-         */
         $this->addValidator('domain', array(
             'regexp' => array(
                 'required' => !$is_default,
@@ -435,7 +447,7 @@ class Store extends Controller
         $errors = $this->setValidators($store);
 
         if (empty($errors)) {
-            
+
             $logo = $this->getValidatorResult('logo');
             $favicon = $this->getValidatorResult('favicon');
 
@@ -443,9 +455,9 @@ class Store extends Controller
             $this->setSubmitted('data.favicon', $favicon);
 
             $emails = $this->getValidatorResult('data.email');
-            $map = array_slice($this->getValidatorResult('data.map'), 0, 2);
+            $map = $this->getValidatorResult('data.map');
 
-            $this->setSubmitted('data.map', $map);
+            $this->setSubmitted('data.map', array_slice($map, 0, 2));
             $this->setSubmitted('data.email', $emails);
         }
 

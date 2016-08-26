@@ -47,47 +47,44 @@ class Search extends Controller
     /**
      * Displays the admin search page
      */
-    public function search()
+    public function listSearch()
     {
         $query = $this->getFilterQuery();
         $term = isset($query['q']) ? $query['q'] : '';
 
         $search_id = (string) $this->request->get('search_id');
-
-        $total = $this->getTotalResults($search_id, $term);
+        $total = $this->getTotalResultsSearch($search_id, $term);
         $limit = $this->setPager($total, $query);
 
-        $handlers = $this->getHandlers();
-        $results = $this->getResults($search_id, $term, $limit);
+        $handlers = $this->getHandlersSearch();
+        $results = $this->getListResultsSearch($search_id, $term, $limit);
 
         $this->setData('query', $term);
         $this->setData('results', $results);
         $this->setData('handlers', $handlers);
         $this->setData('search_id', $search_id);
 
-        $this->setTitleSearch($handlers, $search_id);
-        $this->setBreadcrumbSearch();
-        $this->outputSearch();
+        $this->setTitleListSearch($handlers, $search_id);
+        $this->setBreadcrumbListSearch();
+        $this->outputListSearch();
     }
 
     /**
      * Displays search index page
      */
-    public function index()
+    public function indexSearch()
     {
         $job = $this->getJob();
-        $handlers = $this->getHandlers();
+        $handlers = $this->getHandlersSearch();
 
         $this->setData('job', $job);
         $this->setData('handlers', $handlers);
 
-        if ($this->isPosted('index')) {
-            $this->submit();
-        }
+        $this->submitIndexSearch();
 
-        $this->setTitleIndex();
-        $this->setBreadcrumbIndex();
-        $this->outputIndex();
+        $this->setTitleIndexSearch();
+        $this->setBreadcrumbIndexSearch();
+        $this->outputIndexSearch();
     }
 
     /**
@@ -96,14 +93,15 @@ class Search extends Controller
      * @param string $query
      * @return integer
      */
-    protected function getTotalResults($search_id, $query)
+    protected function getTotalResultsSearch($search_id, $query)
     {
         $options = array(
             'count' => true,
             'language' => $this->langcode
         );
 
-        return (int) $this->search->search($search_id, $query, $options);
+        $result = $this->search->search($search_id, $query, $options);
+        return (int) $result; // Cast (int), the result can be an array
     }
 
     /**
@@ -112,7 +110,7 @@ class Search extends Controller
      * @param string $query
      * @return array
      */
-    protected function getResults($search_id, $query, $total)
+    protected function getListResultsSearch($search_id, $query, $total)
     {
         $options = array(
             'prepare' => true,
@@ -135,7 +133,7 @@ class Search extends Controller
     /**
      * Sets titles on the admin search page
      */
-    protected function setTitleSearch($handlers, $search_id)
+    protected function setTitleListSearch($handlers, $search_id)
     {
         if (empty($handlers[$search_id]['name'])) {
             $title = $this->text('Search');
@@ -150,17 +148,19 @@ class Search extends Controller
     /**
      * Sets breadcrumbs on the admin search page
      */
-    protected function setBreadcrumbSearch()
+    protected function setBreadcrumbListSearch()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')));
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders the admin search page
      */
-    protected function outputSearch()
+    protected function outputListSearch()
     {
         $this->output('search/list');
     }
@@ -168,25 +168,28 @@ class Search extends Controller
     /**
      * Processes indexing
      */
-    protected function submit()
+    protected function submitIndexSearch()
     {
-        $entity_id = (string) $this->request->post('index');
+        if ($this->isPosted('index')) {
 
-        $job = array(
-            'id' => "index_$entity_id",
-            'total' => $this->search->total($entity_id),
-            'data' => array(
-                'index_limit' => $this->config('search_index_limit', 50)
-        ));
+            $limit = $this->config('search_index_limit', 50);
+            $entity_id = (string) $this->request->post('index');
 
-        $this->job->submit($job);
+            $job = array(
+                'id' => "index_$entity_id",
+                'data' => array('index_limit' => $limit),
+                'total' => $this->search->total($entity_id)
+            );
+
+            $this->job->submit($job);
+        }
     }
 
     /**
      * Returns an array of existing search handlers
      * @return array
      */
-    protected function getHandlers()
+    protected function getHandlersSearch()
     {
         return $this->search->getHandlers();
     }
@@ -194,7 +197,7 @@ class Search extends Controller
     /**
      * Sets titles on the search index form page
      */
-    protected function setTitleIndex()
+    protected function setTitleIndexSearch()
     {
         $this->setTitle($this->text('Search'));
     }
@@ -202,16 +205,20 @@ class Search extends Controller
     /**
      * Sets breadcrumbs on the search index form page
      */
-    protected function setBreadcrumbIndex()
+    protected function setBreadcrumbIndexSearch()
     {
-        $this->setBreadcrumb(array(
-            'url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders the search index form page
      */
-    protected function outputIndex()
+    protected function outputIndexSearch()
     {
         $this->output('tool/search');
     }
