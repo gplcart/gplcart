@@ -572,6 +572,8 @@ class Model
                 'domain' => 'varchar(255) NOT NULL',
                 'name' => 'varchar(255) NOT NULL',
                 'basepath' => 'varchar(50) NOT NULL DEFAULT ""',
+                'created' => 'int(10) NOT NULL',
+                'modified' => 'int(10) NOT NULL DEFAULT 0',
                 'data' => 'blob NOT NULL'
             ),
             'serialize' => array('data')

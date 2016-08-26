@@ -113,9 +113,15 @@ class Store extends Model
                 case 'status':
                     $sql .= " ORDER BY status {$data['order']}";
                     break;
+                case 'created':
+                    $sql .= " ORDER BY created {$data['order']}";
+                    break;
+                case 'modified':
+                    $sql .= " ORDER BY modified {$data['order']}";
+                    break;
             }
         } else {
-            $sql .= " ORDER BY name ASC";
+            $sql .= " ORDER BY created ASC";
         }
 
         if (!empty($data['limit'])) {
@@ -271,6 +277,7 @@ class Store extends Model
             'name' => $data['name'],
             'domain' => $data['domain'],
             'status' => !empty($data['status']),
+            'created' => GC_TIME,
             'basepath' => !empty($data['basepath']) ? $data['basepath'] : '',
             'data' => serialize($data['data'])
         );
@@ -321,7 +328,11 @@ class Store extends Model
             return false;
         }
 
-        $values = array();
+        $values = array('modified' => GC_TIME);
+        
+        if (isset($data['modified'])) {
+            $values['modified'] = (int) $data['modified'];
+        }
 
         if (!empty($data['domain'])) {
             $values['domain'] = $data['domain'];
