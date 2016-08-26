@@ -43,35 +43,35 @@ class Common
         $min = isset($options['min']) ? (int) $options['min'] : null;
         $max = isset($options['max']) ? (int) $options['max'] : null;
 
+        $check = true;
         if (!isset($subject) && !isset($min)) {
+            $check = false;
+        }
+
+        if (isset($options['required']) && (!isset($subject) || $subject === '')) {
+            $check = (bool) $options['required'];
+        }
+
+        if (!$check) {
             return true;
         }
 
         $length = mb_strlen((string) $subject);
 
         if (isset($min) && !isset($max)) {
-            if ($length < $min) {
-                return $this->language->text('Content must not be less than %s characters', array('%s' => $min));
-            }
-
-            return true;
+            $error = $this->language->text('Content must not be less than %s characters', array('%s' => $min));
+            return ($length < $min) ? $error : true;
         }
 
         if (isset($max) && !isset($min)) {
-            if ($length > $max) {
-                return $this->language->text('Content must not exceed %s characters', array('%s' => $max));
-            }
-
-            return true;
+            $error = $this->language->text('Content must not exceed %s characters', array('%s' => $max));
+            return ($length > $max) ? $error : true;
         }
 
         if (isset($max) && isset($min)) {
-            if ($length > $max || $length < $min) {
-                return $this->language->text('Content must be %min - %max characters long', array(
-                            '%min' => $min, '%max' => $max));
-            }
-
-            return true;
+            $error = $this->language->text('Content must be %min - %max characters long', array(
+                '%min' => $min, '%max' => $max));
+            return ($length > $max || $length < $min) ? $error : true;
         }
 
         return false;
@@ -202,7 +202,7 @@ class Common
      */
     public function required($subject, array $options = array())
     {
-        
+
         if (empty($subject)) {
             return $this->language->text('Required field');
         }

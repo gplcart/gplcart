@@ -233,12 +233,18 @@ class State extends Controller
     protected function deleteState(array $country, array $state)
     {
         $this->controlAccess('state_delete');
-        $this->state->delete($state['state_id']);
+        
+        $deleted = $this->state->delete($state['state_id']);
 
         $url = "admin/settings/states/{$country['code']}";
-        $message = $this->text('Country state has been deleted');
 
-        $this->redirect($url, $message, 'success');
+        if ($deleted) {
+            $message = $this->text('Country state has been deleted');
+            $this->redirect($url, $message, 'success');
+        }
+
+        $message = $this->text('Unable to delete this country state');
+        $this->redirect($url, $message, 'danger');
     }
 
     /**

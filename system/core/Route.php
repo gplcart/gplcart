@@ -534,21 +534,21 @@ class Route
             'access' => 'user',
             'menu' => array('admin' => 'Users'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\User', 'users')
+                'controller' => array('core\\controllers\\admin\\User', 'listUser')
             )
         );
 
         $routes['admin/user/edit/(\d+)'] = array(
             'access' => 'user_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\User', 'edit')
+                'controller' => array('core\\controllers\\admin\User', 'editUser')
             )
         );
 
         $routes['admin/user/add'] = array(
             'access' => 'user_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\User', 'edit')
+                'controller' => array('core\\controllers\\admin\User', 'editUser')
             )
         );
 
@@ -556,21 +556,21 @@ class Route
             'access' => 'user_role',
             'menu' => array('admin' => 'Roles'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\UserRole', 'roles')
+                'controller' => array('core\\controllers\\admin\\UserRole', 'listUserRole')
             )
         );
 
         $routes['admin/user/role/add'] = array(
             'access' => 'user_role_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\UserRole', 'edit')
+                'controller' => array('core\\controllers\\admin\\UserRole', 'editUserRole')
             )
         );
 
         $routes['admin/user/role/edit/(\d+)'] = array(
             'access' => 'user_role_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\UserRole', 'edit')
+                'controller' => array('core\\controllers\\admin\\UserRole', 'editUserRole')
             )
         );
 

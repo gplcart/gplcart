@@ -56,10 +56,52 @@ class User
         $user = $this->user->getByEmail($value);
 
         if (empty($user)) {
-            return $this->language->text('User does not exist');
+            return $this->language->text('E-mail does not exist');
         }
 
         return array('result' => $user);
+    }
+    
+    /**
+     * Checks if an email is unique
+     * @param string $value
+     * @param array $options
+     * @return boolean|string
+     */
+    public function emailUnique($value, array $options = array())
+    {
+        if (isset($options['data']['email']) && ($options['data']['email'] === $value)) {
+            return true;
+        }
+
+        $user = $this->user->getByEmail($value);
+
+        if (empty($user)) {
+            return true;
+        }
+
+        return $this->language->text('E-mail already exists');
+    }
+    
+    /**
+     * Checks if a name is unique
+     * @param string $value
+     * @param array $options
+     * @return boolean|string
+     */
+    public function nameUnique($value, array $options = array())
+    {
+        if (isset($options['data']['name']) && ($options['data']['name'] === $value)) {
+            return true;
+        }
+
+        $user = $this->user->getByName($value);
+
+        if (empty($user)) {
+            return true;
+        }
+
+        return $this->language->text('Name already exists');
     }
 
 }

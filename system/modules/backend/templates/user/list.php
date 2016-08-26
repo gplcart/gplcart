@@ -132,9 +132,7 @@
           <?php foreach ($users as $id => $user) { ?>
           <tr>
             <td class="middle">
-              <?php if ($id != $superadmin) { ?>
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
-              <?php } ?>
             </td>
             <td class="middle"><?php echo $this->escape($user['name']); ?></td>
             <td class="middle"><?php echo $this->escape($user['email']); ?></td>

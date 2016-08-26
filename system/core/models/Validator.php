@@ -181,7 +181,7 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Common', 'length')
             ),
         );
-        
+
         $handlers['required'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Common', 'required')
@@ -265,19 +265,19 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Country', 'codeUnique')
             ),
         );
-        
+
         $handlers['state_code_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\State', 'codeUnique')
             ),
         );
-        
+
         $handlers['store_domain_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Store', 'domainUnique')
             ),
         );
-        
+
         $handlers['store_basepath_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Store', 'basepathUnique')
@@ -313,19 +313,19 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Product', 'exists')
             ),
         );
-        
+
         $handlers['product_sku_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Product', 'skuUnique')
             ),
         );
-        
+
         $handlers['product_attributes'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Product', 'attributes')
             ),
         );
-        
+
         $handlers['product_combinations'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Product', 'combinations')
@@ -337,7 +337,19 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\User', 'emailExists')
             ),
         );
-        
+
+        $handlers['user_email_unique'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\User', 'emailUnique')
+            ),
+        );
+
+        $handlers['user_name_unique'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\User', 'nameUnique')
+            ),
+        );
+
         $handlers['imagestyle_actions'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\ImageStyle', 'actions')
@@ -345,7 +357,6 @@ class Validator extends Model
         );
 
         $this->hook->fire('validator.handlers', $handlers);
-
         return $handlers;
     }
 
