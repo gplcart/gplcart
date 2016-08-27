@@ -9,12 +9,12 @@
 
 namespace core\controllers;
 
-use core\Controller;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to HTTP errors
  */
-class Error extends Controller
+class Error extends FrontendController
 {
 
     /**

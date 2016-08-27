@@ -9,52 +9,22 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Cart as ModelsCart;
 use core\models\Field as ModelsField;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
-use core\models\Product as ModelsProduct;
-use core\models\Category as ModelsCategory;
-use core\models\Wishlist as ModelsWishlist;
 use core\models\FieldValue as ModelsFieldValue;
 use core\models\ProductClass as ModelsProductClass;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to product comparison
  */
-class Compare extends Controller
+class Compare extends FrontendController
 {
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
 
     /**
      * Product class model instance
      * @var \core\models\ProductClass $product_class
      */
     protected $product_class;
-
-    /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
 
     /**
      * Field class instance
@@ -69,44 +39,17 @@ class Compare extends Controller
     protected $field_value;
 
     /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
-
-    /**
-     * Category model instance
-     * @var \core\models\Category $category
-     */
-    protected $category;
-
-    /**
      * Constructor
-     * @param ModelsProduct $product
      * @param ModelsProductClass $product_class
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
-     * @param ModelsCart $cart
      * @param ModelsField $field
      * @param ModelsFieldValue $field_value
-     * @param ModelsWishlist $wishlist
-     * @param ModelsCategory $category
      */
-    public function __construct(ModelsProduct $product,
-            ModelsProductClass $product_class, ModelsPrice $price,
-            ModelsImage $image, ModelsCart $cart, ModelsField $field,
-            ModelsFieldValue $field_value, ModelsWishlist $wishlist,
-            ModelsCategory $category)
+    public function __construct(ModelsProductClass $product_class,
+            ModelsField $field, ModelsFieldValue $field_value)
     {
         parent::__construct();
 
-        $this->cart = $cart;
-        $this->price = $price;
-        $this->image = $image;
         $this->field = $field;
-        $this->product = $product;
-        $this->category = $category;
-        $this->wishlist = $wishlist;
         $this->field_value = $field_value;
         $this->product_class = $product_class;
     }

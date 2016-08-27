@@ -9,74 +9,17 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Cart as ModelsCart;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
-use core\models\Product as ModelsProduct;
-use core\models\Wishlist as ModelsWishlist;
-use core\models\Category as ModelsCategory;
+use core\controllers\Controller as FrontendController;
 
-class Wishlist extends Controller
+class Wishlist extends FrontendController
 {
 
     /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
-
-    /**
-     * Price model instance
-     * @var \core\models\Price %price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
-
-    /**
-     * Category model instance
-     * @var \core\models\Category $category
-     */
-    protected $category;
-
-    /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
-     * @param ModelsCart $cart
-     * @param ModelsWishlist $wishlist
-     * @param ModelsCategory $category
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price,
-            ModelsImage $image, ModelsCart $cart, ModelsWishlist $wishlist,
-            ModelsCategory $category)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->cart = $cart;
-        $this->price = $price;
-        $this->image = $image;
-        $this->product = $product;
-        $this->wishlist = $wishlist;
-        $this->category = $category;
     }
 
     /**

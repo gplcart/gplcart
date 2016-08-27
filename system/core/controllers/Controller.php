@@ -19,6 +19,18 @@ class Controller extends BaseController
 {
     
     /**
+     * Price model instance
+     * @var \core\models\Price $price
+     */
+    protected $price;
+    
+    /**
+     * Image model instance
+     * @var \core\models\Image $image
+     */
+    protected $image;
+    
+    /**
      * Cart model instance
      * @var \core\models\Cart $cart
      */
@@ -48,7 +60,7 @@ class Controller extends BaseController
      */
     protected $alias;
     
-    protected $cart_uid;
+    protected $cart_user_id;
     
     protected $cart_content = array();
     
@@ -66,6 +78,12 @@ class Controller extends BaseController
     {
         parent::__construct();
         
+        /* @var $price \core\models\Price */
+        $this->price = Container::instance('core\\models\\Price');
+        
+        /* @var $image \core\models\Image */
+        $this->image = Container::instance('core\\models\\Image');
+        
         /* @var $cart \core\models\Cart */
         $this->cart = Container::instance('core\\models\\Cart');
         
@@ -82,9 +100,9 @@ class Controller extends BaseController
         $this->category = Container::instance('core\\models\\Category');
         
         if (!$this->url->isInstall()) {
-            $this->cart_uid = $this->cart->uid();
-            $this->cart_content = $this->cart->getByUser($this->cart_uid);
-            $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
+            $this->cart_user_id = $this->cart->uid();
+            $this->cart_content = $this->cart->getByUser($this->cart_user_id, false);
+            $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_user_id));
             $this->compare_content = $this->product->getCompared();
             $this->category_tree = $this->getCategoryTree($this->current_store);
         }

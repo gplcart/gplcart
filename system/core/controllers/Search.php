@@ -9,38 +9,14 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Cart as ModelsCart;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
 use core\models\Search as ModelsSearch;
-use core\models\Product as ModelsProduct;
-use core\models\Wishlist as ModelsWishlist;
-use core\models\Category as ModelsCategory;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to search functionality
  */
-class Search extends Controller
+class Search extends FrontendController
 {
-
-    /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
 
     /**
      * Search model instance
@@ -49,46 +25,14 @@ class Search extends Controller
     protected $search;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Category model instance
-     * @var \core\models\Category $category
-     */
-    protected $category;
-
-    /**
      * Constructor
-     * @param ModelsWishlist $wishlist
-     * @param ModelsProduct $product
      * @param ModelsSearch $search
-     * @param ModelsCart $cart
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
-     * @param ModelsCategory $category
      */
-    public function __construct(ModelsWishlist $wishlist,
-            ModelsProduct $product, ModelsSearch $search, ModelsCart $cart,
-            ModelsPrice $price, ModelsImage $image, ModelsCategory $category)
+    public function __construct(ModelsSearch $search)
     {
         parent::__construct();
 
-        $this->cart = $cart;
-        $this->price = $price;
-        $this->image = $image;
         $this->search = $search;
-        $this->product = $product;
-        $this->category = $category;
-        $this->wishlist = $wishlist;
     }
 
     public function search()

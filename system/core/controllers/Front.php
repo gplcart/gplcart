@@ -10,9 +10,6 @@
 namespace core\controllers;
 
 use core\models\Page as ModelsPage;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
-use core\models\Product as ModelsProduct;
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -22,45 +19,20 @@ class Front extends FrontendController
 {
 
     /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
-
-    /**
      * Page module instance
      * @var \core\models\Page $page
      */
     protected $page;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Constructor
-     * @param ModelsProduct $product
      * @param ModelsPage $page
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
      */
-    public function __construct(ModelsProduct $product, ModelsPage $page,
-            ModelsPrice $price, ModelsImage $image)
+    public function __construct(ModelsPage $page)
     {
         parent::__construct();
 
         $this->page = $page;
-        $this->price = $price;
-        $this->image = $image;
-        $this->product = $product;
     }
 
     /**

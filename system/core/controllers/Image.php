@@ -9,21 +9,14 @@
 
 namespace core\controllers;
 
-use core\Controller;
 use core\classes\Response;
-use core\models\Image as ModelsImage;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to image cache
  */
-class Image extends Controller
+class Image extends FrontendController
 {
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
 
     /**
      * Response class instance
@@ -33,14 +26,12 @@ class Image extends Controller
 
     /**
      * Constructor
-     * @param ModelsImage $image
      * @param Response $response
      */
-    public function __construct(ModelsImage $image, Response $response)
+    public function __construct(Response $response)
     {
         parent::__construct();
 
-        $this->image = $image;
         $this->response = $response;
     }
 

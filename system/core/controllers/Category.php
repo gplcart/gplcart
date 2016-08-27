@@ -9,63 +9,21 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Cart as ModelsCart;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
 use core\models\Search as ModelsSearch;
-use core\models\Product as ModelsProduct;
-use core\models\Wishlist as ModelsWishlist;
-use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to product catalog
  */
-class Category extends Controller
+class Category extends FrontendController
 {
-
-    /**
-     * Category model instance
-     * @var \core\models\Category $category
-     */
-    protected $category;
 
     /**
      * Category group model instance
      * @var \core\models\CategoryGroup $category_group
      */
     protected $category_group;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
-
-    /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
-
-    /**
-     * Cart model intance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
 
     /**
      * Search model instance
@@ -75,29 +33,15 @@ class Category extends Controller
 
     /**
      * Constructor
-     * @param ModelsCategory $category
-     * @param ModelsImage $image
-     * @param ModelsProduct $product
-     * @param ModelsPrice $price
-     * @param ModelsCart $cart
-     * @param ModelsWishlist $wishlist
      * @param ModelsSearch $search
      * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(ModelsCategory $category, ModelsImage $image,
-            ModelsProduct $product, ModelsPrice $price, ModelsCart $cart,
-            ModelsWishlist $wishlist, ModelsSearch $search,
+    public function __construct(ModelsSearch $search,
             ModelsCategoryGroup $category_group)
     {
         parent::__construct();
 
-        $this->cart = $cart;
-        $this->price = $price;
-        $this->image = $image;
         $this->search = $search;
-        $this->product = $product;
-        $this->category = $category;
-        $this->wishlist = $wishlist;
         $this->category_group = $category_group;
     }
 

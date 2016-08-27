@@ -9,24 +9,15 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
 use core\models\Review as ModelsReview;
 use core\models\Rating as ModelsRating;
-use core\models\Product as ModelsProduct;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to reviews
  */
-class Review extends Controller
+class Review extends FrontendController
 {
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
 
     /**
      * Review model instance
@@ -35,41 +26,22 @@ class Review extends Controller
     protected $review;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
      * Rating model instance
      * @var \core\model\Rating $rating
      */
     protected $rating;
 
     /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Constructor
-     * @param ModelsProduct $product
      * @param ModelsReview $review
-     * @param ModelsPrice $price
      * @param ModelsRating $rating
-     * @param ModelsImage $image
      */
-    public function __construct(ModelsProduct $product, ModelsReview $review,
-            ModelsPrice $price, ModelsRating $rating, ModelsImage $image)
+    public function __construct(ModelsReview $review, ModelsRating $rating)
     {
         parent::__construct();
 
-        $this->price = $price;
-        $this->image = $image;
         $this->rating = $rating;
         $this->review = $review;
-        $this->product = $product;
     }
 
     /**
@@ -80,7 +52,7 @@ class Review extends Controller
     public function edit($product_id, $review_id = null)
     {
         $this->controlAccessEdit();
-        
+
         $product = $this->getProduct($product_id);
         $review = $this->get($review_id, $product_id);
 
@@ -89,7 +61,7 @@ class Review extends Controller
         }
 
         $deletable = (bool) $this->config->get('review_deletable', 1);
-        
+
         if ($this->request->post('delete') && isset($review['review_id']) && $deletable) {
             $this->delete($review, $product);
         }
@@ -199,7 +171,7 @@ class Review extends Controller
         $this->review->delete($review['review_id']);
         $this->redirect("product/{$product['product_id']}");
     }
-    
+
     /**
      * Validates an array of submitted review data
      * @param array $review
@@ -222,7 +194,7 @@ class Review extends Controller
             $this->setMessage($this->text('Your review will be visible after approval'), 'info', true);
         }
     }
-    
+
     /**
      * Returns a review
      * @param mixed $review_id

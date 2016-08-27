@@ -9,13 +9,13 @@
 
 namespace core\controllers;
 
-use core\Controller;
 use core\models\Page as ModelsPage;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to pages
  */
-class Page extends Controller
+class Page extends FrontendController
 {
 
     /**

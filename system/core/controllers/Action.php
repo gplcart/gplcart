@@ -9,58 +9,20 @@
 
 namespace core\controllers;
 
-use core\Hook;
-use core\Controller;
-use core\models\Cart as ModelsCart;
-use core\models\Product as ModelsProduct;
-use core\models\Wishlist as ModelsWishlist;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to user submitted actions
  */
-class Action extends Controller
+class Action extends FrontendController
 {
 
     /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
-
-    /**
-     * Hook class instance
-     * @var \core\Hook $hook
-     */
-    protected $hook;
-
-    /**
      * Constructor
-     * @param ModelsCart $cart
-     * @param ModelsWishlist $wishlist
-     * @param ModelsProduct $product
-     * @param Hook $hook
      */
-    public function __construct(ModelsCart $cart, ModelsWishlist $wishlist,
-            ModelsProduct $product, Hook $hook)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->hook = $hook;
-        $this->cart = $cart;
-        $this->product = $product;
-        $this->wishlist = $wishlist;
     }
 
     /**

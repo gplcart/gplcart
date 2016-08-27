@@ -9,46 +9,18 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Cart as ModelsCart;
 use core\models\File as ModelsFile;
 use core\models\State as ModelsState;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
 use core\models\Search as ModelsSearch;
 use core\models\Rating as ModelsRating;
-use core\models\Product as ModelsProduct;
 use core\models\Country as ModelsCountry;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to AJAX operations
  */
-class Ajax extends Controller
+class Ajax extends FrontendController
 {
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
-
-    /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
 
     /**
      * Country model instance
@@ -82,31 +54,21 @@ class Ajax extends Controller
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
-     * @param ModelsCart $cart
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsSearch $search
      * @param ModelsFile $file
      * @param ModelsRating $rating
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price,
-            ModelsImage $image, ModelsCart $cart, ModelsCountry $country,
-            ModelsState $state, ModelsSearch $search, ModelsFile $file,
-            ModelsRating $rating)
+    public function __construct(ModelsCountry $country, ModelsState $state,
+            ModelsSearch $search, ModelsFile $file, ModelsRating $rating)
     {
         parent::__construct();
 
         $this->file = $file;
-        $this->cart = $cart;
-        $this->price = $price;
-        $this->image = $image;
         $this->state = $state;
         $this->rating = $rating;
         $this->search = $search;
-        $this->product = $product;
         $this->country = $country;
     }
 

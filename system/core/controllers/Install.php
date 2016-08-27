@@ -9,15 +9,15 @@
 
 namespace core\controllers;
 
-use core\Controller;
 use core\classes\Tool;
 use core\models\Country as ModelsCountry;
 use core\models\Install as ModelsInstall;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to installation process
  */
-class Install extends Controller
+class Install extends FrontendController
 {
 
     /**

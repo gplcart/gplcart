@@ -9,26 +9,17 @@
 
 namespace core\controllers;
 
-use core\Controller;
-use core\models\Cart as ModelsCart;
-use core\models\Image as ModelsImage;
 use core\models\State as ModelsState;
 use core\models\Order as ModelsOrder;
-use core\models\Price as ModelsPrice;
 use core\models\Address as ModelsAddress;
 use core\models\Country as ModelsCountry;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to checkout process
  */
-class Checkout extends Controller
+class Checkout extends FrontendController
 {
-
-    /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
 
     /**
      * Order model instance
@@ -37,22 +28,10 @@ class Checkout extends Controller
     protected $order;
 
     /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Address model instance
      * @var \core\models\Address $address
      */
     protected $address;
-
-    /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
 
     /**
      * Country model instance
@@ -65,18 +44,6 @@ class Checkout extends Controller
      * @var \core\models\State $state
      */
     protected $state;
-
-    /**
-     * Currrent user cart ID
-     * @var string
-     */
-    protected $cart_user_id;
-
-    /**
-     * Current cart content
-     * @var array
-     */
-    protected $cart_content;
 
     /**
      * Current state of address form
@@ -140,24 +107,17 @@ class Checkout extends Controller
 
     /**
      * Constructor
-     * @param ModelsCart $cart
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsAddress $address
      * @param ModelsOrder $order
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
      */
-    public function __construct(ModelsCart $cart, ModelsCountry $country,
-            ModelsState $state, ModelsAddress $address, ModelsOrder $order,
-            ModelsPrice $price, ModelsImage $image)
+    public function __construct(ModelsCountry $country, ModelsState $state,
+            ModelsAddress $address, ModelsOrder $order)
     {
         parent::__construct();
 
-        $this->cart = $cart;
-        $this->image = $image;
         $this->order = $order;
-        $this->price = $price;
         $this->state = $state;
         $this->address = $address;
         $this->country = $country;
@@ -172,11 +132,9 @@ class Checkout extends Controller
         $this->form_data = array();
         $this->submitted_address = array();
 
-        $this->cart_user_id = $this->cart->uid();
         $this->country_code = $this->country->getDefault();
         $this->quantity_limit = (int) $this->config->get('cart_total_limit', 20);
         $this->quantity_limit_sku = (int) $this->config->get('cart_sku_limit', 10);
-        $this->cart_content = $this->cart->getByUser($this->cart_user_id, false);
     }
 
     /**

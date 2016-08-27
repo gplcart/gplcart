@@ -9,30 +9,18 @@
 
 namespace core\controllers;
 
-use core\Controller;
 use core\classes\Cache;
-use core\models\Cart as ModelsCart;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
 use core\models\Order as ModelsOrder;
-use core\models\Alias as ModelsAlias;
 use core\models\Review as ModelsReview;
 use core\models\Rating as ModelsRating;
-use core\models\Product as ModelsProduct;
-use core\models\Wishlist as ModelsWishlist;
 use core\models\ProductClass as ModelsProductClass;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to products
  */
-class Product extends Controller
+class Product extends FrontendController
 {
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
 
     /**
      * Product class model instance
@@ -41,34 +29,10 @@ class Product extends Controller
     protected $product_class;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Cart model instance
-     * @var \core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
      * Orders model instance
      * @var \core\models\Order $order
      */
     protected $order;
-
-    /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
 
     /**
      * Review model instance
@@ -83,41 +47,20 @@ class Product extends Controller
     protected $rating;
 
     /**
-     * Url model instance
-     * @var \core\models\Alias $alias
-     */
-    protected $alias;
-
-    /**
      * Constructor
-     * @param ModelsProduct $product
      * @param ModelsProductClass $product_class
-     * @param ModelsPrice $price
-     * @param ModelsImage $image
-     * @param ModelsCart $cart
      * @param ModelsOrder $order
-     * @param ModelsWishlist $wishlist
      * @param ModelsReview $review
      * @param ModelsRating $rating
-     * @param ModelsAlias $alias
      */
-    public function __construct(ModelsProduct $product,
-            ModelsProductClass $product_class, ModelsPrice $price,
-            ModelsImage $image, ModelsCart $cart, ModelsOrder $order,
-            ModelsWishlist $wishlist, ModelsReview $review,
-            ModelsRating $rating, ModelsAlias $alias)
+    public function __construct(ModelsProductClass $product_class,
+            ModelsOrder $order, ModelsReview $review, ModelsRating $rating)
     {
         parent::__construct();
 
-        $this->cart = $cart;
-        $this->alias = $alias;
-        $this->price = $price;
-        $this->image = $image;
         $this->order = $order;
         $this->review = $review;
         $this->rating = $rating;
-        $this->product = $product;
-        $this->wishlist = $wishlist;
         $this->product_class = $product_class;
     }
 
