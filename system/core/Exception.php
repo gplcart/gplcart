@@ -9,7 +9,6 @@
 
 namespace core;
 
-use core\Container;
 use Exception as Base;
 
 /**
@@ -27,7 +26,7 @@ class Exception extends Base
     /**
      * Constructor
      * @param mixed $message
-     * @param numeric $code
+     * @param integer $code
      * @param Base $previous
      */
     public function __construct($message = null, $code = 0,

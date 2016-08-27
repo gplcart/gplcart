@@ -360,7 +360,7 @@ class Language extends Model
      * @return string
      */
     public function text($string = null, array $arguments = array())
-    {
+    { 
         if (!isset($string)) {
             $this->compile();
             return;

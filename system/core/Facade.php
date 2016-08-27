@@ -9,12 +9,8 @@
 
 namespace core;
 
-use core\Hook;
-use core\Route;
-use core\Config;
-use core\Logger;
-use core\classes\Url;
 use core\classes\Session;
+use core\classes\Url;
 use core\exceptions\SystemFailure;
 
 /**
@@ -87,34 +83,32 @@ class Facade
         $this->session = $session;
         $this->exception = $exception;
 
-        if ($this->config->exists()) {
-            date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
+        date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
 
-            // Set error level
-            switch ($this->config->get('error_level', 2)) {
-                case 0:
-                    error_reporting(0); // disable at all
-                    break;
-                case 1:
-                    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-                    break;
-                case 2:
-                    error_reporting(E_ALL);
-            }
-
-            // Register error handlers
-            register_shutdown_function(array($this->logger, 'shutdownHandler'));
-            set_exception_handler(array($this->exception, 'exceptionHandler'));
-            set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
-
-            // Debugging
-            //if ($this->config->get('kint', 0)) {
-                require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
-            //}
-
-            // Register hooks
-            $this->hook->registerModules($this->config->getEnabledModules());
+        // Set error level
+        switch ($this->config->get('error_level', 2)) {
+            case 0:
+                error_reporting(0); // disable at all
+                break;
+            case 1:
+                error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+                break;
+            case 2:
+                error_reporting(E_ALL);
         }
+
+        // Register error handlers
+        register_shutdown_function(array($this->logger, 'shutdownHandler'));
+        set_exception_handler(array($this->exception, 'exceptionHandler'));
+        set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
+
+        // Debugging
+        //if ($this->config->get('kint', 0)) {
+        require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+        //}
+        // Register hooks
+
+        $this->hook->registerModules($this->config->getEnabledModules());
     }
 
     /**

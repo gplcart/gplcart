@@ -170,25 +170,25 @@ class Route
 
         $routes['login'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'login')
+                'controller' => array('core\\controllers\\User', 'loginUser')
             )
         );
 
         $routes['logout'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'logout')
+                'controller' => array('core\\controllers\\User', 'logoutUser')
             )
         );
 
         $routes['register'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'register')
+                'controller' => array('core\\controllers\\User', 'registerUser')
             )
         );
 
         $routes['forgot'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'forgot')
+                'controller' => array('core\\controllers\\User', 'resetPasswordUser')
             )
         );
 

@@ -58,6 +58,10 @@ class User
         if (empty($user)) {
             return $this->language->text('E-mail does not exist');
         }
+        
+        if (!empty($options['status']) && empty($user['status'])) {
+            return $this->language->text('E-mail does not exist');
+        }
 
         return array('result' => $user);
     }

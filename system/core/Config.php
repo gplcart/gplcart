@@ -304,6 +304,10 @@ class Config
      */
     public function getInstalledModules()
     {
+        if (empty($this->db)) {
+            return array();
+        }
+        
         $modules = array();
         $sth = $this->db->query('SELECT * FROM module ORDER BY weight ASC');
 

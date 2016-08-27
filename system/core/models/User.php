@@ -135,11 +135,11 @@ class User extends Model
         if (empty($user_id)) {
             return false;
         }
-        
+
         if (!empty($data['password'])) { // not isset()!
             $data['hash'] = Tool::hash($data['password']);
         }
-        
+
         $data += array('modified' => GC_TIME);
         $values = $this->getDbSchemeValues('user', $data);
 
@@ -365,7 +365,7 @@ class User extends Model
         $result = array(
             'user' => $user,
             'message' => '',
-            'message_type' => 'success',
+            'severity' => 'success',
             'redirect' => $this->getLoginRedirect($user),
         );
 
@@ -382,26 +382,34 @@ class User extends Model
     {
         $this->hook->fire('register.user.before', $data);
 
+        $login = $this->config->get('user_registration_login', true);
+        $status = $this->config->get('user_registration_status', true);
+
+        $data['status'] = $status;
         $data['user_id'] = $this->add($data);
 
-        if (!empty($data['admin'])) {
+        $this->logRegistration($data);
+        $this->emailRegistration($data);
 
-            if (!empty($data['notify'])) {
-                $this->mail->set('user_registered_customer', array($data));
-            }
+        $result = array(
+            'redirect' => '/',
+            'severity' => 'success',
+            'message' => $this->language->text('Your account has been created'));
 
-            $result = array(
-                'redirect' => 'admin/user',
-                'message_type' => 'success',
-                'message' => $this->language->text('User has been added')
-            );
-
-            $this->hook->fire('register.user.after', $data, $result);
-            return $result;
+        if ($login && $status) {
+            $result = $this->login($data['email'], $data['password']);
         }
 
-        $this->logRegistration($data);
+        $this->hook->fire('register.user.after', $data, $result);
+        return $result;
+    }
 
+    /**
+     * Sends E-mails to various recepients to inform them about the registration
+     * @param array $data
+     */
+    protected function emailRegistration(array $data)
+    {
         // Send an e-mail to the customer
         if ($this->config->get('user_registration_email_customer', true)) {
             $this->mail->set('user_registered_customer', array($data));
@@ -411,21 +419,6 @@ class User extends Model
         if ($this->config->get('user_registration_email_admin', true)) {
             $this->mail->set('user_registered_admin', array($data));
         }
-
-        if (!$this->config->get('user_registration_login', true) || !$this->config->get('user_registration_status', true)) {
-            $result = array(
-                'redirect' => '/',
-                'message_type' => 'success',
-                'message' => $this->language->text('Your account has been created'));
-
-
-            $this->hook->fire('register.user.after', $data, $result);
-            return $result;
-        }
-
-        $result = $this->login($data['email'], $data['password']);
-        $this->hook->fire('register.user.after', $data, $result);
-        return $result;
     }
 
     /**
@@ -435,7 +428,6 @@ class User extends Model
      */
     public function getByEmail($email)
     {
-
         $sth = $this->db->prepare('SELECT * FROM user WHERE email=:email');
         $sth->execute(array(':email' => $email));
         $user = $sth->fetch(PDO::FETCH_ASSOC);
@@ -478,7 +470,7 @@ class User extends Model
 
     /**
      * Logs out the current user
-     * @return mixed
+     * @return array
      * @throws \core\exceptions\SystemLogicalUserAccess
      */
     public function logout()
@@ -487,7 +479,7 @@ class User extends Model
         $this->hook->fire('logout.before', $user_id);
 
         if (empty($user_id)) {
-            return false;
+            return array('message' => '', 'severity' => '', 'redirect' => '/');
         }
 
         if (!$this->session->delete()) {
@@ -501,7 +493,7 @@ class User extends Model
         $result = array(
             'user' => $user,
             'message' => '',
-            'message_type' => 'success',
+            'severity' => 'success',
             'redirect' => $this->getLogOutRedirect($user),
         );
 
@@ -521,21 +513,24 @@ class User extends Model
 
     /**
      * Performs reset password operation
-     * @param array $user
-     * @param string $password
+     * @param array $data
      * @return array
      */
-    public function resetPassword(array $user, $password = null)
+    public function resetPassword(array $data)
     {
-        $this->hook->fire('reset.password.before', $user, $password);
+        $this->hook->fire('reset.password.before', $data);
 
-        if (isset($password)) {
-            $result = $this->setNewPassword($user, $password);
-        } else {
-            $result = $this->setResetPassword($user);
+        if (empty($data['user']['user_id'])) {
+            return array('message' => '', 'severity' => '', 'redirect' => '');
         }
 
-        $this->hook->fire('reset.password.after', $user, $password, $result);
+        if (isset($data['password'])) {
+            $result = $this->setNewPassword($data['user'], $data['password']);
+        } else {
+            $result = $this->setResetPassword($data['user']);
+        }
+
+        $this->hook->fire('reset.password.after', $data, $result);
         return $result;
     }
 
@@ -558,7 +553,7 @@ class User extends Model
 
         return array(
             'redirect' => 'forgot',
-            'message_type' => 'success',
+            'severity' => 'success',
             'message' => $this->language->text('Password reset link has been sent to your E-mail')
         );
     }
@@ -579,7 +574,7 @@ class User extends Model
 
         return array(
             'redirect' => 'login',
-            'message_type' => 'success',
+            'severity' => 'success',
             'message' => $this->language->text('Your password has been successfully changed')
         );
     }
@@ -707,10 +702,12 @@ class User extends Model
      */
     protected function logLogin(array $user)
     {
-        $this->logger->log('login', array(
+        $data = array(
             'message' => 'User %s has logged in',
             'variables' => array('%s' => $user['email'])
-        ));
+        );
+
+        $this->logger->log('login', $data);
     }
 
     /**
@@ -719,10 +716,12 @@ class User extends Model
      */
     protected function logLogout(array $user)
     {
-        $this->logger->log('logout', array(
+        $data = array(
             'message' => 'User %email has logged out',
             'variables' => array('%email' => $user['email'])
-        ));
+        );
+
+        $this->logger->log('logout', $data);
     }
 
     /**
@@ -731,10 +730,12 @@ class User extends Model
      */
     protected function logRegistration(array $user)
     {
-        $this->logger->log('register', array(
+        $data = array(
             'message' => 'User %email has been registered',
             'variables' => array('%email' => $user['email'])
-        ));
+        );
+
+        $this->logger->log('register', $data);
     }
 
     /**

@@ -9,7 +9,6 @@
 
 namespace core;
 
-use core\Container;
 use core\exceptions\SystemLogical;
 
 /**

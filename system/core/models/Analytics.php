@@ -9,10 +9,10 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Logger;
-use core\Handler;
 use core\classes\Cache;
+use core\Handler;
+use core\Logger;
+use core\Model;
 
 /**
  * Manages basic behaviors and data related to Google Analytics
@@ -28,7 +28,7 @@ class Analytics extends Model
 
     /**
      * GA profile id
-     * @var type
+     * @var integer
      */
     protected $profile_id;
 
@@ -67,7 +67,7 @@ class Analytics extends Model
      * @param string $email
      * @param string $certificate
      * @param string $app_name
-     * @return object \core\models\Analytics
+     * @return object $this
      */
     public function setCredentials($email, $certificate, $app_name)
     {
@@ -100,7 +100,7 @@ class Analytics extends Model
     /**
      * Sets a Google Analytics view to work with
      * @param string $view
-     * @return object \core\models\Analytics
+     * @return object $this
      */
     public function setView($view)
     {
@@ -109,52 +109,37 @@ class Analytics extends Model
     }
 
     /**
-     * Caches and returns the formatted data array
+     * Returns a statistic for a given handler ID
+     * @param string $handler_id
      * @param array $arguments
-     * @return mixed
+     * @return array
      */
-    public function getResults(array $arguments)
+    public function get($handler_id, array $arguments = array())
     {
-        if (empty($this->profile_id)) {
-            return false;
+        $this->hook->fire('ga.get.before', $handler_id, $arguments);
+
+        $handlers = $this->getHandlers();
+
+        if (empty($handlers[$handler_id])) {
+            return array();
         }
 
-        array_unshift($arguments, 'ga:' . $this->profile_id);
+        $arguments += array(
+            $this->config->get('ga_from', '30daysAgo'),
+            $this->config->get('ga_until', 'today'),
+            $this->config->get('ga_limit', 20)
+        );
 
-        $this->hook->fire('ga.results.before', $arguments);
+        $query = Handler::call($handlers, $handler_id, 'query', $arguments);
 
-        $return = array();
-        $cid = "ga.{$this->profile_id}." . md5(serialize($arguments));
-        $cache = Cache::get($cid, null, $this->config->get('ga_cache_lifespan', 86400));
-
-        if (isset($cache)) {
-            $return = $cache;
-        } else {
-
-            try {
-                $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
-                $rows = $results->getRows();
-            } catch (\Google_IO_Exception $e) {
-                $this->logger->log('ga', $e->getMessage(), 'danger'); // Failed to connect, etc...
-                return array();
-            }
-
-            if (!empty($rows)) {
-                $return = $rows;
-            }
-
-            Cache::set($cid, $return);
-
-            $log = array(
-                'message' => 'Google Analytics for profile %s has updated',
-                'variables' => array('%s' => $this->profile_id)
-            );
-
-            $this->logger->log('ga', $log);
+        if (empty($query)) {
+            return array();
         }
 
-        $this->hook->fire('ga.results.after', $arguments, $return);
-        return $return;
+        $results = $this->getResults($query);
+        $this->hook->fire('ga.get.after', $handler_id, $arguments, $results);
+
+        return $results;
     }
 
     /**
@@ -207,37 +192,52 @@ class Analytics extends Model
     }
 
     /**
-     * Returns a statistic for a given handler ID
-     * @param string $handler_id
+     * Caches and returns the formatted data array
      * @param array $arguments
-     * @return array
+     * @return mixed
      */
-    public function get($handler_id, array $arguments = array())
+    public function getResults(array $arguments)
     {
-        $this->hook->fire('ga.get.before', $handler_id, $arguments);
-
-        $handlers = $this->getHandlers();
-
-        if (empty($handlers[$handler_id])) {
-            return array();
+        if (empty($this->profile_id)) {
+            return false;
         }
 
-        $arguments += array(
-            $this->config->get('ga_from', '30daysAgo'),
-            $this->config->get('ga_until', 'today'),
-            $this->config->get('ga_limit', 20)
-        );
+        array_unshift($arguments, 'ga:' . $this->profile_id);
 
-        $query = Handler::call($handlers, $handler_id, 'query', $arguments);
+        $this->hook->fire('ga.results.before', $arguments);
 
-        if (empty($query)) {
-            return array();
+        $return = array();
+        $cid = "ga.{$this->profile_id}." . md5(serialize($arguments));
+        $cache = Cache::get($cid, null, $this->config->get('ga_cache_lifespan', 86400));
+
+        if (isset($cache)) {
+            $return = $cache;
+        } else {
+
+            try {
+                $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
+                $rows = $results->getRows();
+            } catch (\Google_IO_Exception $e) {
+                $this->logger->log('ga', $e->getMessage(), 'danger'); // Failed to connect, etc...
+                return array();
+            }
+
+            if (!empty($rows)) {
+                $return = $rows;
+            }
+
+            Cache::set($cid, $return);
+
+            $log = array(
+                'message' => 'Google Analytics for profile %s has updated',
+                'variables' => array('%s' => $this->profile_id)
+            );
+
+            $this->logger->log('ga', $log);
         }
 
-        $results = $this->getResults($query);
-        $this->hook->fire('ga.get.after', $handler_id, $arguments, $results);
-
-        return $results;
+        $this->hook->fire('ga.results.after', $arguments, $return);
+        return $return;
     }
 
 }

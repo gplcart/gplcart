@@ -9,16 +9,16 @@
 
 namespace core\controllers;
 
-use core\Controller;
 use core\models\Page as ModelsPage;
 use core\models\Price as ModelsPrice;
 use core\models\Image as ModelsImage;
 use core\models\Product as ModelsProduct;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to front page
  */
-class Front extends Controller
+class Front extends FrontendController
 {
 
     /**

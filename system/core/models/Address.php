@@ -9,10 +9,10 @@
 
 namespace core\models;
 
-use PDO;
-use core\Model;
 use core\classes\Tool;
+use core\Model;
 use core\models\Country as ModelsCountry;
+use PDO;
 
 /**
  * Manages basic behaviors and data related to user addresses

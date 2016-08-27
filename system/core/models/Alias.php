@@ -9,11 +9,11 @@
 
 namespace core\models;
 
-use PDO;
-use core\Route;
-use core\Model;
 use core\classes\Tool;
+use core\Model;
 use core\models\Language as ModelsLanguage;
+use core\Route;
+use PDO;
 
 /**
  * Manages basic behaviors and data related to URL aliasing

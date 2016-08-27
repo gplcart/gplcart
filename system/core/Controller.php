@@ -9,7 +9,6 @@
 
 namespace core;
 
-use core\Container;
 use core\classes\Tool;
 
 /**
@@ -357,7 +356,7 @@ class Controller
 
         $this->token = $this->config->token();
 
-        $this->setJobProperties();
+
         $this->setRouteProperties();
         $this->setDeviceProperties();
         $this->setStoreProperties();
@@ -370,7 +369,7 @@ class Controller
         $this->setDefaultJs();
         $this->controlMaintenanceMode();
 
-        $this->hook->fire('construct', $this);
+        $this->hook->fire('init', $this);
     }
 
     /**
@@ -380,7 +379,7 @@ class Controller
     {
         $this->text();
 
-        $this->hook->fire('destruct', $this);
+        $this->hook->fire('end', $this);
     }
 
     /**
@@ -693,7 +692,7 @@ class Controller
      * Sets an array of submitted data
      * @param string|array|null $key
      * @param mixed $value
-     * @param boolean $filter
+     * @param boolean|string $filter
      * @return array
      */
     public function setSubmitted($key = null, $value = null, $filter = true)
@@ -1482,9 +1481,10 @@ class Controller
      * Returns true if an error occurred
      * and passes back to template the submitted data
      * @param string $key
+     * @param boolean $message
      * @return boolean
      */
-    public function hasErrors($key = null)
+    public function hasErrors($key = null, $message = true)
     {
         $errors = $this->getError();
 
@@ -1492,7 +1492,9 @@ class Controller
             return false;
         }
 
-        $this->setMessage($this->text('One or more errors occurred'), 'danger');
+        if($message){
+            $this->setMessage($this->text('One or more errors occurred'), 'danger');
+        }
 
         if (isset($key)) {
             $this->setData($key, $this->submitted);

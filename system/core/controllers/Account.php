@@ -9,21 +9,18 @@
 
 namespace core\controllers;
 
-use core\Controller;
 use core\classes\Tool;
 use core\models\State as ModelsState;
 use core\models\Order as ModelsOrder;
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
 use core\models\Address as ModelsAddress;
 use core\models\Country as ModelsCountry;
-use core\models\Wishlist as ModelsWishlist;
 use core\models\UserRole as ModelsUserRole;
+use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
  */
-class Account extends Controller
+class Account extends FrontendController
 {
 
     /**
@@ -62,23 +59,6 @@ class Account extends Controller
      */
     protected $role;
 
-    /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
-
-    /**
-     * Product model instance
-     * @var \core\models\Product $product
-     */
-    protected $product;
 
     /**
      * Used for validation
@@ -92,192 +72,113 @@ class Account extends Controller
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsOrder $order
-     * @param ModelsPrice $price
-     * @param ModelsWishlist $wishlist
      * @param ModelsUserRole $role
-     * @param ModelsProduct $product
      */
     public function __construct(ModelsAddress $address, ModelsCountry $country,
-            ModelsState $state, ModelsOrder $order, ModelsPrice $price,
-            ModelsWishlist $wishlist, ModelsUserRole $role,
-            ModelsProduct $product)
+            ModelsState $state, ModelsOrder $order, ModelsUserRole $role)
     {
         parent::__construct();
 
         $this->role = $role;
         $this->state = $state;
         $this->order = $order;
-        $this->price = $price;
-        $this->product = $product;
         $this->country = $country;
         $this->address = $address;
-        $this->wishlist = $wishlist;
     }
 
     /**
      * Displays the customer account page
      * @param integer $user_id
      */
-    public function account($user_id)
+    public function indexAccount($user_id)
     {
-        $user = $this->getUser($user_id);
-
-        $query = $this->getFilterQuery();
+        $user = $this->getUserAccount($user_id);
         $default_limit = $this->config->get('account_order_limit', 10);
-        $limit = $this->setPager($this->getTotalOrders($user_id), $query, $default_limit);
+        
+        $query = $this->getFilterQuery();
+        $total = $this->getTotalOrderAccount($user_id);
+        $limit = $this->setPager($total, $query, $default_limit);
+        $orders = $this->getListOrderAccount($user_id, $limit, $query);
+        
+        $this->setData('user', $user);
+        $this->setData('orders', $orders);
 
         $filters = array('order_id', 'created', 'total', 'status');
         $this->setFilter($filters, $query);
 
-        $this->data['user'] = $user;
-        $this->data['orders'] = $this->getOrders($user_id, $limit, $query);
-
-        $this->setTitleAccount();
-        $this->outputAccount();
+        $this->setTitleIndexAccount();
+        $this->outputIndexAccount();
     }
 
     /**
      * Displays the customer edit account page
      * @param integer $user_id
      */
-    public function edit($user_id)
+    public function editAccount($user_id)
     {
-        $user = $this->getUser($user_id);
+        $user = $this->getUserAccount($user_id);
 
-        // Only superadmin can edit its own account
-        if ($this->user->isSuperadmin($user_id) && !$this->user->isSuperadmin()) {
+        $this->controlAccessEditAccount();
+        
+        $roles = $this->role->getList();
+        $stores = $this->store->getNames();
+        
+        $this->setData('user', $user);
+        $this->setData('roles', $roles);
+        $this->setData('stores', $stores);
+
+        $this->submitEditAccount($user);
+
+        $this->setTitleEditAccount();
+        $this->outputEditAccount();
+    }
+    
+    /**
+     * Displays 403 error page if the current user has no access to edit the page
+     * @param integer $user_id
+     */
+    protected function controlAccessEditAccount($user_id)
+    {
+        if ($this->isSuperadmin($user_id) && !$this->isSuperadmin()) {
             $this->outputError(403);
         }
-
-        $this->data['user'] = $user;
-        $this->data['roles'] = $this->role->getList();
-        $this->data['stores'] = $this->store->getNames();
-
-        if ($this->request->post('save')) {
-            $this->submitEdit($user);
-        }
-
-        if ($this->request->post('delete')) {
-            $this->submitDelete($user);
-        }
-
-        $this->setTitleEdit();
-        $this->outputEdit();
     }
 
     /**
      * Displays the addresses overview page
      * @param integer $user_id
      */
-    public function addresses($user_id)
+    public function listAddressAccount($user_id)
     {
-        $user = $this->getUser($user_id);
+        $user = $this->getUserAccount($user_id);
+        $addresses = $this->getListAddressAccount($user_id);
+        
+        $this->actionAccount($user);
+        
+        $this->setData('user', $user);
+        $this->setData('addresses', $addresses);
+
+        $this->setTitleListAddressAccount();
+        $this->outputListAddressAccount();
+    }
+    
+    /**
+     * Applies an action to user addresses
+     * @param array $user
+     */
+    protected function actionAccount(array $user)
+    {
         $address_id = (int) $this->request->get('delete');
 
         if (!empty($address_id)) {
-            $this->deleteAddress($address_id);
+            $this->deleteAddressAccount($address_id);
         }
-
-        $this->data['user'] = $user;
-        $this->data['addresses'] = $this->getAddresses($user_id);
-
-        $this->setTitleAddresses();
-        $this->outputAddresses();
-    }
-
-    /**
-     * Displays the login page
-     */
-    public function login()
-    {
-        if (!empty($this->uid)) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        if ($this->request->post('login')) {
-            $this->submitLogin();
-        }
-
-        $this->setTitleLogin();
-        $this->setBreadcrumbLogin();
-        $this->outputLogin();
-    }
-
-    /**
-     * Displays the user registration page
-     */
-    public function register()
-    {
-        if (!empty($this->uid) && !$this->access('user_add')) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        if ($this->request->post('register')) {
-            $this->submitRegister();
-        }
-
-        $limits = $this->user->getPasswordLength();
-
-        $this->data['min_password_length'] = $limits['min'];
-        $this->data['max_password_length'] = $limits['max'];
-
-        $this->data['roles'] = $this->role->getList();
-        $this->data['stores'] = $this->store->getNames();
-
-        $this->setTitleRegister();
-        $this->setBreadcrumbRegister();
-        $this->outputRegister();
-    }
-
-    /**
-     * Displays the user forgotten password page
-     */
-    public function forgot()
-    {
-        if (!empty($this->uid)) {
-            $this->url->redirect("account/{$this->uid}");
-        }
-
-        // Check password reset URL
-        $user = $this->getRecoverableUser();
-        $this->data['recoverable_user'] = $user;
-
-        if ($user === false) {
-            $this->redirect('forgot'); // Reset password link expired or invalid
-        }
-
-        if ($this->request->post('reset')) {
-            $this->submitForgot($user);
-        }
-
-        $limits = $this->user->getPasswordLength();
-
-        $this->data['min_password_length'] = $limits['min'];
-        $this->data['max_password_length'] = $limits['max'];
-
-        $this->setTitleForgot();
-        $this->setBreadcrumbForgot();
-        $this->outputForgot();
-    }
-
-    /**
-     * Logs out a user
-     */
-    public function logout()
-    {
-        $result = $this->user->logout();
-
-        if (!empty($result)) {
-            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-        }
-
-        $this->redirect('/');
     }
 
     /**
      * Renders the edit account page templates
      */
-    protected function outputEdit()
+    protected function outputEditAccount()
     {
         $this->output('account/edit');
     }
@@ -285,7 +186,7 @@ class Account extends Controller
     /**
      * Renders the addresses overview page
      */
-    protected function outputAddresses()
+    protected function outputListAddressAccount()
     {
         $this->output('account/address/list');
     }
@@ -293,39 +194,15 @@ class Account extends Controller
     /**
      * Renders the edit address page
      */
-    protected function outputEditAddress()
+    protected function outputEditAddressAccount()
     {
         $this->output('account/address/edit');
     }
 
     /**
-     * Renders the login page
-     */
-    protected function outputLogin()
-    {
-        $this->output('login');
-    }
-
-    /**
-     * Renders the registration page
-     */
-    protected function outputRegister()
-    {
-        $this->output('register');
-    }
-
-    /**
-     * Renders the password reset page templates
-     */
-    protected function outputForgot()
-    {
-        $this->output('forgot');
-    }
-
-    /**
      * Renders the account page templates
      */
-    protected function outputAccount()
+    protected function outputIndexAccount()
     {
         $this->output('account/account');
     }
@@ -335,7 +212,7 @@ class Account extends Controller
      * @param integer $address_id
      * @return array
      */
-    protected function getAddress($address_id)
+    protected function getAddressAccount($address_id)
     {
         $address = array(
             'country' => $this->country->getDefault()
@@ -356,9 +233,14 @@ class Account extends Controller
      * @param string $country
      * @return array
      */
-    protected function getCountryStates($country)
+    protected function getListStateAccount($country)
     {
-        return $this->state->getList(array('country' => $country, 'status' => 1));
+        $options = array(
+            'status' => 1,
+            'country' => $country
+        );
+        
+        return $this->state->getList($options);
     }
 
     /**
@@ -366,7 +248,7 @@ class Account extends Controller
      * @param string $country
      * @return array
      */
-    protected function getCountryFormat($country)
+    protected function getCountryFormatAccount($country)
     {
         return $this->country->getFormat($country);
     }
@@ -375,7 +257,7 @@ class Account extends Controller
      * Returns an array of country names
      * @return array
      */
-    protected function getCountryNames()
+    protected function getCountryNamesAccount()
     {
         return $this->country->getNames(true);
     }
@@ -385,7 +267,7 @@ class Account extends Controller
      * @param integer $user_id
      * @return array
      */
-    protected function getAddresses($user_id)
+    protected function getListAddressAccount($user_id)
     {
         return $this->address->getTranslatedList($user_id);
     }
@@ -395,7 +277,7 @@ class Account extends Controller
      * @param integer $user_id
      * @return array
      */
-    protected function getUser($user_id)
+    protected function getUserAccount($user_id)
     {
         $user = $this->user->get($user_id);
 
@@ -418,7 +300,7 @@ class Account extends Controller
      * @param array $query
      * @return array
      */
-    protected function getOrders($user_id, array $limit, array $query)
+    protected function getListOrderAccount($user_id, array $limit, array $query)
     {
         $query += array('sort' => 'created', 'order' => 'desc', 'limit' => $limit);
         $query['user_id'] = $user_id;
@@ -432,96 +314,23 @@ class Account extends Controller
      * @param integer $user_id
      * @return array
      */
-    protected function getTotalOrders($user_id)
+    protected function getTotalOrderAccount($user_id)
     {
         return $this->order->getList(array('count' => true, 'user_id' => $user_id));
     }
 
     /**
-     * Returns a user from the current reset password URL
-     * @return boolean|array
-     */
-    protected function getRecoverableUser()
-    {
-        $token = (string) $this->request->get('key', '');
-        $user_id = (string) $this->request->get('user_id', '');
-
-        // Data unavailable, exit
-        if (empty($token) || empty($user_id)) {
-            return array();
-        }
-
-        $user = $this->user->get($user_id);
-
-        // User blocked or not found
-        if (empty($user['status'])) {
-            return array();
-        }
-
-        $data = $user['data'];
-
-        // No recovery data is set
-        if (empty($data['reset_password'])) {
-            return false;
-        }
-
-        // Invalid token
-        if (!Tool::hashEquals($data['reset_password']['token'], $token)) {
-            return false;
-        }
-
-        // Expired
-        if ((int) $data['reset_password']['expires'] < GC_TIME) {
-            return false;
-        }
-
-        return $user;
-    }
-
-    /**
      * Sets titles on the account page
      */
-    protected function setTitleAccount()
+    protected function setTitleIndexAccount()
     {
         $this->setTitle($this->text('Orders'), false);
     }
 
     /**
-     * Sets titles on the registration page
-     */
-    protected function setTitleRegister()
-    {
-        $this->setTitle($this->text('Register'));
-    }
-
-    /**
-     * Sets breadcrumbs on the registration page
-     */
-    protected function setBreadcrumbRegister()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-    }
-
-    /**
-     * Sets titles on the password reset page
-     */
-    protected function setTitleForgot()
-    {
-        $this->setTitle($this->text('Reset password'));
-    }
-
-    /**
-     * Sets breadcrumbs on the password reset page
-     */
-    protected function setBreadcrumbForgot()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-    }
-
-    /**
      * Sets titles on the edit account page
      */
-    protected function setTitleEdit()
+    protected function setTitleEditAccount()
     {
         $this->setTitle($this->text('Edit account'), false);
     }
@@ -529,7 +338,7 @@ class Account extends Controller
     /**
      * Sets titles on the addresses overview page
      */
-    protected function setTitleAddresses()
+    protected function setTitleListAddressAccount()
     {
         $this->setTitle($this->text('Addresses'), false);
     }
@@ -537,25 +346,9 @@ class Account extends Controller
     /**
      * Sets titles on the edit address page
      */
-    protected function setTitleEditAddress()
+    protected function setTitleEditAddressAccount()
     {
         $this->setTitle($this->text('Add new address'), false);
-    }
-
-    /**
-     * Sets titles on the login page
-     */
-    protected function setTitleLogin()
-    {
-        $this->setTitle($this->text('Login'));
-    }
-
-    /**
-     * Sets breadcrumbs on the login page
-     */
-    protected function setBreadcrumbLogin()
-    {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
     }
 
     /**
@@ -563,8 +356,14 @@ class Account extends Controller
      * @param array $user
      * @return boolean
      */
-    protected function validateUser(array $user = array())
+    protected function validateAccount(array $user = array())
     {
+        
+        if(isset($user['user_id'])){
+            $this->setSubmitted('user_id', $user['user_id']);
+        }
+        
+        
         // Registration
         if (empty($user['user_id']) && empty($this->uid)) {
             $this->submitted['status'] = $this->config->get('user_registration_status', 1);
@@ -685,7 +484,7 @@ class Account extends Controller
     /**
      * Validates a submitted address
      */
-    protected function validateAddress()
+    protected function validateAddressAccount()
     {
         $this->submitted['status'] = !empty($this->submitted['status']);
 
@@ -698,71 +497,34 @@ class Account extends Controller
     }
 
     /**
-     * Validates the forgot password form values
-     * @param array $user
-     * @return boolean
-     */
-    protected function validateForgot(array $user)
-    {
-        if (isset($this->submitted['email'])) {
-            $email_user = $this->user->getByEmail($this->submitted['email']);
-            if (empty($email_user['status'])) {
-                $this->errors['email'] = $this->text('Please provide another E-mail');
-                return false;
-            }
-
-            $this->submitted['user'] = $email_user;
-        } elseif (isset($this->submitted['password'])) {
-            $this->validatePassword($this->submitted['password']);
-            $this->submitted['user'] = $user;
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes a user
-     * @param array $user
-     */
-    protected function submitDelete(array $user)
-    {
-        $this->controlAccess('user_delete');
-
-        $result = $this->user->delete($user['user_id']);
-
-        $redirect = 'admin/user';
-        $message_type = 'success';
-        $message = 'User %name has been deleted';
-        $variables = array('%name' => $user['name']);
-
-        if (empty($result)) {
-            $redirect = '';
-            $message_type = 'danger';
-            $message = 'Unable to delete user %name. The most probable reason - it is used by one or more orders';
-        }
-
-        $this->redirect($redirect, $this->text($message, $variables), $message_type);
-    }
-
-    /**
      * Saves user account settings
      * @param array $user
-     * @return null
      */
-    protected function submitEdit(array $user)
+    protected function submitAccount(array $user)
     {
-        $this->submitted = $this->request->post('user', array(), 'raw');
-        $this->validateUser($user);
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['user'] = $this->submitted + array('user_id' => $user['user_id']);
+        if(!$this->isPosted('save')){
             return;
         }
+        
+        $this->setSubmitted('user', null, 'raw');
+        $this->validateAccount($user);
+        
+        if(!$this->hasErrors('user')){
+            $this->updateAccount($user);
+        }
+    }
+    
+    /**
+     * Updates a user with submitted values
+     * @param array $user
+     */
+    protected function updateAccount(array $user)
+    {
+        $values = $this->getSubmitted();
+        $this->user->update($user['user_id'], $values);
 
-        $this->user->update($user['user_id'], $this->submitted);
-        $this->redirect('', $this->text('Account has been updated'), 'success');
+        $message = $this->text('Account has been updated');
+        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -770,11 +532,11 @@ class Account extends Controller
      * @param array $user
      * @return null
      */
-    protected function submitAddress(array $user)
+    protected function submitAddressAccount(array $user)
     {
         $this->submitted = $this->request->post('address', array());
 
-        $this->validateAddress();
+        $this->validateAddressAccount();
 
         $errors = $this->getErrors();
 
@@ -800,81 +562,11 @@ class Account extends Controller
     }
 
     /**
-     * Logs in a user
-     */
-    protected function submitLogin()
-    {
-        $this->controlSpam('login');
-        $this->submitted = $this->request->post('user', array(), 'raw');
-
-        $result = $this->user->login($this->submitted['email'], $this->submitted['password']);
-
-        if (!empty($result)) {
-            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-        }
-
-        $this->data['user'] = $this->submitted;
-        $this->setMessage($this->text('Invalid E-mail and/or password'), 'danger');
-    }
-
-    /**
-     * Registers a user
-     * @return null
-     */
-    protected function submitRegister()
-    {
-        $this->controlSpam('register');
-        $this->submitted = $this->request->post('user', array(), 'raw');
-        $this->validateUser();
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['user'] = $this->submitted;
-            return;
-        }
-
-        $this->submitted['admin'] = $this->access('user_add');
-        $result = $this->user->register($this->submitted);
-        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-    }
-
-    /**
-     * Restores forgotten password
-     * @param array $user
-     * @return null
-     */
-    protected function submitForgot(array $user)
-    {
-        $this->controlSpam('forgot');
-        $this->submitted = $this->request->post('user', array(), 'raw');
-
-        $this->validateForgot($user);
-
-        $errors = $this->getErrors();
-
-        if (!empty($errors)) {
-            $this->data['user'] = $this->submitted;
-            return;
-        }
-
-        $result = array('message' => '', 'message_type' => '', 'redirect' => '');
-
-        if (isset($this->submitted['email'])) {
-            $result = $this->user->resetPassword($this->submitted['user']);
-        } elseif (isset($this->submitted['password'])) {
-            $result = $this->user->resetPassword($this->submitted['user'], $this->submitted['password']);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
-    }
-
-    /**
      * Modifies an array of orders before rendering
      * @param array $orders
      * @return array
      */
-    protected function prepareOrders(array $orders)
+    protected function prepareOrdersAccount(array $orders)
     {
         foreach ($orders as &$order) {
 
@@ -896,19 +588,17 @@ class Account extends Controller
      * Deletes an address
      * @param integer $address_id
      */
-    protected function deleteAddress($address_id)
+    protected function deleteAddressAccount($address_id)
     {
-        $result = $this->address->delete($address_id);
-
-        $message_type = 'success';
-        $message = $this->text('Address has been deleted');
-
-        if (empty($result)) {
-            $message_type = 'warning';
+        $deleted = $this->address->delete($address_id);
+        
+        if ($deleted) {
             $message = $this->text('Address cannot be deleted');
+            $this->redirect('', $message, 'warning');
         }
 
-        $this->redirect('', $message, $message_type);
+        $message = $this->text('Address has been deleted');
+        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -916,7 +606,7 @@ class Account extends Controller
      * @param integer $user_id
      * @param integer $address_id
      */
-    public function editAddress($user_id, $address_id = null)
+    public function editAddressAccount($user_id, $address_id = null)
     {
         $user = $this->getUser($user_id);
         $address = $this->getAddress($address_id);
@@ -943,7 +633,7 @@ class Account extends Controller
      * @param array $address
      * @return integer
      */
-    protected function addAddress(array $address)
+    protected function addAddressAccount(array $address)
     {
         $result = $this->address->add($address);
         $this->address->reduceLimit($address['user_id']);

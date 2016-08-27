@@ -267,8 +267,7 @@ class User extends BackendController
         $length += array('required' => empty($user['user_id']));
 
         $this->addValidator('password', array(
-            'length' => $length,
-            'user_name_unique' => array()
+            'length' => $length
         ));
 
         $this->setValidators($user);

@@ -1,66 +1,7 @@
 <div class="row">
   <form method="post" id="register" class="register col-md-6">
-    <input style="position:absolute;top:-9999px;">
-    <input type="password" style="position:absolute;top:-9999px;">
-    <input name="url" style="position:absolute;top:-999px;" value="">
+    <?php echo $honeypot; ?>
     <input type="hidden" name="token" value="<?php echo $token; ?>">
-    <?php if ($this->access('user_add')) { ?> 
-    <div class="form-group">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo empty($user['status']) ? '' : ' active'; ?>">
-          <input name="user[status]" type="radio" autocomplete="off" value="1"<?php echo empty($user['status']) ? '' : ' checked'; ?>>
-          <?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo empty($user['status']) ? ' active' : ''; ?>">
-          <input name="user[status]" type="radio" autocomplete="off" value="0"<?php echo empty($user['status']) ? ' checked' : ''; ?>>
-          <?php echo $this->text('Disabled'); ?>
-        </label>
-      </div>
-    </div>
-    <?php if (!empty($roles)) { ?>
-    <div class="form-group">
-      <label><?php echo $this->text('Role'); ?></label>
-      <select name="user[role_id]" class="form-control">
-        <option value=""><?php echo $this->text('None'); ?></option>
-        <?php foreach ($roles as $role_id => $role) { ?>
-        <?php if (isset($user['role_id']) && $user['role_id'] == $role_id) { ?>
-        <option value="<?php echo $role_id; ?>" selected><?php echo $this->escape($role['name']); ?></option>
-        <?php } else { ?>
-        <option value="<?php echo $role_id; ?>"><?php echo $this->escape($role['name']); ?></option>
-        <?php } ?>
-        <?php } ?>
-      </select>
-    </div>
-    <?php } ?>
-    <?php if (isset($stores) && count($stores) > 1) { ?>
-    <div class="form-group">
-      <label><?php echo $this->text('Store'); ?></label>
-      <select name="user[store_id]" class="form-control">
-        <?php foreach ($stores as $store_id => $store_name) { ?>
-        <?php if (isset($user['store_id']) && $user['store_id'] == $store_id) { ?>
-        <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store_name); ?></option>
-        <?php } else { ?>
-        <option value="<?php echo $store_id; ?>"><?php echo $this->escape($store_name); ?></option>
-        <?php } ?>
-        <?php } ?>
-      </select>
-    </div>
-    <?php } ?>
-    <?php } ?>
-    <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
-      <label><?php echo $this->text('E-mail'); ?></label>
-      <input type="email" class="form-control" maxlength="255" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus required>
-      <?php if (isset($this->errors['email'])) { ?>
-      <div class="help-block"><?php echo $this->errors['email']; ?></div>
-      <?php } ?>
-    </div>
-    <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
-      <label><?php echo $this->text('Password'); ?></label>
-      <input class="form-control" type="password" pattern=".{<?php echo $min_password_length; ?>,<?php echo $max_password_length; ?>}" maxlength="<?php echo $max_password_length; ?>" name="user[password]" placeholder="<?php echo $this->text('Minimum @num characters', array('@num' => $min_password_length)); ?>" required>
-      <?php if (isset($this->errors['password'])) { ?> 
-      <div class="help-block"><?php echo $this->errors['password']; ?></div>
-      <?php } ?>
-    </div>
     <div class="form-group<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
       <label><?php echo $this->text('Name'); ?></label>
       <input class="form-control" maxlength="255" name="user[name]" value="<?php echo isset($user['name']) ? $user['name'] : ''; ?>">
@@ -68,27 +9,35 @@
       <div class="help-block"><?php echo $this->errors['name']; ?></div>
       <?php } ?>
     </div>
-    <div class="form-group">
-      <?php if ($this->access('user_add')) { ?>
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo empty($user['status']) ? '' : ' active'; ?>">
-          <input name="user[notify]" type="checkbox" autocomplete="off" value="1"<?php echo empty($user['status']) ? '' : ' checked'; ?>>
-          <?php echo $this->text('Notify'); ?>
-        </label>
+    <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
+      <label><?php echo $this->text('E-mail'); ?></label>
+      <input type="email" class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus>
+      <?php if (isset($this->errors['email'])) { ?>
+      <div class="help-block"><?php echo $this->errors['email']; ?></div>
+      <?php } ?>
+    </div>
+    <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
+      <label><?php echo $this->text('Password'); ?></label>
+      <input class="form-control" type="password" name="user[password]">
+      <div class="help-block">
+      <?php if(!empty($password_limit['min'])) { ?>
+      <?php echo $this->text('Minimum length: %min characters', array('%min' => $password_limit['min'])); ?>
+      <?php } ?>
+      <?php if(!empty($password_limit['max'])) { ?>
+      <?php echo $this->text('Maximum length: %max characters', array('%max' => $password_limit['max'])); ?>
+      <?php } ?>
+      <?php if (isset($this->errors['password'])) { ?> 
+        <p><?php echo $this->errors['password']; ?></p>
+      <?php } ?>
       </div>
-      <button class="btn btn-primary" name="register" value="1">
-      <?php echo $this->text('Register'); ?>
-      </button>
-      <?php } else { ?>
+    </div>
+    <div class="form-group">
       <button class="btn btn-primary btn-block" name="register" value="1">
       <?php echo $this->text('Register'); ?>
       </button>       
-      <?php } ?>
     </div>
-    <?php if (!$this->access('user_add')) { ?>
     <div class="form-group">
       <a href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Login'); ?></a>
     </div>
-    <?php } ?>
   </form>
 </div>
