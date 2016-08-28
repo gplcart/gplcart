@@ -696,10 +696,10 @@ class Checkout extends FrontendController
      */
     protected function login(array $cart)
     {
-        $email = (string) $this->request->post('email');
-        $password = (string) $this->request->post('password', '', false);
+        
+        $data = $this->getSubmitted();
 
-        $result = $this->user->login($email, $password);
+        $result = $this->user->login($data);
 
         if (isset($result['user'])) {
             $this->cart->login($result['user'], $cart);

@@ -29,7 +29,7 @@ class User extends FrontendController
     /**
      * Displays the login page
      */
-    public function loginUser()
+    public function editLoginUser()
     {
         $this->controlAccessLoginUser();
 
@@ -38,9 +38,9 @@ class User extends FrontendController
         $honeypot = $this->getHoneypot();
         $this->setData('honeypot', $honeypot);
 
-        $this->setTitleLoginUser();
-        $this->setBreadcrumbLoginUser();
-        $this->outputLoginUser();
+        $this->setTitleEditLoginUser();
+        $this->setBreadcrumbEditLoginUser();
+        $this->outputEditLoginUser();
     }
 
     /**
@@ -66,10 +66,25 @@ class User extends FrontendController
         $this->setSubmitted('user', null, 'raw');
         $this->validateLoginUser();
 
-        if (!$this->hasErrors('user', false)) {
-            $result = $this->getSubmitted('redirect');
+        if (!$this->hasErrors('user')) {
+            $this->loginUser();
+        }
+    }
+
+    /**
+     * Logs in a user
+     */
+    protected function loginUser()
+    {
+        $data = $this->getSubmitted();
+        $result = $this->user->login($data);
+
+        if (!empty($result)) {
             $this->redirect($result['redirect'], $result['message'], $result['severity']);
         }
+
+        $message = $this->text('Invalid E-mail and/or password');
+        $this->setMessage($message, 'danger');
     }
 
     /**
@@ -77,24 +92,21 @@ class User extends FrontendController
      */
     protected function validateLoginUser()
     {
-        $email = $this->getSubmitted('email');
-        $password = $this->getSubmitted('password');
-        $result = $this->user->login($email, $password);
+        $this->addValidator('email', array(
+            'required' => array()
+        ));
 
-        if (empty($result)) {
-            $message = $this->text('Invalid E-mail and/or password');
-            $this->setMessage($message, 'danger');
-            $this->setError('login', $message);
-            return;
-        }
+        $this->addValidator('password', array(
+            'required' => array()
+        ));
 
-        $this->setSubmitted('redirect', $result);
+        $this->setValidators();
     }
 
     /**
      * Sets titles on the login page
      */
-    protected function setTitleLoginUser()
+    protected function setTitleEditLoginUser()
     {
         $this->setTitle($this->text('Login'));
     }
@@ -102,7 +114,7 @@ class User extends FrontendController
     /**
      * Sets breadcrumbs on the login page
      */
-    protected function setBreadcrumbLoginUser()
+    protected function setBreadcrumbEditLoginUser()
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Home'),
@@ -122,7 +134,7 @@ class User extends FrontendController
     /**
      * Renders the login page
      */
-    protected function outputLoginUser()
+    protected function outputEditLoginUser()
     {
         $this->output('login');
     }
@@ -130,7 +142,7 @@ class User extends FrontendController
     /**
      * Displays the user registration page
      */
-    public function registerUser()
+    public function editRegisterUser()
     {
         $this->controlAccessRegisterUser();
 
@@ -142,9 +154,9 @@ class User extends FrontendController
         $this->setData('honeypot', $honeypot);
         $this->setData('password_limit', $limit);
 
-        $this->setTitleRegisterUser();
-        $this->setBreadcrumbRegisterUser();
-        $this->outputRegisterUser();
+        $this->setTitleEditRegisterUser();
+        $this->setBreadcrumbEditRegisterUser();
+        $this->outputEditRegisterUser();
     }
 
     /**
@@ -172,10 +184,18 @@ class User extends FrontendController
         $this->validateRegisterUser();
 
         if (!$this->hasErrors('user')) {
-            $submitted = $this->getSubmitted();
-            $result = $this->user->register($submitted);
-            $this->redirect($result['redirect'], $result['message'], $result['severity']);
+            $this->registerUser();
         }
+    }
+
+    /**
+     * Registers a user
+     */
+    protected function registerUser()
+    {
+        $submitted = $this->getSubmitted();
+        $result = $this->user->register($submitted);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -207,7 +227,7 @@ class User extends FrontendController
     /**
      * Sets titles on the registration page
      */
-    protected function setTitleRegisterUser()
+    protected function setTitleEditRegisterUser()
     {
         $this->setTitle($this->text('Register'));
     }
@@ -215,7 +235,7 @@ class User extends FrontendController
     /**
      * Sets breadcrumbs on the user registration page
      */
-    protected function setBreadcrumbRegisterUser()
+    protected function setBreadcrumbEditRegisterUser()
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Home'),
@@ -235,7 +255,7 @@ class User extends FrontendController
     /**
      * Renders the registration page
      */
-    protected function outputRegisterUser()
+    protected function outputEditRegisterUser()
     {
         $this->output('register');
     }
@@ -243,7 +263,7 @@ class User extends FrontendController
     /**
      * Displays the password reset page
      */
-    public function resetPasswordUser()
+    public function EditResetPasswordUser()
     {
         $this->controlAccessResetPasswordUser();
 
@@ -257,9 +277,9 @@ class User extends FrontendController
 
         $this->submitResetPasswordUser($user);
 
-        $this->setTitleResetPasswordUser();
-        $this->setBreadcrumbResetPasswordUser();
-        $this->outputResetPasswordUser();
+        $this->setTitleEditResetPasswordUser();
+        $this->setBreadcrumbEditResetPasswordUser();
+        $this->outputEditResetPasswordUser();
     }
 
     /**
@@ -329,10 +349,18 @@ class User extends FrontendController
         $this->validateResetPasswordUser($user);
 
         if (!$this->hasErrors('user')) {
-            $submitted = $this->getSubmitted();
-            $result = $this->user->resetPassword($submitted);
-            $this->redirect($result['redirect'], $result['message'], $result['severity']);
+            $this->resetPasswordUser();
         }
+    }
+
+    /**
+     * Restores user password
+     */
+    protected function resetPasswordUser()
+    {
+        $submitted = $this->getSubmitted();
+        $result = $this->user->resetPassword($submitted);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -375,7 +403,7 @@ class User extends FrontendController
     /**
      * Sets titles on the password reset page
      */
-    protected function setTitleResetPasswordUser()
+    protected function setTitleEditResetPasswordUser()
     {
         $this->setTitle($this->text('Reset password'));
     }
@@ -383,7 +411,7 @@ class User extends FrontendController
     /**
      * Sets breadcrumbs on the password reset page
      */
-    protected function setBreadcrumbResetPasswordUser()
+    protected function setBreadcrumbEditResetPasswordUser()
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Home'),
@@ -403,7 +431,7 @@ class User extends FrontendController
     /**
      * Renders the password reset page templates
      */
-    protected function outputResetPasswordUser()
+    protected function outputEditResetPasswordUser()
     {
         $this->output('forgot');
     }

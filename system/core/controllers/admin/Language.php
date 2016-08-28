@@ -78,7 +78,8 @@ class Language extends BackendController
 
         if (!empty($code)) {
             $this->language->refresh($code);
-            $this->redirect();
+            $message = $this->text('All cached translation files for language %code have been deleted', array('%code' => $code));
+            $this->redirect('', $message, 'success');
         }
     }
 

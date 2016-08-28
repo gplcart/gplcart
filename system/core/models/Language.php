@@ -276,14 +276,14 @@ class Language extends Model
 
     /**
      * Returns an array of translations from CSV files
-     * @param null|string $filename
+     * @param string $filename
      * @return array
      */
-    public function load($filename = null)
+    public function load($filename = '')
     {
         $cache_key = "translations.{$this->langcode}";
 
-        if (isset($filename)) {
+        if (!empty($filename)) {
             $cache_key .= ".$filename";
         }
 
@@ -321,11 +321,12 @@ class Language extends Model
 
     /**
      * Translates a string
-     * @param null|string $string
+     * @param string $string
      * @param array $arguments
+     * @param string $class
      * @return string
      */
-    public function text($string, array $arguments = array(), $class = null)
+    public function text($string, array $arguments = array(), $class = '')
     {
         if (empty($this->langcode)) {
             return $string;
@@ -350,7 +351,7 @@ class Language extends Model
         }
 
         $this->addString($string, array($string), $filename);
-        return $string;
+        return Tool::formatString($string, $arguments);
     }
 
     /**

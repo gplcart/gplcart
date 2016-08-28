@@ -330,26 +330,24 @@ class User extends Model
 
     /**
      * Logs in a user
-     * @param string $email
-     * @param string $password
-     * @return mixed
+     * @param array $data
      * @throws \core\exceptions\SystemLogicalUserAccess
      */
-    public function login($email, $password)
+    public function login(array $data)
     {
-        $this->hook->fire('login.before', $email, $password);
+        $this->hook->fire('login.before', $data);
 
-        if (empty($email)) {
+        if (empty($data['email']) || empty($data['password'])) {
             return false;
         }
 
-        $user = $this->getByEmail($email);
+        $user = $this->getByEmail($data['email']);
 
         if (empty($user['status'])) {
             return false;
         }
 
-        if (!Tool::hashEquals($user['hash'], Tool::hash($password, $user['hash'], false))) {
+        if (!Tool::hashEquals($user['hash'], Tool::hash($data['password'], $user['hash'], false))) {
             return false;
         }
 
@@ -369,7 +367,7 @@ class User extends Model
             'redirect' => $this->getLoginRedirect($user),
         );
 
-        $this->hook->fire('login.after', $email, $password, $result);
+        $this->hook->fire('login.after', $data, $result);
         return $result;
     }
 
@@ -397,7 +395,7 @@ class User extends Model
             'message' => $this->language->text('Your account has been created'));
 
         if ($login && $status) {
-            $result = $this->login($data['email'], $data['password']);
+            $result = $this->login($data);
         }
 
         $this->hook->fire('register.user.after', $data, $result);
