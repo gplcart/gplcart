@@ -85,7 +85,6 @@ class Rating extends Model
     public function set($product_id, $user_id, $rating)
     {
         $this->hook->fire('set.rating.before', $product_id, $user_id, $rating);
-
         $this->db->delete('rating_user', array('product_id' => $product_id, 'user_id' => $user_id));
 
         $this->addUser($product_id, $user_id, $rating);
@@ -106,9 +105,9 @@ class Rating extends Model
         }
 
         $values = array(
-            'product_id' => (int) $product_id,
             'user_id' => $user_id,
-            'rating' => (float) $rating
+            'rating' => (float) $rating,
+            'product_id' => (int) $product_id
         );
 
         return $this->db->insert('rating_user', $values);

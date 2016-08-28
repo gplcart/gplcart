@@ -319,6 +319,7 @@ class Model
                 'log_id' => 'varchar(50) PRIMARY KEY',
                 'type' => 'varchar(255) NOT NULL',
                 'severity' => 'varchar(255) NOT NULL',
+                'translatable' => 'int(1) NOT NULL DEFAULT 0',
                 'data' => 'blob NOT NULL'
             ),
             'serialize' => array('data')
@@ -370,7 +371,6 @@ class Model
                 'page_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
                 'user_id' => 'int(10) NOT NULL',
                 'status' => 'int(1) NOT NULL DEFAULT 1',
-                'front' => 'int(1) NOT NULL DEFAULT 0',
                 'store_id' => 'int(10) NOT NULL',
                 'category_id' => 'int(10) NOT NULL DEFAULT 0',
                 'created' => 'int(10) NOT NULL',
@@ -418,7 +418,6 @@ class Model
             'fields' => array(
                 'product_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
                 'status' => 'int(1) NOT NULL',
-                'front' => 'int(1) NOT NULL DEFAULT 0',
                 'subtract' => 'int(1) NOT NULL',
                 'product_class_id' => 'int(10) NOT NULL',
                 'price' => 'int(10) NOT NULL DEFAULT 0',

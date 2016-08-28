@@ -52,7 +52,7 @@ class Exception extends Base
     public function log($message = '')
     {
         $error = $this->getMessageArray($message);
-        $this->logger->log('php_exception', $error, 'danger');
+        $this->logger->log('php_exception', $error, 'danger', false);
     }
 
     /**

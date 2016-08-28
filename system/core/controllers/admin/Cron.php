@@ -45,7 +45,7 @@ class Cron extends BackendController
         register_shutdown_function(array($this, 'shutdownHandlerCron'));
         ini_set('max_execution_time', 0);
 
-        $this->logger->log('cron', 'Cron has started');
+        $this->logger->log('cron', 'Cron has started', 'info', true);
 
         $this->processTasksCron();
 
@@ -108,18 +108,23 @@ class Cron extends BackendController
         }
 
         if ($deleted > 0) {
-            $this->logger->log('cron', array(
+
+            $log = array(
                 'message' => 'Deleted @num expired files',
-                'variables' => array('@num' => $deleted)));
+                'variables' => array('@num' => $deleted));
+
+            $this->logger->log('cron', $log);
         }
 
         // Delete expired log records
         $this->report->clearExpired($this->config('report_log_lifespan', 86400));
-        $status = $this->report->checkFilesystem();
+        $result = $this->report->checkFilesystem();
 
-        if ($status !== true) {
-            $this->logger->log('system_status', array(
-                'message' => implode('<br>', (array) $status)), 'warning');
+        if ($result !== true) {
+            foreach ((array) $result as $message) {
+                $log = array('message' => $message);
+                $this->logger->log('system_status', $log, 'warning');
+            }
         }
     }
 

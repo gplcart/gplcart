@@ -271,7 +271,11 @@ class Report extends BackendController
 
             $record['time'] = $this->date($record['time']);
             $record['type'] = $this->text($record['type']);
-            $record['text'] = $this->text($record['text'], $variables);
+            
+            if(!empty($record['translatable'])){
+                $record['text'] = $this->text($record['text'], $variables);
+            }
+            
             $record['summary'] = $this->truncate($record['text']);
             $record['severity_text'] = $this->text($record['severity']);
         }

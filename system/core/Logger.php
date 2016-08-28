@@ -59,15 +59,16 @@ class Logger
 
         return Tool::writeCsv($file, $fields, ',', '"', $limit);
     }
-
+    
     /**
      * Writes a log message to the database
      * @param string $type
-     * @param mixed $data
+     * @param array|string $data
      * @param string $severity
-     * @return bool
+     * @param boolean $translatable
+     * @return boolean
      */
-    public function log($type, $data, $severity = 'info')
+    public function log($type, $data, $severity = 'info', $translatable = true)
     {
         if (empty($this->db)) {
             return false;
@@ -83,16 +84,18 @@ class Logger
         if (empty($message)) {
             return false;
         }
-
-        $result = $this->db->insert('log', array(
-            'log_id' => uniqid(),
-            'text' => $message,
-            'type' => mb_substr($type, 0, 255, 'UTF-8'),
-            'data' => serialize((array) $data),
-            'severity' => mb_substr($severity, 0, 255, 'UTF-8'),
+        
+        $values = array(
             'time' => GC_TIME,
-        ));
+            'text' => $message,
+            'log_id' => uniqid(),
+            'data' => serialize((array) $data),
+            'translatable' => (int) $translatable,
+            'type' => mb_substr($type, 0, 255, 'UTF-8'),
+            'severity' => mb_substr($severity, 0, 255, 'UTF-8')
+        );
 
+        $result = $this->db->insert('log', $values);
         return (bool) $result;
     }
 
@@ -110,7 +113,7 @@ class Logger
         $error['line'] = $errline;
         $error['message'] = $errstr;
 
-        $this->log('php_error', $error, 'warning');
+        $this->log('php_error', $error, 'warning', false);
         static::$errors['warning'][] = $this->errorMessage($error);
     }
 
@@ -138,7 +141,7 @@ class Logger
             $error['file'] = $lasterror['file'];
             $error['line'] = $lasterror['line'];
 
-            $this->log('php_shutdown', $error, 'danger');
+            $this->log('php_shutdown', $error, 'danger', false);
         }
     }
 

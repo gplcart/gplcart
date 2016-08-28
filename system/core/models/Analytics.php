@@ -93,7 +93,7 @@ class Analytics extends Model
 
             return $this;
         } catch (\Google_Auth_Exception $e) {
-            $this->logger->log('ga', $e->getMessage(), 'danger');
+            $this->logger->log('ga', $e->getMessage(), 'danger', false);
         }
     }
 
@@ -218,7 +218,7 @@ class Analytics extends Model
                 $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
                 $rows = $results->getRows();
             } catch (\Google_IO_Exception $e) {
-                $this->logger->log('ga', $e->getMessage(), 'danger'); // Failed to connect, etc...
+                $this->logger->log('ga', $e->getMessage(), 'danger', false); // Failed to connect, etc...
                 return array();
             }
 
