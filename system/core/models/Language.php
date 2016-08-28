@@ -11,9 +11,9 @@ namespace core\models;
 
 use core\Model;
 use core\Route;
-use core\classes\Po;
 use core\classes\Tool;
 use core\classes\Cache;
+use core\classes\Document;
 use core\models\Translit;
 
 /**
@@ -23,34 +23,16 @@ class Language extends Model
 {
 
     /**
+     * Document class instance
+     * @var \core\classes\Document $document;
+     */
+    protected $document;
+
+    /**
      * Translit library instance
      * @var \libraries\translit\Translit $translit;
      */
     protected $translit;
-
-    /**
-     * PO class instance
-     * @var \core\classes\Po $po
-     */
-    protected $po;
-
-    /**
-     * Array of trings to be translated
-     * @var array
-     */
-    protected $translatable = array();
-
-    /**
-     * Array of translated strings
-     * @var array
-     */
-    protected $translation = array();
-
-    /**
-     * Array of untranslated strings
-     * @var array
-     */
-    protected $untranslated = array();
 
     /**
      * Current language code
@@ -59,11 +41,17 @@ class Language extends Model
     protected $langcode = '';
 
     /**
-     * Path to directory that keeps complied php translations
+     * Directory that holds main translation file for the current language
+     * @var string
+     */
+    protected $language_directory = '';
+
+    /**
+     * Path to directory that keeps complied .csv translations
      * for the current language
      * @var string
      */
-    protected $compiled_directory_php = '';
+    protected $compiled_directory_csv = '';
 
     /**
      * Path to directory that keeps complied js translations
@@ -73,54 +61,34 @@ class Language extends Model
     protected $compiled_directory_js = '';
 
     /**
-     * Path to a php file that contains the current compiled translation
-     * @var string
-     */
-    protected $compiled_file_php = '';
-
-    /**
-     * Path to a js file that contains the current compiled translation in JSON
-     * @var string
-     */
-    protected $compiled_file_js = '';
-
-    /**
-     * Compiled translation filename made from the current route pattern
-     * @var string
-     */
-    protected $compiled_filename = '';
-
-    /**
      * Constructor
+     * @param Document $document
      * @param Translit $translit
-     * @param Po $po
      * @param Route $route
      */
-    public function __construct(Translit $translit, Po $po, Route $route)
+    public function __construct(Document $document, Translit $translit,
+            Route $route)
     {
         parent::__construct();
 
-        $this->po = $po;
         $this->route = $route;
         $this->translit = $translit;
+        $this->document = $document;
         $this->langcode = $this->route->getLangcode();
 
         if (!empty($this->langcode)) {
-            $this->compiled_directory_php = GC_LOCALE_DIR . "/{$this->langcode}/compiled";
+
+            $this->language_directory = GC_LOCALE_DIR . "/{$this->langcode}";
+            $this->compiled_directory_csv = "{$this->language_directory}/compiled";
             $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
 
-            if (!file_exists($this->compiled_directory_php)) {
-                mkdir($this->compiled_directory_php, 0755, true);
+            if (!file_exists($this->compiled_directory_csv)) {
+                mkdir($this->compiled_directory_csv, 0755, true);
             }
 
             if (!file_exists($this->compiled_directory_js)) {
                 mkdir($this->compiled_directory_js, 0755, true);
             }
-
-            $current_route = $this->route->getCurrent();
-            $this->compiled_filename = md5($current_route['pattern']);
-            $this->compiled_file_php = "{$this->compiled_directory_php}/{$this->compiled_filename}.php";
-            $this->compiled_file_js = "{$this->compiled_directory_js}/{$this->compiled_filename}.js";
         }
     }
 
@@ -310,47 +278,46 @@ class Language extends Model
     }
 
     /**
-     * Loads a translation for the current language
+     * Returns an array of translations from CSV files
+     * @param null|string $filename
      * @return array
      */
-    public function load()
+    public function load($filename = null)
     {
-        if (empty($this->langcode)) {
+        $cache_key = "translations.{$this->langcode}";
+
+        if (isset($filename)) {
+            $cache_key .= ".$filename";
+        }
+
+        $translations = &Cache::memory($cache_key);
+
+        if (isset($translations)) {
+            return (array) $translations;
+        }
+
+        $file = "{$this->language_directory}/common.csv";
+
+        if (isset($filename)) {
+            $file = "{$this->compiled_directory_csv}/$filename.csv";
+        }
+
+        if (!file_exists($file)) {
             return array();
         }
 
-        if (file_exists($this->compiled_file_php)) {
-            $this->translation = include $this->compiled_file_php;
-            return $this->translation;
+        $rows = array_map('str_getcsv', file($file));
+
+        if (empty($rows)) {
+            return array();
         }
 
-        $this->translation = $this->loadPo($this->langcode);
-        return $this->translation;
-    }
-
-    /**
-     * Converts .po file into PHP array
-     * @param string $langcode
-     * @return array
-     */
-    public function loadPo($langcode)
-    {
-        $compiled_file = GC_LOCALE_DIR . "/$langcode/compiled/po.php";
-
-        if (file_exists($compiled_file)) {
-            return include $compiled_file;
+        foreach ($rows as $row) {
+            $key = array_shift($row);
+            $translations[$key] = $row;
         }
 
-        $file = GC_LOCALE_DIR . "/$langcode/LC_MESSAGES/$langcode.po";
-
-        if (file_exists($file)) {
-            $po = $this->po->read($file);
-            file_put_contents($compiled_file, '<?php return ' . var_export($po, true) . ';');
-            chmod($compiled_file, 0644);
-            return $po;
-        }
-
-        return array();
+        return $translations;
     }
 
     /**
@@ -359,76 +326,80 @@ class Language extends Model
      * @param array $arguments
      * @return string
      */
-    public function text($string = null, array $arguments = array())
-    { 
-        if (!isset($string)) {
-            $this->compile();
-            return;
+    public function text($string, array $arguments = array())
+    {
+        if (empty($this->langcode)) {
+            return $string;
         }
 
-        $this->translatable[] = $string;
+        $filename = strtolower(str_replace('\\', '-', __CLASS__));
 
-        if (isset($this->translation[$string])) {
-            if (isset($this->translation[$string]['msgstr'][0])) {
-                $string = $this->translation[$string]['msgstr'][0];
-            }
-        } else {
-            $this->untranslated[] = $string;
+        $class_translations = $this->load($filename);
+
+        if (!empty($class_translations[$string][0])) {
+            $this->addJs($filename);
+            return Tool::formatString($class_translations[$string][0], $arguments);
         }
 
-        return Tool::formatString($string, $arguments);
+        $all_translations = $this->load();
+
+        if (!empty($all_translations[$string][0])) {
+            $this->addString($string, $all_translations[$string], $filename);
+            return Tool::formatString($all_translations[$string][0], $arguments);
+        }
+
+        $this->addString($string, array($string), $filename);
+        return $string;
     }
 
     /**
-     * Converts .po file into .php file
-     * @return boolean
+     * Adds a contextual JS file containing translations
+     * @param string $filename
      */
-    public function compile()
+    protected function addJs($filename)
     {
-        if (empty($this->langcode) || empty($this->untranslated) || empty($this->translatable)) {
-            return false;
+        static $added = array();
+
+        if (empty($added[$filename])) {
+            $jsfile = str_replace(GC_ROOT_DIR, '', "{$this->compiled_directory_js}/$filename.js");
+            $this->document->js($jsfile, 'top', -70);
+            $added[$filename] = true;
         }
-
-        if (file_exists($this->compiled_file_php)) {
-            // Cannot use automatic recompilation. Redirect issue
-            return false;
-        }
-
-        $po = $this->loadPo($this->langcode);
-        $strings = array_intersect_key($po, array_flip($this->translatable));
-
-        $untranslated = array_flip($this->untranslated);
-        $save = Tool::merge($untranslated, $strings);
-
-        file_put_contents($this->compiled_file_php, '<?php return ' . var_export($save, true) . ';');
-        file_put_contents($this->compiled_file_js, 'GplCart.translations = ' . json_encode($save) . ';');
-
-        chmod($this->compiled_file_php, 0644);
-        chmod($this->compiled_file_js, 0644);
-        return true;
     }
 
     /**
-     * Returns a path to the current compiled php translation file
-     * @return string
+     * Writes one line to CSV and JS translation files
+     * @param string $string
+     * @param array $data
+     * @param null|string $filename
      */
-    public function getCompiledPhp()
+    protected function addString($string, $data = array(), $filename = null)
     {
-        return $this->compiled_file_php;
+        $file = "{$this->language_directory}/common.csv";
+
+        if (isset($filename)) {
+            $file = "{$this->compiled_directory_csv}/$filename.csv";
+            $this->addStringJs($string, $data, $filename);
+        }
+
+        array_unshift($data, $string);
+
+        $fp = fopen($file, 'a');
+        fputcsv($fp, $data);
+        fclose($fp);
     }
 
     /**
-     * Returns a path (either full or relative to root) to the current compiled js translation file
-     * @param boolean $full
-     * @return string
+     * Writes one line of JS code to JS translation file
+     * @param string $string
+     * @param array $data
+     * @param string $filename
      */
-    public function getCompiledJs($full = false)
+    protected function addStringJs($string, array $data, $filename)
     {
-        if ($full) {
-            return $this->compiled_file_js;
-        }
-
-        return trim(str_replace(GC_ROOT_DIR, '', $this->compiled_file_js), '/');
+        $jsfile = "{$this->compiled_directory_js}/$filename.js";
+        $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';';
+        file_put_contents($jsfile, $json, FILE_APPEND);
     }
 
     /**
@@ -437,8 +408,8 @@ class Language extends Model
      */
     public function refresh($langcode)
     {
-        Tool::deleteFiles($this->compiled_directory_php, array('php'));
-        Tool::deleteFiles($this->compiled_directory_js, array('js'));
+        Tool::deleteFiles(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
+        Tool::deleteFiles(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
     }
 
     /**

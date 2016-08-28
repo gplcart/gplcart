@@ -373,16 +373,6 @@ class Controller
     }
 
     /**
-     * Catches end of PHP processing
-     */
-    public function __destruct()
-    {
-        $this->text();
-
-        $this->hook->fire('end', $this);
-    }
-
-    /**
      * Whether the user has a given access
      * @param string $permission
      * @return boolean
@@ -1271,9 +1261,6 @@ class Controller
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, -80);
 
-        // Js translation
-        $this->document->js($this->language->getCompiledJs(), 'top', -70);
-
         $is_backend = $this->url->isBackend();
 
         // Call cron
@@ -1492,7 +1479,7 @@ class Controller
             return false;
         }
 
-        if($message){
+        if ($message) {
             $this->setMessage($this->text('One or more errors occurred'), 'danger');
         }
 
@@ -1658,7 +1645,5 @@ class Controller
     {
         return isset($this->data['pager']) ? $this->data['pager'] : '';
     }
-
-
 
 }
