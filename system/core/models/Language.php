@@ -276,14 +276,14 @@ class Language extends Model
 
     /**
      * Returns an array of translations from CSV files
-     * @param string|null $filename
+     * @param string $filename
      * @return array
      */
-    public function load($filename = null)
+    public function load($filename = '')
     {
         $cache_key = "translations.{$this->langcode}";
 
-        if (isset($filename)) { // !empty() doesn't work on redirects
+        if (!empty($filename)) {
             $cache_key .= ".$filename";
         }
 
@@ -295,7 +295,7 @@ class Language extends Model
 
         $file = "{$this->language_directory}/common.csv";
 
-        if (isset($filename)) {
+        if (!empty($filename)) {
             $file = "{$this->compiled_directory_csv}/$filename.csv";
         }
 
@@ -339,32 +339,50 @@ class Language extends Model
         $filename = strtolower(str_replace('\\', '-', $class));
         $class_translations = $this->load($filename);
 
-        if (!empty($class_translations[$string][0])) {
-            return Tool::formatString($class_translations[$string][0], $arguments);
+        if (isset($class_translations[$string])) {
+            return $this->formatString($string, $arguments, $class_translations[$string]);
         }
 
         $all_translations = $this->load();
 
-        if (!empty($all_translations[$string][0])) {
+        if (isset($all_translations[$string])) {
             $this->addString($string, $all_translations[$string], $filename);
-            return Tool::formatString($all_translations[$string][0], $arguments);
+            return $this->formatString($string, $arguments, $all_translations[$string]);
         }
 
-        $this->addString($string, array($string), $filename);
-        return Tool::formatString($string, $arguments);
+        $this->addString($string);
+        return $this->formatString($string, $arguments);
+    }
+
+    /**
+     * Returns translated and formated staring
+     * @param string $source
+     * @param array $arguments
+     * @param array $data
+     * @return string
+     */
+    protected function formatString($source, array $arguments,
+            array $data = array())
+    {
+
+        if (!isset($data[0]) || $data[0] === '') {
+            return Tool::formatString($source, $arguments);
+        }
+
+        return Tool::formatString($data[0], $arguments);
     }
 
     /**
      * Writes one line to CSV and JS translation files
      * @param string $string
      * @param array $data
-     * @param null|string $filename
+     * @param string $filename
      */
-    protected function addString($string, $data = array(), $filename = null)
+    protected function addString($string, $data = array(), $filename = '')
     {
         $file = "{$this->language_directory}/common.csv";
 
-        if (isset($filename)) {
+        if (!empty($filename)) {
             $file = "{$this->compiled_directory_csv}/$filename.csv";
             $this->addStringJs($string, $data, $filename);
         }
