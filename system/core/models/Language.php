@@ -60,6 +60,12 @@ class Language extends Model
     protected $compiled_directory_js = '';
 
     /**
+     * Array of processed translations
+     * @var array
+     */
+    protected static $processed = array();
+
+    /**
      * Constructor
      * @param Document $document
      * @param Translit $translit
@@ -340,6 +346,7 @@ class Language extends Model
         $class_translations = $this->load($filename);
 
         if (isset($class_translations[$string])) {
+            static::$processed[$string] = true;
             return $this->formatString($string, $arguments, $class_translations[$string]);
         }
 
@@ -347,10 +354,12 @@ class Language extends Model
 
         if (isset($all_translations[$string])) {
             $this->addString($string, $all_translations[$string], $filename);
+            static::$processed[$string] = true;
             return $this->formatString($string, $arguments, $all_translations[$string]);
         }
 
         $this->addString($string);
+        static::$processed[$string] = true;
         return $this->formatString($string, $arguments);
     }
 
@@ -377,21 +386,28 @@ class Language extends Model
      * @param string $string
      * @param array $data
      * @param string $filename
+     * @return bool
      */
     protected function addString($string, $data = array(), $filename = '')
     {
+        if (isset(static::$processed[$string])) {
+            return false;
+        }
+
         $file = "{$this->language_directory}/common.csv";
 
         if (!empty($filename)) {
             $file = "{$this->compiled_directory_csv}/$filename.csv";
-            $this->addStringJs($string, $data, $filename);
+            return $this->addStringJs($string, $data, $filename);
         }
 
         array_unshift($data, $string);
 
         $fp = fopen($file, 'a');
-        fputcsv($fp, $data);
+        $result = fputcsv($fp, $data);
         fclose($fp);
+
+        return (bool) $result;
     }
 
     /**
@@ -399,12 +415,14 @@ class Language extends Model
      * @param string $string
      * @param array $data
      * @param string $filename
+     * @return bool
      */
     protected function addStringJs($string, array $data, $filename)
     {
         $jsfile = "{$this->compiled_directory_js}/$filename.js";
         $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';' . PHP_EOL;
-        file_put_contents($jsfile, $json, FILE_APPEND);
+
+        return (bool) file_put_contents($jsfile, $json, FILE_APPEND);
     }
 
     /**
