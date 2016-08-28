@@ -997,6 +997,7 @@ class Route
             $alias = $sth->fetchColumn();
 
             if (!empty($alias)) {
+                $this->route = $route + array('pattern' => $pattern);
                 $this->url->redirect($alias);
             }
         }

@@ -443,7 +443,8 @@ class Controller
      */
     public function text($string = null, array $arguments = array())
     {
-        return $this->language->text($string, $arguments);
+        $class = $this->current_route['handlers']['controller'][0];
+        return $this->language->text($string, $arguments, $class);
     }
 
     /**
@@ -1261,6 +1262,8 @@ class Controller
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, -80);
 
+        $this->setJsTranslation();
+
         $is_backend = $this->url->isBackend();
 
         // Call cron
@@ -1273,6 +1276,21 @@ class Controller
         if ($is_backend) {
             $session_limit = GC_SESSION_TIMEOUT * 1000;
             $this->document->js("GplCart.logout($session_limit);", 'bottom');
+        }
+    }
+
+    /**
+     * Adds context translation JS files
+     */
+    protected function setJsTranslation()
+    {
+        $classes[] = 'core\\models\\Language'; // text() called in modules
+        $classes[] = $this->current_route['handlers']['controller'][0];
+
+        foreach ($classes as $class) {
+            $filename = strtolower(str_replace('\\', '-', $class));
+            $file = GC_LOCALE_JS_DIR . "/{$this->langcode}/$filename.js";
+            $this->document->js(str_replace(GC_ROOT_DIR, '', $file), 'top', -70);
         }
     }
 

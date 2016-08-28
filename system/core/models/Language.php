@@ -13,7 +13,6 @@ use core\Model;
 use core\Route;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\classes\Document;
 use core\models\Translit;
 
 /**
@@ -23,10 +22,10 @@ class Language extends Model
 {
 
     /**
-     * Document class instance
-     * @var \core\classes\Document $document;
+     * Route class instance
+     * @var \core\Route $route;
      */
-    protected $document;
+    protected $route;
 
     /**
      * Translit library instance
@@ -66,14 +65,12 @@ class Language extends Model
      * @param Translit $translit
      * @param Route $route
      */
-    public function __construct(Document $document, Translit $translit,
-            Route $route)
+    public function __construct(Translit $translit, Route $route)
     {
         parent::__construct();
 
         $this->route = $route;
         $this->translit = $translit;
-        $this->document = $document;
         $this->langcode = $this->route->getLangcode();
 
         if (!empty($this->langcode)) {
@@ -312,6 +309,8 @@ class Language extends Model
             return array();
         }
 
+        // Reindex the array
+        // First column (source string) becomes a key
         foreach ($rows as $row) {
             $key = array_shift($row);
             $translations[$key] = $row;
@@ -326,18 +325,20 @@ class Language extends Model
      * @param array $arguments
      * @return string
      */
-    public function text($string, array $arguments = array())
+    public function text($string, array $arguments = array(), $class = null)
     {
         if (empty($this->langcode)) {
             return $string;
         }
 
-        $filename = strtolower(str_replace('\\', '-', __CLASS__));
+        if (empty($class)) {
+            $class = __CLASS__;
+        }
 
+        $filename = strtolower(str_replace('\\', '-', $class));
         $class_translations = $this->load($filename);
 
         if (!empty($class_translations[$string][0])) {
-            $this->addJs($filename);
             return Tool::formatString($class_translations[$string][0], $arguments);
         }
 
@@ -350,21 +351,6 @@ class Language extends Model
 
         $this->addString($string, array($string), $filename);
         return $string;
-    }
-
-    /**
-     * Adds a contextual JS file containing translations
-     * @param string $filename
-     */
-    protected function addJs($filename)
-    {
-        static $added = array();
-
-        if (empty($added[$filename])) {
-            $jsfile = str_replace(GC_ROOT_DIR, '', "{$this->compiled_directory_js}/$filename.js");
-            $this->document->js($jsfile, 'top', -70);
-            $added[$filename] = true;
-        }
     }
 
     /**
@@ -398,7 +384,7 @@ class Language extends Model
     protected function addStringJs($string, array $data, $filename)
     {
         $jsfile = "{$this->compiled_directory_js}/$filename.js";
-        $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';';
+        $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';' . PHP_EOL;
         file_put_contents($jsfile, $json, FILE_APPEND);
     }
 
