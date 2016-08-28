@@ -276,14 +276,14 @@ class Language extends Model
 
     /**
      * Returns an array of translations from CSV files
-     * @param string $filename
+     * @param string|null $filename
      * @return array
      */
-    public function load($filename = '')
+    public function load($filename = null)
     {
         $cache_key = "translations.{$this->langcode}";
 
-        if (!empty($filename)) {
+        if (isset($filename)) { // !empty() doesn't work on redirects
             $cache_key .= ".$filename";
         }
 
