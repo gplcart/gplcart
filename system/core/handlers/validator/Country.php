@@ -93,7 +93,7 @@ class Country
             }
         }
 
-        return empty($errors) ? true : array('errors' => $errors);
+        return empty($errors) ? true : $errors;
     }
 
 }

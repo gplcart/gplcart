@@ -236,19 +236,23 @@ class Ajax extends FrontendController
             return array();
         }
 
-        $states = $this->state->getList(array(
-            'country' => $country_code,
-            'status' => 1));
-
         $country = $this->country->get($country_code);
 
         if (empty($country['status'])) {
             return array();
         }
+        
+        $options = array(
+            'status' => 1,
+            'country' => $country_code
+        );
+
+        $states = $this->state->getList($options);
+        $format = $this->country->getFormat($country, true);
 
         $response = array(
             'states' => $states,
-            'format' => array_keys($this->country->getFormat($country, true))
+            'format' => array_keys($format)
         );
 
         return $response;

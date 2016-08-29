@@ -23,8 +23,8 @@
       <input type="hidden" name="token" value="<?php echo $token; ?>">
       <?php foreach ($format as $key => $value) { ?>
       <div class="record <?php echo $key; ?>"<?php echo empty($value['status']) ? ' style="display:none;"' : ''; ?>>
-        <div class="form-group <?php echo $key; ?><?php echo isset($this->errors[$key]) ? ' has-error' : ''; ?>">
-          <label class="col-md-2 control-label">
+        <div class="form-group <?php echo $key; ?><?php echo isset($this->errors['format'][$key]) ? ' has-error' : ''; ?>">
+          <label class="col-md-3 control-label">
             <?php if (!empty($value['required'])) { ?><span class="text-danger">* </span><?php } ?>
             <?php echo $this->escape($value['name']); ?>
           </label>
@@ -37,6 +37,7 @@
             </select>
             <?php } elseif ($key == 'state_id') { ?>
             <select class="form-control" name="address[state_id]">
+              <option value="0"><?php echo $this->text('Not provided'); ?></option>
               <?php foreach ($states as $state_id => $state) { ?>
               <option value="<?php echo $state_id; ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : ''; ?>><?php echo $this->escape($state['name']); ?></option>
               <?php } ?>
@@ -44,15 +45,15 @@
             <?php } else { ?>
             <input name="address[<?php echo $key; ?>]" maxlength="255" class="form-control" value="<?php echo isset($address[$key]) ? $this->escape($address[$key]) : ''; ?>">
             <?php } ?>
-            <?php if (isset($this->errors[$key])) { ?>
-            <div class="help-block"><?php echo $this->errors[$key]; ?></div>
+            <?php if (isset($this->errors['format'][$key])) { ?>
+            <div class="help-block"><?php echo $this->xss($this->errors['format'][$key]); ?></div>
             <?php } ?>  
           </div>
         </div>
       </div>
       <?php } ?>
       <div class="row">
-        <div class="col-md-4 col-md-offset-2">
+        <div class="col-md-4 col-md-offset-3">
           <a class="btn btn-default" href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>">
               <?php echo $this->text('Cancel'); ?>
           </a>

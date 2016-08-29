@@ -231,7 +231,7 @@ $(function () {
         var form = $(this).closest('form');
         var selectState = form.find('select[name$="[state_id]"]');
 
-        // Clear up old errors
+        // Clear old errors
         $('#edit-address .form-group.has-error .help-block').remove();
         $('#edit-address .form-group.has-error').removeClass('has-error');
 
@@ -242,14 +242,19 @@ $(function () {
             data: {action: 'getCountryData', token: GplCart.settings.token, country: $(this).val()},
             success: function (data) {
                 if (typeof data === 'object' && 'states' in data) {
+                    
+                    /**
+                    console.log(data.states);
 
                     if (jQuery.isEmptyObject(data.states)) {
                         form.find('div.record:not(.country)').hide();
                         submit.prop('disabled', true);
                         return false;
                     }
+                    */
 
-                    var options = '';
+                    var options = '<option value="0">' + GplCart.text('Not provided'); + '</option>';
+                    
                     $.each(data.states, function (code, state) {
                         options += '<option value="' + code + '">' + state.name + '</option>';
                     });

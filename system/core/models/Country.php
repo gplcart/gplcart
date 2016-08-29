@@ -55,13 +55,13 @@ class Country extends Model
             $format = $country_data['format'];
         }
 
-        if (!$only_enabled) {
-            return $format;
+        if ($only_enabled) {
+            return array_filter($format, function ($item) {
+                return !empty($item['status']);
+            });
         }
-
-        return array_filter($format, function ($item) {
-            return !empty($item['status']);
-        });
+        
+        return $format;
     }
 
     /**

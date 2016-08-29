@@ -9,12 +9,12 @@
 
 namespace core\controllers;
 
-use core\models\State as ModelsState;
-use core\models\Order as ModelsOrder;
+use core\controllers\Controller as FrontendController;
 use core\models\Address as ModelsAddress;
 use core\models\Country as ModelsCountry;
+use core\models\Order as ModelsOrder;
+use core\models\State as ModelsState;
 use core\models\UserRole as ModelsUserRole;
-use core\controllers\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
@@ -104,187 +104,6 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the account index page
-     * @param array $user
-     */
-    protected function setBreadcrumbIndexAccount(array $user)
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Shop')
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Displays the customer edit account page
-     * @param integer $user_id
-     */
-    public function editAccount($user_id)
-    {
-        $user = $this->getUserAccount($user_id);
-
-        $this->controlAccessEditAccount($user);
-
-        $roles = $this->role->getList();
-        $stores = $this->store->getNames();
-
-        $this->setData('user', $user);
-        $this->setData('roles', $roles);
-        $this->setData('stores', $stores);
-
-        $this->submitEditAccount($user);
-
-        $this->setBreadcrumbEditAccount($user);
-        $this->setTitleEditAccount();
-        $this->outputEditAccount();
-    }
-
-    /**
-     * Sets breadcrumbs on the account edit form
-     * @param array $user
-     */
-    protected function setBreadcrumbEditAccount(array $user)
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Shop')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Account'),
-            'url' => $this->url("account/{$user['user_id']}")
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Displays 403 error page if the current user has no access to edit the page
-     * @param array $user
-     */
-    protected function controlAccessEditAccount(array $user)
-    {
-        if ($this->isSuperadmin($user['user_id']) && !$this->isSuperadmin()) {
-            $this->outputError(403);
-        }
-    }
-
-    /**
-     * Displays the addresses overview page
-     * @param integer $user_id
-     */
-    public function listAddressAccount($user_id)
-    {
-        $user = $this->getUserAccount($user_id);
-        $addresses = $this->getListAddressAccount($user_id);
-
-        $this->actionAddressAccount($user);
-
-        $this->setData('user', $user);
-        $this->setData('addresses', $addresses);
-
-        $this->setBreadcrumbListAddressAccount($user);
-        $this->setTitleListAddressAccount();
-        $this->outputListAddressAccount();
-    }
-
-    /**
-     * Sets breadcrumbs on the address list page
-     * @param array $user
-     */
-    protected function setBreadcrumbListAddressAccount(array $user)
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Shop')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Account'),
-            'url' => $this->url("account/{$user['user_id']}")
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Applies an action to user addresses
-     * @param array $user
-     */
-    protected function actionAddressAccount(array $user)
-    {
-        $address_id = (int) $this->request->get('delete');
-
-        if (!empty($address_id)) {
-            $this->deleteAddressAccount($address_id);
-        }
-    }
-
-    /**
-     * Renders the edit account page templates
-     */
-    protected function outputEditAccount()
-    {
-        $this->output('account/edit');
-    }
-
-    /**
-     * Renders the addresses overview page
-     */
-    protected function outputListAddressAccount()
-    {
-        $this->output('account/address/list');
-    }
-
-    /**
-     * Renders the edit address page
-     */
-    protected function outputEditAddressAccount()
-    {
-        $this->output('account/address/edit');
-    }
-
-    /**
-     * Renders the account page templates
-     */
-    protected function outputIndexAccount()
-    {
-        $this->output('account/account');
-    }
-
-    /**
-     * Returns an address
-     * @param integer $address_id
-     * @return array
-     */
-    protected function getAddressAccount($address_id)
-    {
-        if (!is_numeric($address_id)) {
-            return array('country' => $this->country->getDefault());
-        }
-
-        $address = $this->address->get($address_id);
-
-        if (empty($address)) {
-            $this->outputError(404);
-        }
-
-        return $address;
-    }
-
-    /**
-     * Returns an array of addresses
-     * @param integer $user_id
-     * @return array
-     */
-    protected function getListAddressAccount($user_id)
-    {
-        return $this->address->getTranslatedList($user_id);
-    }
-
-    /**
      * Returns a user
      * @param integer $user_id
      * @return array
@@ -302,6 +121,20 @@ class Account extends FrontendController
         }
 
         return $user;
+    }
+
+    /**
+     * Returns a number of total orders for the customer
+     * @param integer $user_id
+     * @return array
+     */
+    protected function getTotalOrderAccount($user_id)
+    {
+        $options = array(
+            'count' => true,
+            'user_id' => $user_id);
+
+        return $this->order->getList($options);
     }
 
     /**
@@ -343,17 +176,17 @@ class Account extends FrontendController
     }
 
     /**
-     * Returns a number of total orders for the customer
-     * @param integer $user_id
-     * @return array
+     * Sets breadcrumbs on the account index page
+     * @param array $user
      */
-    protected function getTotalOrderAccount($user_id)
+    protected function setBreadcrumbIndexAccount(array $user)
     {
-        $options = array(
-            'count' => true,
-            'user_id' => $user_id);
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Shop')
+        );
 
-        return $this->order->getList($options);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -365,27 +198,64 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets titles on the edit account page
+     * Renders the account page templates
      */
-    protected function setTitleEditAccount()
+    protected function outputIndexAccount()
     {
-        $this->setTitle($this->text('Edit account'), false);
+        $this->output('account/account');
     }
 
     /**
-     * Sets titles on the addresses overview page
+     * Displays the customer edit account page
+     * @param integer $user_id
      */
-    protected function setTitleListAddressAccount()
+    public function editAccount($user_id)
     {
-        $this->setTitle($this->text('Addresses'), false);
+        $user = $this->getUserAccount($user_id);
+
+        $this->controlAccessEditAccount($user);
+
+        $roles = $this->role->getList();
+        $stores = $this->store->getNames();
+
+        $this->setData('user', $user);
+        $this->setData('roles', $roles);
+        $this->setData('stores', $stores);
+
+        $this->submitEditAccount($user);
+
+        $this->setBreadcrumbEditAccount($user);
+        $this->setTitleEditAccount();
+        $this->outputEditAccount();
     }
 
     /**
-     * Sets titles on the edit address page
+     * Displays 403 error page if the current user has no access to edit the page
+     * @param array $user
      */
-    protected function setTitleEditAddressAccount()
+    protected function controlAccessEditAccount(array $user)
     {
-        $this->setTitle($this->text('Add new address'), false);
+        if ($this->isSuperadmin($user['user_id']) && !$this->isSuperadmin()) {
+            $this->outputError(403);
+        }
+    }
+
+    /**
+     * Saves user account settings
+     * @param array $user
+     */
+    protected function submitEditAccount(array $user)
+    {
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
+        $this->setSubmitted('user', null, 'raw');
+        $this->validateAccount($user);
+
+        if (!$this->hasErrors('user')) {
+            $this->updateAccount($user);
+        }
     }
 
     /**
@@ -424,24 +294,6 @@ class Account extends FrontendController
     }
 
     /**
-     * Saves user account settings
-     * @param array $user
-     */
-    protected function submitEditAccount(array $user)
-    {
-        if (!$this->isPosted('save')) {
-            return;
-        }
-
-        $this->setSubmitted('user', null, 'raw');
-        $this->validateAccount($user);
-
-        if (!$this->hasErrors('user')) {
-            $this->updateAccount($user);
-        }
-    }
-
-    /**
      * Updates a user with submitted values
      * @param array $user
      */
@@ -452,6 +304,83 @@ class Account extends FrontendController
 
         $message = $this->text('Account has been updated');
         $this->redirect('', $message, 'success');
+    }
+
+    /**
+     * Sets breadcrumbs on the account edit form
+     * @param array $user
+     */
+    protected function setBreadcrumbEditAccount(array $user)
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Shop')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Account'),
+            'url' => $this->url("account/{$user['user_id']}")
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Sets titles on the edit account page
+     */
+    protected function setTitleEditAccount()
+    {
+        $this->setTitle($this->text('Edit account'), false);
+    }
+
+    /**
+     * Renders the edit account page templates
+     */
+    protected function outputEditAccount()
+    {
+        $this->output('account/edit');
+    }
+
+    /**
+     * Displays the addresses overview page
+     * @param integer $user_id
+     */
+    public function listAddressAccount($user_id)
+    {
+        $user = $this->getUserAccount($user_id);
+        $addresses = $this->getListAddressAccount($user_id);
+
+        $this->actionAddressAccount($user);
+
+        $this->setData('user', $user);
+        $this->setData('addresses', $addresses);
+
+        $this->setBreadcrumbListAddressAccount($user);
+        $this->setTitleListAddressAccount();
+        $this->outputListAddressAccount();
+    }
+
+    /**
+     * Returns an array of addresses
+     * @param integer $user_id
+     * @return array
+     */
+    protected function getListAddressAccount($user_id)
+    {
+        return $this->address->getTranslatedList($user_id);
+    }
+
+    /**
+     * Applies an action to user addresses
+     * @param array $user
+     */
+    protected function actionAddressAccount(array $user)
+    {
+        $address_id = (int) $this->request->get('delete');
+
+        if (!empty($address_id)) {
+            $this->deleteAddressAccount($address_id);
+        }
     }
 
     /**
@@ -469,6 +398,41 @@ class Account extends FrontendController
 
         $message = $this->text('Address has been deleted');
         $this->redirect('', $message, 'success');
+    }
+
+    /**
+     * Sets breadcrumbs on the address list page
+     * @param array $user
+     */
+    protected function setBreadcrumbListAddressAccount(array $user)
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Shop')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Account'),
+            'url' => $this->url("account/{$user['user_id']}")
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Sets titles on the addresses overview page
+     */
+    protected function setTitleListAddressAccount()
+    {
+        $this->setTitle($this->text('Addresses'), false);
+    }
+
+    /**
+     * Renders the addresses overview page
+     */
+    protected function outputListAddressAccount()
+    {
+        $this->output('account/address/list');
     }
 
     /**
@@ -496,6 +460,26 @@ class Account extends FrontendController
 
         $this->setTitleEditAddressAccount();
         $this->outputEditAddressAccount();
+    }
+
+    /**
+     * Returns an address
+     * @param integer $address_id
+     * @return array
+     */
+    protected function getAddressAccount($address_id)
+    {
+        if (!is_numeric($address_id)) {
+            return array('country' => $this->country->getDefault());
+        }
+
+        $address = $this->address->get($address_id);
+
+        if (empty($address)) {
+            $this->outputError(404);
+        }
+
+        return $address;
     }
 
     /**
@@ -533,6 +517,34 @@ class Account extends FrontendController
     }
 
     /**
+     * Adds an address
+     * @param array $user
+     */
+    protected function addAddressAccount(array $user)
+    {
+        $address = $this->getSubmitted('address');
+        $result = $this->address->add($address);
+        $this->address->reduceLimit($address['user_id']);
+
+        if (empty($result)) {
+            $message = $this->text('Address has not been added');
+            $this->redirect('', $message, 'warning');
+        }
+
+        $message = $this->text('New address has been added');
+        $this->redirect("account/{$user['user_id']}/address", $message, 'success');
+    }
+
+    /**
+     * Returns an array of country names
+     * @return array
+     */
+    protected function getCountryNamesAccount()
+    {
+        return $this->country->getNames(true);
+    }
+
+    /**
      * Returns an array of states for a given country code
      * @param string $address
      * @return array
@@ -558,31 +570,19 @@ class Account extends FrontendController
     }
 
     /**
-     * Returns an array of country names
-     * @return array
+     * Sets titles on the edit address page
      */
-    protected function getCountryNamesAccount()
+    protected function setTitleEditAddressAccount()
     {
-        return $this->country->getNames(true);
+        $this->setTitle($this->text('Add new address'), false);
     }
 
     /**
-     * Adds an address
-     * @param array $user
+     * Renders the edit address page
      */
-    protected function addAddressAccount(array $user)
+    protected function outputEditAddressAccount()
     {
-        $address = $this->getSubmitted('address');
-        $result = $this->address->add($address);
-        $this->address->reduceLimit($address['user_id']);
-
-        if (empty($result)) {
-            $message = $this->text('Address has not been added');
-            $this->redirect('', $message, 'warning');
-        }
-
-        $message = $this->text('New address has been added');
-        $this->redirect("account/{$user['user_id']}/address", $message, 'success');
+        $this->output('account/address/edit');
     }
 
 }
