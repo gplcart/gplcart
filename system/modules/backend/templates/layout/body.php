@@ -104,7 +104,7 @@
             <span aria-hidden="true">×</span>
           </button>
           <?php foreach ($strings as $string) { ?>
-          <?php echo $string; ?><br>
+          <?php echo $this->xss($string); ?><br>
           <?php } ?>
         </div>
         <?php } ?>

@@ -50,7 +50,7 @@ class Country
     public function codeUnique($code, array $options = array())
     {
         $code = strtoupper($code);
-        
+
         if (isset($options['data']['code']) && ($options['data']['code'] === $code)) {
             return true;
         }
@@ -61,7 +61,39 @@ class Country
             return true;
         }
 
-        return $this->language->text('Country code %code already exists', array('%code' => $code));
+        return $this->language->text('Country code %code already exists', array(
+            '%code' => $code));
+    }
+
+    /**
+     * Checks country format fields
+     * @param string $value
+     * @param array $options
+     * @return boolean|array
+     */
+    public function format($value, array $options = array())
+    {
+        if(empty($options['submitted']['country'])){
+            return false;
+        }
+        
+        $country = $options['submitted']['country'];
+        $format = $this->country->getFormat($country, true);
+
+        $errors = array();
+        foreach ($format as $field => $info) {
+
+            if (empty($info['required'])) {
+                continue;
+            }
+
+            if (empty($options['submitted'][$field]) || mb_strlen($options['submitted'][$field]) > 255) {
+                $errors[$field] = $this->language->text('Content must be %min - %max characters long', array(
+                    '%min' => 1, '%max' => 255));
+            }
+        }
+
+        return empty($errors) ? true : array('errors' => $errors);
     }
 
 }

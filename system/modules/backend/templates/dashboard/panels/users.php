@@ -11,7 +11,7 @@
       <?php } ?>
     </ul>
     <div class="text-right">
-      <a href="<?php echo $this->url('admin/user'); ?>">
+      <a href="<?php echo $this->url('admin/user/list'); ?>">
         <?php echo $this->text('See all users'); ?>
       </a>
     </div>

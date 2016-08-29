@@ -302,7 +302,7 @@ class User extends BackendController
 
         $breadcrumbs[] = array(
             'text' => $this->text('Users'),
-            'url' => $this->url('admin/user'));
+            'url' => $this->url('admin/user/list'));
 
         $this->setBreadcrumbs($breadcrumbs);
     }

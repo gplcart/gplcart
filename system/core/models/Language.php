@@ -398,7 +398,7 @@ class Language extends Model
 
         if (!empty($filename)) {
             $file = "{$this->compiled_directory_csv}/$filename.csv";
-            return $this->addStringJs($string, $data, $filename);
+            $this->addStringJs($string, $data, $filename);
         }
 
         array_unshift($data, $string);

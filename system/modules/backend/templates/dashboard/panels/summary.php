@@ -15,7 +15,7 @@
       <li>
         <?php echo $this->text('Users'); ?>:
         <?php if ($this->access('user')) { ?>
-        <a href="<?php echo $this->url('admin/user'); ?>"><?php echo $user_total; ?></a>
+        <a href="<?php echo $this->url('admin/user/list'); ?>"><?php echo $user_total; ?></a>
         <?php } else { ?>
         <?php echo $user_total; ?>
         <?php } ?>

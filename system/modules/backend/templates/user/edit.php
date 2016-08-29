@@ -106,7 +106,7 @@
         </div>
         <div class="col-md-4">
           <div class="btn-toolbar">
-            <a class="btn btn-default cancel" href="<?php echo $this->url('admin/user'); ?>">
+            <a class="btn btn-default cancel" href="<?php echo $this->url('admin/user/list'); ?>">
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
             </a>    
             <button class="btn btn-default save" name="save" value="1">

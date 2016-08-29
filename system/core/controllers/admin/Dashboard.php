@@ -257,9 +257,9 @@ class Dashboard extends BackendController
 
             $items = $this->report->getList($options);
 
-            foreach ($items as $i => &$item) {
+            foreach ($items as &$item) {
                 $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
-                $message = $this->text($item['text'], $variables);
+                $message = empty($item['translatable']) ? $item['text'] : $this->text($item['text'], $variables);
                 $item['message'] = strip_tags($message);
             }
 

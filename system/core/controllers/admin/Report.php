@@ -270,7 +270,7 @@ class Report extends BackendController
             }
 
             $record['time'] = $this->date($record['time']);
-            $record['type'] = $this->text($record['type']);
+            $record['type'] = $this->text("event_{$record['type']}");
             
             if(!empty($record['translatable'])){
                 $record['text'] = $this->text($record['text'], $variables);

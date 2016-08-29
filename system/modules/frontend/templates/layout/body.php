@@ -128,7 +128,7 @@
         <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in">
           <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
           <?php foreach ($strings as $string) { ?>
-          <?php echo $string; ?><br>
+          <?php echo $this->xss($string); ?><br>
           <?php } ?>
         </div>
         <?php } ?>

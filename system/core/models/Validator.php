@@ -265,6 +265,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Country', 'codeUnique')
             ),
         );
+        
+        $handlers['country_format'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Country', 'format')
+            ),
+        );
 
         $handlers['state_code_unique'] = array(
             'handlers' => array(
@@ -347,6 +353,12 @@ class Validator extends Model
         $handlers['user_name_unique'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\User', 'nameUnique')
+            ),
+        );
+        
+        $handlers['user_password'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\User', 'password')
             ),
         );
 

@@ -9,6 +9,7 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Tool;
 use core\models\User as ModelsUser;
 use core\models\Language as ModelsLanguage;
 
@@ -58,14 +59,14 @@ class User
         if (empty($user)) {
             return $this->language->text('E-mail does not exist');
         }
-        
+
         if (!empty($options['status']) && empty($user['status'])) {
             return $this->language->text('E-mail does not exist');
         }
 
         return array('result' => $user);
     }
-    
+
     /**
      * Checks if an email is unique
      * @param string $value
@@ -86,7 +87,7 @@ class User
 
         return $this->language->text('E-mail already exists');
     }
-    
+
     /**
      * Checks if a name is unique
      * @param string $value
@@ -106,6 +107,31 @@ class User
         }
 
         return $this->language->text('Name already exists');
+    }
+
+    /**
+     * Checks if a password is mathes the user
+     * @param string|null $value
+     * @param array $options
+     * @return boolean|string
+     */
+    public function password($value, array $options = array())
+    {
+        if ((!isset($value) || $value === '') && empty($options['required'])) {
+            return true;
+        }
+
+        if (empty($options['data']['hash'])) {
+            return false;
+        }
+
+        $expected = Tool::hash($value, $options['data']['hash'], false);
+
+        if (Tool::hashEquals($options['data']['hash'], $expected)) {
+            return true;
+        }
+
+        return $this->language->text('Invalid password');
     }
 
 }

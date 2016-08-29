@@ -213,25 +213,25 @@ class Route
 
         $routes['account/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'account')
+                'controller' => array('core\\controllers\\Account', 'indexAccount')
             )
         );
 
         $routes['account/(\d+)/edit'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'edit')
+                'controller' => array('core\\controllers\\Account', 'editAccount')
             )
         );
 
         $routes['account/(\d+)/address'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'addresses')
+                'controller' => array('core\\controllers\\Account', 'listAddressAccount')
             )
         );
 
         $routes['account/(\d+)/address/add'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'editAddress')
+                'controller' => array('core\\controllers\\Account', 'editAddressAccount')
             )
         );
 

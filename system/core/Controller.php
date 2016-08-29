@@ -1177,7 +1177,6 @@ class Controller
     /**
      * Sets php errors recorded by logger
      * @param array $data
-     * @return null
      */
     protected function setPhpErrors(array &$data)
     {
@@ -1194,8 +1193,6 @@ class Controller
 
             unset($errors[$severity]);
         }
-
-        return;
     }
 
     /**
