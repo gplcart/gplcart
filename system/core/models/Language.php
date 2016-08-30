@@ -335,7 +335,7 @@ class Language extends Model
     public function text($string, array $arguments = array(), $class = '')
     {
         if (empty($this->langcode)) {
-            return $string;
+            return $this->formatString($string, $arguments);
         }
 
         if (empty($class)) {
