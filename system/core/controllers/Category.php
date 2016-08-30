@@ -49,22 +49,25 @@ class Category extends FrontendController
      * Displays the category page
      * @param integer $category_id
      */
-    public function category($category_id)
+    public function indexCategory($category_id)
     {
         $category = $this->get($category_id);
 
-        $view = $this->config->module($this->theme, 'catalog_view', 'grid');
-        $sort = $this->config->module($this->theme, 'catalog_sort', 'price');
-        $order = $this->config->module($this->theme, 'catalog_order', 'asc');
+        $view = $this->setting('catalog_view', 'grid');
+        $sort = $this->setting('catalog_sort', 'price');
+        $order = $this->setting('catalog_order', 'asc');
+        $max = $this->setting('catalog_limit', 20);
 
-        $default = array('sort' => $sort, 'order' => $order, 'view' => $view);
+        $filter = array('sort' => $sort, 'order' => $order, 'view' => $view);
 
-        $query = $this->getFilterQuery($default);
-        $total = $this->getTotalProducts($category_id, $query);
-        $limit = $this->setPager($total, $query, $this->config->module($this->theme, 'catalog_limit', 20));
-        $tree = $this->getTree($category['category_group_id']);
+        $query = $this->getFilterQuery($filter);
+        $total = $this->getTotalProductCategory($category_id, $query);
+        $limit = $this->setPager($total, $query, $max);
+        $tree = $this->getTreeCategory($category['category_group_id']);
 
-        $products = $this->getProducts($limit, $query, $category_id);
+        $products = $this->getListProductCategory($limit, $query, $category_id);
+        
+        
 
         $this->data['category'] = $category;
         $this->data['products'] = $this->getRenderedProducts($products);
@@ -74,49 +77,10 @@ class Category extends FrontendController
 
         $this->setCategoryMenu($tree);
 
-        $this->setMetaCategory($category);
-        $this->setTitleCategory($category);
-        $this->setBreadcrumbCategory($category);
-        $this->outputCategory();
-    }
-
-    /**
-     * Modifies a product array before rendering
-     * @param array $products
-     * @param array $query
-     * @return array
-     */
-    public function prepareProducts(array $products, array $query)
-    {
-        if (empty($products)) {
-            return array();
-        }
-
-        $user_id = $this->cart->uid();
-        $product_ids = array_keys($products);
-        $pricerules = $this->store->config('catalog_pricerule');
-
-        $view = in_array($query['view'], array('list', 'grid')) ? $query['view'] : 'grid';
-        $imestylestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
-
-        foreach ($products as $product_id => &$product) {
-            $product['in_comparison'] = $this->product->isCompared($product_id);
-            $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
-            $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
-            $product['in_wishlist'] = $this->wishlist->exists($product_id, array('user_id' => $user_id));
-
-            if (!empty($pricerules)) {
-                $calculated = $this->product->calculate($product, $this->store_id);
-                $product['price'] = $calculated['total'];
-            }
-
-            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-            $product['rendered'] = $this->render("product/item/$view", array(
-                'product' => $product,
-                'buttons' => array('cart_add', 'wishlist_add', 'compare_add')));
-        }
-
-        return $products;
+        $this->setMetaIndexCategory($category);
+        $this->setTitleIndexCategory($category);
+        $this->setBreadcrumbIndexCategory($category);
+        $this->outputIndexCategory();
     }
 
     /**

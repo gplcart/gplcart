@@ -155,11 +155,11 @@ class Checkout extends FrontendController
         $this->form_data = array(
             'order' => array(
                 'store_id' => $this->store_id,
-                'user_id' => $this->cart_user_id,
+                'user_id' => $this->cart_uid,
                 'total' => $this->cart_content['total'],
                 'currency' => $this->cart_content['currency']));
 
-        $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_user_id);
+        $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_uid);
         $this->form_data['shipping_services'] = $this->order->getServices('shipping', $this->cart_content, $this->form_data['order']);
         $this->form_data['payment_services'] = $this->order->getServices('payment', $this->cart_content, $this->form_data['order']);
         $this->address_form = empty($this->form_data['addresses']);
@@ -405,7 +405,7 @@ class Checkout extends FrontendController
      */
     protected function refreshCart()
     {
-        $this->cart_content = $this->cart->getByUser($this->cart_user_id, false); // false - disable cart cache
+        $this->cart_content = $this->cart->getByUser($this->cart_uid, false); // false - disable cart cache
 
         if (!$this->request->isAjax()) {
             $this->redirect('', $this->text('Your cart has been updated'), 'success');
