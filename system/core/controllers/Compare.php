@@ -315,7 +315,7 @@ class Compare extends FrontendController
      */
     protected function getRecentProducts()
     {
-        $limit = $this->config->get('product_recent_limit', 12);
+        $limit = $this->config('product_recent_limit', 12);
         $product_ids = $this->product->getViewed($limit);
 
         if (empty($product_ids)) {

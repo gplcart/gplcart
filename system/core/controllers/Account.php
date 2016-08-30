@@ -350,7 +350,7 @@ class Account extends FrontendController
         $user = $this->getUserAccount($user_id);
         $addresses = $this->getListAddressAccount($user_id);
 
-        $this->actionAddressAccount($user);
+        $this->deleteAddressAccount();
 
         $this->setData('user', $user);
         $this->setData('addresses', $addresses);
@@ -371,33 +371,25 @@ class Account extends FrontendController
     }
 
     /**
-     * Applies an action to user addresses
-     * @param array $user
+     * Deletes an address
      */
-    protected function actionAddressAccount(array $user)
+    protected function deleteAddressAccount()
     {
         $address_id = (int) $this->request->get('delete');
 
-        if (!empty($address_id)) {
-            $this->deleteAddressAccount($address_id);
+        if (empty($address_id)) {
+            return;
         }
-    }
 
-    /**
-     * Deletes an address
-     * @param integer $address_id
-     */
-    protected function deleteAddressAccount($address_id)
-    {
         $deleted = $this->address->delete($address_id);
 
         if ($deleted) {
-            $message = $this->text('Address cannot be deleted');
-            $this->redirect('', $message, 'warning');
+            $message = $this->text('Address has been deleted');
+            $this->redirect('', $message, 'success');
         }
 
-        $message = $this->text('Address has been deleted');
-        $this->redirect('', $message, 'success');
+        $message = $this->text('Address cannot be deleted');
+        $this->redirect('', $message, 'warning');
     }
 
     /**
@@ -445,21 +437,81 @@ class Account extends FrontendController
         $user = $this->getUserAccount($user_id);
         $address = $this->getAddressAccount($address_id);
 
+        $this->outputEditAddressFormAccount();
+
         $this->setData('user', $user);
         $this->setData('address', $address);
 
         $this->submitAddressAccount($user, $address);
 
-        $countries = $this->getCountryNamesAccount();
-        $states = $this->getListStateAccount($address);
-        $format = $this->getCountryFormatAccount($address);
-
-        $this->setData('format', $format);
-        $this->setData('states', $states);
-        $this->setData('countries', $countries);
+        $this->setDataEditAddressAccount();
 
         $this->setTitleEditAddressAccount();
         $this->outputEditAddressAccount();
+    }
+
+    /**
+     * Sets template variables
+     */
+    protected function setDataEditAddressAccount()
+    {
+        $address = $this->getData('address');
+        $form = $this->getEditAddressFormAccount($address);
+        $this->setData('address_form', $form);
+    }
+
+    /**
+     * Returns rendered address edit form
+     * @param array $address
+     * @return string
+     */
+    protected function getEditAddressFormAccount($address)
+    {
+        $country = isset($address['country']) ? $address['country'] : '';
+
+        $format = $this->country->getFormat($country, true);
+        $countries = $this->country->getNames(true);
+
+        $options = array('status' => 1, 'country' => $country);
+        $states = $this->state->getList($options);
+
+        $format_country = empty($format['country']) ? array() : $format['country'];
+        $format_state_id = empty($format['state_id']) ? array() : $format['state_id'];
+
+        unset($format['country'], $format['state_id']);
+
+        $data = array(
+            'states' => $states,
+            'format' => $format,
+            'address' => $address,
+            'countries' => $countries,
+            'format_country' => $format_country,
+            'format_state_id' => $format_state_id
+        );
+
+        return $this->render('account/address/form', $data);
+    }
+
+    /**
+     * Displays edit address form
+     * @param array $address
+     */
+    protected function outputEditAddressFormAccount()
+    {
+        $code = (string) $this->request->post('country');
+
+        if (empty($code)) {
+            return;
+        }
+
+        $country = $this->country->get($code);
+
+        if (empty($country['status'])) {
+            return;
+        }
+
+        $form = $this->getEditAddressFormAccount(array('country' => $code));
+        $this->response->html($form);
     }
 
     /**
@@ -506,7 +558,7 @@ class Account extends FrontendController
      */
     protected function validateAddressAccount(array $user)
     {
-        $this->setSubmittedBool('status');
+        $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $user['user_id']);
 
         $this->addValidator('format', array(
@@ -522,9 +574,9 @@ class Account extends FrontendController
      */
     protected function addAddressAccount(array $user)
     {
-        $address = $this->getSubmitted('address');
+        $address = $this->getSubmitted();
         $result = $this->address->add($address);
-        $this->address->reduceLimit($address['user_id']);
+        $this->address->controlLimit($address['user_id']);
 
         if (empty($result)) {
             $message = $this->text('Address has not been added');
@@ -533,40 +585,6 @@ class Account extends FrontendController
 
         $message = $this->text('New address has been added');
         $this->redirect("account/{$user['user_id']}/address", $message, 'success');
-    }
-
-    /**
-     * Returns an array of country names
-     * @return array
-     */
-    protected function getCountryNamesAccount()
-    {
-        return $this->country->getNames(true);
-    }
-
-    /**
-     * Returns an array of states for a given country code
-     * @param string $address
-     * @return array
-     */
-    protected function getListStateAccount(array $address)
-    {
-        $options = array(
-            'status' => 1,
-            'country' => $address['country']
-        );
-
-        return $this->state->getList($options);
-    }
-
-    /**
-     * Returns an array of the coutry format data
-     * @param string $address
-     * @return array
-     */
-    protected function getCountryFormatAccount(array $address)
-    {
-        return $this->country->getFormat($address['country']);
     }
 
     /**

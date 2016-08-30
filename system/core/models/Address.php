@@ -189,9 +189,9 @@ class Address extends Model
 
         if (isset($data['status'])) {
             $sql .= ' AND c.status = ?';
-            $sql .= ' AND s.status = ?';
+            //$sql .= ' AND s.status = ?';
             $where[] = (int) $data['status'];
-            $where[] = (int) $data['status'];
+            //$where[] = (int) $data['status'];
         }
 
         if (isset($data['user_id'])) {
@@ -288,7 +288,7 @@ class Address extends Model
      * @param integer $user_id
      * @return boolean
      */
-    public function reduceLimit($user_id)
+    public function controlLimit($user_id)
     {
         $limit = $this->getLimit();
         $existing = $this->getList(array('user_id' => $user_id));

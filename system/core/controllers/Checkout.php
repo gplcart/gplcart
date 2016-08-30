@@ -133,8 +133,8 @@ class Checkout extends FrontendController
         $this->submitted_address = array();
 
         $this->country_code = $this->country->getDefault();
-        $this->quantity_limit = (int) $this->config->get('cart_total_limit', 20);
-        $this->quantity_limit_sku = (int) $this->config->get('cart_sku_limit', 10);
+        $this->quantity_limit = (int) $this->config('cart_total_limit', 20);
+        $this->quantity_limit_sku = (int) $this->config('cart_sku_limit', 10);
     }
 
     /**
@@ -596,7 +596,7 @@ class Checkout extends FrontendController
         $this->submitted_address['user_id'] = $user_id;
         $this->form_data['order']['shipping_address'] = $this->address->add($this->submitted_address);
 
-        $this->address->reduceLimit($user_id);
+        $this->address->controlLimit($user_id);
         return true;
     }
 

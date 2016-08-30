@@ -101,7 +101,7 @@ class Product extends FrontendController
      */
     protected function setReviews(array $product)
     {
-        $enabled = $this->config->get('review_enabled', 1);
+        $enabled = $this->config('review_enabled', 1);
 
         if (empty($enabled)) {
             return;
@@ -114,7 +114,7 @@ class Product extends FrontendController
         }
 
         $query = $this->getFilterQuery();
-        $per_page = $this->config->get('review_limit', 5);
+        $per_page = $this->config('review_limit', 5);
         $limit = $this->setPager($total, $query, $per_page);
         $reviews = $this->getReviews($limit, $product);
 
@@ -123,7 +123,7 @@ class Product extends FrontendController
             'query' => $this->query,
             'pager' => $this->getPager(),
             'reviews' => $this->prepareReviews($reviews, $product),
-            'editable' => (bool) $this->config->get('review_editable', 1)
+            'editable' => (bool) $this->config('review_editable', 1)
         ));
     }
 
@@ -377,7 +377,7 @@ class Product extends FrontendController
      */
     protected function getRelated($product_id)
     {
-        $limit = $this->config->get('product_related_limit', 12);
+        $limit = $this->config('product_related_limit', 12);
 
         $options = array(
             'status' => 1,
@@ -396,8 +396,8 @@ class Product extends FrontendController
      */
     protected function getRecent($product_id)
     {
-        $limit = $this->config->get('product_recent_limit', 12);
-        $lifespan = $this->config->get('product_recent_cookie_lifespan', 31536000);
+        $limit = $this->config('product_recent_limit', 12);
+        $lifespan = $this->config('product_recent_cookie_lifespan', 31536000);
 
         $product_ids = $this->product->setViewed($product_id, $limit, $lifespan);
         return $this->loadMultiple($product_ids);
@@ -469,7 +469,7 @@ class Product extends FrontendController
                 'quantity' => $cart['quantity'],
                 'preview' => $this->render('cart/preview', array(
                     'cart' => $this->cart->prepareCartItems($cart, $this->setting()),
-                    'limit' => $this->config->get('cart_preview_limit', 5)
+                    'limit' => $this->config('cart_preview_limit', 5)
             )));
 
             $this->response->json($response);

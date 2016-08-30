@@ -60,7 +60,7 @@ class Review extends FrontendController
             $this->submit($review, $product);
         }
 
-        $deletable = (bool) $this->config->get('review_deletable', 1);
+        $deletable = (bool) $this->config('review_deletable', 1);
 
         if ($this->request->post('delete') && isset($review['review_id']) && $deletable) {
             $this->delete($review, $product);
@@ -69,7 +69,7 @@ class Review extends FrontendController
         $this->data['review'] = $review;
         $this->data['product'] = $product;
         $this->data['deletable'] = $deletable;
-        $this->data['max_length'] = $this->config->get('review_max_length', 1000);
+        $this->data['max_length'] = $this->config('review_max_length', 1000);
         $this->data['price'] = $this->price->format($product['price'], $product['currency']);
 
         $this->setEditForm($review, $product);
@@ -122,7 +122,7 @@ class Review extends FrontendController
         $this->data['rating'] = $this->render('common/rating/edit', array(
             'review' => $review,
             'product' => $product,
-            'unvote' => (bool) $this->config->get('rating_unvote', 1)
+            'unvote' => (bool) $this->config('rating_unvote', 1)
         ));
     }
 
@@ -184,8 +184,8 @@ class Review extends FrontendController
             return;
         }
 
-        $status = (bool) $this->config->get('review_status', 1);
-        $length = (int) $this->config->get('review_max_length', 1000);
+        $status = (bool) $this->config('review_status', 1);
+        $length = (int) $this->config('review_max_length', 1000);
 
         $this->submitted['status'] = $status;
         $this->submitted['text'] = $this->truncate($this->submitted['text'], $length);
@@ -243,7 +243,7 @@ class Review extends FrontendController
      */
     protected function controlAccessEdit()
     {
-        $editable = $this->config->get('review_editable', 1);
+        $editable = $this->config('review_editable', 1);
 
         if (empty($editable) || empty($this->uid)) {
             $this->outputError(403);

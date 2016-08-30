@@ -338,7 +338,9 @@ class Country extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
 
-        if ($this->getSubmitted('default')) {
+        $is_default = $this->getSubmitted('default');
+
+        if ($is_default) {
             $this->setSubmitted('status', 1);
         }
 
@@ -362,7 +364,12 @@ class Country extends BackendController
             'length' => array('max' => 2)
         ));
 
-        $this->setValidators($country);
+        $errors = $this->setValidators($country);
+
+        if (empty($errors) && !$is_default) {
+            $code = $this->getSubmitted('code');
+            $this->country->unsetDefault($code);
+        }
     }
 
     /**
@@ -423,10 +430,15 @@ class Country extends BackendController
         $format = $this->getSubmitted();
 
         // Fix checkboxes, enable required fields
-        foreach ($format as &$item) {
+        foreach ($format as $id => &$item) {
 
             $item['required'] = isset($item['required']);
             $item['status'] = isset($item['status']);
+
+            if ($id === 'country') {
+                $item['status'] = 1;
+                $item['required'] = 1;
+            }
 
             if ($item['required']) {
                 $item['status'] = 1; // Required fields are always enabled

@@ -109,7 +109,7 @@ class Ajax extends FrontendController
             'title' => (string) $this->request->post('term', ''),
             'store_id' => $this->request->post('store_id', null),
             'status' => $this->request->post('status', null),
-            'limit' => array(0, $this->config->get('admin_autocomplete_limit', 10))));
+            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))));
 
         if (!empty($products)) {
             $stores = $this->store->getList();
@@ -143,7 +143,7 @@ class Ajax extends FrontendController
         $users = $this->user->getList(array(
             'email' => (string) $this->request->post('term', ''),
             'store_id' => $this->request->post('store_id', null),
-            'limit' => array(0, $this->config->get('admin_autocomplete_limit', 10))));
+            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))));
 
         return $users;
     }
@@ -218,44 +218,10 @@ class Ajax extends FrontendController
         $preview = array(
             'preview' => $this->render('cart/preview', array(
                 'cart' => $this->cart->prepareCartItems($cart, $this->setting()),
-                'limit' => $this->config->get('cart_preview_limit', 5)
+                'limit' => $this->config('cart_preview_limit', 5)
         )));
 
         return $preview;
-    }
-
-    /**
-     * Returns an array of country data
-     * @return array
-     */
-    public function getCountryData()
-    {
-        $country_code = (string) $this->request->post('country');
-
-        if (empty($country_code)) {
-            return array();
-        }
-
-        $country = $this->country->get($country_code);
-
-        if (empty($country['status'])) {
-            return array();
-        }
-        
-        $options = array(
-            'status' => 1,
-            'country' => $country_code
-        );
-
-        $states = $this->state->getList($options);
-        $format = $this->country->getFormat($country, true);
-
-        $response = array(
-            'states' => $states,
-            'format' => array_keys($format)
-        );
-
-        return $response;
     }
 
     /**
@@ -273,7 +239,7 @@ class Ajax extends FrontendController
         $products = $this->search->search('product_id', $term, array(
             'status' => 1,
             'store_id' => $this->store_id,
-            'limit' => array(0, $this->config->get('autocomplete_limit', 10)),
+            'limit' => array(0, $this->config('autocomplete_limit', 10)),
             'language' => $this->langcode));
 
         if (empty($products)) {
@@ -322,8 +288,8 @@ class Ajax extends FrontendController
 
         $results = $this->search->search($id, $term, array(
             'language' => $this->langcode,
-            'imagestyle' => $this->config->get('admin_image_style', 2),
-            'limit' => array(0, $this->config->get('admin_autocomplete_limit', 10))));
+            'imagestyle' => $this->config('admin_image_style', 2),
+            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))));
 
         $response = array();
         foreach ($results as $result) {
@@ -352,7 +318,7 @@ class Ajax extends FrontendController
 
         if (!empty($type)) {
             $type = (string) $type;
-            $upload_path .= '/' . $this->config->get("{$type}_image_dirname", $type);
+            $upload_path .= '/' . $this->config("{$type}_image_dirname", $type);
         }
 
         $this->file->setUploadPath($upload_path);
@@ -366,7 +332,7 @@ class Ajax extends FrontendController
         $uploaded_path = $this->file->getUploadedFile();
 
         $path = $this->file->path($uploaded_path);
-        $thumb = $this->image->url($this->config->get('admin_image_preset', 2), $path, true);
+        $thumb = $this->image->url($this->config('admin_image_preset', 2), $path, true);
         $key = uniqid(); // Random array key to prevent merging items in the array
 
         $response['files'][] = array(

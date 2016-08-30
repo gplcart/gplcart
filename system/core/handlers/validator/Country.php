@@ -9,6 +9,7 @@
 
 namespace core\handlers\validator;
 
+use core\models\State as ModelsState;
 use core\models\Country as ModelsCountry;
 use core\models\Language as ModelsLanguage;
 
@@ -31,12 +32,21 @@ class Country
     protected $country;
 
     /**
+     * State model instance
+     * @var \core\models\State $state
+     */
+    protected $state;
+
+    /**
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsCountry $country
+     * @param ModelsState $state
      */
-    public function __construct(ModelsLanguage $language, ModelsCountry $country)
+    public function __construct(ModelsLanguage $language,
+            ModelsCountry $country, ModelsState $state)
     {
+        $this->state = $state;
         $this->country = $country;
         $this->language = $language;
     }
@@ -62,7 +72,7 @@ class Country
         }
 
         return $this->language->text('Country code %code already exists', array(
-            '%code' => $code));
+                    '%code' => $code));
     }
 
     /**
@@ -73,15 +83,25 @@ class Country
      */
     public function format($value, array $options = array())
     {
-        if(empty($options['submitted']['country'])){
-            return false;
+        $country = '';
+        if (!empty($options['submitted']['country'])) {
+            $country = $options['submitted']['country'];
         }
-        
-        $country = $options['submitted']['country'];
+
+        $countries = $this->country->getNames(true);
         $format = $this->country->getFormat($country, true);
+        $states = $this->state->getList(array('status' => 1, 'country' => $country));
 
         $errors = array();
         foreach ($format as $field => $info) {
+
+            if ($field === 'state_id' && empty($states)) {
+                continue;
+            }
+            
+            if ($field === 'country' && $country === '' && !empty($countries)) {
+                $errors['country'] = $this->language->text('Required field');
+            }
 
             if (empty($info['required'])) {
                 continue;

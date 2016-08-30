@@ -104,7 +104,7 @@ class Image extends FrontendController
     protected function headers($file)
     {
         $timestamp = filemtime($file);
-        $expires = (int) $this->config->get('image_cache_lifetime', 31536000); // 1 year
+        $expires = (int) $this->config('image_cache_lifetime', 31536000); // 1 year
 
         $headers[] = array('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp));
         $headers[] = array('Cache-Control', "public, max-age=$expires");

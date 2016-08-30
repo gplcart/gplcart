@@ -170,20 +170,6 @@
 				</div>
 			  </div>
 			  <hr>
-			  <div class="form-group required<?php echo isset($this->errors['store']['country']) ? ' has-error' : ''; ?>">
-				<label class="col-md-3 control-label"><?php echo $this->text('Country'); ?></label>
-				<div class="col-md-6">
-				  <select name="settings[store][country]" class="form-control">
-				    <option value=""><?php echo $this->text('Select'); ?></option>
-					<?php foreach($countries as $code => $label) { ?>
-					<option value="<?php echo $code; ?>"<?php echo (isset($settings['site']['country']) && $settings['site']['country'] == $code) ? ' selected' : ''; ?>><?php echo $this->escape($label['name']); ?></option>
-					<?php } ?>
-				  </select>
-				  <?php if(isset($this->errors['store']['country'])) { ?>
-				  <div class="help-block"><?php echo $this->errors['store']['country']; ?></div>
-				  <?php } ?>
-				</div>
-			  </div>
 			  <div class="required form-group<?php echo isset($this->errors['store']['title']) ? ' has-error' : ''; ?>">
 				<label class="col-md-3 control-label"><?php echo $this->text('Store title'); ?></label>
 				<div class="col-md-6">

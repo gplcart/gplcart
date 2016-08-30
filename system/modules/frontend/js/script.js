@@ -38,7 +38,7 @@ $(function () {
             slideMargin: 0
         });
     }
-    
+
     if (jQuery().lightGallery) {
         $('#lg-gallery').lightGallery({selector: '.item', thumbnail: true, download: false});
     }
@@ -82,9 +82,9 @@ $(function () {
 
         return false;
     });
-    
+
     /********************** Product page **********************/
-    
+
     $('.star-rating.static').tooltip();
 
     $('form#add-to-cart').unbind('submit').submit(function (e) {
@@ -126,7 +126,7 @@ $(function () {
             },
             success: function (data) {
                 if (!jQuery.isEmptyObject(data)) {
-                    
+
                     if ('message' in data && data.message) {
                         // Message
                     }
@@ -221,51 +221,19 @@ $(function () {
 
 
     /**************** Account ***************/
-
-    var submit = $('#edit-address [name="save"]');
-
-    $('#edit-address select[name$="[country]"]').change(function () {
-
-        submit.prop('disabled', false);
-
-        var form = $(this).closest('form');
-        var selectState = form.find('select[name$="[state_id]"]');
-
-        // Clear old errors
-        $('#edit-address .form-group.has-error .help-block').remove();
-        $('#edit-address .form-group.has-error').removeClass('has-error');
+    $(document).on('change', '#edit-address [name$="[country]"]', function () {
 
         $.ajax({
-            url: GplCart.settings.base + 'ajax',
+            url: GplCart.settings.urn,
             method: 'POST',
-            dataType: 'json',
-            data: {action: 'getCountryData', token: GplCart.settings.token, country: $(this).val()},
+            dataType: 'html',
+            data: {
+                country: $(this).val(),
+                token: GplCart.settings.token
+            },
             success: function (data) {
-                if (typeof data === 'object' && 'states' in data) {
-                    
-                    /**
-                    console.log(data.states);
-
-                    if (jQuery.isEmptyObject(data.states)) {
-                        form.find('div.record:not(.country)').hide();
-                        submit.prop('disabled', true);
-                        return false;
-                    }
-                    */
-
-                    var options = '<option value="0">' + GplCart.text('Not provided'); + '</option>';
-                    
-                    $.each(data.states, function (code, state) {
-                        options += '<option value="' + code + '">' + state.name + '</option>';
-                    });
-
-                    selectState.html(options);
-
-                    form.find('div.record').hide();
-                    $.each(data.format, function (i, field) {
-                        form.find('div.record.' + field).show();
-                    });
-                }
+                var form = $(data).find('#address-form-wrapper').html();
+                $('#address-form-wrapper').html(form);
             }
         });
     });

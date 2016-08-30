@@ -26,11 +26,19 @@
           <tr>
             <td><?php echo $this->escape($item['name']); ?></td>
             <td class="middle">
-              <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1"<?php echo!empty($item['status']) ? ' checked' : ''; ?>>
+              <?php if($name == 'country') { ?>
+              <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1" checked disabled>
+              <?php } else { ?>
+              <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1"<?php echo empty($item['status']) ? '' : ' checked'; ?>>
+              <?php } ?>
               <input type="hidden" name="format[<?php echo $name; ?>][weight]" value="<?php echo $item['weight']; ?>">
             </td>
             <td class="middle">
-              <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo!empty($item['required']) ? ' checked' : ''; ?>>
+              <?php if($name == 'country') { ?>
+              <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1" disabled checked>
+              <?php } else { ?>
+              <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo empty($item['status']) ? '' : ' checked'; ?>>
+              <?php } ?>
             </td>
             <td class="middle">
               <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($item['weight']); ?></span>

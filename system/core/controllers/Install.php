@@ -10,7 +10,6 @@
 namespace core\controllers;
 
 use core\classes\Tool;
-use core\models\Country as ModelsCountry;
 use core\models\Install as ModelsInstall;
 use core\controllers\Controller as FrontendController;
 
@@ -27,12 +26,6 @@ class Install extends FrontendController
     protected $install;
 
     /**
-     * Country model instance
-     * @var \core\models\Country $country
-     */
-    protected $country;
-
-    /**
      * Language selected upon installation
      * @var string
      */
@@ -41,14 +34,12 @@ class Install extends FrontendController
     /**
      * Constructor
      * @param ModelsInstall $install
-     * @param ModelsCountry $country
      */
-    public function __construct(ModelsInstall $install, ModelsCountry $country)
+    public function __construct(ModelsInstall $install)
     {
         parent::__construct();
 
         $this->install = $install;
-        $this->country = $country;
         $this->install_language = $this->session->get('language', null, '');
     }
 
@@ -66,7 +57,6 @@ class Install extends FrontendController
             $this->submitInstall();
         }
 
-        $this->data['countries'] = $this->country->countries(true);
         $this->data['requirements'] = $this->install->getRequirements();
         $this->data['timezones'] = Tool::timezones();
         $this->data['url_wiki'] = GC_WIKI_URL;
@@ -220,7 +210,6 @@ class Install extends FrontendController
         $this->validateUserPassword();
         $this->validateUserEmail();
         $this->validateStoreTitle();
-        $this->validateStoreCountry();
 
         if ($this->isError()) {
             return false;
@@ -247,26 +236,6 @@ class Install extends FrontendController
 
         $this->errors['database']['connect'] = $this->text($connect);
         return false;
-    }
-
-    /**
-     * Validates store country
-     * @return boolean
-     */
-    protected function validateStoreCountry()
-    {
-        if (empty($this->submitted['store']['country'])) {
-            $this->errors['store']['country'] = $this->text('Required field');
-            return false;
-        }
-
-        $countries = $this->country->countries();
-
-        $code = $this->submitted['store']['country'];
-        $this->submitted['store']['country_name'] = $countries[$code]['name'];
-        $this->submitted['store']['country_native_name'] = $countries[$code]['native_name'];
-
-        return true;
     }
 
     /**

@@ -284,18 +284,6 @@ class Install extends Model
         $this->db->insert('role', array('name' => 'Order manager', 'permissions' => serialize(array())));
         $this->db->insert('role', array('name' => 'Content manager', 'permissions' => serialize(array())));
 
-        // Default country
-        $country = array(
-            'format' => serialize(array()),
-            'status' => 1,
-            'name' => $settings['store']['country_name'],
-            'native_name' => $settings['store']['country_native_name'],
-            'code' => $settings['store']['country'],
-        );
-
-        $this->db->insert('country', $country);
-        $config->set('country', $settings['store']['country']);
-
         // Default language
         if (!empty($settings['store']['language'])) {
             $langcode = $settings['store']['language'];
