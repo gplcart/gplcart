@@ -57,7 +57,7 @@ class Action extends FrontendController
         $result += array(
             'redirect' => (string) $this->request->get('redirect', '/'),
             'message' => $this->text('An error occurred'),
-            'message_type' => 'danger',
+            'severity' => 'danger',
         );
 
         if ($this->request->isAjax()) {
@@ -68,7 +68,7 @@ class Action extends FrontendController
             $this->redirect($result['redirect']);
         }
 
-        $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -85,7 +85,7 @@ class Action extends FrontendController
 
         if ($result === true) {
             return array(
-                'message_type' => 'success',
+                'severity' => 'success',
                 'message' => $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
                     '!href' => $this->url('checkout'))));
         }
@@ -94,7 +94,7 @@ class Action extends FrontendController
             return array(
                 'redirect' => $this->url("product/$product_id", array(), true),
                 'message' => $this->text('Please select product options before adding to the cart'),
-                'message_type' => 'warning',
+                'severity' => 'warning',
             );
         }
 
@@ -121,13 +121,13 @@ class Action extends FrontendController
 
         if (!empty($added)) {
             return array(
-                'message_type' => 'success',
+                'severity' => 'success',
                 'message' => $this->text('Product has been added to your <a href="!href">wishlist</a>', array(
                     '!href' => $this->url('wishlist'))));
         }
 
         return array(
-            'message_type' => 'warning',
+            'severity' => 'warning',
             'message' => $this->text('Oops, you\'re exceeding %limit items in <a href="!href">your wishlist</a>', array(
                 '%limit' => $this->wishlist->getLimits($user_id),
                 '!href' => $this->url('wishlist'))));
@@ -142,7 +142,12 @@ class Action extends FrontendController
         $user_id = $this->cart->uid();
         $product_id = (int) $this->request->get('product_id');
 
-        $result = $this->wishlist->getList(array('product_id' => $product_id, 'user_id' => $user_id));
+        $options = array(
+            'user_id' => $user_id,
+            'product_id' => $product_id
+        );
+
+        $result = $this->wishlist->getList($options);
 
         if (empty($result)) {
             return array();
@@ -153,7 +158,7 @@ class Action extends FrontendController
         }
 
         return array(
-            'message_type' => 'success',
+            'severity' => 'success',
             'message' => $this->text('Product has been deleted from your wishlist'));
     }
 
@@ -174,7 +179,7 @@ class Action extends FrontendController
 
         if (!empty($added)) {
             return array(
-                'message_type' => 'success',
+                'severity' => 'success',
                 'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
                     '!href' => $this->url('compare'))));
         }
@@ -193,7 +198,7 @@ class Action extends FrontendController
 
         return array(
             'redirect' => $this->url('compare', array(), true),
-            'message_type' => 'success',
+            'severity' => 'success',
             'message' => $this->text('Product has been removed from comparison'));
     }
 

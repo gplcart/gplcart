@@ -105,11 +105,19 @@ class Ajax extends FrontendController
             return array('error' => $this->text('You are not permitted to perform this operation'));
         }
 
-        $products = $this->product->getList(array(
-            'title' => (string) $this->request->post('term', ''),
-            'store_id' => $this->request->post('store_id', null),
-            'status' => $this->request->post('status', null),
-            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))));
+        $status = $this->request->post('status', null);
+        $term = (string) $this->request->post('term', '');
+        $store_id = $this->request->post('store_id', null);
+        $max = $this->config('admin_autocomplete_limit', 10);
+
+        $options = array(
+            'title' => $term,
+            'status' => $status,
+            'store_id' => $store_id,
+            'limit' => array(0, $max)
+        );
+
+        $products = $this->product->getList($options);
 
         if (!empty($products)) {
             $stores = $this->store->getList();
@@ -120,7 +128,8 @@ class Ajax extends FrontendController
             $product['url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
-                $product['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/") . "/product/{$product['product_id']}";
+                $product['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
+                        . "/product/{$product['product_id']}";
             }
 
             $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
@@ -137,15 +146,20 @@ class Ajax extends FrontendController
     public function getUsers()
     {
         if (!$this->access('user')) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
+            return array(
+                'error' => $this->text('You are not permitted to perform this operation'));
         }
 
-        $users = $this->user->getList(array(
-            'email' => (string) $this->request->post('term', ''),
-            'store_id' => $this->request->post('store_id', null),
-            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))));
+        $term = (string) $this->request->post('term', '');
+        $store_id = $this->request->post('store_id', null);
+        $max = $this->config('admin_autocomplete_limit', 10);
 
-        return $users;
+        $options = array(
+            'email' => $term,
+            'store_id' => $store_id,
+            'limit' => array(0, $max));
+
+        return $this->user->getList($options);
     }
 
     /**
@@ -154,49 +168,55 @@ class Ajax extends FrontendController
      */
     public function switchProductOptions()
     {
+        $response = array();
         $product_id = (int) $this->request->post('product_id');
         $product = $this->product->get($product_id);
-
-        if (empty($product['status'])) {
-            return array('error' => $this->text('Invalid product'));
-        }
-
-        $response = array();
-
         $field_value_ids = $this->request->post('values');
 
-        if (!empty($field_value_ids)) {
+        if (empty($product['status'])) {
+            $response['error'] = $this->text('Invalid product');
+            $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
+            return $response;
+        }
 
-            $field_value_ids = array_values($field_value_ids);
-            $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
+        if (empty($field_value_ids)) {
+            $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
+            return $response;
+        }
 
-            $response = array(
-                'message' => '',
-                'combination' => array(),
-                'message_modal' => false,
-                'cart_access' => true,
-                'subscribe' => false,
-            );
+        $field_value_ids = array_values($field_value_ids);
+        $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
 
-            if (!empty($product['combination'][$combination_id])) {
-                $combination = $product['combination'][$combination_id];
+        $response = array(
+            'message' => '',
+            'subscribe' => false,
+            'cart_access' => true,
+            'combination' => array(),
+            'message_modal' => false
+        );
 
-                if (!empty($combination['price'])) {
-                    $combination['price'] = $this->price->format($combination['price'], $product['currency']);
-                }
+        if (empty($product['combination'][$combination_id])) {
+            $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
+            return $response;
+        }
 
-                if (!empty($combination['path'])) {
-                    $combination['image'] = $this->image->url($this->store->config('image_style_product'), $combination['path']);
-                }
+        $combination = $product['combination'][$combination_id];
 
-                $response['combination'] = $combination;
+        if (!empty($combination['price'])) {
+            $combination['price'] = $this->price->format($combination['price'], $product['currency']);
+        }
 
-                if (empty($combination['stock']) && $product['subtract']) {
-                    $response['message'] = $this->text('Out of stock');
-                    $response['cart_access'] = false;
-                    $response['subscribe'] = true;
-                }
-            }
+        if (!empty($combination['path'])) {
+            $preset = $this->store->config('image_style_product');
+            $combination['image'] = $this->image->url($preset, $combination['path']);
+        }
+
+        $response['combination'] = $combination;
+
+        if (empty($combination['stock']) && $product['subtract']) {
+            $response['subscribe'] = true;
+            $response['cart_access'] = false;
+            $response['message'] = $this->text('Out of stock');
         }
 
         $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
@@ -215,13 +235,11 @@ class Ajax extends FrontendController
             return array();
         }
 
-        $preview = array(
-            'preview' => $this->render('cart/preview', array(
-                'cart' => $this->cart->prepareCartItems($cart, $this->setting()),
-                'limit' => $this->config('cart_preview_limit', 5)
-        )));
+        $limit = $this->config('cart_preview_limit', 5);
+        $content = $this->cart->prepareCartItems($cart, $this->setting());
 
-        return $preview;
+        $data = array('cart' => $content, 'limit' => $limit);
+        return array('preview' => $this->render('cart/preview', $data));
     }
 
     /**
@@ -236,11 +254,16 @@ class Ajax extends FrontendController
             return array();
         }
 
-        $products = $this->search->search('product_id', $term, array(
+        $max = $this->config('autocomplete_limit', 10);
+
+        $options = array(
             'status' => 1,
-            'store_id' => $this->store_id,
-            'limit' => array(0, $this->config('autocomplete_limit', 10)),
-            'language' => $this->langcode));
+            'limit' => array(0, $max),
+            'language' => $this->langcode,
+            'store_id' => $this->store_id
+        );
+
+        $products = $this->search->search('product_id', $term, $options);
 
         if (empty($products)) {
             return array();
@@ -251,12 +274,13 @@ class Ajax extends FrontendController
         $imestylestyle = $this->config->module($this->theme, 'image_style_product_list', 3);
 
         foreach ($products as $product_id => &$product) {
+
             unset($product['description']);
 
             $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
 
             if ($pricerules) {
-                $calculated = $this->product->calculate($product, $store_id);
+                $calculated = $this->product->calculate($product, $this->store_id);
                 $product['price'] = $calculated['total'];
             }
 
@@ -273,8 +297,8 @@ class Ajax extends FrontendController
      */
     public function adminSearch()
     {
-        $term = (string) $this->request->post('term');
         $id = (string) $this->request->post('id');
+        $term = (string) $this->request->post('term');
 
         if (empty($term) || empty($id)) {
             return array('error' => $this->text('An error occurred'));
@@ -286,14 +310,21 @@ class Ajax extends FrontendController
             return array('error' => $this->text('An error occurred'));
         }
 
-        $results = $this->search->search($id, $term, array(
-            'language' => $this->langcode,
-            'imagestyle' => $this->config('admin_image_style', 2),
-            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))));
+        $preset = $this->config('admin_image_style', 2);
+        $max = $this->config('admin_autocomplete_limit', 10);
+
+        $options = array(
+            'imagestyle' => $preset,
+            'limit' => array(0, $max),
+            'language' => $this->langcode
+        );
+
+        $results = $this->search->search($id, $term, $options);
 
         $response = array();
         foreach ($results as $result) {
-            $response[] = $this->render("backend|search/suggestion/$entityname", array($entityname => $result), true);
+            $template = "backend|search/suggestion/$entityname";
+            $response[] = $this->render($template, array($entityname => $result), true);
         }
 
         return $response;
@@ -305,48 +336,47 @@ class Ajax extends FrontendController
      */
     public function uploadImage()
     {
-        $file = $this->request->file();
-
-        if (empty($file['file']['name'])) {
-            return array('error' => $this->text('Nothing to upload'));
-        }
-
-        $response = array();
-
-        $upload_path = 'image/upload';
+        $path = 'image/upload';
         $type = $this->request->post('type');
 
         if (!empty($type)) {
             $type = (string) $type;
-            $upload_path .= '/' . $this->config("{$type}_image_dirname", $type);
+            $path .= '/' . $this->config("{$type}_image_dirname", $type);
         }
 
-        $this->file->setUploadPath($upload_path);
+        $this->addValidator('file', array(
+            'upload' => array(
+                'path' => $path,
+                'file' => $this->request->file('file')
+        )));
 
-        $upload_result = $this->file->upload($file['file']);
+        $errors = $this->setValidators();
 
-        if ($upload_result !== true) {
-            return array('error' => $upload_result);
+        if (isset($errors['file'])) {
+            return array('error' => (string) $errors['file']);
         }
 
-        $uploaded_path = $this->file->getUploadedFile();
+        $response = array();
+        $uploaded = $this->getValidatorResult('file');
+        $preset = $this->config('admin_image_preset', 2);
+        $thumb = $this->image->url($preset, $uploaded, true);
 
-        $path = $this->file->path($uploaded_path);
-        $thumb = $this->image->url($this->config('admin_image_preset', 2), $path, true);
         $key = uniqid(); // Random array key to prevent merging items in the array
-
-        $response['files'][] = array(
-            'html' => $this->render('backend|common/image/attache', array(
-                'name_prefix' => $type,
-                'languages' => $this->languages,
-                'images' => array(
-                    $key => array(
-                        'path' => $path,
-                        'weight' => 0,
-                        'thumb' => $thumb,
-                        'uploaded' => filemtime($uploaded_path)))), true)
+        $timestamp = filemtime(GC_FILE_DIR . "/$uploaded");
+        $image = array(
+            'weight' => 0,
+            'path' => $path,
+            'thumb' => $thumb,
+            'uploaded' => $timestamp
         );
 
+        $data = array(
+            'name_prefix' => $type,
+            'languages' => $this->languages,
+            'images' => array($key => $image));
+
+        $attached = $this->render('backend|common/image/attache', $data, true);
+        $response['files'][] = array('html' => $attached);
         return $response;
     }
 
@@ -356,14 +386,22 @@ class Ajax extends FrontendController
      */
     public function rate()
     {
-        $product_id = (int) $this->request->post('product_id');
         $stars = (int) $this->request->post('stars', 0);
+        $product_id = (int) $this->request->post('product_id');
 
         if (empty($product_id) || empty($this->uid)) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
+            return array(
+                'error' => $this->text('You are not permitted to perform this operation'));
         }
 
-        if ($this->rating->add(array('product_id' => $product_id, 'stars' => $stars))) {
+        $options = array(
+            'stars' => $stars,
+            'product_id' => $product_id
+        );
+
+        $added = $this->rating->add($options);
+
+        if ($added) {
             return array('success' => 1);
         }
 

@@ -215,17 +215,25 @@ $(function () {
     fileinput.fileupload({
         dataType: 'json',
         url: GplCart.settings.base + 'ajax',
-        formData: {type: fileinput.attr('data-entity-type'), action: 'uploadImage', token: GplCart.settings.token},
+        formData: {
+            type: fileinput.attr('data-entity-type'),
+            action: 'uploadImage',
+            token: GplCart.settings.token
+        },
         done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                if (file.html) {
-                    imageContainer.append(file.html);
-                }
-            });
 
-            imageContainer.find('input[name$="[weight]"]').each(function (i) {
-                $(this).val(i);
-            });
+            if ('result' in data && 'files' in data.result) {
+                
+                $.each(data.result.files, function (index, file) {
+                    if (file.html) {
+                        imageContainer.append(file.html);
+                    }
+                });
+
+                imageContainer.find('input[name$="[weight]"]').each(function (i) {
+                    $(this).val(i);
+                });
+            }
         }
     });
 

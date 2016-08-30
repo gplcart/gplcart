@@ -576,7 +576,7 @@ class Account extends FrontendController
     {
         $address = $this->getSubmitted();
         $result = $this->address->add($address);
-        $this->address->controlLimit($address['user_id']);
+        $this->address->controlLimit($user['user_id']);
 
         if (empty($result)) {
             $message = $this->text('Address has not been added');

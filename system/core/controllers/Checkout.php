@@ -423,11 +423,11 @@ class Checkout extends FrontendController
         if (isset($result['user'])) {
             $options = array(
                 'redirect' => 'checkout',
-                'message_type' => 'success',
+                'severity' => 'success',
                 'message' => $this->text('Hello, %name. Now you\'re logged in', array('%name' => $result['user']['name'])));
 
             $result = array_replace($result, $options);
-            $this->redirect($result['redirect'], $result['message'], $result['message_type']);
+            $this->redirect($result['redirect'], $result['message'], $result['severity']);
         }
 
         $this->errors['login'] = $this->text('Invalid E-mail and/or password');
@@ -547,8 +547,8 @@ class Checkout extends FrontendController
 
         $redirect = empty($result['redirect']) ? "checkout/complete/$order_id" : $result['redirect'];
         $message = empty($result['message']) ? '' : $result['message'];
-        $message_type = empty($result['message_type']) ? 'info' : $result['message_type'];
-        $this->redirect($redirect, $message, $message_type);
+        $severity = empty($result['severity']) ? 'info' : $result['severity'];
+        $this->redirect($redirect, $message, $severity);
     }
 
     /**
