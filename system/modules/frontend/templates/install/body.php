@@ -1,3 +1,4 @@
+<body class="install">
 <div class="container">
   <form method="post" class="form-horizontal" autocomplete="off">
 	<div class="header clearfix">
@@ -199,8 +200,12 @@
 		  <?php } ?>
         </div>
 	  </div>
+
+  </form>
+  
 	<footer class="footer">
 	  <p>&copy; <?php echo (2015 == date('Y')) ? date('Y') : '2015 - ' . date('Y'); ?>  GPL Cart.</p>
 	</footer>
-  </form>
 </div>
+  
+</body>

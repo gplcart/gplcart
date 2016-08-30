@@ -25,6 +25,7 @@ class Database extends PDO
     public function __construct(array $config = array())
     {
         if (!empty($config)) {
+            
             $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
 
             try {
@@ -145,6 +146,97 @@ class Database extends PDO
 
         $stmt->execute();
         return $stmt->rowCount();
+    }
+
+    /**
+     * Creates tables using an array of scheme data
+     * @param array $tables
+     */
+    public function import(array $tables)
+    {
+        $imported = 0;
+        foreach ($tables as $table => $data) {
+
+            $sql = $this->getSqlCreateTable($table, $data);
+
+            if ($this->query($sql) !== false) {
+                $imported++;
+            }
+
+            $alter = $this->getSqlAlterTable($table, $data);
+
+            if (!empty($alter)) {
+                $this->query($alter);
+            }
+        }
+
+        return ($imported == count($tables));
+    }
+
+    /**
+     * Returns a SQL that describes table fields.
+     * Used to create tables
+     * @param array $fields
+     * @return string
+     */
+    protected function getSqlFields(array $fields)
+    {
+        $sql = array();
+        foreach ($fields as $name => $info) {
+
+            $string = "{$info['type']}";
+
+            if (isset($info['length'])) {
+                $string .= "({$info['length']})";
+            }
+
+            if (!empty($info['not_null'])) {
+                $string .= " NOT NULL";
+            }
+
+            if (isset($info['default'])) {
+                $string .= " DEFAULT '{$info['default']}'";
+            }
+
+            if (!empty($info['auto_increment'])) {
+                $string .= " AUTO_INCREMENT";
+            }
+
+            if (!empty($info['primary'])) {
+                $string .= " PRIMARY KEY";
+            }
+
+            $sql[] = $name . ' ' . trim($string);
+        }
+
+
+        return implode(',', $sql);
+    }
+
+    /**
+     * Returns a string with SQL query to create a table
+     * @param string $table
+     * @param array $data
+     * @return string
+     */
+    protected function getSqlCreateTable($table, array $data)
+    {
+        $fields = $this->getSqlFields($data['fields']);
+        $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
+        $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
+
+        return "CREATE TABLE $table($fields) ENGINE=$engine CHARACTER SET utf8 COLLATE $collate";
+    }
+
+    /**
+     * Returns a string with SQL query to alter a table
+     * @param string $table
+     * @param array $data
+     * @return string
+     */
+    protected function getSqlAlterTable($table, array $data)
+    {
+        return empty($data['alter']) ? '' : "ALTER TABLE $table {$data['alter']}";
     }
 
 }

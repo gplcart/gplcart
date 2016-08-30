@@ -72,557 +72,537 @@ class Model
     {
         $tables['address'] = array(
             'fields' => array(
-                'address_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'state_id' => 'int(10) NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'country' => 'varchar(2) NOT NULL',
-                'city_id' => 'varchar(255) NOT NULL',
-                'address_1' => 'varchar(255) NOT NULL',
-                'address_2' => 'varchar(255) NOT NULL DEFAULT ""',
-                'phone' => 'varchar(255) NOT NULL',
-                'type' => 'varchar(255) NOT NULL DEFAULT "shipping"',
-                'user_id' => 'varchar(255) NOT NULL',
-                'middle_name' => 'varchar(255) NOT NULL DEFAULT ""',
-                'last_name' => 'varchar(255) NOT NULL',
-                'first_name' => 'varchar(255) NOT NULL',
-                'postcode' => 'varchar(50) NOT NULL',
-                'company' => 'varchar(255) NOT NULL',
-                'fax' => 'varchar(50) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'address_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'city_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'address_1' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'address_2' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'phone' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => 'shipping'),
+                'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'middle_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'last_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'first_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'postcode' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'company' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'fax' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['alias'] = array(
             'fields' => array(
-                'alias_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'id_value' => 'int(10) NOT NULL',
-                'id_key' => 'varchar(50) NOT NULL',
-                'alias' => 'varchar(255) NOT NULL'
+                'alias_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'alias' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             )
         );
 
         $tables['wishlist'] = array(
             'fields' => array(
-                'wishlist_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'product_id' => 'int(10) NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'user_id' => 'varchar(255) NOT NULL'
+                'wishlist_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             )
         );
 
         $tables['cart'] = array(
             'fields' => array(
-                'cart_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'store_id' => 'int(10) NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL',
-                'product_id' => 'int(10) NOT NULL',
-                'quantity' => 'int(2) NOT NULL DEFAULT 1',
-                'order_id' => 'int(10) NOT NULL DEFAULT "0"',
-                'user_id' => 'varchar(255) NOT NULL',
-                'sku' => 'varchar(255) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'cart_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'quantity' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 1),
+                'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'sku' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true)
+            )
         );
 
         $tables['category'] = array(
             'fields' => array(
-                'category_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'status' => 'int(1) NOT NULL',
-                'category_group_id' => 'int(10) NOT NULL',
-                'parent_id' => 'int(10) NOT NULL',
-                'meta_title' => 'varchar(255) NOT NULL DEFAULT ""',
-                'title' => 'varchar(255) NOT NULL',
-                'meta_description' => 'varchar(255) NOT NULL DEFAULT ""',
-                'description_1' => 'text NOT NULL',
-                'description_2' => 'text NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'category_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'category_group_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'parent_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'description_1' => array('type' => 'text', 'not_null' => true),
+                'description_2' => array('type' => 'text', 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['category_group'] = array(
             'fields' => array(
-                'category_group_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'store_id' => 'int(10) NOT NULL',
-                'type' => 'varchar(50) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'category_group_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['category_group_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'category_group_id' => 'int(10) NOT NULL',
-                'language' => 'varchar(2) NOT NULL',
-                'title' => 'varchar(255) NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'category_group_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             )
         );
 
         $tables['category_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'category_id' => 'int(10) NOT NULL',
-                'language' => 'varchar(4) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'meta_title' => 'varchar(255) NOT NULL',
-                'description_1' => 'text NOT NULL',
-                'meta_description' => 'text NOT NULL',
-                'description_2' => 'text NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description_1' => array('type' => 'text', 'not_null' => true),
+                'meta_description' => array('type' => 'text', 'not_null' => true),
+                'description_2' => array('type' => 'text', 'not_null' => true),
             )
         );
 
         $tables['city'] = array(
             'fields' => array(
-                'city_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'name' => 'varchar(255) NOT NULL',
-                'state_id' => 'int(10) NOT NULL',
-                'country' => 'varchar(2) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'city_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['country'] = array(
             'fields' => array(
-                'code' => 'varchar(2) PRIMARY KEY',
-                'name' => 'varchar(255) NOT NULL',
-                'native_name' => 'varchar(255) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'format' => 'blob NOT NULL'
-            ),
-            'serialize' => array('format')
+                'code' => array('type' => 'varchar', 'length' => 2, 'primary' => true),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'native_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'format' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['collection'] = array(
             'fields' => array(
-                'collection_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'title' => 'varchar(255) NOT NULL',
-                'description' => 'text NOT NULL',
-                'type' => 'varchar(50) NOT NULL',
-                'store_id' => 'int(10) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
+                'collection_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
             )
         );
 
         $tables['collection_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'collection_id' => 'int(10) NOT NULL',
-                'language' => 'varchar(4) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'description' => 'text NOT NULL',
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'collection_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
             )
         );
 
         $tables['collection_item'] = array(
             'fields' => array(
-                'collection_item_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'collection_id' => 'int(10) NOT NULL',
-                'id_value' => 'int(10) NOT NULL',
-                'id_key' => 'varchar(50) NOT NULL',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'collection_item_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'collection_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['field'] = array(
             'fields' => array(
-                'field_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'type' => 'varchar(50) NOT NULL',
-                'widget' => 'varchar(50) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'field_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'widget' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['field_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'field_id' => 'int(10) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'language' => 'varchar(4) NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
             )
         );
 
         $tables['field_value'] = array(
             'fields' => array(
-                'field_value_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'field_id' => 'int(10) NOT NULL',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'file_id' => 'int(10) NOT NULL',
-                'color' => 'varchar(10) NOT NULL',
-                'title' => 'varchar(255) NOT NULL'
+                'field_value_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'color' => array('type' => 'varchar', 'length' => 10, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             )
         );
 
         $tables['field_value_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'field_id' => 'int(10) NOT NULL',
-                'field_value_id' => 'int(10) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'language' => 'varchar(4) NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'field_value_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
             )
         );
 
         $tables['file'] = array(
             'fields' => array(
-                'file_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'id_value' => 'int(10) NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'id_key' => 'varchar(50) NOT NULL',
-                'file_type' => 'varchar(50) NOT NULL',
-                'title' => 'varchar(255) NOT NULL DEFAULT ""',
-                'mime_type' => 'varchar(255) NOT NULL DEFAULT ""',
-                'path' => 'text NOT NULL',
-                'description' => 'text NOT NULL'
+                'file_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'file_type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'mime_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'path' => array('type' => 'text', 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
             )
         );
 
         $tables['file_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'file_id' => 'int(10) NOT NULL',
-                'language' => 'varchar(4) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'description' => 'text NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
             )
         );
 
         $tables['history'] = array(
             'fields' => array(
-                'user_id' => 'int(10) NOT NULL',
-                'id_value' => 'int(10) NOT NULL',
-                'time' => 'int(10) NOT NULL',
-                'history_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'id_key' => 'varchar(32) NOT NULL'
+                'history_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'time' => array('type' => 'int', 'length' => 10, 'not_null' => true)
             )
         );
 
         $tables['log'] = array(
             'fields' => array(
-                'time' => 'int(10) NOT NULL',
-                'text' => 'text NOT NULL',
-                'log_id' => 'varchar(50) PRIMARY KEY',
-                'type' => 'varchar(255) NOT NULL',
-                'severity' => 'varchar(255) NOT NULL',
-                'translatable' => 'int(1) NOT NULL DEFAULT 0',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'log_id' => array('type' => 'varchar', 'length' => 50, 'primary' => true),
+                'time' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'text' => array('type' => 'text', 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'severity' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'translatable' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['module'] = array(
             'fields' => array(
-                'status' => 'int(1) NOT NULL',
-                'weight' => 'int(2) NOT NULL',
-                'module_id' => 'varchar(50) PRIMARY KEY',
-                'settings' => 'blob NOT NULL'
-            ),
-            'serialize' => array('settings')
+                'module_id' => array('type' => 'varchar', 'length' => 255, 'primary' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'settings' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['option_combination'] = array(
             'fields' => array(
-                'product_id' => 'int(10) NOT NULL',
-                'stock' => 'int(10) NOT NULL',
-                'file_id' => 'int(10) NOT NULL',
-                'price' => 'int(10) NOT NULL',
-                'combination_id' => 'varchar(255) PRIMARY KEY'
+                'combination_id' => array('type' => 'varchar', 'length' => 255, 'primary' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'price' => array('type' => 'int', 'length' => 10, 'not_null' => true)
             )
         );
 
         $tables['orders'] = array(
             'fields' => array(
-                'order_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'store_id' => 'int(10) NOT NULL DEFAULT 0',
-                'shipping_address' => 'int(10) NOT NULL',
-                'payment_address' => 'int(10) NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL',
-                'total' => 'int(10) NOT NULL',
-                'creator' => 'int(10) NOT NULL DEFAULT 0',
-                'currency' => 'varchar(4) NOT NULL',
-                'user_id' => 'varchar(255) NOT NULL',
-                'payment' => 'varchar(255) NOT NULL',
-                'shipping' => 'varchar(255) NOT NULL',
-                'status' => 'varchar(50) NOT NULL',
-                'comment' => 'text NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'order_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'shipping_address' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'payment_address' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'total' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'creator' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'comment' => array('type' => 'text', 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['page'] = array(
             'fields' => array(
-                'page_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'user_id' => 'int(10) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 1',
-                'store_id' => 'int(10) NOT NULL',
-                'category_id' => 'int(10) NOT NULL DEFAULT 0',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL DEFAULT 0',
-                'title' => 'varchar(255) NOT NULL',
-                'meta_title' => 'varchar(255) NOT NULL DEFAULT ""',
-                'meta_description' => 'text(255) NOT NULL DEFAULT ""',
-                'description' => 'text NOT NULL',
-                'data' => 'blob NOT NULL',
-            ),
-            'serialize' => array('data')
+                'page_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'description' => array('type' => 'text', 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['page_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'page_id' => 'int(10) NOT NULL',
-                'language' => 'varchar(4) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'meta_description' => 'varchar(255) NOT NULL',
-                'meta_title' => 'varchar(255) NOT NULL',
-                'description' => 'text NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'page_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
             )
         );
 
         $tables['price_rule'] = array(
             'fields' => array(
-                'price_rule_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'value' => 'int(10) NOT NULL',
-                'store_id' => 'int(10) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'weight' => 'int(2) NOT NULL DEFAULT 0',
-                'used' => 'int(10) NOT NULL DEFAULT 0',
-                'name' => 'varchar(255) NOT NULL',
-                'code' => 'varchar(255) NOT NULL',
-                'value_type' => 'varchar(50) NOT NULL',
-                'type' => 'varchar(50) NOT NULL',
-                'currency' => 'varchar(4) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'price_rule_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
+                'used' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'value_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['product'] = array(
             'fields' => array(
-                'product_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'status' => 'int(1) NOT NULL',
-                'subtract' => 'int(1) NOT NULL',
-                'product_class_id' => 'int(10) NOT NULL',
-                'price' => 'int(10) NOT NULL DEFAULT 0',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL',
-                'stock' => 'int(10) NOT NULL DEFAULT 0',
-                'store_id' => 'int(10) NOT NULL DEFAULT 0',
-                'brand_category_id' => 'int(10) NOT NULL',
-                'user_id' => 'int(10) NOT NULL',
-                'category_id' => 'int(10) NOT NULL',
-                'length' => 'int(10) NOT NULL DEFAULT 0',
-                'width' => 'int(10) NOT NULL DEFAULT 0',
-                'height' => 'int(10) NOT NULL DEFAULT 0',
-                'weight' => 'int(10) NOT NULL DEFAULT 0',
-                'meta_title' => 'varchar(255) NOT NULL DEFAULT ""',
-                'meta_description' => 'varchar(255) NOT NULL',
-                'currency' => 'varchar(4) NOT NULL',
-                'volume_unit' => 'varchar(2) NOT NULL',
-                'weight_unit' => 'varchar(2) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'description' => 'text NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'product_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'status' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'subtract' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'brand_category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'length' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'width' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'height' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'weight' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'volume_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'weight_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['product_class'] = array(
             'fields' => array(
-                'product_class_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'title' => 'varchar(255) NOT NULL'
+                'product_class_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             )
         );
 
         $tables['product_class_field'] = array(
             'fields' => array(
-                'product_class_field_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'product_class_id' => 'int(10) NOT NULL',
-                'field_id' => 'int(10) NOT NULL',
-                'required' => 'int(1) NOT NULL',
-                'multiple' => 'int(1) NOT NULL',
-                'weight' => 'int(2) NOT NULL DEFAULT 0'
+                'product_class_field_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'required' => array('type' => 'int', 'length' => 1, 'not_null' => true),
+                'multiple' => array('type' => 'int', 'length' => 1, 'not_null' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
             )
         );
 
         $tables['product_field'] = array(
             'fields' => array(
-                'product_field_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'field_id' => 'int(10) NOT NULL',
-                'field_value_id' => 'int(10) NOT NULL',
-                'product_id' => 'int(10) NOT NULL',
-                'type' => 'varchar(50) NOT NULL'
+                'product_field_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'field_value_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             )
         );
 
         $tables['product_sku'] = array(
             'fields' => array(
-                'sku' => 'varchar(255) NOT NULL',
-                'product_id' => 'int(10) NOT NULL',
-                'combination_id' => 'varchar(255) NOT NULL DEFAULT ""',
-                'store_id' => 'int(10) NOT NULL',
-                'product_sku_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY'
+                'product_sku_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'sku' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'combination_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true)
             )
         );
 
         $tables['product_translation'] = array(
             'fields' => array(
-                'translation_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'product_id' => 'int(10) NOT NULL',
-                'language' => 'varchar(4) NOT NULL',
-                'title' => 'varchar(255) NOT NULL',
-                'meta_description' => 'varchar(255) NOT NULL',
-                'meta_title' => 'varchar(255) NOT NULL',
-                'description' => 'text NOT NULL'
+                'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true),
             )
         );
 
         $tables['product_related'] = array(
             'fields' => array(
-                'product_id' => 'int(10) NOT NULL PRIMARY KEY',
-                'related_product_id' => 'int(10) NOT NULL',
+                'product_id' => array('type' => 'int', 'length' => 10, 'primary' => true),
+                'related_product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
             )
         );
 
         $tables['review'] = array(
             'fields' => array(
-                'review_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'user_id' => 'int(10) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL DEFAULT 0',
-                'product_id' => 'int(10) NOT NULL',
-                'text' => 'text NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'review_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'text' => array('type' => 'text', 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['rating'] = array(
             'fields' => array(
-                'product_id' => 'int(10) NOT NULL PRIMARY KEY',
-                'votes' => 'int(10) NOT NULL',
-                'rating' => 'float DEFAULT 0',
+                'product_id' => array('type' => 'int', 'length' => 10, 'primary' => true),
+                'votes' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'rating' => array('type' => 'float', 'default' => 0),
             )
         );
 
         $tables['rating_user'] = array(
             'fields' => array(
-                'id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'product_id' => 'int(10) NOT NULL',
-                'user_id' => 'varchar(255) NOT NULL',
-                'rating' => 'float DEFAULT 0',
+                'id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'rating' => array('type' => 'float', 'default' => 0),
             )
         );
 
         $tables['role'] = array(
             'fields' => array(
-                'role_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'name' => 'varchar(255) NOT NULL',
-                'permissions' => 'blob NOT NULL'
-            ),
-            'serialize' => array('permissions')
+                'role_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'permissions' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['settings'] = array(
             'fields' => array(
-                'id' => 'varchar(255) PRIMARY KEY',
-                'value' => 'blob NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'serialized' => 'int(1) NOT NULL DEFAULT 0'
+                'id' => array('type' => 'varchar', 'length' => 255, 'primary' => true),
+                'value' => array('type' => 'blob', 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'serialized' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
             )
         );
 
         $tables['state'] = array(
             'fields' => array(
-                'state_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'code' => 'varchar(255) NOT NULL',
-                'name' => 'varchar(255) NOT NULL',
-                'country' => 'varchar(2) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'state_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['store'] = array(
             'fields' => array(
-                'store_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'status' => 'int(1) NOT NULL DEFAULT 0',
-                'domain' => 'varchar(255) NOT NULL',
-                'name' => 'varchar(255) NOT NULL',
-                'basepath' => 'varchar(50) NOT NULL DEFAULT ""',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL DEFAULT 0',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'store_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'domain' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'basepath' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['transaction'] = array(
             'fields' => array(
-                'transaction_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'order_id' => 'int(10) NOT NULL',
-                'created' => 'int(10) NOT NULL',
-                'payment_service' => 'varchar(255) NOT NULL',
-                'service_transaction_id' => 'varchar(255) NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'transaction_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'payment_service' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'service_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['user'] = array(
             'fields' => array(
-                'user_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'created' => 'int(10) NOT NULL',
-                'modified' => 'int(10) NOT NULL DEFAULT 0',
-                'status' => 'int(1) NOT NULL DEFAULT 1',
-                'role_id' => 'int(10) NOT NULL DEFAULT 0',
-                'store_id' => 'int(10) NOT NULL DEFAULT 0',
-                'email' => 'varchar(255) NOT NULL',
-                'name' => 'varchar(255) NOT NULL',
-                'hash' => 'text NOT NULL',
-                'data' => 'blob NOT NULL'
-            ),
-            'serialize' => array('data')
+                'user_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
+                'role_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'email' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'hash' => array('type' => 'text', 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
         );
 
         $tables['zone'] = array(
             'fields' => array(
-                'zone_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'state_id' => 'int(10) NOT NULL',
-                'status' => 'int(1) NOT NULL DEFAULT 1',
-                'name' => 'varchar(255) NOT NULL',
-                'country' => 'varchar(2) NOT NULL'
+                'zone_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
             )
         );
 
         $tables['search_index'] = array(
             'fields' => array(
-                'search_index_id' => 'int(10) AUTO_INCREMENT PRIMARY KEY',
-                'id_value' => 'int(10) NOT NULL',
-                'id_key' => 'varchar(50) NOT NULL',
-                'language' => 'varchar(4) NOT NULL',
-                'text' => 'longtext NOT NULL',
+                'search_index_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+                'text' => array('type' => 'longtext', 'not_null' => true),
             ),
             'engine' => 'MyISAM',
             'alter' => 'ADD FULLTEXT(text)',
@@ -651,12 +631,21 @@ class Model
 
         $values = array_intersect_key($data, $scheme['fields']);
 
-        if (empty($values) || empty($scheme['serialize'])) {
-            return $values;
+        if (empty($values)) {
+            return array();
         }
 
         foreach ($values as $field => &$value) {
-            if (in_array($field, $scheme['serialize'])) {
+
+            if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
+                $value = intval($value);
+            }
+
+            if ($scheme['fields'][$field]['type'] === 'float') {
+                $value = floatval($value);
+            }
+
+            if (!empty($scheme['fields'][$field]['serialize'])) {
                 $value = serialize((array) $value);
             }
         }

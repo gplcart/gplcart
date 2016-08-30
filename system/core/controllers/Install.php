@@ -66,7 +66,6 @@ class Install extends FrontendController
 
         $this->setIssues();
         $this->addCssInstall();
-        $this->addJsInstall();
         $this->setTitleInstall();
         $this->outputInstall();
     }
@@ -181,19 +180,7 @@ class Install extends FrontendController
      */
     protected function addCssInstall()
     {
-
-        $this->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
-        $this->setCss('files/assets/font-awesome/css/font-awesome.min.css');
-        $this->setCss('system/modules/frontend/css/install.css');
-    }
-
-    /**
-     * Adds Js on the installation page
-     */
-    protected function addJsInstall()
-    {
-        $this->setJs('system/modules/frontend/js/script.js', 'top');
-        $this->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
+        $this->setCss('system/modules/frontend/css/install.css', 99);
     }
 
     /**

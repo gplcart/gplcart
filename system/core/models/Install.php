@@ -9,11 +9,12 @@
 
 namespace core\models;
 
-use PDO;
+use PDOException;
 use core\Model;
 use core\Container;
 use core\classes\Tool;
-use core\classes\Request as ClassesRequest;
+use core\classes\Request;
+use core\classes\Database;
 use core\models\Store as ModelsStore;
 use core\models\Language as ModelsLanguage;
 
@@ -54,9 +55,8 @@ class Install extends Model
      * @param ClassesRequest $request
      */
     public function __construct(ModelsStore $store, ModelsLanguage $language,
-            ClassesRequest $request)
+            Request $request)
     {
-
         $this->store = $store;
         $this->request = $request;
         $this->language = $language;
@@ -134,9 +134,7 @@ class Install extends Model
      */
     public function getRequirementsErrors(array $requirements)
     {
-
         $errors = array();
-
         foreach ($requirements as $items) {
             foreach ($items as $name => $info) {
                 if (empty($info['status'])) {
@@ -155,15 +153,13 @@ class Install extends Model
      */
     public function connect(array $settings)
     {
-        extract($settings);
-
         try {
-            $this->db = new PDO("$type:host=$host;port=$port;dbname=$name", $user, $password);
-
-            if ($this->db->query('SHOW TABLES')->fetchColumn()) {
+            $this->db = new Database($settings);
+            $existing = $this->db->query('SHOW TABLES')->fetchColumn();
+            if (!empty($existing)) {
                 return $this->language->text('The database you specified already has tables');
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $this->db = null;
             return $e->getMessage();
         }
@@ -177,33 +173,8 @@ class Install extends Model
      */
     public function tables()
     {
-        $imported = 0;
-        $tables = $this->getDbScheme();
-
-        foreach ($tables as $table => $data) {
-            
-            $fields = '';
-            foreach ($data['fields'] as $name => $info) {
-                $fields .= "$name $info,";
-            }
-
-            $field_list = rtrim($fields, ',');
-
-            $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
-            $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
-
-            $sql = "CREATE TABLE $table($field_list) ENGINE=$engine CHARACTER SET utf8 COLLATE $collate";
-
-            if ($this->db->query($sql) !== false) {
-                $imported++;
-            }
-
-            if (!empty($data['alter'])) {
-                $this->db->query("ALTER TABLE $table {$data['alter']}");
-            }
-        }
-
-        return ($imported == count($tables));
+        $scheme = $this->getDbScheme();
+        return $this->db->import($scheme);
     }
 
     /**
