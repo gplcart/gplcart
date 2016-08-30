@@ -208,161 +208,201 @@ class Install extends Model
      */
     public function store(array $settings)
     {
-        Container::unregister();
-        $config = Container::instance('core\\Config');
+        Container::unregister(); // Remove old instances to prevent conflicts
 
-        $this->db = $config->getDb();
+        $this->config = Container::instance('core\\Config');
+        $this->db = $this->config->getDb();
 
         if (empty($this->db)) {
             return $this->language->text('Unable to connect to the database');
         }
 
-        // Default store
+        $this->config->set('intro', 1);
+
+        $store_id = $this->createStore($settings);
+        $user_id = $this->createSuperadmin($settings, $store_id);
+
+        $this->createRoles();
+        $this->createLanguages($settings);
+        $this->createCollections($store_id);
+        $this->createCategoryGroups($store_id);
+        $this->createPages($user_id, $store_id);
+
+        return true;
+    }
+
+    /**
+     * Creates default collections
+     * @param integer $store_id
+     */
+    protected function createCollections($store_id)
+    {
+        $collections['front_slideshow'] = array(
+            'type' => 'file',
+            'title' => 'Front slideshow',
+            'description' => 'Block with rotating banners on the front page',
+        );
+
+        foreach ($collections as $name => $collection) {
+            $collection += array('status' => 1, 'store_id' => $store_id);
+            $collection_id = $this->db->insert('collection', $collection);
+            $this->config->set("collection_$name", $collection_id);
+        }
+    }
+
+    /**
+     * Creates default category groups
+     * @param integer $store_id
+     */
+    protected function createCategoryGroups($store_id)
+    {
+        $groups[] = array('type' => 'brand', 'title' => 'Brand');
+        $groups[] = array('type' => 'catalog', 'title' => 'Catalog');
+
+        foreach ($groups as $group) {
+            $group += array('store_id' => $store_id, 'data' => serialize(array()));
+            $this->db->insert('category_group', $group);
+        }
+    }
+
+    /**
+     * Creates default store
+     * @param array $settings
+     * @return integer
+     */
+    protected function createStore(array $settings)
+    {
         $data = $this->store->defaultConfig();
+
         $data['title'] = $settings['store']['title'];
         $data['email'] = array($settings['user']['email']);
 
         $store = array(
-            'name' => $settings['store']['title'],
-            'domain' => $this->request->host(),
-            'basepath' => trim($this->request->base(true), '/'),
             'status' => 1,
             'data' => serialize($data),
+            'domain' => $this->request->host(),
+            'name' => $settings['store']['title'],
+            'basepath' => trim($this->request->base(true), '/')
         );
 
         $store_id = $this->db->insert('store', $store);
-        $config->set('store', $store_id);
-        $config->set('intro', 1);
+        $this->config->set('store', $store_id);
 
-        // Default user
+        return $store_id;
+    }
+
+    /**
+     * Creates superadmin user
+     * @param array $settings
+     * @param integer $store_id
+     * @return integer
+     */
+    protected function createSuperadmin(array $settings, $store_id)
+    {
         $user = array(
-            'modified' => 0,
             'status' => 1,
             'role_id' => 0,
-            'store_id' => $store_id,
+            'modified' => 0,
             'created' => GC_TIME,
-            'email' => $settings['user']['email'],
             'name' => 'Superadmin',
-            'hash' => Tool::hash($settings['user']['password']),
-            'data' => serialize(array())
+            'store_id' => $store_id,
+            'data' => serialize(array()),
+            'email' => $settings['user']['email'],
+            'hash' => Tool::hash($settings['user']['password'])
         );
 
         $user_id = $this->db->insert('user', $user);
-        $config->set('user_superadmin', $user_id);
+        $this->config->set('user_superadmin', $user_id);
 
-        // Default roles
-        $this->db->insert('role', array('name' => 'General manager', 'permissions' => serialize(array())));
-        $this->db->insert('role', array('name' => 'Order manager', 'permissions' => serialize(array())));
-        $this->db->insert('role', array('name' => 'Content manager', 'permissions' => serialize(array())));
+        return $user_id;
+    }
 
-        // Default language
-        if (!empty($settings['store']['language'])) {
-            $langcode = $settings['store']['language'];
-            $this->config->set('language', $langcode);
-
-            $languages[$langcode] = array(
-                'code' => $langcode,
-                'name' => $langcode,
-                'native_name' => $langcode,
-                'status' => 1,
-                'default' => 1
-            );
-
-            $languages = $this->config->set('languages', $languages);
+    /**
+     * Creates default languages
+     * @param array $settings
+     * @return boolean
+     */
+    protected function createLanguages(array $settings)
+    {
+        if (empty($settings['store']['language'])) {
+            return false;
         }
 
-        // Default category groups
-        $this->db->insert('category_group', array(
-            'store_id' => $store_id,
-            'data' => serialize(array()),
-            'type' => 'catalog',
-            'title' => 'Catalog'
-        ));
+        $langcode = $settings['store']['language'];
+        $this->config->set('language', $langcode);
 
-        $this->db->insert('category_group', array(
-            'store_id' => $store_id,
-            'data' => serialize(array()),
-            'type' => 'brand',
-            'title' => 'Brand'
-        ));
-
-
-        $collection_id = $this->db->insert('collection', array(
+        $languages[$langcode] = array(
             'status' => 1,
-            'type' => 'file',
-            'store_id' => $store_id,
-            'title' => 'Front slideshow',
-            'description' => 'Block with rotating banners on the front page',
-        ));
+            'default' => 1,
+            'code' => $langcode,
+            'name' => $langcode,
+            'native_name' => $langcode
+        );
 
-        $config->set('collection_front_slideshow', $collection_id);
+        return $this->config->set('languages', $languages);
+    }
 
-        // Default pages and their aliases
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
+    /**
+     * Create default roles
+     */
+    protected function createRoles()
+    {
+        $roles[] = array('name' => 'Content manager');
+        $roles[] = array('name' => 'Order manager');
+        $roles[] = array('name' => 'Content manager');
+
+        foreach ($roles as $role) {
+            $role += array('permissions' => serialize(array()));
+            $this->db->insert('role', $role);
+        }
+    }
+
+    /**
+     * Creates default pages
+     * @param integer $user_id
+     * @param integer $store_id
+     */
+    protected function createPages($user_id, $store_id)
+    {
+        $pages['about.html'] = array(
             'title' => 'About us',
             'description' => 'Company information',
-        ));
+        );
 
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'about.html'
-        ));
-
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
+        $pages['contact.html'] = array(
             'title' => 'Contact us',
             'description' => 'Contact information',
-        ));
+        );
 
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'contact.html'
-        ));
-
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
+        $pages['terms.html'] = array(
             'title' => 'Terms and conditions',
             'description' => 'Terms and conditions',
-        ));
+        );
 
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'terms.html'
-        ));
-
-        $page_id = $this->db->insert('page', array(
-            'status' => 1,
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created' => GC_TIME,
-            'data' => serialize(array()),
+        $pages['faq.html'] = array(
             'title' => 'FAQ',
             'description' => 'Questions and answers',
-        ));
+        );
 
-        $this->db->insert('alias', array(
-            'id_key' => 'page_id',
-            'id_value' => $page_id,
-            'alias' => 'faq.html'
-        ));
+        foreach ($pages as $alias => $data) {
 
-        return true;
+            $data += array(
+                'status' => 1,
+                'created' => GC_TIME,
+                'user_id' => $user_id,
+                'store_id' => $store_id,
+                'data' => serialize(array()));
+
+            $page_id = $this->db->insert('page', $data);
+
+            $alias = array(
+                'alias' => $alias,
+                'id_key' => 'page_id',
+                'id_value' => $page_id
+            );
+
+            $this->db->insert('alias', $alias);
+        }
     }
 
 }
