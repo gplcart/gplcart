@@ -49,6 +49,12 @@ class Install extends Model
     protected $db;
 
     /**
+     * Config class instance
+     * @var \core\Config $config
+     */
+    protected $config;
+
+    /**
      * Constructor
      * @param ModelsStore $store
      * @param ModelsLanguage $language
@@ -237,6 +243,8 @@ class Install extends Model
      */
     protected function createCollections($store_id)
     {
+        $collections = array();
+        
         $collections['front_slideshow'] = array(
             'type' => 'file',
             'title' => 'Front slideshow',
@@ -256,6 +264,8 @@ class Install extends Model
      */
     protected function createCategoryGroups($store_id)
     {
+        $groups = array();
+        
         $groups[] = array('type' => 'brand', 'title' => 'Brand');
         $groups[] = array('type' => 'catalog', 'title' => 'Catalog');
 
@@ -331,6 +341,8 @@ class Install extends Model
         $langcode = $settings['store']['language'];
         $this->config->set('language', $langcode);
 
+        $languages = array();
+        
         $languages[$langcode] = array(
             'status' => 1,
             'default' => 1,
@@ -347,6 +359,8 @@ class Install extends Model
      */
     protected function createRoles()
     {
+        $roles = array();
+        
         $roles[] = array('name' => 'Content manager');
         $roles[] = array('name' => 'Order manager');
         $roles[] = array('name' => 'Content manager');
@@ -364,6 +378,8 @@ class Install extends Model
      */
     protected function createPages($user_id, $store_id)
     {
+        $pages = array();
+        
         $pages['about.html'] = array(
             'title' => 'About us',
             'description' => 'Company information',
