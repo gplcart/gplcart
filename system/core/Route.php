@@ -1057,6 +1057,7 @@ class Route
             $route['arguments'] = $arguments;
             $this->route = $route + array('pattern' => $pattern);
             Handler::call($route, null, 'controller', $arguments);
+            exit;
         }
 
         return false;
@@ -1073,10 +1074,11 @@ class Route
         );
 
         Handler::call($route, null, 'controller');
+        exit;
     }
 
     /**
-     * Parses a route patter and extracts arguments from it
+     * Parses and extracts arguments from a route pattern
      * @param string $pattern
      * @return boolean|array
      */
