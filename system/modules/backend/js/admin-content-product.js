@@ -74,10 +74,6 @@ $(function () {
 
     /**************************************** Product edit form ****************************************/
 
-    if ($('form#edit-product').lenght && $('select[name$="[store_id]"] option:selected').val() !== "") {
-        GplCart.theme.productUpdateCategories($('select[name$="[store_id]"]'));
-    }
-
     $('form#edit-product select[name$="[store_id]"]').change(function () {
         GplCart.theme.productUpdateCategories($(this));
     });

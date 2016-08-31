@@ -69,19 +69,27 @@ class Category extends Model
      * Loads a category from the database
      * @param integer $category_id
      * @param string|null $language
+     * @param string|null $store_id
      * @return array
      */
-    public function get($category_id, $language = null)
+    public function get($category_id, $language = null, $store_id = null)
     {
         $this->hook->fire('get.category.before', $category_id);
+
+        $conditions = array($category_id);
 
         $sql = '
                 SELECT c.*, cg.store_id FROM category c
                 LEFT JOIN category_group cg ON(c.category_group_id=cg.category_group_id)
-                WHERE c.category_id=:category_id';
+                WHERE c.category_id=?';
+
+        if (isset($store_id)) {
+            $sql .= ' AND cg.store_id=?';
+            $conditions[] = $store_id;
+        }
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array(':category_id' => (int) $category_id));
+        $sth->execute($conditions);
 
         $category = $sth->fetch(PDO::FETCH_ASSOC);
 

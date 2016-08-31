@@ -295,7 +295,16 @@
             </label>
             <div class="col-md-8">
               <select name="product[brand_category_id]" class="form-control">
-                <option value=""></option>
+                <option value=""><?php echo $this->text('- select -'); ?></option>
+                <?php if (!empty($categories['brand'])) { ?>
+                <?php foreach ($categories['brand'] as $id => $name) { ?>
+                <?php if (isset($product['brand_category_id']) && $product['brand_category_id'] == $id) { ?>
+                <option value="<?php echo $id; ?>" selected><?php echo $this->escape($name); ?></option>
+                <?php } else { ?>
+                <option value="<?php echo $id; ?>"><?php echo $this->escape($name); ?></option>
+                <?php } ?>
+                <?php } ?>
+                <?php } ?>
               </select>
             </div>
           </div>
@@ -307,7 +316,16 @@
             </label>
             <div class="col-md-8">
               <select data-live-search="true" name="product[category_id]" class="form-control selectpicker">
-                <option value=""></option>
+                <option value=""><?php echo $this->text('- select -'); ?></option>
+                <?php if (!empty($categories['catalog'])) { ?>
+                <?php foreach ($categories['catalog'] as $id => $name) { ?>
+                <?php if (isset($product['category_id']) && $product['category_id'] == $id) { ?>
+                <option value="<?php echo $id; ?>" selected><?php echo $this->escape($name); ?></option>
+                <?php } else { ?>
+                <option value="<?php echo $id; ?>"><?php echo $this->escape($name); ?></option>
+                <?php } ?>
+                <?php } ?>
+                <?php } ?>
               </select>
             </div>
           </div>

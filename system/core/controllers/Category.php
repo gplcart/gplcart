@@ -51,31 +51,30 @@ class Category extends FrontendController
      */
     public function indexCategory($category_id)
     {
-        $category = $this->get($category_id);
+        $category = $this->getCategory($category_id);
 
-        $view = $this->setting('catalog_view', 'grid');
-        $sort = $this->setting('catalog_sort', 'price');
-        $order = $this->setting('catalog_order', 'asc');
-        $max = $this->setting('catalog_limit', 20);
+        $this->setData('category', $category);
 
-        $filter = array('sort' => $sort, 'order' => $order, 'view' => $view);
+        $filter = array(
+            'view' => $this->setting('catalog_view', 'grid'),
+            'sort' => $this->setting('catalog_sort', 'price'),
+            'order' => $this->setting('catalog_order', 'asc')
+        );
 
         $query = $this->getFilterQuery($filter);
         $total = $this->getTotalProductCategory($category_id, $query);
+
+        $max = $this->setting('catalog_limit', 20);
         $limit = $this->setPager($total, $query, $max);
-        $tree = $this->getTreeCategory($category['category_group_id']);
 
         $products = $this->getListProductCategory($limit, $query, $category_id);
-        
-        
 
-        $this->data['category'] = $category;
-        $this->data['products'] = $this->getRenderedProducts($products);
-        $this->data['images'] = $this->getRenderedImages($category);
-        $this->data['children'] = $this->getRenderedChildren($category_id, $tree);
-        $this->data['navbar'] = $this->getRenderedNavbar(count($products), $total, $query);
+        $this->setDataImagesCategory($category);
+        $this->setDataProductsCategory($products);
+        $this->setDataChildrenCategory($category_id);
+        $this->setNavbarCategory($products, $total, $query);
 
-        $this->setCategoryMenu($tree);
+        $this->setMenuCategory();
 
         $this->setMetaIndexCategory($category);
         $this->setTitleIndexCategory($category);
@@ -84,19 +83,74 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets sidebar menu
-     * @param array $tree
+     * Sets rendered category navbar
+     * @param array $products
+     * @param integer $total
+     * @param array $query
      */
-    protected function setCategoryMenu(array $tree)
+    protected function setNavbarCategory(array $products, $total, array $query)
     {
-        $this->addRegionItem('region_left', array('category/block/menu', array('tree' => $tree)));
+        $options = array(
+            'total' => $total,
+            'view' => $query['view'],
+            'quantity' => count($products),
+            'sort' => "{$query['sort']}-{$query['order']}"
+        );
+
+        $html = $this->render('category/navbar', $options);
+        $this->setData('navbar', $html);
+    }
+
+    /**
+     * Sets rendered product list
+     * @param array $products
+     */
+    protected function setDataProductsCategory(array $products)
+    {
+        $html = $this->render('product/list', array('products' => $products));
+        $this->setData('products', $html);
+    }
+
+    /**
+     * Sets rendered category images
+     * @param array $category
+     */
+    protected function setDataImagesCategory(array $category)
+    {
+        $options = array(
+            'imagestyle' => $this->setting('image_style_category', 3));
+
+        $this->setItemThumb($category, $options);
+
+        $html = $this->render('category/images', array('category' => $category));
+        $this->setData('images', $html);
+    }
+
+    /**
+     * Sets rendered category children
+     * @param integer $category_id
+     */
+    protected function setDataChildrenCategory($category_id)
+    {
+        $children = $this->category->getChildren($category_id, $this->category_tree);
+        $html = $this->render('category/children', array('children' => $children));
+        $this->setData('children', $html);
+    }
+
+    /**
+     * Sets menu on the category page
+     */
+    protected function setMenuCategory()
+    {
+        $options = array('category/block/menu', array('tree' => $this->category_tree));
+        $this->addRegionItem('region_left', $options);
     }
 
     /**
      * Sets titles on the category page
      * @param array $category
      */
-    protected function setTitleCategory(array $category)
+    protected function setTitleIndexCategory(array $category)
     {
         $metatitle = $category['meta_title'];
 
@@ -112,7 +166,7 @@ class Category extends FrontendController
      * Sets breadcrumbs on the category page
      * @param array $category
      */
-    protected function setBreadcrumbCategory(array $category)
+    protected function setBreadcrumbIndexCategory(array $category)
     {
         $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
         $this->setBreadcrumb(array('text' => $category['title']));
@@ -122,11 +176,11 @@ class Category extends FrontendController
      * Sets metatags on the category page
      * @param array $category
      */
-    protected function setMetaCategory(array $category)
+    protected function setMetaIndexCategory(array $category)
     {
         $meta_description = $category['meta_description'];
 
-        if (empty($meta_description)) {
+        if ($meta_description === '') {
             $meta_description = $this->truncate($category['description_1'], 160, '');
         }
 
@@ -137,7 +191,7 @@ class Category extends FrontendController
     /**
      * Renders the category page
      */
-    protected function outputCategory()
+    protected function outputIndexCategory()
     {
         $this->output('category/category');
     }
@@ -147,118 +201,15 @@ class Category extends FrontendController
      * @param integer $category_id
      * @return array
      */
-    protected function get($category_id)
+    protected function getCategory($category_id)
     {
-        $category = $this->category->get($category_id, $this->langcode);
+        $category = $this->category->get($category_id, $this->langcode, $this->store_id);
 
         if (empty($category['status'])) {
             $this->outputError(404);
         }
 
-        if ($category['store_id'] != $this->store_id) {
-            $this->outputError(404);
-        }
-
         return $category;
-    }
-
-    /**
-     * Returns ready-to-display category images
-     * @param array $category
-     * @return string
-     */
-    protected function getRenderedImages(array $category)
-    {
-        if (empty($category['images'])) {
-            return '';
-        }
-
-        $imagestyle = $this->config->module($this->theme, 'image_style_category', 3);
-
-        foreach ($category['images'] as &$image) {
-            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
-        }
-
-        return $this->render('category/images', array('category' => $category));
-    }
-
-    /**
-     * Returns ready-to-display category children
-     * @param integer $category_id
-     * @param array $tree
-     * @return string
-     */
-    protected function getRenderedChildren($category_id, array $tree)
-    {
-        $children = $this->category->getChildren($category_id, $tree);
-        return $this->render('category/children', array('children' => $children));
-    }
-
-    /**
-     * Returns ready-to-display category navbar
-     * @param integer $quantity
-     * @param integer $total
-     * @param array $query
-     * @return string
-     */
-    protected function getRenderedNavbar($quantity, $total, array $query)
-    {
-        $options = array(
-            'total' => $total,
-            'quantity' => $quantity,
-            'view' => $query['view'],
-            'sort' => "{$query['sort']}-{$query['order']}"
-        );
-
-        return $this->render('category/navbar', $options);
-    }
-
-    /**
-     * Returns ready-to-display products
-     * @param array $products
-     * @return string
-     */
-    protected function getRenderedProducts(array $products)
-    {
-        return $this->render('product/list', array('products' => $products));
-    }
-
-    /**
-     * Returns prepared category tree
-     * @param integer $category_group_id
-     * @return array
-     */
-    protected function getTree($category_group_id)
-    {
-        $options = array(
-            'status' => 1,
-            'category_group_id' => $category_group_id
-        );
-
-        return $this->prepareTree($this->category->getTree($options));
-    }
-
-    /**
-     * Modifies a category tree before rendering
-     * @param array $tree
-     * @return array
-     */
-    protected function prepareTree(array $tree)
-    {
-        $category_ids = array_keys($tree);
-        $imagestyle = $this->config->module($this->theme, 'image_style_category_child', 3);
-
-        $prepared = array();
-        foreach ($tree as $category_id => $item) {
-            $url = $item['alias'] ? $item['alias'] : "category/{$item['category_id']}";
-            $item['url'] = $url;
-            $item['active'] = ($this->path === $url);
-            $item['thumb'] = $this->image->getThumb($category_id, $imagestyle, 'category_id', $category_ids, false);
-            $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
-            $prepared[$category_id] = $item;
-        }
-
-        return $prepared;
     }
 
     /**
@@ -268,7 +219,7 @@ class Category extends FrontendController
      * @param integer $category_id
      * @return array
      */
-    protected function getProducts($limit, array $query, $category_id)
+    protected function getListProductCategory($limit, array $query, $category_id)
     {
         $options = array(
             'status' => 1,
@@ -276,8 +227,9 @@ class Category extends FrontendController
             'store_id' => $this->store_id,
             'category_id' => $category_id,
                 //'language' => $this->langcode
-                ) + $query;
+        );
 
+        $options += $query;
         $products = $this->product->getList($options);
         return $this->prepareProducts($products, $query);
     }
@@ -288,7 +240,7 @@ class Category extends FrontendController
      * @param array $query
      * @return integer
      */
-    protected function getTotalProducts($category_id, array $query)
+    protected function getTotalProductCategory($category_id, array $query)
     {
         $options = array(
             'count' => true,
@@ -296,7 +248,8 @@ class Category extends FrontendController
                 //'language' => $this->langcode
         );
 
-        return $this->product->getList($options + $query);
+        $options += $query;
+        return $this->product->getList($options);
     }
 
 }

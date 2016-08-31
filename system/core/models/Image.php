@@ -93,36 +93,29 @@ class Image extends Model
     {
         return $this->file->getTranslations($file_id);
     }
-
+    
     /**
      * Returns a string containing an image url
-     * @param integer $id
-     * @param integer $imagestyle
-     * @param string $id_key
-     * @param array $id_value
-     * @param boolean $placeholder
-     * @return null|string
+     * @param array $data
+     * @param array $options
+     * @return string
      */
-    public function getThumb($id, $imagestyle, $id_key, array $id_value,
-            $placeholder = true)
+    public function getThumb(array $data, array $options)
     {
-        if (empty($id_value)) {
-            return $placeholder ? $this->placeholder($imagestyle) : null; // prevent loading too many images
+        if (empty($options['ids'])) {
+            return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
         }
 
-        $images = $this->getList($id_key, $id_value); // memory cached list
+        // memory cached list
+        $images = $this->getList($options['id_key'], $data[$options['id_key']]);
 
         foreach ($images as $file) {
-            if ($file['id_value'] == $id) {
-                return $this->url($imagestyle, $file['path']);
+            if ($file['id_value'] == $data[$options['id_key']]) {
+                return $this->url($options['imagestyle'], $file['path']);
             }
         }
-
-        if ($placeholder) {
-            return $this->placeholder($imagestyle);
-        }
-
-        return null;
+        
+        return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
     }
 
     /**

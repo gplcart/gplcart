@@ -195,7 +195,7 @@ class Route
         $routes['category/(\d+)'] = array(
             'alias' => array(0, 1),
             'handlers' => array(
-                'controller' => array('core\\controllers\\Category', 'category')
+                'controller' => array('core\\controllers\\Category', 'indexCategory')
             )
         );
 
@@ -867,21 +867,9 @@ class Route
      */
     public function process()
     {
-        // Try to find an alias
-        if (!empty($this->db)) {
-            $this->findAliasByPath();
-            $this->findAliasByPattern();
-        }
-
-        // No alias found, call the route controller
-        $this->callController();
-
-        // No route controller found, show 404 error message
-        $route = array(
-            'handlers' => array('controller' => array('core\\controllers\\Error', 'error404'))
-        );
-
-        Handler::call($route, null, 'controller');
+        $this->callControllerAlias();
+        $this->callControllerRoute();
+        $this->callControllerNotFound();
     }
 
     /**
@@ -931,42 +919,58 @@ class Route
      * Finds an alias by the path
      * @return null
      */
-    protected function findAliasByPath()
+    protected function callControllerAlias()
     {
-        $sth = $this->db->prepare('SELECT id_key, id_value FROM alias WHERE alias=:alias');
-        $sth->execute(array(':alias' => $this->path()));
-        $result = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($result)) {
-            return;
+        if (empty($this->db)) {
+            return; // No database available, exit
         }
 
-        $key = str_replace('_id', '', $result['id_key']);
+        $alias = $this->path();
+        $info = $this->getAliasInfo($alias);
 
-        foreach ($this->getList() as $pattern => $route) {
-            if (!isset($route['alias'][0])) {
-                continue;
-            }
+        if (isset($info['id_key'])) {
 
-            $pattern_segments = explode('/', $pattern);
+            // Entity name: product, page, category etc...
+            $entityname = str_replace('_id', '', $info['id_key']);
 
-            if ($pattern_segments[$route['alias'][0]] === $key) {
-                $route['arguments'] = array($result['id_value']);
+            foreach ($this->getList() as $pattern => $route) {
+
+                if (!isset($route['alias'][0])) {
+                    continue; // This route doesn't support aliases
+                }
+
+                $pattern_segments = explode('/', $pattern);
+
+                if ($pattern_segments[$route['alias'][0]] !== $entityname) {
+                    continue; // Not matching, try next route
+                }
+
+                $route['arguments'] = array($info['id_value']);
                 $this->route = $route + array('pattern' => $pattern);
-                Handler::call($route, null, 'controller', $route['arguments']);
-                exit;
+                $result = Handler::call($route, null, 'controller', $route['arguments']);
+
+                if ($result !== false) {
+                    exit; // Controller and method found, exit
+                }
             }
         }
+
+        // Failed to found the matching controller above
+        // The current path can be a system path like product/1
+        // so now we'll try to find an appropriate alias in the database and redirect to it
+        $this->redirectToAlias();
     }
 
     /**
      * Finds an alias by the route pattern
+     * and redirects to it
      */
-    protected function findAliasByPattern()
+    protected function redirectToAlias()
     {
         $path_segments = $this->url->segments();
 
         foreach ($this->getList() as $pattern => $route) {
+
             if (empty($route['alias'])) {
                 continue;
             }
@@ -989,18 +993,51 @@ class Route
                 continue;
             }
 
-            $sth = $this->db->prepare('SELECT alias FROM alias WHERE id_key=:id_key AND id_value=:id_value');
-            $sth->execute(array(
-                ':id_key' => $path_segments[$route['alias'][0]] . '_id',
-                ':id_value' => $path_segments[$route['alias'][1]]));
+            $alias = $this->getAliasById($path_segments, $route);
 
-            $alias = $sth->fetchColumn();
-
-            if (!empty($alias)) {
-                $this->route = $route + array('pattern' => $pattern);
-                $this->url->redirect($alias);
+            if (empty($alias)) {
+                continue;
             }
+
+            $this->route = $route + array('pattern' => $pattern);
+            $this->url->redirect($alias);
         }
+    }
+
+    /**
+     * Selects an alias using entity key ID and numeric value
+     * @param array $segments
+     * @param array $route
+     * @return string
+     */
+    protected function getAliasById(array $segments, array $route)
+    {
+        $sql = 'SELECT alias'
+                . ' FROM alias'
+                . ' WHERE id_key=:id_key AND id_value=:id_value';
+
+        $sth = $this->db->prepare($sql);
+
+        $sth->execute(array(
+            ':id_key' => $segments[$route['alias'][0]] . '_id',
+            ':id_value' => $segments[$route['alias'][1]]));
+
+        return (string) $sth->fetchColumn();
+    }
+
+    /**
+     * Returns alias info (keys) using the current URL path
+     * @param string $alias
+     * @return array|boolean
+     */
+    protected function getAliasInfo($alias)
+    {
+        $sql = 'SELECT id_key, id_value FROM alias WHERE alias=:alias';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array(':alias' => $alias));
+
+        return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -1008,19 +1045,34 @@ class Route
      * @param array $routes
      * @return boolean|null
      */
-    protected function callController()
+    protected function callControllerRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
             $arguments = $this->parsePattern($pattern);
 
-            if ($arguments !== false) {
-                $route['arguments'] = $arguments;
-                $this->route = $route + array('pattern' => $pattern);
-                Handler::call($route, null, 'controller', $arguments);
+            if ($arguments === false) {
+                continue;
             }
+
+            $route['arguments'] = $arguments;
+            $this->route = $route + array('pattern' => $pattern);
+            Handler::call($route, null, 'controller', $arguments);
         }
 
         return false;
+    }
+
+    /**
+     * Displays 404 Not Found Page
+     */
+    protected function callControllerNotFound()
+    {
+        $route = array(
+            'handlers' => array(
+                'controller' => array('core\\controllers\\Error', 'error404'))
+        );
+
+        Handler::call($route, null, 'controller');
     }
 
     /**

@@ -25,7 +25,7 @@ class Database extends PDO
     public function __construct(array $config = array())
     {
         if (!empty($config)) {
-            
+
             $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
 
             try {

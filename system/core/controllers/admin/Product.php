@@ -170,17 +170,25 @@ class Product extends BackendController
         $store_id = (int) $this->request->get('store_id');
 
         if (!empty($store_id) && $this->request->isAjax()) {
-
-            $brand = $this->category->getOptionListByStore($store_id, 'brand');
-            $catalog = $this->category->getOptionListByStore($store_id, 'catalog');
-
-            $response = array(
-                'brand' => reset($brand),
-                'catalog' => reset($catalog)
-            );
-
+            $response = $this->getListCategoryProduct($store_id);
             $this->response->json($response);
         }
+    }
+    
+    /**
+     * Get list of categories keyed by type
+     * @param integer $store_id
+     * @return array
+     */
+    protected function getListCategoryProduct($store_id)
+    {
+        $categories = array();
+        foreach (array('brand', 'catalog') as $type) {
+            $data = $this->category->getOptionListByStore($store_id, $type);
+            $categories[$type] = reset($data);
+        }
+
+        return $categories;
     }
 
     /**
@@ -478,6 +486,11 @@ class Product extends BackendController
             $attached = $this->render('common/image/attache', $data);
             $this->setData('attached_images', $attached);
         }
+        
+        $store_id = $this->getData('store_id');
+        $categories = $this->getListCategoryProduct($store_id);
+        
+        $this->setData('categories', $categories);
     }
 
     /**
