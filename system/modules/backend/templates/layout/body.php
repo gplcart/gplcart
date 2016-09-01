@@ -75,7 +75,7 @@
       </div>
     </div>
   </nav>
-  <?php if ($page_title || $page_description || $breadcrumb) { ?>
+  <?php if ($page_title || $breadcrumb) { ?>
   <div class="container-fluid content-header">
     <div class="row">
       <div class="col-md-12">

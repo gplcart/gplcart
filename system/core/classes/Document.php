@@ -189,24 +189,6 @@ class Document
     }
 
     /**
-     * Adds a page description
-     * @staticvar string $description
-     * @param string $string
-     * @return string
-     */
-    public function pdescription($string = '')
-    {
-        static $description = '';
-
-        if ($string === '') {
-            return $description;
-        }
-
-        $description = $string;
-        return $description;
-    }
-
-    /**
      * Returns a string containing either asset URL or MD5 hash of its content
      * @param string $string
      * @return string

@@ -176,7 +176,7 @@ class Front extends FrontendController
     {
         $products = $this->getFrontProducts();
 
-        $this->addRegionItem('region_content', array('front/block/product', array(
+        $this->setRegion('region_content', array('front/block/product', array(
                 'products' => $this->renderProducts($products))));
     }
 
@@ -186,7 +186,7 @@ class Front extends FrontendController
     protected function setFrontPages()
     {
         $pages = $this->preparePages($this->getFrontPages());
-        $this->addRegionItem('region_top', array('page/block/page', array(
+        $this->setRegion('region_top', array('page/block/page', array(
                 'pages' => $pages)));
     }
 

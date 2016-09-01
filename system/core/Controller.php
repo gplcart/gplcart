@@ -1089,7 +1089,7 @@ class Controller
      * @param string|array $item Expected array format:
      * first item - template, second - variables for $this->render()
      */
-    public function addRegionItem($region, $item)
+    public function setRegion($region, $item)
     {
         if (is_array($item)) {
             $template = array_shift($item);
@@ -1153,24 +1153,78 @@ class Controller
     }
 
     /**
+     * Returns a string containing <title></title>
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->document->title();
+    }
+
+    /**
+     * Returns a string containing H title
+     * @return string
+     */
+    public function getPageTitle()
+    {
+        return $this->document->ptitle();
+    }
+
+    /**
+     * Returns an array with page breadcrumbs
+     * @return array
+     */
+    public function getBreadcrumbs()
+    {
+        return $this->document->breadcrumb();
+    }
+
+    /**
+     * Returns an array of meta data
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->document->meta();
+    }
+
+    /**
+     * Returns an array of attached styles
+     * @return array
+     */
+    public function getCss()
+    {
+        return $this->document->css();
+    }
+
+    /**
+     * Returns an array of attached Java scripts
+     * @param string $region
+     * @return array
+     */
+    public function getJs($region)
+    {
+        return $this->document->js(null, $region);
+    }
+
+    /**
      * Modifies data variables before passing them to templates
      */
     protected function prepareOutput()
     {
-        $this->data['head_title'] = $this->document->title();
-        $this->data['page_title'] = $this->document->ptitle();
-        $this->data['page_description'] = $this->document->pdescription();
-        $this->data['breadcrumb'] = $this->document->breadcrumb();
-        $this->data['meta'] = $this->document->meta();
+        $this->data['meta'] = $this->getMeta();
+        $this->data['head_title'] = $this->getTitle();
+        $this->data['page_title'] = $this->getPageTitle();
+        $this->data['breadcrumb'] = $this->getBreadcrumbs();
 
         // Sort and add styles and javascripts
-        $this->data['css'] = $this->document->css();
+        $this->data['css'] = $this->getCss();
         Tool::sortWeight($this->data['css']);
 
-        $this->data['js_top'] = $this->document->js(null, 'top');
+        $this->data['js_top'] = $this->getJs('top');
         Tool::sortWeight($this->data['js_top']);
 
-        $this->data['js_bottom'] = $this->document->js(null, 'bottom');
+        $this->data['js_bottom'] = $this->getJs('bottom');
         Tool::sortWeight($this->data['js_bottom']);
     }
 
@@ -1397,16 +1451,6 @@ class Controller
     public function setPageTitle($title)
     {
         return $this->document->ptitle($title);
-    }
-
-    /**
-     * Sets page description (not metatag)
-     * @param string $description
-     * @return string
-     */
-    public function setPageDescription($description)
-    {
-        return $this->document->pdescription($description);
     }
 
     /**

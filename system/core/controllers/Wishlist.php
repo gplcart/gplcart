@@ -133,7 +133,7 @@ class Wishlist extends FrontendController
      */
     protected function setBlockRecentProducts()
     {
-        $this->addRegionItem('region_bottom', array('product/block/recent', array(
+        $this->setRegion('region_bottom', array('product/block/recent', array(
                 'products' => $this->getRecentProducts())));
     }
 
@@ -142,7 +142,7 @@ class Wishlist extends FrontendController
      */
     protected function setBlockCategoryMenu()
     {
-        $this->addRegionItem('region_left', array('category/block/menu', array(
+        $this->setRegion('region_left', array('category/block/menu', array(
                 'tree' => $this->getTree())));
     }
 

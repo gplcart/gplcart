@@ -243,7 +243,7 @@ class Route
 
         $routes['compare'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Compare', 'select')
+                'controller' => array('core\\controllers\\Compare', 'selectCompare')
             )
         );
 
@@ -947,11 +947,8 @@ class Route
 
                 $route['arguments'] = array($info['id_value']);
                 $this->route = $route + array('pattern' => $pattern);
-                $result = Handler::call($route, null, 'controller', $route['arguments']);
-
-                if ($result !== false) {
-                    exit; // Controller and method found, exit
-                }
+                Handler::call($route, null, 'controller', $route['arguments']);
+                exit('An error occurred while processing route');
             }
         }
 
@@ -1001,6 +998,7 @@ class Route
 
             $this->route = $route + array('pattern' => $pattern);
             $this->url->redirect($alias);
+            exit('An error occurred while processing route');
         }
     }
 
@@ -1043,7 +1041,6 @@ class Route
     /**
      * Calls an appropriate controller for the current URL
      * @param array $routes
-     * @return boolean|null
      */
     protected function callControllerRoute()
     {
@@ -1057,10 +1054,8 @@ class Route
             $route['arguments'] = $arguments;
             $this->route = $route + array('pattern' => $pattern);
             Handler::call($route, null, 'controller', $arguments);
-            exit;
+            exit('An error occurred while processing route');
         }
-
-        return false;
     }
 
     /**
@@ -1074,7 +1069,7 @@ class Route
         );
 
         Handler::call($route, null, 'controller');
-        exit;
+        exit('An error occurred while processing route');
     }
 
     /**

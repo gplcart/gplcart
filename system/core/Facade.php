@@ -141,10 +141,9 @@ class Facade
      */
     protected function setDebuggingTools()
     {
-        // Debugging
-        //if ($this->config->get('kint', 0)) {
-        require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
-        //}
+        if ($this->config->get('kint', 0)) {
+            require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+        }
     }
 
 }

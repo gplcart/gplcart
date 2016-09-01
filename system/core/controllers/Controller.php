@@ -59,6 +59,12 @@ class Controller extends BaseController
      * @var \core\models\Alias $alias
      */
     protected $alias;
+    
+    /**
+     * Array of recently viewed products
+     * @var array
+     */
+    protected $viewed = array();
 
     /**
      * Current user cart ID
@@ -125,8 +131,9 @@ class Controller extends BaseController
         $this->category = Container::instance('core\\models\\Category');
 
         if (!$this->url->isInstall()) {
+            $this->viewed = $this->getViewed();
             $this->cart_uid = $this->cart->uid();
-            $this->category_tree = $this->getCategoryTree();
+            $this->category_tree = $this->getCategories();
             $this->compare_content = $this->product->getCompared();
             $this->cart_content = $this->cart->getByUser($this->cart_uid, false);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
@@ -136,9 +143,38 @@ class Controller extends BaseController
         $this->hook->fire('init.frontend', $this);
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function getHoneypot()
     {
         return $this->render('common/honeypot');
+    }
+    
+    /**
+     * Returns Share this widget
+     * @param array $options
+     * @return string
+     */
+    public function getShare(array $options = array())
+    {
+        $options += array(
+            'title' => $this->getPageTitle(),
+            'url' => $this->url(false, array(), true)
+        );
+
+        return $this->render('common/share', $options);
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    protected function getViewed()
+    {
+        $limit = $this->config('product_recent_limit', 12);
+        return $this->product->getViewed($limit);
     }
 
     /**
@@ -178,17 +214,49 @@ class Controller extends BaseController
      * @param array $options
      * @return array
      */
-    protected function getCategoryTree(array $options = array())
+    protected function getCategories(array $options = array())
     {
         $options += array(
             'status' => 1,
             'type' => 'catalog',
+            'prepare' => true,
             'store_id' => $this->store_id,
             'imagestyle' => $this->setting('image_style_category_child', 3)
         );
 
         $tree = $this->category->getTree($options);
-        return $this->prepareCategoryTree($tree, $options);
+
+        if (empty($options['prepare'])) {
+            return $tree;
+        }
+
+        return $this->prepareCategories($tree, $options);
+    }
+
+    /**
+     * Loads an array of products from an array of product IDs
+     * @param array $conditions
+     * @param array $options
+     * @return array
+     */
+    protected function getProducts(array $conditions = array(), array $options = array())
+    {
+        $conditions += array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
+        
+        $options += array(
+            'prepare' => true
+        );
+
+        $products = $this->product->getList($conditions);
+
+        if (empty($options['prepare'])) {
+            return $products;
+        }
+
+        return $this->prepareProducts($products, $options);
     }
 
     /**
@@ -196,7 +264,7 @@ class Controller extends BaseController
      * @param array $tree
      * @return array
      */
-    protected function prepareCategoryTree(array $tree, array $options = array())
+    protected function prepareCategories(array $tree, array $options = array())
     {
         if (empty($tree)) {
             return array();
@@ -316,9 +384,12 @@ class Controller extends BaseController
      */
     protected function setItemProductRendered(array &$product, array $options)
     {
+        $options += array('buttons' => array(
+                'cart_add', 'wishlist_add', 'compare_add'));
+        
         $data = array(
             'product' => $product,
-            'buttons' => array('cart_add', 'wishlist_add', 'compare_add'));
+            'buttons' => $options['buttons']);
 
         $product['rendered'] = $this->render("product/item/{$options['view']}", $data);
     }

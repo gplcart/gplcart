@@ -670,7 +670,7 @@ class Product extends Model
         if (!$this->canDelete($product_id)) {
             return false;
         }
-        
+
         $data = array(
             'cart' => array('product_id' => $product_id),
             'review' => array('product_id' => $product_id),
@@ -687,8 +687,8 @@ class Product extends Model
             'search_index' => array('id_key' => 'product_id', 'id_value' => $product_id),
             'collection_item' => array('id_key' => 'product_id', 'id_value' => $product_id)
         );
-        
-        foreach($data as $table => $conditions){
+
+        foreach ($data as $table => $conditions) {
             $this->db->delete($table, $conditions);
         }
 
@@ -780,20 +780,20 @@ class Product extends Model
      */
     public function getCompared()
     {
-        $product_ids = &Cache::memory(__FUNCTION__);
+        $items = &Cache::memory(__FUNCTION__);
 
-        if (isset($product_ids)) {
-            return $product_ids;
+        if (isset($items)) {
+            return (array) $items;
         }
 
-        $product_ids = array();
+        $items = array();
         $saved = $this->request->cookie('comparison');
 
         if (!empty($saved)) {
-            $product_ids = explode(',', $saved);
+            $items = array_filter(array_map('trim', explode('|', urldecode($saved))), 'is_numeric');
         }
 
-        return $product_ids;
+        return $items;
     }
 
     /**
@@ -815,7 +815,7 @@ class Product extends Model
     public function setCompared(array $product_ids)
     {
         $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
-        return Tool::setCookie('comparison', implode(',', (array) $product_ids), $lifespan);
+        return Tool::setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
     }
 
     /**
@@ -1050,15 +1050,17 @@ class Product extends Model
      */
     public function setViewed($product_id, $limit, $lifespan)
     {
-        $product_ids = $this->getViewed($limit);
+        $existing = $this->getViewed($limit);
 
-        if (in_array($product_id, $product_ids)) {
-            return $product_ids;
+        if (in_array($product_id, $existing)) {
+            return $existing;
         }
 
-        $product_ids[] = (int) $product_id;
-        Tool::setCookie('viewed_products', implode('|', array_unique($product_ids)), $lifespan);
-        return $product_ids;
+        $existing[] = (int) $product_id;
+        $saved = array_unique($existing);
+
+        Tool::setCookie('viewed_products', implode('|', $saved), $lifespan);
+        return $saved;
     }
 
     /**
@@ -1069,13 +1071,13 @@ class Product extends Model
     public function getViewed($limit = null)
     {
         $cookie = Tool::getCookie('viewed_products', '');
-        $product_ids = array_filter(explode('|', $cookie), 'is_numeric');
+        $products = array_filter(explode('|', $cookie), 'is_numeric');
 
         if (isset($limit)) {
-            $product_ids = array_slice($product_ids, -$limit);
+            $products = array_slice($products, -$limit);
         }
 
-        return $product_ids;
+        return $products;
     }
 
     /**

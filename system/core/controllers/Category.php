@@ -67,7 +67,7 @@ class Category extends FrontendController
         $max = $this->setting('catalog_limit', 20);
         $limit = $this->setPager($total, $query, $max);
 
-        $products = $this->getListProductCategory($limit, $query, $category_id);
+        $products = $this->getProductsCategory($limit, $query, $category_id);
 
         $this->setDataImagesCategory($category);
         $this->setDataProductsCategory($products);
@@ -138,12 +138,12 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets menu on the category page
+     * Sets menu block
      */
     protected function setMenuCategory()
     {
         $options = array('category/block/menu', array('tree' => $this->category_tree));
-        $this->addRegionItem('region_left', $options);
+        $this->setRegion('region_left', $options);
     }
 
     /**
@@ -219,19 +219,16 @@ class Category extends FrontendController
      * @param integer $category_id
      * @return array
      */
-    protected function getListProductCategory($limit, array $query, $category_id)
+    protected function getProductsCategory($limit, array $query, $category_id)
     {
         $options = array(
-            'status' => 1,
             'limit' => $limit,
-            'store_id' => $this->store_id,
             'category_id' => $category_id,
                 //'language' => $this->langcode
         );
 
         $options += $query;
-        $products = $this->product->getList($options);
-        return $this->prepareProducts($products, $query);
+        return $this->getProducts($options);
     }
 
     /**
