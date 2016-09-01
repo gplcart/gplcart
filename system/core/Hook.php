@@ -33,7 +33,7 @@ class Hook
      * Registers modules hooks
      * @param array $modules
      */
-    public function registerModules(array $modules)
+    public function modules(array $modules)
     {
         foreach ($modules as $module) {
             if (empty($module['hooks'])) {

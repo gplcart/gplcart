@@ -91,7 +91,7 @@ class Facade
 
         // Register hooks
         $modules = $this->config->getEnabledModules();
-        $this->hook->registerModules($modules);
+        $this->hook->modules($modules);
     }
 
     /**

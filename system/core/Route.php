@@ -942,13 +942,13 @@ class Route
                 $pattern_segments = explode('/', $pattern);
 
                 if ($pattern_segments[$route['alias'][0]] !== $entityname) {
-                    continue; // Not matching, try next route
+                    continue; // Entity name not matching, try the next route
                 }
 
                 $route['arguments'] = array($info['id_value']);
                 $this->route = $route + array('pattern' => $pattern);
                 Handler::call($route, null, 'controller', $route['arguments']);
-                exit('An error occurred while processing route');
+                exit('An error occurred while processing the route');
             }
         }
 
@@ -998,7 +998,7 @@ class Route
 
             $this->route = $route + array('pattern' => $pattern);
             $this->url->redirect($alias);
-            exit('An error occurred while processing route');
+            exit('An error occurred while processing the route');
         }
     }
 
@@ -1054,7 +1054,7 @@ class Route
             $route['arguments'] = $arguments;
             $this->route = $route + array('pattern' => $pattern);
             Handler::call($route, null, 'controller', $arguments);
-            exit('An error occurred while processing route');
+            exit('An error occurred while processing the route');
         }
     }
 
@@ -1065,11 +1065,11 @@ class Route
     {
         $route = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Error', 'error404'))
+                'controller' => array('core\\controllers\\Controller', 'outputError'))
         );
 
-        Handler::call($route, null, 'controller');
-        exit('An error occurred while processing route');
+        Handler::call($route, null, 'controller', array(404));
+        exit('An error occurred while processing the route');
     }
 
     /**
