@@ -59,7 +59,7 @@ class Controller extends BaseController
      * @var \core\models\Alias $alias
      */
     protected $alias;
-    
+
     /**
      * Array of recently viewed products
      * @var array
@@ -109,6 +109,17 @@ class Controller extends BaseController
     {
         parent::__construct();
 
+        $this->setFrontendInstancies();
+        $this->setFrontendProperties();
+
+        $this->hook->fire('init.frontend', $this);
+    }
+
+    /**
+     * Sets model instancies
+     */
+    protected function setFrontendInstancies()
+    {
         /* @var $price \core\models\Price */
         $this->price = Container::instance('core\\models\\Price');
 
@@ -129,7 +140,13 @@ class Controller extends BaseController
 
         /* @var $category \core\models\Category */
         $this->category = Container::instance('core\\models\\Category');
+    }
 
+    /**
+     * Sets controller's properties
+     */
+    protected function setFrontendProperties()
+    {
         if (!$this->url->isInstall()) {
             $this->viewed = $this->getViewed();
             $this->cart_uid = $this->cart->uid();
@@ -139,8 +156,6 @@ class Controller extends BaseController
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
             $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
         }
-
-        $this->hook->fire('init.frontend', $this);
     }
 
     /**
@@ -151,7 +166,7 @@ class Controller extends BaseController
     {
         return $this->render('common/honeypot');
     }
-    
+
     /**
      * Returns Share this widget
      * @param array $options
@@ -239,13 +254,14 @@ class Controller extends BaseController
      * @param array $options
      * @return array
      */
-    protected function getProducts(array $conditions = array(), array $options = array())
+    protected function getProducts(array $conditions = array(),
+            array $options = array())
     {
         $conditions += array(
             'status' => 1,
             'store_id' => $this->store_id
         );
-        
+
         $options += array(
             'prepare' => true
         );
@@ -386,7 +402,7 @@ class Controller extends BaseController
     {
         $options += array('buttons' => array(
                 'cart_add', 'wishlist_add', 'compare_add'));
-        
+
         $data = array(
             'product' => $product,
             'buttons' => $options['buttons']);

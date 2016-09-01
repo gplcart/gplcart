@@ -1035,7 +1035,7 @@ class Controller
     }
 
     /**
-     * Displsys an error page
+     * Displays an error page
      * @param integer $code
      */
     public function outputError($code = 403)
