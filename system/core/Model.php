@@ -62,6 +62,44 @@ class Model
     {
         return $this->db;
     }
+    
+    /**
+     * Filters an array of data according to existing columns for the given table
+     * @param string $table
+     * @param array $data
+     * @return array
+     */
+    protected function getDbSchemeValues($table, array $data)
+    {
+        $scheme = $this->getDbScheme($table);
+
+        if (empty($scheme['fields'])) {
+            return array();
+        }
+
+        $values = array_intersect_key($data, $scheme['fields']);
+
+        if (empty($values)) {
+            return array();
+        }
+
+        foreach ($values as $field => &$value) {
+
+            if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
+                $value = intval($value);
+            }
+
+            if ($scheme['fields'][$field]['type'] === 'float') {
+                $value = floatval($value);
+            }
+
+            if (!empty($scheme['fields'][$field]['serialize'])) {
+                $value = serialize((array) $value);
+            }
+        }
+
+        return $values;
+    }
 
     /**
      * Returns an array of data used to create tables in the database
@@ -211,8 +249,7 @@ class Model
                 'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'collection_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'description' => array('type' => 'text', 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true)
             )
         );
 
@@ -220,8 +257,7 @@ class Model
             'fields' => array(
                 'collection_item_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'collection_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
                 'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
@@ -613,44 +649,6 @@ class Model
         }
 
         return $tables;
-    }
-
-    /**
-     * Filters an array of data according to existing columns for the given table
-     * @param string $table
-     * @param array $data
-     * @return array
-     */
-    protected function getDbSchemeValues($table, array $data)
-    {
-        $scheme = $this->getDbScheme($table);
-
-        if (empty($scheme['fields'])) {
-            return array();
-        }
-
-        $values = array_intersect_key($data, $scheme['fields']);
-
-        if (empty($values)) {
-            return array();
-        }
-
-        foreach ($values as $field => &$value) {
-
-            if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
-                $value = intval($value);
-            }
-
-            if ($scheme['fields'][$field]['type'] === 'float') {
-                $value = floatval($value);
-            }
-
-            if (!empty($scheme['fields'][$field]['serialize'])) {
-                $value = serialize((array) $value);
-            }
-        }
-
-        return $values;
     }
 
 }

@@ -332,6 +332,28 @@ class Route
             )
         );
 
+        $routes['admin/content/collection'] = array(
+            'access' => 'collection',
+            'menu' => array('admin' => 'Collections'),
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Collection', 'listCollection')
+            )
+        );
+
+        $routes['admin/content/collection/add'] = array(
+            'access' => 'collection_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Collection', 'editCollection')
+            )
+        );
+
+        $routes['admin/content/collection/edit/(\d+)'] = array(
+            'access' => 'collection_edit',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Collection', 'editCollection')
+            )
+        );
+
         $routes['admin/tool'] = array(
             'menu' => array('admin' => 'Tools'),
             'handlers' => array(
@@ -1063,9 +1085,16 @@ class Route
      */
     protected function callControllerNotFound()
     {
+        $class = 'core\\controllers\\Controller';
+
+        // Use correct templates
+        if ($this->url->isBackend()) {
+            $class = 'core\\controllers\\admin\\Controller';
+        }
+
         $route = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Controller', 'outputError'))
+                'controller' => array($class, 'outputError'))
         );
 
         Handler::call($route, null, 'controller', array(404));

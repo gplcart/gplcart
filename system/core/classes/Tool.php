@@ -433,30 +433,30 @@ class Tool
 
     /**
      * Finds a best matched file for the current URL
-     * @param string $directory
+     * @param string $dir
      * @param string $ext
      * @param array|string $url An URL string or an array of URL segments
-     * @param string $delimiter
+     * @param string $glue
      * @return array
      */
-    public static function contextFile($directory, $ext, $url, $delimiter = '-')
+    public static function contexUrltFile($dir, $ext, $url, $glue = '-')
     {
-
-        if (!is_readable($directory)) {
+        if (!is_readable($dir)) {
             return array();
         }
 
-        if (is_array($url)) {
-            $expected = implode($delimiter, $url);
-        } else {
-            $expected = trim(str_replace('/', $delimiter, (string) $url), $delimiter);
-        }
+        $expected = trim(str_replace('/', $glue, (string) $url), $glue);
 
         $candidates = array();
-        foreach (static::scanFiles($directory, (array) $ext) as $file) {
+        $files = static::scanFiles($dir, (array) $ext);
+
+        foreach ($files as $file) {
+
             $filename = pathinfo($file, PATHINFO_FILENAME);
+
             if (0 === strpos($expected, $filename)) {
-                $candidates[strlen($filename)] = array('path' => $file, 'filename' => $filename);
+                $candidates[strlen($filename)] = array(
+                    'path' => $file, 'filename' => $filename);
             }
         }
 
@@ -465,7 +465,6 @@ class Tool
         }
 
         ksort($candidates);
-
         return end($candidates);
     }
 

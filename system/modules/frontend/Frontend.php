@@ -56,13 +56,13 @@ class Frontend
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
         $controller->setMeta(array('name' => 'author', 'content' => 'GPL Cart'));
-        
+
         $controller->setJs('system/modules/frontend/js/script.js', 'top');
         $controller->setJs('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $controller->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
         $controller->setJs('files/assets/jquery/match-height/dist/jquery.matchHeight-min.js', 'top');
         $controller->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
-        
+
         $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
         $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css');
         $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css');

@@ -24,6 +24,8 @@ class Controller extends BaseController
      * @var array
      */
     protected $current_job = array();
+    
+    protected $search;
 
     /**
      * Constructor
@@ -31,11 +33,20 @@ class Controller extends BaseController
     public function __construct()
     {
         parent::__construct();
+        
+        /* @var $job \core\models\Job */
+        $this->search = Container::instance('core\\models\\Search');
 
         $this->setJobProperties();
 
         $this->data['admin_menu'] = $this->getAdminMenu();
         $this->data['help_summary'] = $this->getHelpSummary();
+        
+        $this->data['store_list'] = $this->store->getList();
+        $this->data['search_handlers'] = $this->search->getHandlers();
+        
+        
+        $this->hook->fire('init.backend', $this);
     }
 
     /**
@@ -47,7 +58,7 @@ class Controller extends BaseController
         $folder = $this->langcode ? $this->langcode : 'en';
         $directory = GC_HELP_DIR . "/$folder";
 
-        $file = Tool::contextFile($directory, 'php', $this->path);
+        $file = Tool::contexUrltFile($directory, 'php', $this->path);
 
         if (empty($file)) {
             return '';
@@ -59,10 +70,9 @@ class Controller extends BaseController
         if (empty($parts)) {
             return '';
         }
-
-        return $this->render('help/summary', array(
-                    'content' => array_map('trim', $parts),
-                    'file' => $file));
+        
+        $data = array('content' => array_map('trim', $parts), 'file' => $file);
+        return $this->render('help/summary', $data);
     }
 
     /**

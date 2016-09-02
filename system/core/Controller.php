@@ -19,6 +19,12 @@ class Controller
 {
 
     /**
+     * Whether the current view is backend
+     * @var boolean
+     */
+    protected $backend;
+
+    /**
      * Name of the current theme
      * @var string
      */
@@ -356,7 +362,6 @@ class Controller
 
         $this->token = $this->config->token();
 
-
         $this->setRouteProperties();
         $this->setDeviceProperties();
         $this->setStoreProperties();
@@ -547,6 +552,8 @@ class Controller
      */
     protected function setRouteProperties()
     {
+        $this->backend = $this->url->isBackend();
+
         // Set access for the route
         $this->current_route = $this->route->getCurrent();
 
@@ -604,10 +611,11 @@ class Controller
      */
     protected function setThemeProperties()
     {
+
         $this->theme_frontend = $this->config('theme', 'frontend');
         $this->theme_backend = $this->config('theme_backend', 'backend');
 
-        if ($this->url->isBackend()) {
+        if ($this->backend) {
             $this->theme = $this->theme_backend;
         } elseif ($this->url->isInstall()) {
             $this->theme = $this->theme_frontend;
@@ -817,7 +825,7 @@ class Controller
         }
 
         // Check access only on restricted areas
-        if (!$this->url->isBackend() && $this->url->isAccount() === false) {
+        if (!$this->backend && $this->url->isAccount() === false) {
             return true;
         }
 
@@ -876,7 +884,7 @@ class Controller
     protected function controlAccessAdmin()
     {
         // Check only admin pages
-        if (!$this->url->isBackend()) {
+        if (!$this->backend) {
             return;
         }
 
@@ -933,7 +941,7 @@ class Controller
      */
     protected function controlMaintenanceMode()
     {
-        if (!$this->url->isInstall() && !$this->url->isBackend() && empty($this->current_store['status'])) {
+        if (!$this->url->isInstall() && !$this->backend && empty($this->current_store['status'])) {
             $this->maintenance = true;
             $this->outputMaintenance();
         }
@@ -1013,10 +1021,12 @@ class Controller
             $templates = array('region_content' => $templates);
         }
 
+        $this->hook->fire('output', $this->data, $this);
+
         $this->prepareOutput();
-        $this->hook->fire('data', $this->data, $this);
 
         $templates += $this->templates;
+
         $layout_template = $templates['layout'];
         unset($templates['layout']);
 
@@ -1315,16 +1325,14 @@ class Controller
 
         $this->setJsTranslation();
 
-        $is_backend = $this->url->isBackend();
-
         // Call cron
-        if ($is_backend && !empty($this->cron_interval) && (GC_TIME - $this->cron_last_run) > $this->cron_interval) {
+        if ($this->backend && !empty($this->cron_interval) && (GC_TIME - $this->cron_last_run) > $this->cron_interval) {
             $url = $this->url('cron', array('key' => $this->cron_key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
             $this->document->js($js, 'bottom');
         }
 
-        if ($is_backend) {
+        if ($this->backend) {
             $session_limit = GC_SESSION_TIMEOUT * 1000;
             $this->document->js("GplCart.logout($session_limit);", 'bottom');
         }
@@ -1377,9 +1385,10 @@ class Controller
         $this->data['last_activity'] = $this->last_activity;
         $this->data['session_limit'] = ($this->last_activity + GC_SESSION_TIMEOUT) * 1000;
 
-        $this->data['lang_region'] = $this->langcode;
-        if (strpos($this->langcode, '_') === false) {
+        if (!empty($this->langcode) && strpos($this->langcode, '_') === false) {
             $this->data['lang_region'] = $this->langcode . '-' . strtoupper($this->langcode);
+        } else {
+            $this->data['lang_region'] = $this->langcode;
         }
 
         $this->data['messages'] = $this->session->getMessage();

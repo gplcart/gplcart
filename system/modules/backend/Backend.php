@@ -9,81 +9,13 @@
 
 namespace modules\backend;
 
-use core\Route;
-use core\classes\Url;
 use core\classes\Tool;
-use core\classes\Document;
-use core\models\User as ModelsUser;
-use core\models\Store as ModelsStore;
-use core\models\Search as ModelsSearch;
 
 /**
  * Main backend theme class
  */
 class Backend
 {
-
-    /**
-     * User model instance
-     * @var \core\models\User $user
-     */
-    protected $user;
-
-    /**
-     * Store model instance
-     * @var \core\models\Store $store
-     */
-    protected $store;
-
-    /**
-     * Search model instance
-     * @var \core\models\Search $search
-     */
-    protected $search;
-
-    /**
-     * Url class instance
-     * @var \core\classes\Url $url
-     */
-    protected $url;
-
-    /**
-     * Document class instance
-     * @var \core\classes\Document $document
-     */
-    protected $document;
-
-    /**
-     * Route class instance
-     * @var \core\Route $route
-     */
-    protected $route;
-
-    /**
-     * Constructor
-     * @param ModelsUser $user
-     * @param ModelsStore $store
-     * @param ModelsSearch $search
-     * @param Url $url
-     * @param Document $document
-     * @param Route $route
-     */
-    public function __construct(ModelsUser $user, ModelsStore $store,
-            ModelsSearch $search, Url $url, Document $document, Route $route)
-    {
-        $this->url = $url;
-        $this->user = $user;
-        $this->store = $store;
-        $this->route = $route;
-        $this->search = $search;
-        $this->document = $document;
-
-        if ($this->url->isBackend()) {
-            $this->addJs();
-            $this->addCss();
-            $this->addMeta();
-        }
-    }
 
     /**
      * Returns module info
@@ -100,81 +32,89 @@ class Backend
             'settings' => array()
         );
     }
-    
+
     /**
-     * Implements hook data
-     * @param array $data
-     * @param object $controller
-     * @return null
+     * Implements hook.backend
+     * @param \core\controllers\admin\Controller $controller
      */
-    public function hookData(array &$data, $controller)
+    public function hookInitBackend($controller)
     {
-        if (!$this->url->isBackend()) {
-            return;
+        $this->addCss($controller);
+        $this->addMeta($controller);
+        $this->addJs($controller);
+    }
+
+    /**
+     * Implements hook.data
+     * @param \core\controllers\admin\Controller $controller
+     */
+    public function hookOutput($data, $controller)
+    {
+        $title = $controller->getPageTitle();
+
+        if (!empty($title)) {
+            $controller->setBreadcrumb(array('text' => $title));
         }
-
-        $data['store_list'] = $this->store->getList();
-        $data['search_handlers'] = $this->search->getHandlers();
-
-        if (!empty($data['page_title'])) {
-            $data['breadcrumb'][] = array('text' => $data['page_title']);
-        }
     }
 
     /**
-     * Adds Bootstrap meta data
+     * Adds styles
+     * @param \core\controllers\admin\Controller $controller
      */
-    protected function addMeta()
+    protected function addCss($controller)
     {
-        $this->document->meta(array('charset' => 'utf-8'));
-        $this->document->meta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
-        $this->document->meta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
-        $this->document->meta(array('name' => 'author', 'content' => 'GPL Cart'));
+        $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
+        $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css');
+        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css');
+        $controller->setCss('files/assets/jquery/summernote/summernote.css');
+        $controller->setCss('files/assets/bootstrap/select/dist/css/bootstrap-select.min.css');
+        $controller->setCss('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css');
+        $controller->setCss('system/modules/backend/css/style.css');
     }
 
     /**
-     * Adds CSS styles
+     * Adds meta tags
+     * @param \core\controllers\admin\Controller $controller
      */
-    protected function addCss()
+    protected function addMeta($controller)
     {
-        $this->document->css('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
-        $this->document->css('files/assets/font-awesome/css/font-awesome.min.css');
-        $this->document->css('files/assets/jquery/ui/jquery-ui.min.css');
-        $this->document->css('files/assets/jquery/summernote/summernote.css');
-        $this->document->css('files/assets/bootstrap/select/dist/css/bootstrap-select.min.css');
-        $this->document->css('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css');
-        $this->document->css('system/modules/backend/css/style.css');
+        $controller->setMeta(array('charset' => 'utf-8'));
+        $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
+        $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
+        $controller->setMeta(array('name' => 'author', 'content' => 'GPL Cart'));
     }
 
     /**
-     * Adds Java Scripts
+     * Adds scripts
+     * @param \core\controllers\admin\Controller $controller
      */
-    protected function addJs()
+    protected function addJs($controller)
     {
-        $this->document->js('system/modules/backend/js/common.js', 'top');
-        $this->document->js('files/assets/jquery/ui/jquery-ui.min.js', 'top');
-        $this->document->js('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
+        $controller->setJs('system/modules/backend/js/common.js', 'top');
+        $controller->setJs('files/assets/jquery/ui/jquery-ui.min.js', 'top');
+        $controller->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
 
-        // Add a JS file depending on the current URL
-        $file = Tool::contextFile(GC_MODULE_DIR . '/backend/js', 'js', $this->url->segments());
+        $path = $controller->getData('path');
+        $file = Tool::contexUrltFile(GC_MODULE_DIR . '/backend/js', 'js', $path);
 
         if (isset($file['filename'])) {
-            $this->document->js("system/modules/backend/js/{$file['filename']}.js", 'bottom');
+            $controller->setJs("system/modules/backend/js/{$file['filename']}.js", 'bottom');
         }
 
-        $this->document->js('files/assets/bootstrap/growl/jquery.bootstrap-growl.min.js', 'bottom');
-        $this->document->js('files/assets/jquery/fileupload/jquery.fileupload.js', 'bottom');
-        $this->document->js('files/assets/bootstrap/select/dist/js/bootstrap-select.min.js', 'bottom');
+        $controller->setJs('files/assets/bootstrap/growl/jquery.bootstrap-growl.min.js', 'bottom');
+        $controller->setJs('files/assets/jquery/fileupload/jquery.fileupload.js', 'bottom');
+        $controller->setJs('files/assets/bootstrap/select/dist/js/bootstrap-select.min.js', 'bottom');
 
-        $langcode = $this->route->getLangcode();
-        $lang_region = (strpos($langcode, '_') === false) ? $langcode . '-' . strtoupper($langcode) : $langcode;
+        $lang_region = $controller->getData('lang_region');
+        $controller->setJs('files/assets/jquery/summernote/summernote.min.js', 'bottom');
 
-        $this->document->js('files/assets/jquery/summernote/summernote.min.js', 'bottom');
-        $this->document->js("files/assets/jquery/summernote/lang/summernote-$lang_region.js", 'bottom');
+        if ($lang_region) {
+            $controller->setJs("files/assets/jquery/summernote/lang/summernote-$lang_region.js", 'bottom');
+        }
 
-        $this->document->js('files/assets/jquery/cookie/js.cookie.js', 'bottom');
-        $this->document->js('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
-        $this->document->js('files/assets/jquery/countdown/countdown.js', 'bottom');
+        $controller->setJs('files/assets/jquery/cookie/js.cookie.js', 'bottom');
+        $controller->setJs('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
+        $controller->setJs('files/assets/jquery/countdown/countdown.js', 'bottom');
     }
 
 }
