@@ -8,12 +8,15 @@
         </label>
         <div class="col-md-4">
           <input name="category_group[title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['title']) ? $this->escape($category_group['title']) : ''; ?>" autofocus>
-          <?php if (isset($this->errors['title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['title'])) { ?>
+            <?php echo $this->errors['title']; ?>
+            <?php } ?>
+            <div class="text-muted"><?php echo $this->text('Category group name to be shown to administrators and customers'); ?></div>
+          </div>
         </div>
       </div>
-      <?php if (!empty($languages)) { ?> 
+      <?php if (!empty($languages)) { ?>
       <?php foreach ($languages as $code => $info) { ?>
       <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
@@ -32,9 +35,7 @@
     <div class="panel-body">
       <div class="form-group<?php echo isset($this->errors['type']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Brand categories are used for grouping products by trademark, catalog - grouping by type'); ?>">
-            <?php echo $this->text('Type'); ?>
-          </span>
+          <?php echo $this->text('Type'); ?>
         </label>
         <div class="col-md-4">
           <select name="category_group[type]" class="form-control">
@@ -43,16 +44,17 @@
             <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->text($type); ?></option>
             <?php } ?>
           </select>
-          <?php if (isset($this->errors['type'])) { ?>
-          <div class="help-block"><?php echo $this->errors['type']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['type'])) { ?>
+            <?php echo $this->errors['type']; ?>
+            <?php } ?>
+            <div class="text-muted"><?php echo $this->text('Brand category groups will contain trademarks (Sony, Apple), catalog - normal categories like Computers, Monitors etc.'); ?></div>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('This category group will be displayed only in the selected store'); ?>">
-            <?php echo $this->text('Store'); ?>
-          </span>
+          <?php echo $this->text('Store'); ?>
         </label>
         <div class="col-md-4">
           <select name="category_group[store_id]" class="form-control">
@@ -64,6 +66,9 @@
             <?php } ?>
             <?php } ?>
           </select>
+          <div class="help-block">
+            <?php echo $this->text('Select a store where to display this category group'); ?>
+          </div>
         </div>
       </div>
     </div>

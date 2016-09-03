@@ -354,6 +354,20 @@ class Route
             )
         );
 
+        $routes['admin/content/collection-item/(\d+)'] = array(
+            'access' => 'collection_item',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\CollectionItem', 'listCollectionItem')
+            )
+        );
+
+        $routes['admin/content/collection-item/(\d+)/add'] = array(
+            'access' => 'collection_item_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\CollectionItem', 'editCollectionItem')
+            )
+        );
+
         $routes['admin/tool'] = array(
             'menu' => array('admin' => 'Tools'),
             'handlers' => array(

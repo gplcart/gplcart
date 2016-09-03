@@ -8,35 +8,40 @@
     <div class="panel-body">
       <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span title="<?php echo $this->text('Category name to be used on the category page and menu'); ?>" class="hint">
-            <?php echo $this->text('Title'); ?>
-          </span>
+          <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-8">
           <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->escape($category['title']) : ''; ?>">
-          <?php if (isset($this->errors['title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['title'])) { ?>
+              <?php echo $this->errors['title']; ?>
+            <?php } ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. The title will be used on the category page and menu'); ?>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Main category description, usually placed on the top of the category page'); ?>">
-            <?php echo $this->text('First description'); ?>
-          </span>
+          <?php echo $this->text('First description'); ?>
         </label>
         <div class="col-md-8">
           <textarea class="form-control summernote" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->xss($category['description_1']) : ''; ?></textarea>
+          <div class="help-block">
+            <?php echo $this->text('Optional. A text that usually placed at the top of the category page'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Additional category description, usually placed on the bottom of the category page'); ?>">
-            <?php echo $this->text('Second description'); ?>
-          </span>
+          <?php echo $this->text('Second description'); ?>
         </label>
         <div class="col-md-8">
           <textarea class="form-control summernote" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->xss($category['description_2']) : ''; ?></textarea>
+          <div class="help-block">
+            <?php echo $this->text('Optional. A text that usually placed at the bottom of the category page'); ?>
+          </div>
         </div>
       </div>
       <?php if (!empty($languages)) { ?>
@@ -82,9 +87,7 @@
     <div class="panel-body">
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Disabled categories will not be available for customers and search engines'); ?>">
-            <?php echo $this->text('Status'); ?>
-          </span>
+          <?php echo $this->text('Status'); ?>
         </label>
         <div class="col-md-6"> 
           <div class="btn-group" data-toggle="buttons">
@@ -96,14 +99,15 @@
               <input name="category[status]" type="radio" autocomplete="off" value="0"<?php echo (!isset($category['status']) || $category['status']) ? '' : ' checked'; ?>>
               <?php echo $this->text('Disabled'); ?>
             </label>
-          </div> 
+          </div>
+          <div class="help-block">
+            <?php echo $this->text('Disabled categories will not be available for frontend users and search engines'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Select Root to make this category parentless, i.e top level'); ?>">
-              <?php echo $this->text('Parent category'); ?>
-          </span>
+          <?php echo $this->text('Parent category'); ?>
         </label>
         <div class="col-md-4">
           <?php if (isset($category['parent_id'])) { ?>
@@ -115,19 +119,25 @@
             <option value="<?php echo $category_id; ?>"<?php echo ($category_id == $parent_id) ? ' selected' : ''; ?>><?php echo $this->escape($category_name); ?></option>
             <?php } ?>
           </select>
+          <div class="help-block">
+            <?php echo $this->text('Select a parent of the category. Specify "Root" for top-level parentless category'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group<?php echo isset($this->errors['alias']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('An alternative, SEO-friendly URL for the category. Leave empty to generate automatically'); ?>">
-              <?php echo $this->text('Alias'); ?>
-          </span>
+           <?php echo $this->text('Alias'); ?>
         </label>
         <div class="col-md-6">
           <input type="text" name="category[alias]" class="form-control" value="<?php echo isset($category['alias']) ? $this->escape($category['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-          <?php if (isset($this->errors['alias'])) { ?>
-          <div class="help-block"><?php echo $this->errors['alias']; ?></div>
+          <div class="help-block">
+          <?php if (isset($this->errors['alias'])) { ?>  
+          <?php echo $this->errors['alias']; ?>
           <?php } ?>
+          <div class="text-muted">
+            <?php echo $this->text('An alternative path by which this category can be accessed. Leave empty to generate it automatically'); ?>
+          </div>
+          </div>
         </div>
       </div>
     </div>
@@ -149,6 +159,7 @@
         <div class="col-md-12">
           <label for="fileinput" class="btn btn-default"><i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?></label>
           <input class="hide" type="file" id="fileinput" name="file" data-entity-type="category" multiple="multiple" accept="image/*">
+          <div class="help-block"><?php echo $this->text('Upload one or more images to be displayed on the category page'); ?></div>
         </div>
       </div>
       <?php } ?>
@@ -159,25 +170,29 @@
     <div class="panel-body">
       <div class="form-group<?php echo isset($this->errors['meta_title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('HTML meta title tag on the category page. Important for SEO'); ?>">
-            <?php echo $this->text('Meta title'); ?>
-          </span>
+          <?php echo $this->text('Meta title'); ?>
         </label>
         <div class="col-md-8">
           <input maxlength="60" name="category[meta_title]" class="form-control" value="<?php echo isset($category['meta_title']) ? $this->escape($category['meta_title']) : ''; ?>">
-          <?php if (isset($this->errors['meta_title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['meta_title']; ?></div>
+          <div class="help-block">
+          <?php if (isset($this->errors['meta_title'])) { ?> 
+          <?php echo $this->errors['meta_title']; ?>
           <?php } ?>
+          <div class="help-block">
+            <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
+          </div>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('HTML meta description tag on the category page. Describes the category to search engines. Important for SEO'); ?>">
           <?php echo $this->text('Meta description'); ?>
-          </span>
         </label>
         <div class="col-md-8">
           <textarea maxlength="160" class="form-control" name="category[meta_description]"><?php echo isset($category['meta_description']) ? $this->escape($category['meta_description']) : ''; ?></textarea>
+          <div class="help-block">
+            <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+          </div>
         </div>
       </div>
       <?php if (!empty($languages)) { ?>

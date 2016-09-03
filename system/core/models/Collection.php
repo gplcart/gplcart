@@ -292,6 +292,8 @@ class Collection extends Model
 
         $result = false;
         $values = $this->getDbSchemeValues('collection', $data);
+        
+        unset($values['type']); // Cannot change item type!
 
         if (!empty($values)) {
             $conditions = array('collection_id' => (int) $collection_id);
@@ -319,21 +321,27 @@ class Collection extends Model
 
         $handlers['product'] = array(
             'title' => $this->language->text('Product'),
+            'id_key' => 'product_id',
             'handlers' => array(
+                'list' => array('core\\models\\Product', 'getList'),
                 'validate' => array('core\\handlers\\validator\\Collection', 'product'),
             ),
         );
 
         $handlers['file'] = array(
             'title' => $this->language->text('File'),
+            'id_key' => 'file_id',
             'handlers' => array(
+                'list' => array('core\\models\\File', 'getList'),
                 'validate' => array('core\\handlers\\validator\\Collection', 'file'),
             ),
         );
 
         $handlers['page'] = array(
             'title' => $this->language->text('Page'),
+            'id_key' => 'page_id',
             'handlers' => array(
+                'list' => array('core\\models\\Page', 'getList'),
                 'validate' => array('core\\handlers\\validator\\Collection', 'page'),
             ),
         );
@@ -341,5 +349,4 @@ class Collection extends Model
         $this->hook->fire('collection.handlers', $handlers);
         return $handlers;
     }
-
 }

@@ -1,29 +1,37 @@
 <form method="post" id="edit-field" onsubmit="return confirm();" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
-    <div class="panel-body">     
+    <div class="panel-body">
       <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Name of the field for all users'); ?>">
-            <?php echo $this->text('Title'); ?>
-          </span>
+          <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="field[title]" class="form-control" value="<?php echo (isset($field['title'])) ? $this->escape($field['title']) : ''; ?>">
-          <?php if (isset($this->errors['title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['title'])) { ?>
+            <?php echo $this->errors['title']; ?>
+            <?php } ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. The title will be displayed to customers on product pages'); ?>
+            </div>
+          </div>
         </div>
       </div>
       <?php if (!empty($languages)) { ?>
       <?php foreach ($languages as $code => $language) { ?>
         <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
-          <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
+          <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['name'])); ?></label>
           <div class="col-md-4">
             <input maxlength="255" name="field[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field['translation'][$code]['title'])) ? $this->escape($field['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+              <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
+              <?php echo $this->errors['translation'][$code]['title']; ?>
+              <?php } ?>
+              <div class="text-muted">
+              <?php echo $this->text('An optional translation for language %name', array('%name' => $language['name'])); ?>
+              </div>
+            </div>
           </div>
         </div>
       <?php } ?>
@@ -35,9 +43,7 @@
       <?php if (empty($field['field_id'])) { ?>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Atributes are facts about the products, options are interactive with the customer'); ?>">
-            <?php echo $this->text('Type'); ?>
-          </span>
+          <?php echo $this->text('Type'); ?>
         </label>
         <div class="col-md-4">
           <select name="field[type]" class="form-control">
@@ -49,14 +55,15 @@
             <option value="option" selected><?php echo $this->text('Option'); ?></option>
             <?php } ?>
           </select>
+          <div class="help-block">
+            <?php echo $this->text('Atributes are facts about the products, options are interactive with the customer (Size, Color etc)'); ?>
+          </div>
         </div>
       </div>
       <?php } ?>
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('How to display the field for customers. This is for options only'); ?>">
-            <?php echo $this->text('Widget'); ?>
-          </span>
+          <?php echo $this->text('Widget'); ?>
         </label>
         <div class="col-md-4">
           <select name="field[widget]" class="form-control">
@@ -64,20 +71,26 @@
             <option value="<?php echo $type; ?>"<?php echo (isset($field['widget']) && $field['widget'] == $type) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
             <?php } ?>
           </select>
+          <div class="help-block">
+            <?php echo $this->text('Select how to represent the field to customers. This is for options only'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
-            <?php echo $this->text('Weight'); ?>
-          </span>
+          <?php echo $this->text('Weight'); ?>
         </label>
-        <div class="col-md-1">
+        <div class="col-md-4">
           <input name="field[weight]" class="form-control" value="<?php echo isset($field['weight']) ? $this->escape($field['weight']) : 0; ?>">
+        <div class="help-block">
+          <?php if (isset($this->errors['weight'])) { ?>
+          <?php echo $this->errors['weight']; ?>
+          <?php } ?>
+          <div class="text-muted">
+            <?php echo $this->text('Fields are sorted in lists by the weight value. Lower value means higher position'); ?>
+          </div>
         </div>
-        <?php if (isset($this->errors['weight'])) { ?>
-        <div class="help-block col-md-6"><?php echo $this->errors['weight']; ?></div>
-        <?php } ?>
+        </div>
       </div>
     </div>
   </div>
@@ -91,7 +104,7 @@
           </button>
           <?php } ?>
         </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-4">
           <div class="btn-toolbar">
             <a href="<?php echo $this->url('admin/content/field'); ?>" class="cancel btn btn-default">
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>

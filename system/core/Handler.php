@@ -40,23 +40,23 @@ class Handler
      * Returns a handler
      * @param array $handlers
      * @param string $handler_id
-     * @param string $method
+     * @param string $name
      * @return boolean|array
      */
-    public static function get($handlers, $handler_id, $method)
+    public static function get($handlers, $handler_id, $name)
     {
         if (isset($handler_id)) {
-            if (empty($handlers[$handler_id]['handlers'][$method])) {
+            if (empty($handlers[$handler_id]['handlers'][$name])) {
                 return false;
             }
 
-            $handler = $handlers[$handler_id]['handlers'][$method];
+            $handler = $handlers[$handler_id]['handlers'][$name];
         } else {
-            if (empty($handlers['handlers'][$method])) {
+            if (empty($handlers['handlers'][$name])) {
                 return false;
             }
 
-            $handler = $handlers['handlers'][$method];
+            $handler = $handlers['handlers'][$name];
         }
 
         $instance = Container::instance($handler);

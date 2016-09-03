@@ -11,6 +11,8 @@ namespace core\models;
 
 use PDO;
 use core\Model;
+use core\Handler;
+use core\models\Collection as ModelsCollection;
 
 /**
  * Manages basic behaviors and data related to collection items
@@ -19,11 +21,19 @@ class CollectionItem extends Model
 {
 
     /**
+     * Collection model instance
+     * @var \core\models\Collection $collection
+     */
+    protected $collection;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(ModelsCollection $collection)
     {
         parent::__construct();
+
+        $this->collection = $collection;
     }
 
     /**
@@ -81,6 +91,27 @@ class CollectionItem extends Model
 
         $this->hook->fire('collection.item.list', $items);
         return $items;
+    }
+
+    /**
+     * Returns an array of collection item values
+     * @param array $options
+     * @return array
+     */
+    public function getValues(array $options)
+    {
+        $items = $this->getList($options);
+
+        if (empty($items)) {
+            return array();
+        }
+
+        $values = array();
+        foreach ($items as $id => $item) {
+            $values[$item['value']] = $id;
+        }
+
+        return $values;
     }
 
     /**
@@ -173,6 +204,65 @@ class CollectionItem extends Model
 
         $this->hook->fire('update.collection.item.after', $collection_item_id, $data, $result);
         return (bool) $result;
+    }
+
+    /**
+     * 
+     * @param array $collection
+     * @param array $options
+     * @return type
+     */
+    public function getEntities(array $collection, array $options = array())
+    {
+        $handler_id = $collection['type'];
+        $handlers = $this->collection->getHandlers();
+        
+        $options += array(
+            'status' => 1,
+            'store_id' => $collection['store_id'],
+            'collection_id' => $collection['collection_id']
+        );
+        
+        $values = $this->getValues($options);
+        
+        if (empty($values)) {
+            return array();
+        }
+
+        $options[$handlers[$handler_id]['id_key']] = array_keys($values);
+        $results = Handler::call($handlers, $handler_id, 'list', array($options));
+
+        if (empty($results)) {
+            return array();
+        }
+
+        foreach ($results as $id => &$result) {
+            if (isset($values[$id])) {
+                $result['collection_item_id'] = $values[$id];
+            }
+        }
+
+        return $results;
+    }
+    
+    public function getSuggestions(array $collection, array $options = array()){
+        
+        $handler_id = $collection['type'];
+        $handlers = $this->collection->getHandlers();
+        
+        $options += array(
+            'status' => 1,
+            'store_id' => $collection['store_id']
+        );
+        
+        $results = Handler::call($handlers, $handler_id, 'list', array($options));
+
+        if (empty($results)) {
+            return array();
+        }
+        
+        return $results;
+        
     }
 
 }

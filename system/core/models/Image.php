@@ -107,7 +107,7 @@ class Image extends Model
         }
 
         // memory cached list
-        $images = $this->getList($options['id_key'], $data[$options['id_key']]);
+        $images = $this->getList($options['id_key'], $options['ids']);
 
         foreach ($images as $file) {
             if ($file['id_value'] == $data[$options['id_key']]) {

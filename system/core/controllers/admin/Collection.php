@@ -183,7 +183,6 @@ class Collection extends BackendController
      */
     protected function getCollection($collection_id)
     {
-
         if (!is_numeric($collection_id)) {
             return array();
         }
@@ -241,9 +240,11 @@ class Collection extends BackendController
             'translation' => array()
         ));
 
-        $this->addValidator('type', array(
-            'required' => array()
-        ));
+        if (empty($collection['collection_id'])) {
+            $this->addValidator('type', array(
+                'required' => array()
+            ));
+        }
 
         $this->addValidator('store_id', array(
             'required' => array()

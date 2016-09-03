@@ -1,12 +1,10 @@
 <form method="post" id="edit-product-class" onsubmit="return confirm();" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
-    <div class="panel-body">      
+    <div class="panel-body">
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Disabled product classes will not be available for editors'); ?>">
             <?php echo $this->text('Status'); ?>
-          </span>
         </label>
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">
@@ -17,22 +15,26 @@
               <input name="product_class[status]" type="radio" autocomplete="off" value="0"<?php echo empty($product_class['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
           </div>
+          <div class="text-muted">
+            <?php echo $this->text('Disabled product classes will not be available for administrators'); ?>
+          </div>
         </div>
-      </div>         
+      </div>
       <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Name of the product class for editors'); ?>">
-            <?php echo $this->text('Name'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->escape($product_class['title']) : ''; ?>">
-          <?php if (isset($this->errors['title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['title'])) { ?>
+            <?php echo $this->errors['title']; ?>
+            <?php } ?>
+            <div class="text-muted">
+            <?php echo $this->text('Required. Name of the product class for administrators'); ?>
+            </div>
+          </div>
         </div>
-      </div>  
-    </div> 
+      </div>
+    </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-body">

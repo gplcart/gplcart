@@ -7,20 +7,28 @@
         <label class="col-md-2 control-label">
           <?php echo $this->text('Title'); ?>
         </label>
-        <div class="col-md-6">
+        <div class="col-md-8">
           <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->escape($page['title']) : ''; ?>" autofocus>
-          <?php if (isset($this->errors['title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['title'])) { ?>
+            <?php echo $this->errors['title']; ?>
+            <?php } ?>
+            <div class="text-muted"><?php echo $this->text('Required. The title will be used on the page and menu'); ?></div>
+          </div>
         </div>
       </div>
       <div class="form-group required<?php echo isset($this->errors['description']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
         <div class="col-md-8">
           <textarea class="form-control summernote" name="page[description]"><?php echo (isset($page['description'])) ? $this->xss($page['description']) : ''; ?></textarea>
-          <?php if (isset($this->errors['description'])) { ?>
-          <div class="help-block"><?php echo $this->errors['description']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['description'])) { ?>
+            <?php echo $this->errors['description']; ?>
+            <?php } ?>
+            <div class="text-muted">
+            <?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?>
+            </div>
+          </div>
         </div>
       </div>
       <?php if (!empty($languages)) { ?>
@@ -44,7 +52,7 @@
         </div>
         <div class="form-group<?php echo isset($this->errors['translation'][$code]['description']) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Text %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-8">
+          <div class="col-md-6">
             <textarea class="form-control summernote" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->xss($page['translation'][$code]['description']) : ''; ?></textarea>
             <?php if (isset($this->errors['translation'][$code]['description'])) { ?>
             <div class="help-block"><?php echo $this->errors['translation'][$code]['description']; ?></div>
@@ -61,11 +69,9 @@
     <div class="panel-body">
       <div class="form-group">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Disabled pages are unavailable for customers and search engines'); ?>">
-            <?php echo $this->text('Status'); ?>
-          </span>
+          <?php echo $this->text('Status'); ?>
         </label>
-        <div class="col-md-6">   
+        <div class="col-md-8">   
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-default<?php echo (!isset($page['status']) || $page['status']) ? ' active' : ''; ?>">
               <input name="page[status]" type="radio" autocomplete="off" value="1"<?php echo (!isset($page['status']) || $page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
@@ -73,42 +79,29 @@
             <label class="btn btn-default<?php echo (isset($page['status']) && !$page['status']) ? ' active' : ''; ?>">
               <input name="page[status]" type="radio" autocomplete="off" value="0"<?php echo (isset($page['status']) && !$page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
-          </div> 
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Show this page on the front page'); ?>">
-            <?php echo $this->text('Front page'); ?>
-          </span>
-        </label>
-        <div class="col-md-6">
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default<?php echo empty($page['front']) ? '' : ' active'; ?>">
-              <input name="page[front]" type="radio" autocomplete="off" value="1"<?php echo empty($page['front']) ? '' : ' checked'; ?>>
-              <?php echo $this->text('Yes'); ?>
-            </label>
-            <label class="btn btn-default<?php echo empty($page['front']) ? ' active' : ''; ?>">
-              <input name="page[front]" type="radio" autocomplete="off" value="0"<?php echo empty($page['front']) ? ' checked' : ''; ?>>
-              <?php echo $this->text('No'); ?>
-            </label>
+          </div>
+          <div class="help-block">
+          <?php echo $this->text('Disabled pages will not be available for frontend users and search engines'); ?>
           </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Store'); ?></label>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <select class="form-control" name="page[store_id]">
-            <option value=""><?php echo $this->text('Select'); ?></option>
+            <option value=""><?php echo $this->text('- select -'); ?></option>
             <?php foreach ($stores as $store_id => $store_name) { ?>
             <option value="<?php echo $store_id; ?>"<?php echo (isset($page['store_id']) && $page['store_id'] == $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store_name); ?></option>
             <?php } ?>
           </select>
+          <div class="help-block">
+          <?php echo $this->text('Select a store where to display this page'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Category'); ?></label>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <select data-live-search="true" name="page[category_id]" class="form-control selectpicker">
             <?php foreach ($categories as $category_group_name => $options) { ?>
             <optgroup label="<?php echo $category_group_name; ?>">
@@ -117,19 +110,25 @@
             <?php } ?>
             <?php } ?>
           </select>
+          <div class="help-block">
+          <?php echo $this->text('Select a category of the page'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group<?php echo isset($this->errors['alias']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('An alternative URL of the page. Leave empty to generate automatically'); ?>">
-            <?php echo $this->text('Alias'); ?>
-          </span>
+          <?php echo $this->text('Alias'); ?>
         </label>
-        <div class="col-md-6">
+        <div class="col-md-8">
           <input name="page[alias]" maxlength="255" class="form-control" value="<?php echo isset($page['alias']) ? $this->escape($page['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-          <?php if (isset($this->errors['alias'])) { ?>
-          <div class="help-block"><?php echo $this->errors['alias']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['alias'])) { ?>
+            <?php echo $this->errors['alias']; ?>
+            <?php } ?>
+            <div class="text-muted">
+            <?php echo $this->text('An alternative path by which this page can be accessed. Leave empty to generate it automatically'); ?>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -151,6 +150,9 @@
         <div class="col-md-12">
           <label for="fileinput" class="btn btn-default"><i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?></label>
           <input class="hide" type="file" id="fileinput" data-entity-type="page" name="file" multiple="multiple" accept="image/*">
+          <div class="help-block">
+          <?php echo $this->text('Upload one or more images to be displayed on the page'); ?>
+          </div>
         </div>
       </div>
       <?php } ?>
@@ -161,17 +163,25 @@
     <div class="panel-body">
       <div class="form-group<?php echo isset($this->errors['meta_title']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
-        <div class="col-md-6">
+        <div class="col-md-8">
           <input maxlength="60" name="page[meta_title]" class="form-control" value="<?php echo (isset($page['meta_title'])) ? $this->escape($page['meta_title']) : ''; ?>">
-          <?php if (isset($this->errors['meta_title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['meta_title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['meta_title'])) { ?>
+            <?php echo $this->errors['meta_title']; ?>
+            <?php } ?>
+            <div class="help-block">
+            <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
-        <div class="col-md-6">
+        <div class="col-md-8">
           <textarea maxlength="160" class="form-control" name="page[meta_description]"><?php echo (isset($page['meta_description'])) ? $this->escape($page['meta_description']) : ''; ?></textarea>
+          <div class="help-block">
+            <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+          </div>
         </div>
       </div>
       <?php if (!empty($languages)) { ?>
@@ -186,7 +196,7 @@
         <?php foreach ($languages as $code => $info) { ?>
         <div class="form-group<?php echo isset($this->errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-6">
+          <div class="col-md-8">
             <input maxlength="60" name="page[translation][<?php echo $code; ?>][meta_title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['meta_title'])) ? $this->escape($page['translation'][$code]['meta_title']) : ''; ?>">
             <?php if (isset($this->errors['translation'][$code]['meta_title'])) { ?>
             <div class="help-block"><?php echo $this->errors['translation'][$code]['meta_title']; ?></div>
@@ -195,7 +205,7 @@
         </div>
         <div class="form-group">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-6">
+          <div class="col-md-8">
             <textarea maxlength="160" class="form-control" name="page[translation][<?php echo $code; ?>][meta_description]"><?php echo (isset($page['translation'][$code]['meta_description'])) ? $this->escape($page['translation'][$code]['meta_description']) : ''; ?></textarea>
           </div>
         </div>

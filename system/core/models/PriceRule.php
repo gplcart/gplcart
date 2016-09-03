@@ -59,7 +59,7 @@ class PriceRule extends Model
     }
 
     /**
-     * Returns array of instance/method of the condition handler
+     * Returns array of instance => method of the condition handler
      * @param string $condition_id
      * @param string $method
      * @return mixed

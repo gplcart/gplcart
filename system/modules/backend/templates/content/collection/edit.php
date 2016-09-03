@@ -45,6 +45,7 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
+      <?php if(empty($collection['collection_id'])) { ?>
       <div class="form-group">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Type'); ?>
@@ -65,6 +66,7 @@
           </select>
         </div>
       </div>
+      <?php } ?>
       <div class="form-group">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Store'); ?>

@@ -4,17 +4,16 @@
   <div class="panel panel-default">
     <div class="panel-body">  
       <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Select one or more fields to be added to the product class'); ?>">
-            <?php echo $this->text('Field'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Field'); ?></label>
         <div class="col-md-4">
           <select data-live-search="true" class="form-control selectpicker" name="fields[]" multiple required>
             <?php foreach ($fields as $field_id => $field_title) { ?>
             <option value="<?php echo $field_id; ?>"><?php echo $this->escape($field_title); ?></option>
             <?php } ?>
           </select>
+          <div class="text-muted">
+            <?php echo $this->text('Required. Select one or more fields to the product class'); ?>
+          </div>
         </div>
       </div>  
     </div>
@@ -22,8 +21,7 @@
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-4 col-md-offset-2">
           <div class="btn-toolbar">
             <a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}"); ?>">
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
