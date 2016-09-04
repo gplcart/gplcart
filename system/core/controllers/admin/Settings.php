@@ -82,6 +82,7 @@ class Settings extends BackendController
             'cron_key' => '',
             'error_level' => 2,
             'gapi_email' => '',
+            'gapi_browser_key' => '',
             'gapi_certificate' => '',
             'email_method' => 'mail',
             'smtp_auth' => 1,

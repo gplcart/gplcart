@@ -5,12 +5,8 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="form-group<?php echo isset($this->errors['status']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Disabled imagestyles will not process images'); ?>">
-                <?php echo $this->text('Status'); ?>
-              </span>
-            </label>
-            <div class="col-md-8">
+            <label class="col-md-3 control-label"><?php echo $this->text('Status'); ?></label>
+            <div class="col-md-9">
               <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default<?php echo!empty($imagestyle['status']) ? ' active' : ''; ?>">
                   <input name="imagestyle[status]" type="radio" autocomplete="off" value="1"<?php echo!empty($imagestyle['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
@@ -19,35 +15,37 @@
                   <input name="imagestyle[status]" type="radio" autocomplete="off" value="0"<?php echo empty($imagestyle['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
                 </label>
               </div>
-              <?php if (isset($this->errors['status'])) { ?>
-              <div class="help-block"><?php echo $this->errors['status']; ?></div>
-              <?php } ?>
+              <div class="help-block">
+                <?php echo $this->text('Disabled imagestyles will not process images'); ?>
+              </div>
             </div>
           </div>
           <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Give a descriptive name for the imagestyle'); ?>">
-                <?php echo $this->text('Name'); ?>
-              </span>
-            </label>
-            <div class="col-md-8">
+            <label class="col-md-3 control-label"><?php echo $this->text('Name'); ?></label>
+            <div class="col-md-9">
               <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->escape($imagestyle['name']) : ''; ?>">
-              <?php if (isset($this->errors['name'])) { ?>
-              <div class="help-block"><?php echo $this->errors['name']; ?></div>
-              <?php } ?>
+              <div class="help-block">
+                <?php if (isset($this->errors['name'])) { ?>
+                <?php echo $this->errors['name']; ?>
+                <?php } ?>
+                <div class="text-muted">
+                  <?php echo $this->text('Required. A descriptive name of the image style for administrators'); ?>
+                </div>
+              </div>
             </div>
           </div>
           <div class="form-group required<?php echo isset($this->errors['actions']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('List of actions to be applied to an image when processing with the imagestyle. One action per line. See the legend. Actions are called from the top to bottom'); ?>">
-                <?php echo $this->text('Actions'); ?>
-              </span>
-            </label>
-            <div class="col-md-8">
-              <textarea name="imagestyle[actions]" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->escape($imagestyle['actions']); ?></textarea>
-              <?php if (isset($this->errors['actions'])) { ?>
-              <div class="help-block"><?php echo $this->errors['actions']; ?></div>
-              <?php } ?>
+            <label class="col-md-3 control-label"><?php echo $this->text('Actions'); ?></label>
+            <div class="col-md-9">
+              <textarea name="imagestyle[actions]" rows="6" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->escape($imagestyle['actions']); ?></textarea>
+              <div class="help-block">
+                <?php if (isset($this->errors['actions'])) { ?>
+                <?php echo $this->errors['actions']; ?>
+                <?php } ?>
+                <div class="text-muted">
+                  <?php echo $this->text('Required. A list of actions to be applied to an image during processing with the imagestyle. One action per line. See the legend. Actions are applied from the top to bottom'); ?>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -76,7 +74,7 @@
                   <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
                 </button>
                 <?php } ?>
-              </div>  
+              </div>
             </div>
           </div>
         </div>

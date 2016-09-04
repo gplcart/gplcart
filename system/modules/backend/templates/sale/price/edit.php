@@ -3,14 +3,12 @@
   <div class="row">
     <div class="col-md-6">
       <div class="panel panel-default">
-        <div class="panel-body"> 
+        <div class="panel-body">
           <div class="form-group">
             <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Disabled price rules will not affect prices'); ?>">
-                <?php echo $this->text('Status'); ?>
-              </span>
+              <?php echo $this->text('Status'); ?>
             </label>
-            <div class="col-md-8">
+            <div class="col-md-9">
               <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default<?php echo!empty($price_rule['status']) ? ' active' : ''; ?>">
                   <input name="price_rule[status]" type="radio" autocomplete="off" value="1"<?php echo!empty($price_rule['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
@@ -19,78 +17,37 @@
                   <input name="price_rule[status]" type="radio" autocomplete="off" value="0"<?php echo empty($price_rule['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
                 </label>
               </div>
+              <div class="help-block">
+                <?php echo $this->text('Disabled rules will not affect store prices'); ?>
+              </div>
             </div>
-          </div> 
+          </div>
           <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Name of the price rule for administrators and customers during checkout'); ?>">
-                <?php echo $this->text('Name'); ?>
-              </span>
-            </label>
-            <div class="col-md-6">
+            <label class="col-md-3 control-label"><?php echo $this->text('Name'); ?></label>
+            <div class="col-md-9">
               <input maxlength="255" name="price_rule[name]" class="form-control" value="<?php echo isset($price_rule['name']) ? $this->escape($price_rule['name']) : ''; ?>">
-              <?php if (isset($this->errors['name'])) { ?>
-              <div class="help-block"><?php echo $this->errors['name']; ?></div>
-              <?php } ?>
-            </div>
-          </div>  
-          <div class="form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('A unique string you want to associate with the price rule. Customer must enter the code to apply the rule to the order'); ?>">
-              <?php echo $this->text('Code'); ?>
-              </span>
-            </label>
-            <div class="col-md-6">
-              <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->escape($price_rule['code']) : ''; ?>">
-              <?php if (isset($this->errors['code'])) { ?>
-              <div class="help-block"><?php echo $this->errors['code']; ?></div>
-              <?php } ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-body">  
-          <div class="form-group">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Percent - add/subtract the percentage value'); ?>">
-                <?php echo $this->text('Value type'); ?>
-              </span>
-            </label>
-            <div class="col-md-6">
-              <select name="price_rule[value_type]" class="form-control">
-                <option value="percent"<?php echo (isset($price_rule['value_type']) && $price_rule['value_type'] == 'percent') ? ' selected' : ''; ?>><?php echo $this->text('Percent'); ?></option>
-                <option value="fixed"<?php echo (isset($price_rule['value_type']) && $price_rule['value_type'] == 'fixed') ? ' selected' : ''; ?>><?php echo $this->text('Fixed'); ?></option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group required<?php echo isset($this->errors['value']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Numeric value to be added to the base price. To substract use negative numbers'); ?>">
-                <?php echo $this->text('Value'); ?>
-              </span>
-            </label>
-            <div class="col-md-6">
-              <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->escape($price_rule['value']) : ''; ?>">
-              <?php if (isset($this->errors['value'])) { ?>
-              <div class="help-block"><?php echo $this->errors['value']; ?></div>
-              <?php } ?>
-            </div>
-          </div> 
-          <div class="form-group">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('If the currency is different to the product/order currency, the price value will be converted accordingly'); ?>">
-              <?php echo $this->text('Currency'); ?>
-              </span>
-            </label>
-            <div class="col-md-6">
-              <select name="price_rule[currency]" class="form-control">
-                <?php foreach ($currencies as $code => $currency) { ?>
-                <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : ''; ?>>
-                <?php echo $this->escape($code); ?>
-                </option>
+              <div class="help-block">
+                <?php if (isset($this->errors['name'])) { ?>
+                <?php echo $this->errors['name']; ?>
                 <?php } ?>
-              </select>
+                <div class="text-muted">
+                  <?php echo $this->text('The name will be shown to administrators and customers during checkout'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
+            <label class="col-md-3 control-label"><?php echo $this->text('Code'); ?></label>
+            <div class="col-md-9">
+              <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->escape($price_rule['code']) : ''; ?>">
+              <div class="help-block">
+                <?php if (isset($this->errors['code'])) { ?>
+                <?php echo $this->errors['code']; ?>
+                <?php } ?>
+                <div class="text-muted">
+                  <?php echo $this->text('A unique code you want to associate with this price rule. The code (i.e coupon) must be specified by a customer during checkout'); ?>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -98,26 +55,68 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="form-group">
+            <label class="col-md-3 control-label"><?php echo $this->text('Value type'); ?></label>
+            <div class="col-md-9">
+              <select name="price_rule[value_type]" class="form-control">
+                <option value="percent"<?php echo (isset($price_rule['value_type']) && $price_rule['value_type'] == 'percent') ? ' selected' : ''; ?>><?php echo $this->text('Percent'); ?></option>
+                <option value="fixed"<?php echo (isset($price_rule['value_type']) && $price_rule['value_type'] == 'fixed') ? ' selected' : ''; ?>><?php echo $this->text('Fixed'); ?></option>
+              </select>
+              <div class="help-block">
+                <?php echo $this->text('Select how to add/subtract the price rule value. I.e for discount 10% use "Percent"'); ?>
+              </div>
+            </div>
+          </div>
+          <div class="form-group required<?php echo isset($this->errors['value']) ? ' has-error' : ''; ?>">
             <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Catalog price rules are only applied to products in your catalog. Order price rules (coupons) concern only customer orders'); ?>">
-                <?php echo $this->text('Type'); ?>
-              </span>
+              <?php echo $this->text('Value'); ?>
             </label>
-            <div class="col-md-6">
+            <div class="col-md-9">
+              <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->escape($price_rule['value']) : ''; ?>">
+              <div class="help-block">
+                <?php if (isset($this->errors['value'])) { ?>
+                <?php echo $this->errors['value']; ?>
+                <?php } ?>
+                <div class="text-muted">
+                  <?php echo $this->text('A numeric value to be added to the original price when the rule is applied. To substract use negative numbers'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-3 control-label"><?php echo $this->text('Currency'); ?></label>
+            <div class="col-md-9">
+              <select name="price_rule[currency]" class="form-control">
+                <?php foreach ($currencies as $code => $currency) { ?>
+                <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : ''; ?>>
+                <?php echo $this->escape($code); ?>
+                </option>
+                <?php } ?>
+              </select>
+              <div class="help-block">
+                <?php echo $this->text('The price value will be converted according to the selected currency'); ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="col-md-3 control-label"><?php echo $this->text('Type'); ?></label>
+            <div class="col-md-9">
               <select name="price_rule[type]" class="form-control">
                 <option value="catalog"><?php echo $this->text('Catalog'); ?></option>
                 <option value="order"<?php echo (isset($price_rule['type']) && $price_rule['type'] == 'order') ? ' selected' : ''; ?>>
                 <?php echo $this->text('Order'); ?>
                 </option>
               </select>
+              <div class="help-block">
+                <?php echo $this->text('Catalog rules apply only to products in the catalog. Order rules (coupons) concern only customer orders'); ?>
+              </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('The price rule will be available only in selected store'); ?>">
-                <?php echo $this->text('Store'); ?>
-              </span>
-            </label>
+            <label class="col-md-3 control-label"><?php echo $this->text('Store'); ?></label>
             <div class="col-md-6">
               <select name="price_rule[store_id]" class="form-control">
                 <?php foreach ($stores as $sid => $store) { ?>
@@ -129,43 +128,48 @@
                 <?php } ?>
                 <?php } ?>
               </select>
+              <div class="help-block">
+              <?php echo $this->text('Select a store where to apply this price rule'); ?>
+              </div>
             </div>
-          </div>        
+          </div>
           <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('Order of applying enabled price rules. Rules with less weight are applied earlier'); ?>">
-                <?php echo $this->text('Weight'); ?>
-              </span>
-            </label>
-            <div class="col-md-4">
-              <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->escape($price_rule['weight']) : '0'; ?>">
-              <?php if (isset($this->errors['weight'])) { ?>
-                <div class="help-block"><?php echo $this->errors['weight']; ?></div>
-              <?php } ?>
-            </div>
-          </div> 
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="form-group<?php echo isset($this->errors['data']['conditions']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label">
-              <span class="hint" title="<?php echo $this->text('What conditions must be met to apply the price rule. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>">
-                <?php echo $this->text('Conditions'); ?>
-              </span>
-            </label>
+            <label class="col-md-3 control-label"><?php echo $this->text('Weight'); ?></label>
             <div class="col-md-9">
-              <textarea name="price_rule[data][conditions]" rows="4" class="form-control" placeholder="<?php echo $this->text('User is logged in: user_id > 0'); ?>"><?php echo!empty($price_rule['data']['conditions']) ? $this->escape($price_rule['data']['conditions']) : ''; ?></textarea>
-              <?php if (isset($this->errors['data']['conditions'])) { ?>
-              <div class="help-block"><?php echo $this->errors['data']['conditions']; ?></div>
+              <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->escape($price_rule['weight']) : '0'; ?>">
+              <div class="help-block">
+              <?php if (isset($this->errors['weight'])) { ?>
+              <?php echo $this->errors['weight']; ?>
               <?php } ?>
+              <div class="text-muted">
+              <?php echo $this->text('A position of the rule among other enabled rules. Rules with lower weight are applied earlier'); ?>
+              </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
-          <div class="row">  
+          <div class="form-group<?php echo isset($this->errors['data']['conditions']) ? ' has-error' : ''; ?>">
+            <label class="col-md-3 control-label"><?php echo $this->text('Conditions'); ?></label>
+            <div class="col-md-9">
+              <textarea name="price_rule[data][conditions]" rows="4" class="form-control" placeholder="<?php echo $this->text('User is logged in: user_id > 0'); ?>"><?php echo!empty($price_rule['data']['conditions']) ? $this->escape($price_rule['data']['conditions']) : ''; ?></textarea>
+              <div class="help-block">
+                <?php if (isset($this->errors['data']['conditions'])) { ?>
+                <?php echo $this->errors['data']['conditions']; ?>
+                <?php } ?>
+                <div class="text-muted">
+                  <?php echo $this->text('What conditions must be met to apply the price rule. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
             <div class="col-md-3">
               <?php if (isset($price_rule['price_rule_id']) && $this->access('price_rule_delete')) { ?>
               <button class="btn btn-danger delete" name="delete" value="1">
@@ -173,7 +177,7 @@
               </button>
               <?php } ?>
             </div>
-            <div class="col-md-9 text-right">
+            <div class="col-md-9">
               <div class="btn-toolbar">
                 <a href="<?php echo $this->url('admin/sale/price'); ?>" class="btn btn-default cancel">
                   <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
@@ -183,7 +187,7 @@
                   <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
                 </button>
                 <?php } ?>
-              </div> 
+              </div>
             </div>
           </div>
         </div>

@@ -6,11 +6,11 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-
 /**
  * To adjust a setting uncomment it by removing the leading #
  * WARNING! Invalid code can break down your site!
  */
+$config = array();
 
 # $config['account_order_limit'] = 10;
 # $config['admin_autocomplete_limit'] = 10; // Number of autocomplete suggestions for an admin
@@ -50,6 +50,9 @@
 # $config['ga_from'] = '30daysAgo';
 # $config['ga_until'] = 'today';
 # $config['ga_limit'] = 20;
+# $config['gapi_browser_key'] = '';
+# $config['gapi_email'] = '';
+# $config['gapi_certificate'] = '';
 # $config['history_lifespan'] = 2628000;
 # $config['image_cache_lifetime'] = 31536000;
 # $config['import_lifespan'] = 86400;

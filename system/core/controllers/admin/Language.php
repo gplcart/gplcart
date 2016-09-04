@@ -259,7 +259,7 @@ class Language extends BackendController
     {
 
         $this->addValidator('code', array(
-            'regexp' => array('pattern' => '/^[a-z]{2}$/', 'required' => true)
+            'regexp' => array('pattern' => '/^[A-Za-z-_]{1,10}$/')
         ));
 
         $this->addValidator('name', array(

@@ -4,53 +4,54 @@
     <div class="panel-body">
       <div class="form-group required<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Two-letter alphabetic uppercase code according to ISO 3166-2 standard, e.g US'); ?>">
-            <?php echo $this->text('Code'); ?>
-          </span>
+          <?php echo $this->text('Code'); ?>
         </label>
-        <div class="col-md-2">
+        <div class="col-md-4">
           <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->escape($country['code']) : ''; ?>">
-          <?php if (isset($this->errors['code'])) { ?>
-          <div class="help-block"><?php echo $this->errors['code']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['code'])) { ?>
+              <?php echo $this->errors['code']; ?>
+            <?php } ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A code according to ISO 3166-2 standard, e.g US'); ?>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('International name of the country in english according to ISO 3166-2 standard'); ?>">
-            <?php echo $this->text('Name'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="country[name]" class="form-control" value="<?php echo isset($country['name']) ? $this->escape($country['name']) : ''; ?>">
-          <?php if (isset($this->errors['name'])) { ?>
-          <div class="help-block"><?php echo $this->errors['name']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+           <?php if (isset($this->errors['name'])) { ?>
+           <?php echo $this->errors['name']; ?>
+           <?php } ?>
+           <div class="text-muted">
+            <?php echo $this->text('Required. An international english name of the country according to ISO 3166-2 standard'); ?>
+           </div>
+          </div>
         </div>
       </div>
       <div class="form-group required<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Local name of the country'); ?>">
-            <?php echo $this->text('Native name'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Native name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="country[native_name]" class="form-control" value="<?php echo isset($country['native_name']) ? $this->escape($country['native_name']) : ''; ?>">
-          <?php if (isset($this->errors['native_name'])) { ?>
-          <div class="help-block"><?php echo $this->errors['native_name']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['native_name'])) { ?>
+            <?php echo $this->errors['native_name']; ?>
+            <?php } ?>
+           <div class="text-muted">
+            <?php echo $this->text('Required. A local name of the country, e.g 中国'); ?>
+           </div>
+          </div>
         </div>
-      </div> 
+      </div>
     </div>
   </div>
-  <div class="panel panel-default"> 
+  <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Primary store country that cannot be deleted or disabled'); ?>">
-            <?php echo $this->text('Default'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Default'); ?></label>
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-default<?php echo empty($country['default']) ? '' : ' active'; ?>">
@@ -62,14 +63,13 @@
               <?php echo $this->text('No'); ?>
             </label>
           </div>
+          <div class="help-block">
+            <?php echo $this->text('Use this country by default in addresses'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Disabled countries will not be displayed to customers'); ?>">
-            <?php echo $this->text('Status'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-default<?php echo empty($country['status']) ? '' : ' active'; ?>">
@@ -79,19 +79,23 @@
               <input name="country[status]" type="radio" autocomplete="off" value="0"<?php echo empty($country['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
           </div>
+          <div class="help-block">
+            <?php echo $this->text('Disabled countries will not be available for frontend users'); ?>
+          </div>
         </div>
       </div>
       <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Items are displayed to users in ascending order by weight'); ?>">
-            <?php echo $this->text('Weight'); ?>
-          </span>
-        </label>
-        <div class="col-md-1">
+        <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
+        <div class="col-md-4">
           <input maxlength="2" name="country[weight]" class="form-control" value="<?php echo isset($country['weight']) ? $this->escape($country['weight']) : 0; ?>">
-          <?php if (isset($this->errors['weight'])) { ?>
-          <div class="help-block"><?php echo $this->errors['weight']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['weight'])) { ?>
+            <?php echo $this->errors['weight']; ?>
+            <?php } ?>
+            <div class="text-muted">
+              <?php echo $this->text('Countries are sorted in lists by the weight value. Lower value means higher position'); ?>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -106,7 +110,7 @@
           </button>
           <?php } ?>
         </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-4">
           <div class="btn-toolbar">
             <a href="<?php echo $this->url('admin/settings/country'); ?>" class="btn btn-default"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
             <?php if ($this->access('country_edit') || $this->access('country_add')) { ?>
