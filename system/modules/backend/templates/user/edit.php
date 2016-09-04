@@ -6,18 +6,23 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->escape($user['name']) : ''; ?>">
-          <?php if (isset($this->errors['name'])) { ?>
-          <div class="help-block"><?php echo $this->errors['name']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['name'])) { ?>
+            <?php echo $this->errors['name']; ?>
+            <?php } ?>
+            <div class="text-muted"><?php echo $this->text('Required. A unique user name, e.g John Smith'); ?></div>
+          </div>
         </div>
       </div>
       <div class="form-group required<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
           <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->escape($user['email']) : ''; ?>">
-          <?php if (isset($this->errors['email'])) { ?>
-          <div class="help-block"><?php echo $this->errors['email']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['email'])) { ?>
+            <?php echo $this->errors['email']; ?>
+            <?php } ?>
+          </div>
         </div>
       </div>
     </div>
@@ -38,6 +43,7 @@
               <?php echo $this->text('Disabled'); ?>
             </label>
           </div>
+          <div class="help-block"><?php echo $this->text('Disabled users are not allowed to login'); ?></div>
         </div>
       </div>
       <?php } ?>
@@ -56,6 +62,7 @@
             <?php } ?>
             <?php } ?>
           </select>
+          <div class="help-block"><?php echo $this->text('Roles are sets of permissions that control what users can do and see on the site'); ?></div>
         </div>
       </div>
       <div class="form-group">
@@ -70,6 +77,7 @@
             <?php } ?>
             <?php } ?>
           </select>
+          <div class="help-block"><?php echo $this->text('Associate this user with a certain store'); ?></div>
         </div>
       </div>
     </div>
@@ -78,7 +86,7 @@
     <div class="panel-body">
       <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
-        <div class="col-md-4"> 
+        <div class="col-md-4">
           <div class="input-group">
             <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $this->escape($user['password']) : ''; ?>">
             <span class="input-group-btn">
@@ -87,9 +95,9 @@
               </button>
             </span>
           </div>
-            <?php if (isset($this->errors['password'])) { ?>
-            <div class="help-block"><?php echo $this->errors['password']; ?></div>
-            <?php } ?>
+          <?php if (isset($this->errors['password'])) { ?>
+          <div class="help-block"><?php echo $this->errors['password']; ?></div>
+          <?php } ?>
         </div>
       </div>
     </div>
@@ -108,7 +116,7 @@
           <div class="btn-toolbar">
             <a class="btn btn-default cancel" href="<?php echo $this->url('admin/user/list'); ?>">
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-            </a>    
+            </a>
             <button class="btn btn-default save" name="save" value="1">
               <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
             </button>

@@ -17,19 +17,19 @@
               <?php echo $this->text('Disabled'); ?>
             </label>
           </div>
+          <div class="help-block"><?php echo $this->text('Disabled roles will not be available for users'); ?></div>
         </div>
       </div>
       <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <span class="hint" title="<?php echo $this->text('Give a descriptive name to the role. For example: Boss, Manager etc'); ?>">
-            <?php echo $this->text('Name'); ?>
-          </span>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->escape($role['name']) : ''; ?>">
-          <?php if (isset($this->errors['name'])) { ?>
-          <div class="help-block"><?php echo $this->errors['name']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php if (isset($this->errors['name'])) { ?>
+            <?php echo $this->errors['name']; ?>
+            <?php } ?>
+            <div class="text-muted"><?php echo $this->text('Required. A descriptive name of the role, e.g Boss, Manager etc'); ?></div>
+          </div>
         </div>
       </div>
     </div>
