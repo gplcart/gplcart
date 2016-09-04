@@ -107,7 +107,7 @@ class CollectionItem extends Model
         }
 
         $values = array();
-        foreach ($items as $id => $item) {
+        foreach ((array) $items as $id => $item) {
             $values[$item['value']] = $id;
         }
 
@@ -210,21 +210,21 @@ class CollectionItem extends Model
      * 
      * @param array $collection
      * @param array $options
-     * @return type
+     * @return array
      */
     public function getEntities(array $collection, array $options = array())
     {
         $handler_id = $collection['type'];
         $handlers = $this->collection->getHandlers();
-        
+
         $options += array(
             'status' => 1,
             'store_id' => $collection['store_id'],
             'collection_id' => $collection['collection_id']
         );
-        
+
         $values = $this->getValues($options);
-        
+
         if (empty($values)) {
             return array();
         }
@@ -244,25 +244,31 @@ class CollectionItem extends Model
 
         return $results;
     }
-    
-    public function getSuggestions(array $collection, array $options = array()){
-        
+
+    /**
+     * Returns an array of autocomplete suggestion for the given collection type
+     * @param array $collection
+     * @param array $options
+     * @return array
+     */
+    public function getSuggestions(array $collection, array $options = array())
+    {
+
         $handler_id = $collection['type'];
         $handlers = $this->collection->getHandlers();
-        
+
         $options += array(
             'status' => 1,
             'store_id' => $collection['store_id']
         );
-        
+
         $results = Handler::call($handlers, $handler_id, 'list', array($options));
 
         if (empty($results)) {
             return array();
         }
-        
+
         return $results;
-        
     }
 
 }

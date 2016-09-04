@@ -62,7 +62,7 @@ class Model
     {
         return $this->db;
     }
-    
+
     /**
      * Filters an array of data according to existing columns for the given table
      * @param string $table
@@ -603,6 +603,16 @@ class Model
                 'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'payment_service' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'service_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            )
+        );
+
+        $tables['trigger'] = array(
+            'fields' => array(
+                'trigger_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
             )
         );

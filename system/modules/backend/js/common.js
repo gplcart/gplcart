@@ -91,9 +91,6 @@ GplCart.theme.chart = function (source, type) {
 
 $(function () {
 
-    // Hints
-    $('.hint').tooltip();
-
     // Bulk actions
     $('*[data-action]').click(function () {
 
@@ -223,7 +220,7 @@ $(function () {
         done: function (e, data) {
 
             if ('result' in data && 'files' in data.result) {
-                
+
                 $.each(data.result.files, function (index, file) {
                     if (file.html) {
                         imageContainer.append(file.html);

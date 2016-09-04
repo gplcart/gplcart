@@ -520,4 +520,22 @@ class Tool
         $ref = $value;
     }
 
+    /**
+     * Parses and extracts arguments from a string
+     * @param string $string
+     * @param string $pattern
+     * @return boolean|array
+     */
+    public static function patternMatch($string, $pattern)
+    {
+        $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
+
+        if (preg_match($pattern, $string, $params)) {
+            array_shift($params);
+            return array_values($params);
+        }
+
+        return false;
+    }
+
 }

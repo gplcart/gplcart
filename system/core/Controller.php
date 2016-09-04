@@ -312,53 +312,8 @@ class Controller
      */
     public function __construct()
     {
-        /* @var $user \core\models\User */
-        $this->user = Container::instance('core\\models\\User');
 
-        /* @var $store \core\models\Store */
-        $this->store = Container::instance('core\\models\\Store');
-
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\\models\\Language');
-
-        /* @var $validator \core\models\Validator */
-        $this->validator = Container::instance('core\\models\\Validator');
-
-        /* @var $url \core\classes\Url */
-        $this->url = Container::instance('core\\classes\\Url');
-
-        /* @var $request \core\classes\Request */
-        $this->request = Container::instance('core\\classes\\Request');
-
-        /* @var $response \core\classes\Response */
-        $this->response = Container::instance('core\\classes\\Response');
-
-        /* @var $session \core\classes\Session */
-        $this->session = Container::instance('core\\classes\\Session');
-
-        /* @var $hook \core\Hook */
-        $this->hook = Container::instance('core\\Hook');
-
-        /* @var $route \core\Route */
-        $this->route = Container::instance('core\\Route');
-
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\\Config');
-
-        /* @var $logger \core\classes\Logger */
-        $this->logger = Container::instance('core\\Logger');
-
-        /* @var $document \core\classes\Document */
-        $this->document = Container::instance('core\\classes\\Document');
-
-        /* @var $filter \core\classes\Filter */
-        $this->filter = Container::instance('core\\classes\\Filter');
-
-        /* @var $device \core\classes\Device */
-        $this->device = Container::instance('core\\classes\\Device');
-
-        /* @var $pager \core\classes\Pager */
-        $this->pager = Container::instance('core\\classes\\Pager');
+        $this->setInstanceProperties();
 
         $this->token = $this->config->token();
 
@@ -545,6 +500,60 @@ class Controller
         }
 
         return empty($attributes) ? '' : ' ' . implode(' ', $attributes);
+    }
+
+    /**
+     * Sets instance properties
+     */
+    protected function setInstanceProperties()
+    {
+        /* @var $user \core\models\User */
+        $this->user = Container::instance('core\\models\\User');
+
+        /* @var $store \core\models\Store */
+        $this->store = Container::instance('core\\models\\Store');
+
+        /* @var $language \core\models\Language */
+        $this->language = Container::instance('core\\models\\Language');
+
+        /* @var $validator \core\models\Validator */
+        $this->validator = Container::instance('core\\models\\Validator');
+
+        /* @var $url \core\classes\Url */
+        $this->url = Container::instance('core\\classes\\Url');
+
+        /* @var $request \core\classes\Request */
+        $this->request = Container::instance('core\\classes\\Request');
+
+        /* @var $response \core\classes\Response */
+        $this->response = Container::instance('core\\classes\\Response');
+
+        /* @var $session \core\classes\Session */
+        $this->session = Container::instance('core\\classes\\Session');
+
+        /* @var $hook \core\Hook */
+        $this->hook = Container::instance('core\\Hook');
+
+        /* @var $route \core\Route */
+        $this->route = Container::instance('core\\Route');
+
+        /* @var $config \core\Config */
+        $this->config = Container::instance('core\\Config');
+
+        /* @var $logger \core\classes\Logger */
+        $this->logger = Container::instance('core\\Logger');
+
+        /* @var $document \core\classes\Document */
+        $this->document = Container::instance('core\\classes\\Document');
+
+        /* @var $filter \core\classes\Filter */
+        $this->filter = Container::instance('core\\classes\\Filter');
+
+        /* @var $device \core\classes\Device */
+        $this->device = Container::instance('core\\classes\\Device');
+
+        /* @var $pager \core\classes\Pager */
+        $this->pager = Container::instance('core\\classes\\Pager');
     }
 
     /**

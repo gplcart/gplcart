@@ -14,6 +14,7 @@ use core\Hook;
 use core\Config;
 use core\Handler;
 use core\classes\Url;
+use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
 
@@ -936,10 +937,10 @@ class Route
 
         $segments = $this->url->segments();
 
-        if (!empty($languages[$segments[0]]['status'])) {
-            $this->langcode = $segments[0];
-        } else {
+        if (empty($languages[$segments[0]]['status'])) {
             $this->langcode = $default_langcode;
+        } else {
+            $this->langcode = $segments[0];
         }
 
         if ($this->langcode && ($this->langcode === $default_langcode)) {
@@ -961,8 +962,7 @@ class Route
             return; // No database available, exit
         }
 
-        $alias = $this->path();
-        $info = $this->getAliasInfo($alias);
+        $info = $this->getAliasInfo($this->path);
 
         if (isset($info['id_key'])) {
 
@@ -1080,8 +1080,10 @@ class Route
      */
     protected function callControllerRoute()
     {
+
         foreach ($this->getList() as $pattern => $route) {
-            $arguments = $this->parsePattern($pattern);
+
+            $arguments = Tool::patternMatch($this->path, $pattern);
 
             if ($arguments === false) {
                 continue;
@@ -1089,6 +1091,7 @@ class Route
 
             $route['arguments'] = $arguments;
             $this->route = $route + array('pattern' => $pattern);
+
             Handler::call($route, null, 'controller', $arguments);
             exit('An error occurred while processing the route');
         }
@@ -1113,33 +1116,6 @@ class Route
 
         Handler::call($route, null, 'controller', array(404));
         exit('An error occurred while processing the route');
-    }
-
-    /**
-     * Parses and extracts arguments from a route pattern
-     * @param string $pattern
-     * @return boolean|array
-     */
-    protected function parsePattern($pattern)
-    {
-        $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
-        $url = $this->path();
-
-        if (preg_match($pattern, $url, $params)) {
-            array_shift($params);
-            return array_values($params);
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns the current path
-     * @return string
-     */
-    protected function path()
-    {
-        return $this->path;
     }
 
 }

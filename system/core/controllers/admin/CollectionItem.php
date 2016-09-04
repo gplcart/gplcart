@@ -203,13 +203,13 @@ class CollectionItem extends BackendController
         }
 
         $this->setSubmitted('collection_item');
-        $this->validateCollectionItem();
+        $this->validateCollectionItem($collection);
 
         if (!$this->hasErrors('collection_item')) {
             return;
         }
 
-        $this->addCollectionItem($collection);
+        $this->addCollectionItem();
     }
 
     /**
@@ -217,14 +217,13 @@ class CollectionItem extends BackendController
      * @param array $collection
      */
     protected function validateCollectionItem(array $collection){
-        
+        $this->setSubmitted('collection_id', $collection['collection_id']);
     }
     
     /**
      * Adds a new item to the collection
-     * @param array $collection
      */
-    protected function addCollectionItem(array $collection){
+    protected function addCollectionItem(){
         
     }
 
