@@ -19,6 +19,12 @@ class Controller
 {
 
     /**
+     * Whether we're installing the system
+     * @var boolean
+     */
+    protected $installing = false;
+
+    /**
      * Whether the current view is backend
      * @var boolean
      */
@@ -562,6 +568,7 @@ class Controller
     protected function setRouteProperties()
     {
         $this->backend = $this->url->isBackend();
+        $this->installing = $this->url->isInstall();
 
         // Set access for the route
         $this->current_route = $this->route->getCurrent();
@@ -620,13 +627,12 @@ class Controller
      */
     protected function setThemeProperties()
     {
-
         $this->theme_frontend = $this->config('theme', 'frontend');
         $this->theme_backend = $this->config('theme_backend', 'backend');
 
         if ($this->backend) {
             $this->theme = $this->theme_backend;
-        } elseif ($this->url->isInstall()) {
+        } elseif ($this->installing) {
             $this->theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
             $this->theme_frontend = $this->theme = $this->store->config('theme');
@@ -802,7 +808,7 @@ class Controller
      */
     protected function setAccessProperties()
     {
-        if ($this->url->isInstall()) {
+        if ($this->installing) {
             return;
         }
 
@@ -950,7 +956,7 @@ class Controller
      */
     protected function controlMaintenanceMode()
     {
-        if (!$this->url->isInstall() && !$this->backend && empty($this->current_store['status'])) {
+        if (!$this->installing && !$this->backend && empty($this->current_store['status'])) {
             $this->maintenance = true;
             $this->outputMaintenance();
         }
@@ -1304,6 +1310,10 @@ class Controller
      */
     protected function setCronProperties()
     {
+        if ($this->installing) {
+            return;
+        }
+        
         $this->cron_interval = (int) $this->config('cron_interval', 86400);
         $this->cron_last_run = (int) $this->config('cron_last_run', 0);
         $this->cron_key = $this->config('cron_key', '');
