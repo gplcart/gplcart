@@ -17,6 +17,18 @@ use core\Controller as BaseController;
  */
 class Controller extends BaseController
 {
+    
+    /**
+     * Trigger model instance
+     * @var \core\models\Trigger $trigger
+     */
+    protected $trigger;
+    
+    /**
+     * An array of fired triggers for the current context
+     * @var type 
+     */
+    protected $triggers = array();
 
     /**
      * Price model instance
@@ -140,6 +152,9 @@ class Controller extends BaseController
 
         /* @var $category \core\models\Category */
         $this->category = Container::instance('core\\models\\Category');
+        
+        /* @var $trigger \core\models\Trigger */
+        $this->trigger = Container::instance('core\\models\\Trigger');
     }
 
     /**
@@ -155,6 +170,10 @@ class Controller extends BaseController
             $this->cart_content = $this->cart->getByUser($this->cart_uid, false);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
             $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
+
+            $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
+            
+            //d($this->triggers);
         }
     }
 
@@ -386,8 +405,8 @@ class Controller extends BaseController
     protected function setItemProductPrice(array &$product, array $options)
     {
         if ($this->catalog_pricerules) {
-            $calculated = $this->product->calculate($product, $this->store_id);
-            $product['price'] = $calculated['total'];
+            //$calculated = $this->product->calculate($product, $this->store_id);
+            //$product['price'] = $calculated['total'];
         }
 
         $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);

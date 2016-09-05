@@ -429,11 +429,10 @@ class Model
                 'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
                 'used' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'trigger_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'value_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
-                'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-                'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+                'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true)
             )
         );
 
@@ -607,12 +606,13 @@ class Model
             )
         );
 
-        $tables['trigger'] = array(
+        $tables['triggers'] = array(
             'fields' => array(
                 'trigger_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
                 'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
             )
         );

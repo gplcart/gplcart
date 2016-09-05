@@ -101,38 +101,6 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
-          <div class="form-group">
-            <label class="col-md-3 control-label"><?php echo $this->text('Type'); ?></label>
-            <div class="col-md-9">
-              <select name="price_rule[type]" class="form-control">
-                <option value="catalog"><?php echo $this->text('Catalog'); ?></option>
-                <option value="order"<?php echo (isset($price_rule['type']) && $price_rule['type'] == 'order') ? ' selected' : ''; ?>>
-                <?php echo $this->text('Order'); ?>
-                </option>
-              </select>
-              <div class="help-block">
-                <?php echo $this->text('Catalog rules apply only to products in the catalog. Order rules (coupons) concern only customer orders'); ?>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-3 control-label"><?php echo $this->text('Store'); ?></label>
-            <div class="col-md-6">
-              <select name="price_rule[store_id]" class="form-control">
-                <?php foreach ($stores as $sid => $store) { ?>
-                <?php $store_name = ($sid) ? $this->escape($store['name']) : $this->text('Default'); ?>
-                <?php if (isset($price_rule['store_id']) && $price_rule['store_id'] == $sid) { ?>
-                <option value="<?php echo $sid; ?>" selected><?php echo $store_name; ?></option>
-                <?php } else { ?>
-                <option value="<?php echo $sid; ?>"><?php echo $store_name; ?></option>
-                <?php } ?>
-                <?php } ?>
-              </select>
-              <div class="help-block">
-              <?php echo $this->text('Select a store where to apply this price rule'); ?>
-              </div>
-            </div>
-          </div>
           <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
             <label class="col-md-3 control-label"><?php echo $this->text('Weight'); ?></label>
             <div class="col-md-9">

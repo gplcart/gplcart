@@ -2,27 +2,34 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\pricerule;
+namespace core\handlers\trigger;
 
-use core\models\User;
-use core\models\Product;
-use core\models\Currency;
-use core\models\PriceRule;
+use core\Route;
+use core\classes\Tool;
+use core\models\User as ModelsUser;
+use core\models\Product as ModelsProduct;
+use core\models\Currency as ModelsCurrency;
+use core\models\Condition as ModelsCondition;
 
 class Condition
 {
 
     /**
-     * Price rule model instance
-     * @var \core\models\PriceRule $pricerule
+     * Route class instance
+     * @var \core\Route $route
      */
-    protected $pricerule;
+    protected $route;
+
+    /**
+     * Condition model instance
+     * @var \core\models\Condition $condition
+     */
+    protected $condition;
 
     /**
      * Product model instance
@@ -44,53 +51,101 @@ class Condition
 
     /**
      * Constructor
-     * @param PriceRule $pricerule
-     * @param User $user
-     * @param Currency $currency
-     * @param Product $product
+     * @param ModelsCondition $condition
+     * @param ModelsUser $user
+     * @param ModelsCurrency $currency
+     * @param ModelsProduct $product
+     * @param Route $route
      */
-    public function __construct(PriceRule $pricerule, User $user, Currency $currency, Product $product)
+    public function __construct(ModelsCondition $condition, ModelsUser $user,
+            ModelsCurrency $currency, ModelsProduct $product, Route $route)
     {
+        $this->route = $route;
         $this->user = $user;
+        $this->condition = $condition;
         $this->product = $product;
         $this->currency = $currency;
-        $this->pricerule = $pricerule;
+    }
+
+    /**
+     * Returns true if route condition is met
+     * @param array $condition
+     * @param array $data
+     * @return boolean
+     */
+    public function route(array $condition, array $data)
+    {
+        $patterns = (array) $condition['value'];
+
+        if (!in_array($condition['operator'], array('=', '!='))) {
+            return false;
+        }
+
+        $route = $this->route->getCurrent();
+        return $this->condition->compareString($route['pattern'], $patterns, $condition['operator']);
+    }
+
+    /**
+     * Returns true if path condition is met
+     * @param array $condition
+     * @param array $data
+     * @return boolean
+     */
+    public function path(array $condition, array $data)
+    {
+        $patterns = (array) $condition['value'];
+
+        if (!in_array($condition['operator'], array('=', '!='))) {
+            return false;
+        }
+
+        $path = $this->route->path();
+
+        $found = false;
+        foreach ($patterns as $pattern) {
+            if (Tool::patternMatch($path, $pattern)) {
+                $found = true;
+            }
+        }
+
+        return ($condition['operator'] === '=') ? $found : !$found;
     }
 
     /**
      * Returns true if a date condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function date(array $rule, array $condition, array $data)
+    public function date(array $condition, array $data)
     {
         $condition_value = reset($condition['value']);
-        return $this->pricerule->compareNumeric(GC_TIME, (int) $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric(GC_TIME, (int) $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a number of usage condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function used(array $rule, array $condition, array $data)
+    public function used(array $condition, array $data)
     {
+        if (!isset($data['rule']['used'])) {
+            return false;
+        }
+
         $condition_value = reset($condition['value']);
-        return $this->pricerule->compareNumeric((int) $rule['used'], (int) $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric((int) $data['rule']['used'], (int) $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a cart total condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function cartTotal(array $rule, array $condition, array $data)
+    public function cartTotal(array $condition, array $data)
     {
         if (!isset($data['cart']['total']) || empty($data['cart']['currency'])) {
             return false;
@@ -107,17 +162,16 @@ class Condition
         }
 
         $condition_price = $this->currency->convert((int) $condition_value[0], $condition_currency, $cart_currency);
-        return $this->pricerule->compareNumeric($cart_subtotal, $condition_price, $condition_operator);
+        return $this->condition->compareNumeric($cart_subtotal, $condition_price, $condition_operator);
     }
 
     /**
      * Returns true if a product ID condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function productId(array $rule, array $condition, array $data)
+    public function productId(array $condition, array $data)
     {
         if (empty($data['cart']['items'])) {
             return false;
@@ -130,7 +184,7 @@ class Condition
         }
 
         foreach ($data['cart']['items'] as $item) {
-            if ($this->pricerule->compareNumeric((int) $item['product_id'], $condition_value, $condition['operator'])) {
+            if ($this->condition->compareNumeric((int) $item['product_id'], $condition_value, $condition['operator'])) {
                 return true;
             }
         }
@@ -140,12 +194,11 @@ class Condition
 
     /**
      * Returns true if a product category ID condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function categoryId(array $rule, array $condition, array $data)
+    public function categoryId(array $condition, array $data)
     {
         if (empty($data['cart']['items'])) {
             return false;
@@ -169,7 +222,7 @@ class Condition
         }
 
         foreach ($products as $product) {
-            if ($this->pricerule->compareNumeric((int) $product['category_id'], $condition_value, $condition['operator'])) {
+            if ($this->condition->compareNumeric((int) $product['category_id'], $condition_value, $condition['operator'])) {
                 return true;
             }
         }
@@ -179,12 +232,11 @@ class Condition
 
     /**
      * Returns true if a product brand condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function brandCategoryId(array $rule, array $condition, array $data)
+    public function brandCategoryId(array $condition, array $data)
     {
         if (empty($data['cart']['items'])) {
             return false;
@@ -208,7 +260,9 @@ class Condition
         }
 
         foreach ($products as $product) {
-            if ($this->pricerule->compareNumeric((int) $product['brand_category_id'], $condition_value, $condition['operator'])) {
+            $match = $this->condition->compareNumeric((int) $product['brand_category_id'], $condition_value, $condition['operator']);
+
+            if ($match) {
                 return true;
             }
         }
@@ -218,12 +272,11 @@ class Condition
 
     /**
      * Returns true if a user ID condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function userId(array $rule, array $condition, array $data)
+    public function userId(array $condition, array $data)
     {
         $user_id = $this->user->id();
 
@@ -233,17 +286,16 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->pricerule->compareNumeric($user_id, $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($user_id, $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a user role condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function userRole(array $rule, array $condition, array $data)
+    public function userRole(array $condition, array $data)
     {
         $role_id = $this->user->roleId();
 
@@ -253,17 +305,16 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->pricerule->compareNumeric($role_id, $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($role_id, $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a shipping service condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function shipping(array $rule, array $condition, array $data)
+    public function shipping(array $condition, array $data)
     {
         if (!isset($data['data']['order']['shipping'])) {
             return false;
@@ -275,17 +326,16 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->pricerule->compareString($data['data']['order']['shipping'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['order']['shipping'], $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a payment service condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function payment(array $rule, array $condition, array $data)
+    public function payment(array $condition, array $data)
     {
         if (!isset($data['data']['order']['payment'])) {
             return false;
@@ -297,39 +347,38 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->pricerule->compareString($data['data']['order']['payment'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['order']['payment'], $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a shipping address condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function shippingAddressId(array $rule, array $condition, array $data)
+    public function shippingAddressId(array $condition, array $data)
     {
-        if (!isset($data['data']['order']['shipping_address'])) {
+        if (empty($data['data']['order']['shipping_address'])) {
             return false;
         }
 
         $condition_value = (array) $condition['value'];
+        $address_id = $data['data']['order']['shipping_address'];
 
         if (!in_array($condition['operator'], array('=', '!='))) {
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->pricerule->compareNumeric($data['data']['order']['shipping_address'], $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($address_id, $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a country condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function country(array $rule, array $condition, array $data)
+    public function country(array $condition, array $data)
     {
         $condition_value = (array) $condition['value'];
 
@@ -339,7 +388,7 @@ class Condition
 
         if (isset($data['data']['address']['country'])) {
             $country = $data['data']['address']['country'];
-            return $this->pricerule->compareString($country, $condition_value, $condition['operator']);
+            return $this->condition->compareString($country, $condition_value, $condition['operator']);
         }
 
         if (!isset($data['data']['order']['shipping_address'])) {
@@ -353,17 +402,16 @@ class Condition
             return false;
         }
 
-        return $this->pricerule->compareString($address['country'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($address['country'], $condition_value, $condition['operator']);
     }
 
     /**
      * Returns true if a state condition is met
-     * @param array $rule
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function state(array $rule, array $condition, array $data)
+    public function state(array $condition, array $data)
     {
         $condition_value = (array) $condition['value'];
 
@@ -373,7 +421,7 @@ class Condition
 
         if (isset($data['data']['address']['state_id'])) {
             $country = $data['data']['address']['state_id'];
-            return $this->pricerule->compareNumeric($country, $condition_value, $condition['operator']);
+            return $this->condition->compareNumeric($country, $condition_value, $condition['operator']);
         }
 
         if (!isset($data['data']['order']['shipping_address'])) {
@@ -387,6 +435,7 @@ class Condition
             return false;
         }
 
-        return $this->pricerule->compareNumeric($address['state_id'], $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($address['state_id'], $condition_value, $condition['operator']);
     }
+
 }

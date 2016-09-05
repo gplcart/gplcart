@@ -9,12 +9,11 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
 use core\models\Language as ModelsLanguage;
 use core\models\PriceRule as ModelsPriceRule;
 
 /**
- * Provides methods to validate various database related data
+ * Provides methods to validate price rules related data
  */
 class PriceRule
 {
@@ -40,74 +39,6 @@ class PriceRule
     {
         $this->rule = $rule;
         $this->language = $language;
-    }
-
-    /**
-     * Validates and modifies price rule conditions
-     * @return boolean|array
-     */
-    public function conditions($value, array $options = array())
-    {
-        if (empty($value)) {
-            return true;
-        }
-
-        $modified = $errors = array();
-        $operators = array_map('htmlspecialchars', $this->rule->getConditionOperators());
-        $conditions = Tool::stringToArray($value);
-
-        foreach ($conditions as $line => $condition) {
-            $line++;
-
-            $condition = trim($condition);
-            $parts = array_map('trim', explode(' ', $condition));
-
-            $condition_id = array_shift($parts);
-            $operator = array_shift($parts);
-
-            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
-                return ($value !== "");
-            });
-
-            if (empty($parameters)) {
-                $errors[] = $line;
-                continue;
-            }
-
-            if (!in_array(htmlspecialchars($operator), $operators)) {
-                $errors[] = $line;
-                continue;
-            }
-
-            $validator = $this->rule->getConditionHandler($condition_id, 'validate');
-
-            if (empty($validator)) {
-                $errors[] = $line;
-                continue;
-            }
-
-            $result = call_user_func_array($validator, array(&$parameters, $options['submitted']));
-
-            if ($result !== true) {
-                $errors[] = $line;
-                continue;
-            }
-
-            $modified[] = array(
-                'id' => $condition_id,
-                'operator' => $operator,
-                'value' => $parameters,
-                'original' => $condition,
-                'weight' => $line,
-            );
-        }
-
-        if (empty($errors)) {
-            return array('result' => $modified);
-        }
-
-        return $this->language->text('Error on lines %num', array(
-                    '%num' => implode(',', $errors)));
     }
 
     /**

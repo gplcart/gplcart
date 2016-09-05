@@ -816,6 +816,28 @@ class Route
             )
         );
 
+        $routes['admin/settings/trigger'] = array(
+            'access' => 'trigger',
+            'menu' => array('admin' => 'Triggers'),
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Trigger', 'listTrigger')
+            )
+        );
+
+        $routes['admin/settings/trigger/add'] = array(
+            'access' => 'trigger_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Trigger', 'editTrigger')
+            )
+        );
+
+        $routes['admin/settings/trigger/edit/(\d+)'] = array(
+            'access' => 'trigger_edit',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Trigger', 'editTrigger')
+            )
+        );
+
         $routes['admin/settings/cities/(\w+)/(\d+)'] = array(
             'access' => 'city',
             'handlers' => array(
@@ -1116,6 +1138,15 @@ class Route
 
         Handler::call($route, null, 'controller', array(404));
         exit('An error occurred while processing the route');
+    }
+
+    /**
+     * Returns the current path
+     * @return string
+     */
+    public function path()
+    {
+        return $this->path;
     }
 
 }

@@ -72,7 +72,7 @@ class PriceRule extends BackendController
         $this->setData('stores', $stores);
 
         $filters = array('name', 'code', 'value', 'value_type',
-            'weight', 'status', 'store_id', 'type');
+            'weight', 'status', 'store_id');
 
         $this->setFilter($filters, $query);
 
@@ -90,18 +90,12 @@ class PriceRule extends BackendController
         $rule = $this->getPriceRule($rule_id);
         $stores = $this->store->getList();
         $currencies = $this->currency->getList(true);
-        $operators = $this->rule->getConditionOperators();
-        $conditions = $this->rule->getConditionHandlers();
 
         $this->setData('stores', $stores);
         $this->setData('price_rule', $rule);
-        $this->setData('operators', $operators);
         $this->setData('currencies', $currencies);
-        $this->setData('conditions', $conditions);
 
         $this->submitPriceRule($rule);
-
-        $this->setDataEditPriceRule();
 
         $this->setTitleEditPriceRule($rule);
         $this->setBreadcrumbEditPriceRule();
@@ -379,12 +373,7 @@ class PriceRule extends BackendController
             'length' => array('max' => 2)
         ));
 
-        $this->addValidator('data.conditions', array(
-            'pricerule_conditions' => array()
-        ));
-
         $options = array(
-            'store_id' => $this->getSubmitted('store_id'),
             'price_rule_id' => $this->getSubmitted('price_rule_id')
         );
 
@@ -415,27 +404,6 @@ class PriceRule extends BackendController
 
             $conditions = $this->getValidatorResult('data.conditions');
             $this->setSubmitted('data.conditions', $conditions);
-        }
-    }
-
-    /**
-     * Converts an array of conditions into a multiline string
-     * @return null
-     */
-    protected function setDataEditPriceRule()
-    {
-        $conditions = $this->getData('price_rule.data.conditions');
-
-        if (!empty($conditions) && is_array($conditions)) {
-
-            Tool::sortWeight($conditions);
-
-            $modified = array();
-            foreach ($conditions as $condition) {
-                $modified[] = $condition['original'];
-            }
-
-            $this->setData('price_rule.data.conditions', implode("\n", $modified));
         }
     }
 

@@ -308,9 +308,9 @@ class Validator extends Model
             ),
         );
 
-        $handlers['pricerule_conditions'] = array(
+        $handlers['trigger_conditions'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\PriceRule', 'conditions')
+                'validate' => array('core\\handlers\\validator\\Trigger', 'conditions')
             ),
         );
 

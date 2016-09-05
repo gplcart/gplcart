@@ -11,8 +11,6 @@ namespace core\models;
 
 use PDO;
 use core\Model;
-use core\Handler;
-use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Currency as ModelsCurrency;
 use core\models\Language as ModelsLanguage;
@@ -50,144 +48,13 @@ class PriceRule extends Model
     }
 
     /**
-     * Returns an array of condition operators
-     * @return array
-     */
-    public function getConditionOperators()
-    {
-        return array(">=", "<=", ">", "<", "=", "!=");
-    }
-
-    /**
-     * Returns array of instance => method of the condition handler
-     * @param string $condition_id
-     * @param string $method
-     * @return mixed
-     */
-    public function getConditionHandler($condition_id, $method)
-    {
-        $handlers = $this->getConditionHandlers();
-        return Handler::get($handlers, $condition_id, $method);
-    }
-
-    /**
-     * Returns an array of condition handlers
-     * @return array
-     */
-    public function getConditionHandlers()
-    {
-        $conditions = &Cache::memory('pricerule.condition.handlers');
-
-        if (isset($conditions)) {
-            return $conditions;
-        }
-
-        $conditions = array(
-            'user_id' => array(
-                'description' => $this->language->text('User ID. Parameters: list of numeric IDs, separated by comma'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'userId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditionsConditions', 'userId'),
-                ),
-            ),
-            'user_role_id' => array(
-                'description' => $this->language->text('User role ID. Parameters: list of numeric IDs, separated by comma'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'userRole'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'userRole'),
-                ),
-            ),
-            'date' => array(
-                'description' => $this->language->text('Date. Parameters: One value in time format'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'date'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'date'),
-                ),
-            ),
-            'product_id' => array(
-                'description' => $this->language->text('Product ID. Parameters: list of numeric IDs, separated by comma'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'productId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'productId'),
-                ),
-            ),
-            'product_category_id' => array(
-                'description' => $this->language->text('Product catalog category ID. Parameters: list of numeric IDs, separated by comma'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'categoryId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'categoryId'),
-                ),
-            ),
-            'product_brand_category_id' => array(
-                'description' => $this->language->text('Product brand category ID. Parameters: list of numeric IDs, separated by comma'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'brandCategoryId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'categoryId'),
-                ),
-            ),
-            'used' => array(
-                'description' => $this->language->text('Times used. Parameters: One numeric value'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'used'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'used'),
-                ),
-            ),
-            'shipping' => array(
-                'description' => $this->language->text('Order shipping method. Parameters: Shipping service ID'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'shipping'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'shipping'),
-                ),
-            ),
-            'payment' => array(
-                'description' => $this->language->text('Order payment method. Parameters: Payment service ID'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'payment'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'payment'),
-                ),
-            ),
-            'shipping_address_id' => array(
-                'description' => $this->language->text('Order shipping address ID. Parameters: list of numeric IDs, separated by comma'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'shippingAddressId'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'shippingAddressId'),
-                ),
-            ),
-            'country' => array(
-                'description' => $this->language->text('Order country code. Parameters: Country code'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'country'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'country'),
-                ),
-            ),
-            'state' => array(
-                'description' => $this->language->text('Order state code. Parameters: State code'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'state'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'state'),
-                ),
-            ),
-            'cart_total' => array(
-                'description' => $this->language->text('Cart total (order subtotal). Parameters: numeric value'),
-                'handlers' => array(
-                    'condition' => array('core\\handlers\\pricerule\\Condition', 'cartTotal'),
-                    'validate' => array('core\\handlers\\validator\\PriceRuleConditions', 'price'),
-                ),
-            ),
-        );
-
-        $this->hook->fire('pricerule.condition.handlers', $conditions);
-        return $conditions;
-    }
-
-    /**
      * Returns an array of rules or total number of rules
      * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())
     {
-        $price_rules = &Cache::memory('price.rules.' . md5(serialize($data)));
+        $price_rules = &Cache::memory('price.rules.' . md5(json_encode($data)));
 
         if (isset($price_rules)) {
             return $price_rules;
@@ -213,9 +80,9 @@ class PriceRule extends Model
             $sql .= ' WHERE price_rule_id IS NOT NULL';
         }
 
-        if (isset($data['store_id'])) {
-            $sql .= ' AND store_id = ?';
-            $where[] = (int) $data['store_id'];
+        if (isset($data['trigger_id'])) {
+            $sql .= ' AND trigger_id = ?';
+            $where[] = $data['trigger_id'];
         }
 
         if (isset($data['name'])) {
@@ -243,51 +110,18 @@ class PriceRule extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['type'])) {
-            $sql .= ' AND type = ?';
-            $where[] = $data['type'];
-        }
-
         if (isset($data['currency'])) {
             $sql .= ' AND currency = ?';
             $where[] = $data['currency'];
         }
+        
+        $orders = array('asc', 'desc');
+        $sorts = array('price_rule_id', 'name', 'code',
+            'value', 'value_type', 'weight', 'status', 'currency', 'trigger_id');
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            $order = $data['order'];
-
-            switch ($data['sort']) {
-                case 'price_rule_id':
-                    $sql .= " ORDER BY price_rule_id $order";
-                    break;
-                case 'name':
-                    $sql .= " ORDER BY name $order";
-                    break;
-                case 'code':
-                    $sql .= " ORDER BY code $order";
-                    break;
-                case 'value':
-                    $sql .= " ORDER BY value $order";
-                    break;
-                case 'value_type':
-                    $sql .= " ORDER BY value_type $order";
-                    break;
-                case 'weight':
-                    $sql .= " ORDER BY weight $order";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status $order";
-                    break;
-                case 'currency':
-                    $sql .= " ORDER BY currency $order";
-                    break;
-                case 'type':
-                    $sql .= " ORDER BY type $order";
-                    break;
-                case 'store_id':
-                    $sql .= " ORDER BY store_id $order";
-                    break;
-            }
+        if ((isset($data['sort']) && in_array($data['sort'], $sorts))
+                && (isset($data['order']) && in_array($data['order'], $orders, true))) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';
         }
@@ -300,16 +134,10 @@ class PriceRule extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $result) {
-            $result['data'] = unserialize($result['data']);
-
-            if (!empty($result['data']['conditions'])) {
-                Tool::sortWeight($result['data']['conditions']);
-            }
-
             $price_rules[$result['price_rule_id']] = $result;
         }
 
@@ -331,10 +159,6 @@ class PriceRule extends Model
 
         $price_rule = $sth->fetch(PDO::FETCH_ASSOC);
 
-        if (isset($price_rule['data'])) {
-            $price_rule['data'] = unserialize($price_rule['data']);
-        }
-
         $this->hook->fire('get.price.rule.after', $price_rule_id, $price_rule);
         return $price_rule;
     }
@@ -354,14 +178,13 @@ class PriceRule extends Model
 
         $values = array(
             'name' => $data['name'],
-            'type' => $data['type'],
             'currency' => $data['currency'],
             'value' => (int) $data['value'],
             'value_type' => $data['value_type'],
             'status' => !empty($data['status']),
+            'trigger_id' => $data['trigger_id'],
             'code' => empty($data['code']) ? '' : $data['code'],
             'weight' => empty($data['weight']) ? 0 : (int) $data['weight'],
-            'data' => empty($data['data']) ? serialize(array()) : serialize($data['data']),
             'store_id' => empty($data['store_id']) ? (int) $this->config->get('store', 1) : (int) $data['store_id']
         );
 
@@ -483,9 +306,7 @@ class PriceRule extends Model
         }
 
         $rules = $this->getList(array(
-            'status' => 1,
-            'type' => $type,
-            'store_id' => $store_id
+            'status' => 1
         ));
 
         $coupons = 0;
@@ -513,116 +334,6 @@ class PriceRule extends Model
 
         $this->hook->fire('suited.price.rules.after', $results, $data);
         return $results;
-    }
-
-    /**
-     * Compares numeric values using operators
-     * @param integer $value1
-     * @param mixed $value2
-     * @param string $operator
-     * @return boolean
-     */
-    public function compareNumeric($value1, $value2, $operator)
-    {
-        if (!is_numeric($value1)) {
-            throw new \core\exceptions\UsagePriceRule('Value 1 is not numeric');
-        }
-
-        if (!is_numeric($value2) && !is_array($value2)) {
-            throw new \core\exceptions\UsagePriceRule('Value 2 neither numeric nor array');
-        }
-
-        switch ($operator) {
-            case '>=':
-                return ($value1 >= $value2);
-            case '<=':
-                return ($value1 <= $value2);
-            case '>':
-                return ($value1 > $value2);
-            case '<':
-                return ($value1 < $value2);
-            case '=':
-
-                if (is_array($value2)) {
-                    return in_array($value1, $value2);
-                }
-
-                return ($value1 == $value2);
-
-            case '!=':
-                if (is_array($value2)) {
-                    return !in_array($value1, $value2);
-                }
-
-                return ($value1 != $value2);
-        }
-
-        return false;
-    }
-
-    /**
-     * Compares string values using operators
-     * @param integer $value1
-     * @param mixed $value2
-     * @param string $operator
-     * @return boolean
-     */
-    public function compareString($value1, $value2, $operator)
-    {
-        if (!is_string($value1)) {
-            throw new \core\exceptions\UsagePriceRule('Value 1 is not string');
-        }
-
-        if (!is_string($value2) && !is_array($value2)) {
-            throw new \core\exceptions\UsagePriceRule('Value 2 neither string nor array');
-        }
-
-        switch ($operator) {
-            case '=':
-
-                if (is_array($value2)) {
-                    return in_array($value1, $value2, true);
-                }
-
-                return (strcmp($value1, $value2) === 0);
-
-            case '!=':
-                if (is_array($value2)) {
-                    return !in_array($value1, $value2, true);
-                }
-
-                return (strcmp($value1, $value2) !== 0);
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if conditions are met for a given rule
-     * @param array $rule
-     * @param array $data
-     * @return boolean
-     */
-    protected function conditionsMet(array $rule, array $data)
-    {
-        if (empty($rule['data']['conditions'])) {
-            return true;
-        }
-
-        $handlers = $this->getConditionHandlers();
-
-        Tool::sortWeight($rule['data']['conditions']);
-
-        $results = 0;
-        foreach ($rule['data']['conditions'] as $condition) {
-            $result = Handler::call($handlers, $condition['id'], 'condition', array($rule, $condition, $data));
-
-            if ($result === true) {
-                $results++;
-            }
-        }
-
-        return (count($rule['data']['conditions']) === $results);
     }
 
     /**
