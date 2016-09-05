@@ -47,32 +47,28 @@ class PriceRule
      * @param array $options
      * @return boolean
      */
-    public function code($value, array $options = array())
+    public function codeUnique($value, array $options = array())
     {
         if (empty($value)) {
             return true;
         }
 
-        $arguments = array(
-            'code' => $value,
-            'store_id' => $options['store_id']);
-
-        $rules = $this->rule->getList($arguments);
-
-        if (isset($options['price_rule_id'])) {
-            // Editing, exclude it from the results
-            unset($rules[$options['price_rule_id']]);
+        if (isset($options['data']['code']) && $options['data']['code'] === $value) {
+            return true;
         }
 
+        $arguments = array('code' => $value);
+        $rules = $this->rule->getList($arguments);
+
         if (empty($rules)) {
-            return true; // No similar code found, passed validation
+            return true;
         }
 
         // Search for exact match
         // because $this->rule->getList() uses LIKE for "code" field
         foreach ($rules as $rule) {
             if ($rule['code'] === $value) {
-                return $this->language->text('Code %code already exists for this store', array(
+                return $this->language->text('Code %code already exists', array(
                             '%code' => $value));
             }
         }

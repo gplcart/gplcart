@@ -114,13 +114,12 @@ class PriceRule extends Model
             $sql .= ' AND currency = ?';
             $where[] = $data['currency'];
         }
-        
+
         $orders = array('asc', 'desc');
         $sorts = array('price_rule_id', 'name', 'code',
             'value', 'value_type', 'weight', 'status', 'currency', 'trigger_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $sorts))
-                && (isset($data['order']) && in_array($data['order'], $orders, true))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $sorts)) && (isset($data['order']) && in_array($data['order'], $orders, true))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';
@@ -154,8 +153,8 @@ class PriceRule extends Model
     {
         $this->hook->fire('get.price.rule.before', $price_rule_id);
 
-        $sth = $this->db->prepare('SELECT * FROM price_rule WHERE price_rule_id=:price_rule_id');
-        $sth->execute(array(':price_rule_id' => (int) $price_rule_id));
+        $sth = $this->db->prepare('SELECT * FROM price_rule WHERE price_rule_id=?');
+        $sth->execute(array($price_rule_id));
 
         $price_rule = $sth->fetch(PDO::FETCH_ASSOC);
 
@@ -184,8 +183,7 @@ class PriceRule extends Model
             'status' => !empty($data['status']),
             'trigger_id' => $data['trigger_id'],
             'code' => empty($data['code']) ? '' : $data['code'],
-            'weight' => empty($data['weight']) ? 0 : (int) $data['weight'],
-            'store_id' => empty($data['store_id']) ? (int) $this->config->get('store', 1) : (int) $data['store_id']
+            'weight' => empty($data['weight']) ? 0 : (int) $data['weight']
         );
 
         $price_rule_id = $this->db->insert('price_rule', $values);
@@ -227,8 +225,8 @@ class PriceRule extends Model
      */
     public function setUsed($price_rule_id)
     {
-        $sth = $this->db->prepare('UPDATE price_rule SET used=used + 1 WHERE price_rule_id=:price_rule_id');
-        $sth->execute(array(':price_rule_id' => (int) $price_rule_id));
+        $sth = $this->db->prepare('UPDATE price_rule SET used=used + 1 WHERE price_rule_id=?');
+        $sth->execute(array($price_rule_id));
         return (bool) $sth->rowCount();
     }
 
@@ -299,15 +297,7 @@ class PriceRule extends Model
     {
         $this->hook->fire('suited.price.rules.before', $type, $data);
 
-        if (isset($data['data']['order']['store_id'])) {
-            $store_id = $data['data']['order']['store_id'];
-        } else {
-            $store_id = $data['store_id'];
-        }
-
-        $rules = $this->getList(array(
-            'status' => 1
-        ));
+        $rules = $this->getList(array('status' => 1));
 
         $coupons = 0;
         $results = array();

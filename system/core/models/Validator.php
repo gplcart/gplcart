@@ -302,9 +302,9 @@ class Validator extends Model
             ),
         );
 
-        $handlers['price_rule_code'] = array(
+        $handlers['pricerule_code_unique'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\PriceRule', 'code')
+                'validate' => array('core\\handlers\\validator\\PriceRule', 'codeUnique')
             ),
         );
 

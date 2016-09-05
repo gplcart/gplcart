@@ -424,7 +424,6 @@ class Model
             'fields' => array(
                 'price_rule_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
                 'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
                 'used' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),

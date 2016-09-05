@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Tool;
 use core\models\Price as ModelsPrice;
+use core\models\Trigger as ModelsTrigger;
 use core\models\Currency as ModelsCurrency;
 use core\models\PriceRule as ModelsPriceRule;
 use core\controllers\admin\Controller as BackendController;
@@ -20,6 +20,12 @@ use core\controllers\admin\Controller as BackendController;
  */
 class PriceRule extends BackendController
 {
+    
+    /**
+     * Trigger model instance
+     * @var \core\models\Trigger $trigger
+     */
+    protected $trigger;
 
     /**
      * Price rule model instance
@@ -38,20 +44,22 @@ class PriceRule extends BackendController
      * @var \core\models\Price $price
      */
     protected $price;
-
+    
     /**
      * Constructor
      * @param ModelsPriceRule $rule
      * @param ModelsCurrency $currency
      * @param ModelsPrice $price
+     * @param ModelsTrigger $trigger
      */
     public function __construct(ModelsPriceRule $rule, ModelsCurrency $currency,
-            ModelsPrice $price)
+            ModelsPrice $price, ModelsTrigger $trigger)
     {
         parent::__construct();
 
         $this->rule = $rule;
         $this->price = $price;
+        $this->trigger = $trigger;
         $this->currency = $currency;
     }
 
@@ -90,9 +98,11 @@ class PriceRule extends BackendController
         $rule = $this->getPriceRule($rule_id);
         $stores = $this->store->getList();
         $currencies = $this->currency->getList(true);
+        $triggers = $this->trigger->getList(array('status' => 1));
 
         $this->setData('stores', $stores);
         $this->setData('price_rule', $rule);
+        $this->setData('triggers', $triggers);
         $this->setData('currencies', $currencies);
 
         $this->submitPriceRule($rule);
@@ -343,15 +353,11 @@ class PriceRule extends BackendController
     {
         $this->setSubmittedBool('status');
 
-        if (isset($rule['price_rule_id'])) {
-            $this->setSubmitted('price_rule_id', $rule['price_rule_id']);
-        }
-
         $this->addValidator('name', array(
             'length' => array('min' => 1, 'max' => 255)
         ));
 
-        $this->addValidator('type', array(
+        $this->addValidator('trigger_id', array(
             'required' => array()
         ));
 
@@ -373,18 +379,9 @@ class PriceRule extends BackendController
             'length' => array('max' => 2)
         ));
 
-        $options = array(
-            'price_rule_id' => $this->getSubmitted('price_rule_id')
-        );
-
-        $type = $this->getSubmitted('type');
-
         $this->addValidator('code', array(
-            'length' => array(
-                'max' => 255,
-                'min' => ($type === 'order') ? 1 : null
-            ),
-            'price_rule_code' => $options
+            'length' => array('max' => 255),
+            'pricerule_code_unique' => array()
         ));
 
         $errors = $this->setValidators($rule);
@@ -401,9 +398,6 @@ class PriceRule extends BackendController
                 $amount = $this->price->amount((float) $value, $currency, false);
                 $this->setSubmitted('value', $amount);
             }
-
-            $conditions = $this->getValidatorResult('data.conditions');
-            $this->setSubmitted('data.conditions', $conditions);
         }
     }
 
