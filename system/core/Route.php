@@ -459,6 +459,14 @@ class Route
             )
         );
 
+        $routes['admin/sale/transaction'] = array(
+            'access' => 'transaction',
+            'menu' => array('admin' => 'Transactions'),
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Transaction', 'listTransaction')
+            )
+        );
+
         $routes['admin/search'] = array(
             'access' => 'search',
             'handlers' => array(
@@ -1103,7 +1111,6 @@ class Route
      */
     protected function callControllerRoute()
     {
-
         foreach ($this->getList() as $pattern => $route) {
 
             $arguments = Tool::patternMatch($this->path, $pattern);

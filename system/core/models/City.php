@@ -27,7 +27,7 @@ class City extends Model
     }
 
     /**
-     * Returns an array of cities for a given state
+     * Returns an array of cities
      * @param array $data
      * @return array|integer
      */

@@ -88,22 +88,24 @@ class Logger
 
     /**
      * Error handler
-     * @param integer $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param integer $errline
+     * @param integer $code
+     * @param string $message
+     * @param string $file
+     * @param string $line
      */
-    public function errorHandler($errno, $errstr, $errfile = '', $errline = '')
+    public function errorHandler($code, $message, $file = '', $line = '')
     {
-        $error['code'] = $errno;
-        $error['file'] = $errfile;
-        $error['line'] = $errline;
-        $error['message'] = $errstr;
+        $error = array(
+            'code' => $code,
+            'file' => $file,
+            'line' => $line,
+            'message' => $message
+        );
 
         $this->log('php_error', $error, 'warning', false);
-        $message = $this->getFormattedError($error);
-        error_log($message, 0);
-        static::$errors['warning'][] = $message;
+        $formatted = $this->getFormattedError($error);
+        error_log($formatted, 0);
+        static::$errors['warning'][] = $formatted;
     }
 
     /**
@@ -111,9 +113,9 @@ class Logger
      */
     public function shutdownHandler()
     {
-        $lasterror = error_get_last();
+        $error = error_get_last();
 
-        $error_types = array(
+        $types = array(
             E_ERROR,
             E_PARSE,
             E_CORE_ERROR,
@@ -124,13 +126,8 @@ class Logger
             E_RECOVERABLE_ERROR,
         );
 
-        if (in_array($lasterror['type'], $error_types)) {
-
-            $error['message'] = $lasterror['message'];
-            $error['code'] = $lasterror['type'];
-            $error['file'] = $lasterror['file'];
-            $error['line'] = $lasterror['line'];
-
+        if (in_array($error['type'], $types)) {
+            $error['code'] = $error['type'];
             error_log($this->getFormattedError($error), 0);
             $this->log('php_shutdown', $error, 'danger', false);
         }
@@ -163,10 +160,10 @@ class Logger
             $message .= "<h3>$header</h3>\n";
         }
 
-        $message .= "<p><strong>Message:</strong> {$error['message']}</p>\n";
-        $message .= "<p><strong>Code:</strong> {$error['code']}</p>\n";
-        $message .= "<p><strong>File:</strong> {$error['file']}</p>\n";
-        $message .= "<p><strong>Line:</strong> {$error['line']}</p>\n";
+        $message .= "Message: {$error['message']}</br>";
+        $message .= "Code: {$error['code']}</br>";
+        $message .= "File: {$error['file']}</br>";
+        $message .= "Line: {$error['line']}</br>";
 
         return $message;
     }

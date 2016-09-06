@@ -93,7 +93,8 @@ class Cron extends BackendController
     {
         // Delete expired records from history table
         $sth = $this->config->getDb()->prepare('DELETE FROM history WHERE time < :time');
-        $sth->execute(array(':time' => (GC_TIME - (int) $this->config('history_lifespan', 2628000))));
+        $time = (GC_TIME - (int) $this->config('history_lifespan', 2628000));
+        $sth->execute(array(':time' => $time));
 
         // Delete old files
         $dirs = array(
