@@ -14,21 +14,13 @@ use DateTime;
 use core\Model;
 use core\classes\Tool;
 use core\classes\Cache;
-use core\models\Module as ModelsModule;
 use core\models\Language as ModelsLanguage;
 
 /**
- * Manages basic behaviors and data related to various reports
+ * Manages basic behaviors and data related to system reports
  */
 class Report extends Model
 {
-
-    /**
-     * Module model instance
-     * @var \core\models\Module $module
-     */
-    protected $module;
-
     /**
      * Language model instance
      * @var \core\models\Language $language
@@ -37,14 +29,12 @@ class Report extends Model
 
     /**
      * Constructor
-     * @param ModelsModule $module
      * @param ModelsLanguage $language
      */
-    public function __construct(ModelsModule $module, ModelsLanguage $language)
+    public function __construct(ModelsLanguage $language)
     {
         parent::__construct();
 
-        $this->module = $module;
         $this->language = $language;
     }
 
@@ -82,21 +72,12 @@ class Report extends Model
             $where[] = "%{$data['text']}%";
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'type':
-                    $sql .= " ORDER BY type {$data['order']}";
-                    break;
-                case 'severity':
-                    $sql .= " ORDER BY severity {$data['order']}";
-                    break;
-                case 'time':
-                    $sql .= " ORDER BY time {$data['order']}";
-                    break;
-                case 'text':
-                    $sql .= " ORDER BY text {$data['order']}";
-                    break;
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('type', 'severity', 'time', 'text');
+
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY time DESC';
         }
@@ -129,8 +110,8 @@ class Report extends Model
      */
     public function getTypes()
     {
-        return $this->db->query('SELECT DISTINCT type FROM log')
-                        ->fetchAll(PDO::FETCH_COLUMN);
+        $sql = 'SELECT DISTINCT type FROM log';
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
 
     /**
@@ -174,7 +155,9 @@ class Report extends Model
         }
 
         $placeholders = rtrim(str_repeat('?, ', count($error_types)), ', ');
-        $sth = $this->db->prepare('DELETE FROM log WHERE log_id IN(' . $placeholders . ')');
+        $sql = 'DELETE FROM log WHERE log_id IN(' . $placeholders . ')';
+
+        $sth = $this->db->prepare($sql);
         $sth->execute($error_types);
         return true;
     }
