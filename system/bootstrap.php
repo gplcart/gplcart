@@ -4,6 +4,18 @@ use core\Container;
 
 error_reporting(E_ALL);
 
+if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+    exit('Your PHP installation is too old. GPL Cart requires at least PHP 5.3.0');
+}
+
+if (ini_get('session.auto_start')) {
+    exit('"session.auto_start" must be set to 0 in your PHP settings');
+}
+
+if (!function_exists('mb_internal_encoding')) {
+    exit('"mbstring" must be enabled in your PHP settings');
+}
+
 define('GC_VERSION', '1.0.0');
 define('GC_ROOT_DIR', getcwd());
 define('GC_SYSTEM_DIR', GC_ROOT_DIR . '/system');
@@ -58,7 +70,6 @@ if (isset($_SERVER['HTTP_HOST'])) {
     $_SERVER['HTTP_HOST'] = '';
 }
 
-ini_set('session.auto_start', '0');
 ini_set('session.use_cookies', '1');
 ini_set('session.use_only_cookies', '1');
 ini_set('session.use_trans_sid', '0');
