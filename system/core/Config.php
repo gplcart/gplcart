@@ -106,20 +106,20 @@ class Config
      */
     public function set($key, $value)
     {
-        if(empty($key) || !isset($value)){
+        if (empty($key) || !isset($value)) {
             return false;
         }
-        
+
         if (empty($this->db)) {
             return false;
         }
 
         $this->reset($key);
-        $serialized = false;
+        $serialized = 0;
 
         if (is_array($value)) {
             $value = serialize($value);
-            $serialized = true;
+            $serialized = 1;
         }
 
         $values = array(
@@ -128,8 +128,8 @@ class Config
             'created' => GC_TIME,
             'serialized' => $serialized
         );
-        
-        
+
+
         $this->db->insert('settings', $values);
         return true;
     }
@@ -307,7 +307,7 @@ class Config
         if (empty($this->db)) {
             return array();
         }
-        
+
         $modules = array();
         $sth = $this->db->query('SELECT * FROM module ORDER BY weight ASC');
 

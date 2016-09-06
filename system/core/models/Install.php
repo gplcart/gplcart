@@ -292,6 +292,7 @@ class Install extends Model
             'data' => serialize($data),
             'domain' => $this->request->host(),
             'name' => $settings['store']['title'],
+            'created' => GC_TIME,
             'basepath' => trim($this->request->base(true), '/')
         );
 
