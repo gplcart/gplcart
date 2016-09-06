@@ -214,6 +214,10 @@ class CategoryGroup extends BackendController
             'translation' => array()
         ));
 
+        $this->addValidator('store_id', array(
+            'required' => array()
+        ));
+
         $category_group_id = null;
         if (isset($category_group['category_group_id'])) {
             $category_group_id = $category_group['category_group_id'];

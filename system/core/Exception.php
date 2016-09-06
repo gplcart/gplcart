@@ -29,25 +29,4 @@ class Exception extends BaseException
         parent::__construct($message, $code, $previous);
     }
 
-    /**
-     * Returns an array of exception data to be rendered
-     * @param string $message
-     * @return array
-     */
-    public function getMessageArray($message = '')
-    {
-        if ($message === '') {
-            $message = $this->getMessage();
-        }
-
-        $data = array(
-            'code' => $this->getCode(),
-            'file' => $this->getFile(),
-            'line' => $this->getLine(),
-            'message' => $this->getMessage()
-        );
-
-        return $data;
-    }
-
 }

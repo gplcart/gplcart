@@ -138,12 +138,27 @@ class Logger
      */
     public function exceptionHandler($exception)
     {
-        $error = $exception->getMessageArray();
+        $error = $this->getExceptionMessageArray($exception);
         $this->log('php_exception', $error, 'danger', false);
 
         $message = $this->getFormattedError($error, 'PHP Exception');
         error_log($message, 0);
         echo $message;
+    }
+
+    /**
+     * Returns an array of exception data to be rendered
+     * @param object $instance
+     * @return array
+     */
+    protected function getExceptionMessageArray($instance)
+    {
+        return array(
+            'code' => $instance->getCode(),
+            'file' => $instance->getFile(),
+            'line' => $instance->getLine(),
+            'message' => $instance->getMessage()
+        );
     }
 
     /**
