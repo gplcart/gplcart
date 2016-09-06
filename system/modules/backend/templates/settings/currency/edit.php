@@ -254,7 +254,7 @@
           </button>
           <?php } ?>
         </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-4">
           <div class="btn-toolbar">
             <a href="<?php echo $this->url('admin/settings/currency'); ?>" class="btn btn-default"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
             <?php if ($this->access('currency_edit') || $this->access('currency_add')) { ?>

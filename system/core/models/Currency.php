@@ -50,36 +50,39 @@ class Currency extends Model
             return false;
         }
 
-        $values = array(
-            'code' => $data['code'],
-            'name' => $data['name'],
-            'symbol' => $data['symbol'],
-            'status' => !empty($data['status']),
-            'default' => !empty($data['default']),
-            'decimals' => isset($data['decimals']) ? (int) $data['decimals'] : 2,
-            'major_unit' => $data['major_unit'],
-            'minor_unit' => $data['minor_unit'],
-            'code_spacer' => isset($data['code_spacer']) ? $data['code_spacer'] : ' ',
-            'numeric_code' => (int) $data['numeric_code'],
-            'symbol_spacer' => isset($data['symbol_spacer']) ? $data['symbol_spacer'] : ' ',
-            'rounding_step' => isset($data['rounding_step']) ? (float) $data['rounding_step'] : 0,
-            'code_placement' => isset($data['code_placement']) ? $data['code_placement'] : 'after',
-            'convertion_rate' => isset($data['convertion_rate']) ? (float) $data['convertion_rate'] : 1,
-            'symbol_placement' => isset($data['symbol_placement']) ? $data['symbol_placement'] : 'before',
-            'decimal_separator' => isset($data['decimal_separator']) ? $data['decimal_separator'] : '.',
-            'thousands_separator' => isset($data['thousands_separator']) ? $data['thousands_separator'] : ',',
-        );
+        $data += $this->defaultCurrencyValues();
 
         $currencies = $this->getList();
-        $currencies[$data['code']] = $values;
+        $currencies[$data['code']] = $data;
         $this->config->set('currencies', $currencies);
 
-        if (!empty($values['default'])) {
+        if (!empty($data['default'])) {
             $this->config->set('currency', $data['code']);
         }
 
         $this->hook->fire('add.currency.after', $data);
         return true;
+    }
+
+    /**
+     * Returns an array of default currency values
+     * @return array
+     */
+    protected function defaultCurrencyValues()
+    {
+        return array(
+            'status' => 0,
+            'default' => 0,
+            'decimals' => 2,
+            'code_spacer' => ' ',
+            'symbol_spacer' => ' ',
+            'rounding_step' => 0,
+            'code_placement' => 'after',
+            'convertion_rate' => 1,
+            'symbol_placement' => 'before',
+            'decimal_separator' => '.',
+            'thousands_separator' => ',',
+        );
     }
 
     /**
@@ -95,7 +98,7 @@ class Currency extends Model
             return $currencies;
         }
 
-        $default = $this->defaultCurrency();
+        $default = $this->defaultCurrencies();
         $saved = $this->config->get('currencies', array());
         $currencies = Tool::merge($default, $saved);
 
@@ -174,10 +177,9 @@ class Currency extends Model
             return false;
         }
 
-        $sql = '
-            SELECT NOT EXISTS (SELECT currency FROM orders WHERE currency=:currency) AND
-            NOT EXISTS (SELECT currency FROM price_rule WHERE currency=:currency) AND
-            NOT EXISTS (SELECT currency FROM product WHERE currency=:currency)';
+        $sql = 'SELECT NOT EXISTS (SELECT currency FROM orders WHERE currency=:currency)'
+                . ' AND NOT EXISTS (SELECT currency FROM price_rule WHERE currency=:currency)'
+                . ' AND NOT EXISTS (SELECT currency FROM product WHERE currency=:currency)';
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':currency' => $code));
@@ -241,7 +243,8 @@ class Currency extends Model
 
         if (isset($currency_code) && isset($list[$currency_code])) {
             if (isset($query)) {
-                Tool::setCookie('currency', $currency_code, $this->config->get('currency_cookie_lifespan', 31536000));
+                $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
+                Tool::setCookie('currency', $currency_code, $lifespan);
             }
             $currency = $currency_code;
             return $currency_code;
@@ -272,7 +275,7 @@ class Currency extends Model
      * Returns an array of default currencies
      * @return array
      */
-    protected function defaultCurrency()
+    protected function defaultCurrencies()
     {
         return array(
             'USD' => array(

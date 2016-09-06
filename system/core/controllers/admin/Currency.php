@@ -202,7 +202,7 @@ class Currency extends BackendController
             return;
         }
         
-        $this->setSubmitted('currency');
+        $this->setSubmitted('currency', null, 'raw');
         $this->validateCurrency($currency);
 
         if ($this->hasErrors('currency')) {
