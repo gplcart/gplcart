@@ -9,7 +9,7 @@
 
 namespace core\classes;
 
-use core\exceptions\SystemLogicalUserAccess;
+use core\exceptions\UserAccessException;
 
 /**
  * Provides methods to work with sessions
@@ -19,12 +19,12 @@ class Session
 
     /**
      * Starts a session
-     * @throws SystemLogicalUserAccess
+     * @throws UserAccessException
      */
     public function __construct()
     {
         if (!$this->started() && !session_start()) {
-            throw new SystemLogicalUserAccess('Failed to start the session');
+            throw new UserAccessException('Failed to start the session');
         }
     }
 

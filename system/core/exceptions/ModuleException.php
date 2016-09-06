@@ -9,18 +9,18 @@
 
 namespace core\exceptions;
 
-use core\exceptions\Usage;
+use core\Exception as CoreException;
 
-class UsageUserAccess extends Usage
+class ModuleException extends CoreException
 {
 
     /**
      * Constructor
      * @param string|null $message
      * @param integer $code
-     * @param Exception $previous
+     * @param CoreException $previous
      */
-    public function __construct($message = null, $code = 0, Usage $previous = null)
+    public function __construct($message = null, $code = 0, CoreException $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

@@ -9,9 +9,8 @@
 
 namespace core;
 
-use core\classes\Session;
 use core\classes\Url;
-use core\exceptions\SystemFailure;
+use core\classes\Session;
 
 /**
  * Provides methods to route incoming requests and setup the system
@@ -56,12 +55,6 @@ class Facade
     protected $logger;
 
     /**
-     * Exception class instance
-     * @var \core\exceptions\SystemFailure $exception
-     */
-    protected $exception;
-
-    /**
      * Constructor
      * @param Route $route
      * @param Url $url
@@ -69,10 +62,9 @@ class Facade
      * @param Config $config
      * @param Hook $hook
      * @param Logger $logger
-     * @param SystemFailure $exception
      */
     public function __construct(Route $route, Url $url, Session $session,
-            Config $config, Hook $hook, Logger $logger, SystemFailure $exception)
+            Config $config, Hook $hook, Logger $logger)
     {
 
         $this->url = $url;
@@ -81,7 +73,6 @@ class Facade
         $this->config = $config;
         $this->logger = $logger;
         $this->session = $session;
-        $this->exception = $exception;
 
         date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
 
@@ -132,7 +123,7 @@ class Facade
     protected function setErrorHandlers()
     {
         register_shutdown_function(array($this->logger, 'shutdownHandler'));
-        set_exception_handler(array($this->exception, 'exceptionHandler'));
+        set_exception_handler(array($this->logger, 'exceptionHandler'));
         set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
     }
 

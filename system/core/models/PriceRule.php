@@ -281,7 +281,7 @@ class PriceRule extends Model
         foreach ($rules as $rule) {
             try {
                 $this->calculateComponent($total, $cart, $data, $components, $rule);
-            } catch (\core\exceptions\UsagePriceRule $exception) {
+            } catch (\Exception $exception) {
                 throw $exception;
             }
         }

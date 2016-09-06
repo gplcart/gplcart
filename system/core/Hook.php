@@ -9,7 +9,7 @@
 
 namespace core;
 
-use core\exceptions\SystemLogical;
+use core\exceptions\ModuleException;
 
 /**
  * Provides methods to work with system hooks (event system)
@@ -114,7 +114,7 @@ class Hook
             try {
                 $instance->{$method}($a, $b, $c);
                 static::$called[$method][$namespace] = array($namespace, $method);
-            } catch (SystemLogical $e) {
+            } catch (ModuleException $e) {
                 echo $e->getMessage();
             }
         }

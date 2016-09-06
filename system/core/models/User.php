@@ -19,6 +19,8 @@ use core\models\Address as ModelsAddress;
 use core\models\UserRole as ModelsUserRole;
 use core\models\Language as ModelsLanguage;
 
+use core\exceptions\UserAccessException;
+
 /**
  * Manages basic behaviors and data related to users
  */
@@ -331,7 +333,7 @@ class User extends Model
     /**
      * Logs in a user
      * @param array $data
-     * @throws \core\exceptions\SystemLogicalUserAccess
+     * @throws UserAccessException
      */
     public function login(array $data)
     {
@@ -352,7 +354,7 @@ class User extends Model
         }
 
         if (!$this->session->regenerate(true)) {
-            throw new \core\exceptions\SystemLogicalUserAccess('Failed to regenerate the current session');
+            throw new UserAccessException('Failed to regenerate the current session');
         }
 
         unset($user['hash']);
@@ -469,7 +471,7 @@ class User extends Model
     /**
      * Logs out the current user
      * @return array
-     * @throws \core\exceptions\SystemLogicalUserAccess
+     * @throws UserAccessException
      */
     public function logout()
     {
@@ -481,7 +483,7 @@ class User extends Model
         }
 
         if (!$this->session->delete()) {
-            throw new \core\exceptions\SystemLogicalUserAccess('Failed to delete the session on logout');
+            throw new UserAccessException('Failed to delete the session on logout');
         }
 
         $user = $this->get($user_id);

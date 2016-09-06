@@ -13,7 +13,6 @@ use PDO;
 use core\Container;
 use core\classes\Tool;
 use core\classes\Cache;
-use code\exceptions\SystemLogical;
 
 /**
  * Contains methods to work with system configurations
@@ -333,7 +332,6 @@ class Config
     /**
      * Initializes system config
      * @return boolean
-     * @throws SystemLogical
      */
     protected function init()
     {
@@ -344,7 +342,7 @@ class Config
         $this->config = include GC_CONFIG_COMMON;
 
         if (empty($this->config['database'])) {
-            throw new SystemLogical('Missing database settings');
+            die('Missing database settings');
         }
 
         $this->exists = true;

@@ -17,6 +17,7 @@ use core\classes\Url;
 use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
+use core\exceptions\RouteException;
 
 /**
  * Routes incoming requests
@@ -1006,7 +1007,7 @@ class Route
                 $route['arguments'] = array($info['id_value']);
                 $this->route = $route + array('pattern' => $pattern);
                 Handler::call($route, null, 'controller', $route['arguments']);
-                exit('An error occurred while processing the route');
+                throw new RouteException('An error occurred while processing the route');
             }
         }
 
@@ -1056,7 +1057,7 @@ class Route
 
             $this->route = $route + array('pattern' => $pattern);
             $this->url->redirect($alias);
-            exit('An error occurred while processing the route');
+            throw new RouteException('An error occurred while processing the route');
         }
     }
 
@@ -1115,7 +1116,7 @@ class Route
             $this->route = $route + array('pattern' => $pattern);
 
             Handler::call($route, null, 'controller', $arguments);
-            exit('An error occurred while processing the route');
+            throw new RouteException('An error occurred while processing the route');
         }
     }
 
@@ -1137,7 +1138,7 @@ class Route
         );
 
         Handler::call($route, null, 'controller', array(404));
-        exit('An error occurred while processing the route');
+        throw new RouteException('An error occurred while processing the route');
     }
 
     /**

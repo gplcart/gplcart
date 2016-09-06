@@ -16,6 +16,7 @@ use core\Container;
 use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
+use core\exceptions\ModuleException;
 
 /**
  * Manages basic behaviors and data related to modules
@@ -130,7 +131,7 @@ class Module extends Model
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeEnable();
-            } catch (\core\exceptions\UsageModule $e) {
+            } catch (ModuleException $e) {
                 echo $e->getMessage();
             }
         }
@@ -336,7 +337,7 @@ class Module extends Model
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeDisable();
-            } catch (\core\exceptions\UsageModule $e) {
+            } catch (ModuleException $e) {
                 echo $e->getMessage();
             }
         }
@@ -469,7 +470,7 @@ class Module extends Model
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeInstall();
-            } catch (\core\exceptions\UsageModule $e) {
+            } catch (ModuleException $e) {
                 // uninstall trouble module
                 $this->db->delete('module', array('module_id' => $module_id));
                 echo $e->getMessage();
@@ -524,7 +525,7 @@ class Module extends Model
             try {
                 $module_class = Container::instance($module['class']);
                 $result = $module_class->beforeUninstall();
-            } catch (\core\exceptions\UsageModule $e) {
+            } catch (ModuleException $e) {
                 echo $e->getMessage();
             }
         }

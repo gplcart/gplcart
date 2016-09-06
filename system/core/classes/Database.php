@@ -11,6 +11,7 @@ namespace core\classes;
 
 use PDO;
 use PDOException;
+use core\exceptions\DatabaseException;
 
 /**
  * Provides wrappers for PDO methods
@@ -31,8 +32,8 @@ class Database extends PDO
             try {
                 parent::__construct($dns, $config['user'], $config['password']);
                 $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $exception) {
-                throw $exception;
+            } catch (PDOException $e) {
+                die('Could not connect to database');
             }
         }
     }

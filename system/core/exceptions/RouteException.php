@@ -9,19 +9,21 @@
 
 namespace core\exceptions;
 
-use core\exceptions\SystemLogical;
+use core\Exception as CoreException;
 
-class SystemLogicalUserAccess extends SystemLogical
+class RouteException extends CoreException
 {
 
     /**
      * Constructor
      * @param string|null $message
      * @param integer $code
-     * @param Exception $previous
+     * @param CoreException $previous
      */
-    public function __construct($message = null, $code = 0, SystemLogical $previous = null)
+    public function __construct($message = null, $code = 0,
+            CoreException $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
+
 }
