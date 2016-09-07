@@ -127,7 +127,7 @@ class Model
             }
 
             if (!empty($info['serialize'])) {
-                $values[$name] = serialize(array());
+                $values[$name] = array();
             }
         }
 
@@ -156,21 +156,21 @@ class Model
         $tables['address'] = array(
             'fields' => array(
                 'address_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-                'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
-                'city_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'address_1' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => ''),
+                'city_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'address_1' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
                 'address_2' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-                'phone' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'phone' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
                 'type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => 'shipping'),
                 'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'middle_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-                'last_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'first_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'postcode' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
-                'company' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'fax' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'last_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'first_name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'postcode' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+                'company' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'fax' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
             )
         );

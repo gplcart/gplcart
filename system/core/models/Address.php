@@ -44,24 +44,19 @@ class Address extends Model
      */
     public function get($address_id)
     {
-
         $this->hook->fire('get.address.before', $address_id);
 
-        $sql = '
-                SELECT a.*,
-                    c.name AS country_name,
-                    c.native_name AS country_native_name,
-                    c.format AS country_format,
-                    s.name AS state_name,
-                    ci.name AS city_name
-                FROM address a
-                LEFT JOIN country c ON(a.country=c.code)
-                LEFT JOIN state s ON(a.state_id=s.state_id)
-                LEFT JOIN city ci ON(a.city_id=ci.city_id)
-                WHERE a.address_id = :address_id';
+        $sql = 'SELECT a.*, c.name AS country_name,'
+                . ' c.native_name AS country_native_name,'
+                . ' c.format AS country_format, s.name AS state_name,'
+                . ' ci.name AS city_name FROM address a'
+                . ' LEFT JOIN country c ON(a.country=c.code)'
+                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
+                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+                . ' WHERE a.address_id = ?';
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array(':address_id' => (int) $address_id));
+        $sth->execute(array($address_id));
         $address = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($address)) {
@@ -86,28 +81,13 @@ class Address extends Model
             return false;
         }
 
-        $values = array(
-            'created' => GC_TIME,
-            'user_id' => $data['user_id'],
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data']),
-            'type' => empty($data['type']) ? 'shipping' : $data['type'],
-            'state_id' => empty($data['state_id']) ? 0 : $data['state_id'],
-            'country' => empty($data['country']) ? '' : $data['country'],
-            'city_id' => empty($data['city_id']) ? '' : $data['city_id'],
-            'address_1' => empty($data['address_1']) ? '' : $data['address_1'],
-            'address_2' => empty($data['address_2']) ? '' : $data['address_2'],
-            'phone' => empty($data['phone']) ? '' : $data['phone'],
-            'fax' => empty($data['fax']) ? '' : $data['fax'],
-            'postcode' => empty($data['postcode']) ? '' : $data['postcode'],
-            'company' => empty($data['company']) ? '' : $data['company'],
-            'first_name' => empty($data['first_name']) ? '' : $data['first_name'],
-            'middle_name' => empty($data['middle_name']) ? '' : $data['middle_name'],
-            'last_name' => empty($data['last_name']) ? '' : $data['last_name'],
-        );
+        $data += array('created' => GC_TIME);
+        $values = $this->prepareDbInsert('address', $data);
 
-        $address_id = $this->db->insert('address', $values);
-        $this->hook->fire('add.address.after', $values, $address_id);
-        return $address_id;
+        $data['address_id'] = $this->db->insert('address', $values);
+
+        $this->hook->fire('add.address.after', $data);
+        return $data['address_id'];
     }
 
     /**
@@ -118,7 +98,8 @@ class Address extends Model
      */
     public function getTranslatedList($user_id, $status = true)
     {
-        $list = $this->getList(array('user_id' => $user_id, 'status' => $status));
+        $conditions = array('user_id' => $user_id, 'status' => $status);
+        $list = $this->getList($conditions);
 
         $addresses = array();
         foreach ($list as $address_id => $address) {
@@ -170,27 +151,29 @@ class Address extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = '
-                SELECT a.*,
-                    ci.city_id,
-                    COALESCE(ci.name, ci.city_id) AS city_name,
-                    c.name AS country_name,
-                    ci.status AS city_status,
-                    c.native_name AS country_native_name,
-                    c.format AS country_format,
-                    s.name AS state_name
-                FROM address a
-                LEFT JOIN country c ON(a.country=c.code)
-                LEFT JOIN state s ON(a.state_id=s.state_id)
-                LEFT JOIN city ci ON(a.city_id=ci.city_id)
-                WHERE a.address_id > 0';
+        $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, ci.city_id) AS city_name,'
+                . ' c.name AS country_name, ci.status AS city_status,'
+                . ' c.native_name AS country_native_name, c.format AS country_format,'
+                . ' s.name AS state_name'
+                . ' FROM address a'
+                . ' LEFT JOIN country c ON(a.country=c.code)'
+                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
+                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+                . ' WHERE a.address_id > 0';
 
         $where = array();
 
         if (isset($data['status'])) {
-            $sql .= ' AND c.status = ?';
+
+            // TODO: optimize this. Select addresses if no countries at all 
+            $countries = $this->country->getList();
+
+            if (!empty($countries)) {
+                $sql .= ' AND c.status = ?';
+                $where[] = (int) $data['status'];
+            }
+
             //$sql .= ' AND s.status = ?';
-            $where[] = (int) $data['status'];
             //$where[] = (int) $data['status'];
         }
 
@@ -205,7 +188,8 @@ class Address extends Model
         $sth->execute($where);
 
         $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $address) {
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($results as $address) {
 
             // City ID can be not numeric (user input). Make this check in the query?
             if (!empty($data['status']) && empty($address['city_status']) && is_numeric($address['city_id'])) {
@@ -213,7 +197,13 @@ class Address extends Model
             }
 
             $address['data'] = unserialize($address['data']);
-            $address['country_format'] = unserialize($address['country_format']);
+
+            $format = array();
+            if (!empty($address['country_format'])) {
+                $format = unserialize($address['country_format']);
+            }
+
+            $address['country_format'] = $format;
             $list[$address['address_id']] = $address;
         }
 
@@ -258,7 +248,8 @@ class Address extends Model
             return false;
         }
 
-        $result = $this->db->delete('address', array('address_id' => (int) $address_id));
+        $conditions = array('address_id' => $address_id);
+        $result = $this->db->delete('address', $conditions);
         $this->hook->fire('delete.address.after', $address_id, $result);
 
         return (bool) $result;
@@ -319,6 +310,7 @@ class Address extends Model
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array((int) $address_id));
+
         return (bool) $sth->fetchColumn();
     }
 
@@ -336,73 +328,15 @@ class Address extends Model
             return false;
         }
 
-        $values = array();
-
-        if (isset($data['state_id'])) {
-            $values['state_id'] = (int) $data['state_id'];
-        }
-
-        if (isset($data['user_id'])) {
-            $values['user_id'] = $data['user_id'];
-        }
-
-        if (isset($data['country'])) {
-            $values['country'] = $data['country'];
-        }
-
-        if (isset($data['city_id'])) {
-            $values['city_id'] = $data['city_id'];
-        }
-
-        if (isset($data['address_1'])) {
-            $values['address_1'] = $data['address_1'];
-        }
-
-        if (isset($data['address_2'])) {
-            $values['address_2'] = $data['address_2'];
-        }
-
-        if (isset($data['phone'])) {
-            $values['phone'] = $data['phone'];
-        }
-
-        if (isset($data['fax'])) {
-            $values['fax'] = $data['fax'];
-        }
-
-        if (isset($data['postcode'])) {
-            $values['postcode'] = $data['postcode'];
-        }
-
-        if (isset($data['company'])) {
-            $values['company'] = $data['company'];
-        }
-
-        if (isset($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (isset($data['type'])) {
-            $values['type'] = $data['type'];
-        }
-
-        if (isset($data['first_name'])) {
-            $values['first_name'] = $data['first_name'];
-        }
-
-        if (isset($data['middle_name'])) {
-            $values['middle_name'] = $data['middle_name'];
-        }
-
-        if (isset($data['last_name'])) {
-            $values['last_name'] = $data['last_name'];
-        }
+        $values = $this->filterDbValues('address', $data);
 
         if (empty($values)) {
             return false;
         }
 
-        $result = $this->db->update('address', $values, array('address_id' => (int) $address_id));
+        $conditions = array('address_id' => $address_id);
+        $result = $this->db->update('address', $values, $conditions);
+
         $this->hook->fire('update.address.after', $address_id, $data, $result);
         return (bool) $result;
     }
