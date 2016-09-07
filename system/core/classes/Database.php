@@ -185,6 +185,10 @@ class Database extends PDO
         $sql = array();
         foreach ($fields as $name => $info) {
 
+            if (strpos($info['type'], 'text') !== false || $info['type'] === 'blob') {
+                unset($info['default']);
+            }
+
             $string = "{$info['type']}";
 
             if (isset($info['length'])) {

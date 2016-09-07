@@ -69,7 +69,7 @@ class Model
      * @param array $data
      * @return array
      */
-    protected function getDbSchemeValues($table, array $data)
+    protected function filterDbValues($table, array $data)
     {
         $scheme = $this->getDbScheme($table);
 
@@ -99,6 +99,47 @@ class Model
         }
 
         return $values;
+    }
+
+    /**
+     * Returns an array of default field values for the given table
+     * @param string $table
+     * @return array
+     */
+    public function getDbDefaultValues($table)
+    {
+        $scheme = $this->getDbScheme($table);
+
+        if (empty($scheme['fields'])) {
+            return array();
+        }
+
+        $values = array();
+        foreach ($scheme['fields'] as $name => $info) {
+
+            if (array_key_exists('default', $info)) {
+                $values[$name] = $info['default'];
+                continue;
+            }
+
+            if (!empty($info['serialize'])) {
+                $values[$name] = serialize(array());
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Returns an array of prepared values ready to insert into the database
+     * @param string $table
+     * @param array $data
+     * @return array
+     */
+    public function prepareDbInsert($table, array $data)
+    {
+        $data += $this->getDbDefaultValues($table);
+        return $this->filterDbValues($table, $data);
     }
 
     /**
@@ -169,12 +210,12 @@ class Model
                 'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
                 'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
                 'category_group_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'parent_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'parent_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-                'description_1' => array('type' => 'text', 'not_null' => true),
-                'description_2' => array('type' => 'text', 'not_null' => true),
+                'description_1' => array('type' => 'text', 'not_null' => true, 'default' => ''),
+                'description_2' => array('type' => 'text', 'not_null' => true, 'default' => ''),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
             )
         );
@@ -203,11 +244,11 @@ class Model
                 'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'description_1' => array('type' => 'text', 'not_null' => true),
-                'meta_description' => array('type' => 'text', 'not_null' => true),
-                'description_2' => array('type' => 'text', 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'description_1' => array('type' => 'text', 'not_null' => true, 'default' => ''),
+                'meta_description' => array('type' => 'text', 'not_null' => true, 'default' => ''),
+                'description_2' => array('type' => 'text', 'not_null' => true, 'default' => ''),
             )
         );
 

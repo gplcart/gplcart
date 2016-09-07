@@ -203,7 +203,7 @@ class Trigger extends Model
             return false;
         }
 
-        $values = $this->getDbSchemeValues('triggers', $data);
+        $values = $this->filterDbValues('triggers', $data);
 
         $result = false;
         if (!empty($values)) {

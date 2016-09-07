@@ -291,7 +291,7 @@ class Collection extends Model
         $this->setTranslations($collection_id, $data);
 
         $result = false;
-        $values = $this->getDbSchemeValues('collection', $data);
+        $values = $this->filterDbValues('collection', $data);
         
         unset($values['type']); // Cannot change item type!
 

@@ -261,7 +261,7 @@ class CategoryGroup extends Model
             return false;
         }
 
-        $values = $this->getDbSchemeValues('category_group', $data);
+        $values = $this->filterDbValues('category_group', $data);
         $conditions = array('category_group_id' => $category_group_id);
 
         if (!empty($values)) {

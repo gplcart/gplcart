@@ -90,7 +90,7 @@ class Review extends Model
         }
         
         $data += array('modified' => GC_TIME);
-        $values = $this->getDbSchemeValues('review', $data);
+        $values = $this->filterDbValues('review', $data);
 
         $result = false;
 

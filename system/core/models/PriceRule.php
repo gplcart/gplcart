@@ -205,7 +205,7 @@ class PriceRule extends Model
             return false;
         }
 
-        $values = $this->getDbSchemeValues('price_rule', $data);
+        $values = $this->filterDbValues('price_rule', $data);
 
         $result = false;
 
