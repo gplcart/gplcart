@@ -55,13 +55,13 @@ class Alias extends Model
      */
     public function add($id_key, $id_value, $alias)
     {
-        $alias_id = $this->db->insert('alias', array(
-            'id_key' => $id_key,
-            'id_value' => (int) $id_value,
+        $values = array(
             'alias' => $alias,
-        ));
+            'id_key' => $id_key,
+            'id_value' => (int) $id_value
+        );
 
-        return $alias_id;
+        return $this->db->insert('alias', $values);
     }
 
     /**
@@ -73,13 +73,13 @@ class Alias extends Model
     public function get($id_key, $id_value = null)
     {
         if (is_numeric($id_key)) {
-            $sth = $this->db->prepare('SELECT * FROM alias WHERE alias_id=:id');
-            $sth->execute(array(':id' => (int) $id_key));
+            $sth = $this->db->prepare('SELECT * FROM alias WHERE alias_id=?');
+            $sth->execute(array($id_key));
             return $sth->fetchAll(PDO::FETCH_ASSOC);
         }
 
         $sth = $this->db->prepare('SELECT alias FROM alias WHERE id_key=? AND id_value=?');
-        $sth->execute(array($id_key, (int) $id_value));
+        $sth->execute(array($id_key, $id_value));
         return $sth->fetchColumn();
     }
 
@@ -106,7 +106,12 @@ class Alias extends Model
      */
     public function getMultiple($id_key, array $id_value)
     {
-        $results = $this->getList(array('id_key' => $id_key, 'id_value' => $id_value));
+        $conditions = array(
+            'id_key' => $id_key,
+            'id_value' => $id_value
+        );
+
+        $results = $this->getList($conditions);
 
         $aliases = array();
         foreach ($results as $result) {
@@ -149,12 +154,12 @@ class Alias extends Model
             $where = array_merge($where, (array) $data['id_value']);
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            $allowed_sort = array('id_value', 'id_key', 'alias');
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('id_value', 'id_key', 'alias');
 
-            if (in_array($data['sort'], $allowed_sort)) {
-                $sql .= " ORDER BY {$data['sort']} {$data['order']}";
-            }
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY alias DESC";
         }
@@ -167,11 +172,13 @@ class Alias extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+
         $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $alias) {
+        foreach ($results as $alias) {
             $list[$alias['alias_id']] = $alias;
         }
 
@@ -250,8 +257,8 @@ class Alias extends Model
      */
     public function info($alias)
     {
-        $sth = $this->db->prepare('SELECT * FROM alias WHERE alias=:alias');
-        $sth->execute(array(':alias' => $alias));
+        $sth = $this->db->prepare('SELECT * FROM alias WHERE alias=?');
+        $sth->execute(array($alias));
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
