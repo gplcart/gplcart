@@ -97,9 +97,8 @@ class Category extends Model
         if (!empty($category)) {
             $category['data'] = unserialize($category['data']);
             $this->attachTransalation($category, $language);
+            $this->attachImage($category);
         }
-
-        $this->attachImage($category);
 
         $this->hook->fire('get.category.after', $category);
         return $category;
@@ -400,7 +399,7 @@ class Category extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         $results = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -429,28 +428,19 @@ class Category extends Model
         }
 
         $values = $this->prepareDbInsert('category', $data);
-        $category_id = $this->db->insert('category', $values);
+        $data['category_id'] = $this->db->insert('category', $values);
 
-        if (!empty($data['translation'])) {
-            $this->setTranslation($category_id, $data, false);
-        }
+        $this->setTranslation($data, false);
 
         if (empty($data['alias'])) {
-            $data['category_id'] = $category_id;
             $data['alias'] = $this->createAlias($data);
         }
 
-        if (!empty($data['alias'])) {
-            $this->setAlias($category_id, $data, false);
-        }
-
-        if (!empty($data['images'])) {
-            $this->setImages($category_id, $data);
-        }
+        $this->setImages($data);
+        $this->setAlias($data, false);
 
         $this->hook->fire('add.category.after', $data);
-
-        return $category_id;
+        return $data['category_id'];
     }
 
     /**
@@ -481,6 +471,7 @@ class Category extends Model
     {
         $translation['language'] = $language;
         $translation['category_id'] = $category_id;
+
         $values = $this->prepareDbInsert('category_translation', $translation);
         return $this->db->insert('category_translation', $values);
     }
@@ -514,27 +505,20 @@ class Category extends Model
 
         $values = $this->filterDbValues('category', $data);
 
-        $result = false;
+        $updated = 0;
 
         if (!empty($values)) {
             $conditions = array('category_id' => (int) $category_id);
-            $result = $this->db->update('category', $values, $conditions);
+            $updated += (int) $this->db->update('category', $values, $conditions);
         }
 
-        if (!empty($data['translation'])) {
-            $this->setTranslation($category_id, $data);
-            $result = true;
-        }
+        $data['category_id'] = $category_id;
 
-        if (!empty($data['alias'])) {
-            $this->setAlias($category_id, $data);
-            $result = true;
-        }
+        $updated += (int) $this->setTranslation($data);
+        $updated += (int) $this->setImages($data);
+        $updated += (int) $this->setAlias($data);
 
-        if (!empty($data['images'])) {
-            $this->setImages($category_id, $data);
-            $result = true;
-        }
+        $result = ($updated > 0);
 
         $this->hook->fire('update.category.after', $category_id, $data, $result);
         return $result;
@@ -557,10 +541,14 @@ class Category extends Model
             return false;
         }
 
-        $this->db->delete('category_translation', array('category_id' => (int) $category_id));
-        $this->db->delete('category', array('category_id' => (int) $category_id));
-        $this->db->delete('alias', array('id_key' => 'category_id', 'id_value' => (int) $category_id));
-        $this->db->delete('file', array('id_key' => 'category_id', 'id_value' => (int) $category_id));
+        $conditions = array('category_id' => (int) $category_id);
+        $conditions2 = array('id_key' => 'category_id', 'id_value' => (int) $category_id);
+
+        $this->db->delete('category', $conditions);
+        $this->db->delete('category_translation', $conditions);
+
+        $this->db->delete('file', $conditions2);
+        $this->db->delete('alias', $conditions2);
 
         $this->hook->fire('delete.category.after', $category_id);
         return true;
@@ -586,19 +574,22 @@ class Category extends Model
 
     /**
      * Deletes and/or adds category translations
-     * @param integer $category_id
      * @param array $data
      * @param boolean $delete
      * @return boolean
      */
-    protected function setTranslation($category_id, array $data, $delete = true)
+    protected function setTranslation(array $data, $delete = true)
     {
+        if (empty($data['translation'])) {
+            return false;
+        }
+
         if ($delete) {
-            $this->deleteTranslation($category_id);
+            $this->deleteTranslation($data['category_id']);
         }
 
         foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($category_id, $language, $translation);
+            $this->addTranslation($data['category_id'], $language, $translation);
         }
 
         return true;
@@ -606,29 +597,35 @@ class Category extends Model
 
     /**
      * Deletes and/or adds an alias
-     * @param integer $category_id
      * @param array $data
      * @param boolean $delete
-     * @return integer
+     * @return boolean
      */
-    protected function setAlias($category_id, array $data, $delete = true)
+    protected function setAlias(array $data, $delete = true)
     {
-        if ($delete) {
-            $this->alias->delete('category_id', (int) $category_id);
+        if (empty($data['alias'])) {
+            return false;
         }
 
-        return $this->alias->add('category_id', $category_id, $data['alias']);
+        if ($delete) {
+            $this->alias->delete('category_id', $data['category_id']);
+        }
+
+        return (bool) $this->alias->add('category_id', $data['category_id'], $data['alias']);
     }
 
     /**
      * Adds category images
-     * @param integer $category_id
      * @param array $data
-     * @return array
+     * @return boolean
      */
-    protected function setImages($category_id, array $data)
+    protected function setImages(array $data)
     {
-        return $this->image->setMultiple('category_id', $category_id, $data['images']);
+        if (empty($data['images'])) {
+            return false;
+        }
+
+        return (bool) $this->image->setMultiple('category_id', $data['category_id'], $data['images']);
     }
 
 }

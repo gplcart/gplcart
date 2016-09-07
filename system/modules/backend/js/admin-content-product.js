@@ -196,7 +196,7 @@ $(function () {
                     {store_id: $('select[name$="[store_id]"] option:selected').val(),
                         status: 1,
                         term: request.term,
-                        action: 'getProducts',
+                        action: 'getProductsAjax',
                         token: GplCart.settings.token}, function (data) {
                 response($.map(data, function (value, key) {
                     return {

@@ -84,6 +84,10 @@ class Model
         }
 
         foreach ($values as $field => &$value) {
+            
+            if(!empty($scheme['fields'][$field]['auto_increment'])){
+                unset($values[$field]);
+            }
 
             if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
                 $value = intval($value);
@@ -93,8 +97,8 @@ class Model
                 $value = floatval($value);
             }
 
-            if (!empty($scheme['fields'][$field]['serialize'])) {
-                $value = serialize((array) $value);
+            if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
+                $value = serialize($value);
             }
         }
 

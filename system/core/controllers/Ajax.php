@@ -99,7 +99,7 @@ class Ajax extends FrontendController
      * Returns an array of products
      * @return array
      */
-    public function getProducts()
+    public function getProductsAjax()
     {
         if (!$this->access('product')) {
             return array('error' => $this->text('You are not permitted to perform this operation'));
@@ -365,8 +365,8 @@ class Ajax extends FrontendController
         $timestamp = filemtime(GC_FILE_DIR . "/$uploaded");
         $image = array(
             'weight' => 0,
-            'path' => $path,
             'thumb' => $thumb,
+            'path' => $uploaded,
             'uploaded' => $timestamp
         );
 
