@@ -54,7 +54,7 @@ class CategoryGroup extends Model
 
         if (!empty($category_group)) {
             $category_group['data'] = unserialize($category_group['data']);
-            $this->setTransalation($category_group, $language);
+            $this->attachTransalation($category_group, $language);
         }
 
         $this->hook->fire('get.category.group.after', $category_group);
@@ -62,27 +62,38 @@ class CategoryGroup extends Model
     }
 
     /**
-     * Sets translations to the category group
+     * Adds translations to the category group
      * @param array $category_group
-     * @param string|null $language
+     * @param null|string $language
      */
-    protected function setTransalation(array &$category_group, $language)
+    protected function attachTransalation(array &$category_group, $language)
     {
         $category_group['language'] = 'und';
 
-        $sql = 'SELECT * FROM category_group_translation WHERE category_group_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($category_group['category_group_id']));
-        $translations = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $translations = $this->getTranslation($category_group['category_group_id']);
 
         foreach ($translations as $translation) {
-            $category_group['translation'][$translation['language']]['title'] = $translation['title'];
+            $category_group['translation'][$translation['language']] = $translation;
         }
 
         if (isset($language) && isset($category_group['translation'][$language])) {
             $category_group = $category_group['translation'][$language] + $category_group;
         }
+    }
+
+    /**
+     * Returns an array of category group translations
+     * @param integer $category_group_id
+     * @return array
+     */
+    public function getTranslation($category_group_id)
+    {
+        $sql = 'SELECT * FROM category_group_translation WHERE category_group_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($category_group_id));
+
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -166,42 +177,71 @@ class CategoryGroup extends Model
             return false;
         }
 
-        $values = array(
-            'type' => $data['type'],
-            'title' => $data['title'],
-            'store_id' => (int) $data['store_id'],
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data'])
-        );
+        $values = $this->prepareDbInsert('category_group', $data);
+        $data['category_group_id'] = $this->db->insert('category_group', $values);
 
-        $category_group_id = $this->db->insert('category_group', $values);
+        $this->setTranslation($data, false);
 
-        if (!empty($data['translation'])) {
-            foreach ($data['translation'] as $language => $translation) {
-                $this->addTranslation($translation, $language, $category_group_id);
-            }
+        $this->hook->fire('add.category.group.after', $data);
+        return $data['category_group_id'];
+    }
+
+    /**
+     * Deletes and/or adds category group translations
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslation(array $data, $delete = true)
+    {
+        if (empty($data['translation'])) {
+            return false;
         }
 
-        $this->hook->fire('add.category.group.after', $data, $category_group_id);
-        return $category_group_id;
+        if ($delete) {
+            $this->deleteTranslation($data['category_group_id']);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($data['category_group_id'], $language, $translation);
+        }
+
+        return true;
     }
 
     /**
      * Adds a category group translation
-     * @param array $translation
+     * @param integer $id
      * @param string $language
-     * @param integer $category_group_id
+     * @param array $translation
      * @return integer
      */
-    public function addTranslation(array $translation, $language,
-            $category_group_id)
+    public function addTranslation($id, $language, array $translation)
     {
         $values = array(
-            'title' => $translation['title'],
             'language' => $language,
-            'category_group_id' => $category_group_id
+            'category_group_id' => $id,
+            'title' => $translation['title']
         );
 
         return $this->db->insert('category_group_translation', $values);
+    }
+
+    /**
+     * Deletes category group translations
+     * @param integer $category_group_id
+     * @param null|string $language
+     * @return boolean
+     */
+    public function deleteTranslation($category_group_id, $language = null)
+    {
+        $conditions = array('category_group_id' => $category_group_id);
+
+        if (isset($language)) {
+            $conditions['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('category_group_translation', $conditions);
     }
 
     /**
@@ -262,21 +302,19 @@ class CategoryGroup extends Model
         }
 
         $values = $this->filterDbValues('category_group', $data);
-        $conditions = array('category_group_id' => $category_group_id);
+
+        $updated = 0;
 
         if (!empty($values)) {
-            $this->db->update('category_group', $values, $conditions);
+            $conditions = array('category_group_id' => $category_group_id);
+            $updated += (int) $this->db->update('category_group', $values, $conditions);
         }
 
-        if (!empty($data['translation'])) {
-            $this->db->delete('category_group_translation', $conditions);
-            foreach ((array) $data['translation'] as $language => $translation) {
-                $this->addTranslation($translation, $language, $category_group_id);
-            }
-        }
+        $updated += (int) $this->setTranslation($data);
+        $result = ($updated > 0);
 
-        $this->hook->fire('update.category.group.after', $category_group_id, $data);
-        return true;
+        $this->hook->fire('update.category.group.after', $category_group_id, $data, $result);
+        return $result;
     }
 
 }

@@ -155,9 +155,7 @@
               <input type="hidden" name="product[product_id]" value="<?php echo $id; ?>">
             </td>
             <td class="middle">
-              <span class="hint" title="<?php echo $this->escape($product['title']); ?>">
                 <?php echo $this->truncate($this->escape($product['title']), 30); ?>
-              </span>
             </td>
             <td class="middle">
               <?php echo $this->escape($product['sku']); ?>

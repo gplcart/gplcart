@@ -228,7 +228,7 @@ class Model
             'fields' => array(
                 'category_group_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+                'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
             )

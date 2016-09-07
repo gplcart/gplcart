@@ -207,8 +207,9 @@ class Analytics extends Model
         $this->hook->fire('ga.results.before', $arguments);
 
         $return = array();
+        $lifespan = $this->config->get('ga_cache_lifespan', 86400);
         $cid = "ga.{$this->profile_id}." . md5(serialize($arguments));
-        $cache = Cache::get($cid, null, $this->config->get('ga_cache_lifespan', 86400));
+        $cache = Cache::get($cid, null, $lifespan);
 
         if (isset($cache)) {
             $return = $cache;

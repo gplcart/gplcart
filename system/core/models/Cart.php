@@ -141,23 +141,12 @@ class Cart extends Model
             $user_id = $this->uid();
         }
 
-        //if ($cached) {
+
         $cart = &Cache::memory("cart.$user_id");
 
         if (isset($cart)) {
             return $cart;
         }
-
-        /*
-          $cache = Cache::get("cart.$user_id");
-
-          if (isset($cache)) {
-          $cart = $cache;
-          return $cart;
-          }
-         * */
-
-        //}
 
         $products = $this->getList(array('user_id' => $user_id));
 

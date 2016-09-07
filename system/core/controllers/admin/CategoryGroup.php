@@ -224,7 +224,6 @@ class CategoryGroup extends BackendController
         }
 
         $this->addValidator('type', array(
-            'required' => array(),
             'category_group_type_unique' => array(
                 'store_id' => $this->getSubmitted('store_id'),
                 'category_group_id' => $category_group_id)
