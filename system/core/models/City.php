@@ -39,7 +39,9 @@ class City extends Model
             $sql = 'SELECT COUNT(city_id) ';
         }
 
-        $sql .= 'FROM city c LEFT JOIN state s ON(c.state_id = s.state_id) WHERE c.city_id > 0';
+        $sql .= ' FROM city c'
+                . ' LEFT JOIN state s ON(c.state_id = s.state_id)'
+                . ' WHERE c.city_id > 0';
 
         $where = array();
 
@@ -68,18 +70,12 @@ class City extends Model
             $where[] = "%{$data['name']}%";
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-            switch ($data['sort']) {
-                case 'name':
-                    $sql .= " ORDER BY c.name {$data['order']}";
-                    break;
-                case 'city_id':
-                    $sql .= " ORDER BY c.city_id {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY c.status {$data['order']}";
-                    break;
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'city_id', 'status');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY c.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY c.name ASC';
         }
@@ -118,16 +114,10 @@ class City extends Model
             return false;
         }
 
-        $city_id = $this->db->insert('city', array(
-            'status' => !empty($data['status']),
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data']),
-            'state_id' => $data['state_id'],
-            'country' => $data['country'],
-            'name' => $data['name'],
-        ));
+        $values = $this->prepareDbInsert('city', $data);
+        $city_id = $this->db->insert('city', $values);
 
         $this->hook->fire('add.city.after', $data, $city_id);
-
         return $city_id;
     }
 
@@ -138,8 +128,9 @@ class City extends Model
      */
     public function get($city_id)
     {
-        $sth = $this->db->prepare('SELECT * FROM city WHERE city_id=:city_id');
-        $sth->execute(array(':city_id' => $city_id));
+        $sth = $this->db->prepare('SELECT * FROM city WHERE city_id=?');
+        $sth->execute(array($city_id));
+
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -160,7 +151,8 @@ class City extends Model
             return false;
         }
 
-        $result = $this->db->delete('city', array('city_id' => (int) $city_id));
+        $conditions = array('city_id' => (int) $city_id);
+        $result = $this->db->delete('city', $conditions);
 
         $this->hook->fire('delete.city.after', $city_id, $result);
         return (bool) $result;
@@ -173,9 +165,11 @@ class City extends Model
      */
     public function canDelete($city_id)
     {
-        $sth = $this->db->prepare('SELECT address_id FROM address WHERE city_id=:city_id');
-        $sth->execute(array(':city_id' => (int) $city_id));
-        return !$sth->fetchColumn();
+        $sth = $this->db->prepare('SELECT address_id FROM address WHERE city_id=?');
+        $sth->execute(array($city_id));
+        $result = $sth->fetchColumn();
+
+        return empty($result);
     }
 
     /**
@@ -192,32 +186,13 @@ class City extends Model
             return false;
         }
 
-        $values = array();
-
-        if (!empty($data['name'])) {
-            $values['name'] = $data['name'];
-        }
-
-        if (!empty($data['state_id'])) {
-            $values['state_id'] = (int) $data['state_id'];
-        }
-
-        if (!empty($data['country'])) {
-            $values['country'] = $data['country'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (bool) $data['status'];
-        }
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
+        $values = $this->filterDbValues('city', $data);
 
         $result = false;
 
         if (!empty($values)) {
-            $result = $this->db->update('city', $values, array('city_id' => (int) $city_id));
+            $conditions = array('city_id' => $city_id);
+            $result = $this->db->update('city', $values, $conditions);
         }
 
         $this->hook->fire('update.city.after', $city_id, $data, $result);
