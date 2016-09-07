@@ -65,19 +65,25 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <?php if (isset($role['role_id']) && $this->access('user_role_delete')) { ?>
-      <button class="btn btn-danger delete" name="delete" value="1">
-        <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
-      </button>
-      <?php } ?>
-      <a href="<?php echo $this->url('admin/user/role'); ?>" class="btn btn-default cancel">
-        <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-      </a>
-      <?php if ($this->access('user_role_edit') || $this->access('user_role_add')) { ?>
-      <button class="btn btn-default save" name="save" value="1">
-        <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
-      </button>
-      <?php } ?>
+      <div class="row">
+        <div class="col-md-2">
+          <?php if (isset($role['role_id']) && $this->access('user_role_delete')) { ?>
+          <button class="btn btn-danger delete" name="delete" value="1">
+            <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
+          </button>
+          <?php } ?>
+        </div>
+        <div class="col-md-10">
+          <a href="<?php echo $this->url('admin/user/role'); ?>" class="btn btn-default cancel">
+            <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
+          </a>
+          <?php if ($this->access('user_role_edit') || $this->access('user_role_add')) { ?>
+          <button class="btn btn-default save" name="save" value="1">
+            <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          </button>
+          <?php } ?> 
+        </div>
+      </div>
     </div>
   </div>
 </form>
