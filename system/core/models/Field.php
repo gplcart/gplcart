@@ -50,11 +50,11 @@ class Field extends Model
         }
 
         $types = array(
+            'image' => $this->language->text('Image'),
             'radio' => $this->language->text('Radio buttons'),
             'select' => $this->language->text('Dropdown list'),
-            'image' => $this->language->text('Image'),
-            'color' => $this->language->text('Color picker'));
-
+            'color' => $this->language->text('Color picker')
+        );
 
         $this->hook->fire('widget.types', $types);
         return $types;
@@ -73,40 +73,68 @@ class Field extends Model
             return false;
         }
 
-        $values = array(
-            'type' => $data['type'],
-            'widget' => $data['widget'],
-            'title' => $data['title'],
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
-            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array())
-        );
+        $values = $this->prepareDbInsert('field', $data);
+        $data['field_id'] = $this->db->insert('field', $values);
 
-        $field_id = $this->db->insert('field', $values);
+        $this->setTranslation($data, false);
 
-        if (!empty($data['translation'])) {
-            foreach ($data['translation'] as $language => $translation) {
-                $this->addTranslation($translation, $language, $field_id);
-            }
+        $this->hook->fire('add.field.after', $data);
+        return $data['field_id'];
+    }
+
+    /**
+     * Deletes and/or adds field translations
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslation(array $data, $delete = true)
+    {
+        if (empty($data['translation'])) {
+            return false;
         }
 
-        $this->hook->fire('add.field.after', $data, $field_id);
+        if ($delete) {
+            $this->deleteTranslation($data['field_id']);
+        }
 
-        return $field_id;
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($data['field_id'], $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes a field translation(s)
+     * @param integer $field_id
+     * @param null|string $language
+     * @return boolean
+     */
+    protected function deleteTranslation($field_id, $language = null)
+    {
+        $conditions = array('field_id' => (int) $field_id);
+
+        if (isset($language)) {
+            $conditions['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('field_translation', $conditions);
     }
 
     /**
      * Adds a field translation
-     * @param array $translation
-     * @param string $language
      * @param integer $field_id
-     * @return integer
+     * @param string $language
+     * @param array $translation
+     * @return type
      */
-    public function addTranslation(array $translation, $language, $field_id)
+    protected function addTranslation($field_id, $language, array $translation)
     {
         $values = array(
+            'language' => $language,
             'field_id' => (int) $field_id,
-            'title' => $translation['title'],
-            'language' => $language
+            'title' => $translation['title']
         );
 
         return $this->db->insert('field_translation', $values);
@@ -121,16 +149,16 @@ class Field extends Model
     {
         $list = array();
 
-        $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title ';
+        $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(f.field_id) ';
+            $sql = 'SELECT COUNT(f.field_id)';
         }
 
-        $sql .= '
-            FROM field f
-            LEFT JOIN field_translation ft ON (f.field_id = ft.field_id AND ft.language=?)
-            WHERE f.field_id > 0';
+        $sql .= ' FROM field f'
+                . ' LEFT JOIN field_translation ft'
+                . ' ON (f.field_id = ft.field_id AND ft.language=?)'
+                . ' WHERE f.field_id > 0';
 
         $language = $this->language->current();
         $where = array($language);
@@ -157,19 +185,11 @@ class Field extends Model
             $where[] = $data['widget'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            $order = $data['order'];
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'type', 'widget');
 
-            switch ($data['sort']) {
-                case 'title':
-                    $sql .= " ORDER BY f.title $order";
-                    break;
-                case 'type':
-                    $sql .= " ORDER BY f.type $order";
-                    break;
-                case 'widget':
-                    $sql .= " ORDER BY f.widget $order";
-            }
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort) ) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+            $sql .= " ORDER BY f.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY f.weight ASC';
         }
@@ -204,29 +224,53 @@ class Field extends Model
     {
         $this->hook->fire('get.field.before', $field_id, $language);
 
-        $sth = $this->db->prepare('SELECT * FROM field WHERE field_id=:field_id');
-        $sth->execute(array(':field_id' => (int) $field_id));
+        $sql = 'SELECT * FROM field WHERE field_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($field_id));
 
         $field = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($field)) {
             $field['data'] = unserialize($field['data']);
-            $field['language'] = 'und';
-
-            $sth = $this->db->prepare('SELECT * FROM field_translation WHERE field_id=:field_id');
-            $sth->execute(array(':field_id' => (int) $field_id));
-
-            foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $translation) {
-                $field['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($field['translation'][$language])) {
-                $field = $field['translation'][$language] + $field;
-            }
+            $this->attachTransalation($field, $language);
         }
 
         $this->hook->fire('get.field.after', $field_id, $language, $field);
         return $field;
+    }
+
+    /**
+     * Adds translations to the field
+     * @param array $field
+     * @param null|string $language
+     */
+    protected function attachTransalation(array &$field, $language)
+    {
+        $field['language'] = 'und';
+
+        foreach ($this->getTranslation($field['field_id']) as $translation) {
+            $field['translation'][$translation['language']] = $translation;
+        }
+
+        if (isset($language) && isset($field['translation'][$language])) {
+            $field = $field['translation'][$language] + $field;
+        }
+    }
+
+    /**
+     * Returns an array of field translations
+     * @param integer $field_id
+     * @return array
+     */
+    public function getTranslation($field_id)
+    {
+        $sql = 'SELECT * FROM field_translation WHERE field_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($field_id));
+
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -246,11 +290,13 @@ class Field extends Model
             return false;
         }
 
-        $this->db->delete('field', array('field_id' => (int) $field_id));
-        $this->db->delete('field_translation', array('field_id' => (int) $field_id));
-        $this->db->delete('product_class_field', array('field_id' => (int) $field_id));
-        $this->db->delete('field_value', array('field_id' => (int) $field_id));
-        $this->db->delete('field_value_translation', array('field_id' => (int) $field_id));
+        $conditions = array('field_id' => (int) $field_id);
+
+        $this->db->delete('field', $conditions);
+        $this->db->delete('field_value', $conditions);
+        $this->db->delete('field_translation', $conditions);
+        $this->db->delete('product_class_field', $conditions);
+        $this->db->delete('field_value_translation', $conditions);
 
         $this->hook->fire('delete.field.after', $field_id);
         return true;
@@ -263,9 +309,13 @@ class Field extends Model
      */
     public function canDelete($field_id)
     {
-        $sth = $this->db->prepare('SELECT field_id FROM product_field WHERE field_id=:field_id');
-        $sth->execute(array(':field_id' => (int) $field_id));
-        return !$sth->fetchColumn();
+        $sql = 'SELECT field_id FROM product_field WHERE field_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($field_id));
+        $result = $sth->fetchColumn();
+
+        return empty($result);
     }
 
     /**
@@ -282,38 +332,19 @@ class Field extends Model
             return false;
         }
 
-        $values = array();
+        $values = $this->filterDbValues('field', $data);
 
-        if (!empty($data['title'])) {
-            $values['title'] = $data['title'];
-        }
-
-        if (!empty($data['widget'])) {
-            $values['widget'] = $data['widget'];
-        }
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (isset($data['weight'])) {
-            $values['weight'] = (int) $data['weight'];
-        }
-
-        $result = false;
+        $updated = 0;
 
         if (!empty($values)) {
-            $result = $this->db->update('field', $values, array('field_id' => (int) $field_id));
+            $conditions = array('field_id' => (int) $field_id);
+            $updated += (int) $this->db->update('field', $values, $conditions);
         }
 
-        if (!empty($data['translation'])) {
-            $this->db->delete('field_translation', array('field_id' => (int) $field_id));
-            foreach ($data['translation'] as $language => $translation) {
-                $this->addTranslation($translation, $language, $field_id);
-            }
+        $data['field_id'] = $field_id;
+        $updated += (int) $this->setTranslation($data);
 
-            $result = true;
-        }
+        $result = ($updated > 0);
 
         $this->hook->fire('update.field.after', $field_id, $data, $result);
         return (bool) $result;
