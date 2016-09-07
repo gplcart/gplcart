@@ -431,12 +431,12 @@ class Category extends Model
         $data['category_id'] = $this->db->insert('category', $values);
 
         $this->setTranslation($data, false);
-
+        $this->setImages($data);
+        
         if (empty($data['alias'])) {
             $data['alias'] = $this->createAlias($data);
         }
-
-        $this->setImages($data);
+        
         $this->setAlias($data, false);
 
         $this->hook->fire('add.category.after', $data);

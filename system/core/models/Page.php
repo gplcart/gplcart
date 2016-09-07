@@ -65,31 +65,47 @@ class Page extends Model
     public function get($page_id, $language = null)
     {
         $this->hook->fire('get.page.before', $page_id, $language);
-        $sth = $this->db->prepare('SELECT * FROM page WHERE page_id=:page_id');
-        $sth->execute(array(':page_id' => $page_id));
+
+        $sth = $this->db->prepare('SELECT * FROM page WHERE page_id=?');
+        $sth->execute(array($page_id));
 
         $page = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($page)) {
             $page['data'] = unserialize($page['data']);
-            $page['language'] = 'und';
-
-            $sth = $this->db->prepare('SELECT * FROM page_translation WHERE page_id=:page_id');
-            $sth->execute(array(':page_id' => $page_id));
-
-            foreach ($this->getTranslations($page_id) as $translation) {
-                $page['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($page['translation'][$language])) {
-                $page = $page['translation'][$language] + $page;
-            }
-
-            $page['images'] = $this->image->getList('page_id', $page_id);
+            $this->attachTransalation($page, $language);
+            $this->attachImage($page);
         }
 
         $this->hook->fire('get.page.after', $page_id, $page);
         return $page;
+    }
+
+    /**
+     * Adds translations to the page
+     * @param array $page
+     * @param null|string $language
+     */
+    protected function attachTransalation(array &$page, $language)
+    {
+        $page['language'] = 'und';
+
+        foreach ($this->getTranslation($page['page_id']) as $translation) {
+            $page['translation'][$translation['language']] = $translation;
+        }
+
+        if (isset($language) && isset($page['translation'][$language])) {
+            $page = $page['translation'][$language] + $page;
+        }
+    }
+
+    /**
+     * Adds images to the page
+     * @param array $page
+     */
+    protected function attachImage(array &$page)
+    {
+        $page['images'] = $this->image->getList('page_id', $page['page_id']);
     }
 
     /**
@@ -105,23 +121,11 @@ class Page extends Model
             return false;
         }
 
-        $values = array(
-            'modified' => 0,
-            'title' => $data['title'],
-            'user_id' => (int) $data['user_id'],
-            'status' => !empty($data['status']),
-            'description' => $data['description'],
-            'meta_title' => empty($data['meta_title']) ? '' : $data['meta_title'],
-            'created' => empty($data['created']) ? GC_TIME : (int) $data['created'],
-            'category_id' => empty($data['category_id']) ? 0 : (int) $data['category_id'],
-            'data' => empty($data['data']) ? serialize(array()) : serialize($data['data']),
-            'meta_description' => empty($data['meta_description']) ? '' : $data['meta_description'],
-            'store_id' => empty($data['store_id']) ? $this->config->get('store', 1) : (int) $data['store_id']
-        );
-
+        $data += array('created' => GC_TIME);
+        $values = $this->prepareDbInsert('page', $data);
         $data['page_id'] = $this->db->insert('page', $values);
 
-        $this->setTranslations($data, false);
+        $this->setTranslation($data, false);
         $this->setImages($data);
 
         if (empty($data['alias'])) {
@@ -143,15 +147,9 @@ class Page extends Model
      */
     public function addTranslation($page_id, $language, array $translation)
     {
-        $values = array(
-            'language' => $language,
-            'page_id' => (int) $page_id,
-            'title' => empty($translation['title']) ? '' : $translation['title'],
-            'meta_title' => empty($translation['meta_title']) ? '' : $translation['meta_title'],
-            'description' => empty($translation['description']) ? '' : $translation['description'],
-            'meta_description' => empty($translation['meta_description']) ? '' : $translation['meta_description']
-        );
+        $translation += array('page_id' => $page_id, 'language' => $language);
 
+        $values = $this->prepareDbInsert('page_translation', $translation);
         return $this->db->insert('page_translation', $values);
     }
 
@@ -160,10 +158,12 @@ class Page extends Model
      * @param integer $page_id
      * @return array
      */
-    public function getTranslations($page_id)
+    public function getTranslation($page_id)
     {
-        $sth = $this->db->prepare('SELECT * FROM page_translation WHERE page_id=:page_id');
-        $sth->execute(array(':page_id' => (int) $page_id));
+        $sql = 'SELECT * FROM page_translation WHERE page_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($page_id));
 
         return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -177,6 +177,7 @@ class Page extends Model
     {
         $pattern = $this->config->get('page_alias_pattern', '%t.html');
         $placeholders = $this->config->get('page_alias_placeholder', array('%t' => 'title'));
+
         return $this->alias->generate($pattern, $placeholders, $data);
     }
 
@@ -194,63 +195,28 @@ class Page extends Model
             return false;
         }
 
-        $values = array();
-        $data['page_id'] = $page_id;
-        $where = array('page_id' => (int) $page_id);
+        $data += array('modified' => GC_TIME);
+        $values = $this->filterDbValues('page', $data);
 
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (!empty($data['created'])) {
-            $values['created'] = (int) $data['created'];
-        }
-
-        if (!empty($data['title'])) {
-            $values['title'] = $data['title'];
-        }
-
-        if (!empty($data['meta_title'])) {
-            $values['meta_title'] = $data['meta_title'];
-        }
-
-        if (!empty($data['meta_description'])) {
-            $values['meta_description'] = $data['meta_description'];
-        }
-
-        if (!empty($data['description'])) {
-            $values['description'] = $data['description'];
-        }
-
-        if (isset($data['category_id'])) {
-            $values['category_id'] = (int) $data['category_id'];
-        }
-
-        if (isset($data['user_id'])) {
-            $values['user_id'] = (int) $data['user_id'];
-        }
-
-        if (isset($data['store_id'])) {
-            $values['store_id'] = (int) $data['store_id'];
-        }
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
+        $updated = 0;
 
         if (!empty($values)) {
-            $values['modified'] = !empty($data['modified']) ? (int) $data['modified'] : GC_TIME;
-            $this->db->update('page', $values, $where);
+            $conditions = array('page_id' => (int) $page_id);
+            $updated += (int) $this->db->update('page', $values, $conditions);
         }
 
-        $this->setTranslations($data);
-        $this->setImages($data);
-        $this->setAlias($data);
+        $data['page_id'] = $page_id;
+
+        $updated += (int) $this->setAlias($data);
+        $updated += (int) $this->setImages($data);
+        $updated += (int) $this->setTranslation($data);
 
         Cache::clear("page.$page_id");
 
-        $this->hook->fire('update.page.after', $page_id, $data);
-        return true;
+        $result = ($updated > 0);
+
+        $this->hook->fire('update.page.after', $page_id, $data, $result);
+        return (bool) $result;
     }
 
     /**
@@ -266,11 +232,22 @@ class Page extends Model
             return false;
         }
 
-        $this->db->delete('page', array('page_id' => (int) $page_id));
-        $this->db->delete('page_translation', array('page_id' => (int) $page_id));
-        $this->db->delete('alias', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
-        $this->db->delete('file', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
-        $this->db->delete('collection_item', array('id_key' => 'page_id', 'id_value' => (int) $page_id));
+        $conditions = array('page_id' => $page_id);
+        $conditions2 = array('id_key' => 'page_id', 'id_value' => $page_id);
+
+        $this->db->delete('page', $conditions);
+        $this->db->delete('page_translation', $conditions);
+
+        $this->db->delete('file', $conditions2);
+        $this->db->delete('alias', $conditions2);
+
+        $sql = 'DELETE ci'
+                . ' FROM collection_item ci'
+                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                . ' WHERE c.type = ? AND ci.value = ?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array('page', $page_id));
 
         $this->hook->fire('delete.page.after', $page_id);
         return true;
@@ -289,12 +266,11 @@ class Page extends Model
             $sql = 'SELECT COUNT(p.page_id)';
         }
 
-        $sql .= '
-        FROM page p
-        LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)
-        LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.page_id)
-        LEFT JOIN user u ON(p.user_id = u.user_id)
-        WHERE p.page_id > 0';
+        $sql .= ' FROM page p'
+                . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
+                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.page_id)'
+                . ' LEFT JOIN user u ON(p.user_id = u.user_id)'
+                . ' WHERE p.page_id > 0';
 
         $language = $this->language->current();
 
@@ -327,22 +303,16 @@ class Page extends Model
             $where[] = "%{$data['email']}%";
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'title':
-                    $sql .= " ORDER BY p.title {$data['order']}";
-                    break;
-                case 'store_id':
-                    $sql .= " ORDER BY p.store_id {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY p.status {$data['order']}";
-                    break;
-                case 'created':
-                    $sql .= " ORDER BY p.created {$data['order']}";
-                    break;
-                case 'email':
-                    $sql .= " ORDER BY u.email {$data['order']}";
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'store_id', 'status', 'created', 'email');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+
+            if ($data['sort'] === 'email') {
+                $sql .= " ORDER BY u.email {$data['order']}";
+            } else {
+                $sql .= " ORDER BY p.{$data['sort']} {$data['order']}";
             }
         } else {
             $sql .= " ORDER BY p.created DESC";
@@ -356,11 +326,12 @@ class Page extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         $list = array();
         foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $page) {
+            $page['data'] = unserialize($page['data']);
             $list[$page['page_id']] = $page;
         }
 
@@ -371,26 +342,26 @@ class Page extends Model
     /**
      * Adds/updates page images
      * @param array $data
-     * @return array
+     * @return boolean
      */
     protected function setImages(array $data)
     {
-        if (empty($data['images']) || empty($data['page_id'])) {
-            return array();
+        if (empty($data['images'])) {
+            return false;
         }
 
-        return $this->image->setMultiple('page_id', $data['page_id'], $data['images']);
+        return (bool) $this->image->setMultiple('page_id', $data['page_id'], $data['images']);
     }
 
     /**
      * Deletes and/or adds an alias
      * @param array $data
      * @param boolean $delete
-     * @return integer|boolean
+     * @return boolean
      */
     protected function setAlias(array $data, $delete = true)
     {
-        if (empty($data['alias']) || empty($data['page_id'])) {
+        if (empty($data['alias'])) {
             return false;
         }
 
@@ -398,7 +369,7 @@ class Page extends Model
             $this->alias->delete('page_id', (int) $data['page_id']);
         }
 
-        return $this->alias->add('page_id', $data['page_id'], $data['alias']);
+        return (bool) $this->alias->add('page_id', $data['page_id'], $data['alias']);
     }
 
     /**
@@ -407,9 +378,9 @@ class Page extends Model
      * @param boolean $delete
      * @return boolean
      */
-    protected function setTranslations(array $data, $delete = true)
+    protected function setTranslation(array $data, $delete = true)
     {
-        if (empty($data['page_id']) || empty($data['translation'])) {
+        if (empty($data['translation'])) {
             return false;
         }
 

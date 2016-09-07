@@ -441,7 +441,7 @@ class Model
                 'page_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
-                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
@@ -458,10 +458,10 @@ class Model
                 'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'page_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'description' => array('type' => 'text', 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'description' => array('type' => 'text', 'not_null' => true, 'default' => ''),
             )
         );
 
