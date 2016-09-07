@@ -39,13 +39,8 @@ class State extends Model
             return false;
         }
 
-        $state_id = $this->db->insert('state', array(
-            'code' => $data['code'],
-            'name' => $data['name'],
-            'country' => $data['country'],
-            'status' => !empty($data['status']),
-            'data' => !empty($data['data']) ? serialize((array) $data['data']) : serialize(array())
-        ));
+        $values = $this->prepareDbInsert('state', $data);
+        $state_id = $this->db->insert('state', $values);
 
         $this->hook->fire('add.state.after', $data, $state_id);
         return $state_id;
@@ -58,8 +53,11 @@ class State extends Model
      */
     public function get($state_id)
     {
-        $sth = $this->db->prepare('SELECT * FROM state WHERE state_id=:state_id');
-        $sth->execute(array(':state_id' => $state_id));
+        $sql = 'SELECT * FROM state WHERE state_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($state_id));
+
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -71,7 +69,9 @@ class State extends Model
      */
     public function getByCode($code, $country = null)
     {
-        $state = $this->getList(array('code' => $code, 'country' => $country));
+        $conditions = array('code' => $code, 'country' => $country);
+        $state = $this->getList($conditions);
+
         return $state ? reset($state) : array();
     }
 
@@ -111,23 +111,12 @@ class State extends Model
             $where[] = "%{$data['code']}%";
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-            switch ($data['sort']) {
-                case 'country':
-                    $sql .= " ORDER BY country {$data['order']}";
-                    break;
-                case 'name':
-                    $sql .= " ORDER BY name {$data['order']}";
-                    break;
-                case 'code':
-                    $sql .= " ORDER BY code {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status {$data['order']}";
-                    break;
-                case 'state_id':
-                    $sql .= " ORDER BY state_id {$data['order']}";
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('country', 'name', 'code', 'status', 'state_id');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY name ASC';
         }
@@ -140,7 +129,7 @@ class State extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         $states = array();
@@ -170,9 +159,11 @@ class State extends Model
             return false;
         }
 
-        $this->db->delete('state', array('state_id' => (int) $state_id));
-        $this->db->delete('zone', array('state_id' => (int) $state_id));
-        $this->db->delete('city', array('state_id' => (int) $state_id));
+        $conditions = array('state_id' => (int) $state_id);
+
+        $this->db->delete('zone', $conditions);
+        $this->db->delete('city', $conditions);
+        $this->db->delete('state', $conditions);
 
         $this->hook->fire('delete.state.after', $state_id);
         return true;
@@ -185,9 +176,13 @@ class State extends Model
      */
     public function canDelete($state_id)
     {
-        $sth = $this->db->prepare('SELECT address_id FROM address WHERE state_id=:state_id');
-        $sth->execute(array(':state_id' => (int) $state_id));
-        return !$sth->fetchColumn();
+        $sql = 'SELECT address_id FROM address WHERE state_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($state_id));
+
+        $result = $sth->fetchColumn();
+        return empty($result);
     }
 
     /**
@@ -204,28 +199,12 @@ class State extends Model
             return false;
         }
 
-        $values = array();
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (!empty($data['code'])) {
-            $values['code'] = $data['code'];
-        }
-
-        if (!empty($data['name'])) {
-            $values['name'] = $data['name'];
-        }
+        $values = $this->filterDbValues('state', $data);
 
         $result = false;
-
         if (!empty($values)) {
-            $result = $this->db->update('state', $values, array('state_id' => (int) $state_id));
+            $conditions = array('state_id' => (int) $state_id);
+            $result = $this->db->update('state', $values, $conditions);
         }
 
         $this->hook->fire('update.state.after', $state_id, $data, $result);
