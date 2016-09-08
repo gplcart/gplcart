@@ -92,7 +92,9 @@ class Currency extends Model
      */
     public function getList($enabled = false)
     {
-        $currencies = &Cache::memory("currencies.$enabled");
+        $cache_key = $enabled ? 'currencies.enabled' : 'currencies';
+
+        $currencies = &Cache::memory($cache_key);
 
         if (isset($currencies)) {
             return $currencies;
@@ -246,6 +248,7 @@ class Currency extends Model
                 $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
                 Tool::setCookie('currency', $currency_code, $lifespan);
             }
+
             $currency = $currency_code;
             return $currency_code;
         }
