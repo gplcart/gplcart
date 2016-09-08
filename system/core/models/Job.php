@@ -92,7 +92,27 @@ class Job extends Model
             return array();
         }
 
-        $default = array(
+        $default = $this->getDefault();
+        $job = Tool::merge($default, $job);
+
+        $existing = $this->getSession($job['id']);
+
+        if (!empty($existing)) {
+            return $existing;
+        }
+
+        $this->setSession($job);
+        $this->hook->fire('set.job.after', $job, $job['id']);
+        return $job;
+    }
+    
+    /**
+     * Returns an array of default job values
+     * @return array
+     */
+    protected function getDefault()
+    {
+        return array(
             'id' => uniqid(),
             'status' => true,
             'title' => '',
@@ -118,18 +138,6 @@ class Job extends Model
                 'errors' => '',
             ),
         );
-
-        $job = Tool::merge($default, $job);
-
-        $existing = $this->getSession($job['id']);
-
-        if (!empty($existing)) {
-            return $existing;
-        }
-
-        $this->setSession($job);
-        $this->hook->fire('set.job.after', $job, $job['id']);
-        return $job;
     }
 
     /**

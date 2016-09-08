@@ -90,7 +90,9 @@ class Page extends Model
     {
         $page['language'] = 'und';
 
-        foreach ($this->getTranslation($page['page_id']) as $translation) {
+        $translations = $this->getTranslation($page['page_id']);
+
+        foreach ($translations as $translation) {
             $page['translation'][$translation['language']] = $translation;
         }
 
@@ -105,7 +107,16 @@ class Page extends Model
      */
     protected function attachImage(array &$page)
     {
-        $page['images'] = $this->image->getList('page_id', $page['page_id']);
+        $images = $this->image->getList('page_id', $page['page_id']);
+
+        foreach ($images as &$image) {
+            $translations = $this->image->getTranslation($image['file_id']);
+            foreach ($translations as $translation) {
+                $image['translation'][$translation['language']] = $translation;
+            }
+        }
+
+        $page['images'] = $images;
     }
 
     /**
@@ -123,6 +134,7 @@ class Page extends Model
 
         $data += array('created' => GC_TIME);
         $values = $this->prepareDbInsert('page', $data);
+
         $data['page_id'] = $this->db->insert('page', $values);
 
         $this->setTranslation($data, false);
@@ -148,8 +160,8 @@ class Page extends Model
     public function addTranslation($page_id, $language, array $translation)
     {
         $translation += array('page_id' => $page_id, 'language' => $language);
-
         $values = $this->prepareDbInsert('page_translation', $translation);
+
         return $this->db->insert('page_translation', $values);
     }
 
@@ -304,16 +316,11 @@ class Page extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'store_id', 'status', 'created', 'email');
+        $allowed_sort = array('title' => 'p.title', 'store_id' => 'p.store_id',
+            'status' => 'p.status', 'created' => 'p.created', 'email' => 'u.email');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-
-            if ($data['sort'] === 'email') {
-                $sql .= " ORDER BY u.email {$data['order']}";
-            } else {
-                $sql .= " ORDER BY p.{$data['sort']} {$data['order']}";
-            }
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY p.created DESC";
         }
@@ -329,8 +336,10 @@ class Page extends Model
             return (int) $sth->fetchColumn();
         }
 
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+
         $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $page) {
+        foreach ($results as $page) {
             $page['data'] = unserialize($page['data']);
             $list[$page['page_id']] = $page;
         }
@@ -401,7 +410,7 @@ class Page extends Model
      * @param null|string $language
      * @return boolean
      */
-    protected function deleteTranslation($page_id, $language = null)
+    public function deleteTranslation($page_id, $language = null)
     {
         $where = array('page_id' => (int) $page_id);
 

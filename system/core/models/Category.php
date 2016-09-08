@@ -129,14 +129,14 @@ class Category extends Model
     protected function attachImage(array &$category)
     {
         $images = $this->image->getList('category_id', $category['category_id']);
-
-        foreach ($images as &$image) {
+        
+        foreach($images as &$image){
             $translations = $this->image->getTranslation($image['file_id']);
-            foreach ($translations as $translation) {
+            foreach($translations as $translation){
                 $image['translation'][$translation['language']] = $translation;
-            }
+            }  
         }
-
+        
         $category['images'] = $images;
     }
 
@@ -441,11 +441,11 @@ class Category extends Model
 
         $this->setTranslation($data, false);
         $this->setImages($data);
-
+        
         if (empty($data['alias'])) {
             $data['alias'] = $this->createAlias($data);
         }
-
+        
         $this->setAlias($data, false);
 
         $this->hook->fire('add.category.after', $data);

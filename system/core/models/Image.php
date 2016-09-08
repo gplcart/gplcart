@@ -78,7 +78,7 @@ class Image extends Model
             'sort' => 'weight',
             'id_key' => $id_key,
             'file_type' => 'image',
-            'id_value' => $id_value  
+            'id_value' => $id_value
         );
 
         return $this->file->getList($options);
@@ -93,7 +93,7 @@ class Image extends Model
     {
         return $this->file->getTranslation($file_id);
     }
-    
+
     /**
      * Returns a string containing an image url
      * @param array $data
@@ -114,7 +114,7 @@ class Image extends Model
                 return $this->url($options['imagestyle'], $file['path']);
             }
         }
-        
+
         return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
     }
 
@@ -175,7 +175,7 @@ class Image extends Model
     {
         try {
             $this->applyActions($file, $actions);
-        } catch (\core\exceptions\Usage $exception) {
+        } catch (\RuntimeException $exception) {
             echo $exception->getMessage();
         }
     }
@@ -200,8 +200,8 @@ class Image extends Model
      */
     public function getStyleList()
     {
-        $saved_imagestyles = $this->config->get('imagestyles', array());
         $default_imagestyles = $this->defaultStyles();
+        $saved_imagestyles = $this->config->get('imagestyles', array());
 
         $imagestyles = Tool::merge($default_imagestyles, $saved_imagestyles);
 
