@@ -233,7 +233,7 @@ class Field extends Model
 
         if (!empty($field)) {
             $field['data'] = unserialize($field['data']);
-            $this->attachTransalation($field, $language);
+            $this->attachTranslation($field, $language);
         }
 
         $this->hook->fire('get.field.after', $field_id, $language, $field);
@@ -245,7 +245,7 @@ class Field extends Model
      * @param array $field
      * @param null|string $language
      */
-    protected function attachTransalation(array &$field, $language)
+    protected function attachTranslation(array &$field, $language)
     {
         $field['language'] = 'und';
 

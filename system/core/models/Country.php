@@ -46,13 +46,13 @@ class Country extends Model
      */
     public function getFormat($country, $only_enabled = false)
     {
-        $country_data = is_string($country) ? $this->get($country) : (array) $country;
+        $data = is_string($country) ? $this->get($country) : (array) $country;
 
-        if (empty($country_data['format'])) {
+        if (empty($data['format'])) {
             $format = $this->defaultFormat();
             Tool::sortWeight($format);
         } else {
-            $format = $country_data['format'];
+            $format = $data['format'];
         }
 
         if ($only_enabled) {
@@ -66,33 +66,35 @@ class Country extends Model
 
     /**
      * Loads a country from the database
-     * @param string $country_code
+     * @param string $code
      * @return array
      */
-    public function get($country_code)
+    public function get($code)
     {
-        $country = &Cache::memory("country.$country_code");
+        $country = &Cache::memory("country.$code");
 
         if (isset($country)) {
             return $country;
         }
 
-        $this->hook->fire('get.country.before', $country_code);
+        $this->hook->fire('get.country.before', $code);
 
-        $sth = $this->db->prepare('SELECT * FROM country WHERE code=:code');
-        $sth->execute(array(':code' => $country_code));
+        $sth = $this->db->prepare('SELECT * FROM country WHERE code=?');
+        $sth->execute(array($code));
 
         $country = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($country)) {
             $country['format'] = unserialize($country['format']);
+
             $default_format = $this->defaultFormat();
             $country['format'] = Tool::merge($default_format, $country['format']);
-            $country['default'] = $this->isDefault($country_code);
+            $country['default'] = $this->isDefault($code);
+
             Tool::sortWeight($country['format']);
         }
 
-        $this->hook->fire('get.country.after', $country_code, $country);
+        $this->hook->fire('get.country.after', $code, $country);
         return $country;
     }
 
@@ -222,32 +224,26 @@ class Country extends Model
     /**
      * Adds a country
      * @param array $data
-     * @return boolean|integer
+     * @return boolean
      */
     public function add(array $data)
     {
         $this->hook->fire('add.country.before', $data);
 
-        if (empty($data)) {
+        if (empty($data['code'])) {
             return false;
         }
-
-        $values = array(
-            'format' => empty($data['format']) ? serialize(array()) : serialize($data['format']),
-            'status' => !empty($data['status']),
-            'weight' => empty($data['weight']) ? 0 : (int) $data['weight'],
-            'name' => $data['name'],
-            'native_name' => $data['native_name'],
-            'code' => $data['code'],
-        );
 
         if (!empty($data['default'])) {
             $this->setDefault($data['code']);
         }
 
-        $country_id = $this->db->insert('country', $values);
-        $this->hook->fire('add.country.after', $data, $country_id);
-        return $country_id;
+        $values = $this->prepareDbInsert('country', $data);
+
+        $result = true;
+        $this->db->insert('country', $values);
+        $this->hook->fire('add.country.after', $data, $result);
+        return (bool) $result;
     }
 
     /**
@@ -260,47 +256,27 @@ class Country extends Model
     {
         $this->hook->fire('update.country.before', $code, $data);
 
-        if (empty($code)) {
+        if (empty($code) || empty($data)) {
             return false;
-        }
-
-        $values = array();
-
-        if (!empty($data['format'])) {
-            $values['format'] = serialize((array) $data['format']);
-        }
-
-        if (!empty($data['name'])) {
-            $values['name'] = $data['name'];
-        }
-
-        if (!empty($data['native_name'])) {
-            $values['native_name'] = $data['native_name'];
-        }
-
-        if (isset($data['status'])) {
-            if ($this->isDefault($code)) {
-                $data['status'] = 1;
-            }
-
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (isset($data['weight'])) {
-            $values['weight'] = (int) $data['weight'];
         }
 
         if (!empty($data['default'])) {
             $this->setDefault($code);
         }
 
+        if ($this->isDefault($code)) {
+            $data['status'] = 1;
+        }
+
+        $values = $this->filterDbValues('country', $data);
+
         $result = false;
 
         if (!empty($values)) {
             $result = $this->db->update('country', $values, array('code' => $code));
-            $this->hook->fire('update.country.after', $code, $data, $result);
         }
 
+        $this->hook->fire('update.country.after', $code, $data, $result);
         return (bool) $result;
     }
 
@@ -323,11 +299,10 @@ class Country extends Model
 
         $this->db->delete('country', array('code' => $code));
         $this->db->delete('zone', array('country' => $code));
-        $this->db->delete('state', array('country' => $code));
         $this->db->delete('city', array('country' => $code));
+        $this->db->delete('state', array('country' => $code));
 
         $this->hook->fire('delete.country.after', $code);
-
         return true;
     }
 
@@ -338,9 +313,13 @@ class Country extends Model
      */
     public function canDelete($code)
     {
-        $sth = $this->db->prepare('SELECT address_id FROM address WHERE country=:country');
-        $sth->execute(array(':country' => $code));
-        return !$sth->fetchColumn();
+        $sql = 'SELECT address_id FROM address WHERE country=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($code));
+
+        $result = $sth->fetchColumn();
+        return empty($result);
     }
 
     /**
@@ -350,9 +329,9 @@ class Country extends Model
      */
     public function getNames($enabled = false)
     {
-        $names = array();
         $countries = $this->getList(array('status' => $enabled));
 
+        $names = array();
         foreach ($countries as $code => $country) {
             $names[$code] = $country['native_name'];
         }
@@ -367,21 +346,19 @@ class Country extends Model
      */
     public function getList(array $data = array())
     {
-        $list = &Cache::memory('countries.' . md5(serialize($data)));
+        $list = &Cache::memory('countries.' . md5(json_encode($data)));
 
         if (isset($list)) {
             return $list;
         }
 
-        $list = array();
-
         $sql = 'SELECT * ';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(code) ';
+            $sql = 'SELECT COUNT(code)';
         }
 
-        $sql .= 'FROM country WHERE LENGTH(code) > 0';
+        $sql .= ' FROM country WHERE LENGTH(code) > 0';
 
         $where = array();
 
@@ -405,24 +382,12 @@ class Country extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-            switch ($data['sort']) {
-                case 'name':
-                    $sql .= " ORDER BY name {$data['order']}";
-                    break;
-                case 'native_name':
-                    $sql .= " ORDER BY native_name {$data['order']}";
-                    break;
-                case 'code':
-                    $sql .= " ORDER BY code {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status {$data['order']}";
-                    break;
-                case 'weight':
-                    $sql .= " ORDER BY weight {$data['order']}";
-                    break;
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';
         }
@@ -435,10 +400,13 @@ class Country extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $country) {
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        $list = array();
+        foreach ($results as $country) {
             $country['format'] = unserialize($country['format']);
             $list[$country['code']] = $country;
             $list[$country['code']]['format'] += $this->defaultFormat();

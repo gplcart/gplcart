@@ -282,7 +282,7 @@ class Model
             'fields' => array(
                 'collection_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'description' => array('type' => 'text', 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true, 'default' => ''),
                 'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
                 'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),

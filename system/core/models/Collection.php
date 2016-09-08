@@ -113,17 +113,10 @@ class Collection extends Model
             return false;
         }
 
-        $values = array(
-            'type' => $data['type'],
-            'title' => $data['title'],
-            'status' => !empty($data['status']),
-            'store_id' => (int) $data['store_id'],
-            'description' => isset($data['description']) ? $data['description'] : ''
-        );
-
+        $values = $this->prepareDbInsert('collection', $data);
         $data['collection_id'] = $this->db->insert('collection', $values);
 
-        $this->setTranslations($data['collection_id'], $data);
+        $this->setTranslation($data, false);
 
         $this->hook->fire('add.collection.after', $data);
         return $data['collection_id'];
@@ -131,20 +124,22 @@ class Collection extends Model
 
     /**
      * Deletes and/or adds collection translations
-     * @param integer $collection_id
      * @param array $data
+     * @param boolean $delete
      * @return boolean
      */
-    protected function setTranslations($collection_id, array $data)
+    protected function setTranslation(array $data, $delete = true)
     {
         if (empty($data['translation'])) {
             return false;
         }
 
-        $this->deleteTranslation($collection_id);
+        if ($delete) {
+            $this->deleteTranslation($data['collection_id']);
+        }
 
         foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($collection_id, $language, $translation);
+            $this->addTranslation($data['collection_id'], $language, $translation);
         }
 
         return true;
@@ -176,15 +171,16 @@ class Collection extends Model
      */
     public function addTranslation($collection_id, $language, array $translation)
     {
-        if($translation['title'] === ''){
+        if (empty($translation['title'])) {
             return false;
         }
-        
-        $values = array(
+
+        $translation += array(
             'language' => $language,
-            'title' => $translation['title'],
-            'collection_id' => (int) $collection_id
+            'collection_id' => $collection_id
         );
+
+        $values = $this->prepareDbInsert('collection_translation', $translation);
 
         return $this->db->insert('collection_translation', $values);
     }
@@ -199,21 +195,14 @@ class Collection extends Model
     {
         $this->hook->fire('get.collection.before', $collection_id);
 
-        $sth = $this->db->prepare('SELECT * FROM collection WHERE collection_id=?');
+        $sql = 'SELECT * FROM collection WHERE collection_id=?';
+
+        $sth = $this->db->prepare($sql);
         $sth->execute(array($collection_id));
         $collection = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($collection)) {
-
-            $collection['language'] = 'und';
-
-            foreach ($this->getTranslations($collection_id) as $translation) {
-                $collection['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($collection['translation'][$language])) {
-                $collection = $collection['translation'][$language] + $collection;
-            }
+            $this->attachTranslation($collection, $language);
         }
 
         $this->hook->fire('get.collection.after', $collection_id, $collection);
@@ -221,11 +210,30 @@ class Collection extends Model
     }
 
     /**
+     * Adds translations to the collection
+     * @param array $collection
+     * @param null|string $language
+     */
+    protected function attachTranslation(array &$collection, $language)
+    {
+        $collection['language'] = 'und';
+
+        $translations = $this->getTranslation($collection['collection_id']);
+        foreach ($translations as $translation) {
+            $collection['translation'][$translation['language']] = $translation;
+        }
+
+        if (isset($language) && isset($collection['translation'][$language])) {
+            $collection = $collection['translation'][$language] + $collection;
+        }
+    }
+
+    /**
      * Returns an array of translations
      * @param integer $collection_id
      * @return array
      */
-    public function getTranslations($collection_id)
+    public function getTranslation($collection_id)
     {
         $sql = 'SELECT * FROM collection_translation WHERE collection_id=?';
         $sth = $this->db->prepare($sql);
@@ -288,18 +296,21 @@ class Collection extends Model
             return false;
         }
 
-        $this->setTranslations($collection_id, $data);
-
-        $result = false;
         $values = $this->filterDbValues('collection', $data);
-        
+
         unset($values['type']); // Cannot change item type!
+
+        $updated = 0;
 
         if (!empty($values)) {
             $conditions = array('collection_id' => (int) $collection_id);
-            $this->db->update('collection', $values, $conditions);
-            $result = true;
+            $updated += (int) $this->db->update('collection', $values, $conditions);
         }
+
+        $data['collection_id'] = $collection_id;
+        $updated += (int) $this->setTranslation($data);
+
+        $result = ($updated > 0);
 
         $this->hook->fire('update.collection.after', $collection_id, $data, $result);
         return (bool) $result;
@@ -349,4 +360,5 @@ class Collection extends Model
         $this->hook->fire('collection.handlers', $handlers);
         return $handlers;
     }
+
 }

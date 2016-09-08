@@ -150,7 +150,7 @@ class Order extends Model
     }
 
     /**
-     * Returns status name
+     * Returns a status name
      * @param string $id
      * @return string
      */
@@ -167,21 +167,23 @@ class Order extends Model
      */
     public function getList($data = array())
     {
-        $sql = 'SELECT o.*, u.email AS creator, uc.name AS customer_name, uc.email AS customer_email,
-        CONCAT(uc.name, "", uc.email) AS customer, h.time AS viewed, a.country,
-        a.city_id, a.address_1, a.address_2, a.phone, a.postcode, a.first_name, a.middle_name, a.last_name';
+        $sql = 'SELECT o.*, u.email AS creator,'
+                . 'uc.name AS customer_name, uc.email AS customer_email,'
+                . 'CONCAT(uc.name, "", uc.email) AS customer,'
+                . 'h.time AS viewed, a.country, a.city_id, a.address_1,'
+                . 'a.address_2, a.phone, a.postcode, a.first_name,'
+                . 'a.middle_name, a.last_name';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(DISTINCT o.order_id)';
         }
 
-        $sql .= '
-        FROM orders o
-        LEFT JOIN user u ON(o.creator=u.user_id)
-        LEFT JOIN user uc ON(o.user_id=uc.user_id)
-        LEFT JOIN address a ON(o.shipping_address=a.address_id)
-        LEFT JOIN history h ON(h.user_id=? AND h.id_key=? AND h.id_value=o.order_id)
-        WHERE o.order_id IS NOT NULL';
+        $sql .= ' FROM orders o'
+                . ' LEFT JOIN user u ON(o.creator=u.user_id)'
+                . ' LEFT JOIN user uc ON(o.user_id=uc.user_id)'
+                . ' LEFT JOIN address a ON(o.shipping_address=a.address_id)'
+                . ' LEFT JOIN history h ON(h.user_id=? AND h.id_key=? AND h.id_value=o.order_id)'
+                . ' WHERE o.order_id IS NOT NULL';
 
         $where = array($this->user->id(), 'order_id');
 

@@ -54,7 +54,7 @@ class CategoryGroup extends Model
 
         if (!empty($category_group)) {
             $category_group['data'] = unserialize($category_group['data']);
-            $this->attachTransalation($category_group, $language);
+            $this->attachTranslation($category_group, $language);
         }
 
         $this->hook->fire('get.category.group.after', $category_group);
@@ -66,7 +66,7 @@ class CategoryGroup extends Model
      * @param array $category_group
      * @param null|string $language
      */
-    protected function attachTransalation(array &$category_group, $language)
+    protected function attachTranslation(array &$category_group, $language)
     {
         $category_group['language'] = 'und';
 

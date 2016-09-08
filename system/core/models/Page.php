@@ -73,7 +73,7 @@ class Page extends Model
 
         if (!empty($page)) {
             $page['data'] = unserialize($page['data']);
-            $this->attachTransalation($page, $language);
+            $this->attachTranslation($page, $language);
             $this->attachImage($page);
         }
 
@@ -86,7 +86,7 @@ class Page extends Model
      * @param array $page
      * @param null|string $language
      */
-    protected function attachTransalation(array &$page, $language)
+    protected function attachTranslation(array &$page, $language)
     {
         $page['language'] = 'und';
 

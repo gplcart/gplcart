@@ -96,7 +96,7 @@ class Category extends Model
 
         if (!empty($category)) {
             $category['data'] = unserialize($category['data']);
-            $this->attachTransalation($category, $language);
+            $this->attachTranslation($category, $language);
             $this->attachImage($category);
         }
 
@@ -109,7 +109,7 @@ class Category extends Model
      * @param array $category
      * @param null|string $language
      */
-    protected function attachTransalation(array &$category, $language)
+    protected function attachTranslation(array &$category, $language)
     {
         $category['language'] = 'und';
 
@@ -545,7 +545,8 @@ class Category extends Model
         $conditions2 = array('id_key' => 'category_id', 'id_value' => (int) $category_id);
 
         $this->db->delete('category', $conditions);
-        $this->db->delete('category_translation', $conditions);
+        
+        $this->deleteTranslation($category_id);
 
         $this->db->delete('file', $conditions2);
         $this->db->delete('alias', $conditions2);
