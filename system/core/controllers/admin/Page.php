@@ -295,7 +295,7 @@ class Page extends BackendController
         }
 
         foreach ($page['images'] as &$image) {
-            $image['translation'] = $this->image->getTranslations($image['file_id']);
+            $image['translation'] = $this->image->getTranslation($image['file_id']);
         }
 
         return $page;

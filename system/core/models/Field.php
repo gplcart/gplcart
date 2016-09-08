@@ -131,12 +131,12 @@ class Field extends Model
      */
     protected function addTranslation($field_id, $language, array $translation)
     {
-        $values = array(
+        $translation += array(
             'language' => $language,
             'field_id' => (int) $field_id,
-            'title' => $translation['title']
         );
 
+        $values = $this->prepareDbInsert('field_translation', $translation);
         return $this->db->insert('field_translation', $values);
     }
 
@@ -248,8 +248,9 @@ class Field extends Model
     protected function attachTranslation(array &$field, $language)
     {
         $field['language'] = 'und';
+        $translations = $this->getTranslation($field['field_id']);
 
-        foreach ($this->getTranslation($field['field_id']) as $translation) {
+        foreach ($translations as $translation) {
             $field['translation'][$translation['language']] = $translation;
         }
 
@@ -296,7 +297,17 @@ class Field extends Model
         $this->db->delete('field_value', $conditions);
         $this->db->delete('field_translation', $conditions);
         $this->db->delete('product_class_field', $conditions);
-        $this->db->delete('field_value_translation', $conditions);
+
+        $sql = 'DELETE fvt'
+                . ' FROM field_value_translation AS fvt'
+                . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
+                . ' FROM field_value AS fv'
+                . ' INNER JOIN field_value AS fv2'
+                . ' ON (fv.field_value_id = fv2.field_value_id)'
+                . ' WHERE fv.field_id = ?);';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($field_id));
 
         $this->hook->fire('delete.field.after', $field_id);
         return true;

@@ -334,8 +334,8 @@ class Model
                 'field_value_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
-                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'color' => array('type' => 'varchar', 'length' => 10, 'not_null' => true),
+                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'color' => array('type' => 'varchar', 'length' => 10, 'not_null' => true, 'default' => ''),
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             )
         );
@@ -343,7 +343,6 @@ class Model
         $tables['field_value_translation'] = array(
             'fields' => array(
                 'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-                'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'field_value_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
                 'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
@@ -361,7 +360,7 @@ class Model
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
                 'mime_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
                 'path' => array('type' => 'text', 'not_null' => true),
-                'description' => array('type' => 'text', 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true, 'default' => ''),
             )
         );
 

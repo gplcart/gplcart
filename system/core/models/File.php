@@ -43,7 +43,7 @@ class File extends Model
     protected $url;
 
     /**
-     * An upload directory
+     * Upload directory
      * @var string
      */
     protected $path = '';
@@ -105,43 +105,77 @@ class File extends Model
             $data['file_type'] = strtok($data['mime_type'], '/');
         }
 
-        $file_id = $this->db->insert('file', array(
-            'created' => GC_TIME,
-            'path' => $data['path'],
-            'id_key' => !empty($data['id_key']) ? $data['id_key'] : '',
-            'file_type' => $data['file_type'],
-            'mime_type' => $data['mime_type'],
-            'id_value' => !empty($data['id_value']) ? (int) $data['id_value'] : 0,
-            'title' => !empty($data['title']) ? $data['title'] : basename($data['path']),
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
-            'description' => !empty($data['description']) ? $data['description'] : ''
-        ));
-
-        if (!empty($data['translation'])) {
-            $this->setTranslations($file_id, $data, false);
+        if (empty($data['title'])) {
+            $data['title'] = basename($data['path']);
         }
 
-        $this->hook->fire('add.file.after', $data, $file_id);
-        return $file_id;
+        $data += array('created' => GC_TIME);
+        $values = $this->prepareDbInsert('file', $data);
+
+        $data['file_id'] = $this->db->insert('file', $values);
+
+        $this->setTranslation($data, false);
+
+        $this->hook->fire('add.file.after', $data);
+        return $data['file_id'];
     }
 
     /**
-     * Adds a translation
+     * Deletes and/or adds file translations
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslation(array $data, $delete = true)
+    {
+        if (empty($data['translation'])) {
+            return false;
+        }
+
+        if ($delete) {
+            $this->deleteTranslation($data['file_id']);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($data['file_id'], $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes file translation(s)
      * @param integer $file_id
+     * @param null|string $language
+     * @return boolean
+     */
+    public function deleteTranslation($file_id, $language = null)
+    {
+        $conditions = array('file_id' => (int) $file_id);
+
+        if (isset($language)) {
+            $conditions['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('file_translation', $conditions);
+    }
+
+    /**
+     * Adds a translation to the file
+     * @param array $file_id
      * @param string $language
      * @param array $translation
-     * @return boolean
+     * @return integer
      */
     public function addTranslation($file_id, $language, array $translation)
     {
-        $values = array(
-            'file_id' => (int) $file_id,
-            'language' => $language,
-            'title' => !empty($translation['title']) ? $translation['title'] : '',
-            'description' => !empty($translation['description']) ? $translation['description'] : ''
+        $translation += array(
+            'file_id' => $file_id,
+            'language' => $language
         );
 
-        return (bool) $this->db->insert('file_translation', $values);
+        $values = $this->prepareDbInsert('file_translation', $translation);
+        return $this->db->insert('file_translation', $values);
     }
 
     /**
@@ -153,37 +187,23 @@ class File extends Model
     {
         $this->hook->fire('update.file.before', $file_id, $data);
 
-        $values = array();
+        $values = $this->filterDbValues('file', $data);
 
-        if (isset($data['weight'])) {
-            $values['weight'] = (int) $data['weight'];
-        }
-
-        if (!empty($data['path'])) {
-            $values['path'] = $data['path'];
-        }
-
-        if (isset($data['title'])) {
-            $values['title'] = $data['title'];
-        }
-
-        if (isset($data['mime_type'])) {
-            $values['mime_type'] = $data['mime_type'];
-        }
-
-        if (isset($data['description'])) {
-            $values['description'] = $data['description'];
-        }
-
-        if (!empty($data['translation'])) {
-            $this->setTranslations($file_id, $data);
-        }
+        $updated = 0;
 
         if (!empty($values)) {
-            $this->db->update('file', $values, array('file_id' => $file_id));
+            $conditions = array('file_id' => $file_id);
+            $updated += (int) $this->db->update('file', $values, $conditions);
         }
 
-        $this->hook->fire('update.file.after', $file_id, $data);
+        $data['file_id'] = $file_id;
+
+        $updated += (int) $this->setTranslation($data);
+
+        $result = ($updated > 0);
+
+        $this->hook->fire('update.file.after', $file_id, $data, $result);
+        return $result;
     }
 
     /**
@@ -196,40 +216,51 @@ class File extends Model
     {
         $this->hook->fire('get.file.before', $file_id);
 
-        $sth = $this->db->prepare('SELECT * FROM file WHERE file_id=:file_id');
-        $sth->execute(array(':file_id' => (int) $file_id));
+        $sth = $this->db->prepare('SELECT * FROM file WHERE file_id=?');
+        $sth->execute(array($file_id));
 
         $file = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($file)) {
-            $file['language'] = 'und';
-            $file['translation'] = $this->getTranslations($file_id);
-
-            if (isset($language) && isset($file['translation'][$language])) {
-                $file = $file['translation'][$language] + $file;
-            }
+            $this->attachTranslation($file, $language);
         }
 
-        $this->hook->fire('get.file.after', $file_id, $file);
+        $this->hook->fire('get.file.after', $file);
         return $file;
     }
 
     /**
-     * Returns file translations
+     * Adds translations to the file
+     * @param array $file
+     * @param null|string $language
+     */
+    protected function attachTranslation(array &$file, $language)
+    {
+        $file['language'] = 'und';
+        $translations = $this->getTranslation($file['file_id']);
+
+        foreach ($translations as $translation) {
+            $file['translation'][$translation['language']] = $translation;
+        }
+
+        if (isset($language) && isset($file['translation'][$language])) {
+            $file = $file['translation'][$language] + $file;
+        }
+    }
+
+    /**
+     * Returns an array of file translations
      * @param integer $file_id
      * @return array
      */
-    public function getTranslations($file_id)
+    public function getTranslation($file_id)
     {
-        $sth = $this->db->prepare('SELECT * FROM file_translation WHERE file_id=:file_id');
-        $sth->execute(array(':file_id' => (int) $file_id));
+        $sql = 'SELECT * FROM file_translation WHERE file_id=?';
 
-        $translations = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $translation) {
-            $translations[$translation['language']] = $translation;
-        }
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($file_id));
 
-        return $translations;
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -249,8 +280,10 @@ class File extends Model
             return false;
         }
 
-        $this->db->delete('file', array('file_id' => $file_id));
-        $this->db->delete('file_translation', array('file_id' => $file_id));
+        $conditions = array('file_id' => $file_id);
+
+        $this->db->delete('file', $conditions);
+        $this->db->delete('file_translation', $conditions);
 
         $this->hook->fire('delete.file.after', $file_id);
         return true;
@@ -263,10 +296,9 @@ class File extends Model
      */
     public function canDelete($file_id)
     {
-        $sql = '
-            SELECT
-            NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:file_id) AND
-            NOT EXISTS (SELECT file_id FROM option_combination WHERE file_id=:file_id)';
+        $sql = 'SELECT'
+                . ' NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:file_id)'
+                . ' AND NOT EXISTS (SELECT file_id FROM option_combination WHERE file_id=:file_id)';
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':file_id' => $file_id));
@@ -305,8 +337,6 @@ class File extends Model
         }
 
         $moved = $this->move($tempname, $file);
-
-
 
         if ($moved !== true) {
             return $moved;
@@ -508,13 +538,11 @@ class File extends Model
      */
     public function getList(array $data = array())
     {
-        $files = &Cache::memory('files.' . md5(serialize($data)));
+        $files = &Cache::memory('files.' . md5(json_encode($data)));
 
         if (isset($files)) {
             return $files;
         }
-
-        $files = array();
 
         $sql = 'SELECT f.*,';
 
@@ -522,11 +550,10 @@ class File extends Model
             $sql = 'SELECT COUNT(f.file_id),';
         }
 
-        $sql .= '
-            COALESCE(NULLIF(ft.title, ""), f.title) AS title
-            FROM file f
-            LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)
-            WHERE f.file_id > 0';
+        $sql .= 'COALESCE(NULLIF(ft.title, ""), f.title) AS title'
+                . ' FROM file f'
+                . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)'
+                . ' WHERE f.file_id > 0';
 
         $language = 'und';
         //$this->language->current();
@@ -577,27 +604,12 @@ class File extends Model
             $where[] = $data['file_type'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'title':
-                    $field = 'title';
-                    break;
-                case 'path':
-                    $field = 'f.path';
-                    break;
-                case 'created':
-                    $field = 'f.created';
-                    break;
-                case 'weight':
-                    $field = 'f.weight';
-                    break;
-                case 'mime_type':
-                    $field = 'f.mime_type';
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title' => 'title', 'path' => 'f.path',
+            'created' => 'f.created', 'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
 
-            if (isset($field)) {
-                $sql .= " ORDER BY $field {$data['order']}";
-            }
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY f.created DESC";
         }
@@ -610,10 +622,13 @@ class File extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $file) {
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        $files = array();
+        foreach ($results as $file) {
             $files[$file['file_id']] = $file;
         }
 
@@ -640,43 +655,6 @@ class File extends Model
     public function url($path, $absolute = false)
     {
         return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
-    }
-
-    /**
-     * Deletes and/or adds file translations
-     * @param integer $file_id
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslations($file_id, array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($file_id);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($file_id, $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes file translation(s)
-     * @param integer $file_id
-     * @param null|string $language
-     * @return boolean
-     */
-    protected function deleteTranslation($file_id, $language = null)
-    {
-        $where = array('file_id' => (int) $file_id);
-
-        if (isset($language)) {
-            $where['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('file_translation', $where);
     }
 
     /**
@@ -798,6 +776,7 @@ class File extends Model
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimetype = finfo_file($finfo, $file);
         finfo_close($finfo);
+
         return $mimetype;
     }
 

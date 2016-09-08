@@ -74,11 +74,11 @@ class Image extends Model
     public function getList($id_key, $id_value)
     {
         $options = array(
-            'id_key' => $id_key,
-            'id_value' => $id_value,
+            'order' => 'asc',
             'sort' => 'weight',
+            'id_key' => $id_key,
             'file_type' => 'image',
-            'order' => 'asc'
+            'id_value' => $id_value  
         );
 
         return $this->file->getList($options);
@@ -89,9 +89,9 @@ class Image extends Model
      * @param integer $file_id
      * @return array
      */
-    public function getTranslations($file_id)
+    public function getTranslation($file_id)
     {
-        return $this->file->getTranslations($file_id);
+        return $this->file->getTranslation($file_id);
     }
     
     /**

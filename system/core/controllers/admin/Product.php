@@ -397,7 +397,7 @@ class Product extends BackendController
 
         if (!empty($product['images'])) {
             foreach ($product['images'] as &$image) {
-                $image['translation'] = $this->image->getTranslations($image['file_id']);
+                $image['translation'] = $this->image->getTranslation($image['file_id']);
             }
         }
 
