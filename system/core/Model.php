@@ -409,9 +409,9 @@ class Model
             'fields' => array(
                 'combination_id' => array('type' => 'varchar', 'length' => 255, 'primary' => true),
                 'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'price' => array('type' => 'int', 'length' => 10, 'not_null' => true)
+                'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+                'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0)
             )
         );
 
@@ -482,28 +482,28 @@ class Model
         $tables['product'] = array(
             'fields' => array(
                 'product_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-                'status' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'subtract' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'status' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 1),
+                'subtract' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 1),
+                'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-                'brand_category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'brand_category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+                'category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'length' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'width' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'height' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'weight' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
                 'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
                 'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-                'volume_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
-                'weight_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+                'volume_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'mm'),
+                'weight_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'g'),
                 'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'description' => array('type' => 'text', 'not_null' => true),
+                'description' => array('type' => 'text', 'not_null' => true, 'default' => ''),
                 'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
             )
         );
@@ -552,10 +552,10 @@ class Model
                 'translation_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-                'description' => array('type' => 'text', 'not_null' => true),
+                'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+                'description' => array('type' => 'text', 'not_null' => true, 'default' => ''),
             )
         );
 

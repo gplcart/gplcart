@@ -62,13 +62,13 @@ class PriceRule extends Model
 
         $price_rules = array();
 
-        $sql = 'SELECT * ';
+        $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(price_rule_id) ';
+            $sql = 'SELECT COUNT(price_rule_id)';
         }
 
-        $sql .= 'FROM price_rule';
+        $sql .= ' FROM price_rule';
         $where = array();
 
         if (!empty($data['price_rule_id'])) {
@@ -174,21 +174,13 @@ class PriceRule extends Model
         if (empty($data)) {
             return false;
         }
+        
+        $values = $this->prepareDbInsert('price_rule', $data);
 
-        $values = array(
-            'name' => $data['name'],
-            'currency' => $data['currency'],
-            'value' => (int) $data['value'],
-            'value_type' => $data['value_type'],
-            'status' => !empty($data['status']),
-            'trigger_id' => $data['trigger_id'],
-            'code' => empty($data['code']) ? '' : $data['code'],
-            'weight' => empty($data['weight']) ? 0 : (int) $data['weight']
-        );
-
-        $price_rule_id = $this->db->insert('price_rule', $values);
-        $this->hook->fire('add.price.rule.after', $data, $price_rule_id);
-        return $price_rule_id;
+        $data['price_rule_id'] = $this->db->insert('price_rule', $values);
+        
+        $this->hook->fire('add.price.rule.after', $data);
+        return $data['price_rule_id'];
     }
 
     /**
@@ -210,11 +202,11 @@ class PriceRule extends Model
         $result = false;
 
         if (!empty($values)) {
-            $result = $this->db->update('price_rule', $values, array('price_rule_id' => (int) $price_rule_id));
+            $conditions = array('price_rule_id' => (int) $price_rule_id);
+            $result = $this->db->update('price_rule', $values, $conditions);
         }
 
         $this->hook->fire('update.price.rule.after', $price_rule_id, $data, $result);
-
         return (bool) $result;
     }
 
@@ -225,8 +217,10 @@ class PriceRule extends Model
      */
     public function setUsed($price_rule_id)
     {
-        $sth = $this->db->prepare('UPDATE price_rule SET used=used + 1 WHERE price_rule_id=?');
+        $sql = 'UPDATE price_rule SET used=used + 1 WHERE price_rule_id=?';
+        $sth = $this->db->prepare($sql);
         $sth->execute(array($price_rule_id));
+        
         return (bool) $sth->rowCount();
     }
 
@@ -238,12 +232,13 @@ class PriceRule extends Model
      */
     public function codeMatches($price_rule_id, $code)
     {
-        $sql = 'SELECT price_rule_id
-               FROM price_rule
-               WHERE code=:code AND price_rule_id=:price_rule_id AND status=:status';
+        $sql = 'SELECT price_rule_id'
+                . ' FROM price_rule'
+                . ' WHERE code=? AND price_rule_id=? AND status=?';
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array(':code' => $code, ':price_rule_id' => $price_rule_id, ':status' => 1));
+        $sth->execute(array($code, $price_rule_id, 1));
+        
         return (bool) $sth->fetchColumn();
     }
 
@@ -260,7 +255,8 @@ class PriceRule extends Model
             return false;
         }
 
-        $result = $this->db->delete('price_rule', array('price_rule_id' => (int) $price_rule_id));
+        $conditions = array('price_rule_id' => (int) $price_rule_id);
+        $result = $this->db->delete('price_rule', $conditions);
 
         $this->hook->fire('delete.price.rule.after', $price_rule_id, $result);
         return (bool) $result;

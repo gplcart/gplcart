@@ -97,7 +97,7 @@ class Category extends Model
         if (!empty($category)) {
             $category['data'] = unserialize($category['data']);
             $this->attachTranslation($category, $language);
-            $this->attachImage($category);
+            $this->attachImage($category, $language);
         }
 
         $this->hook->fire('get.category.after', $category);
@@ -125,16 +125,23 @@ class Category extends Model
     /**
      * Adds images to the category
      * @param array $category
+     * @param null|string $language
      */
-    protected function attachImage(array &$category)
+    protected function attachImage(array &$category, $language)
     {
         $images = $this->image->getList('category_id', $category['category_id']);
         
         foreach($images as &$image){
+            
             $translations = $this->image->getTranslation($image['file_id']);
+            
             foreach($translations as $translation){
                 $image['translation'][$translation['language']] = $translation;
-            }  
+            }
+            
+            if (isset($language) && isset($image['translation'][$language])) {
+                $image = $image['translation'][$language] + $image;
+            }
         }
         
         $category['images'] = $images;
