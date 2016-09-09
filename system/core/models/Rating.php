@@ -37,8 +37,8 @@ class Rating extends Model
         $user_id = null;
         $this->hook->fire('get.rating.before', $product_id, $user_id);
 
-        $sth = $this->db->prepare('SELECT rating, votes FROM rating WHERE product_id=:product_id');
-        $sth->execute(array(':product_id' => (int) $product_id));
+        $sth = $this->db->prepare('SELECT rating, votes FROM rating WHERE product_id=?');
+        $sth->execute(array($product_id));
         $result = $load ? $sth->fetch(PDO::FETCH_ASSOC) : $sth->fetchColumn();
 
         $this->hook->fire('get.rating.after', $product_id, $user_id, $result);
@@ -85,7 +85,9 @@ class Rating extends Model
     public function set($product_id, $user_id, $rating)
     {
         $this->hook->fire('set.rating.before', $product_id, $user_id, $rating);
-        $this->db->delete('rating_user', array('product_id' => $product_id, 'user_id' => $user_id));
+
+        $conditions = array('product_id' => $product_id, 'user_id' => $user_id);
+        $this->db->delete('rating_user', $conditions);
 
         $this->addUser($product_id, $user_id, $rating);
         return $this->setBayesian($product_id);
@@ -122,16 +124,19 @@ class Rating extends Model
     {
         $rating = $this->getBayesian($product_id);
 
-        $sql = "INSERT INTO rating SET rating=:rating, votes=:votes, product_id=:product_id
-               ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes";
+        $sql = 'INSERT INTO rating'
+                . ' SET rating=:rating, votes=:votes, product_id=:product_id'
+                . ' ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes';
 
         $sth = $this->db->prepare($sql);
 
-        $sth->execute(array(
-            ':rating' => $rating['bayesian_rating'],
+        $conditions = array(
+            ':product_id' => $product_id,
             ':votes' => $rating['this_num_votes'],
-            ':product_id' => $product_id));
+            ':rating' => $rating['bayesian_rating']
+        );
 
+        $sth->execute($conditions);
         return $rating;
     }
 
@@ -142,15 +147,22 @@ class Rating extends Model
      */
     protected function getBayesian($product_id)
     {
-        $sql = "
-            SELECT *, ROUND((((result.avg_num_votes * result.avg_rating) + (result.this_num_votes * result.this_rating)) / (result.avg_num_votes + result.this_num_votes)), 1) AS bayesian_rating
-            FROM (SELECT product_id, (SELECT COUNT(product_id) FROM rating_user) / (SELECT COUNT(DISTINCT product_id) FROM rating_user) AS avg_num_votes,
-            (SELECT AVG(rating) FROM rating_user) AS avg_rating, COUNT(product_id) as this_num_votes, AVG(rating) as this_rating FROM rating_user
-            WHERE product_id=:product_id GROUP BY product_id) AS result;
-        ";
+        $sql = 'SELECT *,'
+                . ' ROUND((((result.avg_num_votes * result.avg_rating)'
+                . ' + (result.this_num_votes * result.this_rating))'
+                . ' / (result.avg_num_votes + result.this_num_votes)), 1) AS bayesian_rating'
+                . ' FROM (SELECT product_id,'
+                . ' (SELECT COUNT(product_id) FROM rating_user)'
+                . ' / (SELECT COUNT(DISTINCT product_id) FROM rating_user) AS avg_num_votes,'
+                . ' (SELECT AVG(rating) FROM rating_user) AS avg_rating,'
+                . ' COUNT(product_id) as this_num_votes,'
+                . ' AVG(rating) AS this_rating'
+                . ' FROM rating_user'
+                . ' WHERE product_id=?'
+                . ' GROUP BY product_id) AS result;';
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array(':product_id' => $product_id));
+        $sth->execute(array($product_id));
 
         return $sth->fetch(PDO::FETCH_ASSOC);
     }
