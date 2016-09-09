@@ -437,9 +437,9 @@ class Product extends BackendController
     {
         $output_field_form = false;
         $product_class_id = $this->getData('product.product_class_id', 0);
-        $get_product_class_id = (int) $this->request->get('product_class_id');
+        $get_product_class_id = $this->request->get('product_class_id');
 
-        if (!empty($get_product_class_id)) {
+        if (isset($get_product_class_id)) {
             $output_field_form = true;
             $product_class_id = $get_product_class_id;
         }
@@ -580,6 +580,10 @@ class Product extends BackendController
     protected function validateProduct(array $product = array())
     {
         $this->setSubmittedBool('status');
+        
+        if(isset($product['product_id'])){
+           $this->setSubmitted('product_id', $product['product_id']); 
+        }
 
         $this->addValidator('price', array(
             'numeric' => array(),

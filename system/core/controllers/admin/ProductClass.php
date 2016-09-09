@@ -359,7 +359,8 @@ class ProductClass extends BackendController
         $unique_fields = array();
         foreach ($this->field->getList() as $field) {
             if (empty($fields[$field['field_id']])) {
-                $unique_fields[$field['field_id']] = $field['title'];
+                $type = ($field['type'] === 'option') ? $this->text('Option') : $this->text('Attribute');
+                $unique_fields[$field['field_id']] = "{$field['title']} ($type)";
             }
         }
 

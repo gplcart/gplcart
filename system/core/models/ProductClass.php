@@ -293,7 +293,7 @@ class ProductClass extends Model
      */
     public function getFields($product_class_id)
     {
-        $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title'
+        $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type'
                 . ' FROM product_class_field pcf'
                 . ' LEFT JOIN field f ON(pcf.field_id = f.field_id)'
                 . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=:language)'

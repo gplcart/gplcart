@@ -196,6 +196,7 @@ class Product extends Model
         $updated += (int) $this->setTranslation($data);
         $updated += (int) $this->setImages($data);
         $updated += (int) $this->setAlias($data);
+        
         $updated += (int) $this->setCombinations($data);
         $updated += (int) $this->setAttributes($data);
         $updated += (int) $this->setRelated($data);
@@ -607,27 +608,29 @@ class Product extends Model
 
         $conditions = array('product_id' => $product_id);
         $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
+        
+        $this->db->delete('cart', $conditions);
+        $this->db->delete('review', $conditions);
+        $this->db->delete('rating', $conditions);
+        $this->db->delete('product', $conditions);
+        $this->db->delete('wishlist', $conditions);
+        $this->db->delete('product_sku', $conditions);
+        $this->db->delete('rating_user', $conditions);
+        $this->db->delete('product_field', $conditions);
+        $this->db->delete('option_combination', $conditions);
+        $this->db->delete('product_translation', $conditions);
+        
+        $this->db->delete('file', $conditions2);
+        $this->db->delete('alias', $conditions2);
+        $this->db->delete('search_index', $conditions2);
+        
+        $sql = 'DELETE ci'
+                . ' FROM collection_item ci'
+                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                . ' WHERE c.type = ? AND ci.value = ?';
 
-        $delete = array(
-            'cart' => $conditions,
-            'review' => $conditions,
-            'rating' => $conditions,
-            'product' => $conditions,
-            'wishlist' => $conditions,
-            'product_sku' => $conditions,
-            'rating_user' => $conditions,
-            'product_field' => $conditions,
-            'option_combination' => $conditions,
-            'product_translation' => $conditions,
-            'file' => $conditions2,
-            'alias' => $conditions2,
-            'search_index' => $conditions2,
-            'collection_item' => $conditions2
-        );
-
-        foreach ($delete as $table => $where) {
-            $this->db->delete($table, $where);
-        }
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array('product', $product_id));
 
         $this->hook->fire('delete.product.after', $product_id);
         return true;
@@ -1088,8 +1091,8 @@ class Product extends Model
             }
 
             if (empty($combination['sku'])) {
-                $sku_pattern = $data['sku'] . '-' . $i;
-                $combination['sku'] = $this->sku->generate($sku_pattern, false, array('store_id' => $data['store_id']));
+                $sku_pattern = $data['sku'] . '-' . crc32(uniqid('', true));
+                $combination['sku'] = $this->sku->generate($sku_pattern, array(), array('store_id' => $data['store_id']));
             }
 
             $combination_id = $this->addCombination($combination);

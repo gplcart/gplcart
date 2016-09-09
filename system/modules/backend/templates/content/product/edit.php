@@ -1,8 +1,5 @@
 <form method="post" id="edit-product" onsubmit="return confirm();" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
-  <?php if (isset($product['currency'])) { ?>
-  <input type="hidden" name="product[currency]" value="<?php echo $this->escape($product['currency']); ?>">
-  <?php } ?>
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>
     <div class="panel-body">
@@ -149,10 +146,10 @@
           </div>
         </div>
       </div>
-      <div id="option-form-wrapper"><?php echo $option_form; ?></div>
-      <div id="attribute-form-wrapper"><?php echo $attribute_form; ?></div>
     </div>
   </div>
+  <div id="option-form-wrapper"><?php echo $option_form; ?></div>
+  <div id="attribute-form-wrapper"><?php echo $attribute_form; ?></div>
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Relations & accessibility'); ?></div>
     <div class="panel-body">

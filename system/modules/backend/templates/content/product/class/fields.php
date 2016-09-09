@@ -36,6 +36,13 @@
           <tr>
             <td class="middle">
               <?php echo $this->escape($field['title']); ?>
+              <span class="text-muted">
+              <?php if($field['type'] == 'option') { ?>
+              (<?php echo $this->text('Option'); ?>)
+              <?php } else { ?>
+              (<?php echo $this->text('Attribute'); ?>)
+              <?php } ?>
+              </span>
               <input type="hidden" name="fields[<?php echo $field_id; ?>][weight]" value="<?php echo $field['weight']; ?>">
             </td>
             <td class="middle">

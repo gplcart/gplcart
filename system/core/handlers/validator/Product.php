@@ -125,7 +125,7 @@ class Product
      * @param array $options
      * @return boolean|array
      */
-    protected function attributes($value, array $options = array())
+    public function attributes($value, array $options = array())
     {
         if (empty($options['fields'])) {
             return true;
@@ -162,7 +162,7 @@ class Product
      * @param array $options
      * @return boolean
      */
-    protected function combinations($combinations, array $options = array())
+    public function combinations($combinations, array $options = array())
     {
         if (empty($combinations)) {
             return true;
@@ -184,7 +184,11 @@ class Product
             }
 
             $combination_id = $this->product->getCombinationId($combination['fields']);
-            $repeating_combinations = isset($this->processed_combinations[$combination_id]);
+            
+            if (isset($this->processed_combinations[$combination_id])) {
+                $error = $this->language->text('Option combination already defined');
+                $errors[$index]['exists'] = $error;
+            }
 
             $this->validateCombinationSku($index, $combination, $errors, $options);
             $this->validateCombinationPrice($index, $combination, $errors, $options);
@@ -200,11 +204,6 @@ class Product
         }
 
         $stock = array_sum($this->stock_amount);
-
-        if (!empty($repeating_combinations)) {
-            $error = $this->language->text('Option combinations must be unique');
-            $errors['combination']['repeating_combinations'] = $error;
-        }
 
         if (empty($errors)) {
             return array('result' => array(
@@ -227,7 +226,7 @@ class Product
         if (!empty($options['fields']['option'])) {
             foreach ($options['fields']['option'] as $field_id => $field) {
                 if (!empty($field['required']) && !isset($combination['fields'][$field_id])) {
-                    $errors['combination'][$index]['fields'][$field_id] = $this->language->text('Required field');
+                    $errors[$index]['fields'][$field_id] = $this->language->text('Required field');
                 }
             }
         }
@@ -251,23 +250,23 @@ class Product
         $store_id = $options['submitted']['store_id'];
         $product_id = isset($options['data']['product_id']) ? $options['data']['product_id'] : null;
 
-        if (!empty($combination['sku'])) {
+        if ($combination['sku'] !== '') {
 
             if (mb_strlen($combination['sku']) > 255) {
                 $error = $this->language->text('Content must not exceed %s characters', array('%s' => 255));
-                $errors['combination'][$index]['sku'] = $error;
+                $errors[$index]['sku'] = $error;
                 return;
             }
 
             if (isset($this->processed_skus[$combination['sku']])) {
                 $error = $this->language->text('SKU must be unique per store');
-                $errors['combination'][$index]['sku'] = $error;
+                $errors[$index]['sku'] = $error;
                 return;
             }
 
             if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
                 $error = $this->language->text('SKU must be unique per store');
-                $errors['combination'][$index]['sku'] = $error;
+                $errors[$index]['sku'] = $error;
                 return;
             }
 
@@ -276,8 +275,9 @@ class Product
         }
 
         if (!empty($product_id)) {
-            $sku = $options['submitted']['sku'];
-            $combination['sku'] = $this->sku->generate("$sku-$index", false, array('store_id' => $store_id));
+            $pattern = $options['submitted']['sku'] . '-' . crc32(uniqid('', true));
+            $combination['sku'] = $this->sku->generate($pattern, array(), array('store_id' => $store_id));
+            $this->processed_skus[$combination['sku']] = true;
         }
     }
 
@@ -297,10 +297,8 @@ class Product
         }
 
         if (!is_numeric($combination['price']) || strlen($combination['price']) > 10) {
-            $message = $this->language->text('Only numeric values allowed');
-            $message .= $this->language->text('Content must not exceed %s characters', array('%s' => 10));
-
-            $errors['combination'][$index]['price'] = $message;
+            $message = $this->language->text('Only numeric values and no longer than %s chars', array('%s' => 10));
+            $errors[$index]['price'] = $message;
         }
     }
 
@@ -320,10 +318,8 @@ class Product
         }
 
         if (!is_numeric($combination['stock']) || strlen($combination['stock']) > 10) {
-            $message = $this->language->text('Only numeric values allowed');
-            $message .= $this->language->text('Content must not exceed %s characters', array('%s' => 10));
-
-            $errors['combination'][$index]['stock'] = $message;
+            $message = $this->language->text('Only numeric values and no longer than %s chars', array('%s' => 10));
+            $errors[$index]['stock'] = $message;
         }
     }
 

@@ -1,7 +1,7 @@
 <?php if (!empty($images)) { ?>
 <?php foreach ($images as $index => $image) { ?>
 <?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>
-<div class="col-md-4 thumb">
+<div class="col-md-4">
   <div class="panel thumb panel-default">
     <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][file_id]" value="<?php echo $file_id; ?>">
     <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][path]" value="<?php echo $this->escape($image['path']); ?>">

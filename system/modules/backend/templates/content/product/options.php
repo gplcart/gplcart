@@ -1,14 +1,14 @@
 <div>
   <div id="option-form">
     <?php if (!empty($fields['option'])) { ?>
-    <div class="panel panel-default margin-top-20">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
           <?php echo $this->text('Options'); ?>
         </h4>
       </div>
-      <div class="panel-body">
-        <table class="table table-striped option table-responsive">
+      <div class="panel-body table-responsive">
+        <table class="table table-condensed option">
           <thead>
             <tr>
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
@@ -34,9 +34,9 @@
           <tbody>
             <?php if (!empty($product['combination'])) { ?>
             <?php foreach ($product['combination'] as $row => $combination) { ?>
-            <tr>
+            <tr class="<?php echo isset($this->errors['combination'][$row]) ? 'bg-danger' : ''; ?>">
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
-              <td class="active">
+              <td class="<?php echo isset($this->errors['combination'][$row]) ? '' : ' active'; ?>">
                 <div class="<?php echo isset($this->errors['combination'][$row]['fields'][$field_id]) ? 'has-error' : ''; ?>">
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
                     <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
@@ -52,7 +52,7 @@
               <?php } ?>
               <td>
                 <div class="<?php echo isset($this->errors['combination'][$row]['sku']) ? 'has-error' : ''; ?>">
-                  <input maxlength="255" class="form-control" name="product[combination][<?php echo $row; ?>][sku]" value="<?php echo isset($combination['sku']) ? $this->escape($combination['sku']) : ''; ?>">
+                  <input maxlength="255" class="form-control" name="product[combination][<?php echo $row; ?>][sku]" value="<?php echo isset($combination['sku']) ? $this->escape($combination['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
                   <?php if (isset($this->errors['combination'][$row]['sku'])) { ?>
                   <div class="help-block"><?php echo $this->errors['combination'][$row]['sku']; ?></div>
                   <?php } ?>
@@ -60,7 +60,7 @@
               </td>
               <td>
                 <div class="<?php echo isset($this->errors['combination'][$row]['price']) ? 'has-error' : ''; ?>">
-                  <input type="number" min="0" step="any" pattern="[0-9]+([\.|,][0-9]+)?" class="form-control" name="product[combination][<?php echo $row; ?>][price]" value="<?php echo intval($combination['price']); ?>">
+                  <input class="form-control" name="product[combination][<?php echo $row; ?>][price]" value="<?php echo isset($combination['price']) ? $this->escape($combination['price']) : 0; ?>">
                   <?php if (isset($this->errors['combination'][$row]['price'])) { ?>
                   <div class="help-block"><?php echo $this->errors['combination'][$row]['price']; ?></div>
                   <?php } ?>
@@ -68,7 +68,7 @@
               </td>
               <td>
                 <div class="<?php echo isset($this->errors['combination'][$row]['stock']) ? 'has-error' : ''; ?>">
-                  <input type="number" min="0" step="1" pattern="\d*" maxlength="6" class="form-control" name="product[combination][<?php echo $row; ?>][stock]" value="<?php echo $combination['stock']; ?>">
+                  <input class="form-control" name="product[combination][<?php echo $row; ?>][stock]" value="<?php echo $combination['stock']; ?>">
                   <?php if (isset($this->errors['combination'][$row]['stock'])) { ?>
                   <div class="help-block"><?php echo $this->errors['combination'][$row]['stock']; ?></div>
                   <?php } ?>
@@ -85,8 +85,15 @@
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][file_id]" value="<?php echo $combination['file_id']; ?>">
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][path]" value="<?php echo $this->escape($combination['path']); ?>">
               </td>
-              <td><a href="#" class="btn btn-danger"><i class="fa fa-minus"></i></a></td>
+              <td><a href="#" class="btn btn-danger remove-option-combination"><i class="fa fa-trash"></i></a></td>
             </tr>
+            <?php if(isset($this->errors['combination'][$row]['exists'])) { ?>
+            <tr class="bg-danger">
+              <td colspan="<?php echo (count($fields['option']) + 5); ?>">
+              <?php echo $this->escape($this->errors['combination'][$row]['exists']); ?>
+              </td>
+            </tr>
+            <?php } ?>
             <?php } ?>
             <?php } ?>
           </tbody>
@@ -107,7 +114,7 @@
               <td><input class="form-control" value=""></td>
               <td><input class="form-control" value=""></td>
               <td><a href="#" class="btn btn-default select-image"><i class="fa fa-image"></i></a></td>
-              <td><a href="#" class="btn btn-default"><i class="fa fa-plus"></i></a></td>
+              <td><a href="#" class="btn btn-default add-option-combination"><i class="fa fa-plus"></i></a></td>
             </tr>
           </tfoot>
         </table>

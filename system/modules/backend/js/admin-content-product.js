@@ -56,7 +56,7 @@ $(function () {
 
     /**************************************** Product class fields ****************************************/
 
-    $('.fields tbody').sortable({
+    $('#product-class-fields tbody').sortable({
         handle: '.handle',
         stop: function () {
             $('input[name$="[weight]"]').each(function (i) {
@@ -68,7 +68,7 @@ $(function () {
         }
     });
 
-    $(document).on('click', '.fields tbody input[name$="[remove]"]', function () {
+    $(document).on('click', '#product-class-fields input[name$="[remove]"]', function () {
         $(this).closest('tr').toggleClass('danger', this.checked);
     });
 
@@ -84,18 +84,18 @@ $(function () {
     });
 
     // Refresh product class fields
-    $(document).on('click', 'form#edit-product .refresh-fields', function () {
-        GplCart.theme.productLoadFields($('form#edit-product [name$="[product_class_id]"]').val(), $(this).attr('data-field-type'));
+    $(document).on('click', '.refresh-fields', function () {
+        GplCart.theme.productLoadFields($('[name$="[product_class_id]"]').val(), $(this).attr('data-field-type'));
         return false;
     });
 
     // Add new option combination
-    $(document).on('click', 'form#edit-product #option-form-wrapper table tfoot .fa-plus', function () {
+    $(document).on('click', '#option-form-wrapper .add-option-combination', function () {
 
-        var count = $('form#edit-product #option-form-wrapper table tbody tr').size() + 1;
+        var count = $('#option-form-wrapper tbody tr').size() + 1;
         var html = '<tr>';
 
-        $('form#edit-product #option-form-wrapper table tfoot select').each(function () {
+        $('#option-form-wrapper tfoot select').each(function () {
             html += '<td class="active">';
             html += '<select data-live-search="true" class="form-control selectpicker" name="product[combination][' + count + '][fields][' + $(this).attr('data-field-id') + ']">';
             html += $(this).html();
@@ -119,23 +119,23 @@ $(function () {
         html += '<input type="hidden" name="product[combination][' + count + '][thumb]" value="">';
         html += '</td>';
         html += '<td>';
-        html += '<a href="#" onclick="return false;" class="btn btn-danger btn-default"><i class="fa fa-minus"></i></a>';
+        html += '<a href="#" onclick="return false;" class="btn btn-danger btn-default remove-option-combination"><i class="fa fa-trash"></i></a>';
         html += '</td>';
         html += '</tr>';
 
-        $('form#edit-product #option-form-wrapper table tbody').append(html);
+        $('#option-form-wrapper table tbody').append(html);
         $('.selectpicker').selectpicker();
         return false;
     });
 
     // Delete option combination
-    $(document).on('click', 'form#edit-product #option-form-wrapper table tbody .fa-minus', function () {
+    $(document).on('click', '#option-form-wrapper .remove-option-combination', function () {
         $(this).closest('tr').remove();
         return false;
     });
 
     // Select image for option combination
-    $(document).on('click', 'form#edit-product #option-form-wrapper .select-image', function () {
+    $(document).on('click', '#option-form-wrapper .select-image', function () {
 
         if ($(this).find('img').length) {
             $(this).html('<i class="fa fa-image"></i>');
@@ -146,7 +146,7 @@ $(function () {
         var images = 0;
 
         var html = '<div class="row">';
-        $('form#edit-product .image-container').find('.thumb').each(function () {
+        $('.image-container').find('.thumb').each(function () {
 
             var src = $(this).find('img').attr('src');
             var path = $(this).find('input[name$="[path]"]').val();
@@ -162,34 +162,44 @@ $(function () {
 
         html += '</div>';
 
-        if (images) {
-            GplCart.theme.modal(html, 'select-image-modal');
-            $('form#edit-product #select-image-modal').attr('data-active-row', $(this).closest('tr').index()); // remember clicked row pos
-            $('form#edit-product #select-image-modal img').each(function () {
-                if ($('form#edit-product #option-form-wrapper tbody input[name$="[path]"][value="' + $(this).attr('data-file-path') + '"]').size()) {
-                    $(this).css('opacity', 0.5);
-                }
-            });
+        if (images < 1) {
+            return false;
         }
+
+        GplCart.theme.modal(html, 'select-image-modal');
+
+        var position = $(this).closest('tr').index();
+        $('#select-image-modal').attr('data-active-row', position); // remember clicked row pos
+
+        $('#select-image-modal img').each(function () {
+            var path = $(this).attr('data-file-path');
+            if ($('#option-form-wrapper tbody input[name$="[path]"][value="' + path + '"]').size()) {
+                $(this).css('opacity', 0.5);
+            }
+        });
+
         return false;
     });
 
     // Set selected image
-    $(document).on('click', 'form#edit-product img.combination-image', function () {
+    $(document).on('click', 'img.combination-image', function () {
 
         var src = $(this).attr('src');
         var path = $(this).attr('data-file-path');
-        var pos = $(this).closest('#select-image-modal').attr('data-active-row');
+        var position = $(this).closest('#select-image-modal').attr('data-active-row');
+        var element = $('#option-form-wrapper tbody tr').eq(position).find('.select-image');
+        var html = '<img style="height:20px; width:20px;" src="' + src + '" class="img-responsive combination-image">';
 
-        var el = $('form#edit-product #option-form-wrapper tbody tr').eq(pos).find('.select-image');
-        el.html('<img style="height:20px;width:20px;" src="' + src + '" class="img-responsive combination-image">');
-        el.siblings('input[name$="[path]"]').val(path);
-        el.siblings('input[name$="[thumb]"]').val(src);
+        element.html(html);
+        element.siblings('input[name$="[path]"]').val(path);
+        element.siblings('input[name$="[thumb]"]').val(src);
 
-        $('form#edit-product #select-image-modal').modal('hide');
+        $('#select-image-modal').modal('hide');
     });
 
-    $('form#edit-product .related-product').autocomplete({
+    /*************************** Related products ******************************/
+
+    $('.related-product').autocomplete({
         minLength: 2,
         source: function (request, response) {
             $.post(GplCart.settings.base + 'ajax',
@@ -217,8 +227,8 @@ $(function () {
             html += '</span></span>';
             html += '</span>';
 
-            $('form#edit-product #related-products').append(html);
-            $('form#edit-product .related-product').val('');
+            $('#related-products').append(html);
+            $('.related-product').val('');
 
             return false;
         }
@@ -228,7 +238,7 @@ $(function () {
     };
 
     // Remove related product item
-    $(document).on('click', 'form#edit-product .related-product-item .remove', function () {
+    $(document).on('click', '.related-product-item .remove', function () {
         $(this).closest('.related-product-item').remove();
     });
 

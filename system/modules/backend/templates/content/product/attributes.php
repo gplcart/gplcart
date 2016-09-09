@@ -7,19 +7,12 @@
         <?php echo $this->text('Attributes'); ?>
         </h4>
       </div>
-      <div class="panel-body">
-        <table class="table table-striped table-responsive attribute">
-          <thead>
-            <tr>
-              <th><?php echo $this->text('Field name'); ?></th>
-              <th><?php echo $this->text('Field value'); ?></th>
-              <th><?php echo $this->text('Action'); ?></th>
-            </tr>
-          </thead>
+      <div class="panel-body table-responsive">
+        <table class="table table-striped attribute">
           <tbody>
             <?php foreach ($fields['attribute'] as $field_id => $attribute) { ?>
             <tr>
-              <td>
+              <td class="middle">
                 <?php if (!empty($attribute['required'])) { ?>
                 <span class="text-danger">*</span>
                 <?php } ?>
