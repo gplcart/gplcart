@@ -174,7 +174,7 @@ class Product extends BackendController
             $this->response->json($response);
         }
     }
-    
+
     /**
      * Get list of categories keyed by type
      * @param integer $store_id
@@ -395,17 +395,8 @@ class Product extends BackendController
             }
         }
 
-        if (!empty($product['images'])) {
-            foreach ($product['images'] as &$image) {
-                $image['translation'] = $this->image->getTranslation($image['file_id']);
-            }
-        }
-
         $product['alias'] = $this->alias->get('product_id', $product_id);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
-
-        $user = $this->user->get($product['user_id']);
-        $product['author'] = $user['email'];
 
         return $product;
     }
@@ -435,6 +426,14 @@ class Product extends BackendController
      */
     protected function setDataEditProduct()
     {
+
+        $user_id = $this->getData('product.user_id');
+
+        if (isset($user_id)) {
+            $user = $this->user->get($user_id);
+            $this->setData('product.author', $user['email']);
+        }
+
         $output_field_form = false;
         $product_class_id = $this->getData('product.product_class_id', 0);
         $get_product_class_id = $this->request->get('product_class_id');
@@ -486,10 +485,10 @@ class Product extends BackendController
             $attached = $this->render('common/image/attache', $data);
             $this->setData('attached_images', $attached);
         }
-        
+
         $store_id = $this->getData('store_id');
         $categories = $this->getListCategoryProduct($store_id);
-        
+
         $this->setData('categories', $categories);
     }
 
@@ -507,7 +506,7 @@ class Product extends BackendController
             return;
         }
 
-        $this->setSubmitted('product', null, false);
+        $this->setSubmitted('product', null, 'raw');
 
         $this->validateProduct($product);
 
@@ -580,9 +579,12 @@ class Product extends BackendController
     protected function validateProduct(array $product = array())
     {
         $this->setSubmittedBool('status');
-        
-        if(isset($product['product_id'])){
-           $this->setSubmitted('product_id', $product['product_id']); 
+
+        if (isset($product['product_id'])) {
+            $this->setSubmitted('user_id', $product['user_id']);
+            $this->setSubmitted('created', $product['created']);
+            $this->setSubmitted('modified', $product['modified']);
+            $this->setSubmitted('product_id', $product['product_id']);
         }
 
         $this->addValidator('price', array(

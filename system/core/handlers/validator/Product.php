@@ -184,7 +184,7 @@ class Product
             }
 
             $combination_id = $this->product->getCombinationId($combination['fields']);
-            
+
             if (isset($this->processed_combinations[$combination_id])) {
                 $error = $this->language->text('Option combination already defined');
                 $errors[$index]['exists'] = $error;
@@ -209,7 +209,7 @@ class Product
             return array('result' => array(
                     'stock' => $stock, 'combination' => $combinations));
         }
-        
+
         return $errors;
     }
 

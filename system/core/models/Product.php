@@ -176,8 +176,9 @@ class Product extends Model
         if (empty($product_id)) {
             return false;
         }
-
-        $data += array('product_id' => $product_id, 'modified' => GC_TIME);
+        
+        $data['modified'] = GC_TIME;
+        $data['product_id'] = $product_id;
 
         if (isset($data['price'])) {
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
@@ -196,7 +197,7 @@ class Product extends Model
         $updated += (int) $this->setTranslation($data);
         $updated += (int) $this->setImages($data);
         $updated += (int) $this->setAlias($data);
-        
+
         $updated += (int) $this->setCombinations($data);
         $updated += (int) $this->setAttributes($data);
         $updated += (int) $this->setRelated($data);
@@ -433,7 +434,9 @@ class Product extends Model
      */
     public function getTranslation($product_id)
     {
-        $sth = $this->db->prepare('SELECT * FROM product_translation WHERE product_id=?');
+        $sql = 'SELECT * FROM product_translation WHERE product_id=?';
+
+        $sth = $this->db->prepare($sql);
         $sth->execute(array($product_id));
 
         return $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -448,12 +451,14 @@ class Product extends Model
     {
         $images = $this->image->getList('product_id', $product['product_id']);
 
-        foreach ($images as &$image) {
+        foreach($images as &$image){
+            
             $translations = $this->image->getTranslation($image['file_id']);
-            foreach ($translations as $translation) {
+            
+            foreach($translations as $translation){
                 $image['translation'][$translation['language']] = $translation;
             }
-
+            
             if (isset($language) && isset($image['translation'][$language])) {
                 $image = $image['translation'][$language] + $image;
             }
@@ -607,8 +612,7 @@ class Product extends Model
         }
 
         $conditions = array('product_id' => $product_id);
-        $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
-        
+
         $this->db->delete('cart', $conditions);
         $this->db->delete('review', $conditions);
         $this->db->delete('rating', $conditions);
@@ -619,11 +623,13 @@ class Product extends Model
         $this->db->delete('product_field', $conditions);
         $this->db->delete('option_combination', $conditions);
         $this->db->delete('product_translation', $conditions);
-        
+
+        $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
+
         $this->db->delete('file', $conditions2);
         $this->db->delete('alias', $conditions2);
         $this->db->delete('search_index', $conditions2);
-        
+
         $sql = 'DELETE ci'
                 . ' FROM collection_item ci'
                 . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
@@ -799,7 +805,7 @@ class Product extends Model
         $price = $product['price'];
         $currency_code = $product['currency'];
 
-        foreach ($rules as $id => $rule) {
+        foreach ($rules as $rule) {
             $this->pricerule->calculateComponents($price, $components, $currency_code, $rule);
         }
 
@@ -1073,7 +1079,7 @@ class Product extends Model
 
         if ($delete) {
             $this->deleteField('option', $product_id);
-            $this->deleteCombination(false, $product_id);
+            $this->deleteCombination($product_id);
         }
 
         if (isset($data['store_id']) && $delete) {
@@ -1161,54 +1167,35 @@ class Product extends Model
     /**
      * Deletes product translation(s)
      * @param integer $product_id
-     * @param null|string $language
      * @return boolean
      */
-    protected function deleteTranslation($product_id, $language = null)
+    protected function deleteTranslation($product_id)
     {
-        $where = array('product_id' => (int) $product_id);
-
-        if (isset($language)) {
-            $where['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('product_translation', $where);
+        $conditions = array('product_id' => $product_id);
+        return (bool) $this->db->delete('product_translation', $conditions);
     }
 
     /**
-     * Deletes product field either by an ID or type
-     * @param string|integer $field_id
+     * Deletes product field(s)
+     * @param string $type
      * @param integer $product_id
      * @return boolean
      */
-    protected function deleteField($field_id, $product_id)
+    protected function deleteField($type, $product_id)
     {
-        if (is_numeric($field_id)) {
-            $where['field_id'] = (int) $field_id;
-        } elseif (is_string($field_id)) {
-            $where = array('type' => $field_id, 'product_id' => (int) $product_id);
-        } else {
-            $where = array('product_id' => (int) $product_id);
-        }
-
-        return (bool) $this->db->delete('product_field', $where);
+        $conditions = array('type' => $type, 'product_id' => $product_id);
+        return (bool) $this->db->delete('product_field', $conditions);
     }
 
     /**
-     * Deletes option combination(s) either by combination or product ID
-     * @param string $combination_id
-     * @param integer|null $product_id
+     * Deletes option combination(s) by product ID
+     * @param integer $product_id
      * @return boolean
      */
-    protected function deleteCombination($combination_id, $product_id = null)
+    protected function deleteCombination($product_id)
     {
-        if (isset($product_id)) {
-            $where = array('product_id' => (int) $product_id);
-        } else {
-            $where = array('combination_id' => $combination_id);
-        }
-
-        $this->db->delete('option_combination', $where);
+        $conditions = array('product_id' => $product_id);
+        $this->db->delete('option_combination', $conditions);
         return true;
     }
 

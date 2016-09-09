@@ -527,7 +527,7 @@ class Category extends Model
             $conditions = array('category_id' => (int) $category_id);
             $updated += (int) $this->db->update('category', $values, $conditions);
         }
-
+        
         $data['category_id'] = $category_id;
 
         $updated += (int) $this->setTranslation($data);

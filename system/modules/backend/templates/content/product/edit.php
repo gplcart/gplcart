@@ -258,7 +258,7 @@
           </label>
           <input class="hide" type="file" id="fileinput" data-entity-type="product" name="file" multiple="multiple" accept="image/*">
           <div class="help-block">
-          <?php echo $this->text('Upload one or more images to be displayed on the product. The first image will be main'); ?>
+          <?php echo $this->text('Upload one or more images to be displayed on the product page and catalog. The first image will be main'); ?>
           </div>
         </div>
       </div>
