@@ -39,18 +39,13 @@ class Review extends Model
             return false;
         }
 
-        $values = array(
-            'text' => (string) $data['text'],
-            'status' => !empty($data['status']),
-            'user_id' => (int) $data['user_id'],
-            'product_id' => (int) $data['product_id'],
-            'created' => empty($data['created']) ? GC_TIME : (int) $data['created'],
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data'])
-        );
+        $data += array('created' => GC_TIME);
+        $values = $this->prepareDbInsert('review', $data);
 
-        $review_id = $this->db->insert('review', $values);
-        $this->hook->fire('add.review.after', $data, $review_id);
-        return $review_id;
+        $data['review_id'] = $this->db->insert('review', $values);
+
+        $this->hook->fire('add.review.after', $data);
+        return $data['review_id'];
     }
 
     /**
@@ -62,8 +57,8 @@ class Review extends Model
     {
         $this->hook->fire('get.review.before', $review_id);
 
-        $sth = $this->db->prepare('SELECT * FROM review WHERE review_id=:review_id');
-        $sth->execute(array(':review_id' => (int) $review_id));
+        $sth = $this->db->prepare('SELECT * FROM review WHERE review_id=?');
+        $sth->execute(array($review_id));
 
         $review = $sth->fetch(PDO::FETCH_ASSOC);
 
@@ -88,14 +83,16 @@ class Review extends Model
         if (empty($review_id)) {
             return false;
         }
-        
-        $data += array('modified' => GC_TIME);
+
+        $data['modified'] = GC_TIME;
+
         $values = $this->filterDbValues('review', $data);
 
         $result = false;
 
         if (!empty($values)) {
-            $result = $this->db->update('review', $values, array('review_id' => (int) $review_id));
+            $conditions = array('review_id' => $review_id);
+            $result = $this->db->update('review', $values, $conditions);
         }
 
         $this->hook->fire('update.review.after', $review_id, $data, $result);
@@ -117,6 +114,7 @@ class Review extends Model
 
         $sth = $this->db->prepare("DELETE FROM review WHERE FIND_IN_SET(review_id, :review_id)");
         $sth->execute(array(':review_id' => implode(',', (array) $review_id)));
+
         $this->hook->fire('delete.review.after', $review_id);
         return true;
     }
@@ -128,16 +126,15 @@ class Review extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT r.*, u.name, u.email ';
+        $sql = 'SELECT r.*, u.name, u.email';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(r.review_id) ';
+            $sql = 'SELECT COUNT(r.review_id)';
         }
 
-        $sql .= '
-        FROM review r
-        LEFT JOIN user u ON(r.user_id = u.user_id)
-        WHERE r.review_id > 0';
+        $sql .= ' FROM review r'
+                . ' LEFT JOIN user u ON(r.user_id = u.user_id)'
+                . ' WHERE r.review_id > 0';
 
         $where = array();
 
@@ -176,12 +173,11 @@ class Review extends Model
             $where[] = (int) $data['user_status'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc')))) {
-            $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
 
-            if (in_array($data['sort'], $allowed_sort)) {
-                $sql .= " ORDER BY r.{$data['sort']} {$data['order']}";
-            }
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY r.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY r.created DESC";
         }
@@ -194,7 +190,7 @@ class Review extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
         $list = array();
