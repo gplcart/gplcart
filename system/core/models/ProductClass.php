@@ -82,15 +82,11 @@ class ProductClass extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'title':
-                    $sql .= " ORDER BY title {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status {$data['order']}";
-                    break;
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'status');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY title ASC";
         }
@@ -103,11 +99,13 @@ class ProductClass extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+
         $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $class) {
+        foreach ($results as $class) {
             $list[$class['product_class_id']] = $class;
         }
 
@@ -124,8 +122,10 @@ class ProductClass extends Model
     {
         $this->hook->fire('get.product.class.before', $product_class_id);
 
-        $sth = $this->db->prepare('SELECT * FROM product_class WHERE product_class_id=:product_class_id');
-        $sth->execute(array(':product_class_id' => (int) $product_class_id));
+        $sql = 'SELECT * FROM product_class WHERE product_class_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($product_class_id));
         $product_class = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->hook->fire('get.product.class.after', $product_class_id, $product_class);
@@ -145,13 +145,11 @@ class ProductClass extends Model
             return false;
         }
 
-        $class_id = $this->db->insert('product_class', array(
-            'status' => (int) $data['status'],
-            'title' => $data['title'],
-        ));
+        $values = $this->prepareDbInsert('product_class', $data);
+        $data['product_class_id'] = $this->db->insert('product_class', $values);
 
-        $this->hook->fire('add.product.class.after', $data, $class_id);
-        return $class_id;
+        $this->hook->fire('add.product.class.after', $data);
+        return $data['product_class_id'];
     }
 
     /**
@@ -171,7 +169,9 @@ class ProductClass extends Model
             return false;
         }
 
-        $result = $this->db->delete('product_class', array('product_class_id' => (int) $product_class_id));
+        $conditions = array('product_class_id' => $product_class_id);
+        $result = $this->db->delete('product_class', $conditions);
+
         $this->hook->fire('delete.product.class.after', $product_class_id, $result);
         return (bool) $result;
     }
@@ -183,9 +183,13 @@ class ProductClass extends Model
      */
     public function canDelete($product_class_id)
     {
-        $sth = $this->db->prepare('SELECT product_id FROM product WHERE product_class_id=:product_class_id');
-        $sth->execute(array(':product_class_id' => $product_class_id));
-        return !$sth->fetchColumn();
+        $sql = 'SELECT product_id FROM product WHERE product_class_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($product_class_id));
+
+        $result = $sth->fetchColumn();
+        return empty($result);
     }
 
     /**
@@ -202,19 +206,15 @@ class ProductClass extends Model
             return false;
         }
 
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
+        $values = $this->prepareDbInsert('product_class', $data);
+
+        $result = false;
+
+        if (!empty($values)) {
+            $conditions = array('product_class_id' => (int) $product_class_id);
+            $result = $this->db->update('product_class', $values, $conditions);
         }
 
-        if (!empty($data['title'])) {
-            $values['title'] = $data['title'];
-        }
-
-        if (empty($values)) {
-            return false;
-        }
-
-        $result = $this->db->update('product_class', $values, array('product_class_id' => (int) $product_class_id));
         $this->hook->fire('update.product.class.after', $product_class_id, $data, $result);
         return (bool) $result;
     }
@@ -232,42 +232,30 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = array(
-            'product_class_id' => (int) $data['product_class_id'],
-            'field_id' => (int) $data['field_id'],
-            'required' => !empty($data['required']),
-            'multiple' => !empty($data['multiple']),
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
-        );
+        $values = $this->prepareDbInsert('product_class_field', $data);
+        $data['product_class_field_id'] = $this->db->insert('product_class_field', $values);
 
-        $id = $this->db->insert('product_class_field', $values);
-        $this->hook->fire('add.product.class.field.after', $data, $id);
-        return $id;
+        $this->hook->fire('add.product.class.field.after', $data);
+        return $data['product_class_field_id'];
     }
 
     /**
-     * Deletes a field from a given product class
-     * @param integer $product_class_field_id
+     * Deletes product class fields
      * @param integer|null $product_class_id
      * @return boolean
      */
-    public function deleteField($product_class_field_id,
-            $product_class_id = null)
+    public function deleteField($product_class_id)
     {
-        $this->hook->fire('delete.product.class.field.before', $product_class_field_id, $product_class_id);
+        $this->hook->fire('delete.product.class.field.before', $product_class_id);
 
-        if (empty($product_class_field_id) && empty($product_class_id)) {
+        if (empty($product_class_id)) {
             return false;
         }
 
-        $where = array('product_class_field_id' => (int) $product_class_field_id);
+        $conditions = array('product_class_id' => (int) $product_class_id);
+        $result = $this->db->delete('product_class_field', $conditions);
 
-        if ($product_class_id) {
-            $where = array('product_class_id' => (int) $product_class_id);
-        }
-
-        $result = $this->db->delete('product_class_field', $where);
-        $this->hook->fire('delete.product.class.field.after', $product_class_field_id, $product_class_id, $result);
+        $this->hook->fire('delete.product.class.field.after', $product_class_id, $result);
         return (bool) $result;
     }
 
@@ -279,20 +267,20 @@ class ProductClass extends Model
     public function getFieldData($product_class_id)
     {
         $return = array();
-        $field_list = $this->field->getList();
+        $fields = $this->field->getList();
 
-        foreach ($this->getFields($product_class_id) as $class_field) {
-            if (!isset($field_list[$class_field['field_id']])) {
+        foreach ($this->getFields($product_class_id) as $field) {
+            if (!isset($fields[$field['field_id']])) {
                 continue;
             }
 
-            $field_data = array(
+            $data = array(
                 'values' => $this->field_value->getList(array(
-                    'field_id' => $class_field['field_id'])));
+                    'field_id' => $field['field_id'])));
 
-            $field_data += $field_list[$class_field['field_id']];
-            $field_data += $class_field;
-            $return[$field_list[$class_field['field_id']]['type']][$class_field['field_id']] = $field_data;
+            $data += $fields[$field['field_id']];
+            $data += $field;
+            $return[$fields[$field['field_id']]['type']][$field['field_id']] = $data;
         }
 
         return $return;
@@ -305,18 +293,17 @@ class ProductClass extends Model
      */
     public function getFields($product_class_id)
     {
-        $sql = '
-            SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title
-            FROM product_class_field pcf
-            LEFT JOIN field f ON(pcf.field_id = f.field_id)
-            LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=:language)
-            WHERE product_class_id=:product_class_id
-            ORDER BY weight ASC';
+        $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title'
+                . ' FROM product_class_field pcf'
+                . ' LEFT JOIN field f ON(pcf.field_id = f.field_id)'
+                . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=:language)'
+                . ' WHERE product_class_id=:product_class_id'
+                . ' ORDER BY weight ASC';
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(
-            ':product_class_id' => (int) $product_class_id,
-            ':language' => $this->language->current()
+            ':language' => $this->language->current(),
+            ':product_class_id' => (int) $product_class_id
         ));
 
         $list = array();

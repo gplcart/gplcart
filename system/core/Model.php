@@ -521,8 +521,8 @@ class Model
                 'product_class_field_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
                 'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
                 'field_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-                'required' => array('type' => 'int', 'length' => 1, 'not_null' => true),
-                'multiple' => array('type' => 'int', 'length' => 1, 'not_null' => true),
+                'required' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+                'multiple' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
                 'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
             )
         );

@@ -291,13 +291,6 @@ class Field extends Model
             return false;
         }
 
-        $conditions = array('field_id' => (int) $field_id);
-
-        $this->db->delete('field', $conditions);
-        $this->db->delete('field_value', $conditions);
-        $this->db->delete('field_translation', $conditions);
-        $this->db->delete('product_class_field', $conditions);
-
         $sql = 'DELETE fvt'
                 . ' FROM field_value_translation AS fvt'
                 . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
@@ -308,6 +301,13 @@ class Field extends Model
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array($field_id));
+
+        $conditions = array('field_id' => (int) $field_id);
+
+        $this->db->delete('field', $conditions);
+        $this->db->delete('field_value', $conditions);
+        $this->db->delete('field_translation', $conditions);
+        $this->db->delete('product_class_field', $conditions);
 
         $this->hook->fire('delete.field.after', $field_id);
         return true;

@@ -388,7 +388,7 @@ class ProductClass extends BackendController
         $fields = $this->setSubmitted('fields');
         $product_class_id = $product_class['product_class_id'];
 
-        $this->product_class->deleteField(false, $product_class_id);
+        $this->product_class->deleteField($product_class_id);
 
         foreach ($fields as $field_id => $field) {
 
