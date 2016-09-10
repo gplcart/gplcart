@@ -40,9 +40,7 @@ class Review extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->db->prepareInsert('review', $data);
-
-        $data['review_id'] = $this->db->insert('review', $values);
+        $data['review_id'] = $this->db->insert('review', $data);
 
         $this->hook->fire('add.review.after', $data);
         return $data['review_id'];
@@ -86,14 +84,8 @@ class Review extends Model
 
         $data['modified'] = GC_TIME;
 
-        $values = $this->db->filterValues('review', $data);
-
-        $result = false;
-
-        if (!empty($values)) {
-            $conditions = array('review_id' => $review_id);
-            $result = $this->db->update('review', $values, $conditions);
-        }
+        $conditions = array('review_id' => $review_id);
+        $result = $this->db->update('review', $data, $conditions);
 
         $this->hook->fire('update.review.after', $review_id, $data, $result);
         return (bool) $result;

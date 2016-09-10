@@ -82,9 +82,7 @@ class Address extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->db->prepareInsert('address', $data);
-
-        $data['address_id'] = $this->db->insert('address', $values);
+        $data['address_id'] = $this->db->insert('address', $data);
 
         $this->hook->fire('add.address.after', $data);
         return $data['address_id'];
@@ -328,14 +326,8 @@ class Address extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('address', $data);
-
-        if (empty($values)) {
-            return false;
-        }
-
         $conditions = array('address_id' => $address_id);
-        $result = $this->db->update('address', $values, $conditions);
+        $result = $this->db->update('address', $data, $conditions);
 
         $this->hook->fire('update.address.after', $address_id, $data, $result);
         return (bool) $result;

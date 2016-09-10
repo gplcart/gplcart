@@ -281,8 +281,7 @@ class Store extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->db->prepareInsert('store', $data);
-        $data['store_id'] = $this->db->insert('store', $values);
+        $data['store_id'] = $this->db->insert('store', $data);
 
         $this->hook->fire('add.store.after', $data);
         return $data['store_id'];
@@ -329,14 +328,9 @@ class Store extends Model
         }
 
         $data['modified'] = GC_TIME;
-        $values = $this->db->filterValues('store', $data);
+        $conditions = array('store_id' => $store_id);
 
-        $result = false;
-
-        if (!empty($values)) {
-            $conditions = array('store_id' => (int) $store_id);
-            $result = $this->db->update('store', $values, $conditions);
-        }
+        $result = $this->db->update('store', $data, $conditions);
 
         $this->hook->fire('update.store.after', $store_id, $data, $result);
         return (bool) $result;

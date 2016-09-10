@@ -18,7 +18,6 @@ use core\models\Mail as ModelsMail;
 use core\models\Address as ModelsAddress;
 use core\models\UserRole as ModelsUserRole;
 use core\models\Language as ModelsLanguage;
-
 use core\exceptions\UserAccessException;
 
 /**
@@ -138,12 +137,11 @@ class User extends Model
             return false;
         }
 
-        if (!empty($data['password'])) { // not isset()!
+        if (!empty($data['password'])) {
             $data['hash'] = Tool::hash($data['password']);
         }
 
         $data += array('modified' => GC_TIME);
-        $values = $this->db->filterValues('user', $data);
 
         if (isset($data['addresses'])) {
             foreach ((array) $data['addresses'] as $address) {
@@ -151,12 +149,8 @@ class User extends Model
             }
         }
 
-        $result = false;
-
-        if (!empty($values)) {
-            $result = $this->db->update('user', $values, array('user_id' => $user_id));
-            $this->hook->fire('update.user.after', $user_id, $values, $result);
-        }
+        $result = $this->db->update('user', $data, array('user_id' => $user_id));
+        $this->hook->fire('update.user.after', $user_id, $data, $result);
 
         return (bool) $result;
     }

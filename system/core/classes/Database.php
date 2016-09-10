@@ -55,6 +55,27 @@ class Database extends PDO
     }
     
     /**
+     * 
+     */
+    public function select(){
+        
+    }
+    
+    /**
+     * 
+     */
+    protected function asArray(){
+        
+    }
+    
+    /**
+     * 
+     */
+    protected function asArrays(){
+        
+    }
+    
+    /**
      * Filters an array of data according to existing columns for the given table
      * @param string $table
      * @param array $data
@@ -141,10 +162,18 @@ class Database extends PDO
      * Performs an INSERT query
      * @param string $table
      * @param array $data
-     * @return integer
+     * @return mixed
      */
-    public function insert($table, array $data)
+    public function insert($table, array $data, $prepare = true)
     {
+        if($prepare){
+            $data = $this->prepareInsert($table, $data);
+        }
+        
+        if(empty($data)){
+            return false;
+        }
+        
         ksort($data);
 
         $names = implode(',', array_keys($data));
@@ -166,10 +195,18 @@ class Database extends PDO
      * @param string $table
      * @param array $data
      * @param array $conditions
-     * @return integer
+     * @return mixed
      */
-    public function update($table, array $data, array $conditions)
+    public function update($table, array $data, array $conditions, $filter = true)
     {
+        if($filter){
+            $data = $this->filterValues($table, $data);
+        }
+        
+        if(empty($data)){
+            return false;
+        }
+        
         ksort($data);
 
         $fields = '';

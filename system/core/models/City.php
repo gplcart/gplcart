@@ -114,8 +114,7 @@ class City extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('city', $data);
-        $city_id = $this->db->insert('city', $values);
+        $city_id = $this->db->insert('city', $data);
 
         $this->hook->fire('add.city.after', $data, $city_id);
         return $city_id;
@@ -186,14 +185,8 @@ class City extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('city', $data);
-
-        $result = false;
-
-        if (!empty($values)) {
-            $conditions = array('city_id' => $city_id);
-            $result = $this->db->update('city', $values, $conditions);
-        }
+        $conditions = array('city_id' => $city_id);
+        $result = $this->db->update('city', $data, $conditions);
 
         $this->hook->fire('update.city.after', $city_id, $data, $result);
         return (bool) $result;

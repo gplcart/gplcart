@@ -145,8 +145,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('product_class', $data);
-        $data['product_class_id'] = $this->db->insert('product_class', $values);
+        $data['product_class_id'] = $this->db->insert('product_class', $data);
 
         $this->hook->fire('add.product.class.after', $data);
         return $data['product_class_id'];
@@ -206,14 +205,8 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('product_class', $data);
-
-        $result = false;
-
-        if (!empty($values)) {
-            $conditions = array('product_class_id' => (int) $product_class_id);
-            $result = $this->db->update('product_class', $values, $conditions);
-        }
+        $conditions = array('product_class_id' => (int) $product_class_id);
+        $result = $this->db->update('product_class', $data, $conditions);
 
         $this->hook->fire('update.product.class.after', $product_class_id, $data, $result);
         return (bool) $result;
@@ -232,8 +225,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('product_class_field', $data);
-        $data['product_class_field_id'] = $this->db->insert('product_class_field', $values);
+        $data['product_class_field_id'] = $this->db->insert('product_class_field', $data);
 
         $this->hook->fire('add.product.class.field.after', $data);
         return $data['product_class_field_id'];

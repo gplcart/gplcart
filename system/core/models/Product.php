@@ -126,9 +126,7 @@ class Product extends Model
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        $values = $this->db->prepareInsert('product', $data);
-
-        $data['product_id'] = $this->db->insert('product', $values);
+        $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslation($data, false);
         $this->setImages($data);
@@ -176,7 +174,7 @@ class Product extends Model
         if (empty($product_id)) {
             return false;
         }
-        
+
         $data['modified'] = GC_TIME;
         $data['product_id'] = $product_id;
 
@@ -184,20 +182,13 @@ class Product extends Model
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        $values = $this->db->filterValues('product', $data);
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('product_id' => (int) $product_id);
-            $updated += (int) $this->db->update('product', $values, $conditions);
-        }
+        $conditions = array('product_id' => $product_id);
+        $updated = (int) $this->db->update('product', $data, $conditions);
 
         $updated += (int) $this->setSku($data);
         $updated += (int) $this->setTranslation($data);
         $updated += (int) $this->setImages($data);
         $updated += (int) $this->setAlias($data);
-
         $updated += (int) $this->setCombinations($data);
         $updated += (int) $this->setAttributes($data);
         $updated += (int) $this->setRelated($data);
@@ -255,8 +246,7 @@ class Product extends Model
             'product_id' => $product_id
         );
 
-        $values = $this->db->prepareInsert('product_translation', $translation);
-        return (bool) $this->db->insert('product_translation', $values);
+        return (bool) $this->db->insert('product_translation', $translation);
     }
 
     /**
@@ -308,11 +298,10 @@ class Product extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('product_field', $data);
-        $id = $this->db->insert('product_field', $values);
+        $data['product_field_id'] = $this->db->insert('product_field', $data);
 
-        $this->hook->fire('add.product.field.after', $data, $id);
-        return $id;
+        $this->hook->fire('add.product.field.after', $data);
+        return $data['product_field_id'];
     }
 
     /**
@@ -335,10 +324,8 @@ class Product extends Model
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        $values = $this->db->prepareInsert('option_combination', $data);
-
-        $id = $this->db->insert('option_combination', $values);
-        $this->hook->fire('add.option.combination.after', $data, $id);
+        $this->db->insert('option_combination', $data);
+        $this->hook->fire('add.option.combination.after', $data);
 
         return $data['combination_id'];
     }
@@ -451,14 +438,14 @@ class Product extends Model
     {
         $images = $this->image->getList('product_id', $product['product_id']);
 
-        foreach($images as &$image){
-            
+        foreach ($images as &$image) {
+
             $translations = $this->image->getTranslation($image['file_id']);
-            
-            foreach($translations as $translation){
+
+            foreach ($translations as $translation) {
                 $image['translation'][$translation['language']] = $translation;
             }
-            
+
             if (isset($language) && isset($image['translation'][$language])) {
                 $image = $image['translation'][$language] + $image;
             }

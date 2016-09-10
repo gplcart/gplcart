@@ -167,13 +167,8 @@ class Transaction extends Model
             return false;
         }
 
-        $result = false;
-        $values = $this->db->filterValues('transaction', $data);
-
-        if (!empty($values)) {
-            $conditions = array('transaction_id' => $transaction_id);
-            $result = $this->db->update('transaction', $values, $conditions);
-        }
+        $conditions = array('transaction_id' => $transaction_id);
+        $result = $this->db->update('transaction', $data, $conditions);
 
         $this->hook->fire('update.transaction.after', $transaction_id, $data, $result);
         return (bool) $result;

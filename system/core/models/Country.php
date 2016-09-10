@@ -238,10 +238,8 @@ class Country extends Model
             $this->setDefault($data['code']);
         }
 
-        $values = $this->db->prepareInsert('country', $data);
-
         $result = true;
-        $this->db->insert('country', $values);
+        $this->db->insert('country', $data);
         $this->hook->fire('add.country.after', $data, $result);
         return (bool) $result;
     }
@@ -268,13 +266,7 @@ class Country extends Model
             $data['status'] = 1;
         }
 
-        $values = $this->db->filterValues('country', $data);
-
-        $result = false;
-
-        if (!empty($values)) {
-            $result = $this->db->update('country', $values, array('code' => $code));
-        }
+        $result = $this->db->update('country', $data, array('code' => $code));
 
         $this->hook->fire('update.country.after', $code, $data, $result);
         return (bool) $result;

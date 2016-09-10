@@ -39,11 +39,10 @@ class State extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('state', $data);
-        $state_id = $this->db->insert('state', $values);
+        $data['state_id'] = $this->db->insert('state', $data);
 
-        $this->hook->fire('add.state.after', $data, $state_id);
-        return $state_id;
+        $this->hook->fire('add.state.after', $data);
+        return $data['state_id'];
     }
 
     /**
@@ -198,13 +197,8 @@ class State extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('state', $data);
-
-        $result = false;
-        if (!empty($values)) {
-            $conditions = array('state_id' => (int) $state_id);
-            $result = $this->db->update('state', $values, $conditions);
-        }
+        $conditions = array('state_id' => $state_id);
+        $result = $this->db->update('state', $data, $conditions);
 
         $this->hook->fire('update.state.after', $state_id, $data, $result);
         return (bool) $result;

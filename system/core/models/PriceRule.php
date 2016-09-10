@@ -174,10 +174,8 @@ class PriceRule extends Model
         if (empty($data)) {
             return false;
         }
-        
-        $values = $this->db->prepareInsert('price_rule', $data);
 
-        $data['price_rule_id'] = $this->db->insert('price_rule', $values);
+        $data['price_rule_id'] = $this->db->insert('price_rule', $data);
         
         $this->hook->fire('add.price.rule.after', $data);
         return $data['price_rule_id'];
@@ -197,14 +195,8 @@ class PriceRule extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('price_rule', $data);
-
-        $result = false;
-
-        if (!empty($values)) {
-            $conditions = array('price_rule_id' => (int) $price_rule_id);
-            $result = $this->db->update('price_rule', $values, $conditions);
-        }
+        $conditions = array('price_rule_id' => $price_rule_id);
+        $result = $this->db->update('price_rule', $data, $conditions);
 
         $this->hook->fire('update.price.rule.after', $price_rule_id, $data, $result);
         return (bool) $result;

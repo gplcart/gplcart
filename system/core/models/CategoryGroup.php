@@ -177,8 +177,7 @@ class CategoryGroup extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('category_group', $data);
-        $data['category_group_id'] = $this->db->insert('category_group', $values);
+        $data['category_group_id'] = $this->db->insert('category_group', $data);
 
         $this->setTranslation($data, false);
 
@@ -301,14 +300,8 @@ class CategoryGroup extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('category_group', $data);
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('category_group_id' => $category_group_id);
-            $updated += (int) $this->db->update('category_group', $values, $conditions);
-        }
+        $conditions = array('category_group_id' => $category_group_id);
+        $updated = (int) $this->db->update('category_group', $data, $conditions);
 
         $updated += (int) $this->setTranslation($data);
         $result = ($updated > 0);

@@ -110,9 +110,7 @@ class File extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->db->prepareInsert('file', $data);
-
-        $data['file_id'] = $this->db->insert('file', $values);
+        $data['file_id'] = $this->db->insert('file', $data);
 
         $this->setTranslation($data, false);
 
@@ -174,8 +172,7 @@ class File extends Model
             'language' => $language
         );
 
-        $values = $this->db->prepareInsert('file_translation', $translation);
-        return $this->db->insert('file_translation', $values);
+        return $this->db->insert('file_translation', $translation);
     }
 
     /**
@@ -187,14 +184,8 @@ class File extends Model
     {
         $this->hook->fire('update.file.before', $file_id, $data);
 
-        $values = $this->db->filterValues('file', $data);
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('file_id' => $file_id);
-            $updated += (int) $this->db->update('file', $values, $conditions);
-        }
+        $conditions = array('file_id' => $file_id);
+        $updated = (int) $this->db->update('file', $data, $conditions);
 
         $data['file_id'] = $file_id;
 

@@ -186,8 +186,7 @@ class FieldValue extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('field_value', $data);
-        $data['field_value_id'] = $this->db->insert('field_value', $values);
+        $data['field_value_id'] = $this->db->insert('field_value', $data);
 
         $this->setFile($data, false);
         $this->setTranslation($data, false);
@@ -250,8 +249,7 @@ class FieldValue extends Model
             'field_value_id' => $field_value_id
         );
 
-        $values = $this->db->prepareInsert('field_value_translation', $translation);
-        return $this->db->insert('field_value_translation', $values);
+        return $this->db->insert('field_value_translation', $translation);
     }
 
     /**
@@ -302,14 +300,8 @@ class FieldValue extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('field_value', $data);
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('field_value_id' => (int) $field_value_id);
-            $updated += (int) $this->db->update('field_value', $values, $conditions);
-        }
+        $conditions = array('field_value_id' => $field_value_id);
+        $updated = (int) $this->db->update('field_value', $data, $conditions);
 
         $data['field_value_id'] = $field_value_id;
 

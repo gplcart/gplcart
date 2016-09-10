@@ -113,8 +113,7 @@ class Collection extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('collection', $data);
-        $data['collection_id'] = $this->db->insert('collection', $values);
+        $data['collection_id'] = $this->db->insert('collection', $data);
 
         $this->setTranslation($data, false);
 
@@ -180,9 +179,7 @@ class Collection extends Model
             'collection_id' => $collection_id
         );
 
-        $values = $this->db->prepareInsert('collection_translation', $translation);
-
-        return $this->db->insert('collection_translation', $values);
+        return $this->db->insert('collection_translation', $translation);
     }
 
     /**
@@ -295,17 +292,11 @@ class Collection extends Model
         if (empty($collection_id)) {
             return false;
         }
-
-        $values = $this->db->filterValues('collection', $data);
-
-        unset($values['type']); // Cannot change item type!
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('collection_id' => (int) $collection_id);
-            $updated += (int) $this->db->update('collection', $values, $conditions);
-        }
+        
+        unset($data['type']); // Cannot change item type!
+        
+        $conditions = array('collection_id' => (int) $collection_id);
+        $updated = (int) $this->db->update('collection', $data, $conditions);
 
         $data['collection_id'] = $collection_id;
         $updated += (int) $this->setTranslation($data);

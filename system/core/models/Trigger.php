@@ -203,14 +203,8 @@ class Trigger extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('triggers', $data);
-
-        $result = false;
-        if (!empty($values)) {
-            $conditions = array('trigger_id' => (int) $trigger_id);
-            $this->db->update('triggers', $values, $conditions);
-            $result = true;
-        }
+        $conditions = array('trigger_id' => $trigger_id);
+        $result = $this->db->update('triggers', $data, $conditions);
 
         $this->hook->fire('update.trigger.after', $trigger_id, $data, $result);
         return (bool) $result;

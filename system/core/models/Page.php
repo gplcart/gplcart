@@ -133,9 +133,7 @@ class Page extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->db->prepareInsert('page', $data);
-
-        $data['page_id'] = $this->db->insert('page', $values);
+        $data['page_id'] = $this->db->insert('page', $data);
 
         $this->setTranslation($data, false);
         $this->setImages($data);
@@ -159,10 +157,12 @@ class Page extends Model
      */
     public function addTranslation($page_id, $language, array $translation)
     {
-        $translation += array('page_id' => $page_id, 'language' => $language);
-        $values = $this->db->prepareInsert('page_translation', $translation);
-
-        return $this->db->insert('page_translation', $values);
+        $translation += array(
+            'page_id' => $page_id,
+            'language' => $language
+        );
+        
+        return $this->db->insert('page_translation', $translation);
     }
 
     /**
@@ -208,14 +208,8 @@ class Page extends Model
         }
 
         $data += array('modified' => GC_TIME);
-        $values = $this->db->filterValues('page', $data);
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('page_id' => (int) $page_id);
-            $updated += (int) $this->db->update('page', $values, $conditions);
-        }
+        $conditions = array('page_id' => (int) $page_id);
+        $updated = (int) $this->db->update('page', $data, $conditions);
 
         $data['page_id'] = $page_id;
 

@@ -193,14 +193,9 @@ class CollectionItem extends Model
         if (empty($collection_item_id)) {
             return false;
         }
-
-        $result = false;
-        $values = $this->db->filterValues('collection_item', $data);
-
-        if (!empty($values)) {
-            $conditions = array('collection_item_id' => (int) $collection_item_id);
-            $result = $this->db->update('collection_item', $values, $conditions);
-        }
+            
+        $conditions = array('collection_item_id' => $collection_item_id);
+        $result = $this->db->update('collection_item', $data, $conditions);
 
         $this->hook->fire('update.collection.item.after', $collection_item_id, $data, $result);
         return (bool) $result;

@@ -443,8 +443,7 @@ class Category extends Model
             return false;
         }
 
-        $values = $this->db->prepareInsert('category', $data);
-        $data['category_id'] = $this->db->insert('category', $values);
+        $data['category_id'] = $this->db->insert('category', $data);
 
         $this->setTranslation($data, false);
         $this->setImages($data);
@@ -488,8 +487,7 @@ class Category extends Model
         $translation['language'] = $language;
         $translation['category_id'] = $category_id;
 
-        $values = $this->db->prepareInsert('category_translation', $translation);
-        return $this->db->insert('category_translation', $values);
+        return $this->db->insert('category_translation', $translation);
     }
 
     /**
@@ -519,14 +517,8 @@ class Category extends Model
             return false;
         }
 
-        $values = $this->db->filterValues('category', $data);
-
-        $updated = 0;
-
-        if (!empty($values)) {
-            $conditions = array('category_id' => (int) $category_id);
-            $updated += (int) $this->db->update('category', $values, $conditions);
-        }
+        $conditions = array('category_id' => (int) $category_id);
+        $updated = (int) $this->db->update('category', $data, $conditions);
         
         $data['category_id'] = $category_id;
 

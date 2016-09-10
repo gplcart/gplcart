@@ -472,14 +472,7 @@ class Cart extends Model
         }
 
         $data += array('modified' => GC_TIME);
-
-        $values = $this->db->filterValues('cart', $data);
-
-        if (empty($values)) {
-            return false;
-        }
-
-        $result = $this->db->update('cart', $values, array('cart_id' => $cart_id));
+        $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
 
         // Clear cached data
         $cart = $this->get($cart_id);
