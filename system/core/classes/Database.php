@@ -32,20 +32,24 @@ class Database extends PDO
             try {
                 parent::__construct($dns, $config['user'], $config['password']);
                 $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $e) {
+            } catch (PDOException $exc) {
                 throw new DatabaseException('Could not connect to database');
             }
         }
     }
-    
+
     /**
      * Returns an array of database scheme
      * @param string $table
      * @return array
      */
-    public function scheme($table = null)
+    public function getScheme($table = null)
     {
         $data = include GC_CONFIG_DATABASE;
+
+        if (empty($data)) {
+            throw new DatabaseException('Failed to load database scheme');
+        }
 
         if (isset($table)) {
             return empty($data[$table]) ? array() : $data[$table];
@@ -53,37 +57,105 @@ class Database extends PDO
 
         return $data;
     }
-    
+
+    /**
+     * Returns a single array indexed by column name
+     * @param string $sql
+     * @param array $params
+     * @param array $options
+     * @return array
+     */
+    public function getArray($sql, array $params = array(),
+            array $options = array())
+    {
+        $query = $this->run($sql, $params);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        $this->prepareResult($result, $options);
+        return empty($result) ? array() : (array) $result;
+    }
+
+    /**
+     * Returns an array of arrays
+     * @param string $sql
+     * @param array $params
+     * @param array $options
+     * @return array
+     */
+    public function getArrays($sql, array $params = array(),
+            array $options = array())
+    {
+        $query = $this->run($sql, $params);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $this->prepareResults($result, $options);
+
+        return empty($result) ? array() : (array) $result;
+    }
+
+    /**
+     * Runs a SQL query with an array of placeholders
+     * @param string $sql
+     * @param array $params
+     * @return object
+     */
+    public function run($sql, array $params = array())
+    {
+        $sth = $this->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $key = is_numeric($key) ? $key + 1 : ":$key";
+            $sth->bindValue($key, $value);
+        }
+
+        $sth->execute($params);
+        return $sth;
+    }
+
     /**
      * 
+     * @param type $data
+     * @param array $options
      */
-    public function select(){
-        
+    protected function prepareResult(&$data, array $options)
+    {
+        if (!empty($options['unserialize'])) {
+            foreach ((array) $options['unserialize'] as $field) {
+                if (isset($data[$field])) {
+                    $data[$field] = unserialize($data[$field]);
+                } else {
+                    $data[$field] = array();
+                }
+            }
+        }
     }
-    
+
     /**
      * 
+     * @param type $results
+     * @param array $options
      */
-    protected function asArray(){
-        
+    protected function prepareResults(&$results, array $options)
+    {
+        foreach ($results as $index => &$result) {
+
+            $this->prepareResult($result, $options);
+
+            if (!empty($options['index'])) {
+                $results[$result[$options['index']]] = $result;
+                unset($results[$index]);
+            }
+        }
     }
-    
+
     /**
-     * 
-     */
-    protected function asArrays(){
-        
-    }
-    
-    /**
-     * Filters an array of data according to existing columns for the given table
+     * Filters an array of data according to existing scheme for the given table
      * @param string $table
      * @param array $data
      * @return array
      */
     protected function filterValues($table, array $data)
     {
-        $scheme = $this->scheme($table);
+        $scheme = $this->getScheme($table);
 
         if (empty($scheme['fields'])) {
             return array();
@@ -96,25 +168,37 @@ class Database extends PDO
         }
 
         foreach ($values as $field => &$value) {
-            
-            if(!empty($scheme['fields'][$field]['auto_increment'])){
-                unset($values[$field]);
-            }
-
-            if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
-                $value = intval($value);
-            }
-
-            if ($scheme['fields'][$field]['type'] === 'float') {
-                $value = floatval($value);
-            }
-
-            if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
-                $value = serialize($value);
-            }
+            $this->filterValue($scheme, $values, $field, $value);
         }
 
         return $values;
+    }
+
+    /**
+     * Filters a single item to be saved in the database
+     * @param array $scheme
+     * @param array $values
+     * @param string $field
+     * @param mixed $value
+     */
+    protected function filterValue(array $scheme, array &$values, $field,
+            &$value)
+    {
+        if (!empty($scheme['fields'][$field]['auto_increment'])) {
+            unset($values[$field]); // Remove autoincremented fields
+        }
+
+        if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
+            $value = intval($value); // Make value integer
+        }
+
+        if ($scheme['fields'][$field]['type'] === 'float') {
+            $value = floatval($value); // Make value float
+        }
+
+        if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
+            $value = serialize($value); // Serialize arrays
+        }
     }
 
     /**
@@ -124,7 +208,7 @@ class Database extends PDO
      */
     public function getDefaultValues($table)
     {
-        $scheme = $this->scheme($table);
+        $scheme = $this->getScheme($table);
 
         if (empty($scheme['fields'])) {
             return array();
@@ -166,27 +250,25 @@ class Database extends PDO
      */
     public function insert($table, array $data, $prepare = true)
     {
-        if($prepare){
+        if ($prepare) {
             $data = $this->prepareInsert($table, $data);
         }
-        
-        if(empty($data)){
+
+        if (empty($data)) {
             return false;
         }
-        
-        ksort($data);
 
-        $names = implode(',', array_keys($data));
-        $values = ':' . implode(', :', array_keys($data));
+        $keys = array_keys($data);
+        $fields = implode(',', $keys);
+        $values = ':' . implode(',:', $keys);
 
-        $sth = $this->prepare("INSERT INTO $table ($names) VALUES ($values)");
+        $sth = $this->prepare("INSERT INTO $table ($fields) VALUES ($values)");
 
         foreach ($data as $key => $value) {
             $sth->bindValue(":$key", $value);
         }
 
         $sth->execute();
-
         return $this->lastInsertId();
     }
 
@@ -195,48 +277,41 @@ class Database extends PDO
      * @param string $table
      * @param array $data
      * @param array $conditions
-     * @return mixed
+     * @return integer|boolean
      */
-    public function update($table, array $data, array $conditions, $filter = true)
+    public function update($table, array $data, array $conditions,
+            $filter = true)
     {
-        if($filter){
+        if ($filter) {
             $data = $this->filterValues($table, $data);
         }
-        
-        if(empty($data)){
+
+        if (empty($data)) {
             return false;
         }
-        
-        ksort($data);
 
-        $fields = '';
+        $farray = array();
         foreach ($data as $key => $value) {
-            $fields .= "$key = :field_$key,";
+            $farray[] = "$key=:$key";
         }
 
-        $fields = rtrim($fields, ',');
+        $fields = implode(',', $farray);
 
-        $where = '';
-
-        $i = 0;
+        $carray = array();
         foreach ($conditions as $key => $value) {
-            if ($i == 0) {
-                $where .= "$key = :where_$key";
-            } else {
-                $where .= " AND $key = :where_$key";
-            }
-            $i++;
+            $carray[] = "$key=:$key";
         }
 
-        $where = ltrim($where, ' AND ');
+        $where = implode(' AND ', $carray);
+
         $stmt = $this->prepare("UPDATE $table SET $fields WHERE $where");
 
         foreach ($data as $key => $value) {
-            $stmt->bindValue(":field_$key", $value);
+            $stmt->bindValue(":$key", $value);
         }
 
         foreach ($conditions as $key => $value) {
-            $stmt->bindValue(":where_$key", $value);
+            $stmt->bindValue(":$key", $value);
         }
 
         $stmt->execute();
@@ -246,37 +321,23 @@ class Database extends PDO
     /**
      * Performs a DELETE query
      * @param string $table
-     * @param mixed $conditions
-     * @return integer
+     * @param array $conditions
+     * @return integer|boolean
      */
-    public function delete($table, $conditions)
+    public function delete($table, array $conditions)
     {
         if (empty($conditions)) {
             return false;
         }
 
-        if ($conditions === 'all') {
-            return $this->query("DELETE FROM $table");
-        }
-
-        $conditions = (array) $conditions;
-
-        ksort($conditions);
-
-        $where = '';
-
-        $i = 0;
+        $carray = array();
         foreach ($conditions as $key => $value) {
-            if ($i == 0) {
-                $where .= "$key = :$key";
-            } else {
-                $where .= " AND $key = :$key";
-            }
-            $i++;
+            $carray[] = "$key=:$key";
         }
 
-        $where = ltrim($where, ' AND ');
+        $where = implode(' AND ', $carray);
         $stmt = $this->prepare("DELETE FROM $table WHERE $where");
+
         foreach ($conditions as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }

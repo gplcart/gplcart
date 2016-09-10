@@ -54,15 +54,9 @@ class Address extends Model
                 . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
                 . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
                 . ' WHERE a.address_id = ?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($address_id));
-        $address = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($address)) {
-            $address['data'] = unserialize($address['data']);
-            $address['country_format'] = unserialize($address['country_format']);
-        }
+        
+        $options = array('unserialize' => array('data', 'country_format'));
+        $address = $this->db->getArray($sql, array($address_id), $options);
 
         $this->hook->fire('get.address.after', $address_id, $address);
         return $address;
@@ -181,28 +175,24 @@ class Address extends Model
         }
 
         $sql .= ' ORDER BY a.created ASC';
+        
+        
+        $options = array(
+            'index' => 'address_id',
+            'unserialize' => array('data', 'country_format')
+        );
+        
+        $results = $this->db->getArrays($sql, $where, $options);
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
+        // TODO: Fix this shit. Everything should be done in the SQL above
         $list = array();
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($results as $address) {
-
+        foreach ($results as $address_id => $address) {
             // City ID can be not numeric (user input). Make this check in the query?
             if (!empty($data['status']) && empty($address['city_status']) && is_numeric($address['city_id'])) {
                 continue;
             }
-
-            $address['data'] = unserialize($address['data']);
-
-            $format = array();
-            if (!empty($address['country_format'])) {
-                $format = unserialize($address['country_format']);
-            }
-
-            $address['country_format'] = $format;
-            $list[$address['address_id']] = $address;
+            
+            $list[$address_id] = $address;
         }
 
         $this->hook->fire('address.list', $data, $list);
@@ -305,11 +295,7 @@ class Address extends Model
     public function isReferenced($address_id)
     {
         $sql = 'SELECT order_id FROM orders WHERE shipping_address=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array((int) $address_id));
-
-        return (bool) $sth->fetchColumn();
+        return (bool) $this->db->getArray($sql, array($address_id));
     }
 
     /**

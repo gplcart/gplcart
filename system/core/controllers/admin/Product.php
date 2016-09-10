@@ -585,6 +585,7 @@ class Product extends BackendController
             $this->setSubmitted('created', $product['created']);
             $this->setSubmitted('modified', $product['modified']);
             $this->setSubmitted('product_id', $product['product_id']);
+            $this->setSubmitted('currency', $product['currency']);
         }
 
         $this->addValidator('price', array(

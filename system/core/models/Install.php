@@ -181,7 +181,7 @@ class Install extends Model
      */
     public function tables()
     {
-        $scheme = $this->db->scheme();
+        $scheme = $this->db->getScheme();
         return $this->db->import($scheme);
     }
 

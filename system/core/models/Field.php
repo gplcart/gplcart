@@ -222,15 +222,12 @@ class Field extends Model
     {
         $this->hook->fire('get.field.before', $field_id, $language);
 
+        $options = array('unserialize' => 'data');
         $sql = 'SELECT * FROM field WHERE field_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_id));
-
-        $field = $sth->fetch(PDO::FETCH_ASSOC);
-
+        
+        $field = $this->db->getArray($sql, array($field_id), $options);
+        
         if (!empty($field)) {
-            $field['data'] = unserialize($field['data']);
             $this->attachTranslation($field, $language);
         }
 
@@ -265,11 +262,7 @@ class Field extends Model
     public function getTranslation($field_id)
     {
         $sql = 'SELECT * FROM field_translation WHERE field_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->getArray($sql, array($field_id));
     }
 
     /**
