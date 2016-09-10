@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Logger;
 use core\Model;
 use core\classes\Cache;
@@ -24,12 +23,12 @@ use core\models\Store as ModelsStore;
 use core\models\User as ModelsUser;
 use core\models\Wishlist as ModelsWishlist;
 
-
 /**
  * Manages basic behaviors and data related to user carts
  */
 class Cart extends Model
 {
+
     /**
      * Store model instance
      * @var \core\models\Store $store
@@ -234,10 +233,10 @@ class Cart extends Model
     {
         $data += array('order_id' => 0);
 
-        $sql = '
-            SELECT *, SUM(quantity) AS quantity
-            FROM cart
-            WHERE cart_id > 0';
+        $sql = 'SELECT *,'
+                . ' SUM(quantity) AS quantity'
+                . ' FROM cart'
+                . ' WHERE cart_id > 0';
 
         $where = array();
 
@@ -253,16 +252,8 @@ class Cart extends Model
 
         $sql .= ' GROUP BY sku ORDER BY created DESC';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
-        $results = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $item) {
-            $item['data'] = unserialize($item['data']);
-            $results[$item['cart_id']] = $item;
-        }
-
-        return $results;
+        $options = array('unserialize' => 'data', 'index' => 'cart_id');
+        return $this->db->getRows($sql, $where, $options);
     }
 
     /**
@@ -442,16 +433,17 @@ class Cart extends Model
      */
     protected function setProduct(array $data, $user_id)
     {
-        $sql = 'SELECT cart_id, quantity  FROM cart WHERE sku=:sku AND user_id=:user_id AND order_id=:order_id';
+        $sql = 'SELECT cart_id, quantity'
+                . ' FROM cart'
+                . ' WHERE sku=? AND user_id=? AND order_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':sku' => $data['sku'], ':user_id' => $user_id, 'order_id' => 0));
-        $existing = $sth->fetch(PDO::FETCH_ASSOC);
+        $conditions = array($data['sku'], $user_id, 0);
+        $existing = $this->db->getRow($sql, $conditions);
 
         if (isset($existing['cart_id'])) {
-            $cart_id = $existing['cart_id'];
-            $this->update($cart_id, array('quantity' => $existing['quantity'] ++));
-            return $cart_id;
+            $conditions = array('quantity' => $existing['quantity'] ++);
+            $this->update($existing['cart_id'], $conditions);
+            return $existing['cart_id'];
         }
 
         return $this->add($data);
@@ -490,12 +482,7 @@ class Cart extends Model
      */
     public function get($cart_id)
     {
-        $sql = 'SELECT * FROM cart WHERE cart_id=:cart_id';
-        $where = array(':cart_id' => (int) $cart_id);
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        return $this->db->getRow('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
     }
 
     /**
@@ -520,20 +507,14 @@ class Cart extends Model
             return false;
         }
 
-        $cart_id = $this->db->insert('cart', array(
-            'modified' => 0,
-            'sku' => $data['sku'],
-            'user_id' => $data['user_id'],
-            'quantity' => (int) $data['quantity'],
-            'store_id' => isset($data['store_id']) ? (int) $data['store_id'] : $this->config->get('store', 1),
-            'product_id' => (int) $data['product_id'],
-            'order_id' => isset($data['order_id']) ? (int) $data['order_id'] : 0,
-            'created' => !empty($data['created']) ? (int) $data['created'] : GC_TIME,
-            'data' => isset($data['data']) ? serialize((array) $data['data']) : serialize(array())
-        ));
+        $data += array(
+            'created' => GC_TIME,
+            'store_id' => $this->config->get('store', 1)
+        );
 
-        $this->hook->fire('add.cart.after', $data, $cart_id);
-        return $cart_id;
+        $data['cart_id'] = $this->db->insert('cart', $data);
+        $this->hook->fire('add.cart.after', $data);
+        return $data['cart_id'];
     }
 
     /**
@@ -547,10 +528,10 @@ class Cart extends Model
         $log = array(
             'message' => 'User %uid has added product %product (SKU: %sku) at %store',
             'variables' => array(
-                '%uid' => is_numeric($user_id) ? $user_id : '',
-                '%product' => $product['product_id'],
                 '%sku' => $data['sku'],
-                '%store' => $product['store_id']
+                '%store' => $product['store_id'],
+                '%product' => $product['product_id'],
+                '%uid' => is_numeric($user_id) ? $user_id : ''
             )
         );
 
@@ -575,28 +556,21 @@ class Cart extends Model
             $user_id = $this->uid();
         }
 
-        $sth = $this->db->prepare('SELECT product_sku_id FROM product_sku WHERE sku=:sku');
-        $sth->execute(array(':sku' => $sku));
-
-        $product_sku_id = $sth->fetchColumn();
+        $sql = 'SELECT product_sku_id FROM product_sku WHERE sku=?';
+        $product_sku_id = $this->db->getColumn($sql, array($sku));
 
         if (empty($product_sku_id)) {
             return false;
         }
 
-        $this->db->delete('wishlist', array(
-            'product_id' => (int) $product_sku_id
-        ));
+        $this->db->delete('wishlist', array('product_id' => $product_sku_id));
 
-        $wishlist_id = $this->wishlist->add(array(
-            'product_id' => (int) $product_sku_id,
-            'user_id' => $user_id
-        ));
+        $wishlist = array('product_id' => $product_sku_id, 'user_id' => $user_id);
+        $wishlist_id = $this->wishlist->add($wishlist);
 
         $this->db->delete('cart', array('sku' => $sku, 'user_id' => $user_id));
         $this->deleteCache($user_id);
         $this->hook->fire('move.cart.wishlist.after', $sku, $user_id, $wishlist_id);
-
         return $wishlist_id;
     }
 

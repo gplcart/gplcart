@@ -225,7 +225,7 @@ class Field extends Model
         $options = array('unserialize' => 'data');
         $sql = 'SELECT * FROM field WHERE field_id=?';
         
-        $field = $this->db->getArray($sql, array($field_id), $options);
+        $field = $this->db->getRow($sql, array($field_id), $options);
         
         if (!empty($field)) {
             $this->attachTranslation($field, $language);
@@ -262,7 +262,7 @@ class Field extends Model
     public function getTranslation($field_id)
     {
         $sql = 'SELECT * FROM field_translation WHERE field_id=?';
-        return $this->db->getArray($sql, array($field_id));
+        return $this->db->getRow($sql, array($field_id));
     }
 
     /**

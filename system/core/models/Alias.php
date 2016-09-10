@@ -13,7 +13,6 @@ use core\classes\Tool;
 use core\Model;
 use core\models\Language as ModelsLanguage;
 use core\Route;
-use PDO;
 
 /**
  * Manages basic behaviors and data related to URL aliasing
@@ -73,14 +72,12 @@ class Alias extends Model
     public function get($id_key, $id_value = null)
     {
         if (is_numeric($id_key)) {
-            $sth = $this->db->prepare('SELECT * FROM alias WHERE alias_id=?');
-            $sth->execute(array($id_key));
-            return $sth->fetchAll(PDO::FETCH_ASSOC);
+            $sql = 'SELECT * FROM alias WHERE alias_id=?';
+            return $this->db->getRow($sql, array($id_key));
         }
 
-        $sth = $this->db->prepare('SELECT alias FROM alias WHERE id_key=? AND id_value=?');
-        $sth->execute(array($id_key, $id_value));
-        return $sth->fetchColumn();
+        $sql = 'SELECT alias FROM alias WHERE id_key=? AND id_value=?';
+        return $this->db->getColumn($sql, array($id_key, $id_value));
     }
 
     /**
@@ -95,7 +92,8 @@ class Alias extends Model
             return $this->db->delete('alias', array('alias_id' => $id_key));
         }
 
-        return $this->db->delete('alias', array('id_key' => $id_key, 'id_value' => $id_value));
+        $conditions = array('id_key' => $id_key, 'id_value' => $id_value);
+        return $this->db->delete('alias', $conditions);
     }
 
     /**
@@ -157,8 +155,7 @@ class Alias extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('id_value', 'id_key', 'alias');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY alias DESC";
@@ -168,32 +165,21 @@ class Alias extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->getColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $list = array();
-        foreach ($results as $alias) {
-            $list[$alias['alias_id']] = $alias;
-        }
-
-        return $list;
+        $options = array('index' => 'alias_id');
+        return $this->db->getRows($sql, $where, $options);
     }
 
     /**
-     * Returns an array of id keys (entity types)
+     * Returns a array of id keys (entity types)
      * @return array
      */
     public function getIdKeys()
     {
-        $sth = $this->db->prepare('SELECT id_key FROM alias GROUP BY id_key');
-        $sth->execute();
-        return $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+        return $this->db->getColumns('SELECT id_key FROM alias GROUP BY id_key');
     }
 
     /**
@@ -257,9 +243,7 @@ class Alias extends Model
      */
     public function info($alias)
     {
-        $sth = $this->db->prepare('SELECT * FROM alias WHERE alias=?');
-        $sth->execute(array($alias));
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        return $this->db->getRow('SELECT * FROM alias WHERE alias=?', array($alias));
     }
 
 }

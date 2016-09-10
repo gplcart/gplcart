@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\models\Image as ModelsImage;
@@ -89,16 +88,11 @@ class Category extends Model
             $conditions[] = $store_id;
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($conditions);
+        $options = array('unserialize' => 'data');
+        $category = $this->db->getRow($sql, $conditions, $options);
 
-        $category = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($category)) {
-            $category['data'] = unserialize($category['data']);
-            $this->attachTranslation($category, $language);
-            $this->attachImage($category, $language);
-        }
+        $this->attachTranslation($category, $language);
+        $this->attachImage($category, $language);
 
         $this->hook->fire('get.category.after', $category);
         return $category;
@@ -111,6 +105,10 @@ class Category extends Model
      */
     protected function attachTranslation(array &$category, $language)
     {
+        if (empty($category)) {
+            return;
+        }
+
         $category['language'] = 'und';
 
         foreach ($this->getTranslation($category['category_id']) as $translation) {
@@ -129,21 +127,25 @@ class Category extends Model
      */
     protected function attachImage(array &$category, $language)
     {
+        if (empty($category)) {
+            return;
+        }
+
         $images = $this->image->getList('category_id', $category['category_id']);
-        
-        foreach($images as &$image){
-            
+
+        foreach ($images as &$image) {
+
             $translations = $this->image->getTranslation($image['file_id']);
-            
-            foreach($translations as $translation){
+
+            foreach ($translations as $translation) {
                 $image['translation'][$translation['language']] = $translation;
             }
-            
+
             if (isset($language) && isset($image['translation'][$language])) {
                 $image = $image['translation'][$language] + $image;
             }
         }
-        
+
         $category['images'] = $images;
     }
 
@@ -155,11 +157,7 @@ class Category extends Model
     public function getTranslation($category_id)
     {
         $sql = 'SELECT * FROM category_translation WHERE category_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($category_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->getRows($sql, array($category_id));
     }
 
     /**
@@ -272,12 +270,9 @@ class Category extends Model
 
         $sql .= ' ORDER BY c.weight ASC';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $results = $this->db->getRows($sql, $where, array('unserialize' => 'data'));
 
         foreach ($results as $category) {
-            $category['data'] = unserialize($category['data']);
             $children_tree[$category['parent_id']][] = $category['category_id'];
             $parents_tree[$category['category_id']][] = $category['parent_id'];
             $categories_tree[$category['category_id']] = $category;
@@ -374,7 +369,8 @@ class Category extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT c.*, cg.type, cg.store_id, COALESCE(NULLIF(ct.title, ""), c.title) AS title';
+        $sql = 'SELECT c.*, cg.type, cg.store_id,'
+                . ' COALESCE(NULLIF(ct.title, ""), c.title) AS title';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(c.category_id)';
@@ -411,20 +407,12 @@ class Category extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->getColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $list = array();
-        foreach ($results as $category) {
-            $category['data'] = unserialize($category['data']);
-            $list[$category['category_id']] = $category;
-        }
+        $options = array('index' => 'category_id', 'unserialize' => 'data');
+        $list = $this->db->getRows($sql, $where, $options);
 
         $this->hook->fire('categories', $list);
         return $list;
@@ -447,11 +435,11 @@ class Category extends Model
 
         $this->setTranslation($data, false);
         $this->setImages($data);
-        
+
         if (empty($data['alias'])) {
             $data['alias'] = $this->createAlias($data);
         }
-        
+
         $this->setAlias($data, false);
 
         $this->hook->fire('add.category.after', $data);
@@ -519,7 +507,7 @@ class Category extends Model
 
         $conditions = array('category_id' => (int) $category_id);
         $updated = (int) $this->db->update('category', $data, $conditions);
-        
+
         $data['category_id'] = $category_id;
 
         $updated += (int) $this->setTranslation($data);
@@ -569,15 +557,12 @@ class Category extends Model
      */
     public function canDelete($category_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:category_id)'
-                . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:category_id)'
-                . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:category_id)'
-                . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:category_id)';
+        $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:id)'
+                . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)'
+                . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
+                . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':category_id' => $category_id));
-
-        return (bool) $sth->fetchColumn();
+        return (bool) $this->db->getColumn($sql, array('id' => $category_id));
     }
 
     /**

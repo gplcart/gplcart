@@ -50,7 +50,7 @@ $tables['cart'] = array(
         'cart_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'quantity' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 1),
         'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),

@@ -59,36 +59,61 @@ class Database extends PDO
     }
 
     /**
+     * Returns a single column
+     * @param string $sql
+     * @param array $params
+     * @param integer $pos
+     * @return mixed
+     */
+    public function getColumn($sql, array $params = array(), $pos = 0)
+    {
+        $sth = $this->run($sql, $params);
+        return $sth->fetchColumn($pos);
+    }
+    
+    /**
+     * Returns a simple array of columns
+     * @param string $sql
+     * @param array $params
+     * @param integer $pos
+     * @return mixed
+     */
+    public function getColumns($sql, array $params = array(), $pos = 0)
+    {
+        $sth = $this->run($sql, $params);
+        return $sth->fetchAll(PDO::FETCH_COLUMN, $pos);
+    }
+
+    /**
      * Returns a single array indexed by column name
      * @param string $sql
      * @param array $params
      * @param array $options
      * @return array
      */
-    public function getArray($sql, array $params = array(),
+    public function getRow($sql, array $params = array(),
             array $options = array())
     {
-        $query = $this->run($sql, $params);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
+        $sth = $this->run($sql, $params);
+        $result = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->prepareResult($result, $options);
         return empty($result) ? array() : (array) $result;
     }
 
     /**
-     * Returns an array of arrays
+     * Returns an array of database records
      * @param string $sql
      * @param array $params
      * @param array $options
      * @return array
      */
-    public function getArrays($sql, array $params = array(),
+    public function getRows($sql, array $params = array(),
             array $options = array())
     {
-        $query = $this->run($sql, $params);
-        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $sth = $this->run($sql, $params);
+        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         $this->prepareResults($result, $options);
-
         return empty($result) ? array() : (array) $result;
     }
 
@@ -136,14 +161,18 @@ class Database extends PDO
      */
     protected function prepareResults(&$results, array $options)
     {
-        foreach ($results as $index => &$result) {
+        $reindexed = array();
+        foreach ($results as &$result) {
 
             $this->prepareResult($result, $options);
 
             if (!empty($options['index'])) {
-                $results[$result[$options['index']]] = $result;
-                unset($results[$index]);
+                $reindexed[$result[$options['index']]] = $result;
             }
+        }
+
+        if (!empty($options['index'])) {
+            $results = $reindexed;
         }
     }
 

@@ -12,7 +12,6 @@ namespace core\models;
 use core\classes\Tool;
 use core\Model;
 use core\models\Country as ModelsCountry;
-use PDO;
 
 /**
  * Manages basic behaviors and data related to user addresses
@@ -56,7 +55,7 @@ class Address extends Model
                 . ' WHERE a.address_id = ?';
         
         $options = array('unserialize' => array('data', 'country_format'));
-        $address = $this->db->getArray($sql, array($address_id), $options);
+        $address = $this->db->getRow($sql, array($address_id), $options);
 
         $this->hook->fire('get.address.after', $address_id, $address);
         return $address;
@@ -182,7 +181,7 @@ class Address extends Model
             'unserialize' => array('data', 'country_format')
         );
         
-        $results = $this->db->getArrays($sql, $where, $options);
+        $results = $this->db->getRows($sql, $where, $options);
 
         // TODO: Fix this shit. Everything should be done in the SQL above
         $list = array();
@@ -295,7 +294,7 @@ class Address extends Model
     public function isReferenced($address_id)
     {
         $sql = 'SELECT order_id FROM orders WHERE shipping_address=?';
-        return (bool) $this->db->getArray($sql, array($address_id));
+        return (bool) $this->db->getRow($sql, array($address_id));
     }
 
     /**
