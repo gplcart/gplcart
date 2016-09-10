@@ -1026,7 +1026,7 @@ class Product extends Model
             $this->sku->delete($data['product_id'], array('base' => true));
         }
 
-        return (bool) $this->sku->add($data['sku'], $data['product_id'], $data['store_id']);
+        return (bool) $this->sku->add($data);
     }
 
     /**
@@ -1101,10 +1101,11 @@ class Product extends Model
                 $combination['sku'] = $this->sku->generate($sku_pattern, array(), array('store_id' => $data['store_id']));
             }
 
-            $combination_id = $this->addCombination($combination);
+            $combination['combination_id'] = $this->addCombination($combination);
 
             if (isset($data['store_id'])) {
-                $this->sku->add($combination['sku'], $product_id, $data['store_id'], $combination_id);
+                $combination['store_id'] = $data['store_id'];
+                $this->sku->add($combination);
             }
 
             if (empty($combination['fields'])) {

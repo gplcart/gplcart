@@ -11,7 +11,6 @@ namespace core\classes;
 
 use PDO;
 use PDOException;
-use core\exceptions\DatabaseException;
 
 /**
  * Provides wrappers for PDO methods

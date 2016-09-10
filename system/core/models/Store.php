@@ -33,7 +33,7 @@ class Store extends Model
     public function __construct(Request $request)
     {
         parent::__construct();
-        
+
         $this->request = $request;
     }
 
@@ -61,7 +61,7 @@ class Store extends Model
         $cache_key = 'stores';
 
         if (!empty($data)) {
-            $cache_key .= md5(serialize($data));
+            $cache_key .= md5(json_encode($data));
         }
 
         $stores = &Cache::memory($cache_key);
@@ -99,27 +99,11 @@ class Store extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'name':
-                    $sql .= " ORDER BY name {$data['order']}";
-                    break;
-                case 'domain':
-                    $sql .= " ORDER BY domain {$data['order']}";
-                    break;
-                case 'basepath':
-                    $sql .= " ORDER BY basepath {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status {$data['order']}";
-                    break;
-                case 'created':
-                    $sql .= " ORDER BY created {$data['order']}";
-                    break;
-                case 'modified':
-                    $sql .= " ORDER BY modified {$data['order']}";
-                    break;
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created ASC";
         }
@@ -132,11 +116,13 @@ class Store extends Model
         $sth->execute($where);
 
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $sth->fetchColumn();
         }
 
+        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+
         $stores = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $store) {
+        foreach ($results as $store) {
             $store['data'] = unserialize($store['data']);
             $stores[$store['store_id']] = $store;
         }
@@ -152,7 +138,12 @@ class Store extends Model
     public function id()
     {
         $current = $this->current();
-        return isset($current['store_id']) ? (int) $current['store_id'] : null;
+
+        if (isset($current['store_id'])) {
+            return (int) $current['store_id'];
+        }
+
+        return null;
     }
 
     /**
@@ -161,12 +152,6 @@ class Store extends Model
      */
     public function current()
     {
-        $store = &Cache::memory('current_store');
-
-        if (isset($store)) {
-            return $store;
-        }
-
         $domain = $this->request->host();
         $basepath = trim($this->request->base(true), '/');
 
@@ -198,32 +183,54 @@ class Store extends Model
         }
 
         if (is_numeric($store_id)) {
-            $sql = 'SELECT * FROM store WHERE store_id=:store_id';
-            $where = array(':store_id' => $store_id);
+            $store = $this->selectById($store_id);
         } else {
-            $sql = 'SELECT * FROM store WHERE domain=:domain';
-            $where = array(':domain' => $store_id);
-
-            if (strpos($store_id, '/') !== false) {
-                $parts = explode('/', $store_id, 2);
-                $sql = 'SELECT * FROM store WHERE domain=:domain AND basepath=:basepath';
-                $where = array(':domain' => $parts[0], ':basepath' => $parts[1]);
-            }
+            $store = $this->selectByDomain($store_id);
         }
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
-        $store = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!empty($store)) {
             $store['data'] = unserialize($store['data']);
-            $default_settings = $this->defaultConfig();
-            $store['data'] = $store['data'] + $default_settings;
+            $store['data'] += $this->defaultConfig();
         }
 
         $this->hook->fire('get.store.after', $store_id, $store);
         return $store;
+    }
+
+    /**
+     * Selects a store from the database by a numeric ID
+     * @param integer $store_id
+     * @return array
+     */
+    protected function selectById($store_id)
+    {
+        $sql = 'SELECT * FROM store WHERE store_id=?';
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute(array($store_id));
+
+        return $sth->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Selects a store from the database by a domain
+     * @param string $domain
+     * @return array
+     */
+    protected function selectByDomain($domain)
+    {
+        $sql = 'SELECT * FROM store WHERE domain=?';
+        $conditions = array($domain);
+
+        if (strpos($domain, '/') !== false) {
+            $sql .= ' AND basepath=?';
+            $conditions = explode('/', $domain, 2);
+        }
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute($conditions);
+
+        return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -273,19 +280,12 @@ class Store extends Model
             return false;
         }
 
-        $values = array(
-            'name' => $data['name'],
-            'domain' => $data['domain'],
-            'status' => !empty($data['status']),
-            'created' => GC_TIME,
-            'basepath' => !empty($data['basepath']) ? $data['basepath'] : '',
-            'data' => serialize($data['data'])
-        );
+        $data += array('created' => GC_TIME);
+        $values = $this->prepareDbInsert('store', $data);
+        $data['store_id'] = $this->db->insert('store', $values);
 
-        $store_id = $this->db->insert('store', $values);
-
-        $this->hook->fire('add.store.after', $data, $store_id);
-        return $store_id;
+        $this->hook->fire('add.store.after', $data);
+        return $data['store_id'];
     }
 
     /**
@@ -328,36 +328,14 @@ class Store extends Model
             return false;
         }
 
-        $values = array('modified' => GC_TIME);
-        
-        if (isset($data['modified'])) {
-            $values['modified'] = (int) $data['modified'];
-        }
-
-        if (!empty($data['domain'])) {
-            $values['domain'] = $data['domain'];
-        }
-
-        if (isset($data['basepath'])) {
-            $values['basepath'] = $data['basepath'];
-        }
-
-        if (!empty($data['name'])) {
-            $values['name'] = $data['name'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize($data['data']);
-        }
+        $data['modified'] = GC_TIME;
+        $values = $this->filterDbValues('store', $data);
 
         $result = false;
 
         if (!empty($values)) {
-            $result = $this->db->update('store', $values, array('store_id' => (int) $store_id));
+            $conditions = array('store_id' => (int) $store_id);
+            $result = $this->db->update('store', $values, $conditions);
         }
 
         $this->hook->fire('update.store.after', $store_id, $data, $result);
@@ -381,7 +359,9 @@ class Store extends Model
             return false;
         }
 
-        $result = $this->db->delete('store', array('store_id' => (int) $store_id));
+        $conditions = array('store_id' => $store_id);
+        $result = $this->db->delete('store', $conditions);
+
         $this->hook->fire('delete.store.after', $store_id, $result);
         return (bool) $result;
     }
@@ -397,16 +377,17 @@ class Store extends Model
             return false;
         }
 
-        $sql = '
-        SELECT NOT EXISTS (SELECT store_id FROM product WHERE store_id=:store_id) AND
-        NOT EXISTS (SELECT store_id FROM category_group WHERE store_id=:store_id) AND
-        NOT EXISTS (SELECT store_id FROM page WHERE store_id=:store_id) AND
-        NOT EXISTS (SELECT store_id FROM orders WHERE store_id=:store_id) AND
-        NOT EXISTS (SELECT store_id FROM cart WHERE store_id=:store_id) AND
-        NOT EXISTS (SELECT store_id FROM user WHERE store_id=:store_id)';
+        $sql = 'SELECT'
+                . ' NOT EXISTS (SELECT store_id FROM product WHERE store_id=:store_id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM category_group WHERE store_id=:store_id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM page WHERE store_id=:store_id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM orders WHERE store_id=:store_id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM cart WHERE store_id=:store_id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM user WHERE store_id=:store_id)';
 
         $sth = $this->db->prepare($sql);
         $sth->execute(array(':store_id' => $store_id));
+
         return (bool) $sth->fetchColumn();
     }
 
@@ -465,7 +446,7 @@ class Store extends Model
     public function url($store)
     {
         $scheme = $this->request->scheme();
-        
+
         return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');
     }
 

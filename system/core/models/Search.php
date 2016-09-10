@@ -47,14 +47,14 @@ class Search extends Model
      */
     public function addIndex($text, $id_key, $id_value, $language)
     {
-        $result = $this->db->insert('search_index', array(
+        $values = array(
             'text' => $text,
             'id_key' => $id_key,
             'id_value' => $id_value,
             'language' => $language
-        ));
+        );
 
-        return $result;
+        return $this->db->insert('search_index', $values);
     }
 
     /**
@@ -66,12 +66,13 @@ class Search extends Model
      */
     public function deleteIndex($id_key, $id_value, $language)
     {
-        $result = $this->db->delete('search_index', array(
+        $values = array(
             'id_key' => $id_key,
             'id_value' => $id_value,
-            'language' => $language));
+            'language' => $language
+        );
 
-        return (bool) $result;
+        return (bool) $this->db->delete('search_index', $values);
     }
 
     /**

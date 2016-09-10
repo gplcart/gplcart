@@ -82,13 +82,13 @@ class State extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT * ';
+        $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(state_id) ';
+            $sql = 'SELECT COUNT(state_id)';
         }
 
-        $sql .= 'FROM state WHERE state_id > 0';
+        $sql .= ' FROM state WHERE state_id > 0';
         $where = array();
 
         if (isset($data['name'])) {
@@ -114,8 +114,7 @@ class State extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('country', 'name', 'code', 'status', 'state_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY name ASC';

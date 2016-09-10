@@ -37,6 +37,7 @@ class Sku extends Model
         $skus = $this->getList(array('product_id' => $product_id));
 
         $results = array('base' => '');
+
         foreach ($skus as $sku) {
             if (empty($sku['combination_id'])) {
                 $results['base'] = $sku['sku'];
@@ -109,34 +110,22 @@ class Sku extends Model
 
     /**
      * Adds a SKU
-     * @param string $sku
-     * @param integer $product_id
-     * @param integer $store_id
-     * @param string $option_combination_id
+     * @param array $data
      * @return boolean|integer
      */
-    public function add($sku, $product_id, $store_id = 1,
-            $option_combination_id = '')
+    public function add(array $data)
     {
-        $arguments = func_get_args();
+        $this->hook->fire('add.sku.before', $data);
 
-        $this->hook->fire('add.sku.before', $arguments);
-
-        if (empty($arguments)) {
+        if (empty($data)) {
             return false;
         }
 
-        $values = array(
-            'sku' => $sku,
-            'product_id' => (int) $product_id,
-            'store_id' => (int) $store_id,
-            'combination_id' => $option_combination_id
-        );
+        $values = $this->prepareDbInsert('product_sku', $data);
+        $data['product_sku_id'] = $this->db->insert('product_sku', $values);
 
-        $id = $this->db->insert('product_sku', $values);
-
-        $this->hook->fire('add.sku.after', $arguments, $id);
-        return $id;
+        $this->hook->fire('add.sku.after', $data);
+        return $data['product_sku_id'];
     }
 
     /**
@@ -147,7 +136,7 @@ class Sku extends Model
      */
     public function delete($product_id, array $options = array())
     {
-        $sql = 'DELETE FROM product_sku WHERE product_id=:product_id';
+        $sql = 'DELETE FROM product_sku WHERE product_id=?';
 
         if (!empty($options['combinations'])) {
             $sql .= ' AND LENGTH(combination_id) > 0';
@@ -158,7 +147,7 @@ class Sku extends Model
         }
 
         $sth = $this->db->prepare($sql);
-        $sth->execute(array(':product_id' => (int) $product_id));
+        $sth->execute(array($product_id));
         return $sth->rowCount();
     }
 
