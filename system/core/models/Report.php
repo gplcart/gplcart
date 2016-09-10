@@ -343,6 +343,7 @@ class Report extends Model
     public function checkFilesystem()
     {
         $results[] = $this->checkPermissions(GC_CONFIG_COMMON);
+        $results[] = $this->checkPermissions(GC_CONFIG_DATABASE);
 
         if (file_exists(GC_CONFIG_OVERRIDE)) {
             $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);

@@ -195,7 +195,7 @@ class CollectionItem extends Model
         }
 
         $result = false;
-        $values = $this->filterDbValues('collection_item', $data);
+        $values = $this->db->filterValues('collection_item', $data);
 
         if (!empty($values)) {
             $conditions = array('collection_item_id' => (int) $collection_item_id);

@@ -143,7 +143,7 @@ class User extends Model
         }
 
         $data += array('modified' => GC_TIME);
-        $values = $this->filterDbValues('user', $data);
+        $values = $this->db->filterValues('user', $data);
 
         if (isset($data['addresses'])) {
             foreach ((array) $data['addresses'] as $address) {

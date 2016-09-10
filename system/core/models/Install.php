@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDOException;
 use core\Model;
 use core\Container;
 use core\classes\Tool;
@@ -17,6 +16,8 @@ use core\classes\Request;
 use core\classes\Database;
 use core\models\Store as ModelsStore;
 use core\models\Language as ModelsLanguage;
+
+use core\exceptions\DatabaseException;
 
 /**
  * Manages basic behaviors and data related to system installation
@@ -161,13 +162,14 @@ class Install extends Model
     {
         try {
             $this->db = new Database($settings);
-            $existing = $this->db->query('SHOW TABLES')->fetchColumn();
-            if (!empty($existing)) {
-                return $this->language->text('The database you specified already has tables');
-            }
-        } catch (PDOException $e) {
+        } catch (DatabaseException $e) {
             $this->db = null;
             return $e->getMessage();
+        }
+        
+        $existing = $this->db->query('SHOW TABLES')->fetchColumn();
+        if (!empty($existing)) {
+            return $this->language->text('The database you specified already has tables');
         }
 
         return true;
@@ -179,7 +181,7 @@ class Install extends Model
      */
     public function tables()
     {
-        $scheme = $this->getDbScheme();
+        $scheme = $this->db->scheme();
         return $this->db->import($scheme);
     }
 

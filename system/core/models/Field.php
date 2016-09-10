@@ -73,7 +73,7 @@ class Field extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('field', $data);
+        $values = $this->db->prepareInsert('field', $data);
         $data['field_id'] = $this->db->insert('field', $values);
 
         $this->setTranslation($data, false);
@@ -136,7 +136,7 @@ class Field extends Model
             'field_id' => (int) $field_id,
         );
 
-        $values = $this->prepareDbInsert('field_translation', $translation);
+        $values = $this->db->prepareInsert('field_translation', $translation);
         return $this->db->insert('field_translation', $values);
     }
 
@@ -343,7 +343,7 @@ class Field extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('field', $data);
+        $values = $this->db->filterValues('field', $data);
 
         $updated = 0;
 

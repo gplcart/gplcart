@@ -281,7 +281,7 @@ class Store extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->prepareDbInsert('store', $data);
+        $values = $this->db->prepareInsert('store', $data);
         $data['store_id'] = $this->db->insert('store', $values);
 
         $this->hook->fire('add.store.after', $data);
@@ -329,7 +329,7 @@ class Store extends Model
         }
 
         $data['modified'] = GC_TIME;
-        $values = $this->filterDbValues('store', $data);
+        $values = $this->db->filterValues('store', $data);
 
         $result = false;
 

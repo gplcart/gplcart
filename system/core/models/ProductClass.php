@@ -145,7 +145,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('product_class', $data);
+        $values = $this->db->prepareInsert('product_class', $data);
         $data['product_class_id'] = $this->db->insert('product_class', $values);
 
         $this->hook->fire('add.product.class.after', $data);
@@ -206,7 +206,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('product_class', $data);
+        $values = $this->db->prepareInsert('product_class', $data);
 
         $result = false;
 
@@ -232,7 +232,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('product_class_field', $data);
+        $values = $this->db->prepareInsert('product_class_field', $data);
         $data['product_class_field_id'] = $this->db->insert('product_class_field', $values);
 
         $this->hook->fire('add.product.class.field.after', $data);

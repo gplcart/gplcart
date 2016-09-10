@@ -473,7 +473,7 @@ class Cart extends Model
 
         $data += array('modified' => GC_TIME);
 
-        $values = $this->filterDbValues('cart', $data);
+        $values = $this->db->filterValues('cart', $data);
 
         if (empty($values)) {
             return false;

@@ -121,7 +121,7 @@ class Sku extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('product_sku', $data);
+        $values = $this->db->prepareInsert('product_sku', $data);
         $data['product_sku_id'] = $this->db->insert('product_sku', $values);
 
         $this->hook->fire('add.sku.after', $data);

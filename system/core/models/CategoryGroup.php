@@ -177,7 +177,7 @@ class CategoryGroup extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('category_group', $data);
+        $values = $this->db->prepareInsert('category_group', $data);
         $data['category_group_id'] = $this->db->insert('category_group', $values);
 
         $this->setTranslation($data, false);
@@ -301,7 +301,7 @@ class CategoryGroup extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('category_group', $data);
+        $values = $this->db->filterValues('category_group', $data);
 
         $updated = 0;
 

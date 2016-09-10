@@ -126,7 +126,7 @@ class Product extends Model
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        $values = $this->prepareDbInsert('product', $data);
+        $values = $this->db->prepareInsert('product', $data);
 
         $data['product_id'] = $this->db->insert('product', $values);
 
@@ -184,7 +184,7 @@ class Product extends Model
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        $values = $this->filterDbValues('product', $data);
+        $values = $this->db->filterValues('product', $data);
 
         $updated = 0;
 
@@ -255,7 +255,7 @@ class Product extends Model
             'product_id' => $product_id
         );
 
-        $values = $this->prepareDbInsert('product_translation', $translation);
+        $values = $this->db->prepareInsert('product_translation', $translation);
         return (bool) $this->db->insert('product_translation', $values);
     }
 
@@ -308,7 +308,7 @@ class Product extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('product_field', $data);
+        $values = $this->db->prepareInsert('product_field', $data);
         $id = $this->db->insert('product_field', $values);
 
         $this->hook->fire('add.product.field.after', $data, $id);
@@ -335,7 +335,7 @@ class Product extends Model
             $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        $values = $this->prepareDbInsert('option_combination', $data);
+        $values = $this->db->prepareInsert('option_combination', $data);
 
         $id = $this->db->insert('option_combination', $values);
         $this->hook->fire('add.option.combination.after', $data, $id);

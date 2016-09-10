@@ -114,7 +114,7 @@ class City extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('city', $data);
+        $values = $this->db->prepareInsert('city', $data);
         $city_id = $this->db->insert('city', $values);
 
         $this->hook->fire('add.city.after', $data, $city_id);
@@ -186,7 +186,7 @@ class City extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('city', $data);
+        $values = $this->db->filterValues('city', $data);
 
         $result = false;
 

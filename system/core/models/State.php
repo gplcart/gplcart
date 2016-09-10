@@ -39,7 +39,7 @@ class State extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('state', $data);
+        $values = $this->db->prepareInsert('state', $data);
         $state_id = $this->db->insert('state', $values);
 
         $this->hook->fire('add.state.after', $data, $state_id);
@@ -198,7 +198,7 @@ class State extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('state', $data);
+        $values = $this->db->filterValues('state', $data);
 
         $result = false;
         if (!empty($values)) {

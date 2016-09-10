@@ -175,7 +175,7 @@ class PriceRule extends Model
             return false;
         }
         
-        $values = $this->prepareDbInsert('price_rule', $data);
+        $values = $this->db->prepareInsert('price_rule', $data);
 
         $data['price_rule_id'] = $this->db->insert('price_rule', $values);
         
@@ -197,7 +197,7 @@ class PriceRule extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('price_rule', $data);
+        $values = $this->db->filterValues('price_rule', $data);
 
         $result = false;
 

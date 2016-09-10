@@ -133,7 +133,7 @@ class Page extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->prepareDbInsert('page', $data);
+        $values = $this->db->prepareInsert('page', $data);
 
         $data['page_id'] = $this->db->insert('page', $values);
 
@@ -160,7 +160,7 @@ class Page extends Model
     public function addTranslation($page_id, $language, array $translation)
     {
         $translation += array('page_id' => $page_id, 'language' => $language);
-        $values = $this->prepareDbInsert('page_translation', $translation);
+        $values = $this->db->prepareInsert('page_translation', $translation);
 
         return $this->db->insert('page_translation', $values);
     }
@@ -208,7 +208,7 @@ class Page extends Model
         }
 
         $data += array('modified' => GC_TIME);
-        $values = $this->filterDbValues('page', $data);
+        $values = $this->db->filterValues('page', $data);
 
         $updated = 0;
 

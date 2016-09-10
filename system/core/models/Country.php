@@ -238,7 +238,7 @@ class Country extends Model
             $this->setDefault($data['code']);
         }
 
-        $values = $this->prepareDbInsert('country', $data);
+        $values = $this->db->prepareInsert('country', $data);
 
         $result = true;
         $this->db->insert('country', $values);
@@ -268,7 +268,7 @@ class Country extends Model
             $data['status'] = 1;
         }
 
-        $values = $this->filterDbValues('country', $data);
+        $values = $this->db->filterValues('country', $data);
 
         $result = false;
 

@@ -110,7 +110,7 @@ class File extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->prepareDbInsert('file', $data);
+        $values = $this->db->prepareInsert('file', $data);
 
         $data['file_id'] = $this->db->insert('file', $values);
 
@@ -174,7 +174,7 @@ class File extends Model
             'language' => $language
         );
 
-        $values = $this->prepareDbInsert('file_translation', $translation);
+        $values = $this->db->prepareInsert('file_translation', $translation);
         return $this->db->insert('file_translation', $values);
     }
 
@@ -187,7 +187,7 @@ class File extends Model
     {
         $this->hook->fire('update.file.before', $file_id, $data);
 
-        $values = $this->filterDbValues('file', $data);
+        $values = $this->db->filterValues('file', $data);
 
         $updated = 0;
 

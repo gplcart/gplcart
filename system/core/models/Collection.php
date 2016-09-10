@@ -113,7 +113,7 @@ class Collection extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('collection', $data);
+        $values = $this->db->prepareInsert('collection', $data);
         $data['collection_id'] = $this->db->insert('collection', $values);
 
         $this->setTranslation($data, false);
@@ -180,7 +180,7 @@ class Collection extends Model
             'collection_id' => $collection_id
         );
 
-        $values = $this->prepareDbInsert('collection_translation', $translation);
+        $values = $this->db->prepareInsert('collection_translation', $translation);
 
         return $this->db->insert('collection_translation', $values);
     }
@@ -296,7 +296,7 @@ class Collection extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('collection', $data);
+        $values = $this->db->filterValues('collection', $data);
 
         unset($values['type']); // Cannot change item type!
 

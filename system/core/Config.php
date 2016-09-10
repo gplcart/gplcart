@@ -13,6 +13,7 @@ use PDO;
 use core\Container;
 use core\classes\Tool;
 use core\classes\Cache;
+use core\exceptions\DatabaseException;
 
 /**
  * Contains methods to work with system configurations
@@ -342,7 +343,7 @@ class Config
         $this->config = include GC_CONFIG_COMMON;
 
         if (empty($this->config['database'])) {
-            die('Missing database settings');
+            throw new DatabaseException('Missing database settings');
         }
 
         $this->exists = true;

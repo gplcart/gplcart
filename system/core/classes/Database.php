@@ -11,6 +11,7 @@ namespace core\classes;
 
 use PDO;
 use PDOException;
+use core\exceptions\DatabaseException;
 
 /**
  * Provides wrappers for PDO methods
@@ -32,9 +33,108 @@ class Database extends PDO
                 parent::__construct($dns, $config['user'], $config['password']);
                 $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
-                die('Could not connect to database');
+                throw new DatabaseException('Could not connect to database');
             }
         }
+    }
+    
+    /**
+     * Returns an array of database scheme
+     * @param string $table
+     * @return array
+     */
+    public function scheme($table = null)
+    {
+        $data = include GC_CONFIG_DATABASE;
+
+        if (isset($table)) {
+            return empty($data[$table]) ? array() : $data[$table];
+        }
+
+        return $data;
+    }
+    
+    /**
+     * Filters an array of data according to existing columns for the given table
+     * @param string $table
+     * @param array $data
+     * @return array
+     */
+    protected function filterValues($table, array $data)
+    {
+        $scheme = $this->scheme($table);
+
+        if (empty($scheme['fields'])) {
+            return array();
+        }
+
+        $values = array_intersect_key($data, $scheme['fields']);
+
+        if (empty($values)) {
+            return array();
+        }
+
+        foreach ($values as $field => &$value) {
+            
+            if(!empty($scheme['fields'][$field]['auto_increment'])){
+                unset($values[$field]);
+            }
+
+            if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
+                $value = intval($value);
+            }
+
+            if ($scheme['fields'][$field]['type'] === 'float') {
+                $value = floatval($value);
+            }
+
+            if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
+                $value = serialize($value);
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Returns an array of default field values for the given table
+     * @param string $table
+     * @return array
+     */
+    public function getDefaultValues($table)
+    {
+        $scheme = $this->scheme($table);
+
+        if (empty($scheme['fields'])) {
+            return array();
+        }
+
+        $values = array();
+        foreach ($scheme['fields'] as $name => $info) {
+
+            if (array_key_exists('default', $info)) {
+                $values[$name] = $info['default'];
+                continue;
+            }
+
+            if (!empty($info['serialize'])) {
+                $values[$name] = array();
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Returns an array of prepared values ready to insert into the database
+     * @param string $table
+     * @param array $data
+     * @return array
+     */
+    public function prepareInsert($table, array $data)
+    {
+        $data += $this->getDefaultValues($table);
+        return $this->filterValues($table, $data);
     }
 
     /**

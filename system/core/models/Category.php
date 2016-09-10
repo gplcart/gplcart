@@ -443,7 +443,7 @@ class Category extends Model
             return false;
         }
 
-        $values = $this->prepareDbInsert('category', $data);
+        $values = $this->db->prepareInsert('category', $data);
         $data['category_id'] = $this->db->insert('category', $values);
 
         $this->setTranslation($data, false);
@@ -488,7 +488,7 @@ class Category extends Model
         $translation['language'] = $language;
         $translation['category_id'] = $category_id;
 
-        $values = $this->prepareDbInsert('category_translation', $translation);
+        $values = $this->db->prepareInsert('category_translation', $translation);
         return $this->db->insert('category_translation', $values);
     }
 
@@ -519,7 +519,7 @@ class Category extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('category', $data);
+        $values = $this->db->filterValues('category', $data);
 
         $updated = 0;
 

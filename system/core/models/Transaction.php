@@ -168,7 +168,7 @@ class Transaction extends Model
         }
 
         $result = false;
-        $values = $this->filterDbValues('transaction', $data);
+        $values = $this->db->filterValues('transaction', $data);
 
         if (!empty($values)) {
             $conditions = array('transaction_id' => $transaction_id);

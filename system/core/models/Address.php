@@ -82,7 +82,7 @@ class Address extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->prepareDbInsert('address', $data);
+        $values = $this->db->prepareInsert('address', $data);
 
         $data['address_id'] = $this->db->insert('address', $values);
 
@@ -328,7 +328,7 @@ class Address extends Model
             return false;
         }
 
-        $values = $this->filterDbValues('address', $data);
+        $values = $this->db->filterValues('address', $data);
 
         if (empty($values)) {
             return false;

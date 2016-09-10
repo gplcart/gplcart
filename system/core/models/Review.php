@@ -40,7 +40,7 @@ class Review extends Model
         }
 
         $data += array('created' => GC_TIME);
-        $values = $this->prepareDbInsert('review', $data);
+        $values = $this->db->prepareInsert('review', $data);
 
         $data['review_id'] = $this->db->insert('review', $values);
 
@@ -86,7 +86,7 @@ class Review extends Model
 
         $data['modified'] = GC_TIME;
 
-        $values = $this->filterDbValues('review', $data);
+        $values = $this->db->filterValues('review', $data);
 
         $result = false;
 

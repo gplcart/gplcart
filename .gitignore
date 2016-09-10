@@ -5,6 +5,7 @@ nbproject
 # Config folder. Ignore all but default config
 system/config/*
 !system/config/common.default.php
+!system/config/database.php
 
 # Module folder. Ignore all but core modules
 system/modules/*
