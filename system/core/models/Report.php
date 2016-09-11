@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use DateTime;
 use core\Model;
 use core\classes\Tool;
@@ -21,6 +20,7 @@ use core\models\Language as ModelsLanguage;
  */
 class Report extends Model
 {
+
     /**
      * Language model instance
      * @var \core\models\Language $language
@@ -45,13 +45,13 @@ class Report extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT * ';
+        $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(log_id) ';
+            $sql = 'SELECT COUNT(log_id)';
         }
 
-        $sql .= 'FROM log WHERE log_id IS NOT NULL';
+        $sql .= ' FROM log WHERE log_id IS NOT NULL';
 
         $where = array();
 
@@ -86,19 +86,13 @@ class Report extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $record) {
-            $record['data'] = unserialize($record['data']);
-            $list[$record['log_id']] = $record;
-        }
+        $options = array('index' => 'log_id', 'unserialize' => 'data');
 
+        $list = $this->db->fetchAll($sql, $where, $options);
         $this->hook->fire('report.list', $list);
 
         return $list;
@@ -111,7 +105,7 @@ class Report extends Model
     public function getTypes()
     {
         $sql = 'SELECT DISTINCT type FROM log';
-        return $this->db->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+        return $this->db->fetchColumnAll($sql, array());
     }
 
     /**
@@ -139,7 +133,7 @@ class Report extends Model
                 . " SUM(severity = 'info') AS info"
                 . " FROM log";
 
-        $result = $this->db->query($sql)->fetchAll();
+        $result = $this->db->fetchAll($sql, array());
         return reset($result);
     }
 
@@ -157,8 +151,7 @@ class Report extends Model
         $placeholders = rtrim(str_repeat('?, ', count($error_types)), ', ');
         $sql = 'DELETE FROM log WHERE log_id IN(' . $placeholders . ')';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($error_types);
+        $this->db->run($sql);
         return true;
     }
 
@@ -168,8 +161,8 @@ class Report extends Model
      */
     public function clearExpired($interval)
     {
-        $sth = $this->db->prepare('DELETE FROM log WHERE time < :time');
-        $sth->execute(array(':time' => (GC_TIME - (int) $interval)));
+        $time = (GC_TIME - (int) $interval);
+        $this->db->run('DELETE FROM log WHERE time < ?', array($time));
     }
 
     /**

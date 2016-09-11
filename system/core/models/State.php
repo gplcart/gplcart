@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 
 /**
@@ -53,11 +52,7 @@ class State extends Model
     public function get($state_id)
     {
         $sql = 'SELECT * FROM state WHERE state_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($state_id));
-
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        return $this->db->fetch($sql, array($state_id));
     }
 
     /**
@@ -113,7 +108,8 @@ class State extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('country', 'name', 'code', 'status', 'state_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY name ASC';
@@ -123,20 +119,13 @@ class State extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $states = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $state) {
-            $state['data'] = unserialize($state['data']);
-            $states[$state['state_id']] = $state;
-        }
+        $states = $this->db->fetchAll($sql, $where, array('index' => 'state_id'));
+        $this->hook->fire('state.list', $states);
 
-        $this->hook->fire('states', $states);
         return $states;
     }
 
@@ -159,12 +148,15 @@ class State extends Model
 
         $conditions = array('state_id' => (int) $state_id);
 
-        $this->db->delete('zone', $conditions);
-        $this->db->delete('city', $conditions);
-        $this->db->delete('state', $conditions);
+        $deleted = $this->db->delete('state', $conditions);
 
-        $this->hook->fire('delete.state.after', $state_id);
-        return true;
+        if ($deleted) {
+            $this->db->delete('zone', $conditions);
+            $this->db->delete('city', $conditions);
+        }
+
+        $this->hook->fire('delete.state.after', $state_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -175,11 +167,8 @@ class State extends Model
     public function canDelete($state_id)
     {
         $sql = 'SELECT address_id FROM address WHERE state_id=?';
+        $result = $this->db->fetchColumn($sql, array($state_id));
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($state_id));
-
-        $result = $sth->fetchColumn();
         return empty($result);
     }
 

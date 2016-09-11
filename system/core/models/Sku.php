@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Tool;
 
@@ -92,19 +91,13 @@ class Sku extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $sku) {
-            $list[$sku['product_sku_id']] = $sku;
-        }
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'product_sku_id'));
+        $this->hook->fire('sku.list', $list);
 
-        $this->hook->fire('skus', $list);
         return $list;
     }
 
@@ -131,7 +124,7 @@ class Sku extends Model
      * Deletes a product SKU
      * @param integer $product_id
      * @param array $options
-     * @return integer
+     * @return boolean
      */
     public function delete($product_id, array $options = array())
     {
@@ -145,9 +138,7 @@ class Sku extends Model
             $sql .= ' AND LENGTH(combination_id) = 0';
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_id));
-        return $sth->rowCount();
+        return (bool) $this->db->run($sql, array($product_id))->rowCount();
     }
 
     /**

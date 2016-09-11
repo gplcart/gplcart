@@ -420,8 +420,7 @@ $tables['review'] = array(
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'text' => array('type' => 'text', 'not_null' => true),
-        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'text' => array('type' => 'text', 'not_null' => true)
     )
 );
 
@@ -466,8 +465,7 @@ $tables['state'] = array(
         'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
         'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
-        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true)
     )
 );
 

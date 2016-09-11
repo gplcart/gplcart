@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 
 /**
@@ -55,14 +54,8 @@ class Review extends Model
     {
         $this->hook->fire('get.review.before', $review_id);
 
-        $sth = $this->db->prepare('SELECT * FROM review WHERE review_id=?');
-        $sth->execute(array($review_id));
-
-        $review = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($review)) {
-            $review['data'] = unserialize($review['data']);
-        }
+        $sql = 'SELECT * FROM review WHERE review_id=?';
+        $review = $this->db->fetch($sql, array($review_id));
 
         $this->hook->fire('get.review.after', $review_id, $review);
         return $review;
@@ -104,11 +97,15 @@ class Review extends Model
             return false;
         }
 
-        $sth = $this->db->prepare("DELETE FROM review WHERE FIND_IN_SET(review_id, :review_id)");
-        $sth->execute(array(':review_id' => implode(',', (array) $review_id)));
+        $ids = (array) $review_id;
+        $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+        
+        $sql = "DELETE FROM review WHERE review_id IN($placeholders)";
 
-        $this->hook->fire('delete.review.after', $review_id);
-        return true;
+        $result = (bool) $this->db->run($sql, $ids)->rowCount();
+
+        $this->hook->fire('delete.review.after', $review_id, $result);
+        return (bool) $result;
     }
 
     /**
@@ -168,7 +165,8 @@ class Review extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY r.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY r.created DESC";
@@ -178,19 +176,13 @@ class Review extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $review) {
-            $list[$review['review_id']] = $review;
-        }
-
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'review_id'));
         $this->hook->fire('reviews', $list);
+
         return $list;
     }
 
