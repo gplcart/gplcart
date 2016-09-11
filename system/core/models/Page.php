@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\models\Alias as ModelsAlias;
@@ -66,16 +65,11 @@ class Page extends Model
     {
         $this->hook->fire('get.page.before', $page_id, $language);
 
-        $sth = $this->db->prepare('SELECT * FROM page WHERE page_id=?');
-        $sth->execute(array($page_id));
+        $sql = 'SELECT * FROM page WHERE page_id=?';
+        $page = $this->db->fetch($sql, array($page_id));
 
-        $page = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($page)) {
-            $page['data'] = unserialize($page['data']);
-            $this->attachTranslation($page, $language);
-            $this->attachImage($page);
-        }
+        $this->attachTranslation($page, $language);
+        $this->attachImage($page);
 
         $this->hook->fire('get.page.after', $page_id, $page);
         return $page;
@@ -88,6 +82,10 @@ class Page extends Model
      */
     protected function attachTranslation(array &$page, $language)
     {
+        if (empty($page)) {
+            return;
+        }
+
         $page['language'] = 'und';
 
         $translations = $this->getTranslation($page['page_id']);
@@ -107,6 +105,10 @@ class Page extends Model
      */
     protected function attachImage(array &$page)
     {
+        if (empty($page)) {
+            return;
+        }
+
         $images = $this->image->getList('page_id', $page['page_id']);
 
         foreach ($images as &$image) {
@@ -161,7 +163,7 @@ class Page extends Model
             'page_id' => $page_id,
             'language' => $language
         );
-        
+
         return $this->db->insert('page_translation', $translation);
     }
 
@@ -173,11 +175,7 @@ class Page extends Model
     public function getTranslation($page_id)
     {
         $sql = 'SELECT * FROM page_translation WHERE page_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($page_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->fetchAll($sql, array($page_id));
     }
 
     /**
@@ -209,6 +207,7 @@ class Page extends Model
 
         $data += array('modified' => GC_TIME);
         $conditions = array('page_id' => (int) $page_id);
+
         $updated = (int) $this->db->update('page', $data, $conditions);
 
         $data['page_id'] = $page_id;
@@ -241,22 +240,24 @@ class Page extends Model
         $conditions = array('page_id' => $page_id);
         $conditions2 = array('id_key' => 'page_id', 'id_value' => $page_id);
 
-        $this->db->delete('page', $conditions);
-        $this->db->delete('page_translation', $conditions);
+        $deleted = (bool) $this->db->delete('page', $conditions);
 
-        $this->db->delete('file', $conditions2);
-        $this->db->delete('alias', $conditions2);
+        if ($deleted) {
 
-        $sql = 'DELETE ci'
-                . ' FROM collection_item ci'
-                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                . ' WHERE c.type = ? AND ci.value = ?';
+            $this->db->delete('page_translation', $conditions);
+            $this->db->delete('file', $conditions2);
+            $this->db->delete('alias', $conditions2);
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array('page', $page_id));
+            $sql = 'DELETE ci'
+                    . ' FROM collection_item ci'
+                    . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                    . ' WHERE c.type = ? AND ci.value = ?';
 
-        $this->hook->fire('delete.page.after', $page_id);
-        return true;
+            $this->db->run($sql, array('page', $page_id));
+        }
+
+        $this->hook->fire('delete.page.after', $page_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -313,7 +314,8 @@ class Page extends Model
         $allowed_sort = array('title' => 'p.title', 'store_id' => 'p.store_id',
             'status' => 'p.status', 'created' => 'p.created', 'email' => 'u.email');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY p.created DESC";
@@ -323,20 +325,12 @@ class Page extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $list = array();
-        foreach ($results as $page) {
-            $page['data'] = unserialize($page['data']);
-            $list[$page['page_id']] = $page;
-        }
+        $options = array('index' => 'page_id');
+        $list = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('pages', $list);
         return $list;

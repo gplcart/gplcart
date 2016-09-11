@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\models\Field as ModelsField;
 use core\models\Language as ModelsLanguage;
@@ -85,7 +84,8 @@ class ProductClass extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY title ASC";
@@ -95,20 +95,11 @@ class ProductClass extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $list = array();
-        foreach ($results as $class) {
-            $list[$class['product_class_id']] = $class;
-        }
-
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'product_class_id'));
         $this->hook->fire('get.product.class.list', $list);
         return $list;
     }
@@ -123,12 +114,9 @@ class ProductClass extends Model
         $this->hook->fire('get.product.class.before', $product_class_id);
 
         $sql = 'SELECT * FROM product_class WHERE product_class_id=?';
+        $product_class = $this->db->fetch($sql, array($product_class_id));
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_class_id));
-        $product_class = $sth->fetch(PDO::FETCH_ASSOC);
-
-        $this->hook->fire('get.product.class.after', $product_class_id, $product_class);
+        $this->hook->fire('get.product.class.after', $product_class);
         return $product_class;
     }
 
@@ -183,11 +171,8 @@ class ProductClass extends Model
     public function canDelete($product_class_id)
     {
         $sql = 'SELECT product_id FROM product WHERE product_class_id=?';
+        $result = $this->db->fetchColumn($sql, array($product_class_id));
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_class_id));
-
-        $result = $sth->fetchColumn();
         return empty($result);
     }
 
@@ -205,7 +190,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $conditions = array('product_class_id' => (int) $product_class_id);
+        $conditions = array('product_class_id' => $product_class_id);
         $result = $this->db->update('product_class', $data, $conditions);
 
         $this->hook->fire('update.product.class.after', $product_class_id, $data, $result);
@@ -244,7 +229,7 @@ class ProductClass extends Model
             return false;
         }
 
-        $conditions = array('product_class_id' => (int) $product_class_id);
+        $conditions = array('product_class_id' => $product_class_id);
         $result = $this->db->delete('product_class_field', $conditions);
 
         $this->hook->fire('delete.product.class.field.after', $product_class_id, $result);
@@ -262,6 +247,7 @@ class ProductClass extends Model
         $fields = $this->field->getList();
 
         foreach ($this->getFields($product_class_id) as $field) {
+
             if (!isset($fields[$field['field_id']])) {
                 continue;
             }
@@ -292,18 +278,12 @@ class ProductClass extends Model
                 . ' WHERE product_class_id=:product_class_id'
                 . ' ORDER BY weight ASC';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(
-            ':language' => $this->language->current(),
-            ':product_class_id' => (int) $product_class_id
-        ));
+        $conditions = array(
+            'language' => $this->language->current(),
+            'product_class_id' => $product_class_id
+        );
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $field) {
-            $list[$field['field_id']] = $field;
-        }
-
-        return $list;
+        return $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
     }
 
 }

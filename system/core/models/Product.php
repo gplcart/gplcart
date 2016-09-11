@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -375,20 +374,13 @@ class Product extends Model
             return array();
         }
 
-        $sth = $this->db->prepare('SELECT * FROM product WHERE product_id=?');
-        $sth->execute(array($product_id));
+        $sql = 'SELECT * FROM product WHERE product_id=?';
+        $product = $this->db->fetch($sql, array($product_id));
 
-        $product = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($product)) {
-
-            $product['data'] = unserialize($product['data']);
-
-            $this->attachFields($product);
-            $this->attachCombinations($product);
-            $this->attachImage($product, $language);
-            $this->attachTranslation($product, $language);
-        }
+        $this->attachFields($product);
+        $this->attachCombinations($product);
+        $this->attachImage($product, $language);
+        $this->attachTranslation($product, $language);
 
         $this->hook->fire('get.product.after', $product_id, $product);
         return $product;
@@ -401,6 +393,10 @@ class Product extends Model
      */
     protected function attachTranslation(array &$product, $language)
     {
+        if (empty($product)) {
+            return;
+        }
+
         $product['language'] = 'und';
 
         $translations = $this->getTranslation($product['product_id']);
@@ -422,11 +418,7 @@ class Product extends Model
     public function getTranslation($product_id)
     {
         $sql = 'SELECT * FROM product_translation WHERE product_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->fetchAll($sql, array($product_id));
     }
 
     /**
@@ -434,8 +426,12 @@ class Product extends Model
      * @param array $product
      * @param null|string $language
      */
-    protected function attachImage(array &$product, $language)
+    protected function attachImage(array &$product, $language = null)
     {
+        if (empty($product)) {
+            return;
+        }
+
         $images = $this->image->getList('product_id', $product['product_id']);
 
         foreach ($images as &$image) {
@@ -460,7 +456,9 @@ class Product extends Model
      */
     protected function attachFields(array &$product)
     {
-        $product['field'] = $this->getFields($product['product_id']);
+        if (!empty($product)) {
+            $product['field'] = $this->getFields($product['product_id']);
+        }
     }
 
     /**
@@ -469,7 +467,11 @@ class Product extends Model
      */
     protected function attachCombinations(array &$product)
     {
-        $product['combination'] = $this->getCombinations($product['product_id']);
+        if (empty($product)) {
+            return;
+        }
+
+        $product['combination'] = $this->getCombinationList($product['product_id']);
 
         $sku_codes = $this->sku->getByProduct($product['product_id']);
         $product['sku'] = $sku_codes['base'];
@@ -489,15 +491,14 @@ class Product extends Model
     public function getFields($prodict_id)
     {
         $sql = 'SELECT * FROM product_field WHERE product_id=?';
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($prodict_id));
+        $fields = $this->db->fetchAll($sql, array($prodict_id));
 
-        $fields = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $field) {
-            $fields[$field['type']][$field['field_id']][] = $field['field_value_id'];
+        $list = array();
+        foreach ($fields as $field) {
+            $list[$field['type']][$field['field_id']][] = $field['field_value_id'];
         }
 
-        return $fields;
+        return $list;
     }
 
     /**
@@ -505,21 +506,21 @@ class Product extends Model
      * @param integer $product_id
      * @return array
      */
-    public function getCombinations($product_id)
+    public function getCombinationList($product_id)
     {
         $sql = 'SELECT oc.*, ps.sku'
                 . ' FROM option_combination oc'
                 . ' LEFT JOIN product_sku ps'
                 . ' ON(oc.product_id = ps.product_id AND ps.combination_id = oc.combination_id)'
-                . ' WHERE oc.product_id=:product_id';
+                . ' WHERE oc.product_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':product_id' => (int) $product_id));
+        $results = $this->db->fetchAll($sql, array($product_id));
 
         $combinations = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $combination) {
+        foreach ($results as $combination) {
             $combinations[$combination['combination_id']] = $combination;
-            $combinations[$combination['combination_id']]['fields'] = $this->getCombinationFieldValue($combination['combination_id']);
+            $fields = $this->getCombinationFieldValue($combination['combination_id']);
+            $combinations[$combination['combination_id']]['fields'] = $fields;
         }
 
         return $combinations;
@@ -560,24 +561,15 @@ class Product extends Model
                 . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id AND pt.language=:language)'
                 . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
 
-        $sth = $this->db->prepare($sql);
-
         $conditions = array(
-            ':sku' => $sku,
-            ':language' => $language,
-            ':store_id' => $store_id
+            'sku' => $sku,
+            'language' => $language,
+            'store_id' => $store_id
         );
 
-        $sth->execute($conditions);
+        $product = $this->db->fetch($sql, $conditions);
 
-        $product = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($product)) {
-            return array();
-        }
-
-        $product['data'] = unserialize($product['data']);
-        $product['images'] = $this->image->getList('product_id', $product['product_id']);
+        $this->attachImage($product);
         return $product;
     }
 
@@ -599,34 +591,37 @@ class Product extends Model
         }
 
         $conditions = array('product_id' => $product_id);
-
-        $this->db->delete('cart', $conditions);
-        $this->db->delete('review', $conditions);
-        $this->db->delete('rating', $conditions);
-        $this->db->delete('product', $conditions);
-        $this->db->delete('wishlist', $conditions);
-        $this->db->delete('product_sku', $conditions);
-        $this->db->delete('rating_user', $conditions);
-        $this->db->delete('product_field', $conditions);
-        $this->db->delete('option_combination', $conditions);
-        $this->db->delete('product_translation', $conditions);
-
         $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
 
-        $this->db->delete('file', $conditions2);
-        $this->db->delete('alias', $conditions2);
-        $this->db->delete('search_index', $conditions2);
+        $deleted = (bool) $this->db->delete('product', $conditions);
 
-        $sql = 'DELETE ci'
-                . ' FROM collection_item ci'
-                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                . ' WHERE c.type = ? AND ci.value = ?';
+        if ($deleted) {
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array('product', $product_id));
+            $this->db->delete('cart', $conditions);
+            $this->db->delete('review', $conditions);
+            $this->db->delete('rating', $conditions);
 
-        $this->hook->fire('delete.product.after', $product_id);
-        return true;
+            $this->db->delete('wishlist', $conditions);
+            $this->db->delete('product_sku', $conditions);
+            $this->db->delete('rating_user', $conditions);
+            $this->db->delete('product_field', $conditions);
+            $this->db->delete('option_combination', $conditions);
+            $this->db->delete('product_translation', $conditions);
+
+            $this->db->delete('file', $conditions2);
+            $this->db->delete('alias', $conditions2);
+            $this->db->delete('search_index', $conditions2);
+
+            $sql = 'DELETE ci'
+                    . ' FROM collection_item ci'
+                    . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                    . ' WHERE c.type = ? AND ci.value = ?';
+
+            $this->db->run($sql, array('product', $product_id));
+        }
+
+        $this->hook->fire('delete.product.after', $product_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -639,10 +634,7 @@ class Product extends Model
         $sql = 'SELECT cart_id'
                 . ' FROM cart WHERE product_id=? AND order_id > 0';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_id));
-        $result = $sth->fetchColumn();
-
+        $result = $this->db->fetchColumn($sql, array($product_id));
         return empty($result);
     }
 
@@ -660,21 +652,13 @@ class Product extends Model
             return false;
         }
 
-        $values = array();
         if (isset($data['price']) && !empty($data['currency'])) {
-            $values['price'] = $this->price->amount($data['price'], $data['currency']);
+            $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
-        if (isset($data['stock'])) {
-            $values['stock'] = (int) $data['stock'];
-        }
-
-        if (empty($values)) {
-            return false;
-        }
-
-        $result = $this->db->update('option_combination', $values, array('combination_id' => $combination_id));
+        $result = $this->db->update('option_combination', $data, array('combination_id' => $combination_id));
         $this->hook->fire('update.option.combination.after', $combination_id, $data, $result);
+
         return (bool) $result;
     }
 
@@ -775,6 +759,7 @@ class Product extends Model
         unset($product_ids[$product_id]);
         $rest = array_keys($product_ids);
         $this->setCompared($rest);
+
         return $rest;
     }
 
@@ -832,9 +817,7 @@ class Product extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_id));
-        $list = $sth->fetchAll(PDO::FETCH_COLUMN, 0);
+        $list = $this->db->fetchColumnAll($sql, array($product_id));
 
         if (!empty($list) && $load) {
             $data += array('product_id' => $list);
@@ -853,16 +836,20 @@ class Product extends Model
     {
         $this->hook->fire('get.product.list.before', $data);
 
-        $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title, pt.language, ps.sku';
+        $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""),'
+                . 'p.title) AS title, pt.language, ps.sku';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
         }
 
         $sql .= ' FROM product p'
-                . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.product_id)'
-                . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
+                . ' LEFT JOIN product_translation pt'
+                . ' ON(p.product_id = pt.product_id AND pt.language=?)'
+                . ' LEFT JOIN alias a'
+                . ' ON(a.id_key=? AND a.id_value=p.product_id)'
+                . ' LEFT JOIN product_sku ps'
+                . ' ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
 
         $language = $this->language->current();
         $where = array($language, 'product_id');
@@ -940,19 +927,11 @@ class Product extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $list = array();
-        foreach ($results as $product) {
-            $list[$product['product_id']] = $product;
-        }
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'product_id'));
 
         $this->hook->fire('get.product.list.after', $list);
         return $list;
@@ -1028,6 +1007,7 @@ class Product extends Model
         }
 
         $data['images'] = $this->image->setMultiple('product_id', $data['product_id'], $data['images']);
+
         return !empty($data['images']);
     }
 

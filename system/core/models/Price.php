@@ -38,20 +38,20 @@ class Price extends Model
     /**
      * Returns a formatted price
      * @param integer $amount
-     * @param string $currency_code
+     * @param string $code
      * @param boolean $convert If true, convert amount to decimal
      * @return string
      */
-    public function get($amount, $currency_code, $convert = true)
+    public function get($amount, $code, $convert = true)
     {
-        $current_currency = $this->currency->get();
+        $current = $this->currency->get();
 
-        if ($convert && ($currency_code != $current_currency)) {
-            $amount = $this->currency->convert($amount, $currency_code, $current_currency);
-            return $this->format($amount, $current_currency);
+        if ($convert && ($code != $current)) {
+            $amount = $this->currency->convert($amount, $code, $current);
+            return $this->format($amount, $current);
         }
 
-        return $this->format($amount, $currency_code);
+        return $this->format($amount, $code);
     }
 
     /**

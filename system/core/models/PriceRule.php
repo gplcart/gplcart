@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\models\Currency as ModelsCurrency;
@@ -59,8 +58,6 @@ class PriceRule extends Model
         if (isset($price_rules)) {
             return $price_rules;
         }
-
-        $price_rules = array();
 
         $sql = 'SELECT *';
 
@@ -129,16 +126,12 @@ class PriceRule extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $result) {
-            $price_rules[$result['price_rule_id']] = $result;
-        }
+        $options = array('index' => 'price_rule_id');
+        $price_rules = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('price.rules', $data, $price_rules);
         return $price_rules;
@@ -153,12 +146,10 @@ class PriceRule extends Model
     {
         $this->hook->fire('get.price.rule.before', $price_rule_id);
 
-        $sth = $this->db->prepare('SELECT * FROM price_rule WHERE price_rule_id=?');
-        $sth->execute(array($price_rule_id));
+        $sql = 'SELECT * FROM price_rule WHERE price_rule_id=?';
+        $price_rule = $this->db->fetch($sql, array($price_rule_id));
 
-        $price_rule = $sth->fetch(PDO::FETCH_ASSOC);
-
-        $this->hook->fire('get.price.rule.after', $price_rule_id, $price_rule);
+        $this->hook->fire('get.price.rule.after', $price_rule);
         return $price_rule;
     }
 
@@ -176,7 +167,7 @@ class PriceRule extends Model
         }
 
         $data['price_rule_id'] = $this->db->insert('price_rule', $data);
-        
+
         $this->hook->fire('add.price.rule.after', $data);
         return $data['price_rule_id'];
     }
@@ -210,10 +201,7 @@ class PriceRule extends Model
     public function setUsed($price_rule_id)
     {
         $sql = 'UPDATE price_rule SET used=used + 1 WHERE price_rule_id=?';
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($price_rule_id));
-        
-        return (bool) $sth->rowCount();
+        return (bool) $this->db->run($sql, array($price_rule_id))->rowCount();
     }
 
     /**
@@ -228,10 +216,8 @@ class PriceRule extends Model
                 . ' FROM price_rule'
                 . ' WHERE code=? AND price_rule_id=? AND status=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($code, $price_rule_id, 1));
-        
-        return (bool) $sth->fetchColumn();
+        $params = array($code, $price_rule_id, 1);
+        return (bool) $this->db->fetchColumn($sql, $params);
     }
 
     /**
@@ -247,7 +233,7 @@ class PriceRule extends Model
             return false;
         }
 
-        $conditions = array('price_rule_id' => (int) $price_rule_id);
+        $conditions = array('price_rule_id' => $price_rule_id);
         $result = $this->db->delete('price_rule', $conditions);
 
         $this->hook->fire('delete.price.rule.after', $price_rule_id, $result);

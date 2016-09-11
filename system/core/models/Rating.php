@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 
 /**
@@ -37,9 +36,13 @@ class Rating extends Model
         $user_id = null;
         $this->hook->fire('get.rating.before', $product_id, $user_id);
 
-        $sth = $this->db->prepare('SELECT rating, votes FROM rating WHERE product_id=?');
-        $sth->execute(array($product_id));
-        $result = $load ? $sth->fetch(PDO::FETCH_ASSOC) : $sth->fetchColumn();
+        $sql = 'SELECT rating, votes FROM rating WHERE product_id=?';
+
+        if ($load) {
+            $result = $this->db->fetch($sql, array($product_id));
+        } else {
+            $result = $this->db->fetchColumn($sql, array($product_id));
+        }
 
         $this->hook->fire('get.rating.after', $product_id, $user_id, $result);
         return $result;
@@ -59,13 +62,9 @@ class Rating extends Model
         $placeholders = rtrim(str_repeat('?, ', count($user_ids)), ', ');
 
         $sql = "SELECT * FROM rating_user WHERE user_id IN($placeholders) AND product_id=?";
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array_merge($user_ids, array($product_id)));
 
-        $ratings = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $rating) {
-            $ratings[$rating['user_id']] = $rating;
-        }
+        $conditions = array_merge($user_ids, array($product_id));
+        $ratings = $this->db->fetchAll($sql, $conditions, array('index' => 'user_id'));
 
         if (!is_array($user_id) && isset($ratings[$user_id])) {
             $ratings = $ratings[$user_id];
@@ -107,9 +106,9 @@ class Rating extends Model
         }
 
         $values = array(
+            'rating' => $rating,
             'user_id' => $user_id,
-            'rating' => (float) $rating,
-            'product_id' => (int) $product_id
+            'product_id' => $product_id
         );
 
         return $this->db->insert('rating_user', $values);
@@ -128,15 +127,13 @@ class Rating extends Model
                 . ' SET rating=:rating, votes=:votes, product_id=:product_id'
                 . ' ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes';
 
-        $sth = $this->db->prepare($sql);
-
-        $conditions = array(
-            ':product_id' => $product_id,
-            ':votes' => $rating['this_num_votes'],
-            ':rating' => $rating['bayesian_rating']
+        $vars = array(
+            'product_id' => $product_id,
+            'votes' => $rating['this_num_votes'],
+            'rating' => $rating['bayesian_rating']
         );
 
-        $sth->execute($conditions);
+        $this->db->run($sql, $vars);
         return $rating;
     }
 
@@ -161,10 +158,7 @@ class Rating extends Model
                 . ' WHERE product_id=?'
                 . ' GROUP BY product_id) AS result;';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($product_id));
-
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        return $this->db->fetch($sql, array($product_id));
     }
 
 }
