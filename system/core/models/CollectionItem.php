@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\Handler;
 use core\models\Collection as ModelsCollection;
@@ -66,7 +65,8 @@ class CollectionItem extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('weight', 'status', 'collection_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY weight ASC";
@@ -76,18 +76,12 @@ class CollectionItem extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $items = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $item) {
-            $item['data'] = unserialize($item['data']);
-            $items[$item['collection_item_id']] = $item;
-        }
+        $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
+        $items = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('collection.item.list', $items);
         return $items;
@@ -127,15 +121,7 @@ class CollectionItem extends Model
             return false;
         }
 
-        $values = array(
-            'value' => (int) $data['value'],
-            'status' => !empty($data['status']),
-            'collection_id' => (int) $data['collection_id'],
-            'weight' => isset($data['weight']) ? $data['weight'] : 0,
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data'])
-        );
-
-        $data['collection_item_id'] = $this->db->insert('collection', $values);
+        $data['collection_item_id'] = $this->db->insert('collection', $data);
 
         $this->hook->fire('add.collection.after', $data);
         return $data['collection_item_id'];
@@ -143,66 +129,66 @@ class CollectionItem extends Model
 
     /**
      * Loads a collection item from the database
-     * @param integer $collection_item_id
+     * @param integer $id
      * @return array
      */
-    public function get($collection_item_id)
+    public function get($id)
     {
-        $this->hook->fire('get.collection.item.before', $collection_item_id);
+        $this->hook->fire('get.collection.item.before', $id);
 
-        $sql = 'SELECT * FROM collection_item WHERE collection_item_id=?';
+        $sql = 'SELECT *'
+                . ' FROM collection_item'
+                . ' WHERE collection_item_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($collection_item_id));
-        $result = $sth->fetch(PDO::FETCH_ASSOC);
+        $result = $this->db->fetch($sql, array($id));
 
-        $this->hook->fire('get.collection.item.after', $collection_item_id, $result);
+        $this->hook->fire('get.collection.item.after', $id, $result);
         return $result;
     }
 
     /**
      * Deletes a collection item
-     * @param integer $collection_item_id
+     * @param integer $id
      * @return boolean
      */
-    public function delete($collection_item_id)
+    public function delete($id)
     {
-        $this->hook->fire('delete.collection.item.before', $collection_item_id);
+        $this->hook->fire('delete.collection.item.before', $id);
 
-        if (empty($collection_item_id)) {
+        if (empty($id)) {
             return false;
         }
 
-        $conditions = array('collection_item_id' => (int) $collection_item_id);
+        $conditions = array('collection_item_id' => $id);
         $result = $this->db->delete('collection_item', $conditions);
 
-        $this->hook->fire('delete.collection.item.after', $collection_item_id, $result);
+        $this->hook->fire('delete.collection.item.after', $id, $result);
         return (bool) $result;
     }
 
     /**
      * Updates a collection item
-     * @param integer $collection_item_id
+     * @param integer $id
      * @param array $data
      * @return boolean
      */
-    public function update($collection_item_id, array $data)
+    public function update($id, array $data)
     {
-        $this->hook->fire('update.collection.item.before', $collection_item_id, $data);
+        $this->hook->fire('update.collection.item.before', $id, $data);
 
-        if (empty($collection_item_id)) {
+        if (empty($id)) {
             return false;
         }
-            
-        $conditions = array('collection_item_id' => $collection_item_id);
+
+        $conditions = array('collection_item_id' => $id);
         $result = $this->db->update('collection_item', $data, $conditions);
 
-        $this->hook->fire('update.collection.item.after', $collection_item_id, $data, $result);
+        $this->hook->fire('update.collection.item.after', $id, $data, $result);
         return (bool) $result;
     }
 
     /**
-     * 
+     * Returns an array of collection item entities
      * @param array $collection
      * @param array $options
      * @return array

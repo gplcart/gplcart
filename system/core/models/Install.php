@@ -16,7 +16,6 @@ use core\classes\Request;
 use core\classes\Database;
 use core\models\Store as ModelsStore;
 use core\models\Language as ModelsLanguage;
-
 use core\exceptions\DatabaseException;
 
 /**
@@ -166,7 +165,7 @@ class Install extends Model
             $this->db = null;
             return $e->getMessage();
         }
-        
+
         $existing = $this->db->query('SHOW TABLES')->fetchColumn();
         if (!empty($existing)) {
             return $this->language->text('The database you specified already has tables');
@@ -272,7 +271,7 @@ class Install extends Model
         $groups[] = array('type' => 'catalog', 'title' => 'Catalog');
 
         foreach ($groups as $group) {
-            $group += array('store_id' => $store_id, 'data' => serialize(array()));
+            $group += array('store_id' => $store_id);
             $this->db->insert('category_group', $group);
         }
     }
@@ -291,10 +290,10 @@ class Install extends Model
 
         $store = array(
             'status' => 1,
-            'data' => serialize($data),
+            'data' => $data,
+            'created' => GC_TIME,
             'domain' => $this->request->host(),
             'name' => $settings['store']['title'],
-            'created' => GC_TIME,
             'basepath' => trim($this->request->base(true), '/')
         );
 
@@ -314,12 +313,9 @@ class Install extends Model
     {
         $user = array(
             'status' => 1,
-            'role_id' => 0,
-            'modified' => 0,
             'created' => GC_TIME,
             'name' => 'Superadmin',
             'store_id' => $store_id,
-            'data' => serialize(array()),
             'email' => $settings['user']['email'],
             'hash' => Tool::hash($settings['user']['password'])
         );
@@ -369,7 +365,6 @@ class Install extends Model
         $roles[] = array('name' => 'Content manager');
 
         foreach ($roles as $role) {
-            $role += array('permissions' => serialize(array()));
             $this->db->insert('role', $role);
         }
     }
@@ -409,8 +404,8 @@ class Install extends Model
                 'status' => 1,
                 'created' => GC_TIME,
                 'user_id' => $user_id,
-                'store_id' => $store_id,
-                'data' => serialize(array()));
+                'store_id' => $store_id
+            );
 
             $page_id = $this->db->insert('page', $data);
 

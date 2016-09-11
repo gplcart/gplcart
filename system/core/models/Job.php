@@ -272,6 +272,7 @@ class Job extends Model
     public function shutdownHandler(array $job)
     {
         $error = error_get_last();
+        
         if (isset($error['type']) && $error['type'] === E_ERROR) {
             $text = $this->language->text('An unexpected error has occurred.'
                     . ' The job has not been properly completed');

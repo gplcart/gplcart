@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
@@ -76,7 +75,8 @@ class Collection extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'type', 'store_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         }
 
@@ -84,17 +84,12 @@ class Collection extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $collections = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $collection) {
-            $collections[$collection['collection_id']] = $collection;
-        }
+        $options = array('index' => 'collection_id');
+        $collections = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('collection.list', $collections);
         return $collections;
@@ -193,14 +188,9 @@ class Collection extends Model
         $this->hook->fire('get.collection.before', $collection_id);
 
         $sql = 'SELECT * FROM collection WHERE collection_id=?';
+        $collection = $this->db->fetch($sql, array($collection_id));
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($collection_id));
-        $collection = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($collection)) {
-            $this->attachTranslation($collection, $language);
-        }
+        $this->attachTranslation($collection, $language);
 
         $this->hook->fire('get.collection.after', $collection_id, $collection);
         return $collection;
@@ -213,6 +203,10 @@ class Collection extends Model
      */
     protected function attachTranslation(array &$collection, $language)
     {
+        if (empty($collection)) {
+            return;
+        }
+
         $collection['language'] = 'und';
 
         $translations = $this->getTranslation($collection['collection_id']);
@@ -232,11 +226,11 @@ class Collection extends Model
      */
     public function getTranslation($collection_id)
     {
-        $sql = 'SELECT * FROM collection_translation WHERE collection_id=?';
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($collection_id));
+        $sql = 'SELECT *'
+                . ' FROM collection_translation'
+                . ' WHERE collection_id=?';
 
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->fetchAll($sql, array($collection_id));
     }
 
     /**
@@ -270,12 +264,11 @@ class Collection extends Model
      */
     public function canDelete($collection_id)
     {
-        $sql = 'SELECT collection_item_id FROM collection_item WHERE collection_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($collection_id));
-        $result = $sth->fetchColumn();
-
+        $sql = 'SELECT collection_item_id'
+                . ' FROM collection_item'
+                . ' WHERE collection_id=?';
+        
+        $result = $this->db->fetchColumn($sql, array($collection_id));
         return empty($result);
     }
 
@@ -292,9 +285,9 @@ class Collection extends Model
         if (empty($collection_id)) {
             return false;
         }
-        
+
         unset($data['type']); // Cannot change item type!
-        
+
         $conditions = array('collection_id' => (int) $collection_id);
         $updated = (int) $this->db->update('collection', $data, $conditions);
 

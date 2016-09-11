@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\Logger;
 use core\classes\Cache;
@@ -223,36 +222,21 @@ class Order extends Model
             $where[] = "%{$data['customer']}%";
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'order_id':
-                    $field = 'o.order_id';
-                    break;
-                case 'store_id':
-                    $field = 'o.store_id';
-                    break;
-                case 'status':
-                    $field = 'o.status';
-                    break;
-                case 'created':
-                    $field = 'o.created';
-                    break;
-                case 'total':
-                    $field = 'o.total';
-                    break;
-                case 'currency':
-                    $field = 'o.currency';
-                    break;
-                case 'customer':
-                    $field = 'customer';
-                    break;
-                case 'creator':
-                    $field = 'u.email';
-            }
+        $allowed_order = array('asc', 'desc');
 
-            if (isset($field)) {
-                $sql .= " ORDER BY $field {$data['order']}";
-            }
+        $allowed_sort = array(
+            'order_id' => 'o.order_id',
+            'store_id' => 'o.store_id',
+            'status' => 'o.status',
+            'created' => 'o.created',
+            'total' => 'o.total',
+            'currency' => 'o.currency',
+            'customer' => 'customer',
+            'creator' => 'u.email'
+        );
+
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY o.created DESC";
         }
@@ -261,22 +245,15 @@ class Order extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $order) {
-            $order = $this->prepareOrder($order);
-            $list[$order['order_id']] = $order;
-        }
+        $options = array('unserialize' => 'data', 'index' => 'order_id');
+        $orders = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('order.list', $list);
-
-        return $list;
+        $this->hook->fire('order.list', $orders);
+        return $orders;
     }
 
     /**
@@ -288,19 +265,12 @@ class Order extends Model
     {
         $this->hook->fire('get.order.before', $order_id);
 
-        $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email
-                FROM orders o
-                LEFT JOIN user u ON(o.user_id=u.user_id)
-                WHERE o.order_id=:order_id';
+        $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email'
+                . ' FROM orders o'
+                . ' LEFT JOIN user u ON(o.user_id=u.user_id)'
+                . ' WHERE o.order_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':order_id' => (int) $order_id));
-
-        $order = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($order['data'])) {
-            $order = $this->prepareOrder($order);
-        }
+        $order = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
 
         $this->hook->fire('get.order.after', $order_id, $order);
         return $order;
@@ -329,7 +299,7 @@ class Order extends Model
      */
     public function getCart($order_id)
     {
-        return $this->cart->getList(array('order_id' => (int) $order_id));
+        return $this->cart->getList(array('order_id' => $order_id));
     }
 
     /**
@@ -346,68 +316,11 @@ class Order extends Model
             return false;
         }
 
-        $values = array(
-            'modified' => isset($data['modified']) ? (int) $data['modified'] : GC_TIME
-        );
+        $data += array('modified' => GC_TIME);
 
-        if (isset($data['created'])) {
-            $values['created'] = (int) $data['created'];
-        }
-
-        if (!empty($data['user_id'])) {
-            $values['user_id'] = $data['user_id'];
-        }
-
-        if (!empty($data['creator'])) {
-            $values['creator'] = (int) $data['creator'];
-        }
-
-        if (!empty($data['comment'])) {
-            $values['comment'] = $data['comment'];
-        }
-
-        if (!empty($data['status'])) {
-            $values['status'] = $data['status'];
-        }
-
-        if (isset($data['store_id'])) {
-            $values['store_id'] = (int) $data['store_id'];
-        }
-
-        if (!empty($data['currency'])) {
-            $values['currency'] = $data['currency'];
-        }
-
-        if (!empty($data['data'])) {
-            $values['data'] = serialize((array) $data['data']);
-        }
-
-        if (isset($data['total'])) {
-            $values['total'] = (int) $data['total'];
-        }
-
-        if (!empty($data['shipping_address'])) {
-            $values['shipping_address'] = (int) $data['shipping_address'];
-        }
-
-        if (!empty($data['payment_address'])) {
-            $values['payment_address'] = (int) $data['payment_address'];
-        }
-
-        if (!empty($data['shipping'])) {
-            $values['shipping'] = $data['shipping'];
-        }
-
-        if (!empty($data['payment'])) {
-            $values['payment'] = $data['payment'];
-        }
-
-        if (empty($values)) {
-            return false;
-        }
-
-        $result = $this->db->update('orders', $values, array('order_id' => (int) $order_id));
+        $result = $this->db->update('orders', $data, array('order_id' => $order_id));
         $this->hook->fire('update.order.after', $order_id, $data, $result);
+
         return (bool) $result;
     }
 
@@ -424,12 +337,18 @@ class Order extends Model
             return false;
         }
 
-        $this->db->delete('orders', array('order_id' => (int) $order_id));
-        $this->db->delete('cart', array('order_id' => (int) $order_id));
-        $this->db->delete('history', array('id_key' => 'order_id', 'id_value' => (int) $order_id));
+        $conditions = array('order_id' => $order_id);
+        $conditions2 = array('id_key' => 'order_id', 'id_value' => $order_id);
 
-        $this->hook->fire('delete.order.after', $order_id);
-        return true;
+        $deleted = (bool) $this->db->delete('orders', $conditions);
+
+        if ($deleted) {
+            $this->db->delete('cart', $conditions);
+            $this->db->delete('history', $conditions2);
+        }
+
+        $this->hook->fire('delete.order.after', $order_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -457,7 +376,7 @@ class Order extends Model
             'time' => GC_TIME,
             'user_id' => $user_id,
             'id_key' => 'order_id',
-            'id_value' => (int) $order['order_id']
+            'id_value' => $order['order_id']
         );
 
         return (bool) $this->db->insert('history', $values);
@@ -471,21 +390,19 @@ class Order extends Model
      */
     public function isViewed(array $order, $user_id)
     {
-        $sql = 'SELECT history_id
-                FROM history
-                WHERE id_key=:id_key
-                    AND id_value=:id_value
-                    AND user_id=:user_id';
+        $sql = 'SELECT history_id'
+                . ' FROM history'
+                . ' WHERE id_key=?'
+                . ' AND id_value=?'
+                . ' AND user_id=?';
 
-        $where = array(
-            ':id_key' => 'order_id',
-            ':id_value' => (int) $order['order_id'],
-            ':user_id' => (int) $user_id
+        $conditions = array(
+            'order_id',
+            $order['order_id'],
+            $user_id
         );
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-        return (bool) $sth->fetchColumn();
+        return (bool) $this->db->fetchColumn($sql, $conditions);
     }
 
     /**
@@ -610,30 +527,16 @@ class Order extends Model
             return false;
         }
 
+        $order += array(
+            'created' => GC_TIME, 'status' => $this->getDefaultStatus());
+
         if (empty($order['data']['user'])) {
             $order['data']['user'] = $this->getUserData();
         }
 
-        $values = array(
-            'modified' => 0,
-            'user_id' => $order['user_id'],
-            'store_id' => isset($order['store_id']) ? (int) $order['store_id'] : $this->config->get('store', 1),
-            'status' => isset($order['status']) ? $order['status'] : $this->getDefaultStatus(),
-            'created' => empty($order['created']) ? GC_TIME : (int) $order['created'],
-            'total' => empty($order['total']) ? 0 : (int) $order['total'],
-            'currency' => empty($order['currency']) ? '' : $order['currency'],
-            'data' => serialize($order['data']),
-            'creator' => empty($order['creator']) ? 0 : (int) $order['creator'],
-            'shipping_address' => empty($order['shipping_address']) ? 0 : (int) $order['shipping_address'],
-            'payment_address' => empty($order['payment_address']) ? 0 : (int) $order['payment_address'],
-            'shipping' => empty($order['shipping']) ? '' : $order['shipping'],
-            'payment' => empty($order['payment']) ? '' : $order['payment'],
-            'comment' => empty($order['comment']) ? '' : $order['comment']
-        );
-
-        $order_id = $this->db->insert('orders', $values);
-        $this->hook->fire('add.order.after', $values, $order_id);
-        return $order_id;
+        $order['order_id'] = $this->db->insert('orders', $order);
+        $this->hook->fire('add.order.after', $order);
+        return $order['order_id'];
     }
 
     /**
@@ -878,19 +781,6 @@ class Order extends Model
         $rule['component_price'] = $price;
         $rule['component_price_formatted'] = $this->price->format($price, $order['currency']);
         return $rule;
-    }
-
-    /**
-     * Returns a prepared order
-     * @param array $order
-     * @return array
-     */
-    protected function prepareOrder(array $order)
-    {
-        $order['data'] = unserialize($order['data']);
-        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-        $order['status_formatted'] = $this->getStatusName($order['status']);
-        return $order;
     }
 
 }

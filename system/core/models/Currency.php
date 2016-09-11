@@ -100,7 +100,7 @@ class Currency extends Model
             return $currencies;
         }
 
-        $default = $this->defaultCurrencies();
+        $default = $this->getDefaultList();
         $saved = $this->config->get('currencies', array());
         $currencies = Tool::merge($default, $saved);
 
@@ -175,35 +175,32 @@ class Currency extends Model
      */
     public function canDelete($code)
     {
-        if ($code == $this->config->get('currency', 'USD')) {
+        if ($code == $this->getDefault()) {
             return false;
         }
 
-        $sql = 'SELECT NOT EXISTS (SELECT currency FROM orders WHERE currency=:currency)'
-                . ' AND NOT EXISTS (SELECT currency FROM price_rule WHERE currency=:currency)'
-                . ' AND NOT EXISTS (SELECT currency FROM product WHERE currency=:currency)';
+        $sql = 'SELECT NOT EXISTS (SELECT currency FROM orders WHERE currency=:code)'
+                . ' AND NOT EXISTS (SELECT currency FROM price_rule WHERE currency=:code)'
+                . ' AND NOT EXISTS (SELECT currency FROM product WHERE currency=:code)';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':currency' => $code));
-
-        return (bool) $sth->fetchColumn();
+        return (bool) $this->db->fetchColumn($sql, array('code' => $code));
     }
 
     /**
      * Converts currencies
      * @param integer $amount
-     * @param string $currency_code
-     * @param string $target_currency_code
+     * @param string $code
+     * @param string $target_code
      * @return integer
      */
-    public function convert($amount, $currency_code, $target_currency_code)
+    public function convert($amount, $code, $target_code)
     {
-        if ($currency_code === $target_currency_code) {
+        if ($code === $target_code) {
             return $amount; // Nothing to convert
         }
 
-        $currency = $this->get($currency_code);
-        $target_currency = $this->get($target_currency_code);
+        $currency = $this->get($code);
+        $target_currency = $this->get($target_code);
 
         $exponent = $target_currency['decimals'] - $currency['decimals'];
         $amount *= pow(10, $exponent);
@@ -213,12 +210,12 @@ class Currency extends Model
 
     /**
      * Loads a currency from the database
-     * @param null|string $currency_code
+     * @param null|string $code
      * @return array|string
      */
-    public function get($currency_code = null)
+    public function get($code = null)
     {
-        $currency = &Cache::memory("currency.$currency_code");
+        $currency = &Cache::memory("currency.$code");
 
         if (isset($currency)) {
             return $currency;
@@ -226,31 +223,31 @@ class Currency extends Model
 
         $list = $this->getList();
 
-        if (!empty($currency_code)) {
-            $currency = isset($list[$currency_code]) ? $list[$currency_code] : array();
+        if (!empty($code)) {
+            $currency = isset($list[$code]) ? $list[$code] : array();
             return $currency;
         }
 
         $url = (string) $this->request->get('currency');
 
         if (!empty($url)) {
-            $currency_code = $url;
+            $code = $url;
             $query = true;
         } else {
             $cookie = (string) $this->request->cookie('currency');
             if (!empty($cookie)) {
-                $currency_code = $cookie;
+                $code = $cookie;
             }
         }
 
-        if (isset($currency_code) && isset($list[$currency_code])) {
+        if (isset($code) && isset($list[$code])) {
             if (isset($query)) {
                 $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
-                Tool::setCookie('currency', $currency_code, $lifespan);
+                Tool::setCookie('currency', $code, $lifespan);
             }
 
-            $currency = $currency_code;
-            return $currency_code;
+            $currency = $code;
+            return $code;
         }
 
         $currency = $this->getDefault();
@@ -264,21 +261,21 @@ class Currency extends Model
      */
     public function getDefault($load = false)
     {
-        $default_currency = $this->config->get('currency', 'USD');
+        $currency = $this->config->get('currency', 'USD');
 
         if ($load) {
             $currencies = $this->getList();
-            return isset($currencies[$default_currency]) ? $currencies[$default_currency] : array();
+            return isset($currencies[$currency]) ? $currencies[$currency] : array();
         }
 
-        return $default_currency;
+        return $currency;
     }
 
     /**
      * Returns an array of default currencies
      * @return array
      */
-    protected function defaultCurrencies()
+    protected function getDefaultList()
     {
         return array(
             'USD' => array(

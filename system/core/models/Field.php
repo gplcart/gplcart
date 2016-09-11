@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
@@ -112,7 +111,7 @@ class Field extends Model
      */
     protected function deleteTranslation($field_id, $language = null)
     {
-        $conditions = array('field_id' => (int) $field_id);
+        $conditions = array('field_id' => $field_id);
 
         if (isset($language)) {
             $conditions['language'] = $language;
@@ -132,7 +131,7 @@ class Field extends Model
     {
         $translation += array(
             'language' => $language,
-            'field_id' => (int) $field_id,
+            'field_id' => $field_id,
         );
 
         return $this->db->insert('field_translation', $translation);
@@ -145,8 +144,6 @@ class Field extends Model
      */
     public function getList(array $data = array())
     {
-        $list = array();
-
         $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
 
         if (!empty($data['count'])) {
@@ -186,7 +183,8 @@ class Field extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'type', 'widget');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort) ) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY f.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY f.weight ASC';
@@ -196,19 +194,13 @@ class Field extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $field) {
-            $field['data'] = unserialize($field['data']);
-            $list[$field['field_id']] = $field;
-        }
-
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'field_id'));
         $this->hook->fire('get.field.list', $list);
+
         return $list;
     }
 
@@ -222,14 +214,10 @@ class Field extends Model
     {
         $this->hook->fire('get.field.before', $field_id, $language);
 
-        $options = array('unserialize' => 'data');
         $sql = 'SELECT * FROM field WHERE field_id=?';
-        
-        $field = $this->db->getRow($sql, array($field_id), $options);
-        
-        if (!empty($field)) {
-            $this->attachTranslation($field, $language);
-        }
+        $field = $this->db->fetch($sql, array($field_id));
+
+        $this->attachTranslation($field, $language);
 
         $this->hook->fire('get.field.after', $field_id, $language, $field);
         return $field;
@@ -242,6 +230,10 @@ class Field extends Model
      */
     protected function attachTranslation(array &$field, $language)
     {
+        if (empty($field)) {
+            return;
+        }
+
         $field['language'] = 'und';
         $translations = $this->getTranslation($field['field_id']);
 
@@ -262,7 +254,7 @@ class Field extends Model
     public function getTranslation($field_id)
     {
         $sql = 'SELECT * FROM field_translation WHERE field_id=?';
-        return $this->db->getRow($sql, array($field_id));
+        return $this->db->fetchAll($sql, array($field_id));
     }
 
     /**
@@ -282,6 +274,7 @@ class Field extends Model
             return false;
         }
 
+        // Delete related field value translations BEFORE the field
         $sql = 'DELETE fvt'
                 . ' FROM field_value_translation AS fvt'
                 . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
@@ -290,18 +283,19 @@ class Field extends Model
                 . ' ON (fv.field_value_id = fv2.field_value_id)'
                 . ' WHERE fv.field_id = ?);';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_id));
+        $this->db->run($sql, array($field_id));
 
         $conditions = array('field_id' => (int) $field_id);
+        $result = (bool) $this->db->delete('field', $conditions);
 
-        $this->db->delete('field', $conditions);
-        $this->db->delete('field_value', $conditions);
-        $this->db->delete('field_translation', $conditions);
-        $this->db->delete('product_class_field', $conditions);
+        if ($result) {
+            $this->db->delete('field_value', $conditions);
+            $this->db->delete('field_translation', $conditions);
+            $this->db->delete('product_class_field', $conditions);
+        }
 
-        $this->hook->fire('delete.field.after', $field_id);
-        return true;
+        $this->hook->fire('delete.field.after', $field_id, $result);
+        return (bool) $result;
     }
 
     /**
@@ -312,10 +306,7 @@ class Field extends Model
     public function canDelete($field_id)
     {
         $sql = 'SELECT field_id FROM product_field WHERE field_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_id));
-        $result = $sth->fetchColumn();
+        $result = $this->db->fetchColumn($sql, array($field_id));
 
         return empty($result);
     }

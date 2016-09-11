@@ -253,7 +253,7 @@ class Cart extends Model
         $sql .= ' GROUP BY sku ORDER BY created DESC';
 
         $options = array('unserialize' => 'data', 'index' => 'cart_id');
-        return $this->db->getRows($sql, $where, $options);
+        return $this->db->fetchAll($sql, $where, $options);
     }
 
     /**
@@ -438,7 +438,7 @@ class Cart extends Model
                 . ' WHERE sku=? AND user_id=? AND order_id=?';
 
         $conditions = array($data['sku'], $user_id, 0);
-        $existing = $this->db->getRow($sql, $conditions);
+        $existing = $this->db->fetch($sql, $conditions);
 
         if (isset($existing['cart_id'])) {
             $conditions = array('quantity' => $existing['quantity'] ++);
@@ -482,7 +482,7 @@ class Cart extends Model
      */
     public function get($cart_id)
     {
-        return $this->db->getRow('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
+        return $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
     }
 
     /**
@@ -557,7 +557,7 @@ class Cart extends Model
         }
 
         $sql = 'SELECT product_sku_id FROM product_sku WHERE sku=?';
-        $product_sku_id = $this->db->getColumn($sql, array($sku));
+        $product_sku_id = $this->db->fetchColumn($sql, array($sku));
 
         if (empty($product_sku_id)) {
             return false;

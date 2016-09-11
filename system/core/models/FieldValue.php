@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\models\Image as ModelsImage;
 use core\models\Language as ModelsLanguage;
@@ -84,7 +83,8 @@ class FieldValue extends Model
         $allowed_sort = array('title' => 'fv.title', 'weight' => 'fv.weight',
             'color' => 'fv.color', 'image' => 'f.file_id');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= ' ORDER BY fv.weight ASC';
@@ -94,19 +94,11 @@ class FieldValue extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $list = array();
-        foreach ($results as $field_value) {
-            $list[$field_value['field_value_id']] = $field_value;
-        }
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'field_value_id'));
 
         $this->hook->fire('field.value.list', $data, $list);
         return $list;
@@ -127,13 +119,8 @@ class FieldValue extends Model
                 . ' LEFT JOIN file f ON(fv.file_id = f.file_id)'
                 . ' WHERE fv.field_value_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_value_id));
-        $field_value = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($field_value)) {
-            $this->attachTranslation($field_value, $language);
-        }
+        $field_value = $this->db->fetch($sql, array($field_value_id));
+        $this->attachTranslation($field_value, $language);
 
         $this->hook->fire('get.field.value.after', $field_value);
         return $field_value;
@@ -146,6 +133,10 @@ class FieldValue extends Model
      */
     protected function attachTranslation(array &$field_value, $language)
     {
+        if (empty($field_value)) {
+            return;
+        }
+
         $field_value['language'] = 'und';
         $translations = $this->getTranslation($field_value['field_value_id']);
 
@@ -165,12 +156,11 @@ class FieldValue extends Model
      */
     public function getTranslation($field_value_id)
     {
-        $sql = 'SELECT * FROM field_value_translation WHERE field_value_id=?';
+        $sql = 'SELECT *'
+                . ' FROM field_value_translation'
+                . ' WHERE field_value_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_value_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->fetchAll($sql, array($field_value_id));
     }
 
     /**
@@ -242,7 +232,8 @@ class FieldValue extends Model
      * @param array $translation
      * @return integer
      */
-    public function addTranslation($field_value_id, $language, array $translation)
+    public function addTranslation($field_value_id, $language,
+            array $translation)
     {
         $translation += array(
             'language' => $language,
@@ -282,7 +273,6 @@ class FieldValue extends Model
 
         $file_id = $this->image->add($conditions);
         $this->update($data['field_value_id'], array('file_id' => $file_id));
-
         return true;
     }
 
@@ -331,16 +321,19 @@ class FieldValue extends Model
             return false;
         }
 
-        $conditions = array('field_value_id' => (int) $field_value_id);
-        $conditions2 = array('id_key' => 'field_value_id', 'id_value' => (int) $field_value_id);
+        $conditions = array('field_value_id' => $field_value_id);
+        $conditions2 = array('id_key' => 'field_value_id', 'id_value' => $field_value_id);
 
-        $this->db->delete('file', $conditions2);
-        $this->db->delete('field_value', $conditions);
-        $this->db->delete('product_field', $conditions);
-        $this->db->delete('field_value_translation', $conditions);
+        $deleted = (bool) $this->db->delete('field_value', $conditions);
 
-        $this->hook->fire('delete.field.value.after', $field_value_id);
-        return true;
+        if ($deleted) {
+            $this->db->delete('file', $conditions2);
+            $this->db->delete('product_field', $conditions);
+            $this->db->delete('field_value_translation', $conditions);
+        }
+
+        $this->hook->fire('delete.field.value.after', $field_value_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -355,10 +348,7 @@ class FieldValue extends Model
                 . ' LEFT JOIN cart c ON(pf.product_id = c.product_id)'
                 . ' WHERE pf.field_value_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($field_value_id));
-
-        $result = $sth->fetchColumn();
+        $result = $this->db->fetchColumn($sql, array($field_value_id));
         return empty($result);
     }
 

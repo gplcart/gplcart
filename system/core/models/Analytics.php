@@ -217,7 +217,7 @@ class Analytics extends Model
 
             try {
                 $results = call_user_func_array(array($this->service->data_ga, 'get'), $arguments);
-                $rows = $results->getRows();
+                $rows = $results->getList();
             } catch (\Google_IO_Exception $e) {
                 $this->logger->log('ga', $e->getMessage(), 'danger', false); // Failed to connect, etc...
                 return array();

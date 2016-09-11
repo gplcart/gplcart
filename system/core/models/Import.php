@@ -318,20 +318,27 @@ class Import extends Model
     public function getImages($data, array $operation)
     {
         $return = array('errors' => array(), 'images' => array());
-        $images = array_filter(array_map('trim', explode($this->getCsvDelimiterMultiple(), $data)));
+
+        $delimiter = $this->getCsvDelimiterMultiple();
+        $images = array_filter(array_map('trim', explode($delimiter, $data)));
 
         if (empty($images)) {
             return $return;
         }
 
-        $destination = 'image/upload/' . $this->config->get("{$operation['id']}_image_dirname", $operation['id']);
+        $destination = 'image/upload/'
+                . $this->config->get("{$operation['id']}_image_dirname", $operation['id']);
+        
         $this->file->setUploadPath($destination)->setHandler('image');
 
         foreach ($images as $image) {
             if (0 === strpos($image, 'http')) {
+                
                 $result = $this->file->wget($image);
+                
                 if ($result === true) {
-                    $return['images'][] = array('path' => $this->file->path($this->file->getUploadedFile()));
+                    $uploaded = $this->file->getUploadedFile();
+                    $return['images'][] = array('path' => $this->file->path($uploaded));
                     continue;
                 }
 
@@ -368,6 +375,7 @@ class Import extends Model
     public function validateCsvHeader($file, array $operation)
     {
         $header = $operation['csv']['header'];
+
         $real_header = $this->csv->setFile($file)
                 ->setHeader($header)
                 ->setDelimiter($this->getCsvDelimiter())
@@ -379,6 +387,7 @@ class Import extends Model
         if (($header_id !== $real_header_id) || array_diff($header, $real_header)) {
             $error = $this->language->text('Missing some header columns. Required format: %format', array(
                 '%format' => implode(' | ', $header)));
+
             return $error;
         }
 

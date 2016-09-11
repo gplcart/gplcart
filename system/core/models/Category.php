@@ -88,8 +88,7 @@ class Category extends Model
             $conditions[] = $store_id;
         }
 
-        $options = array('unserialize' => 'data');
-        $category = $this->db->getRow($sql, $conditions, $options);
+        $category = $this->db->fetch($sql, $conditions);
 
         $this->attachTranslation($category, $language);
         $this->attachImage($category, $language);
@@ -157,7 +156,7 @@ class Category extends Model
     public function getTranslation($category_id)
     {
         $sql = 'SELECT * FROM category_translation WHERE category_id=?';
-        return $this->db->getRows($sql, array($category_id));
+        return $this->db->fetchAll($sql, array($category_id));
     }
 
     /**
@@ -168,11 +167,18 @@ class Category extends Model
      */
     public function getOptionListByStore($store_id, $usage = null)
     {
+        $conditions = array(
+            'type' => $usage,
+            'store_id' => $store_id
+        );
+
+        $groups = $this->category_group->getList($conditions);
+
         $list = array();
-        $conditions = array('store_id' => $store_id, 'type' => $usage);
-        foreach ($this->category_group->getList($conditions) as $group) {
+        foreach ($groups as $group) {
             $list[$group['title']] = $this->getOptionList($group['category_group_id']);
         }
+
         return $list;
     }
 
@@ -270,7 +276,7 @@ class Category extends Model
 
         $sql .= ' ORDER BY c.weight ASC';
 
-        $results = $this->db->getRows($sql, $where, array('unserialize' => 'data'));
+        $results = $this->db->fetchAll($sql, $where);
 
         foreach ($results as $category) {
             $children_tree[$category['parent_id']][] = $category['category_id'];
@@ -408,11 +414,11 @@ class Category extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->getColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $options = array('index' => 'category_id', 'unserialize' => 'data');
-        $list = $this->db->getRows($sql, $where, $options);
+        $options = array('index' => 'category_id');
+        $list = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('categories', $list);
         return $list;
@@ -562,7 +568,7 @@ class Category extends Model
                 . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
                 . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
 
-        return (bool) $this->db->getColumn($sql, array('id' => $category_id));
+        return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
     }
 
     /**

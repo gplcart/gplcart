@@ -65,12 +65,12 @@ class Database extends PDO
      * @param integer $pos
      * @return mixed
      */
-    public function getColumn($sql, array $params = array(), $pos = 0)
+    public function fetchColumn($sql, array $params = array(), $pos = 0)
     {
         $sth = $this->run($sql, $params);
         return $sth->fetchColumn($pos);
     }
-    
+
     /**
      * Returns a simple array of columns
      * @param string $sql
@@ -78,7 +78,7 @@ class Database extends PDO
      * @param integer $pos
      * @return mixed
      */
-    public function getColumns($sql, array $params = array(), $pos = 0)
+    public function fetchColumnAll($sql, array $params = array(), $pos = 0)
     {
         $sth = $this->run($sql, $params);
         return $sth->fetchAll(PDO::FETCH_COLUMN, $pos);
@@ -91,8 +91,7 @@ class Database extends PDO
      * @param array $options
      * @return array
      */
-    public function getRow($sql, array $params = array(),
-            array $options = array())
+    public function fetch($sql, array $params, array $options = array())
     {
         $sth = $this->run($sql, $params);
         $result = $sth->fetch(PDO::FETCH_ASSOC);
@@ -108,8 +107,7 @@ class Database extends PDO
      * @param array $options
      * @return array
      */
-    public function getRows($sql, array $params = array(),
-            array $options = array())
+    public function fetchAll($sql, array $params, array $options = array())
     {
         $sth = $this->run($sql, $params);
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -143,14 +141,12 @@ class Database extends PDO
      */
     protected function prepareResult(&$data, array $options)
     {
-        if (!empty($options['unserialize'])) {
-            foreach ((array) $options['unserialize'] as $field) {
-                if (isset($data[$field])) {
-                    $data[$field] = unserialize($data[$field]);
-                } else {
-                    $data[$field] = array();
-                }
-            }
+        if (empty($options['unserialize']) || empty($data)) {
+            return;
+        }
+
+        foreach ((array) $options['unserialize'] as $field) {
+            $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
         }
     }
 

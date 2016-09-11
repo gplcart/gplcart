@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 
 /**
@@ -84,18 +83,11 @@ class City extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $cities = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $city) {
-            $city['data'] = unserialize($city['data']);
-            $cities[$city['city_id']] = $city;
-        }
+        $cities = $this->db->fetchAll($sql, $where, array('index' => 'city_id'));
 
         $this->hook->fire('cities', $cities);
         return $cities;
@@ -127,10 +119,8 @@ class City extends Model
      */
     public function get($city_id)
     {
-        $sth = $this->db->prepare('SELECT * FROM city WHERE city_id=?');
-        $sth->execute(array($city_id));
-
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        $sql = 'SELECT * FROM city WHERE city_id=?';
+        return $this->db->fetch($sql, array($city_id));
     }
 
     /**
@@ -164,10 +154,8 @@ class City extends Model
      */
     public function canDelete($city_id)
     {
-        $sth = $this->db->prepare('SELECT address_id FROM address WHERE city_id=?');
-        $sth->execute(array($city_id));
-        $result = $sth->fetchColumn();
-
+        $sql = 'SELECT address_id FROM address WHERE city_id=?';
+        $result = $this->db->fetchColumn($sql, array($city_id));
         return empty($result);
     }
 

@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Url;
 use core\classes\Curl;
@@ -207,14 +206,8 @@ class File extends Model
     {
         $this->hook->fire('get.file.before', $file_id);
 
-        $sth = $this->db->prepare('SELECT * FROM file WHERE file_id=?');
-        $sth->execute(array($file_id));
-
-        $file = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($file)) {
-            $this->attachTranslation($file, $language);
-        }
+        $file = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
+        $this->attachTranslation($file, $language);
 
         $this->hook->fire('get.file.after', $file);
         return $file;
@@ -227,6 +220,10 @@ class File extends Model
      */
     protected function attachTranslation(array &$file, $language)
     {
+        if (empty($file)) {
+            return;
+        }
+
         $file['language'] = 'und';
         $translations = $this->getTranslation($file['file_id']);
 
@@ -247,11 +244,7 @@ class File extends Model
     public function getTranslation($file_id)
     {
         $sql = 'SELECT * FROM file_translation WHERE file_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($file_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->fetchAll($sql, array($file_id));
     }
 
     /**
@@ -273,11 +266,14 @@ class File extends Model
 
         $conditions = array('file_id' => $file_id);
 
-        $this->db->delete('file', $conditions);
-        $this->db->delete('file_translation', $conditions);
+        $deleted = (bool) $this->db->delete('file', $conditions);
 
-        $this->hook->fire('delete.file.after', $file_id);
-        return true;
+        if ($deleted) {
+            $this->db->delete('file_translation', $conditions);
+        }
+
+        $this->hook->fire('delete.file.after', $file_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -288,13 +284,10 @@ class File extends Model
     public function canDelete($file_id)
     {
         $sql = 'SELECT'
-                . ' NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:file_id)'
-                . ' AND NOT EXISTS (SELECT file_id FROM option_combination WHERE file_id=:file_id)';
+                . ' NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)'
+                . ' AND NOT EXISTS (SELECT file_id FROM option_combination WHERE file_id=:id)';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':file_id' => $file_id));
-
-        return (bool) $sth->fetchColumn();
+        return (bool) $this->db->fetchColumn($sql, array('id' => $file_id));
     }
 
     /**
@@ -599,7 +592,8 @@ class File extends Model
         $allowed_sort = array('title' => 'title', 'path' => 'f.path',
             'created' => 'f.created', 'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY f.created DESC";
@@ -609,19 +603,11 @@ class File extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $files = array();
-        foreach ($results as $file) {
-            $files[$file['file_id']] = $file;
-        }
+        $files = $this->db->fetchAll($sql, $where, array('index' => 'file_id'));
 
         $this->hook->fire('files', $files);
         return $files;

@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\models\Language as ModelsLanguage;
 
@@ -38,27 +37,21 @@ class CategoryGroup extends Model
 
     /**
      * Load a category group from the database
-     * @param integer $category_group_id
+     * @param integer $group_id
      * @param null|string $language
      * @return array
      */
-    public function get($category_group_id, $language = null)
+    public function get($group_id, $language = null)
     {
-        $this->hook->fire('get.category.group.before', $category_group_id);
+        $this->hook->fire('get.category.group.before', $group_id);
 
         $sql = 'SELECT * FROM category_group WHERE category_group_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($category_group_id));
-        $category_group = $sth->fetch(PDO::FETCH_ASSOC);
+        $group = $this->db->fetch($sql, array($group_id));
+        $this->attachTranslation($group, $language);
 
-        if (!empty($category_group)) {
-            $category_group['data'] = unserialize($category_group['data']);
-            $this->attachTranslation($category_group, $language);
-        }
-
-        $this->hook->fire('get.category.group.after', $category_group);
-        return $category_group;
+        $this->hook->fire('get.category.group.after', $group);
+        return $group;
     }
 
     /**
@@ -68,6 +61,10 @@ class CategoryGroup extends Model
      */
     protected function attachTranslation(array &$category_group, $language)
     {
+        if (empty($category_group)) {
+            return;
+        }
+
         $category_group['language'] = 'und';
 
         $translations = $this->getTranslation($category_group['category_group_id']);
@@ -88,12 +85,11 @@ class CategoryGroup extends Model
      */
     public function getTranslation($category_group_id)
     {
-        $sql = 'SELECT * FROM category_group_translation WHERE category_group_id=?';
+        $sql = 'SELECT *'
+                . ' FROM category_group_translation'
+                . ' WHERE category_group_id=?';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($category_group_id));
-
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        return $this->db->fetchAll($sql, array($category_group_id));
     }
 
     /**
@@ -137,8 +133,7 @@ class CategoryGroup extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'store_id', 'title');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY cg.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY cg.title ASC";
@@ -148,17 +143,12 @@ class CategoryGroup extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $group) {
-            $list[$group['category_group_id']] = $group;
-        }
+        $options = array('index' => 'category_group_id');
+        $list = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('category.groups', $list);
         return $list;
@@ -217,13 +207,12 @@ class CategoryGroup extends Model
      */
     public function addTranslation($id, $language, array $translation)
     {
-        $values = array(
+        $translation += array(
             'language' => $language,
-            'category_group_id' => $id,
-            'title' => $translation['title']
+            'category_group_id' => $id
         );
 
-        return $this->db->insert('category_group_translation', $values);
+        return $this->db->insert('category_group_translation', $translation);
     }
 
     /**
@@ -278,10 +267,7 @@ class CategoryGroup extends Model
     public function canDelete($category_group_id)
     {
         $sql = 'SELECT category_id FROM category WHERE category_group_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($category_group_id));
-        $result = $sth->fetchColumn();
+        $result = $this->db->fetchColumn($sql, array($category_group_id));
 
         return empty($result);
     }
@@ -301,9 +287,10 @@ class CategoryGroup extends Model
         }
 
         $conditions = array('category_group_id' => $category_group_id);
-        $updated = (int) $this->db->update('category_group', $data, $conditions);
 
+        $updated = (int) $this->db->update('category_group', $data, $conditions);
         $updated += (int) $this->setTranslation($data);
+
         $result = ($updated > 0);
 
         $this->hook->fire('update.category.group.after', $category_group_id, $data, $result);

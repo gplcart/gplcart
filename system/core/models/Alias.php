@@ -73,11 +73,11 @@ class Alias extends Model
     {
         if (is_numeric($id_key)) {
             $sql = 'SELECT * FROM alias WHERE alias_id=?';
-            return $this->db->getRow($sql, array($id_key));
+            return $this->db->fetch($sql, array($id_key));
         }
 
         $sql = 'SELECT alias FROM alias WHERE id_key=? AND id_value=?';
-        return $this->db->getColumn($sql, array($id_key, $id_value));
+        return $this->db->fetchColumn($sql, array($id_key, $id_value));
     }
 
     /**
@@ -166,11 +166,11 @@ class Alias extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->getColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'alias_id');
-        return $this->db->getRows($sql, $where, $options);
+        return $this->db->fetchAll($sql, $where, $options);
     }
 
     /**
@@ -179,7 +179,7 @@ class Alias extends Model
      */
     public function getIdKeys()
     {
-        return $this->db->getColumns('SELECT id_key FROM alias GROUP BY id_key');
+        return $this->db->fetchColumnAll('SELECT id_key FROM alias GROUP BY id_key');
     }
 
     /**
@@ -243,7 +243,7 @@ class Alias extends Model
      */
     public function info($alias)
     {
-        return $this->db->getRow('SELECT * FROM alias WHERE alias=?', array($alias));
+        return $this->db->fetch('SELECT * FROM alias WHERE alias=?', array($alias));
     }
 
 }

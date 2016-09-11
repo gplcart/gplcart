@@ -71,8 +71,7 @@ $tables['category'] = array(
         'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'description_1' => array('type' => 'text', 'not_null' => true, 'default' => ''),
-        'description_2' => array('type' => 'text', 'not_null' => true, 'default' => ''),
-        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'description_2' => array('type' => 'text', 'not_null' => true, 'default' => '')
     )
 );
 
@@ -81,8 +80,7 @@ $tables['category_group'] = array(
         'category_group_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
-        'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true)
     )
 );
 
@@ -114,8 +112,7 @@ $tables['city'] = array(
         'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
-        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
-        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0)
     )
 );
 
@@ -167,8 +164,7 @@ $tables['field'] = array(
         'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
         'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
         'widget' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
-        'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true)
     )
 );
 
@@ -251,7 +247,7 @@ $tables['log'] = array(
 $tables['module'] = array(
     'fields' => array(
         'module_id' => array('type' => 'varchar', 'length' => 255, 'primary' => true),
-        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true),
+        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
         'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
         'settings' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
@@ -271,18 +267,18 @@ $tables['orders'] = array(
     'fields' => array(
         'order_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'shipping_address' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'payment_address' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'shipping_address' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+        'payment_address' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'total' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+        'total' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'creator' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
+        'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true, 'default' => ''),
         'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
-        'comment' => array('type' => 'text', 'not_null' => true),
+        'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+        'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+        'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+        'comment' => array('type' => 'text', 'not_null' => true, 'default' => ''),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

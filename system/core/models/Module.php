@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use ZipArchive;
 use core\Model;
 use core\Container;
@@ -266,21 +265,7 @@ class Module extends Model
      */
     public function update($module_id, array $data)
     {
-        $values = array();
-
-        if (isset($data['weight'])) {
-            $values['weight'] = (int) $data['weight'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (!empty($data['settings'])) {
-            $values['settings'] = serialize((array) $data['settings']);
-        }
-
-        $this->db->update('module', $values, array('module_id' => $module_id));
+        $this->db->update('module', $data, array('module_id' => $module_id));
     }
 
     /**
@@ -289,14 +274,8 @@ class Module extends Model
      */
     public function add(array $data)
     {
-        $values = array(
-            'module_id' => $data['module_id'],
-            'status' => !empty($data['status']),
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : $this->getNextWeight(),
-            'settings' => empty($data['settings']) ? serialize(array()) : serialize((array) $data['settings']),
-        );
-
-        $this->db->insert('module', $values);
+        $data += array('weight' => $this->getNextWeight());
+        $this->db->insert('module', $data);
     }
 
     /**
@@ -315,7 +294,14 @@ class Module extends Model
         }
 
         if ($this->isActiveTheme($module_id)) {
-            $this->add(array('module_id' => $module_id, 'status' => true, 'settings' => $settings));
+
+            $data = array(
+                'status' => true,
+                'settings' => $settings,
+                'module_id' => $module_id
+            );
+
+            $this->add($data);
             return true;
         }
 
@@ -405,11 +391,10 @@ class Module extends Model
 
         $themes = array($this->config->get('theme_backend', 'backend'));
 
-        $sth = $this->db->query('SELECT * FROM store');
+        $stores = $this->db->fetchAll('SELECT * FROM store', array());
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $store) {
+        foreach ($stores as $store) {
             $data = unserialize($store['data']);
-
             foreach ($data as $key => $value) {
                 if (0 === strpos($key, 'theme')) {
                     $themes[] = $value;
@@ -433,6 +418,7 @@ class Module extends Model
         $required_by = array();
 
         foreach ($modules as $info) {
+
             if (empty($info['dependencies'])) {
                 continue;
             }
@@ -507,8 +493,7 @@ class Module extends Model
      */
     public function getMaxWeight()
     {
-        $sth = $this->db->query('SELECT MAX(weight) FROM module');
-        return (int) $sth->fetchColumn();
+        return (int) $this->db->fetchColumn('SELECT MAX(weight) FROM module', array());
     }
 
     /**
