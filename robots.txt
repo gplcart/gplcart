@@ -16,8 +16,8 @@ Disallow: /files/download
 Disallow: /files/image/misc
 Disallow: /files/private
 Disallow: /forgot
-Disallow: /INSTALL
-Disallow: /LICENSE
+Disallow: /install
+Disallow: /license
 Disallow: /login
 Disallow: /logout
 Disallow: /README
