@@ -9,7 +9,6 @@
 
 namespace core;
 
-use PDO;
 use core\Hook;
 use core\Config;
 use core\Handler;
@@ -883,6 +882,28 @@ class Route
             )
         );
 
+        $routes['admin/settings/zone'] = array(
+            'access' => 'zone',
+            'menu' => array('admin' => 'Zones'),
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Zone', 'listZone')
+            )
+        );
+
+        $routes['admin/settings/zone/add'] = array(
+            'access' => 'zone_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Zone', 'editZone')
+            )
+        );
+
+        $routes['admin/settings/zone/edit/(\d+)'] = array(
+            'access' => 'zone_edit',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Zone', 'editZone')
+            )
+        );
+
         $routes['admin/report'] = array(
             'menu' => array('admin' => 'Reports'),
             'handlers' => array(
@@ -1079,15 +1100,14 @@ class Route
     {
         $sql = 'SELECT alias'
                 . ' FROM alias'
-                . ' WHERE id_key=:id_key AND id_value=:id_value';
+                . ' WHERE id_key=? AND id_value=?';
+        
+        $conditions = array(
+            $segments[$route['alias'][0]] . '_id',
+            $segments[$route['alias'][1]]
+        );
 
-        $sth = $this->db->prepare($sql);
-
-        $sth->execute(array(
-            ':id_key' => $segments[$route['alias'][0]] . '_id',
-            ':id_value' => $segments[$route['alias'][1]]));
-
-        return (string) $sth->fetchColumn();
+        return (string) $this->db->fetchColumn($sql, $conditions);
     }
 
     /**
@@ -1097,12 +1117,8 @@ class Route
      */
     protected function getAliasInfo($alias)
     {
-        $sql = 'SELECT id_key, id_value FROM alias WHERE alias=:alias';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':alias' => $alias));
-
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        $sql = 'SELECT id_key, id_value FROM alias WHERE alias=?';
+        return $this->db->fetch($sql, array($alias));
     }
 
     /**

@@ -46,6 +46,26 @@
           </div>
         </div>
       </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label">
+          <?php echo $this->text('Zone'); ?>
+        </label>
+        <div class="col-md-4">
+          <select name="state[zone_id]" class="form-control">
+            <option value=""><?php echo $this->text('None'); ?></option>
+            <?php foreach ($zones as $zone) { ?>
+            <?php if (isset($state['zone_id']) && $state['zone_id'] == $zone['zone_id']) { ?>
+            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->escape($zone['title']); ?></option>
+            <?php } else { ?>
+            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->escape($zone['title']); ?></option>
+            <?php } ?>
+            <?php } ?>
+          </select>
+          <div class="help-block">
+            <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="panel panel-default">

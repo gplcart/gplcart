@@ -9,6 +9,7 @@
 
 namespace core\controllers\admin;
 
+use core\models\Zone as ModelsZone;
 use core\models\State as ModelsState;
 use core\models\Country as ModelsCountry;
 use core\controllers\admin\Controller as BackendController;
@@ -30,16 +31,24 @@ class State extends BackendController
      * @var \core\models\State $state
      */
     protected $state;
-
+    
+    /**
+     * Zone model instance
+     * @var \core\models\Zone $zone
+     */
+    protected $zone;
+    
     /**
      * Constructor
      * @param ModelsCountry $country
      * @param ModelsState $state
+     * @param ModelsZone $zone
      */
-    public function __construct(ModelsCountry $country, ModelsState $state)
+    public function __construct(ModelsCountry $country, ModelsState $state, ModelsZone $zone)
     {
         parent::__construct();
 
+        $this->zone = $zone;
         $this->state = $state;
         $this->country = $country;
     }
@@ -80,8 +89,10 @@ class State extends BackendController
     {
         $state = $this->getState($state_id);
         $country = $this->getCountry($country_code);
+        $zones = $this->zone->getList(array('status' => 1));
 
         $this->setData('state', $state);
+        $this->setData('zones', $zones);
         $this->setData('country', $country);
 
         $this->submitState($country, $state);

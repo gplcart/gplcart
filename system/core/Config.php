@@ -9,7 +9,6 @@
 
 namespace core;
 
-use PDO;
 use core\Container;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -308,15 +307,10 @@ class Config
             return array();
         }
 
-        $modules = array();
-        $sth = $this->db->query('SELECT * FROM module ORDER BY weight ASC');
+        $sql = 'SELECT * FROM module ORDER BY weight ASC';
+        $options = array('unserialize' => 'settings', 'index' => 'module_id');
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $module) {
-            $module['settings'] = empty($module['settings']) ? array() : unserialize($module['settings']);
-            $modules[$module['module_id']] = $module;
-        }
-
-        return $modules;
+        return $this->db->fetchAll($sql, array(), $options);
     }
 
     /**
@@ -374,10 +368,16 @@ class Config
             return array();
         }
 
+        $results = $this->db->fetchAll('SELECT * FROM settings', array());
+
         $settings = array();
-        $sth = $this->db->query('SELECT * FROM settings');
-        foreach ($sth->fetchAll() as $setting) {
-            $settings[$setting['id']] = $setting['serialized'] ? unserialize($setting['value']) : $setting['value'];
+        foreach ($results as $result) {
+
+            if ($result['serialized']) {
+                $result['value'] = unserialize($result['value']);
+            }
+
+            $settings[$result['id']] = $result['value'];
         }
 
         return $settings;

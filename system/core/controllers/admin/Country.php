@@ -9,6 +9,7 @@
 
 namespace core\controllers\admin;
 
+use core\models\Zone as ModelsZone;
 use core\models\Country as ModelsCountry;
 use core\controllers\admin\Controller as BackendController;
 
@@ -25,13 +26,21 @@ class Country extends BackendController
     protected $country;
 
     /**
+     * Zone model instance
+     * @var \core\models\Zone $zone
+     */
+    protected $zone;
+
+    /**
      * Constructor
      * @param ModelsCountry $country
+     * @param ModelsZone $zone
      */
-    public function __construct(ModelsCountry $country)
+    public function __construct(ModelsCountry $country, ModelsZone $zone)
     {
         parent::__construct();
 
+        $this->zone = $zone;
         $this->country = $country;
     }
 
@@ -67,7 +76,9 @@ class Country extends BackendController
     public function editCountry($country_code = null)
     {
         $country = $this->getCountry($country_code);
+        $zones = $this->zone->getList(array('status' => 1));
 
+        $this->setData('zones', $zones);
         $this->setData('country', $country);
 
         $this->submitCountry($country);
@@ -137,6 +148,8 @@ class Country extends BackendController
      */
     protected function setBreadcrumbListCountry()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -173,6 +186,8 @@ class Country extends BackendController
      */
     protected function setBreadcrumbEditCountry()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -397,6 +412,8 @@ class Country extends BackendController
      */
     protected function setBreadcrumbFormatCountry()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));

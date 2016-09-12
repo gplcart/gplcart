@@ -10,6 +10,7 @@
 namespace core\controllers\admin;
 
 use core\models\City as ModelsCity;
+use core\models\Zone as ModelsZone;
 use core\models\State as ModelsState;
 use core\models\Country as ModelsCountry;
 use core\controllers\admin\Controller as BackendController;
@@ -37,18 +38,26 @@ class City extends BackendController
      * @var \core\models\City $city
      */
     protected $city;
-
+    
+    /**
+     * Zone model instance
+     * @var \core\models\Zone $zone
+     */
+    protected $zone;
+    
     /**
      * Constructor
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsCity $city
+     * @param ModelsZone $zone
      */
     public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsCity $city)
+            ModelsCity $city, ModelsZone $zone)
     {
         parent::__construct();
 
+        $this->zone = $zone;
         $this->city = $city;
         $this->state = $state;
         $this->country = $country;
@@ -207,6 +216,8 @@ class City extends BackendController
      */
     protected function setBreadcrumbListCity(array $country)
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -242,9 +253,11 @@ class City extends BackendController
         $city = $this->getCity($city_id);
         $state = $this->getStateCity($state_id);
         $country = $this->getCountryCity($country_code);
+        $zones = $this->zone->getList(array('status' => 1));
 
         $this->setData('city', $city);
         $this->setData('state', $state);
+        $this->setData('zones', $zones);
         $this->setData('country', $country);
 
         $this->submitCity($country, $state, $city);
@@ -410,6 +423,8 @@ class City extends BackendController
      */
     protected function setBreadcrumbEditCity()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));

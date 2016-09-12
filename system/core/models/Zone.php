@@ -92,6 +92,10 @@ class Zone extends Model
     {
         $this->hook->fire('delete.zone.before', $zone_id);
 
+        if (empty($zone_id) || !$this->canDelete($zone_id)) {
+            return false;
+        }
+
         $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
 
         $this->hook->fire('delete.zone.after', $zone_id, $result);
@@ -100,24 +104,61 @@ class Zone extends Model
     }
 
     /**
+     * Whether a zone can be deleted
+     * @param integer $zone_id
+     * @return boolean
+     */
+    public function canDelete($zone_id)
+    {
+        $sql = 'SELECT NOT EXISTS (SELECT zone_id FROM country WHERE zone_id=:id)'
+                . ' AND NOT EXISTS (SELECT zone_id FROM state WHERE zone_id=:id)'
+                . ' AND NOT EXISTS (SELECT zone_id FROM city WHERE zone_id=:id)';
+
+        return (bool) $this->db->fetchColumn($sql, array('id' => $zone_id));
+    }
+
+    /**
      * Returns an array of zones
-     * @param boolean $enabled
+     * @param array $data
      * @return array
      */
-    public function getList($enabled = false)
+    public function getList(array $data)
     {
-        $sql = 'SELECT * FROM zone';
+        $sql = 'SELECT *';
 
-        if ($enabled) {
-            $sql .= ' WHERE status > 0';
+        if (!empty($data['count'])) {
+            $sql = 'SELECT COUNT(zone_id)';
         }
 
-        $sql .= ' ORDER BY name ASC';
+        $sql .= ' FROM zone WHERE zone_id > 0';
 
-        $list = $this->db->fetchAll($sql, array());
+        $conditions = array();
 
+        if (isset($data['status'])) {
+            $sql .= ' AND status=?';
+            $conditions[] = (int) $data['status'];
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'status');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        } else {
+            $sql .= " ORDER BY title ASC";
+        }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $list = $this->db->fetchAll($sql, $conditions);
         $this->hook->fire('zone.list', $list);
-
         return $list;
     }
 

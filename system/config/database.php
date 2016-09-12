@@ -112,7 +112,8 @@ $tables['city'] = array(
         'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
-        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0)
+        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+        'zone_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0)
     )
 );
 
@@ -124,6 +125,7 @@ $tables['country'] = array(
         'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
         'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
         'format' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+        'zone_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0)
     )
 );
 
@@ -465,7 +467,8 @@ $tables['state'] = array(
         'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
         'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true)
+        'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+        'zone_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0)
     )
 );
 
@@ -522,10 +525,8 @@ $tables['user'] = array(
 $tables['zone'] = array(
     'fields' => array(
         'zone_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-        'state_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
-        'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'country' => array('type' => 'varchar', 'length' => 2, 'not_null' => true),
+        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+        'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true)
     )
 );
 
