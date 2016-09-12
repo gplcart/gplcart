@@ -11,17 +11,16 @@ namespace core\models;
 
 /**
  * Manages basic behaviors and data related to string transliterations
- * Based on Drupal Transliteration module
+ * Modified from Drupal's Transliteration module
  */
 class Translit
 {
 
     /**
      * Transliterates a string
-     * @staticvar array $tail_bytes
      * @param string $string
      * @param string $unknown
-     * @param string|null $source_langcode
+     * @param null|string $source_langcode
      * @return string
      */
     public function translit($string, $unknown = '?', $source_langcode = null)
@@ -33,38 +32,12 @@ class Translit
             return $string;
         }
 
-        static $tail_bytes;
-
-        if (!isset($tail_bytes)) {
-            // Each UTF-8 head byte is followed by a certain number of tail bytes.
-            $tail_bytes = array();
-            for ($n = 0; $n < 256; $n++) {
-                if ($n < 0xc0) {
-                    $remaining = 0;
-                } elseif ($n < 0xe0) {
-                    $remaining = 1;
-                } elseif ($n < 0xf0) {
-                    $remaining = 2;
-                } elseif ($n < 0xf8) {
-                    $remaining = 3;
-                } elseif ($n < 0xfc) {
-                    $remaining = 4;
-                } elseif ($n < 0xfe) {
-                    $remaining = 5;
-                } else {
-                    $remaining = 0;
-                }
-                $tail_bytes[chr($n)] = $remaining;
-            }
-        }
-
-        // Chop the text into pure-ASCII and non-ASCII areas; large ASCII parts can
-        // be handled much more quickly. Don't chop up Unicode areas for punctuation,
-        // though, that wastes energy.
-        preg_match_all('/[\x00-\x7f]+|[\x80-\xff][\x00-\x40\x5b-\x5f\x7b-\xff]*/', $string, $matches);
+        $tail_bytes = $this->getTailBytes();
+        $areas = $this->getAreas($string);
 
         $result = '';
-        foreach ($matches[0] as $str) {
+        foreach ($areas[0] as $str) {
+
             if ($str[0] < "\x80") {
                 // ASCII chunk: guaranteed to be valid UTF-8 and in normal form C, so
                 // skip over it.
@@ -143,6 +116,56 @@ class Translit
             }
         }
         return $result;
+    }
+
+    /**
+     * Chops the text into pure-ASCII and non-ASCII areas
+     * @param string $string
+     * @return array
+     */
+    protected function getAreas($string)
+    {
+        preg_match_all('/[\x00-\x7f]+|[\x80-\xff][\x00-\x40\x5b-\x5f\x7b-\xff]*/', $string, $matches);
+        return $matches;
+    }
+
+    /**
+     * Each UTF-8 head byte is followed by a certain number of tail bytes
+     * This method returns an array of tail bytes
+     * @staticvar null|array $tail_bytes
+     * @return array
+     */
+    protected function getTailBytes()
+    {
+        static $tail_bytes;
+
+        if (isset($tail_bytes)) {
+            return $tail_bytes;
+        }
+
+        $tail_bytes = array();
+
+        for ($n = 0; $n < 256; $n++) {
+            if ($n < 0xc0) {
+                $remaining = 0;
+            } elseif ($n < 0xe0) {
+                $remaining = 1;
+            } elseif ($n < 0xf0) {
+                $remaining = 2;
+            } elseif ($n < 0xf8) {
+                $remaining = 3;
+            } elseif ($n < 0xfc) {
+                $remaining = 4;
+            } elseif ($n < 0xfe) {
+                $remaining = 5;
+            } else {
+                $remaining = 0;
+            }
+
+            $tail_bytes[chr($n)] = $remaining;
+        }
+
+        return $tail_bytes;
     }
 
     /**

@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\classes\Session;
@@ -91,17 +90,12 @@ class UserRole extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            switch ($data['sort']) {
-                case 'name':
-                    $sql .= " ORDER BY name {$data['order']}";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status {$data['order']}";
-                    break;
-                case 'role_id':
-                    $sql .= " ORDER BY role_id {$data['order']}";
-            }
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'status', 'role_id');
+
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY name ASC";
         }
@@ -110,18 +104,16 @@ class UserRole extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $roles = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $role) {
-            $role['permissions'] = unserialize($role['permissions']);
-            $roles[$role['role_id']] = $role;
-        }
+        $options = array(
+            'index' => 'role_id',
+            'unserialize' => 'permissions'
+        );
+
+        $roles = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('roles', $roles);
         return $roles;
@@ -144,7 +136,7 @@ class UserRole extends Model
             return false;
         }
 
-        $result = $this->db->delete('role', array('role_id' => (int) $role_id));
+        $result = $this->db->delete('role', array('role_id' => $role_id));
         $this->hook->fire('delete.role.after', $role_id, $result);
         return (bool) $result;
     }
@@ -156,9 +148,9 @@ class UserRole extends Model
      */
     public function canDelete($role_id)
     {
-        $sth = $this->db->prepare('SELECT user_id FROM user WHERE role_id=:role_id');
-        $sth->execute(array(':role_id' => (int) $role_id));
-        return !$sth->fetchColumn();
+        $sql = 'SELECT user_id FROM user WHERE role_id=?';
+        $result = $this->db->fetchColumn($sql, array($role_id));
+        return empty($result);
     }
 
     /**
@@ -174,16 +166,10 @@ class UserRole extends Model
             return false;
         }
 
-        $values = array(
-            'name' => $data['name'],
-            'status' => !empty($data['status']) ? (int) $data['status'] : 0,
-            'permissions' => !empty($data['permissions']) ? serialize($data['permissions']) : serialize(array())
-        );
+        $data['role_id'] = $this->db->insert('role', $data);
 
-        $role_id = $this->db->insert('role', $values);
-
-        $this->hook->fire('add.role.after', $data, $role_id);
-        return $role_id;
+        $this->hook->fire('add.role.after', $data);
+        return $data['role_id'];
     }
 
     /**
@@ -200,27 +186,8 @@ class UserRole extends Model
             return false;
         }
 
-        $values = array();
-
-        if (isset($data['name'])) {
-            $values['name'] = $data['name'];
-        }
-
-        if (isset($data['status'])) {
-            $values['status'] = (int) $data['status'];
-        }
-
-        if (isset($data['permissions'])) {
-            $values['permissions'] = serialize((array) $data['permissions']);
-        }
-
-        $result = false;
-
-        if (!empty($values)) {
-            $result = $this->db->update('role', $values, array('role_id' => (int) $role_id));
-            $this->hook->fire('update.role.after', $role_id, $data, $result);
-        }
-
+        $result = $this->db->update('role', $data, array('role_id' => $role_id));
+        $this->hook->fire('update.role.after', $role_id, $data, $result);
         return (bool) $result;
     }
 
@@ -239,16 +206,12 @@ class UserRole extends Model
 
         $this->hook->fire('get.role.before', $role_id);
 
-        $sth = $this->db->prepare('SELECT * FROM role WHERE role_id=:role_id');
-        $sth->execute(array(':role_id' => (int) $role_id));
+        $sql = 'SELECT * FROM role WHERE role_id=?';
+        $options = array('unserialize' => 'permissions');
 
-        $role = $sth->fetch(PDO::FETCH_ASSOC);
+        $role = $this->db->fetch($sql, array($role_id), $options);
 
-        if (isset($role['permissions'])) {
-            $role['permissions'] = unserialize($role['permissions']);
-        }
-
-        $this->hook->fire('get.role.after', $role_id, $role);
+        $this->hook->fire('get.role.after', $role);
         return $role;
     }
 

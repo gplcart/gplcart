@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\classes\Request;
@@ -102,7 +101,8 @@ class Store extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created ASC";
@@ -112,20 +112,12 @@ class Store extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        $stores = array();
-        foreach ($results as $store) {
-            $store['data'] = unserialize($store['data']);
-            $stores[$store['store_id']] = $store;
-        }
+        $options = array('unserialize' => 'data', 'index' => 'store_id');
+        $stores = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('stores', $stores);
         return $stores;
@@ -189,7 +181,6 @@ class Store extends Model
         }
 
         if (!empty($store)) {
-            $store['data'] = unserialize($store['data']);
             $store['data'] += $this->defaultConfig();
         }
 
@@ -205,11 +196,9 @@ class Store extends Model
     protected function selectById($store_id)
     {
         $sql = 'SELECT * FROM store WHERE store_id=?';
-
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($store_id));
-
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        
+        $options = array('unserialize' => 'data');
+        return $this->db->fetch($sql, array($store_id), $options);
     }
 
     /**
@@ -227,10 +216,8 @@ class Store extends Model
             $conditions = explode('/', $domain, 2);
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($conditions);
-
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        $options = array('unserialize' => 'data');
+        return $this->db->fetch($sql, $conditions, $options);
     }
 
     /**
@@ -372,17 +359,14 @@ class Store extends Model
         }
 
         $sql = 'SELECT'
-                . ' NOT EXISTS (SELECT store_id FROM product WHERE store_id=:store_id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM category_group WHERE store_id=:store_id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM page WHERE store_id=:store_id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM orders WHERE store_id=:store_id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM cart WHERE store_id=:store_id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM user WHERE store_id=:store_id)';
+                . ' NOT EXISTS (SELECT store_id FROM product WHERE store_id=:id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM category_group WHERE store_id=:id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM page WHERE store_id=:id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM orders WHERE store_id=:id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM cart WHERE store_id=:id)'
+                . ' AND NOT EXISTS (SELECT store_id FROM user WHERE store_id=:id)';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':store_id' => $store_id));
-
-        return (bool) $sth->fetchColumn();
+        return (bool) $this->db->fetchColumn($sql, array('id' => $store_id));
     }
 
     /**

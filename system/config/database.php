@@ -488,7 +488,7 @@ $tables['transaction'] = array(
         'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'payment_service' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'service_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'service_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

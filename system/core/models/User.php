@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\Logger;
 use core\classes\Tool;
@@ -98,29 +97,42 @@ class User extends Model
             return false;
         }
 
-        $values = array(
-            'created' => empty($data['created']) ? GC_TIME : (int) $data['created'],
-            'modified' => 0,
-            'email' => $data['email'],
-            'name' => $data['name'],
-            'hash' => Tool::hash($data['password']),
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data']),
-            'status' => !empty($data['status']),
-            'role_id' => isset($data['role_id']) ? (int) $data['role_id'] : 0,
-            'store_id' => isset($data['store_id']) ? (int) $data['store_id'] : $this->config->get('store', 1),
+        $data += array(
+            'created' => GC_TIME,
+            'hash' => Tool::hash($data['password'])
         );
 
-        $user_id = $this->db->insert('user', $values);
+        $data['user_id'] = $this->db->insert('user', $data);
 
-        if (!empty($data['addresses'])) {
-            foreach ($data['addresses'] as $address) {
-                $address['user_id'] = $user_id;
-                $this->address->add($address);
-            }
+        $this->setAddress($data);
+
+        $this->hook->fire('add.user.after', $data);
+        return $data['user_id'];
+    }
+
+    /**
+     * Adds/updates addresses for the user
+     * @param array $data
+     * @return boolean
+     */
+    protected function setAddress(array $data)
+    {
+        if (empty($data['addresses'])) {
+            return false;
         }
 
-        $this->hook->fire('add.user.after', $data, $user_id);
-        return $user_id;
+        foreach ($data['addresses'] as $address) {
+
+            if (empty($address['address_id'])) {
+                $address['user_id'] = $data['user_id'];
+                $this->address->add($address);
+                continue;
+            }
+
+            $this->address->update($address['address_id'], $address);
+        }
+
+        return true;
     }
 
     /**
@@ -137,19 +149,19 @@ class User extends Model
             return false;
         }
 
+        $data += array('modified' => GC_TIME, 'user_id' => $user_id);
+
         if (!empty($data['password'])) {
             $data['hash'] = Tool::hash($data['password']);
         }
 
-        $data += array('modified' => GC_TIME);
+        $options = array('user_id' => $user_id);
 
-        if (isset($data['addresses'])) {
-            foreach ((array) $data['addresses'] as $address) {
-                $this->setAddress($user_id, $address);
-            }
-        }
+        $updated = (int) $this->db->update('user', $data, $options);
+        $updated += (int) $this->setAddress($data);
 
-        $result = $this->db->update('user', $data, array('user_id' => $user_id));
+        $result = ($updated > 0);
+
         $this->hook->fire('update.user.after', $user_id, $data, $result);
 
         return (bool) $result;
@@ -172,15 +184,20 @@ class User extends Model
             return false;
         }
 
-        $this->db->delete('user', array('user_id' => (int) $user_id));
-        $this->db->delete('cart', array('user_id' => $user_id));
-        $this->db->delete('wishlist', array('user_id' => $user_id));
-        $this->db->delete('review', array('user_id' => $user_id));
-        $this->db->delete('address', array('user_id' => $user_id));
-        $this->db->delete('rating_user', array('user_id' => $user_id));
+        $conditions = array('user_id' => $user_id);
+        $deleted = (bool) $this->db->delete('user', $conditions);
 
-        $this->hook->fire('delete.user.after', $user_id);
-        return true;
+        if ($deleted) {
+            $this->db->delete('cart', $conditions);
+            $this->db->delete('review', $conditions);
+            $this->db->delete('history', $conditions);
+            $this->db->delete('address', $conditions);
+            $this->db->delete('wishlist', $conditions);
+            $this->db->delete('rating_user', $conditions);
+        }
+
+        $this->hook->fire('delete.user.after', $user_id, $deleted);
+        return (bool) $deleted;
     }
 
     /**
@@ -194,11 +211,10 @@ class User extends Model
             return false;
         }
 
-        $sql = 'SELECT * FROM orders WHERE user_id=:user_id';
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array(':user_id' => (int) $user_id));
+        $sql = 'SELECT * FROM orders WHERE user_id=?';
+        $result = $this->db->fetchColumn($sql, array($user_id));
 
-        return !$sth->fetchColumn();
+        return empty($result);
     }
 
     /**
@@ -299,28 +315,21 @@ class User extends Model
     {
         $this->hook->fire('get.user.before', $user_id, $store_id);
 
-        $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name
-                FROM user u
-                LEFT JOIN role r ON (u.role_id = r.role_id)
-                WHERE u.user_id=:user_id';
+        $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name'
+                . ' FROM user u'
+                . ' LEFT JOIN role r ON (u.role_id = r.role_id)'
+                . ' WHERE u.user_id=?';
 
-        $where = array(':user_id' => (int) $user_id);
+        $where = array($user_id);
 
         if (isset($store_id)) {
-            $sql .= ' AND u.store_id=:store_id';
-            $where[':store_id'] = (int) $store_id;
+            $sql .= ' AND u.store_id=?';
+            $where[] = $store_id;
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
+        $user = $this->db->fetch($sql, $where, array('unserialize' => 'data'));
 
-        $user = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($user)) {
-            $user['data'] = unserialize($user['data']);
-        }
-
-        $this->hook->fire('get.user.after', $user_id, $user);
+        $this->hook->fire('get.user.after', $user);
         return $user;
     }
 
@@ -422,16 +431,8 @@ class User extends Model
      */
     public function getByEmail($email)
     {
-        $sth = $this->db->prepare('SELECT * FROM user WHERE email=:email');
-        $sth->execute(array(':email' => $email));
-        $user = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($user)) {
-            return array();
-        }
-
-        $user['data'] = unserialize($user['data']);
-        return $user;
+        $sql = 'SELECT * FROM user WHERE email=?';
+        return $this->db->fetch($sql, array($email), array('unserialize' => 'data'));
     }
 
     /**
@@ -441,16 +442,8 @@ class User extends Model
      */
     public function getByName($name)
     {
-        $sth = $this->db->prepare('SELECT * FROM user WHERE name=:name');
-        $sth->execute(array(':name' => $name));
-        $user = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($user)) {
-            return array();
-        }
-
-        $user['data'] = unserialize($user['data']);
-        return $user;
+        $sql = 'SELECT * FROM user WHERE name=?';
+        return $this->db->fetch($sql, array($name), array('unserialize' => 'data'));
     }
 
     /**
@@ -627,29 +620,12 @@ class User extends Model
             $where[] = (int) $data['status'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            $order = $data['order'];
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'email', 'role_id', 'store_id', 'status', 'created');
 
-            switch ($data['sort']) {
-                case 'name':
-                    $sql .= " ORDER BY name $order";
-                    break;
-                case 'email':
-                    $sql .= " ORDER BY email $order";
-                    break;
-                case 'role_id':
-                    $sql .= " ORDER BY role_id $order";
-                    break;
-                case 'store_id':
-                    $sql .= " ORDER BY store_id $order";
-                    break;
-                case 'status':
-                    $sql .= " ORDER BY status $order";
-                    break;
-                case 'created':
-                    $sql .= " ORDER BY created $order";
-                    break;
-            }
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created DESC";
         }
@@ -658,36 +634,15 @@ class User extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $user) {
-            $list[$user['user_id']] = $user;
-        }
+        $options = array('index' => 'user_id', 'unserialize' => 'data');
+        $list = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('users', $list);
         return $list;
-    }
-
-    /**
-     * Adds/updates an address for a given user
-     * @param integer $user_id
-     * @param array $address
-     * @return bool
-     */
-    protected function setAddress($user_id, array $address)
-    {
-        if (empty($address['address_id'])) {
-            $address['user_id'] = $user_id;
-            return (bool) $this->address->add($address);
-        }
-
-        return (bool) $this->address->update($address['address_id'], $address);
     }
 
     /**

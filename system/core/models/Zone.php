@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 
 /**
@@ -35,38 +34,53 @@ class Zone extends Model
     {
         $this->hook->fire('get.zone.before', $zone_id);
 
-        $sth = $this->db->prepare('SELECT * FROM zone WHERE zone_id=:zone_id');
-        $sth->execute(array(':zone_id' => $zone_id));
+        $sql = 'SELECT * FROM zone WHERE zone_id=?';
+        $zone = $this->db->fetch($sql, array($zone_id));
 
-        $zone = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->hook->fire('get.zone.after', $zone);
 
-        $this->hook->fire('get.zone.after', $zone_id, $zone);
         return $zone;
     }
 
     /**
      * Adds a zone
      * @param array $data
-     * @return integer
+     * @return boolean
      */
-    public function add($data)
+    public function add(array $data)
     {
         $this->hook->fire('add.zone.before', $data);
-        $zone_id = $this->db->insert('zone', $data);
-        $this->hook->fire('add.zone.after', $data, $zone_id);
-        return $zone_id;
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $data['zone_id'] = $this->db->insert('zone', $data);
+
+        $this->hook->fire('add.zone.after', $data);
+
+        return $data['zone_id'];
     }
 
     /**
      * Updates a zone
      * @param integer $zone_id
      * @param array $data
+     * @return boolean
      */
-    public function update($zone_id, $data)
+    public function update($zone_id, array $data)
     {
         $this->hook->fire('update.zone.before', $zone_id, $data);
-        $this->db->update('zone', $data, array('zone_id' => $zone_id));
-        $this->hook->fire('update.zone.after', $zone_id, $data);
+
+        if (empty($zone_id) || empty($data)) {
+            return false;
+        }
+
+        $result = (bool) $this->db->update('zone', $data, array('zone_id' => $zone_id));
+
+        $this->hook->fire('update.zone.after', $zone_id, $data, $result);
+
+        return (bool) $result;
     }
 
     /**
@@ -77,9 +91,12 @@ class Zone extends Model
     public function delete($zone_id)
     {
         $this->hook->fire('delete.zone.before', $zone_id);
-        $this->db->delete('zone', array('zone_id' => $zone_id));
-        $this->hook->fire('delete.zone.after', $zone_id);
-        return true;
+
+        $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
+
+        $this->hook->fire('delete.zone.after', $zone_id, $result);
+
+        return (bool) $result;
     }
 
     /**
@@ -97,11 +114,10 @@ class Zone extends Model
 
         $sql .= ' ORDER BY name ASC';
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute();
+        $list = $this->db->fetchAll($sql, array());
 
-        $list = $sth->fetchAll(PDO::FETCH_ASSOC);
         $this->hook->fire('zone.list', $list);
+
         return $list;
     }
 

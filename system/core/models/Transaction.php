@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 
 /**
@@ -66,7 +65,8 @@ class Transaction extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('order_id', 'created', 'payment_service', 'service_transaction_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY t.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY t.created DESC';
@@ -76,20 +76,14 @@ class Transaction extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $result) {
-            $result['data'] = unserialize($result['data']);
-            $results[$result['transaction_id']] = $result;
-        }
+        $options = array('index' => 'transaction_id', 'unserialize' => 'data');
+        $results = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('transactions', $results);
+        $this->hook->fire('transaction.list', $results);
         return $results;
     }
 
@@ -106,16 +100,11 @@ class Transaction extends Model
             return false;
         }
 
-        $values = array(
-            'created' => (int) $data['created'],
-            'order_id' => (int) $data['order_id'],
-            'payment_service' => $data['payment_service'],
-            'service_transaction_id' => $data['service_transaction_id'],
-            'data' => empty($data['data']) ? serialize(array()) : serialize((array) $data['data']),
-        );
+        $data += array('created' => GC_TIME);
+        $data['transaction_id'] = $this->db->insert('transaction', $data);
 
-        $data['transaction_id'] = $this->db->insert('transaction', $values);
         $this->hook->fire('add.transaction.after', $data);
+
         return $data['transaction_id'];
     }
 
@@ -127,10 +116,9 @@ class Transaction extends Model
     public function get($transaction_id)
     {
         $sql = 'SELECT * FROM transaction WHERE transaction_id=?';
-        $sth = $this->db->prepare($sql);
-        $sth->execute(array($transaction_id));
 
-        return $sth->fetch(PDO::FETCH_ASSOC);
+        $options = array('unserialize' => 'data');
+        return $this->db->fetch($sql, array($transaction_id), $options);
     }
 
     /**

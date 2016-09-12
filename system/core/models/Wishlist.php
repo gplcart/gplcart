@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Cache;
 use core\models\User as ModelsUser;
@@ -51,27 +50,23 @@ class Wishlist extends Model
             return false;
         }
 
-        $values = array(
-            'product_id' => (int) $data['product_id'],
-            'user_id' => $data['user_id'], // number or string
-            'created' => !empty($data['created']) ? (int) $data['created'] : GC_TIME
-        );
-
         if ($check && !$this->canAdd($data['user_id'])) {
             return false; // Limits reached
         }
 
-        if ($check && $this->get($values)) {
+        if ($check && $this->get($data)) {
             return false; // Already exists
         }
 
-        $wishlist_id = $this->db->insert('wishlist', $values);
-        $this->hook->fire('add.wishlist.after', $data, $wishlist_id);
-        return $wishlist_id;
+        $data += array('created' => GC_TIME);
+        $data['wishlist_id'] = $this->db->insert('wishlist', $data);
+
+        $this->hook->fire('add.wishlist.after', $data);
+        return $data['wishlist_id'];
     }
 
     /**
-     * Whether a user can add a product to wishlist
+     * Whether a user can add a product to the wishlist
      * @param integer|null $user_id
      * @return boolean
      */
@@ -103,16 +98,17 @@ class Wishlist extends Model
     {
         $limit = $this->config->get('wishlist_limit', 20);
 
-        if (is_numeric($user_id)) {
-            $user = $this->user->get($user_id);
-            if (empty($user['status'])) {
-                return $limit; // Missing / blocked user
-            }
-
-            $limit = $this->config->get("wishlist_limit_{$user['role_id']}", 20);
+        if (!is_numeric($user_id)) {
+            return $limit; // Anonymous
         }
 
-        return $limit;
+        $user = $this->user->get($user_id);
+
+        if (empty($user['status'])) {
+            return $limit; // Missing user
+        }
+
+        return $this->config->get("wishlist_limit_{$user['role_id']}", 20);
     }
 
     /**
@@ -129,7 +125,12 @@ class Wishlist extends Model
             return false;
         }
 
-        $result = isset($user_id) ? $this->deleteByUser($user_id) : $this->deleteMultiple($wishlist_id);
+        if (isset($user_id)) {
+            $result = $this->deleteByUser($user_id);
+        } else {
+            $result = $this->deleteMultiple($wishlist_id);
+        }
+
         $this->hook->fire('delete.wishlist.after', $wishlist_id, $user_id, $result);
         return (bool) $result;
     }
@@ -141,7 +142,7 @@ class Wishlist extends Model
      */
     public function getList(array $data = array())
     {
-        $cache_key = 'wishlist.' . md5(serialize($data));
+        $cache_key = 'wishlist.' . md5(json_encode($data));
 
         $items = &Cache::memory($cache_key);
 
@@ -149,24 +150,22 @@ class Wishlist extends Model
             return $items;
         }
 
-        $items = array();
-
-        $sql = 'SELECT w.*, u.name AS user_name, u.email ';
+        $sql = 'SELECT w.*, u.name AS user_name, u.email';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(w.wishlist_id) ';
+            $sql = 'SELECT COUNT(w.wishlist_id)';
         }
 
-        $sql .= '
-            FROM wishlist w
-            LEFT JOIN user u ON(w.user_id = u.user_id)
-            WHERE w.wishlist_id > 0';
+        $sql .= ' FROM wishlist w'
+                . ' LEFT JOIN user u ON(w.user_id = u.user_id)'
+                . ' WHERE w.wishlist_id > 0';
 
         $where = array();
 
         if (!empty($data['product_id'])) {
             $values = (array) $data['product_id'];
-            $placeholders = rtrim(str_repeat('?, ', count($values)), ', ');
+            $placeholders = rtrim(str_repeat('?,', count($values)), ',');
+
             $sql .= ' AND w.product_id IN(' . $placeholders . ')';
             $where = array_merge($where, $values);
         }
@@ -178,15 +177,15 @@ class Wishlist extends Model
 
         if (isset($data['created'])) {
             $sql .= ' AND w.created = ?';
-            $where[] = (int) $data['created'];
+            $where[] = $data['created'];
         }
 
-        if (isset($data['sort']) && (isset($data['order']) && in_array($data['order'], array('asc', 'desc'), true))) {
-            $allowed_sort = array('product_id', 'user_id', 'created');
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('product_id', 'user_id', 'created');
 
-            if (in_array($data['sort'], $allowed_sort, true)) {
-                $sql .= " ORDER BY w.{$data['sort']} {$data['order']}";
-            }
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY w.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY w.created DESC";
         }
@@ -195,17 +194,11 @@ class Wishlist extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $item) {
-            $items[$item['wishlist_id']] = $item;
-        }
-
+        $items = $this->db->fetchAll($sql, $where, array('index' => 'wishlist_id'));
         $this->hook->fire('wishlist', $items);
 
         return $items;
@@ -220,28 +213,24 @@ class Wishlist extends Model
     {
         $this->hook->fire('get.wishlist.before', $condition);
 
-        $result = array();
-
         if (is_numeric($condition)) {
-            $sth = $this->db->prepare('SELECT * FROM wishlist WHERE wishlist_id=:wishlist_id');
-            $sth->execute(array(':wishlist_id' => $condition));
-            $result = $sth->fetch(PDO::FETCH_ASSOC);
+            $sql = 'SELECT * FROM wishlist WHERE wishlist_id=?';
+            $conditions = array($condition);
         }
 
         if (is_array($condition)) {
 
             $sql = 'SELECT wishlist_id'
                     . ' FROM wishlist'
-                    . ' WHERE product_id=:product_id AND user_id=:user_id';
+                    . ' WHERE product_id=? AND user_id=?';
 
-            $sth = $this->db->prepare($sql);
+            $conditions = array($condition['product_id'], $condition['user_id']);
+        }
 
-            $sth->execute(array(
-                ':product_id' => $condition['product_id'],
-                ':user_id' => $condition['user_id']
-            ));
+        $result = array();
 
-            $result = $sth->fetch(PDO::FETCH_ASSOC);
+        if (isset($sql)) {
+            $result = $this->db->fetch($sql, $conditions);
         }
 
         $this->hook->fire('get.wishlist.after', $condition, $result);
@@ -272,34 +261,32 @@ class Wishlist extends Model
      */
     protected function countByUser($user_id)
     {
-        $sth = $this->db->prepare('SELECT COUNT(wishlist_id) FROM wishlist WHERE user_id=:user_id');
-        $sth->execute(array(':user_id' => $user_id));
-        return (int) $sth->fetchColumn();
+        $sql = 'SELECT COUNT(wishlist_id) FROM wishlist WHERE user_id=?';
+        return (int) $this->db->fetchColumn($sql, array($user_id));
     }
 
     /**
      * Deletes wishlist items by a user
      * @param mixed $user_id
-     * @return integer
+     * @return bool
      */
     protected function deleteByUser($user_id)
     {
-        return $this->db->delete('wishlist', array('user_id' => $user_id));
+        return (bool) $this->db->delete('wishlist', array('user_id' => $user_id));
     }
 
     /**
      * Deletes wishlist item(s) by one or more ID
      * @param integer|array $wishlist_id
-     * @return integer
+     * @return boolean
      */
     protected function deleteMultiple($wishlist_id)
     {
-        $wishlist_ids = (array) $wishlist_id;
-        $placeholders = rtrim(str_repeat('?, ', count($wishlist_ids)), ', ');
-        $sth = $this->db->prepare("DELETE FROM wishlist WHERE wishlist_id IN($placeholders)");
-        $sth->execute($wishlist_ids);
-        
-        return $sth->rowCount();
+        $ids = (array) $wishlist_id;
+        $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+        $sql = "DELETE FROM wishlist WHERE wishlist_id IN($placeholders)";
+
+        return (bool) $this->db->run($sql, $ids)->rowCount();
     }
 
 }

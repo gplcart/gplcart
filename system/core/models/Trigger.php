@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use PDO;
 use core\Model;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -51,8 +50,6 @@ class Trigger extends Model
             return $triggers;
         }
 
-        $triggers = array();
-
         $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
@@ -86,7 +83,8 @@ class Trigger extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'status', 'store_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY weight ASC";
@@ -96,16 +94,15 @@ class Trigger extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
         if (!empty($data['count'])) {
-            return (int) $sth->fetchColumn();
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $results = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $results = $this->db->fetchAll($sql, $where);
 
+        $triggers = array();
         foreach ($results as $trigger) {
+
             $trigger['database'] = true;
             $trigger['data'] = unserialize($trigger['data']);
 
@@ -133,15 +130,7 @@ class Trigger extends Model
             return false;
         }
 
-        $values = array(
-            'name' => $data['name'],
-            'data' => serialize($data['data']),
-            'status' => !empty($data['status']),
-            'store_id' => (int) $data['store_id'],
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0
-        );
-
-        $data['trigger_id'] = $this->db->insert('triggers', $values);
+        $data['trigger_id'] = $this->db->insert('triggers', $data);
 
         $this->hook->fire('add.trigger.after', $data);
         return $data['trigger_id'];
@@ -156,16 +145,12 @@ class Trigger extends Model
     {
         $this->hook->fire('get.trigger.before', $trigger_id);
 
-        $sth = $this->db->prepare('SELECT * FROM triggers WHERE trigger_id=?');
-        $sth->execute(array($trigger_id));
+        $sql = 'SELECT * FROM triggers WHERE trigger_id=?';
 
-        $trigger = $sth->fetch(PDO::FETCH_ASSOC);
+        $options = array('unserialize' => 'data');
+        $trigger = $this->db->fetch($sql, array($trigger_id), $options);
 
-        if (isset($trigger['data'])) {
-            $trigger['data'] = unserialize($trigger['data']);
-        }
-
-        $this->hook->fire('get.trigger.after', $trigger_id, $trigger);
+        $this->hook->fire('get.trigger.after', $trigger);
         return $trigger;
     }
 
@@ -182,8 +167,8 @@ class Trigger extends Model
             return false;
         }
 
-        $conditions = array('trigger_id' => (int) $trigger_id);
-        $result = $this->db->delete('triggers', $conditions);
+        $conditions = array('trigger_id' => $trigger_id);
+        $result = (bool) $this->db->delete('triggers', $conditions);
 
         $this->hook->fire('delete.trigger.after', $trigger_id, $result);
         return (bool) $result;
