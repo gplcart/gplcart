@@ -138,7 +138,7 @@ class Install extends Model
      * @param array $requirements
      * @return array
      */
-    public function getRequirementsErrors(array $requirements)
+    public function getRequirementErrors(array $requirements)
     {
         $errors = array();
         foreach ($requirements as $items) {
@@ -337,17 +337,22 @@ class Install extends Model
             return false;
         }
 
-        $langcode = $settings['store']['language'];
-        $this->config->set('language', $langcode);
+        $code = key($settings['store']['language']);
+        $this->config->set('language', $code);
+
+        $native_name = $name = $settings['store']['language'][$code][0];
+        if (isset($settings['store']['language'][$code][1])) {
+            $native_name = $settings['store']['language'][$code][1];
+        }
 
         $languages = array();
 
         $languages[$langcode] = array(
             'status' => 1,
             'default' => 1,
-            'code' => $langcode,
-            'name' => $langcode,
-            'native_name' => $langcode
+            'code' => $code,
+            'name' => $name,
+            'native_name' => $native_name
         );
 
         return $this->config->set('languages', $languages);

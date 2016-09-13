@@ -67,7 +67,6 @@ class Language extends Model
 
     /**
      * Constructor
-     * @param Document $document
      * @param Translit $translit
      * @param Route $route
      */
@@ -77,21 +76,35 @@ class Language extends Model
 
         $this->route = $route;
         $this->translit = $translit;
-        $this->langcode = $this->route->getLangcode();
 
-        if (!empty($this->langcode)) {
+        $langcode = $this->route->getLangcode();
 
-            $this->language_directory = GC_LOCALE_DIR . "/{$this->langcode}";
-            $this->compiled_directory_csv = "{$this->language_directory}/compiled";
-            $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
+        if ($this->exists($langcode)) {
+            $this->langcode = $langcode;
+        }
 
-            if (!file_exists($this->compiled_directory_csv)) {
-                mkdir($this->compiled_directory_csv, 0755, true);
-            }
+        $this->init();
+    }
 
-            if (!file_exists($this->compiled_directory_js)) {
-                mkdir($this->compiled_directory_js, 0755, true);
-            }
+    /**
+     * Performs some initial tasks: sets up folders, object properties etc...
+     */
+    protected function init()
+    {
+        if (empty($this->langcode)) {
+            return;
+        }
+
+        $this->language_directory = GC_LOCALE_DIR . "/{$this->langcode}";
+        $this->compiled_directory_csv = "{$this->language_directory}/compiled";
+        $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
+
+        if (!file_exists($this->compiled_directory_csv)) {
+            mkdir($this->compiled_directory_csv, 0755, true);
+        }
+
+        if (!file_exists($this->compiled_directory_js)) {
+            mkdir($this->compiled_directory_js, 0755, true);
         }
     }
 
@@ -171,6 +184,17 @@ class Language extends Model
         }
 
         return $languages;
+    }
+
+    /**
+     * Whether the language exists, i.e available
+     * @param string $code
+     * @return boolean
+     */
+    public function exists($code)
+    {
+        $languages = $this->getAll();
+        return isset($languages[$code]);
     }
 
     /**
@@ -461,6 +485,21 @@ class Language extends Model
         $translit = $this->translit->translit($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
+    }
+
+    /**
+     * Returns an array of common languages with their English and native names
+     * @return array
+     */
+    public function getIso($code = null)
+    {
+        $data = include GC_CONFIG_LANGUAGE;
+
+        if (isset($code)) {
+            return isset($data[$code]) ? (array) $data[$code] : array();
+        }
+
+        return $data;
     }
 
 }

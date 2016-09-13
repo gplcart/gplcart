@@ -984,6 +984,13 @@ class Route
      */
     protected function setLangcode()
     {
+        $lang = $this->request->get('lang');
+        
+        if(isset($lang)){
+            $this->langcode = $lang;
+            return;
+        }
+        
         $default_langcode = $this->config->get('language', '');
         $languages = $this->config->get('languages', array());
 

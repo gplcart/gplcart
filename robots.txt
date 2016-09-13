@@ -3,6 +3,7 @@ Disallow: /*.php$
 Disallow: /*order=
 Disallow: /*sort=
 Disallow: /*view=
+Disallow: /*lang=
 Disallow: /account
 Disallow: /action
 Disallow: /admin

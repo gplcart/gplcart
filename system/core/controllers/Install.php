@@ -29,7 +29,7 @@ class Install extends FrontendController
      * Language selected upon installation
      * @var string
      */
-    protected $install_language;
+    protected $install_language = '';
 
     /**
      * Constructor
@@ -40,7 +40,7 @@ class Install extends FrontendController
         parent::__construct();
 
         $this->install = $install;
-        $this->install_language = $this->session->get('language', null, '');
+        $this->install_language = $this->request->get('lang', '');
     }
 
     /**
@@ -48,108 +48,185 @@ class Install extends FrontendController
      */
     public function install()
     {
+        $this->controlAccessInstall();
 
-        $this->controlInstallMode();
-        $this->setInstallLanguage();
+        $this->submitInstall();
 
-        // Install
-        if ($this->request->post('install')) {
-            $this->submitInstall();
-        }
+        $timezones = Tool::timezones();
+        $languages = $this->getLanguagesInstall();
+        $requirements = $this->getRequirementsInstall();
 
-        $this->data['requirements'] = $this->install->getRequirements();
-        $this->data['timezones'] = Tool::timezones();
-        $this->data['url_wiki'] = GC_WIKI_URL;
-        $this->data['url_licence'] = (file_exists(GC_ROOT_DIR . '/LICENSE')) ? $this->url('LICENSE') : 'https://www.gnu.org/licenses/gpl.html';
-        $this->data['settings']['site']['timezone'] = 'Europe/London';
-        $this->data['languages'] = $this->language->getAvailable();
+        $issues = $this->getRequirementErrorsInstall($requirements);
+        $severity = $this->getSeverityInstall($issues);
 
-        $this->setIssues();
-        $this->addCssInstall();
+        $this->setData('issues', $issues);
+        $this->setData('severity', $severity);
+        $this->setData('url_wiki', GC_WIKI_URL);
+        $this->setData('timezones', $timezones);
+        $this->setData('languages', $languages);
+        $this->setData('requirements', $requirements);
+        $this->setData('url_licence', $this->url('license.txt'));
+        $this->setData('settings.store.timezone', 'Europe/London');
+        $this->setData('settings.store.language', $this->install_language);
+
+        $this->setCssInstall();
         $this->setTitleInstall();
         $this->outputInstall();
     }
 
-    protected function submitInstall()
+    /**
+     * Returns an array of ISO languages
+     * @return type
+     */
+    protected function getLanguagesInstall()
     {
+        $iso = $this->language->getIso();
+        $available = $this->language->getAvailable();
 
-        ini_set('max_execution_time', 0);
-        
-        $this->setSubmitted('settings');
-
-        $this->validate();
-        
-        if($this->hasErrors('settings')){
-            return;
-        }
-
-        $this->session->delete('install');
-        $this->session->set('install', 'processing', true);
-        $this->session->set('install', 'settings', $this->submitted);
-
-        if (!$this->install->tables()) {
-            $this->redirect('', $this->text('Failed to create all necessary tables in the database'), 'danger');
-        }
-
-        if (!$this->install->config($this->submitted)) {
-            $this->redirect('', $this->text('Failed to create config.php'), 'danger');
-        }
-
-        $result = $this->install->store($this->submitted);
-
-        if ($result !== true) {
-            $this->redirect('', $result, 'danger');
-        }
-
-        $this->session->delete();
-        Tool::deleteCookie();
-        $message = $this->text('Congratulations! You have successfully installed your store');
-        $this->redirect('admin', $message, 'success');
+        return array_intersect_key($iso, $available);
     }
 
     /**
-     * Sets a language upon installation
+     * Controls access to installer
      */
-    protected function setInstallLanguage()
-    {
-        $selected = (string) $this->request->post('language');
-
-        // Change language
-        if (!empty($selected)) {
-            $this->install_language = $selected;
-            $this->session->set('language', null, $this->install_language);
-            $this->redirect();
-        }
-
-        $this->data['settings']['site']['language'] = $this->install_language;
-    }
-
-    /**
-     * Sets issues data (if any)
-     */
-    protected function setIssues()
-    {
-
-        $this->data['issues'] = $this->install->getRequirementsErrors($this->data['requirements']);
-
-        $this->data['issue_severity'] = '';
-        if (isset($this->data['issues']['warning'])) {
-            $this->data['issue_severity'] = 'warning';
-        }
-
-        if (isset($this->data['issues']['danger'])) {
-            $this->data['issue_severity'] = 'danger';
-        }
-    }
-
-    /**
-     * Ensures that installation process is really needed
-     */
-    protected function controlInstallMode()
+    protected function controlAccessInstall()
     {
         if ($this->config->exists() && !$this->session->get('install', 'processing')) {
             $this->redirect('/');
         }
+    }
+
+    /**
+     * Returns an array of system requirements
+     * @return array
+     */
+    protected function getRequirementsInstall()
+    {
+        return $this->install->getRequirements();
+    }
+
+    /**
+     * Returns an array of requirement errors
+     * @param array $requirements
+     * @return array
+     */
+    protected function getRequirementErrorsInstall(array $requirements)
+    {
+        return $this->install->getRequirementErrors($requirements);
+    }
+
+    /**
+     * Returns a string with the current severity
+     * @param array $issues
+     * @return string
+     */
+    protected function getSeverityInstall(array $issues)
+    {
+        if (isset($issues['warning'])) {
+            return 'warning';
+        }
+
+        if (isset($issues['danger'])) {
+            return 'danger';
+        }
+
+        return '';
+    }
+
+    /**
+     * Starts installing the system
+     */
+    protected function submitInstall()
+    {
+        if (!$this->isPosted('install')) {
+            return;
+        }
+
+        $this->setSubmitted('settings');
+
+        $this->validateInstall();
+
+        if (!$this->hasErrors('settings')) {
+            $this->processInstall();
+        }
+    }
+
+    /**
+     * Performs all needed operations to install the system
+     */
+    protected function processInstall()
+    {
+        $this->processStartInstall();
+        $this->processTablesInstall();
+        $this->processConfigInstall();
+        $this->processStoreInstall();
+        $this->processFinishInstall();
+    }
+
+    /**
+     * Prepares installation
+     */
+    protected function processStartInstall()
+    {
+        ini_set('max_execution_time', 0);
+
+        $submitted = $this->getSubmitted();
+
+        $this->session->delete('install');
+        $this->session->set('install', 'processing', true);
+        $this->session->set('install', 'settings', $submitted);
+    }
+
+    /**
+     * Imports tables from database config file
+     */
+    protected function processTablesInstall()
+    {
+        $result = $this->install->tables();
+
+        if ($result !== true) {
+            $url = $this->url('', $this->query);
+            $this->redirect($url, $this->text('Failed to create all necessary tables in the database'), 'danger');
+        }
+    }
+
+    /**
+     * Creates main config file
+     */
+    protected function processConfigInstall()
+    {
+        $submitted = $this->getSubmitted();
+
+        if (!$this->install->config($submitted)) {
+            $url = $this->url('', $this->query);
+            $this->redirect($url, $this->text('Failed to create config.php'), 'danger');
+        }
+    }
+
+    /**
+     * Sets up the store
+     */
+    protected function processStoreInstall()
+    {
+        $submitted = $this->getSubmitted();
+        $result = $this->install->store($submitted);
+
+        if ($result !== true) {
+            $url = $this->url('', $this->query);
+            $this->redirect($url, $result, 'danger');
+        }
+    }
+
+    /**
+     * Finishes the installation process
+     */
+    protected function processFinishInstall()
+    {
+        $this->session->delete();
+        Tool::deleteCookie();
+
+        $message = $this->text('Congratulations! You have successfully installed your store');
+        $this->redirect('admin', $message, 'success');
     }
 
     /**
@@ -168,8 +245,7 @@ class Install extends FrontendController
         $variables = array(
             'layout' => 'install/layout',
             'region_body' => 'install/body',
-            'region_head' => 'install/head',
-            'region_bottom' => 'install/bottom'
+            'region_head' => 'install/head'
         );
 
         $this->output($variables);
@@ -178,158 +254,63 @@ class Install extends FrontendController
     /**
      * Adds CSS on the installation page
      */
-    protected function addCssInstall()
+    protected function setCssInstall()
     {
         $this->setCss('system/modules/frontend/css/install.css', 99);
     }
 
     /**
      * Validates an array of submitted form values
-     * @return null
      */
-    protected function validate()
+    protected function validateInstall()
     {
+        $language = array(
+            $this->install_language => $this->language->getIso($this->install_language)
+        );
 
-        $this->validateDbHost();
-        $this->validateDbName();
-        $this->validateDbUser();
-        $this->validateDbPort();
-        $this->validateUserPassword();
-        $this->validateUserEmail();
-        $this->validateStoreTitle();
+        $this->setSubmitted('store.language', $language);
 
-        if ($this->isError()) {
-            return false;
+        $this->addValidator('database.host', array(
+            'required' => array()
+        ));
+
+        $this->addValidator('database.name', array(
+            'required' => array()
+        ));
+
+        $this->addValidator('database.user', array(
+            'required' => array()
+        ));
+
+        $this->addValidator('database.port', array(
+            'numeric' => array('required' => true)
+        ));
+
+        $this->addValidator('user.password', array(
+            'length' => $this->user->getPasswordLength()
+        ));
+
+        $this->addValidator('user.email', array(
+            'required' => array(),
+            'email' => array()
+        ));
+
+        $this->addValidator('store.title', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $errors = $this->setValidators();
+
+        if (!empty($errors)) {
+            return;
         }
 
-        if ($this->validateDbConnect() === true) {
-            return true;
+        $db = $this->getSubmitted('database');
+        $connect = $this->install->connect($db);
+
+        if ($connect !== true) {
+            $this->setError('database.connect', $connect);
         }
-
-        return false;
-    }
-
-    /**
-     * Validates database connection
-     * @return boolean
-     */
-    protected function validateDbConnect()
-    {
-        $connect = $this->install->connect($this->submitted['database']);
-
-        if ($connect === true) {
-            return true;
-        }
-
-        $this->errors['database']['connect'] = $this->text($connect);
-        return false;
-    }
-
-    /**
-     * Validates store title
-     * @return boolean
-     */
-    protected function validateStoreTitle()
-    {
-        if (mb_strlen($this->submitted['store']['title']) > 255) {
-            $this->errors['store']['title'] = $this->text('Content must not exceed %s characters', array('%s' => 255));
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates user e-mail
-     * @return boolean
-     */
-    protected function validateUserEmail()
-    {
-        if (filter_var($this->submitted['user']['email'], FILTER_VALIDATE_EMAIL)) {
-            return true;
-        }
-
-        $this->errors['user']['email'] = $this->text('Invalid E-mail');
-        return false;
-    }
-
-    /**
-     * Validates user password
-     * @return boolean
-     */
-    protected function validateUserPassword()
-    {
-
-        $min_password_length = 8;
-        $max_password_length = 255;
-
-        $password_length = mb_strlen($this->submitted['user']['password']);
-
-        if (($min_password_length <= $password_length) && ($password_length <= $max_password_length)) {
-            return true;
-        }
-
-        $this->errors['user']['password'] = $this->text('Content must be %min - %max characters long', array(
-            '%min' => $min_password_length, '%max' => $max_password_length));
-
-        return false;
-    }
-
-    /**
-     * Validates database host
-     * @return boolean
-     */
-    protected function validateDbHost()
-    {
-
-        if (empty($this->submitted['database']['host'])) {
-            $this->errors['database']['host'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates database name
-     * @return boolean
-     */
-    protected function validateDbName()
-    {
-        if (empty($this->submitted['database']['name'])) {
-            $this->errors['database']['name'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates database user
-     * @return boolean
-     */
-    protected function validateDbUser()
-    {
-        if (empty($this->submitted['database']['user'])) {
-            $this->errors['database']['user'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates database port
-     * @return boolean
-     */
-    protected function validateDbPort()
-    {
-        if (empty($this->submitted['database']['port'])) {
-            $this->errors['database']['port'] = $this->text('Required field');
-            return false;
-        }
-
-        return true;
     }
 
 }

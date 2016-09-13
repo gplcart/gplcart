@@ -126,6 +126,8 @@ class Compare extends FrontendController
      */
     protected function setBreadcrumbSelectCompare()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Home')
@@ -208,6 +210,8 @@ class Compare extends FrontendController
      */
     protected function setBreadcrumbCompare()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Home'));

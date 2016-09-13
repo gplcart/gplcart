@@ -11,13 +11,13 @@
           <div class="form-group form-inline">
             <div class="col-md-12">
               <label><?php echo $this->text('Language'); ?></label>
-              <select class="form-control select-language">
+              <select class="form-control" onchange="location.href = '?lang=' + this.value;">
                 <option value=""><?php echo $this->text('English'); ?></option>
-                <?php foreach ($languages as $code => $info) { ?>
-                <?php if (isset($settings['store']['language']) && $settings['store']['language'] === $code) { ?>
-                <option value="<?php echo $code; ?>" selected><?php echo $this->escape($info['name']); ?></option>
+                <?php foreach ($languages as $code => $name) { ?>
+                <?php if (isset($settings['store']['language']) && $settings['store']['language'] == $code) { ?>
+                <option value="<?php echo $code; ?>" selected><?php echo isset($name[1]) ? $this->escape($name[1]) : $this->escape($name[0]); ?></option>
                 <?php } else { ?>
-                <option value="<?php echo $code; ?>"><?php echo $this->escape($info['name']); ?></option>
+                <option value="<?php echo $code; ?>"><?php echo isset($name[1]) ? $this->escape($name[1]) : $this->escape($name[0]); ?></option>
                 <?php } ?>
                 <?php } ?>
               </select>
@@ -26,17 +26,11 @@
         </div>
         <?php } ?>
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <h2><?php echo $this->text('Installing GPL Cart'); ?></h2>
-        </div>
-      </div>
       <?php if (!empty($messages)) { ?>
       <div class="row" id="message">
         <div class="col-md-12">
           <?php foreach ($messages as $type => $strings) { ?>
           <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in">
-            <button type="button" class="close"><span aria-hidden="true">×</span></button>
             <?php foreach ($strings as $string) { ?>
             <?php echo $string; ?><br>
             <?php } ?>
@@ -48,15 +42,13 @@
       <div class="row">
         <div class="col-md-12">
           <?php if ($issues) { ?>
-          <div class="panel issues panel-<?php echo $issue_severity; ?>">
-            <div class="panel-heading">
-              <h4><?php echo $this->text('Issues'); ?></h4>
-            </div>
+          <div class="panel issues panel-<?php echo $severity; ?>">
+            <div class="panel-heading"><?php echo $this->text('Issues'); ?></div>
             <div class="panel-body">
               <table class="table-condensed">
                 <tbody>
                   <?php foreach ($requirements as $section => $items) { ?>
-                  <tr><td colspan="2"><h4><?php echo $this->escape($section); ?></h4></td></tr>
+                  <tr><td colspan="2"><h4><?php echo ucfirst($this->escape($section)); ?></h4></td></tr>
                   <?php foreach ($items as $name => $info) { ?>
                   <tr class="<?php echo empty($info['status']) ? 'bg-' . $info['severity'] : ''; ?>">
                     <td><?php echo $this->text($info['message']); ?></td>
@@ -75,9 +67,7 @@
           </div>
           <?php } else { ?>
           <div class="panel panel-default database">
-            <div class="panel-heading">
-              <h4><?php echo $this->text('Database'); ?></h4>
-            </div>
+            <div class="panel-heading"><?php echo $this->text('Database'); ?></div>
             <div class="panel-body">
               <div class="required form-group<?php echo isset($this->errors['database']['name']) ? ' has-error' : ''; ?>">
                 <label class="col-md-3 control-label"><?php echo $this->text('Database'); ?></label>
@@ -148,9 +138,7 @@
             </div>
           </div>
           <div class="panel panel-default store">
-            <div class="panel-heading">
-              <h4><?php echo $this->text('Site'); ?></h4>
-            </div>
+            <div class="panel-heading"><?php echo $this->text('Site'); ?></div>
             <div class="panel-body">
               <div class="required form-group<?php echo isset($this->errors['user']['email']) ? ' has-error' : ''; ?>">
                 <label class="col-md-3 control-label"><?php echo $this->text('E-mail'); ?></label>
@@ -170,7 +158,6 @@
                   <?php } ?>
                 </div>
               </div>
-              <hr>
               <div class="required form-group<?php echo isset($this->errors['store']['title']) ? ' has-error' : ''; ?>">
                 <label class="col-md-3 control-label"><?php echo $this->text('Store title'); ?></label>
                 <div class="col-md-6">
@@ -185,7 +172,7 @@
                 <div class="col-md-6">
                   <select name="settings[store][timezone]" class="form-control">
                     <?php foreach ($timezones as $value => $label) { ?>
-                    <option value="<?php echo $value; ?>"<?php echo ($settings['site']['timezone']) == $value ? ' selected' : ''; ?>><?php echo $this->escape($label); ?></option>
+                    <option value="<?php echo $value; ?>"<?php echo ($settings['store']['timezone']) == $value ? ' selected' : ''; ?>><?php echo $this->escape($label); ?></option>
                     <?php } ?>
                   </select>
                 </div>
@@ -193,8 +180,8 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-12">
-              <button class="btn btn-lg btn-success" name="install" value="1">
+            <div class="col-md-12 text-right">
+              <button class="btn btn btn-default" name="install" value="1">
               <?php echo $this->text('Install now!'); ?>
               </button>
             </div>
