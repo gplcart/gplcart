@@ -28,14 +28,16 @@ class Action extends FrontendController
     /**
      * Processes an action
      */
-    public function action()
+    public function doAction()
     {
         // Reject all requests with invalid token
         $this->controlToken();
 
         // Catch spam submits
         $this->controlSpam('action');
+
         $action = (string) $this->request->get('action', '');
+
         $this->hook->fire('action.before', $action);
 
         // Action name = method name
@@ -43,8 +45,14 @@ class Action extends FrontendController
             $this->finishAction();
         }
 
-        $result = $this->{$action}();
+        try {
+            $result = $this->{$action}();
+        } catch (\BadMethodCallException $ex) {
+            $result = array('message' => 'A error occurred', 'severity' => 'danger');
+        }
+
         $this->hook->fire('action.after', $action, $result);
+
         $this->finishAction((array) $result);
     }
 
@@ -55,9 +63,9 @@ class Action extends FrontendController
     protected function finishAction(array $result = array())
     {
         $result += array(
-            'redirect' => (string) $this->request->get('redirect', '/'),
-            'message' => $this->text('An error occurred'),
             'severity' => 'danger',
+            'message' => $this->text('An error occurred'),
+            'redirect' => (string) $this->request->get('redirect', '/')
         );
 
         if ($this->request->isAjax()) {
@@ -75,27 +83,38 @@ class Action extends FrontendController
      * Adds a product to the cart
      * @return array
      */
-    protected function addToCart()
+    protected function addToCartAction()
     {
         $product_id = (int) $this->request->get('product_id');
         $quantity = (int) $this->request->get('quantity', 1);
 
-        $result = $this->cart->submit(array(
-            'product_id' => $product_id, 'quantity' => $quantity));
+        $data = array(
+            'quantity' => $quantity,
+            'product_id' => $product_id
+        );
+
+        $result = $this->cart->submit($data);
 
         if ($result === true) {
-            return array(
+
+            $response = array(
                 'severity' => 'success',
                 'message' => $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
-                    '!href' => $this->url('checkout'))));
+                    '!href' => $this->url('checkout')))
+            );
+
+            return $response;
         }
 
         if ($result === false) {
-            return array(
-                'redirect' => $this->url("product/$product_id", array(), true),
-                'message' => $this->text('Please select product options before adding to the cart'),
+
+            $response = array(
                 'severity' => 'warning',
+                'redirect' => $this->url("product/$product_id", array(), true),
+                'message' => $this->text('Please select product options before adding to the cart')
             );
+
+            return $response;
         }
 
         return array('message' => $result);
@@ -105,7 +124,7 @@ class Action extends FrontendController
      * Adds a product to the wishlist
      * @return array
      */
-    protected function addToWishlist()
+    protected function addToWishlistAction()
     {
         $user_id = $this->cart->uid();
         $product_id = (int) $this->request->get('product_id');
@@ -115,39 +134,49 @@ class Action extends FrontendController
             return array();
         }
 
-        $added = $this->wishlist->add(array(
-            'user_id' => $this->cart->uid(),
-            'product_id' => $product_id), true); // true - check limit
+        $data = array(
+            'product_id' => $product_id,
+            'user_id' => $this->cart->uid()
+        );
 
-        if (!empty($added)) {
-            return array(
-                'severity' => 'success',
-                'message' => $this->text('Product has been added to your <a href="!href">wishlist</a>', array(
-                    '!href' => $this->url('wishlist'))));
+        $added = $this->wishlist->add($data, true); // true - check limit
+
+        if (empty($added)) {
+
+            $response = array(
+                'severity' => 'warning',
+                'message' => $this->text('Oops, you\'re exceeding %limit items in <a href="!href">your wishlist</a>', array(
+                    '%limit' => $this->wishlist->getLimits($user_id),
+                    '!href' => $this->url('wishlist')))
+            );
+
+            return $response;
         }
 
-        return array(
-            'severity' => 'warning',
-            'message' => $this->text('Oops, you\'re exceeding %limit items in <a href="!href">your wishlist</a>', array(
-                '%limit' => $this->wishlist->getLimits($user_id),
-                '!href' => $this->url('wishlist'))));
+        $response = array(
+            'severity' => 'success',
+            'message' => $this->text('Product has been added to your <a href="!href">wishlist</a>', array(
+                '!href' => $this->url('wishlist')))
+        );
+
+        return $response;
     }
 
     /**
      * Removes a product from wishlist
      * @return array
      */
-    protected function removeFromWishlist()
+    protected function removeFromWishlistAction()
     {
         $user_id = $this->cart->uid();
         $product_id = (int) $this->request->get('product_id');
 
-        $options = array(
+        $data = array(
             'user_id' => $user_id,
             'product_id' => $product_id
         );
 
-        $result = $this->wishlist->getList($options);
+        $result = $this->wishlist->getList($data);
 
         if (empty($result)) {
             return array();
@@ -157,16 +186,19 @@ class Action extends FrontendController
             $this->wishlist->delete($wishlist_id);
         }
 
-        return array(
+        $response = array(
             'severity' => 'success',
-            'message' => $this->text('Product has been deleted from your wishlist'));
+            'message' => $this->text('Product has been deleted from your wishlist')
+        );
+
+        return $response;
     }
 
     /**
      * Adds a product to comparison
      * @return array
      */
-    protected function addToCompare()
+    protected function addToCompareAction()
     {
         $product_id = (int) $this->request->get('product_id');
         $product = $this->product->get($product_id);
@@ -177,29 +209,35 @@ class Action extends FrontendController
 
         $added = $this->product->addToCompare($product_id);
 
+        $response = array();
+
         if (!empty($added)) {
-            return array(
+            $response = array(
                 'severity' => 'success',
                 'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
-                    '!href' => $this->url('compare'))));
+                    '!href' => $this->url('compare')))
+            );
         }
 
-        return array();
+        return $response;
     }
 
     /**
      * Removes a product from comparison
      * @return array
      */
-    protected function removeFromComparison()
+    protected function removeFromComparisonAction()
     {
         $product_id = (int) $this->request->get('product_id');
         $this->product->removeCompared($product_id);
 
-        return array(
-            'redirect' => $this->url('compare', array(), true),
+        $response = array(
             'severity' => 'success',
-            'message' => $this->text('Product has been removed from comparison'));
+            'redirect' => $this->url('compare', array(), true),
+            'message' => $this->text('Product has been removed from comparison')
+        );
+
+        return $response;
     }
 
 }

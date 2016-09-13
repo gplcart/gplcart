@@ -127,7 +127,7 @@ class Route
 
         $routes['action'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Action', 'action')
+                'controller' => array('core\\controllers\\Action', 'doAction')
             )
         );
 

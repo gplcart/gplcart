@@ -28,18 +28,18 @@
                 <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
                 <input name="url" class="collapse" value="">
                 <?php if (in_array('wishlist_remove', $buttons)) { ?>
-                <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" name="action" value="removeFromWishlist">
+                <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" name="action" value="removeFromWishlistAction">
                 <i class="fa fa-trash"></i>
                 </button>
                 <?php } ?>
                 <?php if (in_array('compare_remove', $buttons)) { ?>
-                <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" name="action" value="removeFromComparison">
+                <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" name="action" value="removeFromComparisonAction">
                 <i class="fa fa-trash"></i>
                 </button>
                 <?php } ?>
                 <?php if (in_array('wishlist_add', $buttons)) { ?>
                 <?php if (empty($product['in_wishlist'])) { ?>
-                <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" name="action" value="addToWishlist">
+                <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" name="action" value="addToWishlistAction">
                   <i class="fa fa-heart"></i>
                 </button>
                 <?php } else { ?>
@@ -50,7 +50,7 @@
                 <?php } ?>
                 <?php if (in_array('compare_add', $buttons)) { ?>
                 <?php if (empty($product['in_comparison'])) { ?>
-                <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" name="action" value="addToCompare">
+                <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" name="action" value="addToCompareAction">
                   <i class="fa fa-balance-scale"></i>
                 </button>
                 <?php } else { ?>
@@ -60,7 +60,7 @@
                 <?php } ?>
                 <?php } ?>
                 <?php if (in_array('cart_add', $buttons)) { ?>
-                <button title="<?php echo $this->text('Add to cart'); ?>" class="btn btn-default btn-success" name="action" value="addToCart">
+                <button title="<?php echo $this->text('Add to cart'); ?>" class="btn btn-default btn-success" name="action" value="addToCartAction">
                   <i class="fa fa-shopping-cart"></i>
                 </button>
                 <?php } ?>

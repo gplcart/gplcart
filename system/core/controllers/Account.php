@@ -312,6 +312,8 @@ class Account extends FrontendController
      */
     protected function setBreadcrumbEditAccount(array $user)
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Shop')
@@ -398,6 +400,8 @@ class Account extends FrontendController
      */
     protected function setBreadcrumbListAddressAccount(array $user)
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Shop')
