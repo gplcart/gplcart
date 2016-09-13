@@ -69,7 +69,7 @@ $(function () {
             type: 'POST',
             url: GplCart.settings.base + 'ajax',
             dataType: 'json',
-            data: {action: 'getCartPreview', token: GplCart.settings.token},
+            data: {action: 'getCartPreviewAjax', token: GplCart.settings.token},
             success: function (data) {
                 if (typeof data === 'object') {
                     if ('preview' in data) {
@@ -120,15 +120,31 @@ $(function () {
             method: 'post',
             data: {
                 token: GplCart.settings.token,
-                action: 'switchProductOptions',
+                action: 'switchProductOptionsAjax',
                 values: values,
                 product_id: GplCart.settings.product.product_id,
             },
             success: function (data) {
                 if (!jQuery.isEmptyObject(data)) {
+                    
+                    var message;
+                    var error = false;
+                    
+                    if ('error' in data && data.error) {
+                        error = true;
+                        message = GplCart.text('An error occurred');
+                    }
 
                     if ('message' in data && data.message) {
-                        // Message
+                        message = data.message;
+                    }
+                    
+                    if(message.length){
+                        alert(message);
+                    }
+                    
+                    if(error){
+                        return false;
                     }
 
                     if ('combination' in data) {
@@ -190,7 +206,7 @@ $(function () {
     searchInput.autocomplete({
         minLength: 2,
         source: function (request, response) {
-            var params = {term: request.term, action: 'searchProducts', token: GplCart.settings.token};
+            var params = {term: request.term, action: 'searchProductsAjax', token: GplCart.settings.token};
             $.post(GplCart.settings.base + 'ajax', params, function (data) {
                 response($.map(data, function (value) {
                     return {suggestion: value.rendered}

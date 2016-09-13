@@ -115,7 +115,7 @@ class Route
 
         $routes['ajax'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Ajax', 'ajax')
+                'controller' => array('core\\controllers\\Ajax', 'getResponseAjax')
             )
         );
 
@@ -127,7 +127,7 @@ class Route
 
         $routes['action'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Action', 'doAction')
+                'controller' => array('core\\controllers\\Action', 'getResponseAction')
             )
         );
 

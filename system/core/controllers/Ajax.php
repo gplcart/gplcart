@@ -75,7 +75,7 @@ class Ajax extends FrontendController
     /**
      * Main ajax callback
      */
-    public function ajax()
+    public function getResponseAjax()
     {
         if (!$this->request->isAjax()) {
             exit; // Reject non-ajax requests
@@ -92,7 +92,13 @@ class Ajax extends FrontendController
             $this->response->json(array('error' => $this->text('Missing handler')));
         }
 
-        $this->response->json($this->{$action}());
+        try {
+            $response = $this->{$action}();
+        } catch (\BadMethodCallException $exc) {
+            $response = array('error' => $this->text('An error occurred'));
+        }
+
+        $this->response->json($response);
     }
 
     /**
@@ -143,7 +149,7 @@ class Ajax extends FrontendController
      * Returns an array of users
      * @return array
      */
-    public function getUsers()
+    public function getUsersAjax()
     {
         if (!$this->access('user')) {
             return array(
@@ -166,20 +172,37 @@ class Ajax extends FrontendController
      * Toggles product options
      * @return array
      */
-    public function switchProductOptions()
+    public function switchProductOptionsAjax()
     {
-        $response = array();
+
         $product_id = (int) $this->request->post('product_id');
+        $field_value_ids = (array) $this->request->post('values');
+
+        $response = array(
+            'message' => '',
+            'error' => false,
+            'subscribe' => false,
+            'cart_access' => false,
+            'combination' => array(),
+            'message_modal' => false
+        );
+
         $product = $this->product->get($product_id);
-        $field_value_ids = $this->request->post('values');
 
         if (empty($product['status'])) {
-            $response['error'] = $this->text('Invalid product');
+
+            $response['error'] = true;
+            $response['message'] = $this->text('Unavailable product');
+
             $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
             return $response;
         }
 
         if (empty($field_value_ids)) {
+
+            $response['error'] = true;
+            $response['message'] = $this->text('No option selected');
+
             $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
             return $response;
         }
@@ -187,15 +210,11 @@ class Ajax extends FrontendController
         $field_value_ids = array_values($field_value_ids);
         $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
 
-        $response = array(
-            'message' => '',
-            'subscribe' => false,
-            'cart_access' => true,
-            'combination' => array(),
-            'message_modal' => false
-        );
-
         if (empty($product['combination'][$combination_id])) {
+
+            $response['error'] = true;
+            $response['message'] = $this->text('Invalid option combination');
+
             $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
             return $response;
         }
@@ -215,9 +234,10 @@ class Ajax extends FrontendController
 
         if (empty($combination['stock']) && $product['subtract']) {
             $response['subscribe'] = true;
-            $response['cart_access'] = false;
             $response['message'] = $this->text('Out of stock');
         }
+
+        $response['cart_access'] = true;
 
         $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
         return $response;
@@ -227,7 +247,7 @@ class Ajax extends FrontendController
      * Returns the cart preview for the current user
      * @return array
      */
-    public function getCartPreview()
+    public function getCartPreviewAjax()
     {
         $cart = $this->cart->getByUser();
 
@@ -236,7 +256,7 @@ class Ajax extends FrontendController
         }
 
         $limit = $this->config('cart_preview_limit', 5);
-        $content = $this->cart->prepareCartItems($cart, $this->setting());
+        $content = $this->prepareCart($cart);
 
         $data = array('cart' => $content, 'limit' => $limit);
         return array('preview' => $this->render('cart/preview', $data));
@@ -246,7 +266,7 @@ class Ajax extends FrontendController
      * Returns an array of products based on certain conditions
      * @return array
      */
-    public function searchProducts()
+    public function searchProductsAjax()
     {
         $term = (string) $this->request->post('term');
 
@@ -256,46 +276,32 @@ class Ajax extends FrontendController
 
         $max = $this->config('autocomplete_limit', 10);
 
-        $options = array(
+        $conditions = array(
             'status' => 1,
             'limit' => array(0, $max),
             'language' => $this->langcode,
             'store_id' => $this->store_id
         );
 
-        $products = $this->search->search('product_id', $term, $options);
+        $products = $this->search->search('product_id', $term, $conditions);
 
         if (empty($products)) {
             return array();
         }
 
-        $product_ids = array_keys($products);
-        $pricerules = $this->store->config('catalog_pricerule');
-        $imestylestyle = $this->config->module($this->theme, 'image_style_product_list', 3);
+        $options = array(
+            'template' => 'search/suggestion',
+            'imagestyle' => $this->setting('image_style_product_list', 3)
+        );
 
-        foreach ($products as $product_id => &$product) {
-
-            unset($product['description']);
-
-            $product['thumb'] = $this->image->getThumb($product_id, $imestylestyle, 'product_id', $product_ids);
-
-            if ($pricerules) {
-                $calculated = $this->product->calculate($product, $this->store_id);
-                $product['price'] = $calculated['total'];
-            }
-
-            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-            $product['rendered'] = $this->render('search/suggestion', array('product' => $product));
-        }
-
-        return $products;
+        return $this->prepareProducts($products, $options);
     }
 
     /**
      * Returns an array of products for admin
      * @return array
      */
-    public function adminSearch()
+    public function adminSearchAjax()
     {
         $id = (string) $this->request->post('id');
         $term = (string) $this->request->post('term');
@@ -334,7 +340,7 @@ class Ajax extends FrontendController
      * Uploads an image
      * @return array
      */
-    public function uploadImage()
+    public function uploadImageAjax()
     {
         $path = 'image/upload';
         $type = $this->request->post('type');
@@ -384,7 +390,7 @@ class Ajax extends FrontendController
      * Rates a product
      * @return array
      */
-    public function rate()
+    public function rateAjax()
     {
         $stars = (int) $this->request->post('stars', 0);
         $product_id = (int) $this->request->post('product_id');

@@ -214,7 +214,7 @@ $(function () {
         url: GplCart.settings.base + 'ajax',
         formData: {
             type: fileinput.attr('data-entity-type'),
-            action: 'uploadImage',
+            action: 'uploadImageAjax',
             token: GplCart.settings.token
         },
         done: function (e, data) {
@@ -244,7 +244,7 @@ $(function () {
         source: function (request, response) {
 
             var id = searchTypeSelect.val();
-            var params = {term: request.term, action: 'adminSearch', id: id, token: GplCart.settings.token};
+            var params = {term: request.term, action: 'adminSearchAjax', id: id, token: GplCart.settings.token};
 
             $.post(GplCart.settings.base + 'ajax', params, function (data) {
                 response($.map(data, function (value, key) {

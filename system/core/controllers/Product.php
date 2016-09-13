@@ -468,7 +468,7 @@ class Product extends FrontendController
             $response = array(
                 'quantity' => $cart['quantity'],
                 'preview' => $this->render('cart/preview', array(
-                    'cart' => $this->cart->prepareCartItems($cart, $this->setting()),
+                    'cart' => $this->prepareCart($cart),
                     'limit' => $this->config('cart_preview_limit', 5)
             )));
 

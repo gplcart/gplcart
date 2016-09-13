@@ -657,41 +657,4 @@ class Cart extends Model
         return Tool::deleteCookie($cookie_name);
     }
 
-    /**
-     * Prepares an array of cart items
-     * @param array $cart
-     * @param array $settings
-     * @return array
-     */
-    public function prepareCartItems(array $cart, array $settings)
-    {
-        $imagestyle = isset($settings['image_style_cart']) ? (int) $settings['image_style_cart'] : 3;
-
-        foreach ($cart['items'] as &$item) {
-
-            $imagepath = '';
-
-            if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
-                $imagefile = reset($item['product']['images']);
-                $imagepath = $imagefile['path'];
-            }
-
-            if (!empty($item['product']['option_file_id']) && !empty($item['product']['images'][$item['product']['option_file_id']]['path'])) {
-                $imagepath = $item['product']['images'][$item['product']['option_file_id']]['path'];
-            }
-
-            $item['total_formatted'] = $this->price->format($item['total'], $cart['currency']);
-            $item['price_formatted'] = $this->price->format($item['price'], $cart['currency']);
-
-            if (empty($imagepath)) {
-                $item['thumb'] = $this->image->placeholder($imagestyle);
-            } else {
-                $item['thumb'] = $this->image->url($imagestyle, $imagepath);
-            }
-        }
-
-        $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
-        return $cart;
-    }
-
 }

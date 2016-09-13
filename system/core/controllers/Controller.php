@@ -17,13 +17,13 @@ use core\Controller as BaseController;
  */
 class Controller extends BaseController
 {
-    
+
     /**
      * Trigger model instance
      * @var \core\models\Trigger $trigger
      */
     protected $trigger;
-    
+
     /**
      * An array of fired triggers for the current context
      * @var type 
@@ -152,7 +152,7 @@ class Controller extends BaseController
 
         /* @var $category \core\models\Category */
         $this->category = Container::instance('core\\models\\Category');
-        
+
         /* @var $trigger \core\models\Trigger */
         $this->trigger = Container::instance('core\\models\\Trigger');
     }
@@ -172,7 +172,7 @@ class Controller extends BaseController
             $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
 
             $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
-            
+
             //d($this->triggers);
         }
     }
@@ -226,15 +226,18 @@ class Controller extends BaseController
         if (!isset($options['view']) || !in_array($options['view'], array('list', 'grid'))) {
             $options['view'] = 'grid';
         }
-
-        $options['id_key'] = 'product_id';
-        $options['ids'] = array_keys($products);
-        $options['imagestyle'] = $this->setting("image_style_product_{$options['view']}", 3);
+        
+        $options += array(
+            'id_key' => 'product_id',
+            'ids' => array_keys($products),
+            'template' => "product/item/{$options['view']}",
+            'imagestyle' => $this->setting("image_style_product_{$options['view']}", 3)
+        );
 
         foreach ($products as &$product) {
             $this->setItemThumb($product, $options);
             $this->setItemUrl($product, $options);
-            $this->setItemProductPrice($product, $options);
+            $this->setItemPrice($product, $options);
             $this->setItemProductCompared($product, $options);
             $this->setItemProductWishlist($product, $options);
             $this->setItemProductRendered($product, $options);
@@ -319,6 +322,27 @@ class Controller extends BaseController
     }
 
     /**
+     * Prepares an array of cart items
+     * @param array $cart
+     * @return array
+     */
+    public function prepareCart(array $cart)
+    {
+        foreach ($cart['items'] as &$item) {
+
+            $item['currency'] = $cart['currency'];
+
+            $this->setItemTotal($item);
+            $this->setItemPrice($item);
+            $this->setItemCartThumb($item);
+        }
+
+        $this->setItemTotal($cart);
+
+        return $cart;
+    }
+
+    /**
      * Sets active flag to the item if its url mathes the current path
      * @param array $item
      * @param array $options
@@ -347,6 +371,11 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
+        if (isset($options['path'])) {
+            $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
+            return $data;
+        }
+
         if (empty($data['images']) && isset($options['ids'])) {
             $data['thumb'] = $this->image->getThumb($data, $options);
             return $data; // Processing single item, exit
@@ -361,6 +390,29 @@ class Controller extends BaseController
         }
 
         return $data;
+    }
+
+    /**
+     * Sets product image thumbnail to the cart item
+     * @param array $item
+     */
+    protected function setItemCartThumb(array &$item)
+    {
+        $options = array(
+            'path' => '',
+            'imagestyle' => $this->setting('image_style_cart', 3)
+        );
+
+        if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
+            $imagefile = reset($item['product']['images']);
+            $options['path'] = $imagefile['path'];
+        }
+
+        if (!empty($item['product']['option_file_id']) && !empty($item['product']['images'][$item['product']['option_file_id']]['path'])) {
+            $options['path'] = $item['product']['images'][$item['product']['option_file_id']]['path'];
+        }
+
+        $this->setItemThumb($item, $options);
     }
 
     /**
@@ -382,11 +434,12 @@ class Controller extends BaseController
     {
         $product_id = $product['product_id'];
         $arguments = array('user_id' => $this->cart_uid);
+        
         $product['in_wishlist'] = $this->wishlist->exists($product_id, $arguments);
     }
 
     /**
-     * Sets item URL considering its possible alias
+     * Sets a URL to the item considering its possible alias
      * @param array $data
      * @param array $options
      */
@@ -398,11 +451,11 @@ class Controller extends BaseController
     }
 
     /**
-     * Sets formatted product price considering price rules
+     * Sets the formatted product price considering price rules
      * @param array $product
      * @param array $options
      */
-    protected function setItemProductPrice(array &$product, array $options)
+    protected function setItemPrice(array &$product, array $options = array())
     {
         if ($this->catalog_pricerules) {
             //$calculated = $this->product->calculate($product, $this->store_id);
@@ -410,6 +463,15 @@ class Controller extends BaseController
         }
 
         $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
+    }
+
+    /**
+     * Sets formatted total to the item
+     * @param array $item
+     */
+    protected function setItemTotal(array &$item)
+    {
+        $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
     }
 
     /**
@@ -426,7 +488,7 @@ class Controller extends BaseController
             'product' => $product,
             'buttons' => $options['buttons']);
 
-        $product['rendered'] = $this->render("product/item/{$options['view']}", $data);
+        $product['rendered'] = $this->render($options['template'], $data);
     }
 
 }

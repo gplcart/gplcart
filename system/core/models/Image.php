@@ -357,7 +357,12 @@ class Image extends Model
      */
     public function url($imagestyle_id, $image, $absolute = false)
     {
+        if (empty($image)) {
+            return $this->placeholder($imagestyle_id, $absolute);
+        }
+
         $image = trim($image, "/");
+
         $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $image);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
         $path = "files/image/cache/$imagestyle_id/$image";

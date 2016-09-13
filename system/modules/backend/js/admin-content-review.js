@@ -12,7 +12,7 @@ $(function () {
 
             $.post(GplCart.settings.base + 'ajax', {
                 term: request.term,
-                action: 'getUsers',
+                action: 'getUsersAjax',
                 token: GplCart.settings.token}, function (data) {
 
                 response($.map(data, function (value, key) {
@@ -71,7 +71,7 @@ $(function () {
 
             $.post(GplCart.settings.base + 'ajax', {
                 term: request.term,
-                action: 'getUsers',
+                action: 'getUsersAjax',
                 token: GplCart.settings.token}, function (data) {
 
                 response($.map(data, function (value, key) {

@@ -28,7 +28,7 @@ class Action extends FrontendController
     /**
      * Processes an action
      */
-    public function doAction()
+    public function getResponseAction()
     {
         // Reject all requests with invalid token
         $this->controlToken();
@@ -48,7 +48,7 @@ class Action extends FrontendController
         try {
             $result = $this->{$action}();
         } catch (\BadMethodCallException $ex) {
-            $result = array('message' => 'A error occurred', 'severity' => 'danger');
+            $result = array('message' => $this->text('An error occurred'), 'severity' => 'danger');
         }
 
         $this->hook->fire('action.after', $action, $result);
