@@ -120,7 +120,7 @@ class Zone extends Model
     /**
      * Returns an array of zones
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data)
     {
