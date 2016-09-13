@@ -213,7 +213,7 @@ class Install extends FrontendController
 
         if ($result !== true) {
             $url = $this->url('', $this->query);
-            $this->redirect($url, $result, 'danger');
+            $this->redirect($url, (string) $result, 'danger');
         }
     }
 

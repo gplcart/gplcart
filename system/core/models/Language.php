@@ -35,7 +35,7 @@ class Language extends Model
 
     /**
      * Current language code
-     * @var boolean
+     * @var string
      */
     protected $langcode = '';
 

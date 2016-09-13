@@ -347,7 +347,7 @@ class Install extends Model
 
         $languages = array();
 
-        $languages[$langcode] = array(
+        $languages[$code] = array(
             'status' => 1,
             'default' => 1,
             'code' => $code,
