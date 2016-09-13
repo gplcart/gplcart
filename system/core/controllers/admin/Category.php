@@ -337,11 +337,8 @@ class Category extends BackendController
         ));
 
         $this->addValidator('title', array(
-            'length' => array(
-                'min' => 1,
-                'max' => 255,
-                'required' => true
-        )));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
         $this->addValidator('meta_title', array(
             'length' => array('max' => 255)
