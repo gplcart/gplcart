@@ -149,7 +149,7 @@
                   <?php } ?>
                 </div>
               </div>
-              <div class="form-group<?php echo isset($this->errors['user']['password']) ? ' has-error' : ''; ?>">
+              <div class="required form-group<?php echo isset($this->errors['user']['password']) ? ' has-error' : ''; ?>">
                 <label class="col-md-3 control-label"><?php echo $this->text('Password'); ?></label>
                 <div class="col-md-6">
                   <input type="password" name="settings[user][password]" class="form-control" value="">
