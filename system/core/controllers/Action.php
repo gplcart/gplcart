@@ -95,6 +95,8 @@ class Action extends FrontendController
 
         $result = $this->cart->submit($data);
 
+        $response = array('message' => $result);
+
         if ($result === true) {
 
             $response = array(
@@ -102,8 +104,6 @@ class Action extends FrontendController
                 'message' => $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
                     '!href' => $this->url('checkout')))
             );
-
-            return $response;
         }
 
         if ($result === false) {
@@ -113,11 +113,9 @@ class Action extends FrontendController
                 'redirect' => $this->url("product/$product_id", array(), true),
                 'message' => $this->text('Please select product options before adding to the cart')
             );
-
-            return $response;
         }
 
-        return array('message' => $result);
+        return $response;
     }
 
     /**
@@ -141,6 +139,12 @@ class Action extends FrontendController
 
         $added = $this->wishlist->add($data, true); // true - check limit
 
+        $response = array(
+            'severity' => 'success',
+            'message' => $this->text('Product has been added to your <a href="!href">wishlist</a>', array(
+                '!href' => $this->url('wishlist')))
+        );
+
         if (empty($added)) {
 
             $response = array(
@@ -149,15 +153,7 @@ class Action extends FrontendController
                     '%limit' => $this->wishlist->getLimits($user_id),
                     '!href' => $this->url('wishlist')))
             );
-
-            return $response;
         }
-
-        $response = array(
-            'severity' => 'success',
-            'message' => $this->text('Product has been added to your <a href="!href">wishlist</a>', array(
-                '!href' => $this->url('wishlist')))
-        );
 
         return $response;
     }
