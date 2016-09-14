@@ -9,7 +9,6 @@
 
 namespace core\controllers;
 
-use core\classes\Cache;
 use core\models\Order as ModelsOrder;
 use core\models\Review as ModelsReview;
 use core\models\Rating as ModelsRating;
@@ -68,18 +67,13 @@ class Product extends FrontendController
      * Displays a product page
      * @param integer $product_id
      */
-    public function product($product_id)
+    public function indexProduct($product_id)
     {
-        $product = $this->get($product_id);
-
-        $this->data['product'] = $product;
-        $this->data['price'] = $product['price_formatted'];
-
-        $this->submitted = $this->request->post('product', array());
-
-        if (!empty($this->submitted)) {
-            $this->addToCart();
-        }
+        $product = $this->getProduct($product_id);
+        
+        $this->submitProduct($product);
+        
+        $this->setData('product', $product);
 
         $this->setReviews($product);
         $this->setRatingWidget($product);
@@ -93,6 +87,88 @@ class Product extends FrontendController
         $this->setJsProduct($product);
         $this->setTitleProduct($product);
         $this->outputProduct();
+    }
+    
+    /**
+     * Adds a product to the cart
+     * @param array $product
+     */
+    protected function submitProduct(array $product)
+    {
+
+        if (!$this->isPosted('product')) {
+            return;
+        }
+
+        $this->setSubmitted('product');
+        $this->validateProduct($product);
+
+        if (!$this->hasErrors('product')) {
+            $this->addToCartProduct($product);
+        }
+        
+        $errors = implode('\n', $this->getError());
+
+        if ($this->request->isAjax()) {
+            $this->response->json(array('errors' => $errors));
+        }
+
+        $this->redirect('', $errors, 'warning');
+    }
+
+    /**
+     * Validates adding a product to the cart
+     */
+    protected function validateProduct(array $product)
+    {
+        $this->addValidator('quantity', array(
+            'numeric' => array()
+        ));
+        
+        $this->setValidators($product);
+    }
+    
+    /**
+     * Validates and adds a product to the cart
+     */
+    protected function addToCartProduct(array $product)
+    {
+        
+        $submitted = $this->getSubmitted();
+        $is_ajax = $this->request->isAjax();
+        
+        $result = $this->cart->addProduct($product, $submitted);
+
+        if ($result === true) {
+            
+            if (!$is_ajax) {
+                $this->redirect('', $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
+            }
+
+            $cart = $this->cart->getByUser($this->cart_uid, $this->store_id);
+
+            $response = array(
+                'quantity' => $cart['quantity'],
+                'preview' => $this->render('cart/preview', array(
+                    'cart' => $this->prepareCart($cart),
+                    'limit' => $this->config('cart_preview_limit', 5)
+            )));
+
+            $this->response->json($response);
+        }
+
+        foreach ($result as &$error) {
+            $error = $this->text($error);
+            if (!$is_ajax) {
+                $this->setMessage($error, 'danger', true);
+            }
+        }
+
+        if ($is_ajax) {
+            $this->response->json(array('errors' => $result));
+        }
+
+        $this->redirect();
     }
 
     /**
@@ -439,55 +515,7 @@ class Product extends FrontendController
         return $products;
     }
 
-    /**
-     * Validates and adds a product to the cart
-     */
-    protected function addToCart()
-    {
-        $is_ajax = $this->request->isAjax();
 
-        $this->validateAddToCart();
-        $errors = $this->getError();
-
-        if (!empty($errors)) {
-            if ($is_ajax) {
-                $this->response->json(array('errors' => $errors));
-            }
-            $this->redirect('', $errors, 'danger');
-        }
-
-        $add_result = $this->cart->addProduct($this->submitted);
-
-        if ($add_result === true) {
-            if (!$is_ajax) {
-                $this->redirect('', $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
-            }
-
-            $cart = $this->cart->getByUser();
-
-            $response = array(
-                'quantity' => $cart['quantity'],
-                'preview' => $this->render('cart/preview', array(
-                    'cart' => $this->prepareCart($cart),
-                    'limit' => $this->config('cart_preview_limit', 5)
-            )));
-
-            $this->response->json($response);
-        }
-
-        foreach ($add_result as &$error) {
-            $error = $this->text($error);
-            if (!$is_ajax) {
-                $this->setMessage($error, 'danger', true);
-            }
-        }
-
-        if ($is_ajax) {
-            $this->response->json(array('errors' => $add_result));
-        }
-
-        $this->redirect();
-    }
 
     /**
      * Returns an array of product's fields
@@ -549,20 +577,6 @@ class Product extends FrontendController
         return array('main' => $main, 'extra' => $images);
     }
 
-    /**
-     * Validates adding a product to the cart
-     * @return null
-     */
-    protected function validateAddToCart()
-    {
-        if (empty($this->submitted['quantity'])) {
-            $this->submitted['quantity'] = 1;
-            return;
-        }
 
-        if (!is_numeric($this->submitted['quantity']) || strlen($this->submitted['quantity']) > 2) {
-            $this->errors['quantity'] = $this->text('Invalid quantity');
-        }
-    }
 
 }

@@ -39,10 +39,10 @@ class Page extends FrontendController
      * Displays a page
      * @param integer $page_id
      */
-    public function page($page_id)
+    public function indexPage($page_id)
     {
-        $page = $this->get($page_id);
-        $this->data['page'] = $page;
+        $page = $this->getPage($page_id);
+        $this->setData('page', $page);
 
         $this->setTitlePage($page);
         $this->setBreadcrumbPage($page);
@@ -63,8 +63,14 @@ class Page extends FrontendController
      */
     protected function setBreadcrumbPage(array $page)
     {
-        $breadcrumb = array('text' => $this->text('Home'), 'url' => $this->url('/'));
-        $this->setBreadcrumb($breadcrumb);
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -81,7 +87,7 @@ class Page extends FrontendController
      * @param integer $page_id
      * @return array
      */
-    protected function get($page_id)
+    protected function getPage($page_id)
     {
         $page = $this->page->get($page_id, $this->langcode);
 

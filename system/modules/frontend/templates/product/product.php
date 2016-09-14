@@ -27,7 +27,7 @@
     
     <div class="row">
       <div class="col-md-12">
-        <div id="price" class="h3"><?php echo $price; ?></div>
+        <div id="price" class="h3"><?php echo $product['price_formatted']; ?></div>
       </div>
     </div>
     <div class="row">

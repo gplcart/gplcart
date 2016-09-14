@@ -9,18 +9,16 @@
 
 namespace core\models;
 
-use core\Logger;
 use core\Model;
+use core\Logger;
+use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
-use core\classes\Tool;
-use core\models\Currency as ModelsCurrency;
-use core\models\Image as ModelsImage;
-use core\models\Language as ModelsLanguage;
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
-use core\models\Store as ModelsStore;
+use core\models\Sku as ModelsSku;
 use core\models\User as ModelsUser;
+use core\models\Product as ModelsProduct;
+use core\models\Currency as ModelsCurrency;
+use core\models\Language as ModelsLanguage;
 use core\models\Wishlist as ModelsWishlist;
 
 /**
@@ -30,22 +28,16 @@ class Cart extends Model
 {
 
     /**
-     * Store model instance
-     * @var \core\models\Store $store
-     */
-    protected $store;
-
-    /**
      * Product model instance
      * @var \core\models\Product $product
      */
     protected $product;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
+     * Sku model instance
+     * @var \core\models\Sku $sku
      */
-    protected $price;
+    protected $sku;
 
     /**
      * Currency model instance
@@ -66,12 +58,6 @@ class Cart extends Model
     protected $wishlist;
 
     /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Language model instance
      * @var \core\models\Language $language
      */
@@ -90,36 +76,25 @@ class Cart extends Model
     protected $logger;
 
     /**
-     * Array of validation errors
-     * @var array
-     */
-    protected $errors = array();
-
-    /**
      * Constructor
      * @param ModelsProduct $product
-     * @param ModelsPrice $price
+     * @param ModelsSku $sku
      * @param ModelsCurrency $currency
      * @param ModelsUser $user
      * @param ModelsWishlist $wishlist
      * @param ModelsLanguage $language
-     * @param ModelsStore $store
-     * @param ModelsImage $image
      * @param Request $request
      * @param Logger $logger
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price,
+    public function __construct(ModelsProduct $product, ModelsSku $sku,
             ModelsCurrency $currency, ModelsUser $user,
             ModelsWishlist $wishlist, ModelsLanguage $language,
-            ModelsStore $store, ModelsImage $image, Request $request,
-            Logger $logger)
+            Request $request, Logger $logger)
     {
         parent::__construct();
 
+        $this->sku = $sku;
         $this->user = $user;
-        $this->store = $store;
-        $this->price = $price;
-        $this->image = $image;
         $this->logger = $logger;
         $this->product = $product;
         $this->request = $request;
@@ -130,24 +105,24 @@ class Cart extends Model
 
     /**
      * Returns a cart content for a given user ID
-     * @param mixed $user_id
-     * @param boolean $cached
+     * @param string|integer $user_id
+     * @param integer $store_id
      * @return array
      */
-    public function getByUser($user_id = null, $cached = true)
+    public function getByUser($user_id, $store_id)
     {
-        if (!isset($user_id)) {
-            $user_id = $this->uid();
-        }
-
-
-        $cart = &Cache::memory("cart.$user_id");
+        $cart = &Cache::memory("cart.$user_id.$store_id");
 
         if (isset($cart)) {
             return $cart;
         }
 
-        $products = $this->getList(array('user_id' => $user_id));
+        $options = array(
+            'user_id' => $user_id,
+            'store_id' => $store_id
+        );
+
+        $products = $this->getList($options);
 
         if (empty($products)) {
             return array();
@@ -159,16 +134,19 @@ class Cart extends Model
 
         $cart = array();
         foreach ($products as $cart_id => $item) {
-            $item['product'] = $this->product->getBySku($item['sku'], $item['store_id']);
 
-            // Invalid / disabled product
-            if (empty($item['product']['status'])) {
+            if ($item['store_id'] != $store_id) {
                 continue;
             }
 
-            // Product store changed
-            if ((int) $this->store->id() !== (int) $item['product']['store_id']) {
-                continue;
+            $item['product'] = $this->product->getBySku($item['sku'], $item['store_id']);
+
+            if (empty($item['product']['status'])) {
+                continue; // Invalid / disabled product
+            }
+
+            if ($store_id != $item['product']['store_id']) {
+                continue; // Store has been changed for this product
             }
 
             $price = $item['product']['price'];
@@ -182,8 +160,10 @@ class Cart extends Model
 
             $item['price'] = $price;
             $item['total'] = $item['price'] * $item['quantity'];
+
             $total += (int) $item['total'];
             $quantity += (int) $item['quantity'];
+
             $cart['items'][$cart_id] = $item;
         }
 
@@ -192,10 +172,6 @@ class Cart extends Model
         $cart['currency'] = $current_currency;
 
         $this->hook->fire('get.cart.after', $user_id, $cart);
-
-        if ($cached) {
-            //Cache::set("cart.$user_id", $cart);
-        }
 
         return $cart;
     }
@@ -247,7 +223,12 @@ class Cart extends Model
 
         if (isset($data['order_id'])) {
             $sql .= ' AND order_id=?';
-            $where[] = $data['order_id'];
+            $where[] = (int) $data['order_id'];
+        }
+
+        if (isset($data['store_id'])) {
+            $sql .= ' AND store_id=?';
+            $where[] = (int) $data['store_id'];
         }
 
         $sql .= ' GROUP BY sku ORDER BY created DESC';
@@ -257,196 +238,84 @@ class Cart extends Model
     }
 
     /**
-     * Adds a product to the cart
-     * @param array $data
-     * @return boolean|string
-     * Returns true on success,
-     * false - needs more data (redirect to product page),
-     * string - last validation error
-     */
-    public function submit(array $data)
-    {
-        $product = $this->product->get($data['product_id']);
-
-        if (empty($product['status'])) {
-            return $this->language->text('An error occurred');
-        }
-
-        if (!empty($product['combination'])) {
-            return false;
-        }
-
-        if (empty($data['quantity'])) {
-            $data['quantity'] = 1;
-        }
-
-        $result = $this->addProduct($data);
-
-        if ($result === true) {
-            return true;
-        }
-
-        $error = is_array($result) ? end($result) : $result;
-        return $error;
-    }
-
-    /**
-     * Adds a product to the cart
-     * @param array $data
+     * Returns cart limit(s)
      * @return mixed
      */
-    public function addProduct(array $data)
+    public function getLimits($item = null)
     {
-        $this->hook->fire('add.cart.product.before', $data);
+        $limits = array(
+            'sku' => (int) $this->config->get('cart_sku_limit', 10),
+            'total' => (int) $this->config->get('cart_total_limit', 20)
+        );
 
-        if (empty($data['quantity'])) {
-            return false;
-        }
-
-        $user_id = $this->uid();
-        $product = $this->product->get($data['product_id']);
-        $this->validate($data, $product, $user_id);
-        $data = array('user_id' => $user_id, 'store_id' => $product['store_id']) + $data;
-
-        $this->hook->fire('presave.cart.product', $data, $product, $this->errors);
-
-        if (!empty($this->errors)) {
-            return $this->errors;
-        }
-
-        $cart_id = $this->setProduct($data, $user_id);
-        $this->hook->fire('add.cart.product.after', $data, $cart_id);
-
-        $this->logAddToCart($data, $product, $user_id);
-        $this->deleteCache($user_id);
-        return true;
+        return isset($item) ? $limits[$item] : $limits;
     }
 
     /**
-     * Validates a product before adding to the cart
+     * Adds a product to the cart
      * @param array $data
-     * @param array $product
-     * @param string|integer $user_id
-     * @return boolean
+     * @return array
      */
-    protected function validate(array &$data, array $product, $user_id)
+    public function addProduct(array $product, array $data)
     {
-        if (!$this->validateProduct($product)) {
-            return false;
+        $this->hook->fire('add.product.cart.before', $product, $data);
+
+        if (empty($product) || empty($data)) {
+            return array();
         }
 
-        if (empty($data['options'])) {
-            $data['sku'] = $product['sku'];
-            $data['stock'] = $product['stock'];
-        } else {
-            $data['combination_id'] = $this->product->getCombinationId($data['options'], $product['product_id']);
-
-            if (!empty($product['combination'][$data['combination_id']]['sku'])) {
-                $data['sku'] = $product['combination'][$data['combination_id']]['sku'];
-                $data['stock'] = $product['combination'][$data['combination_id']]['stock'];
-            }
+        if (!empty($product['combination']) && empty($data['combination_id'])) {
+            return array(
+                'severity' => 'warning',
+                'redirect' => $this->request->base() . "product/{$product['product_id']}",
+                'message' => $this->text('Please select product options before adding to the cart')
+            );
         }
 
-        if (!$this->validateSku($data)) {
-            return false;
-        }
+        $data += array(
+            'quantity' => 1,
+            'user_id' => $this->uid(),
+            'store_id' => $product['store_id']
+        );
 
-        if (!$this->validateLimits($data, $product, $user_id)) {
-            return false;
-        }
+        $result = array(
+            'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
+                '!href' => $this->request->base() . 'checkout')),
+            'severity' => 'success',
+            'redirect' => ''
+        );
 
-        return true;
-    }
+        $result['cart_id'] = $this->setProduct($data);
 
-    /**
-     * Validates a product before adding to the cart
-     * @param array $product
-     * @return boolean
-     */
-    protected function validateProduct(array $product)
-    {
-        if (!empty($product['status'])) {
-            return true;
-        }
+        $this->hook->fire('add.product.cart.after', $product, $data, $result);
 
-        $this->errors[] = $this->language->text('Invalid product');
-        return false;
-    }
+        $this->logAddToCart($product, $data);
 
-    /**
-     * Validates a product SKU before addingto the cart
-     * @param array $data
-     * @return boolean
-     */
-    protected function validateSku(array $data)
-    {
-        if (empty($data['sku'])) {
-            $this->errors[] = $this->language->text('SKU not found');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates cart limits for the current cart
-     * @param array $data
-     * @param array $product
-     * @param string|integer $user_id
-     * @return boolean
-     */
-    protected function validateLimits(array $data, array $product, $user_id)
-    {
-        $total = (int) $data['quantity'];
-        $skus = array($data['sku'] => true);
-
-        foreach ($this->getList(array('user_id' => $user_id)) as $item) {
-            $skus[$item['sku']] = true;
-            $total += (int) $item['quantity'];
-        }
-
-        $limit_sku = (int) $this->config->get('cart_sku_limit', 10);
-        $limit_total = (int) $this->config->get('cart_total_limit', 20);
-
-        if (!empty($limit_sku) && (count($skus) > $limit_sku)) {
-            $this->errors[] = $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
-                '%num' => $limit_sku));
-        }
-
-        if (!empty($limit_total) && ($total > $limit_total)) {
-            $this->errors[] = $this->language->text('Sorry, you cannot have more than %num items in your cart', array(
-                '%num' => $limit_total));
-        }
-
-        if ($product['subtract'] && ((int) $data['quantity'] > (int) $data['stock'])) {
-            $this->errors[] = $this->language->text('Too low stock level');
-        }
-
-        return empty($this->errors);
+        return $result;
     }
 
     /**
      * Adds/updates products in the cart
      * @param array $data
-     * @param string|integer $user_id
      * @return integer
      */
-    protected function setProduct(array $data, $user_id)
+    protected function setProduct(array $data)
     {
+
         $sql = 'SELECT cart_id, quantity'
                 . ' FROM cart'
                 . ' WHERE sku=? AND user_id=? AND order_id=?';
 
-        $conditions = array($data['sku'], $user_id, 0);
+        $conditions = array($data['sku'], $data['user_id'], 0);
         $existing = $this->db->fetch($sql, $conditions);
 
-        if (isset($existing['cart_id'])) {
-            $conditions = array('quantity' => $existing['quantity'] ++);
-            $this->update($existing['cart_id'], $conditions);
-            return $existing['cart_id'];
+        if (empty($existing['cart_id'])) {
+            return $this->add($data);
         }
 
-        return $this->add($data);
+        $conditions2 = array('quantity' => $existing['quantity'] ++);
+        $this->update($existing['cart_id'], $conditions2);
+        return $existing['cart_id'];
     }
 
     /**
@@ -466,9 +335,7 @@ class Cart extends Model
         $data += array('modified' => GC_TIME);
         $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
 
-        // Clear cached data
-        $cart = $this->get($cart_id);
-        $this->deleteCache($cart['user_id']);
+        Cache::clearMemory();
 
         $this->hook->fire('update.cart.after', $cart_id, $data, $result);
 
@@ -486,15 +353,6 @@ class Cart extends Model
     }
 
     /**
-     * Clears up cached cart content for a given user
-     * @param string|integer $user_id
-     */
-    public function deleteCache($user_id)
-    {
-        Cache::clear("cart.$user_id");
-    }
-
-    /**
      * Adds a cart record to the database
      * @param array $data
      * @return boolean
@@ -507,23 +365,23 @@ class Cart extends Model
             return false;
         }
 
-        $data += array(
-            'created' => GC_TIME,
-            'store_id' => $this->config->get('store', 1)
-        );
+        $data += array('created' => GC_TIME);
 
         $data['cart_id'] = $this->db->insert('cart', $data);
+
+        Cache::clearMemory();
+
         $this->hook->fire('add.cart.after', $data);
         return $data['cart_id'];
     }
 
     /**
      * Logs adding products to the cart
-     * @param array $data
      * @param array $product
-     * @param integer|string $user_id
+     * @param array $data
+     * @return boolean
      */
-    protected function logAddToCart(array $data, array $product, $user_id)
+    protected function logAddToCart(array $product, array $data)
     {
         $log = array(
             'message' => 'User %uid has added product %product (SKU: %sku) at %store',
@@ -531,46 +389,66 @@ class Cart extends Model
                 '%sku' => $data['sku'],
                 '%store' => $product['store_id'],
                 '%product' => $product['product_id'],
-                '%uid' => is_numeric($user_id) ? $user_id : ''
+                '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : ''
             )
         );
 
-        $this->logger->log('cart', $log);
+        return $this->logger->log('cart', $log);
+    }
+
+    /**
+     * Logs logging in during checkout
+     * @param array $user
+     */
+    protected function logLoginCheckout(array $user)
+    {
+        $log = array(
+            'message' => 'User has logged in during checkout using %email',
+            'variables' => array('%email' => $user['email'])
+        );
+
+        $this->logger->log('checkout', $log);
     }
 
     /**
      * Moves a cart item to the wishlist
      * @param string $sku
-     * @param integer|null $user_id
-     * @return mixed
+     * @param string|integer $user_id
+     * @param insteger $store_id
+     * @return boolean
      */
-    public function moveToWishlist($sku, $user_id = null)
+    public function moveToWishlist($sku, $user_id, $store_id)
     {
-        $this->hook->fire('move.cart.wishlist.before', $sku, $user_id);
+        $this->hook->fire('move.cart.wishlist.before', $sku, $user_id, $store_id);
 
         if (empty($sku)) {
             return false;
         }
 
-        if (!isset($user_id)) {
-            $user_id = $this->uid();
-        }
+        $skuinfo = $this->sku->get($sku, $store_id);
 
-        $sql = 'SELECT product_sku_id FROM product_sku WHERE sku=?';
-        $product_sku_id = $this->db->fetchColumn($sql, array($sku));
-
-        if (empty($product_sku_id)) {
+        if (empty($skuinfo['product_id'])) {
             return false;
         }
 
-        $this->db->delete('wishlist', array('product_id' => $product_sku_id));
+        $data = array(
+            'user_id' => $user_id,
+            'product_id' => $skuinfo['product_id']
+        );
 
-        $wishlist = array('product_id' => $product_sku_id, 'user_id' => $user_id);
-        $wishlist_id = $this->wishlist->add($wishlist);
+        $this->db->delete('wishlist', $data);
+        $wishlist_id = $this->wishlist->add($data);
 
-        $this->db->delete('cart', array('sku' => $sku, 'user_id' => $user_id));
-        $this->deleteCache($user_id);
-        $this->hook->fire('move.cart.wishlist.after', $sku, $user_id, $wishlist_id);
+        $conditions = array(
+            'sku' => $sku,
+            'user_id' => $user_id
+        );
+
+        $this->db->delete('cart', $conditions);
+
+        Cache::clearMemory();
+
+        $this->hook->fire('move.cart.wishlist.after', $sku, $user_id, $store_id);
         return $wishlist_id;
     }
 
@@ -587,22 +465,18 @@ class Cart extends Model
             return false;
         }
 
-        $log = array(
-            'message' => 'User has logged in during checkout using %email',
-            'variables' => array('%email' => $user['email'])
-        );
-
-        $this->logger->log('checkout', $log);
+        $conditions = array('user_id' => $user['user_id']);
 
         if (!$this->config->get('cart_login_merge', 0)) {
-            $this->delete(false, $user['user_id']);
+            $this->delete($conditions);
         }
 
         foreach ($cart['items'] as $item) {
-            $this->update($item['cart_id'], array('user_id' => $user['user_id']));
+            $this->update($item['cart_id'], $conditions);
         }
 
         $this->deleteCookie();
+        $this->logLoginCheckout($user);
 
         $this->hook->fire('cart.login.after', $user, $cart);
         return true;
@@ -610,39 +484,34 @@ class Cart extends Model
 
     /**
      * Deletes a cart record from the database
-     * @param integer $cart_id
-     * @param mixed $user_id
-     * @param integer $order_id
+     * @param array $arguments
      * @return boolean
      */
-    public function delete($cart_id, $user_id = null, $order_id = 0)
+    public function delete(array $arguments)
     {
-        $arguments = func_get_args();
-
         $this->hook->fire('delete.cart.before', $arguments);
 
         if (empty($arguments)) {
             return false;
         }
 
-        if (!empty($user_id)) {
-            $this->deleteCache($user_id);
-            // Cart orders with order_id = 0 are not linked to orders, i.e before checkout
-            $where = array('user_id' => $user_id, 'order_id' => (int) $order_id);
+        // Cart orders with order_id = 0 are not linked to orders,
+        // i.e before checkout
+        $arguments += array('order_id' => 0);
+
+        if (empty($arguments['user_id'])) {
+            $conditions = array('cart_id' => $arguments['cart_id']);
+        } else {
+
+            $conditions = array(
+                'user_id' => $arguments['user_id'],
+                'order_id' => $arguments['order_id']);
         }
 
-        $cart = $this->get($cart_id);
+        $result = (bool) $this->db->delete('cart', $conditions);
 
-        if (!empty($cart)) {
-            $this->deleteCache($cart['user_id']);
-            $where = array('cart_id' => (int) $cart_id);
-        }
+        Cache::clearMemory();
 
-        if (empty($where)) {
-            return false;
-        }
-
-        $result = $this->db->delete('cart', $where);
         $this->hook->fire('delete.cart.after', $arguments, $result);
         return (bool) $result;
     }
@@ -653,8 +522,8 @@ class Cart extends Model
      */
     public function deleteCookie()
     {
-        $cookie_name = $this->config->get('user_cookie_name', 'user_id');
-        return Tool::deleteCookie($cookie_name);
+        $cookie = $this->config->get('user_cookie_name', 'user_id');
+        return Tool::deleteCookie($cookie);
     }
 
 }

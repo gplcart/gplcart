@@ -99,7 +99,7 @@ class Validator extends Model
      * @param array $data
      * @return \core\models\Validator
      */
-    public function set($submitted = array(), array $data = array())
+    public function set(array &$submitted = array(), array $data = array())
     {
         foreach ($this->fields as $field => $validators) {
             foreach ($validators as $handler_id => $options) {
@@ -122,7 +122,13 @@ class Validator extends Model
                 }
 
                 if (isset($result['result'])) {
+
                     Tool::setArrayValue($this->results, $field, $result['result']);
+
+                    if (!empty($options['set'])) {
+                        Tool::setArrayValue($submitted, array(), $result['result']);
+                    }
+                    
                     continue;
                 }
 
@@ -257,6 +263,18 @@ class Validator extends Model
         $handlers['images'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Common', 'images')
+            ),
+        );
+
+        $handlers['cart_options'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Cart', 'options')
+            ),
+        );
+
+        $handlers['cart_limits'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Cart', 'limits')
             ),
         );
 

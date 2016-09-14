@@ -123,6 +123,7 @@ class Controller extends BaseController
 
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
+        $this->setFrontendSubmits();
 
         $this->hook->fire('init.frontend', $this);
     }
@@ -167,7 +168,7 @@ class Controller extends BaseController
             $this->cart_uid = $this->cart->uid();
             $this->category_tree = $this->getCategories();
             $this->compare_content = $this->product->getCompared();
-            $this->cart_content = $this->cart->getByUser($this->cart_uid, false);
+            $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
             $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
 
@@ -490,5 +491,88 @@ class Controller extends BaseController
 
         $product['rendered'] = $this->render($options['template'], $data);
     }
+    
+    /***************************** Submits *****************************/
+    
+    /**
+     * Sets all submit listeners
+     */
+    protected function setFrontendSubmits(){
+        $this->submitAddToCart();
+    }
+    
+    /**
+     * Adds a product to the cart
+     */
+    protected function submitAddToCart()
+    {
+        if (!$this->isPosted('add_to_cart')) {
+            return; // No "Add to cart" clicked
+        }
+
+        $this->setSubmitted();
+        $this->validateAddToCart();
+        
+        if($this->hasErrors(null, false)){
+            $this->submitComplete();
+            return;
+        }
+
+        $product = $this->getSubmitted('product');
+        $quantity = (int) $this->getSubmitted('quantity', 1);
+        $data = array('quantity' => $quantity);
+        
+        $result = $this->cart->addProduct($product, $data);
+        $this->submitComplete($result);
+    }
+    
+    /**
+     * Validates Add to cart action
+     */
+    protected function validateAddToCart()
+    {
+        $product_id = $this->getSubmitted('product_id');
+        $product = $this->product->get($product_id);
+
+        if (empty($product['status'])) {
+            $this->setError('product_id', $this->language->text('Product does not exist'));
+            return; // Unknown/disabled product
+        }
+        
+        $this->setSubmitted('product', $product);
+        $this->setSubmitted('user_id', $this->cart_uid);
+
+        // set => true - set validation results to the submitted values for further usage
+        $this->addValidator('options', array('cart_options' => array('set' => true)));
+        $this->addValidator('quantity', array('cart_limits' => array('control_errors' => true)));
+
+        $this->setValidators($product);
+    }
+
+    /**
+     * Finishes a submitted action.
+     * For non-AJAX requests - redirects the user with a message
+     * For AJAX requests - outputs JSON string with results such as message, redirect path...
+     * @param array $data
+     * @return mixed
+     */
+    protected function submitComplete(array $data = array()){
+        
+        $errors = $this->getError();
+        $message = empty($errors) ? $this->text('An error occurred') : end($errors);
+        
+        $data += array(
+            'redirect' => '',
+            'severity' => 'danger',
+            'message' => $message
+        );
+        
+        if($this->request->isAjax()){
+            return $this->response->json($data);
+        }
+        
+        $this->redirect($data['redirect'], $data['message'], $data['severity']);
+    }
+    
 
 }

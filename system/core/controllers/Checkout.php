@@ -133,8 +133,8 @@ class Checkout extends FrontendController
         $this->submitted_address = array();
 
         $this->country_code = $this->country->getDefault();
-        $this->quantity_limit = (int) $this->config('cart_total_limit', 20);
-        $this->quantity_limit_sku = (int) $this->config('cart_sku_limit', 10);
+        $this->quantity_limit = $this->cart->getLimits('total');
+        $this->quantity_limit_sku = $this->cart->getLimits('sku');
     }
 
     /**
@@ -342,7 +342,7 @@ class Checkout extends FrontendController
      */
     protected function moveWishlist()
     {
-        if ($this->cart->moveToWishlist($this->submitted['wishlist'])) {
+        if ($this->cart->moveToWishlist($this->submitted['wishlist'], $this->cart_uid, $this->store_id)) {
             $this->form_data['form_messages']['cart'] = $this->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $this->url('wishlist')));
             $this->cart_updated = true;
         }
@@ -397,7 +397,7 @@ class Checkout extends FrontendController
     protected function deleteCart()
     {
         $this->cart_updated = true;
-        $this->cart->delete($this->submitted['delete']);
+        $this->cart->delete(array('cart_id' => $this->submitted['delete']));
     }
 
     /**
@@ -405,7 +405,7 @@ class Checkout extends FrontendController
      */
     protected function refreshCart()
     {
-        $this->cart_content = $this->cart->getByUser($this->cart_uid, false); // false - disable cart cache
+        $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
         if (!$this->request->isAjax()) {
             $this->redirect('', $this->text('Your cart has been updated'), 'success');

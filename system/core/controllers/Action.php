@@ -87,35 +87,21 @@ class Action extends FrontendController
     {
         $product_id = (int) $this->request->get('product_id');
         $quantity = (int) $this->request->get('quantity', 1);
-
-        $data = array(
-            'quantity' => $quantity,
-            'product_id' => $product_id
+        
+        $response = array(
+            'redirect' => '',
+            'severity' => 'danger',
+            'message' => $this->text('An error occurred')
         );
-
-        $result = $this->cart->submit($data);
-
-        $response = array('message' => $result);
-
-        if ($result === true) {
-
-            $response = array(
-                'severity' => 'success',
-                'message' => $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
-                    '!href' => $this->url('checkout')))
-            );
+        
+        $product = $this->product->get($product_id);
+        
+        if(empty($product['status'])){
+            return $response;
         }
-
-        if ($result === false) {
-
-            $response = array(
-                'severity' => 'warning',
-                'redirect' => $this->url("product/$product_id", array(), true),
-                'message' => $this->text('Please select product options before adding to the cart')
-            );
-        }
-
-        return $response;
+        
+        $data = array('quantity' => $quantity);
+        return $this->cart->addProduct($product, $data) + $response;
     }
 
     /**
