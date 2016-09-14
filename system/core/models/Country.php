@@ -380,8 +380,7 @@ class Country extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';
@@ -406,6 +405,23 @@ class Country extends Model
 
         $this->hook->fire('countries', $list);
         return $list;
+    }
+
+    /**
+     * Returns an array of country names regarding to ISO 3166-1 alpha-2 standard
+     * or a string with a country name if the code parameter is set
+     * @param null|string $code
+     * @return array|string
+     */
+    public function getIso($code = null)
+    {
+        $data = include GC_CONFIG_COUNTRY;
+
+        if (isset($code)) {
+            return isset($data[$code]) ? $data[$code] : '';
+        }
+
+        return $data;
     }
 
 }
