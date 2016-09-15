@@ -140,7 +140,7 @@ class Route
         $routes['product/(\d+)'] = array(
             'alias' => array(0, 1),
             'handlers' => array(
-                'controller' => array('core\\controllers\\Product', 'product')
+                'controller' => array('core\\controllers\\Product', 'indexProduct')
             )
         );
 
