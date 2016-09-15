@@ -82,9 +82,9 @@ class Product extends FrontendController
         $this->setRelatedProduct($product);
         $this->setRecentProduct($product);
 
-        $this->setJsProduct($product);
-        $this->setTitleProduct($product);
-        $this->outputProduct();
+        $this->setJsIndexProduct($product);
+        $this->setTitleIndexProduct($product);
+        $this->outputIndexProduct();
     }
 
     /**
@@ -221,7 +221,7 @@ class Product extends FrontendController
     /**
      * Renders and displays product page
      */
-    protected function outputProduct()
+    protected function outputIndexProduct()
     {
         $this->output('product/product');
     }
@@ -230,7 +230,7 @@ class Product extends FrontendController
      * Sets title on the product page
      * @param array $product
      */
-    protected function setTitleProduct(array $product)
+    protected function setTitleIndexProduct(array $product)
     {
         $this->setTitle($product['title'], false);
     }
@@ -239,7 +239,7 @@ class Product extends FrontendController
      * Sets Javascripts on the product page
      * @param array $product
      */
-    protected function setJsProduct(array $product)
+    protected function setJsIndexProduct(array $product)
     {
         $this->setJsSettings('product', $product);
     }
