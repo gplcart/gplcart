@@ -176,7 +176,7 @@ class Product extends FrontendController
         );
 
         $options += $this->query;
-        $reviews = $this->review->getList($options);
+        $reviews = (array) $this->review->getList($options);
 
         return $this->prepareReviewsProduct($reviews, $product);
     }
@@ -300,7 +300,7 @@ class Product extends FrontendController
             'product_id' => $product_id
         );
 
-        return $this->review->getList($options);
+        return (int) $this->review->getList($options);
     }
 
     /**
@@ -346,7 +346,7 @@ class Product extends FrontendController
             'store_id' => $this->store_id
         );
 
-        $products = $this->product->getRelated($product_id, true, $options);
+        $products = (array) $this->product->getRelated($product_id, true, $options);
         return $this->prepareProducts($products, $options);
     }
 
