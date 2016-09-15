@@ -67,7 +67,9 @@ class Cart
         }
 
         if (empty($options)) {
-            return array('result' => array(
+
+            return array(
+                'result' => array(
                     'sku' => $product['sku'],
                     'stock' => $product['stock']
             ));
@@ -102,7 +104,7 @@ class Cart
 
         $skus = 1;
         $total = $quantity;
-        $items = $this->getList(array('user_id' => $user_id));
+        $items = $this->cart->getList(array('user_id' => $user_id));
 
         foreach ($items as $item) {
             $total += (int) $item['quantity'];

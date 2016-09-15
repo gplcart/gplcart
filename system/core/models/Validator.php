@@ -83,13 +83,17 @@ class Validator extends Model
         $this->hook->fire('validate', $arguments, $result, $this);
 
         if ($result === true) {
-            return true;
+            return true; // Certainly passed validation
         }
 
         if (empty($result)) {
+            // Unknown handler or failed validation
             return $this->language->text('Failed to pass validation');
         }
 
+        // Checker returned some data that can be used in the future
+        // It can be an array of results (passed validation)
+        // or an array of errors
         return $result;
     }
 
@@ -104,34 +108,45 @@ class Validator extends Model
         foreach ($this->fields as $field => $validators) {
             foreach ($validators as $handler_id => $options) {
 
+                // Skip any further validations in case of previous error(s)
                 if (!empty($options['control_errors']) && !empty($this->errors)) {
                     return $this;
                 }
 
+                // Pass submitted values to the checker
                 $options['submitted'] = $submitted;
 
+                // Pass an extra data to the checker
                 if (!isset($options['data'])) {
                     $options['data'] = $data;
                 }
 
+                // Get a value from the submitted values
                 $value = Tool::getArrayValue($submitted, $field);
+
+                // Call a handler for this checker
                 $result = $this->check($handler_id, $value, $options);
 
                 if ($result === true) {
-                    continue;
+                    continue; // Certainly passed validation, go to the next checker
                 }
 
                 if (isset($result['result'])) {
 
+                    // Passed validation.
+                    // Save returned results from this checker for the future
                     Tool::setArrayValue($this->results, $field, $result['result']);
 
-                    if (!empty($options['set'])) {
-                        Tool::setArrayValue($submitted, array(), $result['result']);
+                    if (!empty($options['submitted'])) {
+                        // Add the results directly to the submitted values
+                        // so they can be used by the next checker/validator
+                        $submitted = Tool::merge($submitted, $result['result']);
                     }
-                    
+
                     continue;
                 }
 
+                // An error occurred, save it and stop the next checks
                 Tool::setArrayValue($this->errors, $field, $result);
                 break;
             }

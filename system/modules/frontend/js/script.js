@@ -5,11 +5,11 @@ GplCart.theme = {
         <div class="modal-dialog">\n\
         <div class="modal-content">\n\
         <div class="modal-header clearfix">\n\
-        <button type="button" class="btn btn-primary pull-right" data-dismiss="modal">\n\
-        <i class="fa fa-times"></i></button>';
+        <a href="#" class="pull-right" data-dismiss="modal">\n\
+        <i class="fa fa-times"></i></a>';
 
         if (typeof header !== 'undefined') {
-            html += '<h3 class="modal-title pull-left">' + header + '</h3>';
+            html += '<h4 class="modal-title pull-left">' + header + '</h4>';
         }
 
         html += '</div><div class="modal-body">' + content + '</div></div></div>';
@@ -93,18 +93,29 @@ $(function () {
 
         $.ajax({
             type: 'POST',
-            url: GplCart.settings.urn,
             dataType: 'json',
-            data: $(this).serialize(),
+            url: GplCart.settings.urn,
+            data: $(this).serialize() + '&add_to_cart=1',
             success: function (data) {
-                if (typeof data === 'object') {
-                    if ('preview' in data) {
-                        GplCart.theme.modal(data.preview, 'cart-preview', GplCart.text('Your cart'));
-                        $('#cart-quantity-summary').text(data.quantity);
-                    }
+                
+                if (typeof data !== 'object') {
+                    alert(GplCart.text('An error occurred'));
+                    return false;
+                }
+                
+                if ('preview' in data) {
+                    GplCart.theme.modal(data.preview, 'cart-preview', GplCart.text('Your cart'));
+                    $('#cart-quantity-summary').text(data.quantity);
+                    return false;
+                }
+
+                if ('message' in data) {
+                    GplCart.theme.modal(data.message, 'cart-message');
                 }
             },
-            error: function () {}
+            error: function (request, status, error) {
+                alert('Error: ' + request.responseText);
+            }
         });
     });
 
@@ -125,6 +136,7 @@ $(function () {
                 product_id: GplCart.settings.product.product_id,
             },
             success: function (data) {
+                
                 if (!jQuery.isEmptyObject(data)) {
                     
                     var message;
@@ -160,7 +172,9 @@ $(function () {
                     }
                 }
             },
-            error: function (error) {}
+            error: function (request, status, error) {
+                alert('Error: ' + request.responseText);
+            }
         });
     });
 

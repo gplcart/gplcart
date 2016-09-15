@@ -218,7 +218,7 @@ class Controller extends BaseController
         if (!isset($options['view']) || !in_array($options['view'], array('list', 'grid'))) {
             $options['view'] = 'grid';
         }
-        
+
         $options += array(
             'id_key' => 'product_id',
             'ids' => array_keys($products),
@@ -426,7 +426,7 @@ class Controller extends BaseController
     {
         $product_id = $product['product_id'];
         $arguments = array('user_id' => $this->cart_uid);
-        
+
         $product['in_wishlist'] = $this->wishlist->exists($product_id, $arguments);
     }
 
@@ -482,16 +482,17 @@ class Controller extends BaseController
 
         $product['rendered'] = $this->render($options['template'], $data);
     }
-    
-    /***************************** Submits *****************************/
-    
+
+    /*     * *************************** Submits **************************** */
+
     /**
      * Sets all submit listeners
      */
-    protected function setFrontendSubmits(){
+    protected function setFrontendSubmits()
+    {
         $this->submitAddToCart();
     }
-    
+
     /**
      * Adds a product to the cart
      */
@@ -510,8 +511,8 @@ class Controller extends BaseController
         }
 
         $product = $this->getSubmitted('product');
-        $quantity = $this->getSubmitted('quantity', 1);
-        $result = $this->cart->addProduct($product, array('quantity' => $quantity));
+
+        $result = $this->cart->addProduct($product, $this->getSubmitted());
 
         if ($this->request->isAjax()) {
             $this->outputCartPreview();
@@ -519,7 +520,7 @@ class Controller extends BaseController
 
         $this->submitComplete($result);
     }
-    
+
     /**
      * Outputs JSON with cart preview
      */
@@ -542,23 +543,32 @@ class Controller extends BaseController
      */
     protected function validateAddToCart()
     {
+        $quantity = $this->getSubmitted('quantity');
         $product_id = $this->getSubmitted('product_id');
+        
+        if(empty($quantity)){
+           $this->setSubmitted('quantity', 1);
+        }
+        
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
             $this->setError('product_id', $this->language->text('Product does not exist'));
             return; // Unknown/disabled product
         }
-        
+
         $this->setSubmitted('product', $product);
         $this->setSubmitted('user_id', $this->cart_uid);
-        
-        $this->addValidator('quantity', array('numeric' => array()));
+
+        $this->addValidator('quantity', array(
+            'required' => array(),
+            'numeric' => array(),
+            'length' => array('max' => 2)
+        ));
 
         // set => true - set validation results to the submitted values for further usage
-        $this->addValidator('options', array('cart_options' => array('set' => true)));
-        $this->addValidator('quantity', array('cart_limits' => array('control_errors' => true)));
-
+        $this->addValidator('options', array('cart_options' => array('submitted' => true)));
+        $this->addValidator('limit', array('cart_limits' => array('control_errors' => true)));
         $this->setValidators($product);
     }
 
@@ -569,23 +579,23 @@ class Controller extends BaseController
      * @param array $data
      * @return mixed
      */
-    protected function submitComplete(array $data = array()){
-        
+    protected function submitComplete(array $data = array())
+    {
+
         $errors = $this->getError();
         $message = empty($errors) ? $this->text('An error occurred') : end($errors);
-        
+
         $data += array(
             'redirect' => '',
             'severity' => 'danger',
             'message' => $message
         );
-        
-        if($this->request->isAjax()){
+
+        if ($this->request->isAjax()) {
             return $this->response->json($data);
         }
-        
+
         $this->redirect($data['redirect'], $data['message'], $data['severity']);
     }
-    
 
 }

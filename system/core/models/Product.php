@@ -756,9 +756,9 @@ class Product extends Model
         }
 
         $product_ids = array_flip($compared);
-        
+
         unset($product_ids[$product_id]);
-        
+
         $rest = array_keys($product_ids);
         $this->setCompared($rest);
 

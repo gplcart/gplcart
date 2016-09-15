@@ -1397,7 +1397,7 @@ class Controller
     {
         $this->data['token'] = $this->token;
         $this->data['base'] = $this->base;
-        $this->data['lang'] = $this->langcode;
+        $this->data['lang'] = empty($this->langcode) ? 'en' : $this->langcode;
         $this->data['urn'] = $this->urn;
         $this->data['uri'] = $this->uri;
         $this->data['path'] = $this->path;

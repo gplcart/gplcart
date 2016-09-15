@@ -1,8 +1,11 @@
-<body class="<?php echo $this->escape(implode(' ', $body_classes)); ?>">
-  <nav class="navbar navbar-inverse navbar-fixed-top top-menu megamenu">
-    <div class="container-fluid">
+<body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
+  
+  
+    <nav class="navbar navbar-static-top navbar-default first">
+        <div class="container-fluid">
+          
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
           <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -10,10 +13,9 @@
         </button>
         <a class="navbar-brand" href="<?php echo $base; ?>">Project name</a>
       </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <?php if (!empty($megamenu)) { ?>
-        <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>        
-        <?php } ?>
+          
+      <div class="navbar-collapse collapse">
+
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a rel="nofollow" id="cart-link" href="<?php echo $this->url('cart'); ?>">
@@ -97,6 +99,21 @@
             </span>
           </div>
         </form>
+      </div>
+          
+
+          
+      </div>
+    </nav>
+  
+  
+  <nav class="navbar navbar-inverse navbar-static-top second">
+    <div class="container-fluid">
+      <div class="navbar-collapse collapse">
+        <?php if (!empty($megamenu)) { ?>
+        <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>        
+        <?php } ?>
+
       </div>
     </div>
   </nav>
@@ -216,4 +233,5 @@
       </div>
     </div>
   </footer>
+
 </body>

@@ -195,7 +195,7 @@ class Cart extends Model
             return (string) $user_id;
         }
 
-        $user_id = Tool::randomString(6);
+        $user_id = '_' . Tool::randomString(6); // Add prefix to prevent from being "numeric"
         Tool::setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
         return (string) $user_id;
     }
@@ -301,7 +301,6 @@ class Cart extends Model
      */
     protected function setProduct(array $data)
     {
-
         $sql = 'SELECT cart_id, quantity'
                 . ' FROM cart'
                 . ' WHERE sku=? AND user_id=? AND order_id=?';
@@ -312,9 +311,12 @@ class Cart extends Model
         if (empty($existing['cart_id'])) {
             return $this->add($data);
         }
+        
+        $existing['quantity'] += $data['quantity'];
 
-        $conditions2 = array('quantity' => $existing['quantity'] ++);
+        $conditions2 = array('quantity' => $existing['quantity']);
         $this->update($existing['cart_id'], $conditions2);
+        
         return $existing['cart_id'];
     }
 
@@ -384,12 +386,12 @@ class Cart extends Model
     protected function logAddToCart(array $product, array $data)
     {
         $log = array(
-            'message' => 'User %uid has added product %product (SKU: %sku) at %store',
+            'message' => 'User %uid added product #%product (SKU: %sku) at store #%store',
             'variables' => array(
                 '%sku' => $data['sku'],
                 '%store' => $product['store_id'],
                 '%product' => $product['product_id'],
-                '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : ''
+                '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : '**anonymous**'
             )
         );
 

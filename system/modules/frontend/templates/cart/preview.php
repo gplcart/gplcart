@@ -31,7 +31,7 @@
   <hr>
   <div class="row buttons">
     <div class="col-md-12 checkout">
-    <a href="<?php echo $this->url('checkout'); ?>" class="btn btn-block btn-success"><?php echo $this->text('checkout'); ?></a>
+    <a href="<?php echo $this->url('checkout'); ?>" class="btn btn-block btn-success"><?php echo $this->text('Checkout'); ?></a>
     </div>
   </div>
   <?php } else { ?>
