@@ -37,7 +37,7 @@
           <button class="btn btn-default" name="save" value="1"><?php echo $this->text('Save'); ?></button>
         </div>
       </div>
-      <input name="url" style="position:absolute;top:-999px;" value="">
+      <?php echo $honeypot; ?>
     </form>      
   </div>
 </div>
