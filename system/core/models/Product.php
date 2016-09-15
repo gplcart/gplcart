@@ -822,7 +822,7 @@ class Product extends Model
         $list = $this->db->fetchColumnAll($sql, array($product_id));
 
         if (!empty($list) && $load) {
-            $data += array('product_id' => $list);
+            $data['product_id'] = $list;
             $list = $this->getList($data);
         }
 

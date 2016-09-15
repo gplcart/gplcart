@@ -70,137 +70,59 @@ class Product extends FrontendController
     public function indexProduct($product_id)
     {
         $product = $this->getProduct($product_id);
-        
-        $this->submitProduct($product);
-        
+        $share = $this->getShare();
+
+        $this->setData('share', $share);
         $this->setData('product', $product);
 
-        $this->setReviews($product);
-        $this->setRatingWidget($product);
-        $this->setShareWidget($product);
-        $this->setCartForm($product);
-        $this->setImages($product);
-        $this->setRelated($product);
-        $this->setRecent($product);
+        $this->setReviewsProduct($product);
+        $this->setRatingWidgetProduct($product);
+        $this->setCartFormProduct($product);
+        $this->setImagesProduct($product);
+        $this->setRelatedProduct($product);
+        $this->setRecentProduct($product);
 
-        $this->setCssProduct();
         $this->setJsProduct($product);
         $this->setTitleProduct($product);
         $this->outputProduct();
-    }
-    
-    /**
-     * Adds a product to the cart
-     * @param array $product
-     */
-    protected function submitProduct(array $product)
-    {
-
-        if (!$this->isPosted('product')) {
-            return;
-        }
-
-        $this->setSubmitted('product');
-        $this->validateProduct($product);
-
-        if (!$this->hasErrors('product')) {
-            $this->addToCartProduct($product);
-        }
-        
-        $errors = implode('\n', $this->getError());
-
-        if ($this->request->isAjax()) {
-            $this->response->json(array('errors' => $errors));
-        }
-
-        $this->redirect('', $errors, 'warning');
-    }
-
-    /**
-     * Validates adding a product to the cart
-     */
-    protected function validateProduct(array $product)
-    {
-        $this->addValidator('quantity', array(
-            'numeric' => array()
-        ));
-        
-        $this->setValidators($product);
-    }
-    
-    /**
-     * Validates and adds a product to the cart
-     */
-    protected function addToCartProduct(array $product)
-    {
-        
-        $submitted = $this->getSubmitted();
-        $is_ajax = $this->request->isAjax();
-        
-        $result = $this->cart->addProduct($product, $submitted);
-
-        if ($result === true) {
-            
-            if (!$is_ajax) {
-                $this->redirect('', $this->text('Product has been added to your cart. <a href="!href">Checkout</a>', array('!href' => $this->url('checkout'))), 'success');
-            }
-
-            $cart = $this->cart->getByUser($this->cart_uid, $this->store_id);
-
-            $response = array(
-                'quantity' => $cart['quantity'],
-                'preview' => $this->render('cart/preview', array(
-                    'cart' => $this->prepareCart($cart),
-                    'limit' => $this->config('cart_preview_limit', 5)
-            )));
-
-            $this->response->json($response);
-        }
-
-        foreach ($result as &$error) {
-            $error = $this->text($error);
-            if (!$is_ajax) {
-                $this->setMessage($error, 'danger', true);
-            }
-        }
-
-        if ($is_ajax) {
-            $this->response->json(array('errors' => $result));
-        }
-
-        $this->redirect();
     }
 
     /**
      * Sets list of reviews related to the product
      * @param array $product
      */
-    protected function setReviews(array $product)
+    protected function setReviewsProduct(array $product)
     {
-        $enabled = $this->config('review_enabled', 1);
+        $per_page = (int) $this->config('review_limit', 5);
+        $enabled = (bool) $this->config('review_enabled', 1);
+        $editable = (bool) $this->config('review_editable', 1);
 
-        if (empty($enabled)) {
+        if (!$enabled) {
             return;
         }
 
-        $total = $this->getTotalReviews($product['product_id']);
+        $total = $this->getTotalReviewsProduct($product['product_id']);
 
         if (empty($total)) {
             return;
         }
 
         $query = $this->getFilterQuery();
-        $per_page = $this->config('review_limit', 5);
         $limit = $this->setPager($total, $query, $per_page);
-        $reviews = $this->getReviews($limit, $product);
+        $pager = $this->getPager();
 
-        $this->data['reviews'] = $this->render('review/list', array(
+        $reviews = $this->getReviewsProduct($limit, $product);
+
+        $options = array(
+            'pager' => $pager,
             'product' => $product,
+            'reviews' => $reviews,
             'query' => $this->query,
-            'pager' => $this->getPager(),
-            'reviews' => $this->prepareReviews($reviews, $product),
-            'editable' => (bool) $this->config('review_editable', 1)
-        ));
+            'editable' => $editable
+        );
+
+        $html = $this->render('review/list', $options);
+        $this->setData('reviews', $html);
     }
 
     /**
@@ -209,8 +131,12 @@ class Product extends FrontendController
      * @param array $product
      * @return array
      */
-    protected function prepareReviews(array $reviews, array $product)
+    protected function prepareReviewsProduct(array $reviews, array $product)
     {
+        if (empty($reviews)) {
+            return array();
+        }
+
         $users = array();
         foreach ($reviews as $review) {
             $users[] = $review['user_id'];
@@ -221,8 +147,14 @@ class Product extends FrontendController
         }
 
         foreach ($reviews as &$review) {
-            $rating = isset($ratings[$review['user_id']]['rating']) ? $ratings[$review['user_id']]['rating'] : 0;
-            $review['rating_widget'] = $this->render('common/rating/static', array('rating' => $rating));
+
+            $rating = 0;
+            if (isset($ratings[$review['user_id']]['rating'])) {
+                $rating = $ratings[$review['user_id']]['rating'];
+            }
+
+            $html = $this->render('common/rating/static', array('rating' => $rating));
+            $review['rating_widget'] = $html;
         }
 
         return $reviews;
@@ -234,7 +166,7 @@ class Product extends FrontendController
      * @param array $product
      * @return array
      */
-    protected function getReviews(array $limit, array $product)
+    protected function getReviewsProduct(array $limit, array $product)
     {
         $options = array(
             'status' => 1,
@@ -244,14 +176,16 @@ class Product extends FrontendController
         );
 
         $options += $this->query;
-        return $this->review->getList($options);
+        $reviews = $this->review->getList($options);
+
+        return $this->prepareReviewsProduct($reviews, $product);
     }
 
     /**
      * Sets rendered rating widget
      * @param array $product
      */
-    protected function setRatingWidget(array $product)
+    protected function setRatingWidgetProduct(array $product)
     {
         $rating = $this->rating->getByProduct($product['product_id'], true);
 
@@ -261,27 +195,17 @@ class Product extends FrontendController
             'rating' => isset($rating['rating']) ? $rating['rating'] : 0
         );
 
-        $this->data['rating'] = $this->render('common/rating/static', $options);
-    }
-
-    /**
-     * Sets rendered share widget
-     * @param array $product
-     */
-    protected function setShareWidget(array $product)
-    {
-        $this->data['share'] = $this->render('common/share', array(
-            'url' => $this->url(false, array(), true),
-            'title' => $product['title']));
+        $html = $this->render('common/rating/static', $options);
+        $this->setData('rating', $html);
     }
 
     /**
      * Sets rendered "Add to cart form"
      * @param array $product
      */
-    protected function setCartForm(array $product)
+    protected function setCartFormProduct(array $product)
     {
-        $access = ($product['stock'] || !$product['subtract']);
+        $access = ($product['stock'] || empty($product['subtract']));
 
         $cart = array(
             'product' => $product,
@@ -290,7 +214,8 @@ class Product extends FrontendController
             'field_data' => $product['fields']
         );
 
-        $this->data['cart_form'] = $this->render('cart/add', $cart);
+        $html = $this->render('cart/add', $cart);
+        $this->setData('cart_form', $html);
     }
 
     /**
@@ -311,21 +236,11 @@ class Product extends FrontendController
     }
 
     /**
-     * Sets CSS on the product page
-     */
-    protected function setCssProduct()
-    {
-        $this->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css');
-    }
-
-    /**
      * Sets Javascripts on the product page
      * @param array $product
      */
     protected function setJsProduct(array $product)
     {
-        $this->setJs('files/assets/jquery/lightgallery/dist/js/lightgallery-all.min.js', 'top');
-        $this->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
         $this->setJsSettings('product', $product);
     }
 
@@ -333,53 +248,42 @@ class Product extends FrontendController
      * Sets block with recent products on the product page
      * @param array $product
      */
-    protected function setRecent(array $product)
+    protected function setRecentProduct(array $product)
     {
-        $products = $this->getRecent($product['product_id']);
+        $products = $this->getRecentProduct($product['product_id']);
 
-        $this->data['recent'] = $this->render('product/block/recent', array(
-            'products' => $this->renderBlockItems($products)
-        ));
+        $options = array('products' => $products);
+        $html = $this->render('product/block/recent', $options);
+
+        $this->setData('recent', $html);
     }
 
     /**
      * Sets block with related products on the product page
      * @param array $product
      */
-    protected function setRelated(array $product)
+    protected function setRelatedProduct(array $product)
     {
-        $products = $this->getRelated($product['product_id']);
+        $products = $this->getRelatedProduct($product['product_id']);
 
-        $this->data['related'] = $this->render('product/block/related', array(
-            'products' => $this->renderBlockItems($products)
-        ));
+        $options = array('products' => $products);
+        $html = $this->render('product/block/related', $options);
+        $this->setData('related', $html);
     }
 
     /**
      * Sets rendered product images
      * @param array $product
      */
-    protected function setImages(array $product)
+    protected function setImagesProduct(array $product)
     {
-        $this->data['images'] = $this->render('product/images', array(
+        $options = array(
             'product' => $product,
-            'images' => $this->getImages($product),
-        ));
-    }
+            'images' => $this->getImagesProduct($product),
+        );
 
-    /**
-     * Returns an array of rendered, ready-to-display product items
-     * @param array $products
-     * @return array
-     */
-    protected function renderBlockItems(array $products)
-    {
-        $rendered = array();
-        foreach ($products as $product) {
-            $rendered[] = $this->render('product/item/grid', array('product' => $product));
-        }
-
-        return $rendered;
+        $html = $this->render('product/images', $options);
+        $this->setData('images', $html);
     }
 
     /**
@@ -387,14 +291,16 @@ class Product extends FrontendController
      * @param integer $product_id
      * @return integer
      */
-    protected function getTotalReviews($product_id)
+    protected function getTotalReviewsProduct($product_id)
     {
-        return $this->review->getList(array(
-                    'status' => 1,
-                    'count' => true,
-                    'user_status' => 1,
-                    'product_id' => $product_id
-        ));
+        $options = array(
+            'status' => 1,
+            'count' => true,
+            'user_status' => 1,
+            'product_id' => $product_id
+        );
+
+        return $this->review->getList($options);
     }
 
     /**
@@ -402,29 +308,12 @@ class Product extends FrontendController
      * @param integer $product_id
      * @return array
      */
-    protected function get($product_id)
+    protected function getProduct($product_id)
     {
-        $product = Cache::get("product.$product_id.{$this->langcode}");
+        $product = $this->product->get($product_id, $this->langcode);
 
-        if (!isset($product)) {
-
-            $product = $this->product->get($product_id, $this->langcode);
-
-            if (empty($product)) {
-                $this->outputError(404);
-            }
-
-            $alias = $this->alias->get('product_id', $product_id);
-
-            if (empty($alias)) {
-                $this->url("product/$product_id");
-            } else {
-                $product['url'] = $this->url($alias);
-            }
-
-            $product['fields'] = $this->getFields($product);
-
-            Cache::set("product.$product_id.{$this->langcode}", $product);
+        if (empty($product)) {
+            $this->outputError(404);
         }
 
         if ($product['store_id'] != $this->store_id) {
@@ -432,17 +321,13 @@ class Product extends FrontendController
         }
 
         if (empty($product['status']) && !$this->access('product')) {
-            $this->outputError(404);
+            $this->outputError(403);
         }
 
-        $enabled = $this->store->config('catalog_pricerule');
+        $product['fields'] = $this->getFieldsProduct($product);
 
-        if (!empty($enabled)) {
-            $calculated = $this->product->calculate($product, $this->store_id);
-            $product['price'] = $calculated['total'];
-        }
+        $this->setItemPrice($product);
 
-        $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
         return $product;
     }
 
@@ -451,7 +336,7 @@ class Product extends FrontendController
      * @param integer $product_id
      * @return array
      */
-    protected function getRelated($product_id)
+    protected function getRelatedProduct($product_id)
     {
         $limit = $this->config('product_related_limit', 12);
 
@@ -461,8 +346,8 @@ class Product extends FrontendController
             'store_id' => $this->store_id
         );
 
-        $product_ids = $this->product->getRelated($product_id, false, $options);
-        return $this->loadMultiple($product_ids);
+        $products = $this->product->getRelated($product_id, true, $options);
+        return $this->prepareProducts($products, $options);
     }
 
     /**
@@ -470,84 +355,48 @@ class Product extends FrontendController
      * @param integer $product_id
      * @return array
      */
-    protected function getRecent($product_id)
+    protected function getRecentProduct($product_id)
     {
         $limit = $this->config('product_recent_limit', 12);
         $lifespan = $this->config('product_recent_cookie_lifespan', 31536000);
 
         $product_ids = $this->product->setViewed($product_id, $limit, $lifespan);
-        return $this->loadMultiple($product_ids);
+        return $this->getProducts(array('product_id' => $product_ids));
     }
 
     /**
-     * Returns an array of loaded products
-     * @param array $product_ids
-     * @return array
-     */
-    protected function loadMultiple($product_ids)
-    {
-        if (empty($product_ids)) {
-            return array();
-        }
-
-        $pricerules = $this->store->config('catalog_pricerule');
-        $products = $this->product->getList(array('product_id' => $product_ids));
-        $imagestyle = $this->setting('image_style_product_grid', 3);
-
-        foreach ($products as $product_id => &$product) {
-
-            if (empty($product['alias'])) {
-                $product['url'] = $this->url("product/$product_id");
-            } else {
-                $product['url'] = $this->url($product['alias']);
-            }
-
-            $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
-
-            if (!empty($pricerules)) {
-                $calculated = $this->product->calculate($product, $this->store_id);
-                $product['price'] = $calculated['total'];
-            }
-
-            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-        }
-
-        return $products;
-    }
-
-
-
-    /**
-     * Returns an array of product's fields
+     * Returns an array of product fields
      * @param array $product
      * @return array
      */
-    protected function getFields(array $product)
+    protected function getFieldsProduct(array $product)
     {
-        $field_data = $this->product_class->getFieldData($product['product_class_id']);
+        $data = $this->product_class->getFieldData($product['product_class_id']);
 
         if (empty($product['field']['option'])) {
-            return $field_data;
+            return $data;
         }
 
+        $imagestyle = $this->setting('image_style_option', 1);
+
         foreach ($product['field']['option'] as $field_id => $field_values) {
-            if (empty($field_data['option'][$field_id]) || $field_data['option'][$field_id]['widget'] != 'image') {
+
+            if (empty($data['option'][$field_id])) {
+                continue;
+            }
+
+            if (empty($data['option'][$field_id]['widget'] !== 'image')) {
                 continue;
             }
 
             foreach ($field_values as $field_value_id) {
-                $path = $field_data['option'][$field_id]['values'][$field_value_id]['path'];
-                if ($path) {
-                    $thumb = $this->image->url($this->store->config('image_style_option'), $path);
-                } else {
-                    $thumb = $this->image->placeholder($this->store->config('image_style_option'));
-                }
-
-                $field_data['option'][$field_id]['values'][$field_value_id]['thumb'] = $thumb;
+                $path = $data['option'][$field_id]['values'][$field_value_id]['path'];
+                $options = array('path' => $path, 'imagestyle' => $imagestyle);
+                $this->setItemThumb($data['option'][$field_id]['values'][$field_value_id], $options);
             }
         }
 
-        return $field_data;
+        return $data;
     }
 
     /**
@@ -555,7 +404,7 @@ class Product extends FrontendController
      * @param array $product
      * @return array
      */
-    protected function getImages($product)
+    protected function getImagesProduct($product)
     {
         if (empty($product['images'])) {
             return array();
@@ -576,7 +425,5 @@ class Product extends FrontendController
         $main = array_shift($images);
         return array('main' => $main, 'extra' => $images);
     }
-
-
 
 }

@@ -90,6 +90,7 @@ class Frontend
             'image_style_product_grid' => 3,
             'image_style_product_list' => 3,
             'image_style_cart' => 3,
+            'image_style_option' => 1,
             'image_style_page_banner' => 7,
         );
     }

@@ -67,12 +67,6 @@ class Controller extends BaseController
     protected $category;
 
     /**
-     * Alias model instance instance
-     * @var \core\models\Alias $alias
-     */
-    protected $alias;
-
-    /**
      * Array of recently viewed products
      * @var array
      */
@@ -141,9 +135,6 @@ class Controller extends BaseController
 
         /* @var $cart \core\models\Cart */
         $this->cart = Container::instance('core\\models\\Cart');
-
-        /* @var $alias \core\models\Alias */
-        $this->alias = Container::instance('core\\models\\Alias');
 
         /* @var $product \core\models\Product */
         $this->product = Container::instance('core\\models\\Product');
@@ -510,22 +501,42 @@ class Controller extends BaseController
             return; // No "Add to cart" clicked
         }
 
-        $this->setSubmitted();
+        $this->setSubmitted('product');
         $this->validateAddToCart();
-        
-        if($this->hasErrors(null, false)){
+
+        if ($this->hasErrors(null, false)) {
             $this->submitComplete();
             return;
         }
 
         $product = $this->getSubmitted('product');
-        $quantity = (int) $this->getSubmitted('quantity', 1);
-        $data = array('quantity' => $quantity);
-        
-        $result = $this->cart->addProduct($product, $data);
+        $quantity = $this->getSubmitted('quantity', 1);
+        $result = $this->cart->addProduct($product, array('quantity' => $quantity));
+
+        if ($this->request->isAjax()) {
+            $this->outputCartPreview();
+        }
+
         $this->submitComplete($result);
     }
     
+    /**
+     * Outputs JSON with cart preview
+     */
+    protected function outputCartPreview()
+    {
+        $cart = $this->cart->getByUser($this->cart_uid, $this->store_id);
+
+        $options = array(
+            'cart' => $this->prepareCart($cart),
+            'limit' => $this->config('cart_preview_limit', 5)
+        );
+
+        $html = $this->render('cart/preview', $options);
+        $response = array('quantity' => $cart['quantity'], 'preview' => $html);
+        $this->response->json($response);
+    }
+
     /**
      * Validates Add to cart action
      */
@@ -541,6 +552,8 @@ class Controller extends BaseController
         
         $this->setSubmitted('product', $product);
         $this->setSubmitted('user_id', $this->cart_uid);
+        
+        $this->addValidator('quantity', array('numeric' => array()));
 
         // set => true - set validation results to the submitted values for further usage
         $this->addValidator('options', array('cart_options' => array('set' => true)));
