@@ -510,14 +510,10 @@ class Controller extends BaseController
             return;
         }
 
+        $submitted = $this->getSubmitted();
         $product = $this->getSubmitted('product');
 
-        $result = $this->cart->addProduct($product, $this->getSubmitted());
-
-        if ($this->request->isAjax()) {
-            $this->outputCartPreview();
-        }
-
+        $result = $this->cart->addProduct($product, $submitted);
         $this->submitComplete($result);
     }
 
@@ -545,11 +541,11 @@ class Controller extends BaseController
     {
         $quantity = $this->getSubmitted('quantity');
         $product_id = $this->getSubmitted('product_id');
-        
-        if(empty($quantity)){
-           $this->setSubmitted('quantity', 1);
+
+        if (empty($quantity)) {
+            $this->setSubmitted('quantity', 1);
         }
-        
+
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
@@ -581,21 +577,24 @@ class Controller extends BaseController
      */
     protected function submitComplete(array $data = array())
     {
-
         $errors = $this->getError();
         $message = empty($errors) ? $this->text('An error occurred') : end($errors);
 
         $data += array(
             'redirect' => '',
-            'severity' => 'danger',
-            'message' => $message
+            'message' => $message,
+            'severity' => 'danger'
         );
 
-        if ($this->request->isAjax()) {
-            return $this->response->json($data);
+        if (!$this->request->isAjax()) {
+            $this->redirect($data['redirect'], $data['message'], $data['severity']);
         }
 
-        $this->redirect($data['redirect'], $data['message'], $data['severity']);
+        if ($data['severity'] == 'success' && empty($data['redirect'])) {
+            $this->outputCartPreview();
+        }
+
+        return $this->response->json($data);
     }
 
 }

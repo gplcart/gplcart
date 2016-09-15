@@ -324,10 +324,7 @@ class Review extends BackendController
     protected function validateReview(array $review)
     {
         $this->addValidator('text', array(
-            'length' => array(
-                'min' => $this->config('review_min_length', 10),
-                'max' => $this->config('review_max_length', 1000)
-        )));
+            'length' => $this->review->getLimits()));
 
         $this->addValidator('created', array(
             'required' => array(),

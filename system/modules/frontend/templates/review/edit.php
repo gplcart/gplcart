@@ -6,7 +6,7 @@
   <?php } ?>
   <div class="col-md-11">
     <h4 class="title"><?php echo $this->escape($product['title']); ?></h4>
-    <div class="h4 price"><?php echo $price; ?></div>
+    <div class="h4 price"><?php echo $this->escape($product['price_formatted']); ?></div>
   </div>
 </div>
 <div class="row">

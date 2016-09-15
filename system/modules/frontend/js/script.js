@@ -108,6 +108,11 @@ $(function () {
                     $('#cart-quantity-summary').text(data.quantity);
                     return false;
                 }
+                
+                if('redirect' in data && data.redirect.length){
+                    window.location.replace(data.redirect);
+                    return false;
+                }
 
                 if ('message' in data) {
                     GplCart.theme.modal(data.message, 'cart-message');
@@ -137,7 +142,10 @@ $(function () {
             },
             success: function (data) {
                 
-                if (!jQuery.isEmptyObject(data)) {
+                if (jQuery.isEmptyObject(data)) {
+                    alert(GplCart.text('An error occurred'));
+                    return false;
+                }
                     
                     var message;
                     var error = false;
@@ -170,7 +178,6 @@ $(function () {
                             $('#main-image').attr('src', data.combination.image);
                         }
                     }
-                }
             },
             error: function (request, status, error) {
                 alert('Error: ' + request.responseText);

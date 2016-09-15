@@ -99,7 +99,7 @@ class Review extends Model
 
         $ids = (array) $review_id;
         $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-        
+
         $sql = "DELETE FROM review WHERE review_id IN($placeholders)";
 
         $result = (bool) $this->db->run($sql, $ids)->rowCount();
@@ -165,8 +165,7 @@ class Review extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY r.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY r.created DESC";
@@ -184,6 +183,18 @@ class Review extends Model
         $this->hook->fire('reviews', $list);
 
         return $list;
+    }
+
+    /**
+     * Returns an array of allowed min and max limits for review text
+     * @return array
+     */
+    public function getLimits()
+    {
+        return array(
+            'min' => $this->config->get('review_min_length', 10),
+            'max' => $this->config->get('review_max_length', 1000)
+        );
     }
 
 }
