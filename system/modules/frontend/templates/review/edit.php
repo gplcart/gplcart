@@ -20,7 +20,7 @@
       <div class="form-group required<?php echo isset($this->errors['text']) ? ' has-error' : ''; ?>">
         <label class="col-md-1"><?php echo $this->text('Review'); ?></label>
         <div class="col-md-6">
-          <textarea class="form-control" rows="2" name="review[text]" maxlength="<?php echo $max_length; ?>" placeholder="<?php echo $this->text('Maximum @num characters', array('@num' => $max_length)); ?>"><?php echo isset($review['text']) ? $review['text'] : ''; ?></textarea>
+          <textarea class="form-control" rows="2" name="review[text]"><?php echo isset($review['text']) ? $review['text'] : ''; ?></textarea>
           <?php if (isset($this->errors['text'])) { ?>
           <div class="help-block"><?php echo $this->errors['text']; ?></div>
           <?php } ?>

@@ -59,11 +59,9 @@ class Review extends FrontendController
         $this->submitReview($review, $product);
 
         $honeypot = $this->getHoneypot();
-        $max = $this->config('review_max_length', 1000);
         $deletable = (bool) $this->config('review_deletable', 1);
 
         $this->setData('review', $review);
-        $this->setData('max_length', $max);
         $this->setData('product', $product);
         $this->setData('honeypot', $honeypot);
         $this->setData('deletable', $deletable);
@@ -319,7 +317,7 @@ class Review extends FrontendController
         $editable = $this->config('review_editable', 1);
 
         // We only accept logged in users and check if 
-        // adding/editing enabled
+        // review editing is enabled
         if (empty($editable) || empty($this->uid)) {
             $this->outputError(403);
         }
