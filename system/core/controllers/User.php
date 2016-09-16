@@ -116,6 +116,8 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditLoginUser()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
@@ -237,6 +239,8 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditRegisterUser()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
@@ -360,6 +364,7 @@ class User extends FrontendController
     {
         $submitted = $this->getSubmitted();
         $result = $this->user->resetPassword($submitted);
+
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
