@@ -238,7 +238,7 @@ class Route
 
         $routes['wishlist'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Wishlist', 'wishlist')
+                'controller' => array('core\\controllers\\Wishlist', 'indexWishlist')
             )
         );
 
