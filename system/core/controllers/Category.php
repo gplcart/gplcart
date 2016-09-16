@@ -67,14 +67,12 @@ class Category extends FrontendController
         $max = $this->setting('catalog_limit', 20);
         $limit = $this->setPager($total, $query, $max);
 
-        $products = $this->getProductsCategory($limit, $query, $category_id);
+        $products = $this->getListProductCategory($limit, $query, $category_id);
 
         $this->setDataImagesCategory($category);
         $this->setDataProductsCategory($products);
         $this->setDataChildrenCategory($category_id);
-        $this->setNavbarCategory($products, $total, $query);
-
-        $this->setMenuCategory();
+        $this->setDataNavbarCategory($products, $total, $query);
 
         $this->setMetaIndexCategory($category);
         $this->setTitleIndexCategory($category);
@@ -88,7 +86,7 @@ class Category extends FrontendController
      * @param integer $total
      * @param array $query
      */
-    protected function setNavbarCategory(array $products, $total, array $query)
+    protected function setDataNavbarCategory(array $products, $total, array $query)
     {
         $options = array(
             'total' => $total,
@@ -135,15 +133,6 @@ class Category extends FrontendController
         $children = $this->category->getChildren($category_id, $this->category_tree);
         $html = $this->render('category/children', array('children' => $children));
         $this->setData('children', $html);
-    }
-
-    /**
-     * Sets menu block
-     */
-    protected function setMenuCategory()
-    {
-        $options = array('category/block/menu', array('tree' => $this->category_tree));
-        $this->setRegion('region_left', $options);
     }
 
     /**
@@ -219,7 +208,7 @@ class Category extends FrontendController
      * @param integer $category_id
      * @return array
      */
-    protected function getProductsCategory($limit, array $query, $category_id)
+    protected function getListProductCategory($limit, array $query, $category_id)
     {
         $options = array(
             'limit' => $limit,

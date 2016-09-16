@@ -19,7 +19,7 @@
   <?php if(count($cart['items']) > $limit) { ?>
   <div class="row more">
     <div class="col-md-12">
-    <a href="<?php echo $this->url('cart'); ?>"><?php echo $this->text('Showing %num from %total', array('%num' => count($cart['items']), '%total' => $limit)); ?></a>
+    <a href="<?php echo $this->url('checkout'); ?>"><?php echo $this->text('Showing %num from %total', array('%num' => count($cart['items']), '%total' => $limit)); ?></a>
     </div>
   </div>
   <?php } ?>

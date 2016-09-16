@@ -35,42 +35,44 @@ class Search extends FrontendController
         $this->search = $search;
     }
 
-    public function search()
+    /**
+     * Displays search results page
+     */
+    public function indexSearch()
     {
         $term = (string) $this->request->get('q', '');
+        $max = $this->setting('catalog_limit', 20);
 
-        $view = $this->config->module($this->theme, 'catalog_view', 'grid');
-        $sort = $this->config->module($this->theme, 'catalog_sort', 'price');
-        $order = $this->config->module($this->theme, 'catalog_order', 'asc');
+        $filter = array(
+            'view' => $this->setting('catalog_view', 'grid'),
+            'sort' => $this->setting('catalog_sort', 'price'),
+            'order' => $this->setting('catalog_order', 'asc')
+        );
 
-        $default = array('sort' => $sort, 'order' => $order, 'view' => $view);
+        $query = $this->getFilterQuery($filter);
+        $total = $this->getTotalResultSearch($term);
+        $limit = $this->setPager($total, $query, $max);
 
-        $query = $this->getFilterQuery($default);
-        $total = $this->getTotalResults($term);
-        $limit = $this->setPager($total, $query, $this->config->module($this->theme, 'catalog_limit', 20));
-        $products = $this->getResults($term, $limit, $query);
+        $products = $this->getListResultSearch($term, $limit, $query);
 
-        $this->data['results'] = $this->getRenderedResults($products);
-        $this->data['navbar'] = $this->getRenderedNavbar(count($products), $total, $query);
+        $this->setDataResultSearch($products);
+        $this->setDataNavbarSearch($products, $total, $query);
 
-        $this->setBlockCategoryMenu();
-        $this->setBlockRecentProducts();
-
-        $this->setTitleSearch($term);
-        $this->setBreadcrumbSearch();
-        $this->outputSearch();
+        $this->setTitleIndexSearch($term);
+        $this->setBreadcrumbIndexSearch();
+        $this->outputIndexSearch();
     }
 
     /**
      * Sets titles on the search page
      * @param string $term
      */
-    protected function setTitleSearch($term)
+    protected function setTitleIndexSearch($term)
     {
-        if ($term !== '') {
-            $title = $this->text('Search for <small>%term</small>', array('%term' => $term));
-        } else {
+        if ($term === '') {
             $title = $this->text('Search');
+        } else {
+            $title = $this->text('Search for <small>%term</small>', array('%term' => $term));
         }
 
         $this->setTitle($title);
@@ -79,7 +81,7 @@ class Search extends FrontendController
     /**
      * Renders the search page templates
      */
-    protected function outputSearch()
+    protected function outputIndexSearch()
     {
         $this->output('search/search');
     }
@@ -87,10 +89,18 @@ class Search extends FrontendController
     /**
      * Sets breadcrumbs on the search page
      */
-    protected function setBreadcrumbSearch()
+    protected function setBreadcrumbIndexSearch()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-        $this->setBreadcrumb(array('text' => $this->text('Search')));
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Home'),
+            'url' => $this->url('/'));
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Search'));
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -98,14 +108,16 @@ class Search extends FrontendController
      * @param string $term
      * @return integer
      */
-    protected function getTotalResults($term)
+    protected function getTotalResultSearch($term)
     {
-        $total = $this->search->search('product_id', $term, array(
-            'count' => true,
+        $options = array(
             'status' => 1,
+            'count' => true,
             'store_id' => $this->store_id,
-            'language' => $this->langcode));
+            'language' => $this->langcode
+        );
 
+        $total = $this->search->search('product_id', $term, $options);
         return (int) $total;
     }
 
@@ -116,7 +128,8 @@ class Search extends FrontendController
      * @param array $query
      * @return array
      */
-    protected function getResults($term, array $limit, array $query = array())
+    protected function getListResultSearch($term, array $limit,
+            array $query = array())
     {
         $options = array(
             'status' => 1,
@@ -125,137 +138,38 @@ class Search extends FrontendController
             'limit' => $limit) + $query;
 
         $results = $this->search->search('product_id', $term, $options);
+
         return $this->prepareProducts($results, $query);
     }
 
     /**
-     * Prepares an array of search results before rendering
+     * Sets rendered results
      * @param array $products
-     * @param array $query
-     * @return array
      */
-    protected function prepareProducts(array $products, array $query)
+    protected function setDataResultSearch(array $products)
     {
-        $user_id = $this->cart->uid();
-        $product_ids = array_keys($products);
-        $pricerules = $this->store->config('catalog_pricerule');
-        $view = in_array($query['view'], array('list', 'grid')) ? $query['view'] : 'grid';
-        $imagestyle = $this->config->module($this->theme, "image_style_product_$view", 3);
-
-        foreach ($products as $product_id => &$product) {
-
-            $product['in_comparison'] = $this->product->isCompared($product_id);
-            $product['in_wishlist'] = $this->wishlist->exists($product_id, array('user_id' => $user_id));
-            $product['thumb'] = $this->image->getThumb($product_id, $imagestyle, 'product_id', $product_ids);
-            $product['url'] = $product['alias'] ? $this->url($product['alias']) : $this->url("product/$product_id");
-
-            if (!empty($pricerules)) {
-                $calculated = $this->product->calculate($product, $this->store_id);
-                $product['price'] = $calculated['total'];
-            }
-
-            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-            $product['rendered'] = $this->render("product/item/$view", array(
-                'product' => $product,
-                'buttons' => array('cart_add', 'wishlist_add', 'compare_add')));
-        }
-        return $products;
+        $data = array('products' => $products);
+        $html = $this->render('product/list', $data);
+        $this->setData('results', $html);
     }
 
     /**
-     * Returns a string containing ready-to-display products
+     * Sets rendered navbar
      * @param array $products
-     * @return string
-     */
-    protected function getRenderedResults(array $products)
-    {
-        return $this->render('product/list', array('products' => $products));
-    }
-
-    /**
-     * Returns ready-to-display category navbar
-     * @param integer $quantity
      * @param integer $total
      * @param array $query
-     * @return string
      */
-    protected function getRenderedNavbar($quantity, $total, $query)
+    protected function setDataNavbarSearch(array $products, $total, array $query)
     {
         $options = array(
             'total' => $total,
-            'quantity' => $quantity,
             'view' => $query['view'],
+            'quantity' => count($products),
             'sort' => "{$query['sort']}-{$query['order']}"
         );
 
-        return $this->render('category/navbar', $options);
-    }
-
-    /**
-     * Sets sidebar menu
-     */
-    protected function setBlockCategoryMenu()
-    {
-        $this->setRegion('region_left', array('category/block/menu', array(
-                'tree' => $this->getCategoryTree())));
-    }
-
-    /**
-     * Returns an array of categories
-     * @return array
-     */
-    protected function getCategoryTree()
-    {
-        $options = array(
-            'status' => 1,
-            'store_id' => $this->store_id,
-            'type' => 'catalog',
-        );
-
-        $tree = $this->category->getTree($options);
-        return $this->prepareCategoryTree($tree);
-    }
-
-    /**
-     * Modifies an array of categories before rendering
-     * @param array $tree
-     * @return array
-     */
-    protected function prepareCategoryTree(array $tree)
-    {
-        foreach ($tree as &$item) {
-            $item['url'] = $item['alias'] ? $item['alias'] : "category/{$item['category_id']}";
-            $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
-        }
-
-        return $tree;
-    }
-
-    /**
-     * Adds recently viewed products block
-     */
-    protected function setBlockRecentProducts()
-    {
-        $this->setRegion('region_bottom', array(
-            'product/block/recent', array(
-                'products' => $this->getRecentProducts())));
-    }
-
-    /**
-     * Returns an array of recently viewed products
-     * @return array
-     */
-    protected function getRecentProducts()
-    {
-        $limit = $this->config('product_recent_limit', 12);
-        $product_ids = $this->product->getViewed($limit);
-
-        if (empty($product_ids)) {
-            return array();
-        }
-
-        $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
-        return $this->prepareProducts($products, array('view' => 'grid'));
+        $html = $this->render('category/navbar', $options);
+        $this->setData('navbar', $html);
     }
 
 }

@@ -478,6 +478,7 @@ class Controller extends BaseController
 
         $data = array(
             'product' => $product,
+            'token' => $this->token,
             'buttons' => $options['buttons']);
 
         $product['rendered'] = $this->render($options['template'], $data);

@@ -18,10 +18,16 @@ body {
     background-color: #fff;
 }
 
-.navbar-static-top.first {
+.navbar-static-top.first,
+.navbar.category {
     margin-bottom: 0;
     background-color: #fff;
+    border-radius: 0;
     border: none;
+}
+
+.navbar.category {
+    border-bottom: 1px solid #eee;
 }
 
 .footer {

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar category navbar-default">
   <div class="container-fluid">
     <span class="navbar-text navbar-left"><?php echo $this->text('Showing %num from %total', array('%num' => $quantity, '%total' => $total)); ?></span>
     <form class="navbar-form navbar-right" onchange="$(this).submit();">

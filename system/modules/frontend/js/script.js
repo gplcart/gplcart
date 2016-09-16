@@ -87,7 +87,7 @@ $(function () {
 
     $('.star-rating.static').tooltip();
 
-    $('form#add-to-cart').unbind('submit').submit(function (e) {
+    $('form.add-to-cart').unbind('submit').submit(function (e) {
 
         e.preventDefault();
 
@@ -124,7 +124,7 @@ $(function () {
         });
     });
 
-    $('form#add-to-cart [name^="product[options]"]').change(function () {
+    $('form.add-to-cart [name^="product[options]"]').change(function () {
 
         var values = $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').map(function () {
             return this.value;

@@ -1,4 +1,4 @@
-<form method="post" class="add-cart form-horizontal" id="add-to-cart">
+<form method="post" class="add-to-cart form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <input type="hidden" name="product[product_id]" value="<?php echo $product['product_id']; ?>">
   <?php if (!empty($product['field']['option'])) { ?>

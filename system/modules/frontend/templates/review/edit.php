@@ -38,6 +38,6 @@
         </div>
       </div>
       <?php echo $honeypot; ?>
-    </form>      
+    </form>
   </div>
 </div>

@@ -11,11 +11,9 @@
       </div>
       <p><?php echo $this->escape($product['price_formatted']); ?></p>
       <?php if(!empty($buttons)) { ?>
-      <form action="<?php echo $this->url('action'); ?>" class="form-horizontal" data-product-id="<?php echo $product['product_id']; ?>">
-        <input type="hidden" name="token" value="<?php echo $this->token; ?>">
-        <input type="hidden" name="redirect" value="<?php echo isset($redirect) ? $redirect : $this->uri; ?>">
-        <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
-        <input name="url" class="collapse" value="">
+      <form method="post" class="form-horizontal add-to-cart">
+        <input type="hidden" name="token" value="<?php echo $token; ?>">
+        <input type="hidden" name="product[product_id]" value="<?php echo $product['product_id']; ?>">
         <div class="row">
           <div class="col-md-12">
             <?php if (in_array('wishlist_remove', $buttons)) { ?>
@@ -51,7 +49,7 @@
             <?php } ?>
             <?php } ?>
             <?php if (in_array('cart_add', $buttons)) { ?>
-            <button title="<?php echo $this->text('Add to cart'); ?>" class="btn btn-success" name="action" value="addToCartAction">
+            <button title="<?php echo $this->text('Add to cart'); ?>" class="btn btn-success" name="add_to_cart" value="1">
             <i class="fa fa-shopping-cart"></i>
             </button>
             <?php } ?>
