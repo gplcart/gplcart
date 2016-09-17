@@ -53,7 +53,7 @@ class Controller extends BaseController
      * @var \core\models\Product $product
      */
     protected $product;
-    
+
     /**
      * Compare model instance
      * @var \core\models\Compare $compare
@@ -85,10 +85,10 @@ class Controller extends BaseController
     protected $cart_uid;
 
     /**
-     * Cart content for the current user
+     * Array of total cart items and numbers per SKU
      * @var array
      */
-    protected $cart_content = array();
+    protected $cart_quantity = array();
 
     /**
      * Wishlist content for the current user
@@ -144,7 +144,7 @@ class Controller extends BaseController
 
         /* @var $product \core\models\Product */
         $this->product = Container::instance('core\\models\\Product');
-        
+
         /* @var $compare \core\models\Compare */
         $this->compare = Container::instance('core\\models\\Compare');
 
@@ -168,19 +168,18 @@ class Controller extends BaseController
             $this->cart_uid = $this->cart->uid();
             $this->category_tree = $this->getCategories();
             $this->compare_content = $this->compare->get();
-            $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
+            $this->cart_quantity = $this->cart->getQuantity($this->cart_uid, $this->store_id);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
             $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
-
             $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
 
-            //d($this->triggers);
+            $this->data['cart_quantity'] = $this->cart_quantity;
         }
     }
 
     /**
-     * 
-     * @return type
+     * Returns rendered honeypot input
+     * @return string
      */
     public function getHoneypot()
     {
@@ -506,35 +505,36 @@ class Controller extends BaseController
         $this->submitCompare();
         $this->submitWishlist();
     }
-    
-    protected function submitCompare(){
+
+    protected function submitCompare()
+    {
         if (!$this->isPosted('add_to_compare')) {
             return; // No "Add to compare" clicked
         }
-        
+
         /*
-        $this->setSubmitted('product');
-        $this->validateAddToCompare();
+          $this->setSubmitted('product');
+          $this->validateAddToCompare();
 
-        if ($this->hasErrors(null, false)) {
-            return $this->completeSubmit();
-        }
+          if ($this->hasErrors(null, false)) {
+          return $this->completeSubmit();
+          }
 
-        $product_id = $this->getSubmitted();
-        
-        $added = $this->product->addToCompare($product_id);
+          $product_id = $this->getSubmitted();
 
-        if (empty($added)) {
-            return $this->completeSubmit();
-        }
-        
-        $result = array(
-            'severity' => 'success',
-            'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
-                '!href' => $this->url('compare')))
-        );
+          $added = $this->product->addToCompare($product_id);
 
-        $this->completeSubmit($result);
+          if (empty($added)) {
+          return $this->completeSubmit();
+          }
+
+          $result = array(
+          'severity' => 'success',
+          'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
+          '!href' => $this->url('compare')))
+          );
+
+          $this->completeSubmit($result);
          * */
     }
 
@@ -651,6 +651,7 @@ class Controller extends BaseController
         }
 
         $this->setSubmitted('user_id', $this->cart_uid);
+        $this->setSubmitted('store_id', $this->store_id);
 
         // Check if the product exists
         // and set its loaded array to the data array

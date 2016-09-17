@@ -1,9 +1,6 @@
 <body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
-  
-  
-    <nav class="navbar navbar-static-top navbar-default first">
-        <div class="container-fluid">
-          
+  <nav class="navbar navbar-static-top navbar-default first">
+    <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
           <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
@@ -13,14 +10,12 @@
         </button>
         <a class="navbar-brand" href="<?php echo $base; ?>">Project name</a>
       </div>
-          
       <div class="navbar-collapse collapse">
-
         <ul class="nav navbar-nav navbar-right">
           <li>
-            <a rel="nofollow" id="cart-link" href="<?php echo $this->url('cart'); ?>">
-              <?php if (!empty($cart['quantity'])) { ?>
-              <span class="badge" id="cart-quantity-summary"><?php echo $cart['quantity']; ?></span>
+            <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
+              <?php if (!empty($cart_quantity['total'])) { ?>
+              <span class="badge" id="cart-quantity-summary"><?php echo $cart_quantity['total']; ?></span>
               <?php } else { ?>
               <span id="cart-quantity-summary"></span>
               <?php } ?>
@@ -43,7 +38,7 @@
             <?php if (!empty($compare)) { ?>
             <a rel="nofollow" id="compare-link" href="<?php echo $this->url('compare'); ?>">
               <span class="badge" id="compare-quantity-summary">
-              <?php echo count($compare); ?>
+                <?php echo count($compare); ?>
               </span>
               <i class="fa fa-balance-scale"></i>
             </a>
@@ -66,7 +61,7 @@
               </li>
               <li>
                 <a href="<?php echo $this->url("account/{$this->uid}/wishlist"); ?>">
-                  <?php echo $this->text('Wishlist'); ?>
+                    <?php echo $this->text('Wishlist'); ?>
                 </a>
               </li>
               <li>
@@ -99,94 +94,79 @@
             </span>
           </div>
         </form>
-      </div>
-          
-
-          
-      </div>
-    </nav>
-  
-  
+      </div> 
+    </div>
+  </nav>
   <nav class="navbar navbar-inverse navbar-static-top second">
     <div class="container-fluid">
       <div class="navbar-collapse collapse">
-        <?php if (!empty($megamenu)) { ?>
-        <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>        
-        <?php } ?>
-
+      <?php if (!empty($megamenu)) { ?>
+      <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>        
+      <?php } ?>
       </div>
     </div>
   </nav>
-  
-        <?php if (!empty($breadcrumb)) { ?>
+  <?php if (!empty($breadcrumb)) { ?>
   <div class="container-fluid breadcrumb">
-        <ol class="breadcrumb">
-          <?php foreach ($breadcrumb as $item) { ?>
-          <?php if(!empty($item['url'])) { ?>
-          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->escape($item['text']); ?></a></li>
-          <?php } else { ?>
-          <li><?php echo $this->escape($item['text']); ?></li>
-          <?php } ?>
-          <?php } ?>
-
-          <?php if(!empty($page_title)) { ?>
-          <li><h1><?php echo $this->escape($page_title); ?></h1></li>
-          <?php } ?>
-          
-        </ol>
-  </div>
+    <ol class="breadcrumb">
+      <?php foreach ($breadcrumb as $item) { ?>
+      <?php if (!empty($item['url'])) { ?>
+      <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->escape($item['text']); ?></a></li>
+      <?php } else { ?>
+      <li><?php echo $this->escape($item['text']); ?></li>
       <?php } ?>
-  
-  
-  
-  
+      <?php } ?>
+      <?php if (!empty($page_title)) { ?>
+      <li><h1><?php echo $this->escape($page_title); ?></h1></li>
+      <?php } ?>
+    </ol>
+  </div>
+  <?php } ?>
   <?php if (!empty($region_top)) { ?>
   <div class="region top"><?php echo $region_top; ?></div>
   <?php } ?>
   <div class="container-fluid main">
     <div class="row">
-      <?php if(!empty($region_left)) { ?>
+      <?php if (!empty($region_left)) { ?>
       <div class="col-md-3">
-      <div class="region left"><?php echo $region_left; ?></div>
+        <div class="region left"><?php echo $region_left; ?></div>
       </div>
       <?php } ?>
       <?php $region_content_class = 'col-md-12'; ?>
-      <?php if(!empty($region_left) && empty($region_right)) { ?>
+      <?php if (!empty($region_left) && empty($region_right)) { ?>
       <?php $region_content_class = 'col-md-9'; ?>
       <?php } ?>
-      <?php if(empty($region_left) && !empty($region_right)) { ?>
+      <?php if (empty($region_left) && !empty($region_right)) { ?>
       <?php $region_content_class = 'col-md-9'; ?>
       <?php } ?>
-      <?php if(!empty($region_left) && !empty($region_right)) { ?>
+      <?php if (!empty($region_left) && !empty($region_right)) { ?>
       <?php $region_content_class = 'col-md-6'; ?>
       <?php } ?>
       <div class="<?php echo ($region_content_class); ?>">
-    <?php if (!empty($messages)) { ?>
-    <div class="row" id="message">
-      <div class="col-md-12">
-        <?php foreach ($messages as $type => $strings) { ?>
-        <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in">
-          <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
-          <?php foreach ($strings as $string) { ?>
-          <?php echo $this->xss($string); ?><br>
-          <?php } ?>
+        <?php if (!empty($messages)) { ?>
+        <div class="row" id="message">
+          <div class="col-md-12">
+            <?php foreach ($messages as $type => $strings) { ?>
+            <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in">
+              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
+              <?php foreach ($strings as $string) { ?>
+              <?php echo $this->xss($string); ?><br>
+              <?php } ?>
+            </div>
+            <?php } ?>
+          </div>
         </div>
         <?php } ?>
-      </div>
-    </div>
-    <?php } ?>
-
-
         <?php if (!empty($region_content)) { ?>
         <div class="region content"><?php echo $region_content; ?></div>
-  <?php if (!empty($region_bottom)) { ?>
-  <div class="region bottom"><?php echo $region_bottom; ?></div>
-  <?php } ?>
+        <?php if (!empty($region_bottom)) { ?>
+        <div class="region bottom"><?php echo $region_bottom; ?></div>
+        <?php } ?>
         <?php } ?>
       </div>
-      <?php if(!empty($region_right)) { ?>
+      <?php if (!empty($region_right)) { ?>
       <div class="col-md-3">
-      <div class="region right"><?php echo $region_right; ?></div>
+        <div class="region right"><?php echo $region_right; ?></div>
       </div>
       <?php } ?>
     </div>
@@ -196,20 +176,20 @@
       <div class="row">
         <div class="col-md-6">
           <p>
-            <?php if(!empty($current_store['data']['owner'])) { ?>
+            <?php if (!empty($current_store['data']['owner'])) { ?>
             <?php echo $this->escape($current_store['data']['owner']); ?>
             <?php } ?>
             &copy; <?php echo date('Y'); ?> All Rights Reserved</p>
           <ul class="list-unstyled">
-          <?php if(!empty($current_store['data']['address'])) { ?>
+            <?php if (!empty($current_store['data']['address'])) { ?>
             <li><i class="fa fa-map-marker"></i> <?php echo $this->xss($current_store['data']['address']); ?></li>
-          <?php } ?>
-          <?php if(!empty($current_store['data']['phone'])) { ?>
-          <li><i class="fa fa-phone"></i> <?php echo $this->escape(implode(', ', $current_store['data']['phone'])); ?></li>
-          <?php } ?>
-          <?php if(!empty($current_store['data']['fax'])) { ?>
-          <li><i class="fa fa-fax"></i> <?php echo $this->escape(implode(', ', $current_store['data']['fax'])); ?></li>
-          <?php } ?>
+            <?php } ?>
+            <?php if (!empty($current_store['data']['phone'])) { ?>
+            <li><i class="fa fa-phone"></i> <?php echo $this->escape(implode(', ', $current_store['data']['phone'])); ?></li>
+            <?php } ?>
+            <?php if (!empty($current_store['data']['fax'])) { ?>
+            <li><i class="fa fa-fax"></i> <?php echo $this->escape(implode(', ', $current_store['data']['fax'])); ?></li>
+            <?php } ?>
           </ul>
           <p class="small text-muted">Powered by <a href="http://gplcart.com">GPL Cart</a></p>
         </div>
@@ -244,5 +224,4 @@
       </div>
     </div>
   </footer>
-
 </body>

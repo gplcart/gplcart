@@ -207,14 +207,12 @@ class Cart extends Model
      */
     public function getList(array $data = array())
     {
-        $data += array('order_id' => 0);
 
-        $sql = 'SELECT *,'
-                . ' SUM(quantity) AS quantity'
-                . ' FROM cart'
-                . ' WHERE cart_id > 0';
+        $sql = 'SELECT * FROM cart WHERE cart_id > 0';
 
         $where = array();
+
+        $data += array('order_id' => 0);
 
         if (isset($data['user_id'])) {
             $sql .= ' AND user_id=?';
@@ -231,10 +229,36 @@ class Cart extends Model
             $where[] = (int) $data['store_id'];
         }
 
-        $sql .= ' GROUP BY sku ORDER BY created DESC';
+        $sql .= ' ORDER BY created DESC';
 
-        $options = array('unserialize' => 'data', 'index' => 'cart_id');
+        $options = array('unserialize' => 'data', 'index' => 'sku');
         return $this->db->fetchAll($sql, $where, $options);
+    }
+
+    /**
+     * Returns an array containing total number of products
+     * and number of products per SKU for the given user and store
+     * @param string $user_id
+     * @param integer $store_id
+     * @return array
+     */
+    public function getQuantity($user_id, $store_id)
+    {
+        $conditions = array(
+            'user_id' => $user_id,
+            'store_id' => $store_id
+        );
+
+        $items = $this->getList($conditions);
+
+        $result = array('total' => 0, 'sku' => array());
+
+        foreach ($items as $item) {
+            $result['total'] += (int) $item['quantity'];
+            $result['sku'][$item['sku']] = (int) $item['quantity'];
+        }
+
+        return $result;
     }
 
     /**
@@ -303,20 +327,23 @@ class Cart extends Model
     {
         $sql = 'SELECT cart_id, quantity'
                 . ' FROM cart'
-                . ' WHERE sku=? AND user_id=? AND order_id=?';
+                . ' WHERE sku=?'
+                . ' AND user_id=?'
+                . ' AND store_id=?'
+                . ' AND order_id=?';
 
-        $conditions = array($data['sku'], $data['user_id'], 0);
+        $conditions = array($data['sku'], $data['user_id'], $data['store_id'], 0);
         $existing = $this->db->fetch($sql, $conditions);
 
         if (empty($existing['cart_id'])) {
             return $this->add($data);
         }
-        
+
         $existing['quantity'] += $data['quantity'];
 
         $conditions2 = array('quantity' => $existing['quantity']);
         $this->update($existing['cart_id'], $conditions2);
-        
+
         return $existing['cart_id'];
     }
 

@@ -37,13 +37,13 @@ class Cart
      * @var \core\models\Product $product
      */
     protected $product;
-    
+
     /**
      * Combination model instance
      * @var \core\models\Combination $combination
      */
     protected $combination;
-    
+
     /**
      * Constructor
      * @param ModelsLanguage $language
@@ -107,17 +107,21 @@ class Cart
     public function limits($value, array $options = array())
     {
         $product = $options['data'];
+
+        $sku = $options['submitted']['sku'];
         $user_id = $options['submitted']['user_id'];
+
+        $store_id = $options['submitted']['store_id'];
         $stock = (int) $options['submitted']['stock'];
         $quantity = (int) $options['submitted']['quantity'];
 
-        $skus = 1;
-        $total = $quantity;
-        $items = $this->cart->getList(array('user_id' => $user_id));
+        $existing_quantity = $this->cart->getQuantity($user_id, $store_id);
 
-        foreach ($items as $item) {
-            $total += (int) $item['quantity'];
-            $skus++;
+        $expected_quantity_sku = $quantity;
+        $expected_quantity_total = $existing_quantity['total'] + $quantity;
+
+        if (isset($existing_quantity['sku'][$sku])) {
+            $expected_quantity_sku += $existing_quantity['sku'][$sku];
         }
 
         if ($product['subtract'] && $quantity > $stock) {
@@ -127,14 +131,16 @@ class Cart
         $limit_sku = $this->cart->getLimits('sku');
         $limit_total = $this->cart->getLimits('total');
 
-        if (!empty($limit_sku) && ($skus > $limit_sku)) {
-            return $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
-                        '%num' => $limit_sku));
-        }
-
-        if (!empty($limit_total) && ($total > $limit_total)) {
+        // First check total items limit
+        if (!empty($limit_total) && ($expected_quantity_total > $limit_total)) {
             return $this->language->text('Sorry, you cannot have more than %num items in your cart', array(
                         '%num' => $limit_total));
+        }
+
+        // then limits per SKU
+        if (!empty($limit_sku) && ($expected_quantity_sku > $limit_sku)) {
+            return $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
+                        '%num' => $limit_sku));
         }
 
         return true;

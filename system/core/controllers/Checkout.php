@@ -68,6 +68,12 @@ class Checkout extends FrontendController
      * @var string
      */
     protected $cart_action;
+    
+    /**
+     * Cart content for the current user
+     * @var array
+     */
+    protected $cart_content = array();
 
     /**
      * Current country code
@@ -121,6 +127,8 @@ class Checkout extends FrontendController
         $this->state = $state;
         $this->address = $address;
         $this->country = $country;
+        
+        $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
         static::$total_quantity = 0;
 
