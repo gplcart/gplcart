@@ -53,6 +53,12 @@ class Controller extends BaseController
      * @var \core\models\Product $product
      */
     protected $product;
+    
+    /**
+     * Compare model instance
+     * @var \core\models\Compare $compare
+     */
+    protected $compare;
 
     /**
      * Wishlist model instance
@@ -138,6 +144,9 @@ class Controller extends BaseController
 
         /* @var $product \core\models\Product */
         $this->product = Container::instance('core\\models\\Product');
+        
+        /* @var $compare \core\models\Compare */
+        $this->compare = Container::instance('core\\models\\Compare');
 
         /* @var $wishlist \core\models\Wishlist */
         $this->wishlist = Container::instance('core\\models\\Wishlist');
@@ -158,7 +167,7 @@ class Controller extends BaseController
             $this->viewed = $this->getViewed();
             $this->cart_uid = $this->cart->uid();
             $this->category_tree = $this->getCategories();
-            $this->compare_content = $this->product->getCompared();
+            $this->compare_content = $this->compare->get();
             $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
             $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
@@ -414,7 +423,7 @@ class Controller extends BaseController
      */
     protected function setItemProductCompared(array &$product, array $options)
     {
-        $product['in_comparison'] = $this->product->isCompared($product['product_id']);
+        $product['in_comparison'] = $this->compare->exists($product['product_id']);
     }
 
     /**
@@ -484,21 +493,55 @@ class Controller extends BaseController
         $product['rendered'] = $this->render($options['template'], $data);
     }
 
-    /*     * *************************** Submits **************************** */
+    ###########################################################################
+    ################################# Submits #################################
+    ###########################################################################
 
     /**
      * Sets all submit listeners
      */
     protected function setFrontendSubmits()
     {
-        $this->submitAddToCart();
-        $this->submitAddToWishlist();
+        $this->submitCart();
+        $this->submitCompare();
+        $this->submitWishlist();
+    }
+    
+    protected function submitCompare(){
+        if (!$this->isPosted('add_to_compare')) {
+            return; // No "Add to compare" clicked
+        }
+        
+        /*
+        $this->setSubmitted('product');
+        $this->validateAddToCompare();
+
+        if ($this->hasErrors(null, false)) {
+            return $this->completeSubmit();
+        }
+
+        $product_id = $this->getSubmitted();
+        
+        $added = $this->product->addToCompare($product_id);
+
+        if (empty($added)) {
+            return $this->completeSubmit();
+        }
+        
+        $result = array(
+            'severity' => 'success',
+            'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
+                '!href' => $this->url('compare')))
+        );
+
+        $this->completeSubmit($result);
+         * */
     }
 
     /**
      * Adds a product to the cart
      */
-    protected function submitAddToCart()
+    protected function submitCart()
     {
         if (!$this->isPosted('add_to_cart')) {
             return; // No "Add to cart" clicked
@@ -508,21 +551,20 @@ class Controller extends BaseController
         $this->validateAddToCart();
 
         if ($this->hasErrors(null, false)) {
-            $this->submitComplete();
-            return;
+            return $this->completeSubmit();
         }
 
         $submitted = $this->getSubmitted();
         $product = $this->getSubmitted('product');
 
         $result = $this->cart->addProduct($product, $submitted);
-        $this->submitComplete($result);
+        $this->completeSubmit($result);
     }
 
     /**
-     * Adds a product to the cart
+     * Adds a product to the wishlist
      */
-    protected function submitAddToWishlist()
+    protected function submitWishlist()
     {
         if (!$this->isPosted('add_to_wishlist')) {
             return; // No "Add to wishlist" clicked
@@ -532,47 +574,69 @@ class Controller extends BaseController
         $this->validateAddToWishlist();
 
         if ($this->hasErrors(null, false)) {
-            return $this->submitComplete();
+            return $this->completeSubmit();
         }
 
         $submitted = $this->getSubmitted();
         $result = $this->wishlist->addProduct($submitted);
 
-        return $this->submitComplete($result);
+        return $this->completeSubmit($result);
     }
 
     /**
-     * Validates "Add to wishlist" action
+     * Finishes a submitted action.
+     * For non-AJAX requests - redirects the user with a message
+     * For AJAX requests - outputs JSON string with results such as message, redirect path...
+     * @param array $data
+     * @return mixed
      */
-    protected function validateAddToWishlist()
+    protected function completeSubmit(array $data = array())
     {
-        $this->setSubmitted('user_id', $this->cart_uid);
+        $errors = $this->getError();
+        $message = empty($errors) ? $this->text('An error occurred') : end($errors);
 
-        $this->addValidator('product_id', array(
-            'product_exists' => array(
-                'status' => true,
-                'required' => true
-            )
-        ));
+        $data += array(
+            'redirect' => '',
+            'message' => $message,
+            'severity' => 'danger'
+        );
 
-        $this->setValidators();
+        if ($this->request->isAjax()) {
+            $this->outputAjaxResponse($data);
+        }
+
+        $this->redirect($data['redirect'], $data['message'], $data['severity']);
     }
 
     /**
-     * Outputs JSON with cart preview
+     * Outputs JSON with warious data
      */
-    protected function outputCartPreview()
+    protected function outputAjaxResponse(array $data)
+    {
+        $response = $data;
+        if ($this->isPosted('add_to_cart') && $data['severity'] == 'success') {
+            $response = $this->getCartPreview();
+        }
+
+        $this->response->json($response);
+    }
+
+    /**
+     * Returns an array containing rendered cart preview
+     * @param array $options
+     * @return array
+     */
+    protected function getCartPreview(array $options = array())
     {
         $cart = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
-        $options = array(
+        $options += array(
             'cart' => $this->prepareCart($cart),
             'limit' => $this->config('cart_preview_limit', 5)
         );
 
         $html = $this->render('cart/preview', $options);
-        $response = array('quantity' => $cart['quantity'], 'preview' => $html);
-        $this->response->json($response);
+        return array('quantity' => $cart['quantity'], 'rendered' => $html);
     }
 
     /**
@@ -622,32 +686,20 @@ class Controller extends BaseController
     }
 
     /**
-     * Finishes a submitted action.
-     * For non-AJAX requests - redirects the user with a message
-     * For AJAX requests - outputs JSON string with results such as message, redirect path...
-     * @param array $data
-     * @return mixed
+     * Validates "Add to wishlist" action
      */
-    protected function submitComplete(array $data = array())
+    protected function validateAddToWishlist()
     {
-        $errors = $this->getError();
-        $message = empty($errors) ? $this->text('An error occurred') : end($errors);
+        $this->setSubmitted('user_id', $this->cart_uid);
 
-        $data += array(
-            'redirect' => '',
-            'message' => $message,
-            'severity' => 'danger'
-        );
+        $this->addValidator('product_id', array(
+            'product_exists' => array(
+                'status' => true,
+                'required' => true
+            )
+        ));
 
-        if (!$this->request->isAjax()) {
-            $this->redirect($data['redirect'], $data['message'], $data['severity']);
-        }
-
-        if ($data['severity'] == 'success' && empty($data['redirect'])) {
-            $this->outputCartPreview();
-        }
-
-        return $this->response->json($data);
+        $this->setValidators();
     }
 
 }

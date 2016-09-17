@@ -87,26 +87,22 @@ $(function () {
 
     $('.star-rating.static').tooltip();
     
-    $('form :button[name]').click(function() {
-        $(':button[name]', $(this).parents('form')).removeAttr('clicked');
-        $(this).attr('clicked', 'true');
-    });
-
-    $('form.add-to-cart--').unbind('submit').submit(function (e) {
-
+    $('form.add-to-cart :button[name]').click(function (e) {
+        
         e.preventDefault();
         
-        var action = $(':button[name][clicked=true]').attr('name');
+        var button = $(this);
+        var action = button.attr('name');
         
         if(!action){
             return false;
         }
-
+        
         $.ajax({
             type: 'POST',
             dataType: 'json',
             url: GplCart.settings.urn,
-            data: $(this).serialize() + '&' + action + '=1',
+            data: button.closest('form').serialize() + '&' + action + '=1',
             success: function (data) {
                 
                 if (typeof data !== 'object') {
@@ -114,25 +110,30 @@ $(function () {
                     return false;
                 }
                 
-                if ('preview' in data) {
-                    GplCart.theme.modal(data.preview, 'cart-preview', GplCart.text('Your cart'));
-                    $('#cart-quantity-summary').text(data.quantity);
+                if('redirect' in data && data.redirect.length){
+                    window.location.replace(data.redirect);
                     return false;
                 }
                 
-                if('redirect' in data && data.redirect.length){
-                    window.location.replace(data.redirect);
+                if ('rendered' in data) {
+                    GplCart.theme.modal(data.rendered, 'cart-preview', GplCart.text('Your cart'));
+                    $('#cart-quantity-summary').text(data.quantity);
                     return false;
                 }
 
                 if ('message' in data) {
                     GplCart.theme.modal(data.message, 'cart-message');
+                    return false;
                 }
+                
+                alert(GplCart.text('Invalid response'));
             },
             error: function () {
                 alert(GplCart.text('An error occurred'));
             }
         });
+        
+        return false;
     });
 
     $('form.add-to-cart [name^="product[options]"]').change(function () {
