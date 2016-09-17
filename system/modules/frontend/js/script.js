@@ -86,16 +86,27 @@ $(function () {
     /********************** Product page **********************/
 
     $('.star-rating.static').tooltip();
+    
+    $('form :button[name]').click(function() {
+        $(':button[name]', $(this).parents('form')).removeAttr('clicked');
+        $(this).attr('clicked', 'true');
+    });
 
-    $('form.add-to-cart').unbind('submit').submit(function (e) {
+    $('form.add-to-cart--').unbind('submit').submit(function (e) {
 
         e.preventDefault();
+        
+        var action = $(':button[name][clicked=true]').attr('name');
+        
+        if(!action){
+            return false;
+        }
 
         $.ajax({
             type: 'POST',
             dataType: 'json',
             url: GplCart.settings.urn,
-            data: $(this).serialize() + '&add_to_cart=1',
+            data: $(this).serialize() + '&' + action + '=1',
             success: function (data) {
                 
                 if (typeof data !== 'object') {
@@ -118,8 +129,8 @@ $(function () {
                     GplCart.theme.modal(data.message, 'cart-message');
                 }
             },
-            error: function (request, status, error) {
-                alert('Error: ' + request.responseText);
+            error: function () {
+                alert(GplCart.text('An error occurred'));
             }
         });
     });

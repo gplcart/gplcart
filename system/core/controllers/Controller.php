@@ -492,6 +492,7 @@ class Controller extends BaseController
     protected function setFrontendSubmits()
     {
         $this->submitAddToCart();
+        $this->submitAddToWishlist();
     }
 
     /**
@@ -519,6 +520,45 @@ class Controller extends BaseController
     }
 
     /**
+     * Adds a product to the cart
+     */
+    protected function submitAddToWishlist()
+    {
+        if (!$this->isPosted('add_to_wishlist')) {
+            return; // No "Add to wishlist" clicked
+        }
+
+        $this->setSubmitted('product');
+        $this->validateAddToWishlist();
+
+        if ($this->hasErrors(null, false)) {
+            return $this->submitComplete();
+        }
+
+        $submitted = $this->getSubmitted();
+        $result = $this->wishlist->addProduct($submitted);
+
+        return $this->submitComplete($result);
+    }
+
+    /**
+     * Validates "Add to wishlist" action
+     */
+    protected function validateAddToWishlist()
+    {
+        $this->setSubmitted('user_id', $this->cart_uid);
+
+        $this->addValidator('product_id', array(
+            'product_exists' => array(
+                'status' => true,
+                'required' => true
+            )
+        ));
+
+        $this->setValidators();
+    }
+
+    /**
      * Outputs JSON with cart preview
      */
     protected function outputCartPreview()
@@ -541,21 +581,23 @@ class Controller extends BaseController
     protected function validateAddToCart()
     {
         $quantity = $this->getSubmitted('quantity');
-        $product_id = $this->getSubmitted('product_id');
 
         if (empty($quantity)) {
             $this->setSubmitted('quantity', 1);
         }
 
-        $product = $this->product->get($product_id);
-
-        if (empty($product['status'])) {
-            $this->setError('product_id', $this->language->text('Product does not exist'));
-            return; // Unknown/disabled product
-        }
-
-        $this->setSubmitted('product', $product);
         $this->setSubmitted('user_id', $this->cart_uid);
+
+        // Check if the product exists
+        // and set its loaded array to the data array
+        // see the argument for $this->setValidators()
+        $this->addValidator('product_id', array(
+            'product_exists' => array(
+                'set_data' => true,
+                'status' => true,
+                'required' => true
+            )
+        ));
 
         $this->addValidator('quantity', array(
             'required' => array(),
@@ -563,10 +605,20 @@ class Controller extends BaseController
             'length' => array('max' => 2)
         ));
 
-        // set => true - set validation results to the submitted values for further usage
-        $this->addValidator('options', array('cart_options' => array('submitted' => true)));
-        $this->addValidator('limit', array('cart_limits' => array('control_errors' => true)));
-        $this->setValidators($product);
+        // set_submitted => true - set validation results
+        // to the submitted values for further usage
+        $this->addValidator('options', array(
+            'cart_options' => array('set_submitted' => true)
+        ));
+
+        $this->addValidator('limit', array(
+            'cart_limits' => array('control_errors' => true)
+        ));
+
+        $this->setValidators();
+
+        $product = $this->getValidatorResult('product_id');
+        $this->setSubmitted('product', $product);
     }
 
     /**

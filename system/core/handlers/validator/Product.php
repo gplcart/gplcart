@@ -87,9 +87,19 @@ class Product
             return $this->language->text('Product does not exist');
         }
 
+        if (empty($product['status']) && !empty($options['status'])) {
+            return $this->language->text('Product does not exist');
+        }
+
         return array('result' => $product);
     }
 
+    /**
+     * 
+     * @param type $value
+     * @param array $options
+     * @return boolean
+     */
     public function skuUnique($value, array $options = array())
     {
         if (!empty($value)) {

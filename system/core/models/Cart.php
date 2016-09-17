@@ -439,7 +439,7 @@ class Cart extends Model
         );
 
         $this->db->delete('wishlist', $data);
-        $wishlist_id = $this->wishlist->add($data);
+        $wishlist_id = $this->wishlist->addProduct($data);
 
         $conditions = array(
             'sku' => $sku,

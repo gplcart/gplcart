@@ -103,7 +103,7 @@ class Validator extends Model
      * @param array $data
      * @return \core\models\Validator
      */
-    public function set(array &$submitted = array(), array $data = array())
+    public function set(array &$submitted = array(), array &$data = array())
     {
         foreach ($this->fields as $field => $validators) {
             foreach ($validators as $handler_id => $options) {
@@ -137,10 +137,16 @@ class Validator extends Model
                     // Save returned results from this checker for the future
                     Tool::setArrayValue($this->results, $field, $result['result']);
 
-                    if (!empty($options['submitted'])) {
+                    if (!empty($options['set_submitted'])) {
                         // Add the results directly to the submitted values
                         // so they can be used by the next checker/validator
                         $submitted = Tool::merge($submitted, $result['result']);
+                    }
+
+                    if (!empty($options['set_data'])) {
+                        // Add the results directly to the data values
+                        // so they can be used by the next checker/validator
+                        $data = Tool::merge($data, $result['result']);
                     }
 
                     continue;

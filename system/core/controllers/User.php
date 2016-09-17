@@ -116,13 +116,11 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditLoginUser()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -231,21 +229,11 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditRegisterUser()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Login'),
-            'url' => $this->url('login'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Forgot password'),
-            'url' => $this->url('forgot'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -410,19 +398,11 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditResetPasswordUser()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Login'),
-            'url' => $this->url('login'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Register account'),
-            'url' => $this->url('register'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

@@ -1,12 +1,12 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <form method="post" id="form-login" class="login form-horizontal">
+    <form method="post" id="login" class="login form-horizontal">
       <?php echo $honeypot; ?>
       <input type="hidden" name="token" value="<?php echo $token; ?>">
       <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
         <label class="control-label col-md-2"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
-          <input type="email" class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus>
+          <input class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus>
           <?php if (isset($this->errors['email'])) { ?>
           <div class="help-block"><?php echo $this->errors['email']; ?></div>
           <?php } ?>

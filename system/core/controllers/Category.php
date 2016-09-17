@@ -157,8 +157,11 @@ class Category extends FrontendController
      */
     protected function setBreadcrumbIndexCategory(array $category)
     {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
-        $this->setBreadcrumb(array('text' => $category['title']));
+        $breadcrumb = array(
+            'text' => $this->text('Home'),
+            'url' => $this->url('/'));
+        
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

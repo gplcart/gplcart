@@ -10,8 +10,10 @@
 namespace core\models;
 
 use core\Model;
+use core\Logger;
 use core\classes\Cache;
 use core\models\User as ModelsUser;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to user wishlists
@@ -26,23 +28,39 @@ class Wishlist extends Model
     protected $user;
 
     /**
+     * Language model instance
+     * @var \core\models\Language $language
+     */
+    protected $language;
+
+    /**
+     * Logger class instance
+     * @var \core\Logger $logger
+     */
+    protected $logger;
+
+    /**
      * Constructor
      * @param ModelsUser $user
+     * @param ModelsLanguage $language
+     * @param Logger $logger
      */
-    public function __construct(ModelsUser $user)
+    public function __construct(ModelsUser $user, ModelsLanguage $language,
+            Logger $logger)
     {
         parent::__construct();
 
         $this->user = $user;
+        $this->logger = $logger;
+        $this->language = $language;
     }
 
     /**
      * Adds a product to a wishlist
      * @param array $data
-     * @param boolean $check
      * @return boolean
      */
-    public function add(array $data, $check = false)
+    public function add(array $data)
     {
         $this->hook->fire('add.wishlist.before', $data);
 
@@ -50,19 +68,81 @@ class Wishlist extends Model
             return false;
         }
 
-        if ($check && !$this->canAdd($data['user_id'])) {
-            return false; // Limits reached
-        }
-
-        if ($check && $this->get($data)) {
-            return false; // Already exists
-        }
-
         $data += array('created' => GC_TIME);
         $data['wishlist_id'] = $this->db->insert('wishlist', $data);
 
         $this->hook->fire('add.wishlist.after', $data);
         return $data['wishlist_id'];
+    }
+
+    /**
+     * Adds a product to a wishlist and returns detailed result
+     * @param array $data
+     * @return array
+     */
+    public function addProduct(array $data)
+    {
+        $this->hook->fire('add.product.wishlist.before', $data);
+
+        if (empty($data)) {
+            return array();
+        }
+
+        $existing = $this->get($data);
+
+        if (!empty($existing)) {
+
+            $result = array(
+                'severity' => 'warning',
+                'message' => $this->language->text('Product already exists in your wishlist')
+            );
+
+            $this->hook->fire('add.product.wishlist.after', $data, $result);
+            return $result;
+        }
+
+        if ($this->canAdd($data['user_id'])) {
+
+            $result = array(
+                'severity' => 'success',
+                'message' => $this->language->text('Product has been added to your wishlist'));
+
+            $data['wishlist_id'] = $this->add($data);
+
+            $this->hook->fire('add.product.wishlist.after', $data, $result);
+
+            $this->logAddToWishlist($data);
+            return $result;
+        }
+
+        $limit = $this->wishlist->getLimits($data['user_id']);
+
+        $result = array(
+            'severity' => 'warning',
+            'message' => $this->language->text('Oops, you\'re exceeding %limit items', array(
+                '%limit' => $limit))
+        );
+
+        $this->hook->fire('add.product.wishlist.after', $data, $result);
+        return $result;
+    }
+
+    /**
+     * Logs adding a product to a wishlist
+     * @param array $data
+     * @return boolean
+     */
+    protected function logAddToWishlist(array $data)
+    {
+        $log = array(
+            'message' => 'User %uid added product #%product to wishlist',
+            'variables' => array(
+                '%product' => $data['product_id'],
+                '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : '**anonymous**'
+            )
+        );
+
+        return $this->logger->log('wishlist', $log);
     }
 
     /**
