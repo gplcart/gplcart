@@ -14,6 +14,7 @@ use core\models\State as ModelsState;
 use core\models\Search as ModelsSearch;
 use core\models\Rating as ModelsRating;
 use core\models\Country as ModelsCountry;
+use core\models\Combination as ModelsCombination;
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -53,15 +54,23 @@ class Ajax extends FrontendController
     protected $rating;
 
     /**
+     * Combination model instance
+     * @var \core\models\Combination $combination
+     */
+    protected $combination;
+
+    /**
      * Constructor
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsSearch $search
      * @param ModelsFile $file
      * @param ModelsRating $rating
+     * @param ModelsCombination $combination
      */
     public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsSearch $search, ModelsFile $file, ModelsRating $rating)
+            ModelsSearch $search, ModelsFile $file, ModelsRating $rating,
+            ModelsCombination $combination)
     {
         parent::__construct();
 
@@ -70,6 +79,7 @@ class Ajax extends FrontendController
         $this->rating = $rating;
         $this->search = $search;
         $this->country = $country;
+        $this->combination = $combination;
     }
 
     /**
@@ -208,7 +218,7 @@ class Ajax extends FrontendController
         }
 
         $field_value_ids = array_values($field_value_ids);
-        $combination_id = $this->product->getCombinationId($field_value_ids, $product_id);
+        $combination_id = $this->combination->id($field_value_ids, $product_id);
 
         if (empty($product['combination'][$combination_id])) {
 

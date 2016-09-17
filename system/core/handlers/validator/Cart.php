@@ -12,6 +12,7 @@ namespace core\handlers\validator;
 use core\models\Cart as ModelsCart;
 use core\models\Product as ModelsProduct;
 use core\models\Language as ModelsLanguage;
+use core\models\Combination as ModelsCombination;
 
 /**
  * Provides methods to validate cart data
@@ -36,20 +37,28 @@ class Cart
      * @var \core\models\Product $product
      */
     protected $product;
-
+    
+    /**
+     * Combination model instance
+     * @var \core\models\Combination $combination
+     */
+    protected $combination;
+    
     /**
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsCart $cart
      * @param ModelsProduct $product
+     * @param ModelsCombination $combination
      */
     public function __construct(ModelsLanguage $language, ModelsCart $cart,
-            ModelsProduct $product)
+            ModelsProduct $product, ModelsCombination $combination)
     {
 
         $this->cart = $cart;
         $this->product = $product;
         $this->language = $language;
+        $this->combination = $combination;
     }
 
     /**
@@ -75,7 +84,7 @@ class Cart
             ));
         }
 
-        $combination_id = $this->product->getCombinationId($options, $product['product_id']);
+        $combination_id = $this->combination->id($options, $product['product_id']);
 
         if (empty($product['combination'][$combination_id]['sku'])) {
             return $this->language->text('Invalid option combination');

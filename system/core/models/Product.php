@@ -20,6 +20,7 @@ use core\models\Alias as ModelsAlias;
 use core\models\Search as ModelsSearch;
 use core\models\Language as ModelsLanguage;
 use core\models\PriceRule as ModelsPriceRule;
+use core\models\Combination as ModelsCombination;
 
 /**
  * Manages basic behaviors and data related to products
@@ -38,6 +39,12 @@ class Product extends Model
      * @var \core\models\Alias $alias
      */
     protected $alias;
+    
+    /**
+     * Combination model instance
+     * @var \core\models\Combination $combination
+     */
+    protected $combination;
 
     /**
      * Price model instance
@@ -74,7 +81,7 @@ class Product extends Model
      * @var \core\classes\Request $request
      */
     protected $request;
-
+    
     /**
      * Constructor
      * @param ModelsPrice $price
@@ -84,11 +91,12 @@ class Product extends Model
      * @param ModelsLanguage $language
      * @param ModelsSku $sku
      * @param ModelsSearch $search
+     * @param ModelsCombination $combination
      * @param Request $request
      */
     public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
             ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-            ModelsSku $sku, ModelsSearch $search, Request $request)
+            ModelsSku $sku, ModelsSearch $search, ModelsCombination $combination, Request $request)
     {
         parent::__construct();
 
@@ -100,6 +108,7 @@ class Product extends Model
         $this->request = $request;
         $this->language = $language;
         $this->pricerule = $pricerule;
+        $this->combination = $combination;
     }
 
     /**
@@ -304,49 +313,6 @@ class Product extends Model
     }
 
     /**
-     * Adds a field combination
-     * @param array $data
-     * @return boolean|string
-     */
-    public function addCombination(array $data)
-    {
-        $this->hook->fire('add.option.combination.before', $data);
-
-        if (empty($data)) {
-            return false;
-        }
-
-        $fields = empty($data['fields']) ? array() : (array) $data['fields'];
-        $data['combination_id'] = $this->getCombinationId($fields, $data['product_id']);
-
-        if (!empty($data['price'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
-        }
-
-        $this->db->insert('option_combination', $data);
-        $this->hook->fire('add.option.combination.after', $data);
-
-        return $data['combination_id'];
-    }
-
-    /**
-     * Creates a field combination id from the field value ids
-     * @param array $field_value_ids
-     * @param null|integer $product_id
-     * @return string
-     */
-    public function getCombinationId(array $field_value_ids, $product_id = null)
-    {
-        sort($field_value_ids);
-
-        if (!empty($product_id)) {
-            return $product_id . '-' . implode('_', $field_value_ids);
-        }
-
-        return implode('_', $field_value_ids);
-    }
-
-    /**
      * Creates a URL alis
      * @param array $data
      * @param boolean $translit_alias
@@ -471,7 +437,7 @@ class Product extends Model
             return;
         }
 
-        $product['combination'] = $this->getCombinationList($product['product_id']);
+        $product['combination'] = $this->combination->getList($product['product_id']);
 
         $sku_codes = $this->sku->getByProduct($product['product_id']);
         $product['sku'] = $sku_codes['base'];
@@ -499,44 +465,6 @@ class Product extends Model
         }
 
         return $list;
-    }
-
-    /**
-     * Returns an array of option combinations for a given product
-     * @param integer $product_id
-     * @return array
-     */
-    public function getCombinationList($product_id)
-    {
-        $sql = 'SELECT oc.*, ps.sku'
-                . ' FROM option_combination oc'
-                . ' LEFT JOIN product_sku ps'
-                . ' ON(oc.product_id = ps.product_id AND ps.combination_id = oc.combination_id)'
-                . ' WHERE oc.product_id=?';
-
-        $results = $this->db->fetchAll($sql, array($product_id));
-
-        $combinations = array();
-        foreach ($results as $combination) {
-            $combinations[$combination['combination_id']] = $combination;
-            $fields = $this->getCombinationFieldValue($combination['combination_id']);
-            $combinations[$combination['combination_id']]['fields'] = $fields;
-        }
-
-        return $combinations;
-    }
-
-    /**
-     *
-     * @param string $combination_id
-     * @return array
-     */
-    public function getCombinationFieldValue($combination_id)
-    {
-        $field_value_ids = explode('_', substr($combination_id, strpos($combination_id, '-') + 1));
-        sort($field_value_ids);
-
-        return $field_value_ids;
     }
 
     /**
@@ -636,30 +564,6 @@ class Product extends Model
 
         $result = $this->db->fetchColumn($sql, array($product_id));
         return empty($result);
-    }
-
-    /**
-     * Updates a field combination
-     * @param string $combination_id
-     * @param array $data
-     * @return boolean
-     */
-    public function updateCombination($combination_id, array $data)
-    {
-        $this->hook->fire('update.option.combination.before', $combination_id, $data);
-
-        if (empty($combination_id)) {
-            return false;
-        }
-
-        if (isset($data['price']) && !empty($data['currency'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
-        }
-
-        $result = $this->db->update('option_combination', $data, array('combination_id' => $combination_id));
-        $this->hook->fire('update.option.combination.after', $combination_id, $data, $result);
-
-        return (bool) $result;
     }
 
     /**
@@ -945,7 +849,7 @@ class Product extends Model
 
         if ($delete) {
             $this->deleteField('option', $product_id);
-            $this->deleteCombination($product_id);
+            $this->combination->delete($product_id);
         }
 
         if (isset($data['store_id']) && $delete) {
@@ -967,7 +871,7 @@ class Product extends Model
                 $combination['sku'] = $this->sku->generate($sku_pattern, array(), array('store_id' => $data['store_id']));
             }
 
-            $combination['combination_id'] = $this->addCombination($combination);
+            $combination['combination_id'] = $this->combination->add($combination);
 
             if (isset($data['store_id'])) {
                 $combination['store_id'] = $data['store_id'];
@@ -1052,18 +956,6 @@ class Product extends Model
     {
         $conditions = array('type' => $type, 'product_id' => $product_id);
         return (bool) $this->db->delete('product_field', $conditions);
-    }
-
-    /**
-     * Deletes option combination(s) by product ID
-     * @param integer $product_id
-     * @return boolean
-     */
-    protected function deleteCombination($product_id)
-    {
-        $conditions = array('product_id' => $product_id);
-        $this->db->delete('option_combination', $conditions);
-        return true;
     }
 
 }
