@@ -112,34 +112,6 @@ class Action extends FrontendController
     }
 
     /**
-     * Adds a product to comparison
-     * @return array
-     */
-    protected function addToCompareAction()
-    {
-        $product_id = (int) $this->request->get('product_id');
-        $product = $this->product->get($product_id);
-
-        if (empty($product['status'])) {
-            return array();
-        }
-
-        $added = $this->product->addToCompare($product_id);
-
-        $response = array();
-
-        if (!empty($added)) {
-            $response = array(
-                'severity' => 'success',
-                'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
-                    '!href' => $this->url('compare')))
-            );
-        }
-
-        return $response;
-    }
-
-    /**
      * Removes a product from comparison
      * @return array
      */

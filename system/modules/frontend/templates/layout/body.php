@@ -15,36 +15,36 @@
           <li>
             <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
               <?php if (!empty($cart_quantity['total'])) { ?>
-              <span class="badge" id="cart-quantity-summary"><?php echo $cart_quantity['total']; ?></span>
+              <span class="badge" id="cart-quantity"><?php echo $cart_quantity['total']; ?></span>
               <?php } else { ?>
-              <span id="cart-quantity-summary"></span>
+              <span class="badge" id="cart-quantity" style="display:none;"></span>
               <?php } ?>
               <i class="fa fa-shopping-cart"></i>
             </a>
           </li>
           <li>
             <a rel="nofollow" id="wishlist-link" href="<?php echo $this->url('wishlist'); ?>">
-              <?php if (!empty($wishlist)) { ?>
-              <span class="badge" id="wishlist-quantity-summary">
-              <?php echo count($wishlist); ?>
+              <?php if (!empty($wishlist_quantity)) { ?>
+              <span class="badge" id="wishlist-quantity">
+              <?php echo $wishlist_quantity; ?>
               </span>
               <?php } else { ?>
-              <span id="wishlist-quantity-summary"></span>
+              <span class="badge" id="wishlist-quantity" style="display:none;"></span>
               <?php } ?>
               <i class="fa fa-heart"></i>
             </a>
           </li>
           <li>
-            <?php if (!empty($compare)) { ?>
+            <?php if (!empty($compare_content)) { ?>
             <a rel="nofollow" id="compare-link" href="<?php echo $this->url('compare'); ?>">
-              <span class="badge" id="compare-quantity-summary">
-                <?php echo count($compare); ?>
+              <span class="badge" id="compare-quantity">
+                <?php echo count($compare_content); ?>
               </span>
               <i class="fa fa-balance-scale"></i>
             </a>
             <?php } else { ?>
             <span class="navbar-text">
-              <span id="compare-quantity-summary"></span>
+              <span class="badge" id="compare-quantity" style="display:none;"></span>
               <i class="fa fa-balance-scale"></i>
             </span>
             <?php } ?>

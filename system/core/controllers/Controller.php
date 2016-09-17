@@ -164,16 +164,29 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->url->isInstall()) {
+            
             $this->viewed = $this->getViewed();
             $this->cart_uid = $this->cart->uid();
             $this->category_tree = $this->getCategories();
             $this->compare_content = $this->compare->get();
+            
             $this->cart_quantity = $this->cart->getQuantity($this->cart_uid, $this->store_id);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
-            $this->wishlist_content = $this->wishlist->getList(array('user_id' => $this->cart_uid));
+            
             $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
+            
+            $wishlist = array(
+                'user_id' => $this->cart_uid,
+                'store_id' => $this->store_id
+            );
+            
+            // Don't count, use the same arguments to avoid an extra query
+            // see $this->setItemProductWishlist()
+            $wishlist_items = $this->wishlist->getList($wishlist);
 
             $this->data['cart_quantity'] = $this->cart_quantity;
+            $this->data['wishlist_quantity'] = count($wishlist_items);
+            $this->data['compare_content'] = $this->compare_content;
         }
     }
 
@@ -432,10 +445,13 @@ class Controller extends BaseController
      */
     protected function setItemProductWishlist(array &$product, array $options)
     {
-        $product_id = $product['product_id'];
-        $arguments = array('user_id' => $this->cart_uid);
+        $arguments = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id,
+            'product_id' => $product['product_id']
+        );
 
-        $product['in_wishlist'] = $this->wishlist->exists($product_id, $arguments);
+        $product['in_wishlist'] = $this->wishlist->exists($arguments);
     }
 
     /**
@@ -506,36 +522,27 @@ class Controller extends BaseController
         $this->submitWishlist();
     }
 
+    /**
+     * Adds/removes a product from comparison
+     */
     protected function submitCompare()
     {
         if (!$this->isPosted('add_to_compare')) {
             return; // No "Add to compare" clicked
         }
 
-        /*
-          $this->setSubmitted('product');
-          $this->validateAddToCompare();
+        $this->setSubmitted('product');
+        $this->validateAddToCompare();
 
-          if ($this->hasErrors(null, false)) {
-          return $this->completeSubmit();
-          }
+        if ($this->hasErrors(null, false)) {
+            return $this->completeSubmit();
+        }
 
-          $product_id = $this->getSubmitted();
+        $submitted = $this->getSubmitted();
+        $product = $this->getSubmitted('product');
 
-          $added = $this->product->addToCompare($product_id);
-
-          if (empty($added)) {
-          return $this->completeSubmit();
-          }
-
-          $result = array(
-          'severity' => 'success',
-          'message' => $this->text('Product has been added to <a href="!href">comparison</a>', array(
-          '!href' => $this->url('compare')))
-          );
-
-          $this->completeSubmit($result);
-         * */
+        $result = $this->compare->addProduct($product, $submitted);
+        $this->completeSubmit($result);
     }
 
     /**
@@ -636,7 +643,7 @@ class Controller extends BaseController
         );
 
         $html = $this->render('cart/preview', $options);
-        return array('quantity' => $cart['quantity'], 'rendered' => $html);
+        return array('update' => array('cart-quantity' => $cart['quantity']), 'modal' => $html);
     }
 
     /**
@@ -692,6 +699,7 @@ class Controller extends BaseController
     protected function validateAddToWishlist()
     {
         $this->setSubmitted('user_id', $this->cart_uid);
+        $this->setSubmitted('store_id', $this->store_id);
 
         $this->addValidator('product_id', array(
             'product_exists' => array(
@@ -701,6 +709,24 @@ class Controller extends BaseController
         ));
 
         $this->setValidators();
+    }
+    
+    /**
+     * Validates "Add to compare" action
+     */
+    protected function validateAddToCompare()
+    {
+        $this->addValidator('product_id', array(
+            'product_exists' => array(
+                'status' => true,
+                'required' => true
+            )
+        ));
+
+        $this->setValidators();
+        
+        $product = $this->getValidatorResult('product_id');
+        $this->setSubmitted('product', $product);
     }
 
 }

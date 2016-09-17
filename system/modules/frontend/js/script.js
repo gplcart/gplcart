@@ -115,18 +115,17 @@ $(function () {
                     return false;
                 }
                 
-                if ('rendered' in data) {
-                    GplCart.theme.modal(data.rendered, 'cart-preview', GplCart.text('Your cart'));
-                    $('#cart-quantity-summary').text(data.quantity);
-                    return false;
-                }
-
-                if ('message' in data) {
+                if ('modal' in data) {
+                    GplCart.theme.modal(data.modal, 'cart-preview', GplCart.text('Your cart'));
+                } else if('message' in data){
                     GplCart.theme.modal(data.message, 'cart-message');
-                    return false;
                 }
                 
-                alert(GplCart.text('Invalid response'));
+                if('update' in data){
+                    for(var selector in data.update){
+                        $('#' + selector).text(data.update[selector]).show();
+                    }
+                }
             },
             error: function () {
                 alert(GplCart.text('An error occurred'));

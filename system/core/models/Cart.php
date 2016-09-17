@@ -284,11 +284,17 @@ class Cart extends Model
     {
         $this->hook->fire('add.product.cart.before', $product, $data);
 
+        $result = array(
+            'severity' => 'warning',
+            'message' => $this->language->text('Product has not been added')
+        );
+
         if (empty($product) || empty($data)) {
-            return array();
+            return $result;
         }
 
         if (!empty($product['combination']) && empty($data['combination_id'])) {
+
             return array(
                 'severity' => 'warning',
                 'redirect' => $this->request->base() . "product/{$product['product_id']}",
@@ -302,19 +308,24 @@ class Cart extends Model
             'store_id' => $product['store_id']
         );
 
-        $result = array(
-            'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
-                '!href' => $this->request->base() . 'checkout')),
-            'severity' => 'success',
-            'redirect' => ''
-        );
+        $cart_id = $this->setProduct($data);
 
-        $result['cart_id'] = $this->setProduct($data);
+        if (!empty($cart_id)) {
+
+            $existing = $this->getQuantity($data['user_id'], $data['store_id']);
+
+            $result = array(
+                'cart_id' => $cart_id,
+                'severity' => 'success',
+                'update' => array('compare-quantity' => $existing['total']),
+                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
+                    '!href' => $this->request->base() . 'checkout'))
+            );
+
+            $this->logAddToCart($product, $data);
+        }
 
         $this->hook->fire('add.product.cart.after', $product, $data, $result);
-
-        $this->logAddToCart($product, $data);
-
         return $result;
     }
 
@@ -462,6 +473,7 @@ class Cart extends Model
 
         $data = array(
             'user_id' => $user_id,
+            'store_id' => $store_id,
             'product_id' => $skuinfo['product_id']
         );
 
@@ -524,7 +536,7 @@ class Cart extends Model
             return false;
         }
 
-        // Cart orders with order_id = 0 are not linked to orders,
+        // Items with order_id = 0 are not linked to orders,
         // i.e before checkout
         $arguments += array('order_id' => 0);
 

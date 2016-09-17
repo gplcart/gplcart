@@ -70,7 +70,48 @@ class Compare extends Model
         $this->controlLimit($product_ids);
 
         $result = $this->set($product_ids);
+
         $this->hook->fire('add.compare.after', $product_id, $result);
+        return $result;
+    }
+
+    /**
+     * Adds a product to comparison and returns
+     * an array of results
+     * @param array $product
+     * @param array $data
+     * @return array
+     */
+    public function addProduct(array $product, array $data)
+    {
+        $this->hook->fire('add.product.compare.before', $product, $data);
+
+        if (empty($product)) {
+            return array();
+        }
+
+        $result = array(
+            'severity' => 'warning',
+            'message' => $this->language->text('Product has not been added to comparison')
+        );
+
+        $added = $this->add($product['product_id']);
+
+        if (!empty($added)) {
+
+            // Since the cookie isn't available until the next request
+            // we add one more here
+            $existing = count($this->get());
+            $existing ++;
+
+            $result = array(
+                'severity' => 'success',
+                'update' => array('compare-quantity' => $existing),
+                'message' => $this->language->text('Product has been added to comparison')
+            );
+        }
+
+        $this->hook->fire('add.product.compare.after', $product, $data, $result);
         return $result;
     }
 
@@ -93,7 +134,7 @@ class Compare extends Model
      */
     public function get()
     {
-        $items = &Cache::memory('get.compared');
+        $items = &Cache::memory('comparison');
 
         if (isset($items)) {
             return (array) $items;
@@ -132,7 +173,10 @@ class Compare extends Model
     public function set(array $product_ids)
     {
         $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
-        return Tool::setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
+        $result = Tool::setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
+
+        Cache::clearMemory('comparison');
+        return $result;
     }
 
     /**

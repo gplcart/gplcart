@@ -47,6 +47,7 @@ $tables['wishlist'] = array(
     'fields' => array(
         'wishlist_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
     )
