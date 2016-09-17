@@ -143,7 +143,7 @@ class Compare extends Model
     public function delete($product_id)
     {
         $this->hook->fire('delete.compare.before', $product_id);
-        
+
         if (empty($product_id)) {
             return false;
         }
@@ -160,7 +160,7 @@ class Compare extends Model
 
         $rest = array_keys($product_ids);
         $this->set($rest);
-        
+
         $this->hook->fire('delete.compare.after', $product_id, $rest);
         return $rest;
     }

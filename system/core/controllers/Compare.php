@@ -12,6 +12,8 @@ namespace core\controllers;
 use core\models\Field as ModelsField;
 use core\models\FieldValue as ModelsFieldValue;
 use core\models\ProductClass as ModelsProductClass;
+use core\models\ProductField as ModelsProductField;
+
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -25,6 +27,12 @@ class Compare extends FrontendController
      * @var \core\models\ProductClass $product_class
      */
     protected $product_class;
+    
+    /**
+     * Product field model instance
+     * @var \core\models\ProductField $product_field
+     */
+    protected $product_field;
 
     /**
      * Field class instance
@@ -37,21 +45,23 @@ class Compare extends FrontendController
      * @var \core\models\FieldValue $field_value
      */
     protected $field_value;
-
+    
     /**
      * Constructor
      * @param ModelsProductClass $product_class
      * @param ModelsField $field
      * @param ModelsFieldValue $field_value
+     * @param ModelsProductField $product_field
      */
     public function __construct(ModelsProductClass $product_class,
-            ModelsField $field, ModelsFieldValue $field_value)
+            ModelsField $field, ModelsFieldValue $field_value, ModelsProductField $product_field)
     {
         parent::__construct();
 
         $this->field = $field;
         $this->field_value = $field_value;
         $this->product_class = $product_class;
+        $this->product_field = $product_field;
     }
 
     /**
@@ -176,7 +186,7 @@ class Compare extends FrontendController
 
         foreach ($reindexed[$product_class_id] as $product_id => &$product) {
 
-            $product_fields = $this->product->getFields($product_id);
+            $product_fields = $this->product_field->getList($product_id);
 
             foreach ($product_fields as $type => $items) {
 

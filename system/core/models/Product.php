@@ -21,6 +21,7 @@ use core\models\Search as ModelsSearch;
 use core\models\Language as ModelsLanguage;
 use core\models\PriceRule as ModelsPriceRule;
 use core\models\Combination as ModelsCombination;
+use core\models\ProductField as ModelsProductField;
 
 /**
  * Manages basic behaviors and data related to products
@@ -39,12 +40,18 @@ class Product extends Model
      * @var \core\models\Alias $alias
      */
     protected $alias;
-    
+
     /**
      * Combination model instance
      * @var \core\models\Combination $combination
      */
     protected $combination;
+
+    /**
+     * Product field model instance
+     * @var \core\models\ProductField $product_field
+     */
+    protected $product_field;
 
     /**
      * Price model instance
@@ -81,7 +88,7 @@ class Product extends Model
      * @var \core\classes\Request $request
      */
     protected $request;
-    
+
     /**
      * Constructor
      * @param ModelsPrice $price
@@ -92,11 +99,14 @@ class Product extends Model
      * @param ModelsSku $sku
      * @param ModelsSearch $search
      * @param ModelsCombination $combination
+     * @param ModelsProductField $product_field
      * @param Request $request
      */
     public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
             ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-            ModelsSku $sku, ModelsSearch $search, ModelsCombination $combination, Request $request)
+            ModelsSku $sku, ModelsSearch $search,
+            ModelsCombination $combination, ModelsProductField $product_field,
+            Request $request)
     {
         parent::__construct();
 
@@ -109,6 +119,7 @@ class Product extends Model
         $this->language = $language;
         $this->pricerule = $pricerule;
         $this->combination = $combination;
+        $this->product_field = $product_field;
     }
 
     /**
@@ -294,25 +305,6 @@ class Product extends Model
     }
 
     /**
-     * Adds a field to a product
-     * @param array $data
-     * @return boolean|integer
-     */
-    public function addField(array $data)
-    {
-        $this->hook->fire('add.product.field.before', $data);
-
-        if (empty($data)) {
-            return false;
-        }
-
-        $data['product_field_id'] = $this->db->insert('product_field', $data);
-
-        $this->hook->fire('add.product.field.after', $data);
-        return $data['product_field_id'];
-    }
-
-    /**
      * Creates a URL alis
      * @param array $data
      * @param boolean $translit_alias
@@ -423,7 +415,7 @@ class Product extends Model
     protected function attachFields(array &$product)
     {
         if (!empty($product)) {
-            $product['field'] = $this->getFields($product['product_id']);
+            $product['field'] = $this->product_field->getList($product['product_id']);
         }
     }
 
@@ -447,24 +439,6 @@ class Product extends Model
                 $combination['sku'] = $sku_codes['combinations'][$combination_id];
             }
         }
-    }
-
-    /**
-     * Returns an array of fields for a given product
-     * @param integer $prodict_id
-     * @return array
-     */
-    public function getFields($prodict_id)
-    {
-        $sql = 'SELECT * FROM product_field WHERE product_id=?';
-        $fields = $this->db->fetchAll($sql, array($prodict_id));
-
-        $list = array();
-        foreach ($fields as $field) {
-            $list[$field['type']][$field['field_id']][] = $field['field_value_id'];
-        }
-
-        return $list;
     }
 
     /**
@@ -755,7 +729,8 @@ class Product extends Model
             return $existing;
         }
 
-        $existing[] = (int) $product_id;
+        array_unshift($existing, $product_id);
+
         $saved = array_unique($existing);
 
         Tool::setCookie('viewed_products', implode('|', $saved), $lifespan);
@@ -773,7 +748,7 @@ class Product extends Model
         $products = array_filter(explode('|', $cookie), 'is_numeric');
 
         if (isset($limit)) {
-            $products = array_slice($products, -$limit);
+            $products = array_slice($products, 0, $limit);
         }
 
         return $products;
@@ -848,7 +823,7 @@ class Product extends Model
         $product_id = $data['product_id'];
 
         if ($delete) {
-            $this->deleteField('option', $product_id);
+            $this->product_field->delete('option', $product_id);
             $this->combination->delete($product_id);
         }
 
@@ -891,7 +866,7 @@ class Product extends Model
                     'field_value_id' => $field_value_id
                 );
 
-                $this->addField($options);
+                $this->product_field->add($options);
             }
 
             $i++;
@@ -915,7 +890,7 @@ class Product extends Model
         $product_id = $data['product_id'];
 
         if ($delete) {
-            $this->deleteField('attribute', $product_id);
+            $this->product_field->delete('attribute', $product_id);
         }
 
         foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
@@ -928,7 +903,7 @@ class Product extends Model
                     'field_value_id' => $field_value_id
                 );
 
-                $this->addField($options);
+                $this->product_field->add($options);
             }
         }
 
@@ -944,18 +919,6 @@ class Product extends Model
     {
         $conditions = array('product_id' => $product_id);
         return (bool) $this->db->delete('product_translation', $conditions);
-    }
-
-    /**
-     * Deletes product field(s)
-     * @param string $type
-     * @param integer $product_id
-     * @return boolean
-     */
-    protected function deleteField($type, $product_id)
-    {
-        $conditions = array('type' => $type, 'product_id' => $product_id);
-        return (bool) $this->db->delete('product_field', $conditions);
     }
 
 }
