@@ -45,19 +45,6 @@ class Backend
     }
 
     /**
-     * Implements hook.data
-     * @param \core\controllers\admin\Controller $controller
-     */
-    public function hookOutput($data, $controller)
-    {
-        $title = $controller->getPageTitle();
-
-        if (!empty($title)) {
-            $controller->setBreadcrumb(array('text' => $title));
-        }
-    }
-
-    /**
      * Adds styles
      * @param \core\controllers\admin\Controller $controller
      */

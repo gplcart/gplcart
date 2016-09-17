@@ -14,8 +14,27 @@ body {
     border-radius: 0;
 }
 
+
+
 .panel-default>.panel-heading {
     background-color: #fff;
+}
+
+.breadcrumb {
+    background-color: #fff;
+    margin: 0;
+}
+
+.navbar.second {
+    margin-bottom: 0;
+}
+
+.breadcrumb h1 {
+    margin:0;
+    padding: 0;
+    font-size: 100%;
+    line-height: 1;
+    display: inline;
 }
 
 .navbar-static-top.first,

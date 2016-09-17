@@ -117,6 +117,29 @@
       </div>
     </div>
   </nav>
+  
+        <?php if (!empty($breadcrumb)) { ?>
+  <div class="container-fluid breadcrumb">
+        <ol class="breadcrumb">
+          <?php foreach ($breadcrumb as $item) { ?>
+          <?php if(!empty($item['url'])) { ?>
+          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->escape($item['text']); ?></a></li>
+          <?php } else { ?>
+          <li><?php echo $this->escape($item['text']); ?></li>
+          <?php } ?>
+          <?php } ?>
+
+          <?php if(!empty($page_title)) { ?>
+          <li><h1><?php echo $this->escape($page_title); ?></h1></li>
+          <?php } ?>
+          
+        </ol>
+  </div>
+      <?php } ?>
+  
+  
+  
+  
   <?php if (!empty($region_top)) { ?>
   <div class="region top"><?php echo $region_top; ?></div>
   <?php } ?>
@@ -152,20 +175,8 @@
       </div>
     </div>
     <?php } ?>
-      <?php if (!empty($breadcrumb)) { ?>
-        <ol class="breadcrumb">
-          <?php foreach ($breadcrumb as $item) { ?>
-          <?php if(!empty($item['url'])) { ?>
-          <li><a href="<?php echo $item['url']; ?>"><?php echo $item['text']; ?></a></li>
-          <?php } else { ?>
-          <li><?php echo $item['text']; ?></li>
-          <?php } ?>
-          <?php } ?>
-        </ol>
-      <?php } ?>
-      <?php if ($page_title) { ?>  
-        <h1><?php echo $page_title; ?></h1>
-        <?php } ?>
+
+
         <?php if (!empty($region_content)) { ?>
         <div class="region content"><?php echo $region_content; ?></div>
   <?php if (!empty($region_bottom)) { ?>

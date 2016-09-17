@@ -122,14 +122,6 @@ class User extends FrontendController
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Register account'),
-            'url' => $this->url('register'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Forgot password'),
-            'url' => $this->url('forgot'));
-
         $this->setBreadcrumbs($breadcrumbs);
     }
 
