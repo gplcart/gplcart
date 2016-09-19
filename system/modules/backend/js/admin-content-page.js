@@ -1,34 +1,79 @@
-$(function () {
-    $('select[name$="[store_id]"]').change(function () {
-        var storeId = $(this).find('option:selected').val();
+/* global GplCart, Backend */
+(function ($) {
 
-        $.ajax({
-            url: GplCart.settings.urn,
-            method: 'POST',
-            dataType: 'json',
-            data: {token: GplCart.settings.token, action: 'categories', store_id: storeId},
-            beforeSend: function () {
-                $('select[name$="[store_id]"], select[name$="[category_id]"]').prop('disabled', true);
-            },
-            success: function (data) {
-                if (typeof data === 'object') {
+    Backend.include.page = Backend.include.page || {attach: {}};
 
-                    var options = '';
-                    for (var g in data) {
-                        options += '<optgroup label="' + g + '">';
-                        var cats = data[g];
-                        for (var i in cats) {
-                            options += '<option value="' + i + '">' + cats[i] + '</option>';
+    /**
+     * Refreshes selectpicker state
+     * @param {Object} selector
+     * @returns {undefined}
+     */
+    Backend.include.page.attach.selectpickerRefresh = function (selector) {
+        selector.selectpicker('refresh');
+    }
+
+    /**
+     * Updates categories depending on chosen store
+     * @returns {undefined}
+     */
+    Backend.include.page.attach.updateCategories = function () {
+
+        var store = $('select[name$="[store_id]"]');
+        var category = $('select[name$="[category_id]"]');
+
+        store.change(function () {
+
+            var storeId = $(this).find('option:selected').val();
+
+            var data = {
+                store_id: storeId,
+                action: 'categories',
+                token: GplCart.settings.token
+            };
+
+            $.ajax({
+                url: GplCart.settings.urn,
+                method: 'POST',
+                dataType: 'json',
+                data: data,
+                beforeSend: function () {
+                    store.prop('disabled', true);
+                    category.prop('disabled', true);
+                },
+                success: function (data) {
+                    if (typeof data === 'object') {
+
+                        var options = '';
+                        for (var g in data) {
+                            options += '<optgroup label="' + g + '">';
+                            var cats = data[g];
+                            for (var i in cats) {
+                                options += '<option value="' + i + '">' + cats[i] + '</option>';
+                            }
                         }
+
+                        category = category.html(options);
+                        Backend.include.page.attach.selectpickerRefresh(category);
                     }
-                    $('select[name$="[category_id]"]').html(options).selectpicker('refresh');
+                },
+                complete: function () {
+
+                    store = store.prop('disabled', false);
+                    category = category.prop('disabled', false);
+
+                    Backend.include.page.attach.selectpickerRefresh(store);
+                    Backend.include.page.attach.selectpickerRefresh(category);
                 }
-            },
-            complete: function () {
-                $('select[name$="[store_id]"], select[name$="[category_id]"]').prop('disabled', false).selectpicker('refresh');
-            }
+            });
         });
+    };
+
+    /**
+     * Call attached above methods when DOM is ready
+     * @returns {undefined}
+     */
+    $(function () {
+        Backend.init(Backend.include.page);
     });
 
-
-});
+})(jQuery);

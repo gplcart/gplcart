@@ -1,3 +1,4 @@
+/* global GplCart, Backend  */
 (function ($) {
 
     Backend.include.field = Backend.include.field || {attach: {}};
@@ -57,7 +58,7 @@
     };
 
     /**
-     * Call attached methods above when DOM is ready
+     * Call attached above methods when DOM is ready
      * @returns {undefined}
      */
     $(function () {

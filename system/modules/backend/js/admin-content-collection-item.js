@@ -1,3 +1,4 @@
+/* global GplCart, Backend  */
 (function ($) {
 
     Backend.include.collection = Backend.include.collection || {attach: {}};
@@ -10,15 +11,21 @@
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
-                $.post(GplCart.settings.urn, {
+                
+                var params = {
                     term: request.term,
                     token: GplCart.settings.token
-                }, function (data) {
+                };
+                
+                $.post(GplCart.settings.urn, params, function (data) {
                     response($.map(data, function (value, key) {
-                        return {
-                            label: value.title ? value.title + ' (' + key + ')' : '--',
-                            value: key
-                        }
+                        
+                        var result = {
+                            value: key,
+                            label: value.title ? value.title + ' (' + key + ')' : '--'
+                        };
+                        
+                        return result;
                     }));
                 });
             },
@@ -36,7 +43,7 @@
     }
 
     /**
-     * Call attached methods above when DOM is ready
+     * Call attached above methods when DOM is ready
      * @returns {undefined}
      */
     $(function () {

@@ -71,15 +71,17 @@ class Country extends BackendController
 
     /**
      * Displays the country add/edit form
-     * @param string|null $country_code
+     * @param string|null $code
      */
-    public function editCountry($country_code = null)
+    public function editCountry($code = null)
     {
-        $country = $this->getCountry($country_code);
+        $country = $this->getCountry($code);
         $zones = $this->zone->getList(array('status' => 1));
+        $can_delete = (!empty($code) && $this->access('country_delete') && empty($country['default']) && $this->country->canDelete($code));
 
         $this->setData('zones', $zones);
         $this->setData('country', $country);
+        $this->setData('can_delete', $can_delete);
 
         $this->submitCountry($country);
 
@@ -149,7 +151,7 @@ class Country extends BackendController
     protected function setBreadcrumbListCountry()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -187,7 +189,7 @@ class Country extends BackendController
     protected function setBreadcrumbEditCountry()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -413,7 +415,7 @@ class Country extends BackendController
     protected function setBreadcrumbFormatCountry()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));

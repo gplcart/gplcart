@@ -124,7 +124,7 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
-          <?php if (isset($country['code']) && $this->access('country_delete') && empty($country['default'])) { ?>
+          <?php if ($can_delete) { ?>
           <button class="btn btn-danger delete" name="delete" value="1">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>

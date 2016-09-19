@@ -1,5 +1,6 @@
+/* global GplCart, Backend */
 (function ($) {
-    
+
     Backend.include.category = Backend.include.category || {attach: {}};
 
     /**
@@ -51,7 +52,7 @@
     };
 
     /**
-     * Call attached methods above when DOM is ready
+     * Call attached above methods when DOM is ready
      * @returns {undefined}
      */
     $(function () {

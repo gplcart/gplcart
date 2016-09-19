@@ -88,12 +88,9 @@
           <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->escape($item['text']); ?></a></li>
           <?php } ?>
           <?php } ?>
-          
           <?php if(!empty($page_title)) { ?>
           <li><?php echo $this->xss($page_title); ?></li>
           <?php } ?>
-          
-          
         </ol>
         <?php } ?>
       </div>

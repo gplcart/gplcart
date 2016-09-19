@@ -1,7 +1,14 @@
-/* global Backend */
+/* global GplCart, Backend */
 var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {}};
 
 (function ($) {
+
+    /**
+     * Module settings
+     * @var object
+     */
+    Backend.settings.imageContainer = '.image-container';
+    Backend.settings.imageModal = '#select-image-modal';
 
     /**
      * Returns html for modal
@@ -37,10 +44,10 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         html += '</div>';
 
         return html;
-    }
+    };
 
     /**
-     * Returns html for loading indicator
+     * Returns HTML of loading indicator
      * @returns {String}
      */
     Backend.html.loading = function () {
@@ -57,7 +64,28 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         html += '<div class="modal-backdrop loading fade in"></div>';
 
         return html;
-    }
+    };
+
+    /**
+     * Transforms an object of items into <select> options
+     * @param {Object} items
+     * @param {String} selected
+     * @returns {String}
+     */
+    Backend.html.options = function (items, selected) {
+
+        var options = '';
+
+        for (var i in items) {
+            if (selected === i) {
+                options += '<option value="' + i + '" selected>' + items[i] + '</option>';
+            } else {
+                options += '<option value="' + i + '">' + items[i] + '</option>';
+            }
+        }
+
+        return options;
+    };
 
     /**
      * Displays a modal popup with a custom content
@@ -68,6 +96,8 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @returns {undefined}
      */
     Backend.ui.modal = function (content, id, header, footer) {
+
+        id = id.replace(/^[^a-z]+|[^\w:.-]+/gi, '');
 
         var html = Backend.html.modal(content, id, header, footer);
 
@@ -122,6 +152,12 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
         if (key in settings && 'datasets' in settings[key]) {
 
+            var el = document.getElementById('chart-' + source);
+
+            if (!el) {
+                return;
+            }
+
             var data = {
                 labels: settings[key].labels,
                 datasets: settings[key].datasets
@@ -133,26 +169,17 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                 options: settings[key].options
             };
 
-            var ctx = document.getElementById('chart-' + source);
-            new Chart(ctx, options);
+            new Chart(el, options);
         }
     };
 
-    /**
-     * Module settings
-     * @var object
-     */
-    Backend.settings.imageContainer = '.image-container';
-    
     /**
      * Calls attached methods from this module
      * @param {Object} object
      * @returns {undefined}
      */
     Backend.init = function (object) {
-        
-        object = object || Backend;
-        
+
         $.each(object.attach, function () {
             this.call();
         });
@@ -400,7 +427,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
                 $.post(url, params, function (data) {
                     response($.map(data, function (value, key) {
-                        return {suggestion: value}
+                        return {suggestion: value};
                     }));
                 });
             },
@@ -441,11 +468,19 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     };
 
     /**
+     * Sets up traffic chart
+     * @returns {undefined}
+     */
+    Backend.attach.chartTraffic = function () {
+        Backend.ui.chart('traffic', 'line');
+    };
+
+    /**
      * Init the module when DOM is ready
      * @returns {undefined}
      */
     $(function () {
-        Backend.init();
+        Backend.init(Backend);
     });
 
 })(jQuery);

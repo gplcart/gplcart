@@ -1,1 +1,0 @@
-Backend.ui.chart('traffic', 'line');
