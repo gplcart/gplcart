@@ -117,7 +117,7 @@
       <?php } ?>
       <?php } ?>
       <?php if (!empty($page_title)) { ?>
-      <li><h1><?php echo $this->escape($page_title); ?></h1></li>
+      <li><h1><?php echo $this->xss($page_title); ?></h1></li>
       <?php } ?>
     </ol>
   </div>

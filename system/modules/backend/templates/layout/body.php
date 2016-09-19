@@ -90,7 +90,7 @@
           <?php } ?>
           
           <?php if(!empty($page_title)) { ?>
-          <li><?php echo $this->escape($page_title); ?></li>
+          <li><?php echo $this->xss($page_title); ?></li>
           <?php } ?>
           
           
