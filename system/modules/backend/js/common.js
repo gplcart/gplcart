@@ -12,10 +12,10 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
     /**
      * Returns html for modal
-     * @param {string} content
-     * @param {string} id
-     * @param {string} header
-     * @param {string} footer
+     * @param {String} content
+     * @param {String} id
+     * @param {String} header
+     * @param {String} footer
      * @returns {String}
      */
     Backend.html.modal = function (content, id, header, footer) {
@@ -89,10 +89,10 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
     /**
      * Displays a modal popup with a custom content
-     * @param {type} content
-     * @param {type} id
-     * @param {type} header
-     * @param {type} footer
+     * @param {String} content
+     * @param {String} id
+     * @param {String} header
+     * @param {String} footer
      * @returns {undefined}
      */
     Backend.ui.modal = function (content, id, header, footer) {
@@ -108,7 +108,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
     /**
      * Displays a loading indicator
-     * @param {type} mode
+     * @param {Boolean} mode
      */
     Backend.ui.loading = function (mode) {
 
@@ -122,8 +122,8 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
     /**
      * Displays an alert popup with a custom message
-     * @param {type} message
-     * @param {type} type
+     * @param {String} message
+     * @param {String} type
      * @returns {undefined}
      */
     Backend.ui.alert = function (message, type) {
@@ -251,7 +251,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
     /**
      * Clears all filters
-     * @param {object} settings
+     * @param {Object} settings
      * @returns {undefined}
      */
     Backend.attach.clearFilter = function (settings) {
@@ -271,7 +271,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
         selector.click(function () {
 
-            var query = input.filter(function (e) {
+            var query = input.filter(function (i, e) {
                 return $(e).val() !== "";
             }).serialize();
 

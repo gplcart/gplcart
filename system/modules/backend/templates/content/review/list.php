@@ -56,7 +56,7 @@
               </a>
             </th>
             <th class="middle">
-              <a href="<?php echo $sort_user_id; ?>">
+              <a href="<?php echo $sort_email; ?>">
                 <?php echo $this->text('Author'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
@@ -78,12 +78,11 @@
               <input class="form-control" name="text" value="<?php echo $filter_text; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th class="middle">
-              <input class="form-control" name="product" value="<?php echo $product; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+              <input class="form-control product" value="<?php echo $product; ?>" placeholder="<?php echo $this->text('Any'); ?>">
               <input type="hidden" name="product_id" value="<?php echo $filter_product_id; ?>">
             </th>
             <th class="middle">
-              <input class="form-control" name="user" value="<?php echo $user; ?>" placeholder="<?php echo $this->text('Any'); ?>">
-              <input type="hidden" name="user_id" value="<?php echo $filter_user_id; ?>">
+              <input class="form-control" name="email" value="<?php echo $filter_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th class="middle">
               <select class="form-control" name="status">

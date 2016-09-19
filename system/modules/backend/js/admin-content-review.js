@@ -17,7 +17,7 @@
      */
     Backend.include.review.attach.autocompleteUser = function () {
 
-        var inputName = $('#edit-review input[name$="[email]"], #reviews input[name="user"]');
+        var inputName = $('#edit-review input[name$="[email]"], #reviews input[name="email"]');
         var inputId = $('#edit-review input[name$="[user_id]"], #reviews input[name="user_id"]');
 
         inputName.autocomplete({
@@ -35,8 +35,8 @@
                     response($.map(data, function (value, key) {
 
                         var result = {
-                            value: value.user_id,
-                            label: value.name + ' (' + value.email + ')'
+                            value: value.email,
+                            label: value.email
                         };
 
                         return result;
@@ -59,7 +59,7 @@
      */
     Backend.include.review.attach.autocompleteProduct = function () {
 
-        var inputName = $('#edit-review [name$="[product]"], #reviews [name="product"]');
+        var inputName = $('#edit-review [name$="[product]"], #reviews input.product');
         var inputId = $('#edit-review [name$="[product_id]"], #reviews [name="product_id"]');
 
         inputName.autocomplete({

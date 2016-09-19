@@ -58,7 +58,7 @@ class Review extends BackendController
 
         $this->setData('reviews', $reviews);
 
-        $filters = array('product_id', 'user_id',
+        $filters = array('product_id', 'email',
             'status', 'created', 'text');
 
         $this->setFilter($filters, $query);
@@ -92,17 +92,17 @@ class Review extends BackendController
      */
     protected function setDataEditReview(array $review)
     {
-        if (isset($review['user_id'])) {
-            $user = $this->user->get($review['user_id']);
-            $email = isset($user['email']) ? $user['email'] : '';
-            $this->setData('review.email', $email);
-        }
+        $user_id = $this->getData('review.user_id');
+        $product_id = $this->getData('review.product_id');
 
-        if (isset($review['product_id'])) {
-            $product = $this->product->get($review['product_id']);
-            $title = isset($product['title']) ? $product['title'] : '';
-            $this->setData('review.product', $title);
-        }
+        $user = $this->user->get($user_id);
+        $email = isset($user['email']) ? $user['email'] : '';
+        $this->setData('review.email', $email);
+
+        $product = $this->product->get($product_id);
+        $title = isset($product['title']) ? $product['title'] : '';
+        $this->setData('review.product', $title);
+
     }
 
     /**
@@ -181,19 +181,12 @@ class Review extends BackendController
      */
     protected function setDataListReview(array $query)
     {
-        $email = $title = '';
-
+        $title = '';
         if (isset($query['product_id'])) {
             $product = $this->product->get($query['product_id']);
             $title = isset($product['title']) ? $product['title'] : '';
         }
 
-        if (isset($query['user_id'])) {
-            $user = $this->user->get($query['user_id']);
-            $email = isset($user['email']) ? "{$user['name']} ({$user['email']})" : '';
-        }
-
-        $this->setData('user', $email);
         $this->setData('product', $title);
     }
 

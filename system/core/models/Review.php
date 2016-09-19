@@ -136,6 +136,11 @@ class Review extends Model
             $sql .= ' AND r.user_id = ?';
             $where[] = (int) $data['user_id'];
         }
+        
+        if (isset($data['email'])) {
+            $sql .= ' AND u.email = ?';
+            $where[] = $data['email'];
+        }
 
         if (isset($data['product_id'])) {
             $sql .= ' AND r.product_id = ?';
@@ -163,10 +168,12 @@ class Review extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('product_id', 'user_id', 'status', 'created', 'text');
+        $allowed_sort = array(
+            'product_id' => 'r.product_id', 'email' => 'u.email',
+            'status' => 'r.status', 'created' => 'r.created', 'text' => 'r.text');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY r.{$data['sort']} {$data['order']}";
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY r.created DESC";
         }
