@@ -106,12 +106,50 @@ class Compare extends Model
 
             $result = array(
                 'severity' => 'success',
-                'update' => array('compare-quantity' => $existing),
+                'ajax' => array(
+                    'insert' => array('compare-quantity' => $existing)),
                 'message' => $this->language->text('Product has been added to comparison')
             );
         }
 
         $this->hook->fire('add.product.compare.after', $product, $data, $result);
+        return $result;
+    }
+    
+    /**
+     * Removes a product from comparison and returns
+     * an array of results
+     * @param array $product
+     * @param array $data
+     * @return array
+     */
+    public function deleteProduct($product_id)
+    {
+        $this->hook->fire('delete.product.compare.before', $product_id);
+
+        if (empty($product_id)) {
+            return array();
+        }
+
+        $result = array(
+            'severity' => 'warning',
+            'message' => $this->language->text('Product has not been removed from comparison')
+        );
+
+        $deleted = (bool) $this->delete($product_id);
+
+        if ($deleted) {
+
+            $existing = count($this->get());
+
+            $result = array(
+                'severity' => 'success',
+                'quantity' => $existing,
+                'message' => $this->language->text('Product has been deleted from comparison')
+            );
+        }
+
+        $this->hook->fire('delete.product.compare.after', $product_id, $result);
         return $result;
     }
 

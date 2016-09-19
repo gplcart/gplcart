@@ -41,7 +41,7 @@
       <?php } ?>
       <?php } ?>
     </div>
-    <script>GplCart.theme.chart('events', 'doughnut');</script>
+    <script>Backend.ui.chart('events', 'doughnut');</script>
     <?php } else { ?>
     <?php echo $this->text('No events yet'); ?>
     <?php } ?>

@@ -69,8 +69,7 @@ class Compare extends FrontendController
      */
     public function selectCompare()
     {
-        $this->setRegionViewedCompare();
-        $this->setDataProductsCompare();
+        $this->setDataSelectCompare();
 
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
@@ -80,7 +79,7 @@ class Compare extends FrontendController
     /**
      * Sets products to be compared
      */
-    protected function setDataProductsCompare()
+    protected function setDataSelectCompare()
     {
         $data = array('product_id' => $this->compare_content);
 
@@ -109,18 +108,6 @@ class Compare extends FrontendController
         }
 
         return $prepared;
-    }
-
-    /**
-     * Sets recently viewed products
-     */
-    protected function setRegionViewedCompare()
-    {
-        $options = array('product_id' => $this->viewed);
-        $products = $this->getProducts($options);
-
-        $data = array('product/block/recent', array('products' => $products));
-        $this->setRegion('region_bottom', $data);
     }
 
     /**
@@ -160,9 +147,7 @@ class Compare extends FrontendController
      */
     public function compare($compared)
     {
-        $share = $this->getShare();
-        $this->setData('share', $share);
-        $this->setDataProductFieldsCompare();
+        $this->setDataCompare();
 
         $this->setTitleCompare();
         $this->setBreadcrumbCompare();
@@ -172,9 +157,18 @@ class Compare extends FrontendController
     /**
      * Sets product field data on the product compare page
      */
-    protected function setDataProductFieldsCompare()
+    protected function setDataCompare()
     {
-        $products = $this->getProducts(array('product_id' => $this->compare_content));
+        $options = array(
+            'buttons' => array(
+                'cart_add',
+                'wishlist_add',
+                'compare_remove'
+            )
+        );
+        
+        $conditions = array('product_id' => $this->compare_content);
+        $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {
             return;

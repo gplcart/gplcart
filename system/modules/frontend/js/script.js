@@ -1,29 +1,85 @@
-GplCart.theme = {
-    modal: function (content, id, header) {
+/**
+ * Displays modal popup
+ * @param {type} content
+ * @param {type} id
+ * @param {type} header
+ * @returns {undefined}
+ */
+GplCart.theme.modal = function (content, id, header) {
 
-        var html = '<div class="modal fade" id="' + id + '">\n\
-        <div class="modal-dialog">\n\
-        <div class="modal-content">\n\
-        <div class="modal-header clearfix">\n\
-        <a href="#" class="pull-right" data-dismiss="modal">\n\
-        <i class="fa fa-times"></i></a>';
+    var html = GplCart.theme.html.modal(content, id, header);
 
-        if (typeof header !== 'undefined') {
-            html += '<h4 class="modal-title pull-left">' + header + '</h4>';
+    $('.modal').remove();
+    $('body').append(html);
+    $('#' + id + '').modal('show');
+}
+
+GplCart.theme.html = {};
+
+/**
+ * Returns HTML of modal pop-up
+ * @param {type} content
+ * @param {type} id
+ * @param {type} header
+ * @returns {String}
+ */
+GplCart.theme.html.modal = function(content, id, header){
+    
+    var html = '<div class="modal fade" id="' + id + '">';
+        html += '<div class="modal-dialog">';
+        html += '<div class="modal-content">';
+        html += '<div class="modal-header clearfix">';
+        html += '<a href="#" class="pull-right" data-dismiss="modal">';
+        html += '<i class="fa fa-times"></i></a>';
+
+    if (typeof header !== 'undefined') {
+        html += '<h4 class="modal-title pull-left">' + header + '</h4>';
+    }
+
+    html += '</div><div class="modal-body">' + content + '</div></div></div>';
+    return html;
+}
+
+/**
+ * 
+ * @returns {String}
+ */
+GplCart.theme.html.compare = function(){
+    return '<a title="' + GplCart.text('Already in comparison') + '" href="' + GplCart.settings.base + 'compare" class="btn btn-default active"><i class="fa fa-balance-scale"></i></a>';
+}
+
+/**
+ * 
+ * @returns {String}
+ */
+GplCart.theme.html.wishlist = function(){
+    return '<a title="' + GplCart.text('Already in wishlist') + '" href="' + GplCart.settings.base + 'wishlist" class="btn btn-default active"><i class="fa fa-heart"></i></a>';
+}
+
+/**
+ * 
+ * @param {type} action
+ * @param {type} button
+ * @param {type} data
+ * @returns {undefined}
+ */
+GplCart.theme.submit = function(action, button, data){
+    
+    if (data.severity === 'success') {
+        switch (action) {
+            case 'add_to_compare':
+                $('#compare-quantity').text(data.quantity).show();
+                button.replaceWith(GplCart.theme.html.compare);
+                break;
+            case 'add_to_compare':
+                $('#wishlist-quantity').text(data.quantity).show();
+                button.replaceWith(GplCart.theme.html.wishlist);
+                break;
         }
-
-        html += '</div><div class="modal-body">' + content + '</div></div></div>';
-
-        $('.modal').remove();
-        $('body').append(html);
-        $('#' + id + '').modal('show');
     }
 }
 
 $(function () {
-
-    // Add Js enabled class
-    $('body').addClass('js');
 
     // Deal with W3C validator warnings
     $('label.btn > input[type="radio"]').attr('autocomplete', 'off');
@@ -87,7 +143,7 @@ $(function () {
 
     $('.star-rating.static').tooltip();
     
-    $('form.add-to-cart :button[name]').click(function (e) {
+    $(':button[name][data-ajax="true"]').click(function (e) {
         
         e.preventDefault();
         
@@ -120,12 +176,8 @@ $(function () {
                 } else if('message' in data){
                     GplCart.theme.modal(data.message, 'cart-message');
                 }
-                
-                if('update' in data){
-                    for(var selector in data.update){
-                        $('#' + selector).text(data.update[selector]).show();
-                    }
-                }
+
+                GplCart.theme.submit(action, button, data);
             },
             error: function () {
                 alert(GplCart.text('An error occurred'));
@@ -135,7 +187,7 @@ $(function () {
         return false;
     });
 
-    $('form.add-to-cart [name^="product[options]"]').change(function () {
+    $('form.product-action [name^="product[options]"]').change(function () {
 
         var values = $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').map(function () {
             return this.value;

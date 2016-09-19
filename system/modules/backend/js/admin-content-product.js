@@ -64,7 +64,7 @@ $(function () {
                 $(this).closest('tr').find('td .weight').text(i);
             });
 
-            GplCart.theme.alert(GplCart.text('Changes will not be saved until the form is submitted'), 'warning');
+            Backend.ui.alert(GplCart.text('Changes will not be saved until the form is submitted'), 'warning');
         }
     });
 
@@ -166,7 +166,7 @@ $(function () {
             return false;
         }
 
-        GplCart.theme.modal(html, 'select-image-modal');
+        Backend.ui.modal(html, 'select-image-modal');
 
         var position = $(this).closest('tr').index();
         $('#select-image-modal').attr('data-active-row', position); // remember clicked row pos
@@ -297,7 +297,7 @@ $(function () {
                     }
                 }
 
-                GplCart.theme.alert(message, messageType);
+                Backend.ui.alert(message, messageType);
             },
             complete: function () {
                 inputs.prop('disabled', false);

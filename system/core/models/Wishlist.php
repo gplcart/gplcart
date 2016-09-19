@@ -124,7 +124,8 @@ class Wishlist extends Model
             $result = array(
                 'severity' => 'success',
                 'wishlist_id' => $wishlist_id,
-                'update' => array('wishlist-quantity' => count($exists)),
+                'ajax' => array(
+                    'insert' => array('wishlist-quantity' => count($exists))),
                 'message' => $this->language->text('Product has been added to your wishlist'));
 
             $this->logAddToWishlist($data);

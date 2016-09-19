@@ -1,114 +1,191 @@
-/**
- * Displays a modal popup with a custom content
- * @param {type} content
- * @param {type} id
- * @param {type} header
- * @param {type} footer
- * @returns {undefined}
- */
-GplCart.theme.modal = function (content, id, header, footer) {
+/* global Backend */
+var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {}};
 
-    var html = '\
-        <div class="modal fade" id="' + id + '">\n\
-        <div class="modal-dialog">\n\
-        <div class="modal-content">\n\
-        <div class="modal-header clearfix">\n\
-        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">\n\
-        <i class="fa fa-times"></i></button>';
+(function ($) {
 
-    if (typeof header !== 'undefined') {
-        html += '<h3 class="modal-title pull-left">' + header + '</h3>';
-    }
+    /**
+     * Returns html for modal
+     * @param {string} content
+     * @param {string} id
+     * @param {string} header
+     * @param {string} footer
+     * @returns {String}
+     */
+    Backend.html.modal = function (content, id, header, footer) {
 
-    html += '</div><div class="modal-body">' + content + '</div>';
+        var html = '';
 
-    if (typeof footer !== 'undefined') {
-        html += '<div class="modal-footer">' + footer + '</div>';
-    }
+        html += '<div class="modal fade" id="' + id + '">';
+        html += '<div class="modal-dialog">';
+        html += '<div class="modal-content">';
+        html += '<div class="modal-header clearfix">';
+        html += '<button type="button" class="btn btn-default pull-right" data-dismiss="modal">';
+        html += '<i class="fa fa-times"></i></button>';
 
-    html += '</div></div>';
-
-    $('.modal').remove();
-    $('body').append(html);
-    $('#' + id).modal('show');
-};
-
-/**
- * Displays a loading indicator
- * @param {type} mode
- * @returns {undefined}
- */
-GplCart.theme.loading = function (mode) {
-
-    if (mode === false) {
-        $('body').find('.loading').remove();
-        return;
-    }
-
-    var html = '<div class="modal loading show">\n\
-        <div class="modal-dialog">\n\
-        <div class="modal-content">\n\
-        <div class="modal-body">\n\
-        <div class="progress">\n\
-        <div class="progress-bar progress-bar-striped active"></div>\n\
-        </div></div></div></div></div>\n\
-        <div class="modal-backdrop loading fade in"></div>';
-
-    $('body').append(html);
-};
-
-/**
- * Displays an alert popup with a custom message
- * @param {type} message
- * @param {type} type
- * @returns {undefined}
- */
-GplCart.theme.alert = function (message, type) {
-    $.bootstrapGrowl(message, {
-        type: type,
-        align: 'right',
-        width: 'auto',
-        delay: 2000,
-        offset: {from: 'bottom', amount: 20}
-    });
-};
-
-/**
- * Creates a chart
- * @param {type} source
- * @param {type} type
- * @returns {undefined}
- */
-GplCart.theme.chart = function (source, type) {
-    var key = 'chart_' + source;
-    if (key  in GplCart.settings && 'datasets' in GplCart.settings[key]) {
-        var settings = GplCart.settings[key];
-        var ctx = document.getElementById('chart-' + source);
-        var data = {labels: settings.labels, datasets: settings.datasets};
-        var chart = new Chart(ctx, {type: type, data: data, options: settings.options});
-    }
-};
-
-$(function () {
-
-    // Bulk actions
-    $('*[data-action]').click(function () {
-
-        var selected = [];
-
-        $('input[name^="selected"]').each(function () {
-            if ($(this).is(':checked')) {
-                selected.push($(this).val());
-            }
-        });
-
-        if (!selected.length) {
-            return false;
+        if (typeof header !== 'undefined') {
+            html += '<h3 class="modal-title pull-left">' + header + '</h3>';
         }
 
-        var conf = confirm($(this).data('action-confirm'));
+        html += '</div>';
+        html += '<div class="modal-body">' + content + '</div>';
 
-        if (conf) {
+        if (typeof footer !== 'undefined') {
+            html += '<div class="modal-footer">' + footer + '</div>';
+        }
+
+        html += '</div>';
+        html += '</div>';
+
+        return html;
+    }
+
+    /**
+     * Returns html for loading indicator
+     * @returns {String}
+     */
+    Backend.html.loading = function () {
+
+        var html = '';
+
+        html += '<div class="modal loading show">';
+        html += '<div class="modal-dialog">';
+        html += '<div class="modal-content">';
+        html += '<div class="modal-body">';
+        html += '<div class="progress">';
+        html += '<div class="progress-bar progress-bar-striped active"></div>';
+        html += '</div></div></div></div></div>';
+        html += '<div class="modal-backdrop loading fade in"></div>';
+
+        return html;
+    }
+
+    /**
+     * Displays a modal popup with a custom content
+     * @param {type} content
+     * @param {type} id
+     * @param {type} header
+     * @param {type} footer
+     * @returns {undefined}
+     */
+    Backend.ui.modal = function (content, id, header, footer) {
+
+        var html = Backend.html.modal(content, id, header, footer);
+
+        $('.modal').remove();
+        $('body').append(html);
+        $('#' + id).modal('show');
+    };
+
+    /**
+     * Displays a loading indicator
+     * @param {type} mode
+     */
+    Backend.ui.loading = function (mode) {
+
+        if (mode === false) {
+            $('body').find('.loading').remove();
+        } else {
+            var html = Backend.html.loading();
+            $('body').append(html);
+        }
+    };
+
+    /**
+     * Displays an alert popup with a custom message
+     * @param {type} message
+     * @param {type} type
+     * @returns {undefined}
+     */
+    Backend.ui.alert = function (message, type) {
+
+        var settings = {
+            type: type,
+            align: 'right',
+            width: 'auto',
+            delay: 2000,
+            offset: {from: 'bottom', amount: 20}
+        };
+
+        $.bootstrapGrowl(message, settings);
+    };
+
+    /**
+     * Creates a chart
+     * @param {String} source
+     * @param {String} type
+     * @returns {undefined}
+     */
+    Backend.ui.chart = function (source, type) {
+
+        var key = 'chart_' + source;
+        var settings = GplCart.settings;
+
+        if (key in settings && 'datasets' in settings[key]) {
+
+            var data = {
+                labels: settings[key].labels,
+                datasets: settings[key].datasets
+            };
+
+            var options = {
+                type: type,
+                data: data,
+                options: settings[key].options
+            };
+
+            var ctx = document.getElementById('chart-' + source);
+            new Chart(ctx, options);
+        }
+    };
+
+    /**
+     * Module settings
+     * @var object
+     */
+    Backend.settings.imageContainer = '.image-container';
+    
+    /**
+     * Calls attached methods from this module
+     * @param {Object} object
+     * @returns {undefined}
+     */
+    Backend.init = function (object) {
+        
+        object = object || Backend;
+        
+        $.each(object.attach, function () {
+            this.call();
+        });
+    };
+
+    /**
+     * Handles bulk actions
+     * @returns {undefined}
+     */
+    Backend.attach.bulkAction = function () {
+
+        var selector = $('*[data-action]');
+        var inputs = $('input[name^="selected"]');
+
+        selector.click(function () {
+
+            var selected = [];
+            inputs.each(function () {
+                if ($(this).is(':checked')) {
+                    selected.push($(this).val());
+                }
+            });
+
+            if (selected.length < 1) {
+                return false;
+            }
+
+            var conf = confirm($(this).data('action-confirm'));
+
+            if (!conf) {
+                return false;
+            }
+
             $.ajax({
                 method: 'POST',
                 url: GplCart.settings.urn,
@@ -118,167 +195,257 @@ $(function () {
                     action: $(this).data('action'),
                     value: $(this).data('action-value')
                 },
-                success: function (data) {
+                success: function () {
                     location.reload(true);
                 },
                 beforeSend: function () {
-                    GplCart.theme.loading(true);
+                    Backend.ui.loading(true);
                 },
                 complete: function () {
-                    GplCart.theme.loading(false);
+                    Backend.ui.loading(false);
                 }
             });
-        }
+        });
+    };
 
-        return false;
-    });
+    /**
+     * Check / uncheck multiple checkboxes
+     * @returns {undefined}
+     */
+    Backend.attach.selectAll = function () {
 
-    // Check / uncheck multiple checkboxes
-    $('#select-all').click(function () {
-        $('.select-all').prop('checked', $(this).is(':checked'));
+        var input = $('.select-all');
+        var selector = $('#select-all');
 
-    });
+        selector.click(function () {
+            input.prop('checked', $(this).is(':checked'));
+        });
+    };
 
-    // Clears all filters
-    $('.clear-filter').click(function () {
-        window.location.replace(GplCart.settings.urn.split("?")[0]);
-    });
+    /**
+     * Clears all filters
+     * @param {object} settings
+     * @returns {undefined}
+     */
+    Backend.attach.clearFilter = function (settings) {
+        $('.clear-filter').click(function () {
+            window.location.replace(GplCart.settings.urn.split("?")[0]);
+        });
+    };
 
-    // Rerforms filter query
-    $('.filters .filter').click(function () {
+    /**
+     * Rerforms filter query
+     * @returns {undefined}
+     */
+    Backend.attach.filterQuery = function () {
 
-        var query = $('.filters :input').filter(function (i, e) {
-            return $(e).val() !== "";
-        }).serialize();
+        var input = $('.filters :input');
+        var selector = $('.filters .filter');
 
-        if (!query) {
+        selector.click(function () {
+
+            var query = input.filter(function (e) {
+                return $(e).val() !== "";
+            }).serialize();
+
+            if (!query) {
+                return false;
+            }
+
+            var url = GplCart.settings.urn.split("?")[0] + '?' + query;
+            window.location.replace(url);
             return false;
-        }
+        });
+    };
 
-        var url = GplCart.settings.urn.split("?")[0];
+    /**
+     * Session time left counter
+     * @returns {undefined}
+     */
+    Backend.attach.countdown = function () {
 
-        url += '?' + query;
-        window.location.replace(url);
-        return false;
+        var format = '%M:%S';
+        var result = $('#session-expires');
+        var limit = GplCart.settings.session_limit;
 
-    });
+        result.countdown(limit, function (event) {
+            $(this).html(event.strftime(format));
+        });
+    };
 
-    /********************************* Time counter *********************************/
+    /**
+     * Adds WYSIWYG editor to a textarea
+     * @returns {undefined}
+     */
+    Backend.attach.wysiwyg = function () {
 
-    // Session time left counter
-    $('#session-expires').countdown(GplCart.settings.session_limit, function (event) {
-        $(this).html(event.strftime('%M:%S'));
-    });
+        var input = $('textarea.summernote');
+        var lang = GplCart.settings.lang_region;
 
-    /********************************* WYSIWYG *********************************/
+        var settings = {
+            height: 150,
+            lang: lang,
+            toolbar: [
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['style', ['style']],
+                ['para', ['ul', 'ol']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview']]
+            ]};
 
-    $('textarea.summernote').summernote({
-        height: 150,
-        lang: GplCart.settings.lang_region,
-        toolbar: [
-            ['font', ['bold', 'italic', 'underline', 'clear']],
-            ['style', ['style']],
-            ['para', ['ul', 'ol']],
-            ['table', ['table']],
-            ['insert', ['link', 'picture', 'hr']],
-            ['view', ['fullscreen', 'codeview']]
-        ]});
+        input.summernote(settings);
+    };
 
-    /********************************* Images *********************************/
+    /**
+     * Delete uploaded images
+     * @returns {undefined}
+     */
+    Backend.attach.deleteImages = function () {
 
-    var imageContainer = $('.image-container');
+        var item = 'div.thumb';
+        var selector = '.image-container .delete-image';
+        var container = Backend.settings.imageContainer;
 
-    // Delete images
-    $(document).on('click', '.image-container .delete-image', function () {
-        $(this).closest('div.thumb').remove();
-        imageContainer.append('<input name="delete_image[]" value="' + $(this).attr('data-file-id') + '" type="hidden">');
-        return false;
-    });
+        $(document).on('click', selector, function () {
+            $(this).closest(item).remove();
+            var input = '<input name="delete_image[]" value="' + $(this).attr('data-file-id') + '" type="hidden">';
+            $(container).append(input);
+            return false;
+        });
+    };
 
-    // Make images sortable
-    imageContainer.sortable({
-        items: '> .thumb',
-        handle: '.handle',
-        stop: function () {
-            $('input[name$="[weight]"]').each(function (i, v) {
-                $(this).val(i);
-            });
-        }
-    });
+    /**
+     * Makes images sortable
+     * @returns {undefined}
+     */
+    Backend.attach.imagesSortable = function () {
 
-    var fileinput = $('#fileinput');
-
-    // AJAX image upload
-    fileinput.fileupload({
-        dataType: 'json',
-        url: GplCart.settings.base + 'ajax',
-        formData: {
-            type: fileinput.attr('data-entity-type'),
-            action: 'uploadImageAjax',
-            token: GplCart.settings.token
-        },
-        done: function (e, data) {
-
-            if ('result' in data && 'files' in data.result) {
-
-                $.each(data.result.files, function (index, file) {
-                    if (file.html) {
-                        imageContainer.append(file.html);
-                    }
-                });
-
-                imageContainer.find('input[name$="[weight]"]').each(function (i) {
+        var params = {
+            items: '> div > .thumb',
+            handle: '.handle',
+            stop: function () {
+                $('input[name$="[weight]"]').each(function (i, v) {
                     $(this).val(i);
                 });
             }
-        }
-    });
+        };
 
-    /********************************* Search *********************************/
-
-    var searchInput = $('#search-form [name="q"]');
-    var searchTypeSelect = $('#search-form [name="search_id"]');
-
-    searchInput.autocomplete({
-        minLength: 2,
-        source: function (request, response) {
-
-            var id = searchTypeSelect.val();
-            var params = {term: request.term, action: 'adminSearchAjax', id: id, token: GplCart.settings.token};
-
-            $.post(GplCart.settings.base + 'ajax', params, function (data) {
-                response($.map(data, function (value, key) {
-                    return {suggestion: value}
-                }));
-            });
-        },
-        select: function (event, ui) {
-            return false;
-        },
-        position: {
-            my: "right top",
-            at: "right bottom"
-        },
-    }).autocomplete('instance')._renderItem = function (ul, item) {
-        return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
+        var container = Backend.settings.imageContainer;
+        $(container).sortable(params);
     };
 
-    // Retain searching on focus
-    searchInput.focus(function () {
-        if ($(this).val()) {
-            $(this).autocomplete("search");
+    /**
+     * AJAX image upload
+     * @returns {undefined}
+     */
+    Backend.attach.fileUpload = function () {
+
+        var fileinput = $('#fileinput');
+        var container = $(Backend.settings.imageContainer);
+
+        fileinput.fileupload({
+            dataType: 'json',
+            url: GplCart.settings.base + 'ajax',
+            formData: {
+                type: fileinput.attr('data-entity-type'),
+                action: 'uploadImageAjax',
+                token: GplCart.settings.token
+            },
+            done: function (e, data) {
+
+                if ('result' in data && 'files' in data.result) {
+
+                    $.each(data.result.files, function (index, file) {
+                        if (file.html) {
+                            container.append(file.html);
+                        }
+                    });
+
+                    container.find('input[name$="[weight]"]').each(function (i) {
+                        $(this).val(i);
+                    });
+                }
+            }
+        });
+    };
+
+    /**
+     * Makes an input autocomplete
+     * @returns {undefined}
+     */
+    Backend.attach.searchAutocomplete = function () {
+
+        var keyword = $('#search-form [name="q"]');
+        var type = $('#search-form [name="search_id"]');
+
+        var position = {
+            my: "right top",
+            at: "right bottom"
+        };
+
+        keyword.autocomplete({
+            minLength: 2,
+            position: position,
+            source: function (request, response) {
+
+                var params = {
+                    id: type.val(),
+                    term: request.term,
+                    action: 'adminSearchAjax',
+                    token: GplCart.settings.token
+                };
+
+                var url = GplCart.settings.base + 'ajax';
+
+                $.post(url, params, function (data) {
+                    response($.map(data, function (value, key) {
+                        return {suggestion: value}
+                    }));
+                });
+            },
+            select: function () {
+                return false;
+            }
+        }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
+        };
+
+        // Retain searching on focus
+        keyword.focus(function () {
+            if ($(this).val()) {
+                $(this).autocomplete("search");
+            }
+        });
+    };
+
+    /**
+     * Memorize search type
+     * @returns {undefined}
+     */
+    Backend.attach.searchMemorize = function () {
+
+        var cookie_id = 'search-id';
+        var cookie_settings = {expires: 365, path: '/'};
+        var input = $('#search-form [name="search_id"]');
+
+        var search_id = Cookies.get(cookie_id);
+
+        if (search_id) {
+            input.val(search_id);
         }
+
+        input.change(function () {
+            Cookies.set(cookie_id, $(this).val(), cookie_settings);
+        });
+    };
+
+    /**
+     * Init the module when DOM is ready
+     * @returns {undefined}
+     */
+    $(function () {
+        Backend.init();
     });
 
-    // Memorize search type
-    var search_id = Cookies.get('search-id');
-
-    if (search_id) {
-        searchTypeSelect.val(search_id);
-    }
-
-    searchTypeSelect.change(function () {
-        Cookies.set('search-id', $(this).val(), {expires: 365, path: '/'});
-    });
-
-});
+})(jQuery);

@@ -15,7 +15,7 @@ $(function () {
                 $(this).closest('tr').find('td .weight').text(i);
             });
             
-            GplCart.theme.alert(GplCart.text('Changes will not be saved until the form is submitted'), 'info');
+            Backend.ui.alert(GplCart.text('Changes will not be saved until the form is submitted'), 'info');
         }
     });
 

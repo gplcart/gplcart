@@ -497,13 +497,15 @@ class Controller extends BaseController
      */
     protected function setItemProductRendered(array &$product, array $options)
     {
-        $options += array('buttons' => array(
+        $options += array(
+            'buttons' => array(
                 'cart_add', 'wishlist_add', 'compare_add'));
 
         $data = array(
             'product' => $product,
             'token' => $this->token,
-            'buttons' => $options['buttons']);
+            'buttons' => $options['buttons']
+        );
 
         $product['rendered'] = $this->render($options['template'], $data);
     }

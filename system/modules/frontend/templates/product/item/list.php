@@ -22,7 +22,7 @@
           <?php if (!empty($buttons)) { ?>
           <div class="row">
             <div class="col-md-12 text-right">
-              <form method="post" class="form-horizontal add-to-cart">
+              <form method="post" class="form-horizontal product-action">
                 <input type="hidden" name="token" value="<?php echo $token; ?>">
                 <input type="hidden" name="product[product_id]" value="<?php echo $product['product_id']; ?>">
                 <?php if (in_array('wishlist_remove', $buttons)) { ?>
