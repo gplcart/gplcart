@@ -317,7 +317,7 @@ class Cart extends Model
             $result = array(
                 'cart_id' => $cart_id,
                 'severity' => 'success',
-                'update' => array('compare-quantity' => $existing['total']),
+                'quantity' => $existing['total'],
                 'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
                     '!href' => $this->request->base() . 'checkout'))
             );

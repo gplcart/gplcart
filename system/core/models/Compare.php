@@ -103,12 +103,13 @@ class Compare extends Model
             // we add one more here
             $existing = count($this->get());
             $existing ++;
+            
+            $href = $this->request->base() . 'compare';
 
             $result = array(
                 'severity' => 'success',
-                'ajax' => array(
-                    'insert' => array('compare-quantity' => $existing)),
-                'message' => $this->language->text('Product has been added to comparison')
+                'quantity' => $existing,
+                'message' => $this->language->text('Product has been added to <a href="!href">comparison</a>', array('!href' => $href))
             );
         }
 
@@ -118,9 +119,8 @@ class Compare extends Model
     
     /**
      * Removes a product from comparison and returns
-     * an array of results
-     * @param array $product
-     * @param array $data
+     * an array of result data
+     * @param integer $product_id
      * @return array
      */
     public function deleteProduct($product_id)

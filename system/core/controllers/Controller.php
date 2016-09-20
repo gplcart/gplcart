@@ -91,16 +91,16 @@ class Controller extends BaseController
     protected $cart_quantity = array();
 
     /**
-     * Wishlist content for the current user
-     * @var array
-     */
-    protected $wishlist_content = array();
-
-    /**
      * Comparison list content for the current user
      * @var array
      */
     protected $compare_content = array();
+
+    /**
+     * Array of wishlist items
+     * @var array
+     */
+    protected $wishlist_content = array();
 
     /**
      * Catalog category tree for the current store
@@ -164,28 +164,28 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->url->isInstall()) {
-            
+
             $this->viewed = $this->getViewed();
             $this->cart_uid = $this->cart->uid();
             $this->category_tree = $this->getCategories();
             $this->compare_content = $this->compare->get();
-            
+
             $this->cart_quantity = $this->cart->getQuantity($this->cart_uid, $this->store_id);
             $this->catalog_pricerules = $this->store->config('catalog_pricerule');
-            
+
             $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
-            
+
             $wishlist = array(
                 'user_id' => $this->cart_uid,
                 'store_id' => $this->store_id
             );
-            
+
             // Don't count, use the same arguments to avoid an extra query
             // see $this->setItemProductWishlist()
-            $wishlist_items = $this->wishlist->getList($wishlist);
+            $this->wishlist_content = $this->wishlist->getList($wishlist);
 
             $this->data['cart_quantity'] = $this->cart_quantity;
-            $this->data['wishlist_quantity'] = count($wishlist_items);
+            $this->data['wishlist_quantity'] = count($this->wishlist_content);
             $this->data['compare_content'] = $this->compare_content;
         }
     }
@@ -525,11 +525,16 @@ class Controller extends BaseController
      */
     protected function submitCompare()
     {
+        $this->setSubmitted('product');
+
+        if ($this->isPosted('remove_from_compare')) {
+            return $this->deleteCompare();
+        }
+
         if (!$this->isPosted('add_to_compare')) {
             return; // No "Add to compare" clicked
         }
 
-        $this->setSubmitted('product');
         $this->validateAddToCompare();
 
         if ($this->hasErrors(null, false)) {
@@ -540,6 +545,16 @@ class Controller extends BaseController
         $product = $this->getSubmitted('product');
 
         $result = $this->compare->addProduct($product, $submitted);
+        $this->completeSubmit($result);
+    }
+
+    /**
+     * Deletes a submitted product from the comparison
+     */
+    protected function deleteCompare()
+    {
+        $product_id = $this->getSubmitted('product_id');
+        $result = $this->compare->deleteProduct($product_id);
         $this->completeSubmit($result);
     }
 
@@ -571,11 +586,17 @@ class Controller extends BaseController
      */
     protected function submitWishlist()
     {
+        $this->setSubmitted('product');
+
+        if ($this->isPosted('remove_from_wishlist')) {
+            return $this->deleteWishlist();
+        }
+
         if (!$this->isPosted('add_to_wishlist')) {
             return; // No "Add to wishlist" clicked
         }
 
-        $this->setSubmitted('product');
+
         $this->validateAddToWishlist();
 
         if ($this->hasErrors(null, false)) {
@@ -589,6 +610,21 @@ class Controller extends BaseController
     }
 
     /**
+     * Deletes a submitted product from the wishlist
+     */
+    protected function deleteWishlist()
+    {
+        $condititons = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id,
+            'product_id' => $this->getSubmitted('product_id')
+        );
+
+        $result = $this->wishlist->deleteProduct($condititons);
+        $this->completeSubmit($result);
+    }
+
+    /**
      * Finishes a submitted action.
      * For non-AJAX requests - redirects the user with a message
      * For AJAX requests - outputs JSON string with results such as message, redirect path...
@@ -598,50 +634,53 @@ class Controller extends BaseController
     protected function completeSubmit(array $data = array())
     {
         $errors = $this->getError();
-        $message = empty($errors) ? $this->text('An error occurred') : end($errors);
+        $message = $this->text('An error occurred');
+
+        if (!empty($errors)) {
+            $message = end($errors);
+        }
 
         $data += array(
             'redirect' => '',
-            'message' => $message,
-            'severity' => 'danger'
+            'severity' => 'warning',
+            'message' => $message
         );
 
-        if ($this->request->isAjax()) {
-            $this->outputAjaxResponse($data);
-        }
-
+        $this->outputAjaxResponse($data);
         $this->redirect($data['redirect'], $data['message'], $data['severity']);
     }
 
     /**
-     * Outputs JSON with warious data
+     * Outputs JSON with various data
      */
     protected function outputAjaxResponse(array $data)
     {
-        $response = $data;
-        if ($this->isPosted('add_to_cart') && $data['severity'] == 'success') {
-            $response = $this->getCartPreview();
-        }
+        if ($this->request->isAjax()) {
 
-        $this->response->json($response);
+            $response = $data;
+            if ($this->isPosted('add_to_cart') && $data['severity'] === 'success') {
+                $cart = $this->getCartPreview($data);
+                $response += array('modal' => $cart);
+            }
+
+            $this->response->json($response);
+        }
     }
 
     /**
-     * Returns an array containing rendered cart preview
-     * @param array $options
-     * @return array
+     * Returns rendered cart preview
+     * @return string
      */
-    protected function getCartPreview(array $options = array())
+    protected function getCartPreview()
     {
         $cart = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
-        $options += array(
+        $options = array(
             'cart' => $this->prepareCart($cart),
             'limit' => $this->config('cart_preview_limit', 5)
         );
 
-        $html = $this->render('cart/preview', $options);
-        return array('update' => array('cart-quantity' => $cart['quantity']), 'modal' => $html);
+        return $this->render('cart/preview', $options);
     }
 
     /**
@@ -708,7 +747,7 @@ class Controller extends BaseController
 
         $this->setValidators();
     }
-    
+
     /**
      * Validates "Add to compare" action
      */
@@ -722,7 +761,7 @@ class Controller extends BaseController
         ));
 
         $this->setValidators();
-        
+
         $product = $this->getValidatorResult('product_id');
         $this->setSubmitted('product', $product);
     }

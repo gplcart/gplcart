@@ -126,17 +126,16 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @param {String} type
      * @returns {undefined}
      */
-    Backend.ui.alert = function (message, type) {
-
-        var settings = {
-            type: type,
-            align: 'right',
-            width: 'auto',
-            delay: 2000,
-            offset: {from: 'bottom', amount: 20}
-        };
-
-        $.bootstrapGrowl(message, settings);
+    Backend.ui.alert = function (text, severity) {
+        if ($.fn.puigrowl) {
+            
+            $('.growl-message').remove();
+            $('body').append('<div class="growl-message"></div>');
+            
+            var settings = {life: 1000};
+            var message = [{severity: severity, summary: '', detail: text}];
+            $('.growl-message').puigrowl(settings).puigrowl('show', message);
+        }
     };
 
     /**
@@ -171,18 +170,6 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
             new Chart(el, options);
         }
-    };
-
-    /**
-     * Calls attached methods from this module
-     * @param {Object} object
-     * @returns {undefined}
-     */
-    Backend.init = function (object) {
-
-        $.each(object.attach, function () {
-            this.call();
-        });
     };
 
     /**
@@ -480,7 +467,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @returns {undefined}
      */
     $(function () {
-        Backend.init(Backend);
+        GplCart.attach(Backend);
     });
 
 })(jQuery);

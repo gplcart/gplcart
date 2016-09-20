@@ -56,6 +56,10 @@ class Backend
         $controller->setCss('files/assets/jquery/summernote/summernote.css');
         $controller->setCss('files/assets/bootstrap/select/dist/css/bootstrap-select.min.css');
         $controller->setCss('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css');
+        
+        $controller->setCss('files/assets/jquery/primeui/components/core/core.css');
+        $controller->setCss('files/assets/jquery/primeui/components/growl/growl.css');
+        
         $controller->setCss('system/modules/backend/css/style.css');
     }
 
@@ -80,6 +84,9 @@ class Backend
         $controller->setJs('system/modules/backend/js/common.js', 'top');
         $controller->setJs('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $controller->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
+        
+        $controller->setJs('files/assets/jquery/primeui/components/core/core.js', 'bottom');
+        $controller->setJs('files/assets/jquery/primeui/components/growl/growl.js', 'bottom');
 
         $path = $controller->getData('path');
         $file = Tool::contexUrltFile(GC_MODULE_DIR . '/backend/js', 'js', $path);
@@ -88,7 +95,6 @@ class Backend
             $controller->setJs("system/modules/backend/js/{$file['filename']}.js", 'bottom');
         }
 
-        $controller->setJs('files/assets/bootstrap/growl/jquery.bootstrap-growl.min.js', 'bottom');
         $controller->setJs('files/assets/jquery/fileupload/jquery.fileupload.js', 'bottom');
         $controller->setJs('files/assets/bootstrap/select/dist/js/bootstrap-select.min.js', 'bottom');
 

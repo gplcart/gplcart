@@ -73,6 +73,13 @@ h1 {
     padding-top: 20px;
 }
 
+.growl-message {
+    z-index: 9999 !important;
+    opacity: 1;
+    background-color: #fff;
+    background-image: none !important;
+}
+
 .no-border {
     border: none !important;
 }

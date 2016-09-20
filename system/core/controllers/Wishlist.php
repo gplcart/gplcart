@@ -66,18 +66,25 @@ class Wishlist extends FrontendController
      * Returns an array of wishlist items for the current user
      * @return array
      */
-    protected function getListProductWishlist()
+    protected function getProductsWishlist()
     {
-        $user_id = $this->cart->uid();
-        $results = $this->wishlist->getList(array('user_id' => $user_id));
-
-        // Reindex array
-        $products = array();
-        foreach ($results as $result) {
-            $products[$result['product_id']] = $result;
+        if(empty($this->wishlist_content)){
+            return array();
         }
+        
+        $ids = array();
+        foreach ($this->wishlist_content as $result) {
+            $ids[] = $result['product_id'];
+        }
+        
+        $conditions = array('product_id' => $ids);
+        
+        $options = array(
+            'buttons' => array(
+                'cart_add', 'wishlist_remove', 'compare_add')
+        );
 
-        return $products;
+        return $this->getProducts($conditions, $options);
     }
 
     /**
@@ -85,10 +92,9 @@ class Wishlist extends FrontendController
      */
     protected function setDataWishlist()
     {
-        $products = $this->getListProductWishlist();
-        $prepared = $this->prepareProducts($products);
+        $products = $this->getProductsWishlist();
 
-        $html = $this->render("product/list", array('products' => $prepared));
+        $html = $this->render("product/list", array('products' => $products));
         $this->setData('products', $html);
     }
 

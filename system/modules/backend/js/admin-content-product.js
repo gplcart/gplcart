@@ -394,7 +394,7 @@
      * @returns {undefined}
      */
     $(function () {
-        Backend.init(Backend.include.product);
+        GplCart.attach(Backend.include.product);
     });
 
 })(jQuery);

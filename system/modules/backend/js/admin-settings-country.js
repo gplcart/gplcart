@@ -39,7 +39,7 @@
      * @returns {undefined}
      */
     $(function () {
-        Backend.init(Backend.include.country);
+        GplCart.attach(Backend.include.country);
     });
 
 })(jQuery);

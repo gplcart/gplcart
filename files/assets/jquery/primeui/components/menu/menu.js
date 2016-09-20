@@ -1,7 +1,21 @@
 /**
- * PrimeUI BaseMenu widget
+ * PrimeUI Menu widgets
  */
-(function() {
+ (function (factory) {
+     if (typeof define === 'function' && define.amd) {
+         // AMD. Register as an anonymous module.
+         define(['jquery'], factory);
+     } else if (typeof module === 'object' && module.exports) {
+         // Node/CommonJS
+         module.exports = function( root, jQuery ) {
+             factory(jQuery);
+             return jQuery;
+         };
+     } else {
+         // Browser globals
+         factory(jQuery);
+     }
+ }(function ($) {
 
     $.widget("primeui.puibasemenu", {
 
@@ -98,12 +112,6 @@
             }
         }
     });
-})();
-
-/**
- * PrimeUI Menu widget
- */
-(function() {
 
     $.widget("primeui.puimenu", $.primeui.puibasemenu, {
 
@@ -211,12 +219,6 @@
             }
         }
     });
-})();
-
-/**
- * PrimeUI BreadCrumb Widget
- */
-(function() {
 
     $.widget("primeui.puibreadcrumb", {
 
@@ -264,12 +266,6 @@
             });
         }
     });
-})();
-
-/*
- * PrimeUI TieredMenu Widget
- */
-(function() {
 
     $.widget("primeui.puitieredmenu", $.primeui.puibasemenu, {
 
@@ -328,10 +324,8 @@
             this._super();
         },
 
-
         _bindEvents: function() {
             this._bindItemEvents();
-
             this._bindDocumentHandler();
         },
 
@@ -504,13 +498,6 @@
 
     });
 
-})();
-
-/**
- * PrimeUI Menubar Widget
- */
-(function() {
-
     $.widget("primeui.puimenubar", $.primeui.puitieredmenu, {
 
         options: {
@@ -558,13 +545,6 @@
             return 'fa-caret-down';
         }
     });
-
-})();
-
-/*
- * PrimeUI SlideMenu Widget
- */
-(function() {
 
     $.widget("primeui.puislidemenu", $.primeui.puibasemenu, {
 
@@ -776,13 +756,6 @@
         }
     });
 
-})();
-
-/**
- * PrimeUI Context Menu Widget
- */
-(function() {
-
     $.widget("primeui.puicontextmenu", $.primeui.puitieredmenu, {
 
         options: {
@@ -799,37 +772,21 @@
             var $this = this;
 
             if(this.options.target) {
-                if($.type(this.options.target) === 'string') {
-                    this.options.target =  $(this.options.target);
+                this.options.target =  $(this.options.target);
+                
+                if(this.options.target.hasClass('ui-datatable')) {
+                    $this._bindDataTable();
                 }
-            }
-            else {
-                this.options.target = $(document);
+                else {
+                    this.options.target.on(this.options.event + '.ui-contextmenu', function(e){
+                        $this.show(e);
+                    });
+                }
             }
 
             if(!this.element.parent().parent().is(document.body)) {
                 this.element.parent().appendTo('body');
             }
-
-            if(this.options.target.hasClass('ui-datatable')) {
-                $this._bindDataTable();
-            }
-            else {
-                this.options.target.on(this.options.event + '.ui-contextmenu', function(e){
-                    $this.show(e);
-                });
-            }
-        },
-
-        _bindItemEvents: function() {
-            this._super();
-
-            var $this = this;
-
-            //hide menu on item click
-            this.links.on('click.ui-contextmenu', function() {
-                $this._hide();
-            });
         },
 
         _bindDocumentHandler: function() {
@@ -865,13 +822,14 @@
         _unbindEvents: function() {
             this._super();
 
-            this.options.target.off(this.options.event + '.ui-contextmenu');
-            this.links.off('click.ui-contextmenu');
-            $(document.body).off('click.ui-contextmenu.' + this.id);
-
-            if(this.options.target.hasClass('ui-datatable')) {
-                this._unbindDataTable();
+            if(this.options.target) {
+                if(this.options.target.hasClass('ui-datatable'))
+                    this._unbindDataTable();
+                else 
+                    this.options.target.off(this.options.event + '.ui-contextmenu');
             }
+            
+            $(document.body).off('click.ui-contextmenu.' + this.id);
         },
 
         show: function(e) {
@@ -952,14 +910,6 @@
         }
 
     });
-
-})();
-
-
-/*
- * PrimeUI MegaMenu Widget
- */
-(function() {
 
     $.widget("primeui.puimegamenu", $.primeui.puibasemenu, {
 
@@ -1424,13 +1374,6 @@
         }
 
     });
-
-})();
-
-/**
- * PrimeUI PanelMenu Widget
- */
-(function() {
 
     $.widget("primeui.puipanelmenu", $.primeui.puibasemenu, {
 
@@ -1969,4 +1912,4 @@
 
     });
 
-})();
+}));

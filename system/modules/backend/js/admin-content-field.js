@@ -62,7 +62,7 @@
      * @returns {undefined}
      */
     $(function () {
-        Backend.init(Backend.include.field);
+        GplCart.attach(Backend.include.field);
     });
 
 

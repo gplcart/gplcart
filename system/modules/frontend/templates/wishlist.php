@@ -1,10 +1,10 @@
 <div class="row wishlist">
   <div class="col-md-12">
-    <?php if($products) { ?>
-    <?php echo $products; ?>
+    <?php if (empty($products)) { ?>
+    <?php echo $this->text('Your wishlist is empty. <a href="!href">Continue shopping</a>', array(
+        '!href' => $this->url('/'))); ?>
     <?php } else { ?>
-    <p><?php echo $this->text('Your wishlist is empty'); ?></p>
-    <a href="<?php echo $this->url('/'); ?>" class="btn btn-default"><?php echo $this->text('Continue shopping'); ?></a>
+    <?php echo $products; ?>
     <?php } ?>
   </div>
 </div>

@@ -1,11 +1,24 @@
 /* global GplCart */
-var GplCart = GplCart || {settings: {}, translations: {}, theme: {}};
+var GplCart = GplCart || {settings: {}, translations: {}};
 
 (function ($) {
-    
-    $(function(){
+
+    $(function () {
         $('body').addClass('js');
     });
+
+    /**
+     * Calls attached methods
+     * @param {Object} object
+     * @returns {undefined}
+     */
+    GplCart.attach = function (object) {
+        if ('attach' in object) {
+            $.each(object.attach, function () {
+                this.call();
+            });
+        }
+    };
 
     /**
      * Translates a string
@@ -92,7 +105,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, theme: {}};
     GplCart.gmap = function (lat, lng) {
         $.getScript('https://www.google.com/jsapi', function () {
             google.load('maps', '3', {callback: function () {
-                    if (lng === false) {
+                if (lng === false) {
                         geocoder = new google.maps.Geocoder();
                         geocoder.geocode({'address': lat}, function (results, status) {
                             if (status === google.maps.GeocoderStatus.OK) {
@@ -172,10 +185,8 @@ var GplCart = GplCart || {settings: {}, translations: {}, theme: {}};
      * @returns {String}
      */
     GplCart.randomString = function (portion) {
-
         portion = portion || -8;
-
         return Math.random().toString(36).slice(portion);
-    }
+    };
 
 })(jQuery);

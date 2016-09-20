@@ -25,11 +25,11 @@
           <li>
             <a rel="nofollow" id="wishlist-link" href="<?php echo $this->url('wishlist'); ?>">
               <?php if (!empty($wishlist_quantity)) { ?>
-              <span class="badge" data-selector="wishlist-quantity">
+              <span class="badge" id="wishlist-quantity">
               <?php echo $wishlist_quantity; ?>
               </span>
               <?php } else { ?>
-              <span class="badge" data-selector="wishlist-quantity" style="display:none;"></span>
+              <span class="badge" id="wishlist-quantity" style="display:none;"></span>
               <?php } ?>
               <i class="fa fa-heart"></i>
             </a>

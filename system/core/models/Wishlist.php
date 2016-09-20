@@ -11,6 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
+use core\classes\Url;
 use core\classes\Cache;
 use core\models\User as ModelsUser;
 use core\models\Language as ModelsLanguage;
@@ -38,18 +39,26 @@ class Wishlist extends Model
      * @var \core\Logger $logger
      */
     protected $logger;
-
+    
+    /**
+     * Url class instance
+     * @var \core\classes\Url $url
+     */
+    protected $url;
+    
     /**
      * Constructor
      * @param ModelsUser $user
      * @param ModelsLanguage $language
      * @param Logger $logger
+     * @param Url $url
      */
     public function __construct(ModelsUser $user, ModelsLanguage $language,
-            Logger $logger)
+            Logger $logger, Url $url)
     {
         parent::__construct();
 
+        $this->url = $url;
         $this->user = $user;
         $this->logger = $logger;
         $this->language = $language;
@@ -94,12 +103,13 @@ class Wishlist extends Model
         if (empty($data)) {
             return $result;
         }
+        
+        $href = $this->url->get('wishlist');
 
         if ($this->exists($data)) {
-
             return array(
                 'severity' => 'warning',
-                'message' => $this->language->text('Product already exists in your wishlist')
+                'message' => $this->language->text('Product already exists in your <a href="!href">wishlist</a>', array('!href' => $href))
             );
         }
 
@@ -118,20 +128,62 @@ class Wishlist extends Model
 
         if (!empty($wishlist_id)) {
 
-            $options = array('user_id' => $data['user_id'], 'store_id' => $data['store_id']);
+            $options = array(
+                'user_id' => $data['user_id'],
+                'store_id' => $data['store_id']
+            );
+            
             $exists = $this->getList($options);
 
             $result = array(
                 'severity' => 'success',
                 'wishlist_id' => $wishlist_id,
-                'ajax' => array(
-                    'insert' => array('wishlist-quantity' => count($exists))),
-                'message' => $this->language->text('Product has been added to your wishlist'));
+                'quantity' => count($exists),
+                'message' => $this->language->text('Product has been added to your <a href="!href">wishlist</a>', array('!href' => $href)));
 
             $this->logAddToWishlist($data);
         }
 
         $this->hook->fire('add.product.wishlist.after', $data, $result);
+        return $result;
+    }
+    
+    /**
+     * Removes a product from wishlist and returns
+     * an array of result data
+     * @param array $data
+     * @return array
+     */
+    public function deleteProduct(array $data)
+    {
+        $this->hook->fire('delete.product.wishlist.before', $data);
+
+        if (empty($data)) {
+            return array();
+        }
+
+        $result = array(
+            'severity' => 'warning',
+            'message' => $this->language->text('Product has not been deleted from wishlist')
+        );
+
+        $deleted = (bool) $this->delete($data);
+
+        if ($deleted) {
+
+            unset($data['product_id']);
+
+            $existing = $this->getList($data);
+
+            $result = array(
+                'severity' => 'success',
+                'quantity' => count($existing),
+                'redirect' => empty($existing) ? 'wishlist' : '',
+                'message' => $this->language->text('Product has been deleted from wishlist')
+            );
+        }
+
+        $this->hook->fire('delete.product.wishlist.after', $data, $result);
         return $result;
     }
 
@@ -204,23 +256,22 @@ class Wishlist extends Model
 
     /**
      * Deletes a wishlist item
-     * @param integer $wishlist_id
+     * @param array $data
      * @return boolean
      */
-    public function delete($wishlist_id)
+    public function delete(array $data)
     {
-        $this->hook->fire('delete.wishlist.before', $wishlist_id);
+        $this->hook->fire('delete.wishlist.before', $data);
 
-        if (empty($wishlist_id)) {
+        if (empty($data)) {
             return false;
         }
 
-        $op = array('wishlist_id' => $wishlist_id);
-        $result = (bool) $this->db->delete('wishlist', $op);
+        $result = (bool) $this->db->delete('wishlist', $data);
 
         Cache::clearMemory();
 
-        $this->hook->fire('delete.wishlist.after', $wishlist_id, $result);
+        $this->hook->fire('delete.wishlist.after', $data, $result);
         return (bool) $result;
     }
 

@@ -56,7 +56,7 @@
      * @returns {undefined}
      */
     $(function () {
-        Backend.init(Backend.include.category);
+        GplCart.attach(Backend.include.category);
     });
 
 })(jQuery);

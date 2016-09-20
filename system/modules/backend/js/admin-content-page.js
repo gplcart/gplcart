@@ -73,7 +73,7 @@
      * @returns {undefined}
      */
     $(function () {
-        Backend.init(Backend.include.page);
+        GplCart.attach(Backend.include.page);
     });
 
 })(jQuery);

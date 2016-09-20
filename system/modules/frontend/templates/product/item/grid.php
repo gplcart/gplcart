@@ -17,7 +17,7 @@
         <div class="row">
           <div class="col-md-12">
             <?php if (in_array('wishlist_remove', $buttons)) { ?>
-            <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" name="remove_from_wishlist" value="1">
+            <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" data-ajax="true" name="remove_from_wishlist" value="1">
             <i class="fa fa-trash"></i>
             </button>
             <?php } ?>

@@ -13,7 +13,6 @@ use core\models\Field as ModelsField;
 use core\models\FieldValue as ModelsFieldValue;
 use core\models\ProductClass as ModelsProductClass;
 use core\models\ProductField as ModelsProductField;
-
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -27,7 +26,7 @@ class Compare extends FrontendController
      * @var \core\models\ProductClass $product_class
      */
     protected $product_class;
-    
+
     /**
      * Product field model instance
      * @var \core\models\ProductField $product_field
@@ -45,7 +44,7 @@ class Compare extends FrontendController
      * @var \core\models\FieldValue $field_value
      */
     protected $field_value;
-    
+
     /**
      * Constructor
      * @param ModelsProductClass $product_class
@@ -54,7 +53,8 @@ class Compare extends FrontendController
      * @param ModelsProductField $product_field
      */
     public function __construct(ModelsProductClass $product_class,
-            ModelsField $field, ModelsFieldValue $field_value, ModelsProductField $product_field)
+            ModelsField $field, ModelsFieldValue $field_value,
+            ModelsProductField $product_field)
     {
         parent::__construct();
 
@@ -84,13 +84,12 @@ class Compare extends FrontendController
         $data = array('product_id' => $this->compare_content);
 
         $options = array(
-            'buttons' => array('cart_add', 'wishlist_add'),
             'view' => $this->setting('compare_view', 'grid'),
-            'imagestyle' => $this->setting('image_style_product_grid', 3)
+            'buttons' => array('cart_add', 'wishlist_add', 'compare_remove')
         );
 
         $products = $this->getProducts($data, $options);
-        $reindexed = $this->reindexProductsCompare($products);
+        $reindexed = $this->prepareProductsCompare($products);
 
         $this->setData('products', $reindexed);
     }
@@ -100,7 +99,7 @@ class Compare extends FrontendController
      * @param array $products
      * @return array
      */
-    protected function reindexProductsCompare(array $products)
+    protected function prepareProductsCompare(array $products)
     {
         $prepared = array();
         foreach ($products as $product_id => $product) {
@@ -124,7 +123,7 @@ class Compare extends FrontendController
     protected function setBreadcrumbSelectCompare()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Home')
@@ -143,15 +142,27 @@ class Compare extends FrontendController
 
     /**
      * Displays the product compare page
-     * @param string $compared
+     * @param string $ids
      */
-    public function compare($compared)
+    public function compare($ids)
     {
+        $this->controlAccessCompare();
+
         $this->setDataCompare();
 
         $this->setTitleCompare();
         $this->setBreadcrumbCompare();
         $this->outputCompare();
+    }
+
+    /**
+     * Controls access to the comparison page
+     */
+    protected function controlAccessCompare()
+    {
+        if (count($this->compare_content) < 2) {
+            $this->redirect('compare');
+        }
     }
 
     /**
@@ -166,7 +177,7 @@ class Compare extends FrontendController
                 'compare_remove'
             )
         );
-        
+
         $conditions = array('product_id' => $this->compare_content);
         $products = $this->getProducts($conditions, $options);
 
@@ -174,7 +185,7 @@ class Compare extends FrontendController
             return;
         }
 
-        $reindexed = $this->reindexProductsCompare($products);
+        $reindexed = $this->prepareProductsCompare($products);
         $product_class_id = key($reindexed);
         $fields = array('option' => array(), 'attribute' => array());
 
@@ -215,7 +226,7 @@ class Compare extends FrontendController
     protected function setBreadcrumbCompare()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Home'));

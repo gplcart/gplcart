@@ -13,10 +13,6 @@
         <a href="<?php echo $this->url('compare/' . implode(',', array_keys($items))); ?>" class="btn btn-default">
           <i class="fa fa-balance-scale"></i> <?php echo $this->text('Compare'); ?>
         </a>
-        <?php } else { ?>
-        <span class="btn btn-default disabled">
-          <i class="fa fa-balance-scale"></i> <?php echo $this->text('Add more similar products to compare'); ?>
-        </span>
         <?php } ?>
       </div>
     </div>

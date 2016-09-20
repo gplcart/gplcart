@@ -1,7 +1,21 @@
 /**
  * PrimeUI Carousel widget
  */
-(function() {
+ (function (factory) {
+     if (typeof define === 'function' && define.amd) {
+         // AMD. Register as an anonymous module.
+         define(['jquery'], factory);
+     } else if (typeof module === 'object' && module.exports) {
+         // Node/CommonJS
+         module.exports = function( root, jQuery ) {
+             factory(jQuery);
+             return jQuery;
+         };
+     } else {
+         // Browser globals
+         factory(jQuery);
+     }
+ }(function ($) {
 
     $.widget("primeui.puicarousel", {
        
@@ -161,8 +175,8 @@
         calculateItemWidths: function() {
             var firstItem = this.items.eq(0);
             if(firstItem.length) {
-                var itemFrameWidth = firstItem.outerWidth(true) - firstItem.width();    //sum of margin, border and padding
-                this.items.width((this.viewport.innerWidth() - itemFrameWidth * this.columns) / this.columns);
+                var itemFrameWidth = firstItem.outerWidth(true) - firstItem.outerWidth();    //sum of margin, border and padding
+                this.items.css({'width': ((this.viewport.innerWidth() - itemFrameWidth * this.columns) / this.columns)});
             }
         },
     
@@ -369,4 +383,4 @@
 
     });
     
-})();
+}));
