@@ -59,7 +59,7 @@
   <?php } ?>
   <div class="row">
     <div class="col-md-6">
-      <button name="add_to_cart" value="1" class="btn btn-success add-to-cart"<?php echo $cart_access ? '' : ' disabled'; ?>>
+      <button name="add_to_cart" value="1" data-ajax="true" class="btn btn-success add-to-cart"<?php echo $cart_access ? '' : ' disabled'; ?>>
         <?php echo $this->text('Add to cart'); ?>
       </button>
     </div>
