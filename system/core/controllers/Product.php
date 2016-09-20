@@ -82,9 +82,18 @@ class Product extends FrontendController
         $this->setRelatedProduct($product);
         $this->setRecentProduct($product);
 
+        $this->setCssIndexProduct();
         $this->setJsIndexProduct($product);
+        
         $this->setTitleIndexProduct($product);
         $this->outputIndexProduct();
+    }
+    
+    /**
+     * Sets CSS on the product page
+     */
+    protected function setCssIndexProduct() {
+        $this->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css');
     }
 
     /**
@@ -242,6 +251,8 @@ class Product extends FrontendController
     protected function setJsIndexProduct(array $product)
     {
         $this->setJsSettings('product', $product);
+        $this->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
+        $this->setJs('files/assets/jquery/lightgallery/dist/js/lightgallery-all.min.js', 'top');
     }
 
     /**
