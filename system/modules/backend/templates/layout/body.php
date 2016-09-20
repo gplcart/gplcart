@@ -83,9 +83,9 @@
         <ol class="breadcrumb">
           <?php foreach ($breadcrumb as $item) { ?>
           <?php if(empty($item['url'])) { ?>
-          <li><?php echo $this->escape($item['text']); ?></li>
+          <li><?php echo $this->xss($item['text']); ?></li>
           <?php } else { ?>
-          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->escape($item['text']); ?></a></li>
+          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->xss($item['text']); ?></a></li>
           <?php } ?>
           <?php } ?>
           <?php if(!empty($page_title)) { ?>
