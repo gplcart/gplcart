@@ -63,11 +63,12 @@ class Frontend
         $controller->setJs('files/assets/jquery/match-height/dist/jquery.matchHeight-min.js', 'top');
         $controller->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
 
-        $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
-        $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css');
-        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css');
-        $controller->setCss('files/assets/jquery/lightslider/dist/css/lightslider.min.css');
-        $controller->setCss('system/modules/frontend/css/style.css');
+        $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css', 0);
+        $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css', 10);
+        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css', 20);
+        $controller->setCss('files/assets/jquery/lightslider/dist/css/lightslider.min.css', 30);
+        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css', 40);
+        $controller->setCss('system/modules/frontend/css/style.css', 50);
     }
 
     /**
@@ -94,5 +95,4 @@ class Frontend
             'image_style_page_banner' => 7,
         );
     }
-
 }

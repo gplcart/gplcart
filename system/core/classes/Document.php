@@ -9,6 +9,7 @@
 
 namespace core\classes;
 
+use core\classes\Cache;
 use core\classes\Request;
 
 /**
@@ -42,9 +43,10 @@ class Document
      */
     public function js($script = '', $position = 'top', $weight = null)
     {
-        static $scripts = array();
+        $scripts = &Cache::memory('document.js');
 
         if (empty($script)) {
+
             if (!empty($position)) {
                 return empty($scripts[$position]) ? array() : $scripts[$position];
             }
@@ -82,7 +84,7 @@ class Document
      */
     public function css($css = '', $weight = null)
     {
-        static $styles = array();
+        $styles = &Cache::memory('document.css');
 
         if (empty($css)) {
             return $styles;
@@ -95,7 +97,7 @@ class Document
         }
 
         if (!isset($weight)) {
-            $weight = !empty($styles) ? count($styles) : 0;
+            $weight = empty($styles) ? 0 : count($styles);
             $weight++;
         }
 
@@ -118,7 +120,7 @@ class Document
      */
     public function meta($data = null)
     {
-        static $meta = array();
+        $meta = &Cache::memory('document.meta');
 
         if (!isset($data)) {
             return $meta;
@@ -136,7 +138,7 @@ class Document
      */
     public function breadcrumb($breadcrumb = null)
     {
-        static $breadcrumbs = array();
+        $breadcrumbs = &Cache::memory('document.breadcrumbs');
 
         if (!isset($breadcrumb)) {
             return $breadcrumbs;
@@ -155,7 +157,7 @@ class Document
      */
     public function title($string = '', $both = true)
     {
-        static $title = '';
+        $title = &Cache::memory('document.title');
 
         if ($string === '') {
             return $title;
@@ -178,7 +180,7 @@ class Document
      */
     public function ptitle($string = '')
     {
-        static $title = '';
+        $title = &Cache::memory('document.ptitle');
 
         if ($string === '') {
             return $title;

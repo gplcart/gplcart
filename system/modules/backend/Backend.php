@@ -56,10 +56,8 @@ class Backend
         $controller->setCss('files/assets/jquery/summernote/summernote.css');
         $controller->setCss('files/assets/bootstrap/select/dist/css/bootstrap-select.min.css');
         $controller->setCss('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css');
-        
         $controller->setCss('files/assets/jquery/primeui/components/core/core.css');
         $controller->setCss('files/assets/jquery/primeui/components/growl/growl.css');
-        
         $controller->setCss('system/modules/backend/css/style.css');
     }
 

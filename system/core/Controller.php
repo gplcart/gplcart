@@ -1330,8 +1330,8 @@ class Controller
     protected function setDefaultJs()
     {
         // Libraries
-        $this->document->js('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -100);
-        $this->document->js('files/assets/system/js/common.js', 'top', -90);
+        $this->document->js('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -999);
+        $this->document->js('files/assets/system/js/common.js', 'top', -900);
 
         // Settings
         $allowed = array(
@@ -1340,7 +1340,7 @@ class Controller
             'path', 'last_activity', 'session_limit');
 
         $settings = array_intersect_key($this->data, array_flip($allowed));
-        $this->setJsSettings('', $settings, -80);
+        $this->setJsSettings('', $settings, -800);
 
         $this->setJsTranslation();
 
