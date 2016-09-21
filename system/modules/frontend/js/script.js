@@ -126,8 +126,10 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
      * @returns {undefined}
      */
     Frontend.attach.equalHeight = function () {
-        var selector = '.products .thumbnail .title, label.address';
-        $(selector).matchHeight();
+        if ($.fn.matchHeight) {
+            var selector = '.products .thumbnail .title, label.address';
+            $(selector).matchHeight();
+        }
     };
 
     /**
