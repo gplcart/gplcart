@@ -7,7 +7,7 @@
           <?php echo $this->text('Options'); ?>
         </h4>
       </div>
-      <div class="panel-body table-responsive">
+      <div class="panel-body">
         <table class="table table-condensed option">
           <thead>
             <tr>
