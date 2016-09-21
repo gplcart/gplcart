@@ -369,7 +369,7 @@ class Product extends FrontendController
      */
     protected function getRecentProduct($product_id)
     {
-        $limit = $this->config('product_recent_limit', 3);
+        $limit = $this->config('product_recent_limit', 12);
         $lifespan = $this->config('product_recent_cookie_lifespan', 31536000);
         $product_ids = $this->product->setViewed($product_id, $limit, $lifespan);
         
