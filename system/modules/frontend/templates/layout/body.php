@@ -85,10 +85,10 @@
         </ul>
         <form class="navbar-form navbar-left search" action="<?php echo $this->url('search'); ?>">
           <div class="input-group">
-            <input type="search" pattern="\S+" class="form-control typeahead" autocomplete="off" data-provide="typeahead" name="q" value="<?php echo empty($this->query['q']) ? '' : $this->escape($this->query['q']); ?>" placeholder="<?php echo $this->text('Enter search keyword...'); ?>">
+            <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo empty($this->query['q']) ? '' : $this->escape($this->query['q']); ?>" placeholder="<?php echo $this->text('Enter search keyword...'); ?>">
             <i class="fa fa-spinner fa-spin hidden"></i>
             <span class="input-group-btn">
-              <button type="submit" class="btn btn-default">
+              <button class="btn btn-default">
                 <i class="fa fa-search"></i>
               </button>
             </span>

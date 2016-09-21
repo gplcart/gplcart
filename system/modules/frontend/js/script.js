@@ -437,6 +437,47 @@
             });
         });
     };
+    
+    /**
+     * Search autocomplete field
+     * @returns {undefined}
+     */
+    Frontend.attach.searchAutocomplete = function () {
+
+        var input = $('input[name="q"]');
+
+        input.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+
+                var params = {
+                    term: request.term,
+                    action: 'searchProductsAjax',
+                    token: GplCart.settings.token
+                };
+
+                var url = GplCart.settings.base + 'ajax';
+
+                $.post(url, params, function (data) {
+                    response($.map(data, function (value, key) {
+                        return {suggestion: value.rendered};
+                    }));
+                });
+            },
+            select: function () {
+                return false;
+            }
+        }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
+        };
+
+        // Retain searching on focus
+        input.focus(function () {
+            if ($(this).val()) {
+                $(this).autocomplete("search");
+            }
+        });
+    };
 
     /**
      * Redirects to a page when clicked on the suggested item
