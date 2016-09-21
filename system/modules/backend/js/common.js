@@ -128,10 +128,10 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.ui.alert = function (text, severity) {
         if ($.fn.puigrowl) {
-            
+
             $('.growl-message').remove();
             $('body').append('<div class="growl-message"></div>');
-            
+
             var settings = {life: 1000};
             var message = [{severity: severity, summary: '', detail: text}];
             $('.growl-message').puigrowl(settings).puigrowl('show', message);
@@ -146,30 +146,35 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.ui.chart = function (source, type) {
 
+        if (typeof Chart === 'undefined') {
+            return;
+        }
+
         var key = 'chart_' + source;
         var settings = GplCart.settings;
 
-        if (key in settings && 'datasets' in settings[key]) {
-
-            var el = document.getElementById('chart-' + source);
-
-            if (!el) {
-                return;
-            }
-
-            var data = {
-                labels: settings[key].labels,
-                datasets: settings[key].datasets
-            };
-
-            var options = {
-                type: type,
-                data: data,
-                options: settings[key].options
-            };
-
-            new Chart(el, options);
+        if (!settings[key] || !settings[key].datasets) {
+            return;
         }
+
+        var el = document.getElementById('chart-' + source);
+
+        if (!el) {
+            return;
+        }
+
+        var data = {
+            labels: settings[key].labels,
+            datasets: settings[key].datasets
+        };
+
+        var options = {
+            type: type,
+            data: data,
+            options: settings[key].options
+        };
+
+        new Chart(el, options);
     };
 
     /**
@@ -278,13 +283,16 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.countdown = function () {
 
-        var format = '%M:%S';
-        var result = $('#session-expires');
-        var limit = GplCart.settings.session_limit;
+        if ($.fn.countdown) {
 
-        result.countdown(limit, function (event) {
-            $(this).html(event.strftime(format));
-        });
+            var format = '%M:%S';
+            var result = $('#session-expires');
+            var limit = GplCart.settings.session_limit;
+
+            result.countdown(limit, function (event) {
+                $(this).html(event.strftime(format));
+            });
+        }
     };
 
     /**
@@ -368,7 +376,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
             },
             done: function (e, data) {
 
-                if ('result' in data && 'files' in data.result) {
+                if ('result' in data && data.result.files) {
 
                     $.each(data.result.files, function (index, file) {
                         if (file.html) {

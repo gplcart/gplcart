@@ -1,7 +1,7 @@
-/* global GplCart, Frontend */
-var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
-
 (function ($) {
+
+    /* global GplCart, Frontend */
+    var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
 
     /**
      * Returns HTML of modal pop-up
@@ -34,10 +34,10 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
      * @returns {String}
      */
     Frontend.html.buttonInCompare = function () {
-        
+
         var url = GplCart.settings.base + 'compare';
         var title = GplCart.text('Already in comparison');
-        
+
         var html = '';
         html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
         html += '<i class="fa fa-balance-scale"></i></a>';
@@ -50,7 +50,7 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
      * @returns {String}
      */
     Frontend.html.buttonInWishlist = function () {
-        
+
         var url = GplCart.settings.base + 'wishlist';
         var title = GplCart.text('Already in wishlist');
 
@@ -205,7 +205,13 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
                     }
 
                     if (data.modal) {
-                        Frontend.ui.modal(data.modal, action + '-content-modal');
+
+                        var header = '';
+                        if (action === 'add_to_cart') {
+                            header = GplCart.text('Cart');
+                        }
+
+                        Frontend.ui.modal(data.modal, action + '-content-modal', header);
                     } else if (data.message) {
                         Frontend.ui.modal(data.message, action + '-message-modal');
                     }
@@ -299,7 +305,7 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
     Frontend.attach.updateOptions = function () {
 
         $('form.add-to-cart [name^="product[options]"]').change(function () {
-            
+
             var element = $(this);
             var input = '[name^="product[options]"]:checked, [name^="product[options]"] option:selected';
 
@@ -325,8 +331,8 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
                         alert(GplCart.text('An error occurred'));
                         return false;
                     }
-                    
-                    if(data.message){
+
+                    if (data.message) {
                         $('#combination-message').toggleClass('text-' + data.severity).html(data.message).show();
                     }
 
@@ -337,7 +343,7 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
                     if (!data.combination) {
                         return false;
                     }
-                    
+
                     $('#price').text(data.combination.price_formatted);
 
                     if (data.combination.sku) {

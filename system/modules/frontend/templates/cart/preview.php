@@ -1,7 +1,7 @@
 <div id="cart-preview">
   <?php if(!empty($cart['items'])) { ?>
   <div class="row items">
-    <div class="col-md-12">
+    <div class="col-md-12 pre-scrollable">
       <?php foreach($cart['items'] as $item) { ?>
       <div class="media cart-item">
         <div class="media-left image col-md-2">
@@ -16,28 +16,22 @@
       <?php } ?>
     </div>
   </div>
-  <?php if(count($cart['items']) > $limit) { ?>
-  <div class="row more">
-    <div class="col-md-12">
-    <a href="<?php echo $this->url('checkout'); ?>"><?php echo $this->text('Showing %num from %total', array('%num' => count($cart['items']), '%total' => $limit)); ?></a>
-    </div>
-  </div>
-  <?php } ?>
+  <hr>
   <div class="row subtotal">
     <div class="col-md-12">
-    <h4><?php echo $this->text('Subtotal'); ?> : <span class="price"><?php echo $cart['total_formatted']; ?></span></h4>
+      <b><?php echo $this->text('Subtotal'); ?></b> : <span class="price"><?php echo $cart['total_formatted']; ?></span>
+      <div class="help-block"><?php echo $this->text('Final price will be shown on checkout page'); ?></div>
     </div>
   </div>
-  <hr>
   <div class="row buttons">
     <div class="col-md-12 checkout">
-    <a href="<?php echo $this->url('checkout'); ?>" class="btn btn-block btn-success"><?php echo $this->text('Checkout'); ?></a>
+    <a href="<?php echo $this->url('checkout'); ?>" class="btn btn-block btn-success"><?php echo $this->text('Cart / Checkout'); ?></a>
     </div>
   </div>
   <?php } else { ?>
   <div class="row items">
     <div class="col-md-12">
-       <?php echo $this->text('Your shopping cart is empty'); ?>
+      <?php echo $this->text('Your shopping cart is empty'); ?>
     </div>
   </div>
   <?php } ?>
