@@ -50,7 +50,7 @@ class ProductField extends Model
      * @param integer $product_id
      * @return boolean
      */
-    protected function delete($type, $product_id)
+    public function delete($type, $product_id)
     {
         $conditions = array('type' => $type, 'product_id' => $product_id);
         return (bool) $this->db->delete('product_field', $conditions);
