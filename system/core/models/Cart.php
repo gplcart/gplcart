@@ -424,11 +424,12 @@ class Cart extends Model
     protected function logAddToCart(array $product, array $data)
     {
         $log = array(
-            'message' => 'User %uid added product #%product (SKU: %sku) at store #%store',
+            'message' => 'User %uid added product <a target="_blank" href="@url">@product</a> (SKU: %sku) at store #%store',
             'variables' => array(
                 '%sku' => $data['sku'],
                 '%store' => $product['store_id'],
-                '%product' => $product['product_id'],
+                '@url' => $this->request->base() . "product/{$product['product_id']}",
+                '@product' => $product['product_id'],
                 '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : '**anonymous**'
             )
         );

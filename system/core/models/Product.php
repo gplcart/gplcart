@@ -419,6 +419,10 @@ class Product extends Model
         }
 
         $product['field'] = $this->product_field->getList($product['product_id']);
+        
+        if(empty($product['field']['option'])){
+            return;
+        }
 
         // Remove repeating field values
         foreach ($product['field']['option'] as &$field_values) {
