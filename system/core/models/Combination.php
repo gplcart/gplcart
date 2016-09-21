@@ -49,7 +49,7 @@ class Combination extends Model
      * @param integer $product_id
      * @return boolean
      */
-    protected function delete($product_id)
+    public function delete($product_id)
     {
         $conditions = array('product_id' => $product_id);
         $this->db->delete('option_combination', $conditions);
