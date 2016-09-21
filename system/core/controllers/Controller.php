@@ -473,7 +473,9 @@ class Controller extends BaseController
      */
     protected function setItemPrice(array &$product, array $options = array())
     {
-        if ($this->catalog_pricerules) {
+        $options += array('calculate' => true);
+        
+        if ($this->catalog_pricerules && !empty($options['calculate'])) {
             //$calculated = $this->product->calculate($product, $this->store_id);
             //$product['price'] = $calculated['total'];
         }

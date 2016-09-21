@@ -296,8 +296,9 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
      */
     Frontend.attach.updateOptions = function () {
 
-        $('form.product-action [name^="product[options]"]').change(function () {
-
+        $('form.add-to-cart [name^="product[options]"]').change(function () {
+            
+            var element = $(this);
             var input = '[name^="product[options]"]:checked, [name^="product[options]"] option:selected';
 
             var values = $(input).map(function () {
@@ -322,44 +323,34 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
                         alert(GplCart.text('An error occurred'));
                         return false;
                     }
-
-                    var message;
-                    var error = false;
-
-                    if (data.error) {
-                        error = true;
-                        message = GplCart.text('An error occurred');
+                    
+                    if(data.message){
+                        $('#combination-message').toggleClass('text-' + data.severity).html(data.message).show();
                     }
 
-                    if (data.message) {
-                        message = data.message;
+                    if (data.modal) {
+                        Frontend.ui.modal(data.modal, 'product-update-option');
                     }
 
-                    if (message.length) {
-                        alert(message);
-                    }
-
-                    if (error) {
+                    if (!data.combination) {
                         return false;
                     }
+                    
+                    $('#price').text(data.combination.price_formatted);
 
-                    if (!('combination' in data)) {
-                        return false;
-                    }
-
-                    if (data.combination.sku !== '') {
+                    if (data.combination.sku) {
                         $('#sku').text(data.combination.sku);
                     }
 
-                    $('#price').text(data.combination.price);
-
-                    if ('image' in data.combination) {
-                        $('#main-image').attr('src', data.combination.image);
+                    if (data.combination.thumb) {
+                        $('#main-image').attr('src', data.combination.thumb);
                     }
 
+                    element.closest('form').find('[name="add_to_cart"]').prop('disabled', !data.cart_access);
+
                 },
-                error: function (request, status, error) {
-                    alert('Error: ' + request.responseText);
+                error: function () {
+                    alert(GplCart.text('An error occurred'));
                 }
             });
         });

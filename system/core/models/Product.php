@@ -414,8 +414,15 @@ class Product extends Model
      */
     protected function attachFields(array &$product)
     {
-        if (!empty($product)) {
-            $product['field'] = $this->product_field->getList($product['product_id']);
+        if (empty($product)) {
+            return;
+        }
+
+        $product['field'] = $this->product_field->getList($product['product_id']);
+
+        // Remove repeating field values
+        foreach ($product['field']['option'] as &$field_values) {
+            $field_values = array_unique($field_values);
         }
     }
 

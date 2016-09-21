@@ -184,72 +184,19 @@ class Ajax extends FrontendController
      */
     public function switchProductOptionsAjax()
     {
-
         $product_id = (int) $this->request->post('product_id');
         $field_value_ids = (array) $this->request->post('values');
-
-        $response = array(
-            'message' => '',
-            'error' => false,
-            'subscribe' => false,
-            'cart_access' => false,
-            'combination' => array(),
-            'message_modal' => false
-        );
-
+        
         $product = $this->product->get($product_id);
+        $response = $this->combination->select($product, $field_value_ids);
+       
+        $options = array(
+            'calculate' => false,
+            'imagestyle' => $this->setting('image_style_product', 5));
+        
+        $this->setItemThumb($response['combination'], $options);
+        $this->setItemPrice($response['combination'], $options);
 
-        if (empty($product['status'])) {
-
-            $response['error'] = true;
-            $response['message'] = $this->text('Unavailable product');
-
-            $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
-            return $response;
-        }
-
-        if (empty($field_value_ids)) {
-
-            $response['error'] = true;
-            $response['message'] = $this->text('No option selected');
-
-            $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
-            return $response;
-        }
-
-        $field_value_ids = array_values($field_value_ids);
-        $combination_id = $this->combination->id($field_value_ids, $product_id);
-
-        if (empty($product['combination'][$combination_id])) {
-
-            $response['error'] = true;
-            $response['message'] = $this->text('Invalid option combination');
-
-            $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
-            return $response;
-        }
-
-        $combination = $product['combination'][$combination_id];
-
-        if (!empty($combination['price'])) {
-            $combination['price'] = $this->price->format($combination['price'], $product['currency']);
-        }
-
-        if (!empty($combination['path'])) {
-            $preset = $this->store->config('image_style_product');
-            $combination['image'] = $this->image->url($preset, $combination['path']);
-        }
-
-        $response['combination'] = $combination;
-
-        if (empty($combination['stock']) && $product['subtract']) {
-            $response['subscribe'] = true;
-            $response['message'] = $this->text('Out of stock');
-        }
-
-        $response['cart_access'] = true;
-
-        $this->hook->fire('switch.product.options', $field_value_ids, $product, $response);
         return $response;
     }
 

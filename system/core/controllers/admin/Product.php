@@ -579,6 +579,7 @@ class Product extends BackendController
     protected function validateProduct(array $product = array())
     {
         $this->setSubmittedBool('status');
+        $this->setSubmittedBool('subtract');
 
         if (isset($product['product_id'])) {
             $this->setSubmitted('user_id', $product['user_id']);

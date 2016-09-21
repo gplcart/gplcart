@@ -136,5 +136,56 @@ class Combination extends Model
 
         return implode('_', $field_value_ids);
     }
+    
+    /**
+     * 
+     * @param array $product
+     * @param array $field_value_ids
+     * @return boolean|string
+     */
+    public function select(array $product, array $field_value_ids)
+    {
+        $this->hook->fire('select.combination.before', $product, $field_value_ids);
+
+        $response = array(
+            'modal' => '',
+            'cart_access' => true,
+            'severity' => '',
+            'combination' => array(),
+            'message' => ''
+        );
+
+        if (empty($product['status'])) {
+            $response['severity'] = 'danger';
+            $response['message'] = $this->text('Unavailable product');
+            return $response;
+        }
+
+        if (empty($field_value_ids)) {
+            $response['severity'] = 'warning';
+            $response['message'] = $this->language->text('No option selected');
+            return $response;
+        }
+
+        $combination_id = $this->id($field_value_ids, $product['product_id']);
+
+        if (empty($product['combination'][$combination_id])) {
+            $response['severity'] = 'danger';
+            $response['message'] = $this->language->text('Invalid option combination');
+            return $response;
+        }
+
+        $response['combination'] = $product['combination'][$combination_id];
+        $response['combination']['currency'] = $product['currency'];
+
+        if (empty($response['combination']['stock']) && $product['subtract']) {
+            $response['cart_access'] = false;
+            $response['severity'] = 'warning';
+            $response['message'] = $this->language->text('Out of stock');
+        }
+
+        $this->hook->fire('select.combination.after', $product, $field_value_ids, $response);
+        return $response;
+    }
 
 }

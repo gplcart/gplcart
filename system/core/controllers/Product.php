@@ -84,15 +84,16 @@ class Product extends FrontendController
 
         $this->setCssIndexProduct();
         $this->setJsIndexProduct($product);
-        
+
         $this->setTitleIndexProduct($product);
         $this->outputIndexProduct();
     }
-    
+
     /**
      * Sets CSS on the product page
      */
-    protected function setCssIndexProduct() {
+    protected function setCssIndexProduct()
+    {
         $this->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css');
     }
 
