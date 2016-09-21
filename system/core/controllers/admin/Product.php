@@ -279,6 +279,10 @@ class Product extends BackendController
 
         $stores = $this->store->getList();
         $products = $this->product->getList($query);
+        
+        if(empty($products)){
+            return array();
+        }
 
         foreach ($products as &$product) {
             $product['view_url'] = '';

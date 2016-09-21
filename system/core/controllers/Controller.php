@@ -302,6 +302,10 @@ class Controller extends BaseController
         );
 
         $products = $this->product->getList($conditions);
+        
+        if(empty($products)){
+            return array();
+        }
 
         if (empty($options['prepare'])) {
             return $products;

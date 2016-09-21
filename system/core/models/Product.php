@@ -741,8 +741,9 @@ class Product extends Model
         }
 
         array_unshift($existing, $product_id);
-
         $saved = array_unique($existing);
+        
+        $this->controlViewedLimit($saved, $limit);
 
         Tool::setCookie('viewed_products', implode('|', $saved), $lifespan);
         return $saved;
@@ -757,12 +758,26 @@ class Product extends Model
     {
         $cookie = Tool::getCookie('viewed_products', '');
         $products = array_filter(explode('|', $cookie), 'is_numeric');
-
-        if (isset($limit)) {
-            $products = array_slice($products, 0, $limit);
-        }
-
+        $this->controlViewedLimit($products, $limit);
         return $products;
+    }
+    
+    /**
+     * Reduces an array of recently viewed products
+     * If the limit is set to X and > 0,
+     * it removes all but first X items in the array
+     * @param array $items
+     * @param integer $limit
+     * @return array
+     */
+    protected function controlViewedLimit(array &$items, $limit){
+        
+        if (empty($limit)) {
+            return $items;
+        }
+        
+        $items = array_slice($items, 0, $limit + 1);
+        return $items;
     }
 
     /**

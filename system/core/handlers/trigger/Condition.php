@@ -208,6 +208,10 @@ class Condition
         foreach ($data['cart']['items'] as $item) {
             $product_ids[] = $item['product_id'];
         }
+        
+        if(empty($product_ids)){
+            return false;
+        }
 
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
 
@@ -245,6 +249,10 @@ class Condition
         $product_ids = array();
         foreach ($data['cart']['items'] as $item) {
             $product_ids[] = $item['product_id'];
+        }
+        
+        if(empty($product_ids)){
+           return false; 
         }
 
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));

@@ -134,10 +134,12 @@ class Ajax extends FrontendController
         );
 
         $products = $this->product->getList($options);
-
-        if (!empty($products)) {
-            $stores = $this->store->getList();
+        
+        if(empty($products)){
+            return array();
         }
+
+        $stores = $this->store->getList();
 
         $list = array();
         foreach ($products as $product) {
