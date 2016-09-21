@@ -331,9 +331,12 @@
                         alert(GplCart.text('An error occurred'));
                         return false;
                     }
+                    
+                    var wrapper = $('#combination-message');
+                    wrapper.empty().hide();
 
                     if (data.message) {
-                        $('#combination-message').toggleClass('text-' + data.severity).html(data.message).show();
+                        wrapper.toggleClass('text-' + data.severity).html(data.message).show();
                     }
 
                     if (data.modal) {
