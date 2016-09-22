@@ -62,7 +62,7 @@
           </td>
           <td class="middle">
             <?php if(!isset($item['status'])) { ?>
-            <i class="fa fa-question-circle-o"></i>
+            <i title="<?php echo $this->text('Unknown'); ?>" class="fa fa-question-circle-o"></i>
             <?php } else if (empty($item['status'])){ ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>

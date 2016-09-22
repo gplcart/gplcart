@@ -1,14 +1,14 @@
 /* global GplCart, Backend */
 (function ($) {
 
-    Backend.include.page = Backend.include.page || {attach: {}};
+    Backend.include.page = Backend.include.page || {attach: {}, helper: {}};
 
     /**
      * Refreshes selectpicker state
      * @param {Object} selector
      * @returns {undefined}
      */
-    Backend.include.page.attach.selectpickerRefresh = function (selector) {
+    Backend.include.page.helper.selectpickerRefresh = function (selector) {
         selector.selectpicker('refresh');
     }
 
@@ -53,7 +53,7 @@
                         }
 
                         category = category.html(options);
-                        Backend.include.page.attach.selectpickerRefresh(category);
+                        Backend.include.page.helper.selectpickerRefresh(category);
                     }
                 },
                 complete: function () {
@@ -61,8 +61,8 @@
                     store = store.prop('disabled', false);
                     category = category.prop('disabled', false);
 
-                    Backend.include.page.attach.selectpickerRefresh(store);
-                    Backend.include.page.attach.selectpickerRefresh(category);
+                    Backend.include.page.helper.selectpickerRefresh(store);
+                    Backend.include.page.helper.selectpickerRefresh(category);
                 }
             });
         });
