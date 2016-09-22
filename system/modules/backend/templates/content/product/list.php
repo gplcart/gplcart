@@ -50,6 +50,11 @@
           <tr>
             <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
             <th class="middle">
+              <a href="<?php echo $sort_product_id; ?>">
+                <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+              </a>
+            </th>
+            <th class="middle">
               <a href="<?php echo $sort_title; ?>">
                 <?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i>
               </a>
@@ -87,6 +92,7 @@
             <th></th>
           </tr>
           <tr class="filters active">
+            <th></th>
             <th></th>
             <th class="middle">
               <input class="form-control" placeholder="<?php echo $this->text('Any'); ?>" maxlength="255" name="title" value="<?php echo $filter_title; ?>">
@@ -152,8 +158,8 @@
           <tr data-product-id="<?php echo $id; ?>">
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
-              <input type="hidden" name="product[product_id]" value="<?php echo $id; ?>">
             </td>
+            <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
                 <?php echo $this->truncate($this->escape($product['title']), 30); ?>
             </td>

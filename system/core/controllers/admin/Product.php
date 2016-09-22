@@ -113,7 +113,7 @@ class Product extends BackendController
         $this->setData('currencies', $currencies);
 
         $filters = array('title', 'sku', 'price', 'stock', 'status',
-            'store_id', 'currency');
+            'store_id', 'product_id', 'currency');
 
         $this->setFilter($filters, $query);
 
