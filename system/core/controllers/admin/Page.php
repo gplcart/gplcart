@@ -80,7 +80,7 @@ class Page extends BackendController
         $this->setData('pages', $pages);
         $this->setData('stores', $stores);
 
-        $filters = array('title', 'store_id',
+        $filters = array('title', 'store_id', 'page_id',
             'status', 'created', 'email');
 
         $this->setFilter($filters, $query);

@@ -272,16 +272,23 @@ class Page extends Model
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.page_id)';
         }
+        
+        $language = $this->language->current();
+        $where = array($language, 'page_id');        
 
         $sql .= ' FROM page p'
                 . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
                 . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.page_id)'
-                . ' LEFT JOIN user u ON(p.user_id = u.user_id)'
-                . ' WHERE p.page_id > 0';
+                . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
 
-        $language = $this->language->current();
-
-        $where = array($language, 'page_id');
+        if (!empty($data['page_id'])) {
+            $ids = (array) $data['page_id'];
+            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+            $sql .= ' WHERE p.page_id IN(' . $placeholders . ')';
+            $where = array_merge($where, $ids);
+        } else {
+            $sql .= ' WHERE p.page_id > 0';
+        }
 
         if (isset($data['title'])) {
             $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
@@ -312,7 +319,8 @@ class Page extends Model
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title' => 'p.title', 'store_id' => 'p.store_id',
-            'status' => 'p.status', 'created' => 'p.created', 'email' => 'u.email');
+            'page_id' => 'p.page_id', 'status' => 'p.status',
+            'created' => 'p.created', 'email' => 'u.email');
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {

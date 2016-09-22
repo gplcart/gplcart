@@ -43,6 +43,11 @@
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>
             <th>
+              <a href="<?php echo $sort_page_id; ?>">
+                <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+              </a>
+            </th>
+            <th>
               <a href="<?php echo $sort_title; ?>">
                 <?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i>
               </a>
@@ -71,6 +76,7 @@
           </tr>
           <tr class="filters active">
             <th></th>
+            <th><?php echo $this->text('ID'); ?></th>
             <th>
               <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
@@ -125,6 +131,7 @@
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
+            <td class="middle"><?php echo $this->escape($id); ?></td>
             <td class="middle"><?php echo $this->truncate($this->escape($page['title']), 30); ?></td>
             <td class="middle">
               <?php if (isset($stores[$page['store_id']])) { ?>
