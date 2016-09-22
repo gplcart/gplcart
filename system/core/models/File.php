@@ -597,7 +597,8 @@ class File extends Model
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title' => 'title', 'path' => 'f.path',
-            'created' => 'f.created', 'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
+            'file_id' => 'f.file_id','created' => 'f.created',
+            'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
@@ -615,7 +616,6 @@ class File extends Model
         }
 
         $files = $this->db->fetchAll($sql, $where, array('index' => 'file_id'));
-
         $this->hook->fire('files', $files);
         return $files;
     }

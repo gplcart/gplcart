@@ -24,6 +24,11 @@
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>
             <th>
+              <a href="<?php echo $sort_file_id; ?>">
+                <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+              </a>
+            </th>
+            <th>
               <a href="<?php echo $sort_title; ?>">
                 <?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i>
               </a>
@@ -46,6 +51,7 @@
             <th></th>
           </tr>
           <tr class="filters active">
+            <th></th>
             <th></th>
             <th><input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
             <th><input class="form-control" name="mime_type" value="<?php echo $filter_mime_type; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
@@ -73,6 +79,7 @@
           <?php foreach ($files as $id => $file) { ?>
           <tr>
             <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"></td>
+            <td class="middle"><?php echo $id; ?></td>
             <td class="middle"><?php echo $this->escape($this->truncate($file['title'], 30)); ?></td>
             <td class="middle"><?php echo $this->escape($this->truncate($file['mime_type'])); ?></td>
             <td class="middle">

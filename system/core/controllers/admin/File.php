@@ -50,7 +50,7 @@ class File extends BackendController
 
         $this->setData('files', $files);
 
-        $allowed = array('title', 'mime_type', 'created', 'path');
+        $allowed = array('title', 'mime_type', 'file_id', 'created', 'path');
         $this->setFilter($allowed, $query);
 
         $this->setTitleListFile();
