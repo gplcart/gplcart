@@ -14,10 +14,12 @@
                 
                 var params = {
                     term: request.term,
-                    token: GplCart.settings.token
+                    token: GplCart.settings.token,
+                    action: 'getCollectionItemAjax',
+                    collection_id: GplCart.settings.collection.collection_id
                 };
                 
-                $.post(GplCart.settings.urn, params, function (data) {
+                $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         
                         var result = {

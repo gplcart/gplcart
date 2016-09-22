@@ -91,16 +91,11 @@ class Search extends FrontendController
      */
     protected function setBreadcrumbIndexSearch()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Search'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -138,6 +133,10 @@ class Search extends FrontendController
             'limit' => $limit) + $query;
 
         $results = $this->search->search('product_id', $term, $options);
+
+        if (empty($results)) {
+            return array();
+        }
 
         return $this->prepareProducts($results, $query);
     }

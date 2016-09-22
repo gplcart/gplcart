@@ -533,16 +533,23 @@ class File extends Model
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(f.file_id),';
         }
+        
+        $language = 'und';
+        //$this->language->current();
+        $where = array($language);
 
         $sql .= 'COALESCE(NULLIF(ft.title, ""), f.title) AS title'
                 . ' FROM file f'
-                . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)'
-                . ' WHERE f.file_id > 0';
+                . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
 
-        $language = 'und';
-        //$this->language->current();
-
-        $where = array($language);
+        if (!empty($data['file_id'])) {
+            $ids = (array) $data['file_id'];
+            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+            $sql .= ' WHERE f.file_id IN(' . $placeholders . ')';
+            $where = array_merge($where, $ids);
+        } else {
+            $sql .= ' WHERE f.file_id > 0';
+        }
 
         if (isset($data['title'])) {
             $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';

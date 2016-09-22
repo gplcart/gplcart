@@ -66,7 +66,6 @@ class Category extends FrontendController
 
         $max = $this->setting('catalog_limit', 20);
         $limit = $this->setPager($total, $query, $max);
-
         $products = $this->getListProductCategory($limit, $query, $category_id);
 
         $this->setDataImagesCategory($category);

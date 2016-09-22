@@ -75,8 +75,7 @@ class Collection extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'type', 'store_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         }
 
@@ -267,7 +266,7 @@ class Collection extends Model
         $sql = 'SELECT collection_item_id'
                 . ' FROM collection_item'
                 . ' WHERE collection_id=?';
-        
+
         $result = $this->db->fetchColumn($sql, array($collection_id));
         return empty($result);
     }
@@ -319,7 +318,7 @@ class Collection extends Model
             'id_key' => 'product_id',
             'handlers' => array(
                 'list' => array('core\\models\\Product', 'getList'),
-                'validate' => array('core\\handlers\\validator\\Collection', 'product'),
+                'validate' => array('core\\handlers\\validator\\CollectionItem', 'product'),
             ),
         );
 
@@ -328,7 +327,7 @@ class Collection extends Model
             'id_key' => 'file_id',
             'handlers' => array(
                 'list' => array('core\\models\\File', 'getList'),
-                'validate' => array('core\\handlers\\validator\\Collection', 'file'),
+                'validate' => array('core\\handlers\\validator\\CollectionItem', 'file'),
             ),
         );
 
@@ -337,7 +336,7 @@ class Collection extends Model
             'id_key' => 'page_id',
             'handlers' => array(
                 'list' => array('core\\models\\Page', 'getList'),
-                'validate' => array('core\\handlers\\validator\\Collection', 'page'),
+                'validate' => array('core\\handlers\\validator\\CollectionItem', 'page'),
             ),
         );
 

@@ -14,6 +14,8 @@ use core\models\State as ModelsState;
 use core\models\Search as ModelsSearch;
 use core\models\Rating as ModelsRating;
 use core\models\Country as ModelsCountry;
+use core\models\Collection as ModelsCollection;
+use core\models\CollectionItem as ModelsCollectionItem;
 use core\models\Combination as ModelsCombination;
 use core\controllers\Controller as FrontendController;
 
@@ -60,6 +62,18 @@ class Ajax extends FrontendController
     protected $combination;
 
     /**
+     * Collection model instance
+     * @var \core\models\Collection $collection
+     */
+    protected $collection;
+
+    /**
+     * Collection item model instance
+     * @var \core\models\CollectionItem $collection_item
+     */
+    protected $collection_item;
+
+    /**
      * Constructor
      * @param ModelsCountry $country
      * @param ModelsState $state
@@ -67,10 +81,13 @@ class Ajax extends FrontendController
      * @param ModelsFile $file
      * @param ModelsRating $rating
      * @param ModelsCombination $combination
+     * @param ModelsCollection $collection
+     * @param ModelsCollectionItem $collection_item
      */
     public function __construct(ModelsCountry $country, ModelsState $state,
             ModelsSearch $search, ModelsFile $file, ModelsRating $rating,
-            ModelsCombination $combination)
+            ModelsCombination $combination, ModelsCollection $collection,
+            ModelsCollectionItem $collection_item)
     {
         parent::__construct();
 
@@ -79,7 +96,9 @@ class Ajax extends FrontendController
         $this->rating = $rating;
         $this->search = $search;
         $this->country = $country;
+        $this->collection = $collection;
         $this->combination = $combination;
+        $this->collection_item = $collection_item;
     }
 
     /**
@@ -105,7 +124,7 @@ class Ajax extends FrontendController
         try {
             $response = $this->{$action}();
         } catch (\BadMethodCallException $exc) {
-            $response = array('error' => $this->text('An error occurred'));
+            $response = array('error' => $exc->getMessage());
         }
 
         $this->response->json($response);
@@ -134,8 +153,8 @@ class Ajax extends FrontendController
         );
 
         $products = $this->product->getList($options);
-        
-        if(empty($products)){
+
+        if (empty($products)) {
             return array();
         }
 
@@ -188,14 +207,14 @@ class Ajax extends FrontendController
     {
         $product_id = (int) $this->request->post('product_id');
         $field_value_ids = (array) $this->request->post('values');
-        
+
         $product = $this->product->get($product_id);
         $response = $this->combination->select($product, $field_value_ids);
-       
+
         $options = array(
             'calculate' => false,
             'imagestyle' => $this->setting('image_style_product', 5));
-        
+
         $this->setItemThumb($response['combination'], $options);
         $this->setItemPrice($response['combination'], $options);
 
@@ -257,6 +276,35 @@ class Ajax extends FrontendController
     }
 
     /**
+     * Returns an array of suggested collection entities
+     * @return array
+     */
+    public function getCollectionItemAjax()
+    {
+        $term = (string) $this->request->post('term');
+        $collection_id = (int) $this->request->post('collection_id');
+
+        if (empty($term) || empty($collection_id)) {
+            return array('error' => $this->text('An error occurred'));
+        }
+
+        $collection = $this->collection->get($collection_id);
+
+        if (empty($collection)) {
+            return array('error' => $this->text('An error occurred'));
+        }
+
+        if (!$this->access($collection['type'])) {
+            return array('error' => $this->text('You are not permitted to perform this operation'));
+        }
+
+        $max = $this->config('admin_autocomplete_limit', 10);
+        $options = array('title' => $term, 'limit' => array(0, $max));
+
+        return $this->collection_item->getSuggestions($collection, $options);
+    }
+
+    /**
      * Returns an array of products for admin
      * @return array
      */
@@ -271,8 +319,8 @@ class Ajax extends FrontendController
 
         $entityname = preg_replace('/_id$/', '', $id);
 
-        if (!$this->access('admin') || !$this->access($entityname)) {
-            return array('error' => $this->text('An error occurred'));
+        if (!$this->access($entityname)) {
+            return array('error' => $this->text('You are not permitted to perform this operation'));
         }
 
         $preset = $this->config('admin_image_style', 2);

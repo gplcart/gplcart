@@ -26,7 +26,7 @@
                 <input type="hidden" name="token" value="<?php echo $token; ?>">
                 <input type="hidden" name="product[product_id]" value="<?php echo $product['product_id']; ?>">
                 <?php if (in_array('wishlist_remove', $buttons)) { ?>
-                <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" name="remove_from_wishlist" value="1">
+                <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" data-ajax="true" name="remove_from_wishlist" value="1">
                 <i class="fa fa-trash"></i>
                 </button>
                 <?php } ?>
@@ -37,7 +37,7 @@
                 <?php } ?>
                 <?php if (in_array('wishlist_add', $buttons)) { ?>
                 <?php if (empty($product['in_wishlist'])) { ?>
-                <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" name="add_to_wishlist" value="1">
+                <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
                   <i class="fa fa-heart"></i>
                 </button>
                 <?php } else { ?>
@@ -48,7 +48,7 @@
                 <?php } ?>
                 <?php if (in_array('compare_add', $buttons)) { ?>
                 <?php if (empty($product['in_comparison'])) { ?>
-                <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" name="add_to_compare" value="1">
+                <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
                   <i class="fa fa-balance-scale"></i>
                 </button>
                 <?php } else { ?>
@@ -58,7 +58,7 @@
                 <?php } ?>
                 <?php } ?>
                 <?php if (in_array('cart_add', $buttons)) { ?>
-                <button title="<?php echo $this->text('Add to cart'); ?>" class="btn btn-default btn-success" name="add_to_cart" value="1">
+                <button title="<?php echo $this->text('Add to cart'); ?>" class="btn btn-default btn-success" data-ajax="true" name="add_to_cart" value="1">
                   <i class="fa fa-shopping-cart"></i>
                 </button>
                 <?php } ?>

@@ -298,6 +298,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Cart', 'limits')
             ),
         );
+        
+        $handlers['collection_item_value'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\CollectionItem', 'value')
+            ),
+        );
 
         $handlers['country_code_unique'] = array(
             'handlers' => array(

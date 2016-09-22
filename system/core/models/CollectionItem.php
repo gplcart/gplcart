@@ -121,9 +121,9 @@ class CollectionItem extends Model
             return false;
         }
 
-        $data['collection_item_id'] = $this->db->insert('collection', $data);
+        $data['collection_item_id'] = $this->db->insert('collection_item', $data);
 
-        $this->hook->fire('add.collection.after', $data);
+        $this->hook->fire('add.collection.item.after', $data);
         return $data['collection_item_id'];
     }
 
@@ -190,17 +190,11 @@ class CollectionItem extends Model
     /**
      * Returns an array of collection item entities
      * @param array $collection
-     * @param array $options
      * @return array
      */
-    public function getEntities(array $collection, array $options = array())
+    public function getListItems(array $collection)
     {
-        $handler_id = $collection['type'];
-        $handlers = $this->collection->getHandlers();
-
-        $options += array(
-            'status' => 1,
-            'store_id' => $collection['store_id'],
+        $options = array(
             'collection_id' => $collection['collection_id']
         );
 
@@ -209,9 +203,15 @@ class CollectionItem extends Model
         if (empty($values)) {
             return array();
         }
+        
+        $handler_id = $collection['type'];
+        $handlers = $this->collection->getHandlers();
+        
+        $conditions = array(
+            $handlers[$handler_id]['id_key'] => array_keys($values)
+        );
 
-        $options[$handlers[$handler_id]['id_key']] = array_keys($values);
-        $results = Handler::call($handlers, $handler_id, 'list', array($options));
+        $results = Handler::call($handlers, $handler_id, 'list', array($conditions));
 
         if (empty($results)) {
             return array();
@@ -234,7 +234,6 @@ class CollectionItem extends Model
      */
     public function getSuggestions(array $collection, array $options = array())
     {
-
         $handler_id = $collection['type'];
         $handlers = $this->collection->getHandlers();
 

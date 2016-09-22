@@ -108,9 +108,8 @@ class CollectionItem extends BackendController
      */
     protected function getListCollectionItem(array $collection)
     {
-
-        $items = $this->collection_item->getEntities($collection);
-
+        $items = $this->collection_item->getListItems($collection);
+        
         return $items;
     }
 
@@ -139,7 +138,6 @@ class CollectionItem extends BackendController
      */
     protected function setTitleListCollectionItem(array $collection)
     {
-
         $title = $this->text('Items of collection %name', array(
             '%name' => $collection['title']));
 
@@ -179,7 +177,6 @@ class CollectionItem extends BackendController
     public function editCollectionItem($collection_id)
     {
         $collection = $this->getCollection($collection_id);
-        $this->outputEntitiesCollectionItem($collection);
         $handler = $this->getHandlerCollectionItem($collection);
 
         $this->setData('handler', $handler);
@@ -187,11 +184,21 @@ class CollectionItem extends BackendController
         
         $this->submitCollectionItem($collection);
 
+        $this->setJsEditCollectionItem($collection);
         $this->setTitleEditCollectionItem($collection);
         $this->setBreadcrumbEditCollectionItem($collection);
         $this->outputEditCollectionItem();
     }
     
+    /**
+     * Sets JS on the edit collection item page
+     * @param array $collection
+     */
+    protected function setJsEditCollectionItem(array $collection)
+    {
+        $this->setJsSettings('collection', $collection);
+    }
+
     /**
      * Saves a submitted collection item
      * @param array $collection
@@ -206,10 +213,8 @@ class CollectionItem extends BackendController
         $this->validateCollectionItem($collection);
 
         if (!$this->hasErrors('collection_item')) {
-            return;
+            $this->addCollectionItem($collection);
         }
-
-        $this->addCollectionItem();
     }
 
     /**
@@ -217,30 +222,32 @@ class CollectionItem extends BackendController
      * @param array $collection
      */
     protected function validateCollectionItem(array $collection){
+        
+        $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $collection['collection_id']);
+        
+        $this->addValidator('value', array('collection_item_value' => array()));
+        $this->setValidators($collection);
     }
     
     /**
      * Adds a new item to the collection
      */
-    protected function addCollectionItem(){
-        
-    }
-
-    /**
-     * Outputs an AJAX string with autocomplete suggestions
-     * @param array $collection
-     */
-    protected function outputEntitiesCollectionItem(array $collection)
+    protected function addCollectionItem(array $collection)
     {
-        $title = (string) $this->request->post('term', '', 'raw');
+        $this->controlAccess('collection_item_add');
 
-        if ($title !== '') {
-            $max = $this->config('admin_autocomplete_limit', 10);
-            $options = array('title' => $title, 'limit' => array(0, $max));
-            $entities = $this->collection_item->getSuggestions($collection, $options);
-            $this->response->json($entities);
+        $submitted = $this->getSubmitted();
+        $added = $this->collection_item->add($submitted);
+
+        if (empty($added)) {
+            $message = $this->text('Collection item has not been added');
+            $this->redirect('', $message, 'warning');
         }
+
+        $url = "admin/content/collection-item/{$collection['collection_id']}";
+        $message = $this->text('Collection item has been added');
+        $this->redirect($url, $message, 'success');
     }
 
     /**

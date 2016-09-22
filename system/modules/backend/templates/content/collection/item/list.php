@@ -49,7 +49,7 @@
         <?php foreach ($items as $item) { ?>
         <tr data-collection-item-id="<?php echo $item['collection_item_id']; ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value=""></td>
-          <td class="middle"><?php echo $this->truncate($this->escape($collection_item['title'])); ?></td>
+          <td class="middle"><?php echo $this->truncate($this->escape($item['title'])); ?></td>
           <td class="middle">
             <?php if (empty($category['status'])) { ?>
             <i class="fa fa-square-o"></i>

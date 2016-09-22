@@ -121,7 +121,7 @@ class Route
 
         $routes[''] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Front', 'front')
+                'controller' => array('core\\controllers\\Front', 'indexFront')
             )
         );
 

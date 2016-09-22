@@ -37,8 +37,7 @@ body {
     display: inline;
 }
 
-.navbar-static-top.first,
-.navbar.category {
+.navbar-static-top.first {
     margin-bottom: 0;
     background-color: #fff;
     border-radius: 0;
@@ -46,7 +45,12 @@ body {
 }
 
 .navbar.category {
-    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    border: none;
+}
+
+.panel-body .pagination {
+    margin-bottom: 0;
 }
 
 .footer {
