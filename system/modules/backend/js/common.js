@@ -224,6 +224,8 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                     Backend.ui.loading(false);
                 }
             });
+            
+            return false;
         });
     };
 

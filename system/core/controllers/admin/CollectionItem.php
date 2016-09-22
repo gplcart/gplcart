@@ -77,11 +77,22 @@ class CollectionItem extends BackendController
 
         $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
+        
+        // Update weight and returm JSON responce
+        if ($action === 'weight' && $this->access('collection_item_edit')) {
+
+            foreach ($selected as $id => $weight) {
+                $this->collection_item->update($id, array('weight' => $weight));
+            }
+
+            $this->response->json(array(
+                'success' => $this->text('Collection items have been reordered')));
+        }
 
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
-
+            
             if ($action === 'status' && $this->access('collection_item_edit')) {
                 $updated += (int) $this->collection_item->update($id, array('status' => $value));
             }
@@ -178,7 +189,9 @@ class CollectionItem extends BackendController
     {
         $collection = $this->getCollection($collection_id);
         $handler = $this->getHandlerCollectionItem($collection);
+        $weight = $this->collection_item->getNextWeight($collection_id);
 
+        $this->setData('weight', $weight);
         $this->setData('handler', $handler);
         $this->setData('collection', $collection);
         
@@ -226,7 +239,25 @@ class CollectionItem extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $collection['collection_id']);
         
-        $this->addValidator('value', array('collection_item_value' => array()));
+        $input = $this->getSubmitted('input');
+        
+        if(is_numeric($input)){
+            $this->setSubmitted('value', $input);
+        }
+        
+        $this->addValidator('value', array(
+            'collection_item_value' => array()
+        ));
+        
+        $this->addValidator('weight', array(
+            'length' => array('min' => 1, 'max' => 2),
+            'numeric' => array()
+        ));
+        
+        $this->addValidator('data.url', array(
+            'length' => array('max' => 255)
+        ));
+        
         $this->setValidators($collection);
     }
     

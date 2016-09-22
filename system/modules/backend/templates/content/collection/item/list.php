@@ -36,29 +36,41 @@
     </div>  
   </div>
   <div class="panel-body table-responsive">  
-    <table class="table table-striped categories">
+    <table class="table table-striped collection-items">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Title'); ?></th>
-          <th><?php echo $this->text('Enabled'); ?></th>
+          <th><?php echo $this->text('Status'); ?></th>
+          <th><?php echo $this->text('Entity status'); ?></th>
           <th><?php echo $this->text('Weight'); ?></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($items as $item) { ?>
-        <tr data-collection-item-id="<?php echo $item['collection_item_id']; ?>">
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value=""></td>
+        <tr data-collection-item-id="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>">
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>"></td>
+          <td class="middle"><?php echo $this->truncate($this->escape($item['collection_item']['collection_item_id'])); ?></td>
           <td class="middle"><?php echo $this->truncate($this->escape($item['title'])); ?></td>
           <td class="middle">
-            <?php if (empty($category['status'])) { ?>
+            <?php if (empty($item['collection_item']['status'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
           <td class="middle">
-            <i class="fa fa-arrows handle"></i> <span class="weight"></span>
+            <?php if(!isset($item['status'])) { ?>
+            <i class="fa fa-question-circle"></i>
+            <?php } else if (empty($item['status'])){ ?>
+            <i class="fa fa-square-o"></i>
+            <?php } else { ?>
+            <i class="fa fa-check-square-o"></i>
+            <?php } ?>
+          </td>
+          <td class="middle">
+            <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $item['collection_item']['weight']; ?></span>
           </td>
         </tr>
         <?php } ?>

@@ -11,6 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Handler;
+use core\classes\Tool;
 use core\models\Collection as ModelsCollection;
 
 /**
@@ -51,6 +52,11 @@ class CollectionItem extends Model
         $sql .= ' FROM collection_item WHERE collection_item_id > 0';
 
         $where = array();
+        
+        if (isset($data['value'])) {
+            $sql .= ' AND value = ?';
+            $where[] = (int) $data['value'];
+        }
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
@@ -69,7 +75,7 @@ class CollectionItem extends Model
                 && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
-            $sql .= " ORDER BY weight ASC";
+            $sql .= " ORDER BY weight DESC";
         }
 
         if (!empty($data['limit'])) {
@@ -85,27 +91,6 @@ class CollectionItem extends Model
 
         $this->hook->fire('collection.item.list', $items);
         return $items;
-    }
-
-    /**
-     * Returns an array of collection item values
-     * @param array $options
-     * @return array
-     */
-    public function getValues(array $options)
-    {
-        $items = $this->getList($options);
-
-        if (empty($items)) {
-            return array();
-        }
-
-        $values = array();
-        foreach ((array) $items as $id => $item) {
-            $values[$item['value']] = $id;
-        }
-
-        return $values;
     }
 
     /**
@@ -192,24 +177,27 @@ class CollectionItem extends Model
      * @param array $collection
      * @return array
      */
-    public function getListItems(array $collection)
+    public function getListItems(array $collection, array $conditions = array())
     {
-        $options = array(
+        $conditions += array(
             'collection_id' => $collection['collection_id']
         );
 
-        $values = $this->getValues($options);
+        $list = $this->getList($conditions);
 
-        if (empty($values)) {
+        if (empty($list)) {
             return array();
+        }
+        
+        // Reindex collection items by value
+        $items = array();
+        foreach($list as $item){
+            $items[$item['value']] = $item;
         }
         
         $handler_id = $collection['type'];
         $handlers = $this->collection->getHandlers();
-        
-        $conditions = array(
-            $handlers[$handler_id]['id_key'] => array_keys($values)
-        );
+        $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
 
         $results = Handler::call($handlers, $handler_id, 'list', array($conditions));
 
@@ -217,13 +205,27 @@ class CollectionItem extends Model
             return array();
         }
 
-        foreach ($results as $id => &$result) {
-            if (isset($values[$id])) {
-                $result['collection_item_id'] = $values[$id];
+        foreach ($results as $entity_id => &$result) {
+            if (isset($items[$entity_id])) {
+               $result['weight'] = $items[$entity_id]['weight'];
+               $result['collection_item'] = $items[$entity_id];
             }
         }
-
+        
+        Tool::sortWeight($results);
         return $results;
+    }
+    
+    /**
+     * Returns the next possible weight for a collection item
+     * @param integer $collection_id
+     * @return integer
+     */
+    public function getNextWeight($collection_id)
+    {
+        $sql = 'SELECT MAX(weight) FROM collection_item WHERE collection_id=?';
+        $weight = (int) $this->db->fetchColumn($sql, array($collection_id));
+        return ++$weight;
     }
 
     /**

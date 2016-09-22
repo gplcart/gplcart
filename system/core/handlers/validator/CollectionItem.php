@@ -15,6 +15,7 @@ use core\models\Page as ModelsPage;
 use core\models\Product as ModelsProduct;
 use core\models\Language as ModelsLanguage;
 use core\models\Collection as ModelsCollection;
+use core\models\CollectionItem as ModelsCollectionItem;
 
 /**
  * Provides methods to validate collection item data
@@ -53,22 +54,30 @@ class CollectionItem
     protected $collection;
 
     /**
+     * Collection item model instance
+     * @var \core\models\CollectionItem $collection_item
+     */
+    protected $collection_item;
+
+    /**
      * Constructor
      * @param ModelsFile $file
      * @param ModelsPage $page
      * @param ModelsProduct $product
      * @param ModelsCollection $collection
+     * @param ModelsCollectionItem $collection_item
      * @param ModelsLanguage $language
      */
     public function __construct(ModelsFile $file, ModelsPage $page,
             ModelsProduct $product, ModelsCollection $collection,
-            ModelsLanguage $language)
+            ModelsCollectionItem $collection_item, ModelsLanguage $language)
     {
         $this->file = $file;
         $this->page = $page;
         $this->product = $product;
         $this->language = $language;
         $this->collection = $collection;
+        $this->collection_item = $collection_item;
     }
 
     /**
@@ -81,6 +90,17 @@ class CollectionItem
     {
         if (empty($value) || empty($options['data']['type'])) {
             return false;
+        }
+
+        $conditions = array(
+            'value' => $value,
+            'collection_id' => $options['data']['collection_id']
+        );
+
+        $existing = $this->collection_item->getList($conditions);
+
+        if (!empty($existing)) {
+            return $this->language->text('Value already exists in this collection');
         }
 
         $handler_id = $options['data']['type'];

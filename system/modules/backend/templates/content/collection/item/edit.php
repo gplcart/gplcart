@@ -15,18 +15,54 @@
               <input name="collection_item[status]" type="radio" autocomplete="off" value="0"<?php echo empty($collection_item['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
           </div>
+          <div class="help-block">
+          <?php echo $this->text('Only enabled items will be shown to frontend users'); ?>
+          </div>
         </div>
       </div>
       <input type="hidden" name="collection_item[value]" value="<?php echo isset($collection_item['value']) ? $collection_item['value'] : ''; ?>">
-      <div class="form-group required<?php echo isset($this->errors['input']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo isset($this->errors['value']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->escape($handler['title']); ?>
         </label>
         <div class="col-md-6">
           <input name="collection_item[input]" class="form-control" value="<?php echo isset($collection_item['input']) ? $this->escape($collection_item['input']) : ''; ?>">
-          <?php if (isset($this->errors['input'])) { ?>
-          <div class="help-block"><?php echo $this->errors['input']; ?></div>
+          <div class="help-block">
+          <?php if (isset($this->errors['value'])) { ?>
+          <?php echo $this->errors['value']; ?>
           <?php } ?>
+          <div class="text-muted">
+          <?php echo $this->text('Required. Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group<?php echo isset($this->errors['data']['url']) ? ' has-error' : ''; ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Url'); ?></label>
+        <div class="col-md-6">
+          <input name="collection_item[data][url]" class="form-control" value="<?php echo isset($collection_item['data']['url']) ? $this->escape($collection_item['data']['url']) : ''; ?>">
+          <div class="help-block">
+          <?php if (isset($this->errors['data']['url'])) { ?>
+          <?php echo $this->errors['data']['url']; ?>
+          <?php } ?>
+          <div class="text-muted">
+          <?php echo $this->text('Optional. Enter a referring URL. You can use either absolute (with http://) or relative URLs'); ?>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group required<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
+        <div class="col-md-3">
+          <input name="collection_item[weight]" class="form-control" value="<?php echo isset($collection_item['weight']) ? $this->escape($collection_item['weight']) : $weight; ?>">
+          <div class="help-block">
+          <?php if (isset($this->errors['weight'])) { ?>
+          <?php echo $this->errors['weight']; ?>
+          <?php } ?>
+          <div class="text-muted">
+          <?php echo $this->text('Required. Position of the item. Items with lower weight go first'); ?>
+          </div>
+          </div>
         </div>
       </div>
     </div>
