@@ -316,6 +316,10 @@ class Collection extends Model
         $handlers['product'] = array(
             'title' => $this->language->text('Product'),
             'id_key' => 'product_id',
+            'template' => array(
+                'list' => 'product/list',
+                'item' => 'product/item/grid',
+            ),
             'handlers' => array(
                 'list' => array('core\\models\\Product', 'getList'),
                 'validate' => array('core\\handlers\\validator\\CollectionItem', 'product'),
@@ -325,6 +329,10 @@ class Collection extends Model
         $handlers['file'] = array(
             'title' => $this->language->text('File'),
             'id_key' => 'file_id',
+            'template' => array(
+                'list' => 'collection/list/file',
+                'item' => 'collection/item/file'
+            ),
             'handlers' => array(
                 'list' => array('core\\models\\File', 'getList'),
                 'validate' => array('core\\handlers\\validator\\CollectionItem', 'file'),
@@ -334,6 +342,10 @@ class Collection extends Model
         $handlers['page'] = array(
             'title' => $this->language->text('Page'),
             'id_key' => 'page_id',
+            'template' => array(
+                'list' => 'collection/list/page',
+                'item' => 'collection/item/page'
+            ),
             'handlers' => array(
                 'list' => array('core\\models\\Page', 'getList'),
                 'validate' => array('core\\handlers\\validator\\CollectionItem', 'page'),

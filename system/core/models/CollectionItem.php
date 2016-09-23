@@ -12,6 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Handler;
 use core\classes\Tool;
+use core\classes\Cache;
 use core\models\Collection as ModelsCollection;
 
 /**
@@ -43,6 +44,14 @@ class CollectionItem extends Model
      */
     public function getList(array $data = array())
     {
+        ksort($data);
+        
+        $items = &Cache::memory('collection.item.list.' . md5(json_encode($data)));
+        
+        if(isset($items)){
+            return $items;
+        }
+        
         $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
                 . 'c.type, c.title AS collection_title';
 
@@ -62,7 +71,9 @@ class CollectionItem extends Model
         }
 
         if (isset($data['status'])) {
+            $sql .= ' AND c.status = ?';
             $sql .= ' AND ci.status = ?';
+            $where[] = (int) $data['status'];
             $where[] = (int) $data['status'];
         }
         
