@@ -325,6 +325,73 @@
       </div>
     </div>
   </div>
+  <?php if(isset($store['store_id'])) { ?>
+  <div class="panel panel-default">
+    <div class="panel-heading"><?php echo $this->text('Collections'); ?></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Banners'); ?></label>
+        <div class="col-md-4">
+          <select name="store[data][collection_banner]" class="form-control">
+          <option value="0"><?php echo $this->text('Disabled'); ?></option>
+          <?php if(!empty($collections['file'])) { ?>
+          <?php foreach($collections['file'] as $collection_id => $collection) { ?>
+          <?php if(isset($store['data']['collection_banner']) && $store['data']['collection_banner'] == $collection_id) { ?>
+          <option value="<?php echo $collection_id; ?>" selected><?php echo $this->escape($collection['title']); ?></option>
+          <?php } else { ?>
+          <option value="<?php echo $collection_id; ?>"><?php echo $this->escape($collection['title']); ?></option>
+          <?php } ?>
+          <?php } ?>
+          <?php } ?>
+          </select>
+          <div class="help-block">
+            <?php echo $this->text('Select a <a href="@href">collection</a> to be used for banner slideshow on the front page', array('@href' => $this->url('admin/content/collection'))); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Featured products'); ?></label>
+        <div class="col-md-4">
+          <select name="store[data][collection_featured]" class="form-control">
+          <option value="0"><?php echo $this->text('Disabled'); ?></option>
+          <?php if(!empty($collections['product'])) { ?>
+          <?php foreach($collections['product'] as $collection_id => $collection) { ?>
+          <?php if(isset($store['data']['collection_featured']) && $store['data']['collection_featured'] == $collection_id) { ?>
+          <option value="<?php echo $collection_id; ?>" selected><?php echo $this->escape($collection['title']); ?></option>
+          <?php } else { ?>
+          <option value="<?php echo $collection_id; ?>"><?php echo $this->escape($collection['title']); ?></option>
+          <?php } ?>
+          <?php } ?>
+          <?php } ?>
+          </select>
+          <div class="help-block">
+            <?php echo $this->text('Select a <a href="@href">collection</a> to be used for list of featured products on the front page', array('@href' => $this->url('admin/content/collection'))); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Pages'); ?></label>
+        <div class="col-md-4">
+          <select name="store[data][collection_page]" class="form-control">
+          <option value="0"><?php echo $this->text('Disabled'); ?></option>
+          <?php if(!empty($collections['page'])) { ?>
+          <?php foreach($collections['page'] as $collection_id => $collection) { ?>
+          <?php if(isset($store['data']['collection_page']) && $store['data']['collection_page'] == $collection_id) { ?>
+          <option value="<?php echo $collection_id; ?>" selected><?php echo $this->escape($collection['title']); ?></option>
+          <?php } else { ?>
+          <option value="<?php echo $collection_id; ?>"><?php echo $this->escape($collection['title']); ?></option>
+          <?php } ?>
+          <?php } ?>
+          <?php } ?>
+          </select>
+          <div class="help-block">
+            <?php echo $this->text('Select a <a href="@href">collection</a> to be used for list of articles/news on the front page', array('@href' => $this->url('admin/content/collection'))); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <?php } ?>
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Images'); ?></div>
     <div class="panel-body">
@@ -438,8 +505,3 @@
     </div>
   </div>
 </form>
-<script>
-    if ('map' in GplCart.settings) {
-        GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1]);
-    }
-</script>

@@ -45,13 +45,13 @@ class CollectionItem extends Model
     public function getList(array $data = array())
     {
         ksort($data);
-        
+
         $items = &Cache::memory('collection.item.list.' . md5(json_encode($data)));
-        
-        if(isset($items)){
+
+        if (isset($items)) {
             return $items;
         }
-        
+
         $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
                 . 'c.type, c.title AS collection_title';
 
@@ -64,7 +64,7 @@ class CollectionItem extends Model
                 . ' WHERE ci.collection_item_id > 0';
 
         $where = array();
-        
+
         if (isset($data['value'])) {
             $sql .= ' AND ci.value = ?';
             $where[] = (int) $data['value'];
@@ -76,22 +76,23 @@ class CollectionItem extends Model
             $where[] = (int) $data['status'];
             $where[] = (int) $data['status'];
         }
-        
+
         if (isset($data['store_id'])) {
             $sql .= ' AND c.store_id = ?';
             $where[] = (int) $data['store_id'];
         }
-
-        if (isset($data['collection_id'])) {
-            $sql .= ' AND ci.collection_id = ?';
-            $where[] = (int) $data['collection_id'];
+        
+        if (!empty($data['collection_id'])) {
+            $ids = (array) $data['collection_id'];
+            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+            $sql .= ' AND ci.collection_id IN(' . $placeholders . ')';
+            $where = array_merge($where, $ids);
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('weight', 'status', 'collection_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY ci.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY ci.weight DESC";
@@ -203,13 +204,13 @@ class CollectionItem extends Model
         if (empty($list)) {
             return array();
         }
-        
+
         // Reindex collection items by value
         $items = array();
-        foreach($list as $item){
+        foreach ($list as $item) {
             $items[$item['value']] = $item;
         }
-        
+
         $handler_id = $conditions['type'];
         $handlers = $this->collection->getHandlers();
         $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
@@ -222,15 +223,15 @@ class CollectionItem extends Model
 
         foreach ($results as $entity_id => &$result) {
             if (isset($items[$entity_id])) {
-               $result['weight'] = $items[$entity_id]['weight'];
-               $result['collection_item'] = $items[$entity_id];
+                $result['weight'] = $items[$entity_id]['weight'];
+                $result['collection_item'] = $items[$entity_id];
             }
         }
-        
+
         Tool::sortWeight($results);
         return $results;
     }
-    
+
     /**
      * Returns the next possible weight for a collection item
      * @param integer $collection_id

@@ -11,6 +11,7 @@ namespace core\controllers\admin;
 
 use core\models\Image as ModelsImage;
 use core\models\Module as ModelsModule;
+use core\models\Collection as ModelsCollection;
 use core\controllers\admin\Controller as BackendController;
 
 /**
@@ -30,18 +31,27 @@ class Store extends BackendController
      * @var \core\models\Module $module
      */
     protected $module;
-
+    
+    /**
+     * Collection model instance
+     * @var \core\models\Collection $collection
+     */
+    protected $collection;
+    
     /**
      * Constructor
      * @param ModelsImage $image
      * @param ModelsModule $module
+     * @param ModelsCollection $collection
      */
-    public function __construct(ModelsImage $image, ModelsModule $module)
+    public function __construct(ModelsImage $image, ModelsModule $module,
+            ModelsCollection $collection)
     {
         parent::__construct();
 
         $this->image = $image;
         $this->module = $module;
+        $this->collection = $collection;
     }
 
     /**
@@ -73,9 +83,8 @@ class Store extends BackendController
     public function editStore($store_id = null)
     {
         $store = $this->getStore($store_id);
-
-        $themes = $this->module->getByType('theme', true);
-        unset($themes[$this->theme_backend]);
+        $themes = $this->getListThemeStore();
+        $collections = $this->getListCollectionStore($store_id);
 
         $is_default = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
         $can_delete = (isset($store['store_id']) && $this->store->canDelete($store['store_id']));
@@ -84,6 +93,7 @@ class Store extends BackendController
         $this->setData('themes', $themes);
         $this->setData('is_default', $is_default);
         $this->setData('can_delete', $can_delete);
+        $this->setData('collections', $collections);
 
         $this->submitStore($store);
         $this->setDataEditStore();
@@ -93,6 +103,36 @@ class Store extends BackendController
         $this->seTitleEditStore($store);
         $this->setBreadcrumbEditStore();
         $this->outputEditStore();
+    }
+    
+    /**
+     * Returns an array of available theme modules excluding bakend theme
+     * @return array
+     */
+    protected function getListThemeStore()
+    {
+        $themes = $this->module->getByType('theme', true);
+        unset($themes[$this->theme_backend]);
+        return $themes;
+    }
+    
+    /**
+     * Returns an array of enabled collection for the current store
+     * keyed by entity name
+     * @param integer $store_id
+     * @return array
+     */
+    protected function getListCollectionStore($store_id)
+    {
+        $conditions = array('status' => 1, 'store_id' => $store_id);
+        $collections = $this->collection->getList($conditions);
+
+        $list = array();
+        foreach ($collections as $collection) {
+            $list[$collection['type']][$collection['collection_id']] = $collection;
+        }
+
+        return $list;
     }
 
     /**

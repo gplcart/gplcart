@@ -471,6 +471,16 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     Backend.attach.chartTraffic = function () {
         Backend.ui.chart('traffic', 'line');
     };
+    
+    /**
+     * Sets up Google Map
+     * @returns {undefined}
+     */
+    Backend.attach.map = function () {
+        if (GplCart.settings.map) {
+            GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1]);
+        }
+    };
 
     /**
      * Init the module when DOM is ready

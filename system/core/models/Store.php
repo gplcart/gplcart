@@ -241,16 +241,9 @@ class Store extends Model
             'phone' => array(),
             'theme' => 'frontend',
             'title' => 'GPL Cart',
-            'hours' => array(
-                array('09:00 AM' => '05:00 PM'),
-                array('09:00 AM' => '05:00 PM'),
-                array('09:00 AM' => '05:00 PM'),
-                array('09:00 AM' => '05:00 PM'),
-                array('09:00 AM' => '05:00 PM'),
-                array(),
-                array(),
-            ),
-            'social' => array()
+            'collection_banner' => 1,
+            'collection_featured' => 2,
+            'collection_page' => 3
         );
     }
 
