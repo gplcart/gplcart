@@ -43,28 +43,36 @@ class CollectionItem extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT *';
+        $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
+                . 'c.type, c.title AS collection_title';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(collection_item_id)';
         }
 
-        $sql .= ' FROM collection_item WHERE collection_item_id > 0';
+        $sql .= ' FROM collection_item ci'
+                . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
+                . ' WHERE ci.collection_item_id > 0';
 
         $where = array();
         
         if (isset($data['value'])) {
-            $sql .= ' AND value = ?';
+            $sql .= ' AND ci.value = ?';
             $where[] = (int) $data['value'];
         }
 
         if (isset($data['status'])) {
-            $sql .= ' AND status = ?';
+            $sql .= ' AND ci.status = ?';
             $where[] = (int) $data['status'];
+        }
+        
+        if (isset($data['store_id'])) {
+            $sql .= ' AND c.store_id = ?';
+            $where[] = (int) $data['store_id'];
         }
 
         if (isset($data['collection_id'])) {
-            $sql .= ' AND collection_id = ?';
+            $sql .= ' AND ci.collection_id = ?';
             $where[] = (int) $data['collection_id'];
         }
 
@@ -73,9 +81,9 @@ class CollectionItem extends Model
 
         if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
                 && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+            $sql .= " ORDER BY ci.{$data['sort']} {$data['order']}";
         } else {
-            $sql .= " ORDER BY weight DESC";
+            $sql .= " ORDER BY ci.weight DESC";
         }
 
         if (!empty($data['limit'])) {
@@ -174,15 +182,11 @@ class CollectionItem extends Model
 
     /**
      * Returns an array of collection item entities
-     * @param array $collection
+     * @param array $conditions
      * @return array
      */
-    public function getListItems(array $collection, array $conditions = array())
+    public function getListItems(array $conditions = array())
     {
-        $conditions += array(
-            'collection_id' => $collection['collection_id']
-        );
-
         $list = $this->getList($conditions);
 
         if (empty($list)) {
@@ -195,7 +199,7 @@ class CollectionItem extends Model
             $items[$item['value']] = $item;
         }
         
-        $handler_id = $collection['type'];
+        $handler_id = $conditions['type'];
         $handlers = $this->collection->getHandlers();
         $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
 

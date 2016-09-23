@@ -119,9 +119,11 @@ class CollectionItem extends BackendController
      */
     protected function getListCollectionItem(array $collection)
     {
-        $items = $this->collection_item->getListItems($collection);
+        $conditions = array(
+            'type' => $collection['type'],
+            'collection_id' => $collection['collection_id']);
         
-        return $items;
+        return $this->collection_item->getListItems($conditions);
     }
 
     /**
