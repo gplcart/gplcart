@@ -522,6 +522,8 @@ class File extends Model
      */
     public function getList(array $data = array())
     {
+        ksort($data);
+        
         $files = &Cache::memory('files.' . md5(json_encode($data)));
 
         if (isset($files)) {

@@ -220,7 +220,9 @@ class Category extends Model
      */
     public function getTree(array $data)
     {
-        $tree = &Cache::memory('category.tree.' . implode('.', $data));
+        ksort($data);
+        
+        $tree = &Cache::memory('category.tree.' . md5(json_encode($data)));
 
         if (isset($tree)) {
             return $tree;

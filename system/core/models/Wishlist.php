@@ -282,6 +282,8 @@ class Wishlist extends Model
      */
     public function getList(array $data = array())
     {
+        ksort($data);
+        
         $cache_key = 'wishlist.' . md5(json_encode($data));
 
         $items = &Cache::memory($cache_key);

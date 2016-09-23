@@ -341,6 +341,8 @@ class Country extends Model
      */
     public function getList(array $data = array())
     {
+        ksort($data);
+        
         $list = &Cache::memory('countries.' . md5(json_encode($data)));
 
         if (isset($list)) {

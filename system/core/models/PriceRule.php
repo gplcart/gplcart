@@ -53,6 +53,8 @@ class PriceRule extends Model
      */
     public function getList(array $data = array())
     {
+        ksort($data);
+        
         $price_rules = &Cache::memory('price.rules.' . md5(json_encode($data)));
 
         if (isset($price_rules)) {
