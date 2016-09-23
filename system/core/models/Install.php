@@ -246,16 +246,27 @@ class Install extends Model
     {
         $collections = array();
 
-        $collections['front_slideshow'] = array(
+        $collections[] = array(
             'type' => 'file',
-            'title' => 'Front slideshow',
-            'description' => 'Block with rotating banners on the front page',
+            'title' => 'Banners',
+            'description' => 'Block with banners on the front page',
+        );
+        
+        $collections[] = array(
+            'type' => 'product',
+            'title' => 'Featured products',
+            'description' => 'Block with featured products on the front page',
+        );
+        
+        $collections[] = array(
+            'type' => 'page',
+            'title' => 'News/articles',
+            'description' => 'Block with news/articles on the front page',
         );
 
-        foreach ($collections as $name => $collection) {
+        foreach ($collections as $collection) {
             $collection += array('status' => 1, 'store_id' => $store_id);
-            $collection_id = $this->db->insert('collection', $collection);
-            $this->config->set("collection_$name", $collection_id);
+            $this->db->insert('collection', $collection);
         }
     }
 
