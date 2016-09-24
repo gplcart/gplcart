@@ -89,11 +89,11 @@ class File extends BackendController
      */
     protected function setBreadcrumbListFile()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin'));
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -137,9 +137,7 @@ class File extends BackendController
 
         foreach ($selected as $file_id) {
             if ($action === 'delete' && $this->access('file_delete')) {
-
                 $result = $this->file->deleteAll($file_id);
-
                 $deleted_disk += $result['disk'];
                 $deleted_database += $result['database'];
             }
@@ -166,13 +164,14 @@ class File extends BackendController
         }
     }
 
+    /**
+     * Displays the file edit page
+     * @param null|integer $file_id
+     */
     public function editFile($file_id = null)
     {
-
         $this->downloadFile();
-
         $file = $this->getFile($file_id);
-
         $extensions = $this->file->supportedExtensions(true);
 
         $this->submitFile($file);
@@ -279,9 +278,7 @@ class File extends BackendController
     protected function updateFile(array $file)
     {
         $this->controlAccess('file_edit');
-
         $submitted = $this->getSubmitted();
-
         $updated = $this->file->update($file['file_id'], $submitted);
 
         if ($updated) {
@@ -299,9 +296,7 @@ class File extends BackendController
     protected function addFile()
     {
         $this->controlAccess('file_add');
-
         $submitted = $this->getSubmitted();
-
         $result = $this->file->add($submitted);
 
         if (empty($result)) {
@@ -333,12 +328,19 @@ class File extends BackendController
      */
     protected function setBreadcrumbEditFile()
     {
-        $breadcrumb = array(
+        $breadcrumbs = array();
+        
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
+        
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/content/file'),
+            'text' => $this->text('Files')
+        );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
