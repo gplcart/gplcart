@@ -101,8 +101,7 @@ class Store extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created ASC";
@@ -196,7 +195,7 @@ class Store extends Model
     protected function selectById($store_id)
     {
         $sql = 'SELECT * FROM store WHERE store_id=?';
-        
+
         $options = array('unserialize' => 'data');
         return $this->db->fetch($sql, array($store_id), $options);
     }

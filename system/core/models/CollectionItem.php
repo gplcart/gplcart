@@ -82,11 +82,9 @@ class CollectionItem extends Model
             $where[] = (int) $data['store_id'];
         }
         
-        if (!empty($data['collection_id'])) {
-            $ids = (array) $data['collection_id'];
-            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-            $sql .= ' AND ci.collection_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $ids);
+        if (isset($data['collection_id'])) {
+            $sql .= ' AND ci.collection_id = ?';
+            $where[] = (int) $data['collection_id'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -197,21 +195,22 @@ class CollectionItem extends Model
      * @param array $conditions
      * @return array
      */
-    public function getListItems(array $conditions = array())
+    public function getItems(array $conditions = array())
     {
         $list = $this->getList($conditions);
 
         if (empty($list)) {
             return array();
         }
+        
+        $handler_id = null;
 
-        // Reindex collection items by value
         $items = array();
         foreach ($list as $item) {
+            $handler_id = $item['type'];
             $items[$item['value']] = $item;
         }
-
-        $handler_id = $conditions['type'];
+        
         $handlers = $this->collection->getHandlers();
         $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
 

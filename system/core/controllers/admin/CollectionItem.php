@@ -123,7 +123,7 @@ class CollectionItem extends BackendController
             'type' => $collection['type'],
             'collection_id' => $collection['collection_id']);
         
-        return $this->collection_item->getListItems($conditions);
+        return $this->collection_item->getItems($conditions);
     }
 
     /**

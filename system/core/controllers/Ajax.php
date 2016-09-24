@@ -268,7 +268,7 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'template' => 'search/suggestion',
+            'template_item' => 'search/suggestion',
             'imagestyle' => $this->setting('image_style_product_list', 3)
         );
 

@@ -374,6 +374,12 @@ class Store extends BackendController
         $this->controlAccess('store_edit');
 
         $submitted = $this->getSubmitted();
+
+        // Prevent editing domain and basepath for default store
+        if ($this->store->isDefault($store['store_id'])) {
+            unset($submitted['domain'], $submitted['basepath']);
+        }
+        
         $this->store->update($store['store_id'], $submitted);
 
         $message = $this->text('Store %name has been updated', array(
@@ -402,12 +408,6 @@ class Store extends BackendController
     protected function validateStore(array $store)
     {
         $is_default = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
-
-        // Prevent editing domain and basepath for default store
-        if ($is_default) {
-            $this->setSubmitted('domain', null);
-            $this->setSubmitted('basepath', null);
-        }
 
         // Delete logo and favicon (if set)
         if ($this->isSubmitted('delete_favicon')) {

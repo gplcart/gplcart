@@ -137,9 +137,11 @@ class File extends BackendController
 
         foreach ($selected as $file_id) {
             if ($action === 'delete' && $this->access('file_delete')) {
-                $file = $this->file->get($file_id);
-                $deleted_database += (int) $this->file->delete($file_id);
-                $deleted_disk += (int) $this->file->deleteFromDisk($file);
+
+                $result = $this->file->deleteAll($file_id);
+
+                $deleted_disk += $result['disk'];
+                $deleted_database += $result['database'];
             }
         }
 
@@ -162,6 +164,209 @@ class File extends BackendController
             $filepath = GC_FILE_DIR . '/' . $file['path'];
             $this->response->download($filepath);
         }
+    }
+
+    public function editFile($file_id = null)
+    {
+
+        $this->downloadFile();
+
+        $file = $this->getFile($file_id);
+
+        $extensions = $this->file->supportedExtensions(true);
+
+        $this->submitFile($file);
+
+        $can_delete = (isset($file['file_id']) && $this->access('file_delete') && $this->file->canDelete($file_id));
+
+        $this->setData('file', $file);
+        $this->setData('can_delete', $can_delete);
+        $this->setData('extensions', $extensions);
+
+        $this->setTitleEditFile($file);
+        $this->setBreadcrumbEditFile($file);
+        $this->outputEditFile();
+    }
+
+    /**
+     * Saves an array of submitted values
+     * @param array $file
+     */
+    protected function submitFile(array $file)
+    {
+        if ($this->isPosted('delete') && isset($file['file_id'])) {
+            return $this->deleteFile($file);
+        }
+
+        if (!$this->isPosted('save')) {
+            return;
+        }
+
+        $this->setSubmitted('file');
+        $this->validateFile($file);
+
+        if ($this->hasErrors('file')) {
+            return;
+        }
+
+        if (isset($file['file_id'])) {
+            return $this->updateFile($file);
+        }
+
+        $this->addFile();
+    }
+
+    /**
+     * Validates a submitted data
+     * @param array $file
+     */
+    protected function validateFile(array $file)
+    {
+        $this->addValidator('title', array(
+            'length' => array('max' => 255)
+        ));
+
+        $this->addValidator('weight', array(
+            'numeric' => array(),
+            'length' => array('max' => 2)
+        ));
+
+        $this->addValidator('translation', array(
+            'translation' => array()
+        ));
+
+        if (empty($file['file_id'])) {
+            $this->addValidator('file', array(
+                'upload' => array(
+                    'required' => true,
+                    'control_errors' => true,
+                    'path' => 'image/upload/common',
+                    'file' => $this->request->file('file')
+            )));
+        }
+
+        $errors = $this->setValidators($file);
+
+        if (empty($errors) && empty($file['file_id'])) {
+            $uploaded = $this->getValidatorResult('file');
+            $this->setSubmitted('path', $uploaded);
+        }
+    }
+
+    /**
+     * Completely deletes a file from the database an disk
+     * @param array $file
+     */
+    protected function deleteFile(array $file)
+    {
+        $this->controlAccess('file_delete');
+
+        $result = $this->file->deleteAll($file['file_id']);
+
+        if (array_sum($result) === 2) {
+            $message = $this->text('File has been deleted from database and disk');
+            $this->redirect('admin/content/file', $message, 'success');
+        }
+
+        $message = $this->text('An error occurred while deleting the file');
+        $this->redirect('admin/content/file', $message, 'warning');
+    }
+
+    /**
+     * Updates a file with submitted values
+     * @param array $file
+     */
+    protected function updateFile(array $file)
+    {
+        $this->controlAccess('file_edit');
+
+        $submitted = $this->getSubmitted();
+
+        $updated = $this->file->update($file['file_id'], $submitted);
+
+        if ($updated) {
+            $message = $this->text('File has been updated');
+            $this->redirect('admin/content/file', $message, 'success');
+        }
+
+        $message = $this->text('File has not been updated');
+        $this->redirect('admin/content/file', $message, 'warning');
+    }
+
+    /**
+     * Adds a new file using an array of submitted values
+     */
+    protected function addFile()
+    {
+        $this->controlAccess('file_add');
+
+        $submitted = $this->getSubmitted();
+
+        $result = $this->file->add($submitted);
+
+        if (empty($result)) {
+            $message = $this->text('File has not been added');
+            $this->redirect('admin/content/file', $message, 'warning');
+        }
+
+        $message = $this->text('File has been added');
+        $this->redirect('admin/content/file', $message, 'success');
+    }
+
+    /**
+     * Sets titles on the edit file page
+     * @param array $file
+     */
+    protected function setTitleEditFile(array $file)
+    {
+        if (isset($file['file_id'])) {
+            $title = $this->text('Edit file %title', array('%title' => $file['title']));
+        } else {
+            $title = $this->text('Add file');
+        }
+
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the edit file page
+     */
+    protected function setBreadcrumbEditFile()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Renders the edit file page
+     */
+    protected function outputEditFile()
+    {
+        $this->output('content/file/edit');
+    }
+
+    /**
+     * Returns an array of file data
+     * @param integer $file_id
+     * @return array
+     */
+    protected function getFile($file_id)
+    {
+        if (!is_numeric($file_id)) {
+            return array();
+        }
+
+        $file = $this->file->get($file_id);
+
+        if (empty($file)) {
+            $this->outputError(404);
+        }
+
+        return $file;
     }
 
 }

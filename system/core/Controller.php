@@ -357,6 +357,10 @@ class Controller
      */
     public function render($file, array $data = array(), $fullpath = false)
     {
+        if(empty($file)){
+            return $this->text('No template file provided');
+        }
+        
         $module = $this->theme;
 
         if (strpos($file, '|') !== false) {
@@ -379,7 +383,7 @@ class Controller
         $this->setPhpErrors($data);
 
         if (!file_exists($template)) {
-            return "Could not load template $template";
+            return $this->text('Could not load template %path', array('%path' => $template));
         }
 
         if ($extension === '.twig') {

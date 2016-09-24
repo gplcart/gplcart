@@ -525,6 +525,20 @@ class Route
             )
         );
 
+        $routes['admin/content/file/add'] = array(
+            'access' => 'file_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\File', 'editFile')
+            )
+        );
+
+        $routes['admin/content/file/edit/(\d+)'] = array(
+            'access' => 'file_edit',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\File', 'editFile')
+            )
+        );
+
         $routes['admin/content/category-group'] = array(
             'access' => 'category_group',
             'menu' => array('admin' => 'Categories'),
@@ -985,12 +999,12 @@ class Route
     protected function setLangcode()
     {
         $lang = $this->request->get('lang');
-        
-        if(isset($lang)){
+
+        if (isset($lang)) {
             $this->langcode = $lang;
             return;
         }
-        
+
         $default_langcode = $this->config->get('language', '');
         $languages = $this->config->get('languages', array());
 
@@ -1108,7 +1122,7 @@ class Route
         $sql = 'SELECT alias'
                 . ' FROM alias'
                 . ' WHERE id_key=? AND id_value=?';
-        
+
         $conditions = array(
             $segments[$route['alias'][0]] . '_id',
             $segments[$route['alias'][1]]

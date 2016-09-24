@@ -9,6 +9,7 @@
 
 namespace core\controllers;
 
+use core\models\CollectionItem as ModelsCollectionItem;
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -16,13 +17,22 @@ use core\controllers\Controller as FrontendController;
  */
 class Front extends FrontendController
 {
-
+    
+    /**
+     * Collection item model instance
+     * @var \core\models\CollectionItem $collection_item
+     */
+    protected $collection_item;
+    
     /**
      * Constructor
+     * @param ModelsCollectionItem $collection_item
      */
-    public function __construct()
+    public function __construct(ModelsCollectionItem $collection_item)
     {
         parent::__construct();
+
+        $this->collection_item = $collection_item;
     }
 
     /**
@@ -30,8 +40,24 @@ class Front extends FrontendController
      */
     public function indexFront()
     {
+        $this->setRegionFeaturedFront();
+        
         $this->setTitleIndexFront();
         $this->outputIndexFront();
+    }
+    
+    /**
+     * Adds a block with featured products on the front page
+     */
+    protected function setRegionFeaturedFront()
+    {
+        $collection_id = $this->store->config('collection_featured');
+
+        if (!empty($collection_id)) {
+            $options = array('collection_id' => $collection_id);
+            $html = $this->renderCollectionProduct($options);
+            $this->setRegion('region_content', $html);
+        }
     }
 
     /**

@@ -16,7 +16,12 @@
           </li>
         </ul>
       </div>
-      <?php } ?> 
+      <?php } ?>
+      <?php if ($this->access('file_add') && $this->access('file_upload')) { ?>
+      <a class="btn btn-default pull-right" href="<?php echo $this->url('admin/content/file/add'); ?>">
+        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
+      </a>
+      <?php } ?>
     </div>
     <div class="panel-body table-responsive">
       <table class="table table-striped files">
@@ -96,6 +101,13 @@
                 <li>
                   <a href="<?php echo $this->url('', array('download' => $id)); ?>">
                     <?php echo strtolower($this->text('Download')); ?>
+                  </a>
+                </li>
+                <?php } ?>
+                <?php if ($this->access('file_edit')) { ?>
+                <li>
+                  <a href="<?php echo $this->url("admin/content/file/edit/$id"); ?>">
+                    <?php echo strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>

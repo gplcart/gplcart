@@ -320,10 +320,10 @@ class File extends Model
             return $valid;
         }
 
-        $moved = $this->move($tempname, $file);
+        $result = $this->move($tempname, $file);
 
-        if ($moved !== true) {
-            return $moved;
+        if ($result !== true) {
+            return $result;
         }
 
         $this->hook->fire('file.upload.after', $postfile, $this->uploaded);
@@ -403,7 +403,7 @@ class File extends Model
         $extensions = array_unique($extensions);
 
         if ($dot) {
-            // Prepend the dot to each extension in the array
+            // Prepend a dot to the each extension in the array
             $extensions = array_map(function ($value) {
                 return ".$value";
             }, $extensions);
@@ -523,7 +523,7 @@ class File extends Model
     public function getList(array $data = array())
     {
         ksort($data);
-        
+
         $files = &Cache::memory('files.' . md5(json_encode($data)));
 
         if (isset($files)) {
@@ -535,7 +535,7 @@ class File extends Model
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(f.file_id),';
         }
-        
+
         $language = 'und';
         //$this->language->current();
         $where = array($language);
@@ -599,11 +599,10 @@ class File extends Model
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title' => 'title', 'path' => 'f.path',
-            'file_id' => 'f.file_id','created' => 'f.created',
+            'file_id' => 'f.file_id', 'created' => 'f.created',
             'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY f.created DESC";
@@ -655,6 +654,36 @@ class File extends Model
         }
 
         return unlink(GC_FILE_DIR . '/' . $file['path']);
+    }
+
+    /**
+     * Deletes a file both from database and disk
+     * @param integer|array $file
+     * @return array
+     */
+    public function deleteAll($file)
+    {
+        if (is_numeric($file)) {
+            $file = $this->get($file);
+        }
+
+        if (empty($file['file_id'])) {
+            return array('database' => 0, 'disk' => 0);
+        }
+
+        $deleted_database = $this->delete($file['file_id']);
+
+        if (empty($deleted_database)) {
+            return array('database' => 0, 'disk' => 0);
+        }
+
+        $deleted_disk = $this->deleteFromDisk($file);
+
+        if (empty($deleted_disk)) {
+            return array('database' => 1, 'disk' => 0);
+        }
+
+        return array('database' => 1, 'disk' => 1);
     }
 
     /**

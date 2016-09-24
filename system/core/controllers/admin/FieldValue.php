@@ -153,6 +153,8 @@ class FieldValue extends BackendController
      */
     protected function setBreadcrumbListFieldValue()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -284,6 +286,8 @@ class FieldValue extends BackendController
      */
     protected function setBreadcrumbEditFieldValue(array $field)
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));

@@ -210,10 +210,10 @@ $tables['field_value_translation'] = array(
 $tables['file'] = array(
     'fields' => array(
         'file_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-        'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'id_value' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'weight' => array('type' => 'int', 'length' => 2, 'not_null' => true, 'default' => 0),
-        'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+        'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
         'file_type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
         'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'mime_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),

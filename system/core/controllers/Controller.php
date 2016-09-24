@@ -71,6 +71,12 @@ class Controller extends BaseController
      * @var \core\models\Category $category
      */
     protected $category;
+    
+    /**
+     * Collection item model instance
+     * @var \core\models\Collection item $collection_item
+     */
+    protected $collection_item;
 
     /**
      * Array of recently viewed products
@@ -156,6 +162,9 @@ class Controller extends BaseController
 
         /* @var $trigger \core\models\Trigger */
         $this->trigger = Container::instance('core\\models\\Trigger');
+        
+        /* @var $collection_item \core\models\CollectionItem */
+        $this->collection_item = Container::instance('core\\models\\CollectionItem');
     }
 
     /**
@@ -243,7 +252,7 @@ class Controller extends BaseController
         $options += array(
             'id_key' => 'product_id',
             'ids' => array_keys($products),
-            'template' => "product/item/{$options['view']}",
+            'template_item' => "product/item/{$options['view']}",
             'imagestyle' => $this->setting("image_style_product_{$options['view']}", 3)
         );
 
@@ -513,7 +522,7 @@ class Controller extends BaseController
             'buttons' => $options['buttons']
         );
 
-        $product['rendered'] = $this->render($options['template'], $data);
+        $product['rendered'] = $this->render($options['template_item'], $data);
     }
 
     /**
@@ -771,5 +780,82 @@ class Controller extends BaseController
         $product = $this->getValidatorResult('product_id');
         $this->setSubmitted('product', $product);
     }
+    
+    protected function getCollectionItems(array $options)
+    {
+        $options += array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
+
+        return $this->collection_item->getItems($options);
+    }
+
+    /**
+     * Returns rendered product collection
+     * @param array $options
+     * @return string
+     */
+    protected function renderCollectionProduct(array $options)
+    {
+        $options += array(
+            'template_list' => 'product/list'
+        );
+
+        $products = $this->getCollectionItems($options);
+
+        if (empty($products)) {
+            return '';
+        }
+
+        $prepared = $this->prepareProducts($products, $options);
+        return $this->render($options['template_list'], array('products' => $prepared));
+    }
+    
+    /**
+     * Returns rendered page collection
+     * @param array $options
+     * @return string
+     */
+    protected function renderCollectionPage(array $options)
+    {
+        $options += array(
+            'template_list' => 'collection/list/page',
+            'template_item' => 'collection/item/page'
+        );
+
+        $pages = $this->getCollectionItems($options);
+
+        if (empty($pages)) {
+            return '';
+        }
+
+        $prepared = $this->preparePages($pages, $options);
+        return $this->render($options['template_list'], array('pages' => $prepared));
+    }
+    
+    /**
+     * Returns rendered file collection
+     * @param array $options
+     * @return string
+     */
+    protected function renderCollectionFile(array $options)
+    {
+        $options += array(
+            'template_list' => 'collection/list/file',
+            'template_item' => 'collection/item/file'
+        );
+
+        $files = $this->getCollectionItems($options);
+
+        if (empty($files)) {
+            return '';
+        }
+
+        $prepared = $this->prepareFiles($files, $options);
+        return $this->render($options['template_list'], array('files' => $prepared));
+    }
+
+
 
 }
