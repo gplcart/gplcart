@@ -654,16 +654,13 @@ class Controller
             $this->response->error404();
         }
 
-        $theme_class = $this->config->getModuleClass($this->theme);
-        $theme_data = $this->config->getModuleData($theme_class);
+        $theme_data = $this->config->getModuleData($this->theme);
 
         if (empty($theme_data['info'])) {
             $this->response->error404();
         }
 
-        if (!empty($theme_data['info']['settings'])) {
-            $this->theme_settings = $theme_data['info']['settings'];
-        }
+        $this->theme_settings = $this->config->module($this->theme);
 
         if (isset($this->theme_settings['twig'])) {
             /* @var $twig \core\classes\Twig */

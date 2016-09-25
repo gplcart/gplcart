@@ -2,7 +2,6 @@
 
 /**
  * @package GPL Cart core
- * @version $Id$
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -10,11 +9,9 @@
 
 namespace modules\frontend\controllers;
 
-
 use core\models\Image as ModelsImage;
 use core\models\Module as ModelsModule;
 use modules\frontend\Frontend as ModulesFrontend;
-
 use core\controllers\admin\Controller as BackendController;
 
 class Frontend extends BackendController
@@ -37,14 +34,15 @@ class Frontend extends BackendController
      * @var \modules\frontend\Frontend $frontend
      */
     protected $frontend;
-    
+
     /**
      * Constructor
      * @param ModelsImage $image
      * @param ModelsModule $module
      * @param ModulesFrontend $frontend
      */
-    public function __construct(ModelsImage $image, ModelsModule $module, ModulesFrontend $frontend)
+    public function __construct(ModelsImage $image, ModelsModule $module,
+            ModulesFrontend $frontend)
     {
         parent::__construct();
 
@@ -58,81 +56,87 @@ class Frontend extends BackendController
      */
     public function settingsFrontend()
     {
-        $this->data['imagestyles'] = $this->image->getStyleNames();
-        $this->data['settings'] = $this->config->module('frontend');
+        $this->submitSettingsFrontend();
 
-        if ($this->request->post('save')) {
-            $this->submit();
-        }
+        $imagestyles = $this->image->getStyleNames();
+        $settings = $this->config->module('frontend');
 
-        $this->setTitleSettings();
-        $this->setBreadcrumbSettings();
-        $this->outputSettings();
+        $this->setData('settings', $settings);
+        $this->setData('imagestyles', $imagestyles);
+
+        $this->setTitleSettingsFrontend();
+        $this->setBreadcrumbSettingsFrontend();
+        $this->outputSettingsFrontend();
     }
 
     /**
      * Saves the submitted settings
-     * @return null
      */
-    protected function submit()
+    protected function submitSettingsFrontend()
     {
-        $this->submitted = $this->request->post('settings');
-
-        $this->validate();
-
-        if ($this->getErrors()) {
-            $this->data['settings'] = $this->submitted;
+        if (!$this->isPosted('save')) {
             return;
         }
 
+        $this->setSubmitted('settings');
+        $this->validateSettingsFrontend();
+
+        if (!$this->hasErrors('settings')) {
+            $this->updateSettingsFrontend();
+        }
+    }
+
+    /**
+     * Updates module settings with an array of submitted values
+     */
+    protected function updateSettingsFrontend()
+    {
         $this->controlAccess('module_edit');
-        $this->module->setSettings('frontend', $this->submitted);
-        $this->redirect('admin/module/list', $this->text('Settings have been updated'), 'success');
+
+        $settings = $this->getSubmitted();
+        $this->module->setSettings('frontend', $settings);
+
+        $message = $this->text('Settings have been updated');
+        $this->redirect('admin/module/list', $message, 'success');
     }
 
     /**
      * Validates an array of submitted settings
      */
-    protected function validate()
+    protected function validateSettingsFrontend()
     {
-        $this->validateNumeric();
-    }
+        $this->addValidator('catalog_limit', array(
+            'numeric' => array(),
+            'length' => array('min' => 1, 'max' => 2)
+        ));
 
-    /**
-     * Validates numeric fields
-     * @return boolean
-     */
-    protected function validateNumeric()
-    {
-        $has_errors = false;
-        foreach (array('catalog_limit') as $name) {
-            if (empty($this->submitted[$name])) {
-                $this->submitted[$name] = 0;
-                continue;
-            }
-
-            if (!is_numeric($this->submitted[$name]) || strlen($this->submitted[$name]) > 2) {
-                $this->errors[$name] = $this->text('Only numeric value and no more than %s digits', array('%s' => 2));
-                $has_errors = true;
-            }
-        }
-
-        return !$has_errors;
+        $this->setValidators();
     }
 
     /**
      * Sets breadcrumbs on the module settings page
      */
-    protected function setBreadcrumbSettings()
+    protected function setBreadcrumbSettingsFrontend()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Modules'), 'url' => $this->url('admin/module/list')));
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Modules'),
+            'url' => $this->url('admin/module/list')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
      * Renders the module settings page templates
      */
-    protected function outputSettings()
+    protected function outputSettingsFrontend()
     {
         $this->output('frontend|settings');
     }
@@ -140,8 +144,9 @@ class Frontend extends BackendController
     /**
      * Sets titles on the module settings page
      */
-    protected function setTitleSettings()
+    protected function setTitleSettingsFrontend()
     {
         $this->setTitle($this->text('Edit module settings'));
     }
+
 }

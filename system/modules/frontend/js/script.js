@@ -110,7 +110,7 @@
             $('.banners .slider').lightSlider({
                 auto: true,
                 loop: true,
-                autoWidth: true,
+                //autoWidth: true,
                 pager:false,
                 pauseOnHover: true,
                 item: 1,

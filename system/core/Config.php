@@ -220,8 +220,7 @@ class Config
             }
 
             $module_name = $module_dir;
-            $module_class = $this->getModuleClass($module_name);
-            $module_data = $this->getModuleData($module_class);
+            $module_data = $this->getModuleData($module_name, $saved_modules);
 
             if (empty($module_data['info']['core'])) {
                 continue;
@@ -241,7 +240,7 @@ class Config
             $module_info['hooks'] = $this->getHooks($module_instance);
 
             $module_info += array(
-                'class' => $module_class,
+                'class' => $module_data['class'],
                 'directory' => GC_MODULE_DIR . "/$module_name",
                 'name' => $module_name,
                 'description' => '',
@@ -270,21 +269,24 @@ class Config
 
         return $modules;
     }
-
+    
     /**
      * Returns an array containing module info and instance
-     * @param string $class
-     * @return boolean|array
+     * @param string $name
+     * @param array $saved_modules
+     * @return boolean
      */
-    public function getModuleData($class)
+    public function getModuleData($name, array $saved_modules = array())
     {
+        $class = $this->getModuleClass($name);
         $instance = Container::instance($class);
 
         if (empty($instance) || !is_callable(array($instance, 'info'))) {
             return false;
         }
-
-        return array('info' => $instance->info(), 'instance' => $instance);
+        
+        $info = $instance->info();
+        return array('class' => $class, 'info' => $info, 'instance' => $instance);
     }
 
     /**
@@ -310,7 +312,8 @@ class Config
         $sql = 'SELECT * FROM module ORDER BY weight ASC';
         $options = array('unserialize' => 'settings', 'index' => 'module_id');
 
-        return $this->db->fetchAll($sql, array(), $options);
+        $list = $this->db->fetchAll($sql, array(), $options);
+        return $list;
     }
 
     /**

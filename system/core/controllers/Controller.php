@@ -852,8 +852,9 @@ class Controller extends BaseController
      */
     protected function renderCollectionFile(array $options)
     {
+        
         $options += array(
-            'imagestyle' => 7,
+            'imagestyle' => $this->setting('image_style_collection_banner', 7),
             'template_item' => 'collection/item/file'
         );
 
