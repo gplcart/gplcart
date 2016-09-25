@@ -71,7 +71,7 @@ class Controller extends BaseController
      * @var \core\models\Category $category
      */
     protected $category;
-    
+
     /**
      * Collection item model instance
      * @var \core\models\Collection item $collection_item
@@ -162,7 +162,7 @@ class Controller extends BaseController
 
         /* @var $trigger \core\models\Trigger */
         $this->trigger = Container::instance('core\\models\\Trigger');
-        
+
         /* @var $collection_item \core\models\CollectionItem */
         $this->collection_item = Container::instance('core\\models\\CollectionItem');
     }
@@ -267,7 +267,7 @@ class Controller extends BaseController
 
         return $products;
     }
-    
+
     /**
      * Sets an additional data to an array of pages
      * @param array $pages
@@ -337,8 +337,8 @@ class Controller extends BaseController
         );
 
         $products = $this->product->getList($conditions);
-        
-        if(empty($products)){
+
+        if (empty($products)) {
             return array();
         }
 
@@ -513,7 +513,7 @@ class Controller extends BaseController
     protected function setItemPrice(array &$product, array $options = array())
     {
         $options += array('calculate' => true);
-        
+
         if ($this->catalog_pricerules && !empty($options['calculate'])) {
             //$calculated = $this->product->calculate($product, $this->store_id);
             //$product['price'] = $calculated['total'];
@@ -547,10 +547,10 @@ class Controller extends BaseController
             'token' => $this->token,
             'buttons' => $options['buttons']
         );
-        
+
         $this->setItemRendered($product, $data, $options);
     }
-    
+
     /**
      * Adds to the item its rendered HTML
      * @param array $item
@@ -817,7 +817,7 @@ class Controller extends BaseController
         $product = $this->getValidatorResult('product_id');
         $this->setSubmitted('product', $product);
     }
-    
+
     protected function getCollectionItems(array $options)
     {
         $options += array(
@@ -844,16 +844,16 @@ class Controller extends BaseController
         if (empty($products)) {
             return '';
         }
-        
+
         $item = reset($products);
         $title = $item['collection_item']['collection_title'];
 
         $prepared = $this->prepareProducts($products, $options);
         $data = array('products' => $prepared, 'title' => $title);
-        
+
         return $this->render($options['template_list'], $data);
     }
-    
+
     /**
      * Returns rendered page collection
      * @param array $options
@@ -871,16 +871,16 @@ class Controller extends BaseController
         if (empty($pages)) {
             return '';
         }
-        
+
         $item = reset($pages);
         $title = $item['collection_item']['collection_title'];
 
         $prepared = $this->preparePages($pages, $options);
         $data = array('pages' => $prepared, 'title' => $title);
-        
+
         return $this->render($options['template_list'], $data);
     }
-    
+
     /**
      * Returns rendered file collection
      * @param array $options
@@ -898,16 +898,16 @@ class Controller extends BaseController
         if (empty($files)) {
             return '';
         }
-        
-        foreach($files as &$file){
-            
+
+        foreach ($files as &$file) {
+
             $options['path'] = $file['path'];
-            
-            if(!empty($file['collection_item']['data']['url'])){
+
+            if (!empty($file['collection_item']['data']['url'])) {
                 $url = $file['collection_item']['data']['url'];
                 $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
             }
-            
+
             $this->setItemThumb($file, $options);
             $this->setItemRendered($file, array('file' => $file), $options);
         }
