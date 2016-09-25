@@ -169,11 +169,7 @@ class Session
      */
     protected function started()
     {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return (session_status() === PHP_SESSION_ACTIVE);
-        }
-
-        return (session_id() !== '');
+        return (session_status() === PHP_SESSION_ACTIVE);
     }
 
 }

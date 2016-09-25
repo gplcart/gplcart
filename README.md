@@ -8,7 +8,7 @@ GPLCart is an open source e-commerce platform based on the classical LAMP stack 
 
 ## Requirements ##
 
-- PHP 5.3+, Mysql 5+, Apache 1+
+- PHP 5.4+, Mysql 5+, Apache 1+
 
 Also you'll need the following extension enabled:
 
@@ -58,7 +58,7 @@ GPLCart - это движок интернет-магазина с открыт�
 
 ## Системные требования ##
 
-- PHP 5.3+, Mysql 5+, Apache 1+
+- PHP 5.4+, Mysql 5+, Apache 1+
 
 Также ваш PHP должен иметь следущие расширения:
 

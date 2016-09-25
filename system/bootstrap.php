@@ -4,8 +4,8 @@ use core\Container;
 
 error_reporting(E_ALL);
 
-if (version_compare(PHP_VERSION, '5.3.0') < 0) {
-    exit('Your PHP installation is too old. GPL Cart requires at least PHP 5.3.0');
+if (version_compare(PHP_VERSION, '5.4.0') < 0) {
+    exit('Your PHP installation is too old. GPL Cart requires at least PHP 5.4.0');
 }
 
 if (ini_get('session.auto_start')) {
