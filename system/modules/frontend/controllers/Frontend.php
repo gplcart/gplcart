@@ -74,6 +74,10 @@ class Frontend extends BackendController
      */
     protected function submitSettingsFrontend()
     {
+        if($this->isPosted('reset')){
+            return $this->resetSettingsFrontend();
+        }
+        
         if (!$this->isPosted('save')) {
             return;
         }
@@ -84,6 +88,18 @@ class Frontend extends BackendController
         if (!$this->hasErrors('settings')) {
             $this->updateSettingsFrontend();
         }
+    }
+    
+    /**
+     * Resets module settings to default values
+     */
+    protected function resetSettingsFrontend()
+    {
+        $this->controlAccess('module_edit');
+        $this->module->setSettings('frontend', array());
+
+        $message = $this->text('Settings have been reset to default values');
+        $this->redirect('', $message, 'success');
     }
 
     /**
