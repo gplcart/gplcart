@@ -41,7 +41,7 @@ class Frontend
         $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
             'handlers' => array(
-                'controller' => array('modules\\frontend\\controllers\\Frontend', 'settings')
+                'controller' => array('modules\\frontend\\controllers\\Frontend', 'settingsFrontend')
             )
         );
     }
@@ -62,13 +62,15 @@ class Frontend
         $controller->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
         $controller->setJs('files/assets/jquery/match-height/dist/jquery.matchHeight-min.js', 'top');
         $controller->setJs('files/assets/jquery/lightslider/dist/js/lightslider.min.js', 'top');
+        $controller->setJs('files/assets/jquery/lightgallery/dist/js/lightgallery-all.min.js', 'top');
 
         $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css', 0);
         $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css', 10);
         $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css', 20);
         $controller->setCss('files/assets/jquery/lightslider/dist/css/lightslider.min.css', 30);
-        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css', 40);
-        $controller->setCss('system/modules/frontend/css/style.css', 50);
+        $controller->setCss('files/assets/jquery/lightgallery/dist/css/lightgallery.min.css', 40);
+        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css', 50);
+        $controller->setCss('system/modules/frontend/css/style.css', 60);
     }
 
     /**

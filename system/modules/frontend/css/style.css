@@ -14,8 +14,6 @@ body {
     border-radius: 0;
 }
 
-
-
 .panel-default>.panel-heading {
     background-color: #fff;
 }
@@ -63,6 +61,14 @@ body {
     background-color: #fff;
 }
 
+.section {
+    margin-bottom: 20px;
+}
+
+.section.collection {
+    background: #fff;
+}
+
 .margin-bottom-20 {
     margin-bottom: 20px !important;
 }
@@ -76,7 +82,7 @@ span.required:before {
 
 table.compare [class*="col-"] {
     width: auto;
-    min-width: 12em;
+    min-width: 10em;
 }
 
 table.compare tbody > tr > td  {
@@ -203,242 +209,13 @@ td.middle {
     border-top: 0 !important;
 }
 
-
-/*************************** Carousel ***************************/
-
-.carousel .thumbnail {
-    margin-bottom: 0;
-}
-
-.carousel.block .carousel-control {
-    width:30px;
-    background-color: rgba(255, 255, 255, 0);
-    filter: alpha(opacity=1);
-    opacity: 1;
-    color:#777;
-}
-
-.carousel.block .carousel-control:focus,
-.carousel.block .carousel-control:hover {
-    text-decoration: none;
-    filter: alpha(opacity=1);
-    opacity: 1;
-}
-
-.carousel.block .carousel-control.left {
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .0001) 100%);
-    background-image: -o-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .0001) 100%);
-    background-image: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 1)), to(rgba(255, 255, 255, .0001)));
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .0001) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffffffff', GradientType=1);
-    text-align: left;
-    left: -5px;
-}
-.carousel.block .carousel-control.right {
-    background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, .0001) 0%, rgba(255, 255, 255, 1) 100%);
-    background-image: -o-linear-gradient(left, rgba(255, 255, 255, .0001) 0%, rgba(255, 255, 255, 1) 100%);
-    background-image: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, .0001)), to(rgba(255, 255, 255, 1)));
-    background-image: linear-gradient(to right, rgba(255, 255, 255, .0001) 0%, rgba(255, 255, 255, 1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffffffff', GradientType=1);
-    text-align: right;
-    right: -5px;
-}
-
-/* Large desktops and laptops */
-@media (min-width: 1200px) {
-    .carousel.block .carousel-control {
-        padding-top:12%;
-    } 
-}
-
-/* Landscape tablets and medium desktops */
-@media (min-width: 992px) and (max-width: 1199px) {
-    .carousel.block .carousel-control {
-        padding-top:12%;
-    }
-}
-
-/* Portrait tablets and small desktops */
-@media (min-width: 768px) and (max-width: 991px) {
-    .carousel.block .carousel-control {
-        padding-top: 30px;
-    }
-}
-
-/* Landscape phones and portrait tablets */
-@media (max-width: 767px) {
-    .carousel.block .carousel-control {
-        padding-top: 200px;
-    }
-}
-
-/* Portrait phones and smaller */
-@media (max-width: 480px) {
-    .carousel.block .carousel-control {
-        padding-top: 0;
-    }
-}
-
-/************************ Megamenu ************************/
-
-.megamenu .nav,
-.megamenu .collapse,
-.megamenu .dropup,
-.megamenu .dropdown {
-    position: static;
-}
-
-.megamenu .dropdown-menu {
-    left: auto;
-}
-
-.megamenu .dropdown.full-width .dropdown-menu {
-    left: 0;
-    right: 0;
-}
-
-.megamenu li.depth-1 {
-    float: left;
-    width: 25%;
-}
-
-.megamenu .depth-1 > li > a:focus,
-.megamenu .depth-1 > li > a:hover {
-    background-color: transparent !important;
-}
-
-.megamenu .depth-1 a {
-    color: #333 !important;
-}
-
-.megamenu ul.depth-2 {
-    padding-left: 20px;
-}
-
-.megamenu ul.depth-2 li {
-    list-style: none;
-    list-style-type: none;
+.slider.banner li { width:1200px; }
+@media (max-width: 768px) {
+    .slider.banner li { width:800px; }
 }
 
 .products div.thumbnail {
     border: none;
-}
-
-.region {
-    margin-bottom: 20px;
-}
-
-/************ Fullscreen carousel ************/
-
-/* Fading slide */
-.carousel-fade .carousel-inner { background: #000; }
-.carousel-fade .carousel-control { z-index: 2; }  
-.carousel-fade .item {
-    opacity: 0;
-    -webkit-transition-property: opacity;
-    -moz-transition-property: opacity;
-    -o-transition-property: opacity;
-    transition-property: opacity;
-}
-
-.carousel-fade .next.left,
-.carousel-fade .prev.right,
-.carousel-fade .item.active { opacity: 1; }
-
-.carousel-fade .active.left,
-.carousel-fade .active.right {
-    left: 0;
-    opacity: 0;
-    z-index: 1;
-}
-
-/* Safari Fix */
-@media all and (transform-3d), (-webkit-transform-3d) {
-    .carousel-fade .carousel-inner > .item.next,
-    .carousel-fade .carousel-inner > .item.active.right {
-        opacity: 0;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-    }
-    .carousel-fade .carousel-inner > .item.prev,
-    .carousel-fade .carousel-inner > .item.active.left {
-        opacity: 0;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-    }
-    .carousel-fade .carousel-inner > .item.next.left,
-    .carousel-fade .carousel-inner > .item.prev.right,
-    .carousel-fade .carousel-inner > .item.active {
-        opacity: 1;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-/******** End fading slide **********/
-
-.fullscreen-carousel .carousel,
-.fullscreen-carousel .item {
-    height: 100%;
-}
-
-.fullscreen-carousel .carousel-inner {
-    height: 100%;
-}
-
-.fullscreen-carousel .fill {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-}
-
-.fullscreen-carousel {
-    height: 500px;
-}
-
-.fullscreen-carousel .description {
-    display: table;
-    width: 100%;
-    height: 400px;
-}
-
-.fullscreen-carousel .description .inner {
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.fullscreen-carousel .description .content {
-    background: rgba(255, 255, 255, 0.5);
-    padding: 10px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.js .item.clickable {
-    cursor: pointer;
-}
-
-.js .item.clickable .description .content {
-    cursor: default !important;
-}
-
-.fullscreen-carousel .carousel-indicators li {
-    border-color: #ddd;
-    width: 18px;
-    height: 18px;
-}
-
-.fullscreen-carousel .carousel-indicators li.active {
-    background: #ddd;
-}
-
-.recent-products form {
-    display: none;
 }
 
 /******** Search ************/

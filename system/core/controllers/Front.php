@@ -40,7 +40,10 @@ class Front extends FrontendController
      */
     public function indexFront()
     {
+        
+        $this->setRegionBannerFront();
         $this->setRegionFeaturedFront();
+        
         
         $this->setTitleIndexFront();
         $this->outputIndexFront();
@@ -56,6 +59,20 @@ class Front extends FrontendController
         if (!empty($collection_id)) {
             $options = array('collection_id' => $collection_id);
             $html = $this->renderCollectionProduct($options);
+            $this->setRegion('region_content', $html);
+        }
+    }
+    
+    /**
+     * Adds a block with banners on the front page
+     */
+    protected function setRegionBannerFront()
+    {
+        $collection_id = $this->store->config('collection_banner');
+
+        if (!empty($collection_id)) {
+            $options = array('collection_id' => $collection_id);
+            $html = $this->renderCollectionFile($options);
             $this->setRegion('region_content', $html);
         }
     }

@@ -10,12 +10,14 @@
 
 namespace modules\frontend\controllers;
 
-use core\Controller;
-use core\models\Image;
-use core\models\Module;
-use modules\frontend\Frontend as F;
 
-class Frontend extends Controller
+use core\models\Image as ModelsImage;
+use core\models\Module as ModelsModule;
+use modules\frontend\Frontend as ModulesFrontend;
+
+use core\controllers\admin\Controller as BackendController;
+
+class Frontend extends BackendController
 {
 
     /**
@@ -35,14 +37,14 @@ class Frontend extends Controller
      * @var \modules\frontend\Frontend $frontend
      */
     protected $frontend;
-
+    
     /**
      * Constructor
-     * @param Image $image
-     * @param Module $module
-     * @param Frontend $frontend
+     * @param ModelsImage $image
+     * @param ModelsModule $module
+     * @param ModulesFrontend $frontend
      */
-    public function __construct(Image $image, Module $module, F $frontend)
+    public function __construct(ModelsImage $image, ModelsModule $module, ModulesFrontend $frontend)
     {
         parent::__construct();
 
@@ -54,7 +56,7 @@ class Frontend extends Controller
     /**
      * Displays the module settings page
      */
-    public function settings()
+    public function settingsFrontend()
     {
         $this->data['imagestyles'] = $this->image->getStyleNames();
         $this->data['settings'] = $this->config->module('frontend');
@@ -132,7 +134,7 @@ class Frontend extends Controller
      */
     protected function outputSettings()
     {
-        $this->output('frontend|admin/settings');
+        $this->output('frontend|settings');
     }
 
     /**

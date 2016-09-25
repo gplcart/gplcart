@@ -262,7 +262,7 @@ class Controller extends BaseController
             $this->setItemPrice($product, $options);
             $this->setItemProductCompared($product, $options);
             $this->setItemProductWishlist($product, $options);
-            $this->setItemProductRendered($product, $options);
+            $this->setItemRenderedProduct($product, $options);
         }
 
         return $products;
@@ -360,7 +360,7 @@ class Controller extends BaseController
 
             $this->setItemTotal($item);
             $this->setItemPrice($item);
-            $this->setItemCartThumb($item);
+            $this->setItemThumbCart($item);
         }
 
         $this->setItemTotal($cart);
@@ -422,7 +422,7 @@ class Controller extends BaseController
      * Sets product image thumbnail to the cart item
      * @param array $item
      */
-    protected function setItemCartThumb(array &$item)
+    protected function setItemThumbCart(array &$item)
     {
         $options = array(
             'path' => '',
@@ -510,7 +510,7 @@ class Controller extends BaseController
      * @param array $product
      * @param array $options
      */
-    protected function setItemProductRendered(array &$product, array $options)
+    protected function setItemRenderedProduct(array &$product, array $options)
     {
         $options += array(
             'buttons' => array(
@@ -521,8 +521,19 @@ class Controller extends BaseController
             'token' => $this->token,
             'buttons' => $options['buttons']
         );
-
-        $product['rendered'] = $this->render($options['template_item'], $data);
+        
+        $this->setItemRendered($product, $data, $options);
+    }
+    
+    /**
+     * Adds to the item its rendered HTML
+     * @param array $item
+     * @param array $data
+     * @param array $options
+     */
+    protected function setItemRendered(array &$item, array $data, array $options)
+    {
+        $item['rendered'] = $this->render($options['template_item'], $data);
     }
 
     /**
@@ -799,7 +810,7 @@ class Controller extends BaseController
     protected function renderCollectionProduct(array $options)
     {
         $options += array(
-            'template_list' => 'product/list'
+            'template_list' => 'collection/list/product'
         );
 
         $products = $this->getCollectionItems($options);
@@ -842,7 +853,7 @@ class Controller extends BaseController
     protected function renderCollectionFile(array $options)
     {
         $options += array(
-            'template_list' => 'collection/list/file',
+            'imagestyle' => 7,
             'template_item' => 'collection/item/file'
         );
 
@@ -851,11 +862,21 @@ class Controller extends BaseController
         if (empty($files)) {
             return '';
         }
+        
+        foreach($files as &$file){
+            
+            $options['path'] = $file['path'];
+            
+            if(!empty($file['collection_item']['data']['url'])){
+                $url = $file['collection_item']['data']['url'];
+                $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
+            }
+            
+            $this->setItemThumb($file, $options);
+            $this->setItemRendered($file, array('file' => $file), $options);
+        }
 
-        $prepared = $this->prepareFiles($files, $options);
-        return $this->render($options['template_list'], array('files' => $prepared));
+        return $this->render('collection/list/file', array('files' => $files));
     }
-
-
 
 }

@@ -172,10 +172,9 @@ class File extends BackendController
     {
         $this->downloadFile();
         $file = $this->getFile($file_id);
-        $extensions = $this->file->supportedExtensions(true);
-
         $this->submitFile($file);
 
+        $extensions = $this->file->supportedExtensions(true);
         $can_delete = (isset($file['file_id']) && $this->access('file_delete') && $this->file->canDelete($file_id));
 
         $this->setData('file', $file);
@@ -259,7 +258,6 @@ class File extends BackendController
     protected function deleteFile(array $file)
     {
         $this->controlAccess('file_delete');
-
         $result = $this->file->deleteAll($file['file_id']);
 
         if (array_sum($result) === 2) {
@@ -329,12 +327,12 @@ class File extends BackendController
     protected function setBreadcrumbEditFile()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/file'),
             'text' => $this->text('Files')

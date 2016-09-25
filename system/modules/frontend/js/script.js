@@ -103,6 +103,22 @@
             $('.multi-item-carousel').lightSlider(settings);
         }
     };
+    
+    Frontend.attach.slider = function () {
+
+        if ($.fn.lightSlider) {
+            $('.banners .slider').lightSlider({
+                auto: true,
+                loop: true,
+                autoWidth: true,
+                pager:false,
+                pauseOnHover: true,
+                item: 1,
+
+            });
+        }
+
+    };
 
     /**
      * Setup image gallery

@@ -77,12 +77,12 @@ class Url
         $url = strtok($url, '?');
 
         if ($absolute) {
-            if (strpos($url, '://') !== false) {
+            //if (strpos($url, '://') !== false) {
                 $url = $path;
-            } else {
-                $scheme = $this->request->scheme();
-                $url = $scheme . $this->request->host() . $url;
-            }
+            //} else {
+                //$scheme = $this->request->scheme();
+                //$url = $scheme . $this->request->host() . $url;
+            //}
         }
 
         $url = rtrim($url, '/');
@@ -200,7 +200,7 @@ class Url
      * @param string $url
      * @return boolean
      */
-    protected function isAbsolute($url)
+    public function isAbsolute($url)
     {
         $pattern = "/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
