@@ -357,10 +357,10 @@ class Controller
      */
     public function render($file, array $data = array(), $fullpath = false)
     {
-        if(empty($file)){
+        if (empty($file)) {
             return $this->text('No template file provided');
         }
-        
+
         $module = $this->theme;
 
         if (strpos($file, '|') !== false) {
@@ -1314,7 +1314,7 @@ class Controller
         if ($this->installing) {
             return;
         }
-        
+
         $this->cron_interval = (int) $this->config('cron_interval', 86400);
         $this->cron_last_run = (int) $this->config('cron_last_run', 0);
         $this->cron_key = $this->config('cron_key', '');

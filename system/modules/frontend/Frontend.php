@@ -41,7 +41,7 @@ class Frontend
         $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
             'handlers' => array(
-                'controller' => array('modules\\frontend\\controllers\\Frontend', 'settingsFrontend')
+                'controller' => array('modules\\frontend\\controllers\\Frontend', 'editFrontend')
             )
         );
     }
@@ -97,4 +97,5 @@ class Frontend
             'image_style_collection_banner' => 7,
         );
     }
+
 }
