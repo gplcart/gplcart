@@ -260,12 +260,38 @@ class Controller extends BaseController
             $this->setItemThumb($product, $options);
             $this->setItemUrl($product, $options);
             $this->setItemPrice($product, $options);
-            $this->setItemProductCompared($product, $options);
-            $this->setItemProductWishlist($product, $options);
+            $this->setItemCompared($product, $options);
+            $this->setItemWishlist($product, $options);
             $this->setItemRenderedProduct($product, $options);
         }
 
         return $products;
+    }
+    
+    /**
+     * Sets an additional data to an array of pages
+     * @param array $pages
+     * @param array $options
+     * @return array
+     */
+    protected function preparePages(array $pages, array $options = array())
+    {
+        if (empty($pages)) {
+            return array();
+        }
+
+        $options += array(
+            'id_key' => 'page_id',
+            'ids' => array_keys($pages),
+        );
+
+        foreach ($pages as &$page) {
+            $this->setItemThumb($page, $options);
+            $this->setItemUrl($page, $options);
+            $this->setItemRendered($page, array('page' => $page), $options);
+        }
+
+        return $pages;
     }
 
     /**
@@ -446,7 +472,7 @@ class Controller extends BaseController
      * @param array $product
      * @param array $options
      */
-    protected function setItemProductCompared(array &$product, array $options)
+    protected function setItemCompared(array &$product, array $options)
     {
         $product['in_comparison'] = $this->compare->exists($product['product_id']);
     }
@@ -456,7 +482,7 @@ class Controller extends BaseController
      * @param array $product
      * @param array $options
      */
-    protected function setItemProductWishlist(array &$product, array $options)
+    protected function setItemWishlist(array &$product, array $options)
     {
         $arguments = array(
             'user_id' => $this->cart_uid,
@@ -818,9 +844,14 @@ class Controller extends BaseController
         if (empty($products)) {
             return '';
         }
+        
+        $item = reset($products);
+        $title = $item['collection_item']['collection_title'];
 
         $prepared = $this->prepareProducts($products, $options);
-        return $this->render($options['template_list'], array('products' => $prepared));
+        $data = array('products' => $prepared, 'title' => $title);
+        
+        return $this->render($options['template_list'], $data);
     }
     
     /**
@@ -840,9 +871,14 @@ class Controller extends BaseController
         if (empty($pages)) {
             return '';
         }
+        
+        $item = reset($pages);
+        $title = $item['collection_item']['collection_title'];
 
         $prepared = $this->preparePages($pages, $options);
-        return $this->render($options['template_list'], array('pages' => $prepared));
+        $data = array('pages' => $prepared, 'title' => $title);
+        
+        return $this->render($options['template_list'], $data);
     }
     
     /**
@@ -852,7 +888,6 @@ class Controller extends BaseController
      */
     protected function renderCollectionFile(array $options)
     {
-        
         $options += array(
             'imagestyle' => $this->setting('image_style_collection_banner', 7),
             'template_item' => 'collection/item/file'

@@ -79,7 +79,6 @@ span.required:before {
     color:red;
 }
 
-
 table.compare [class*="col-"] {
     width: auto;
     min-width: 10em;
@@ -183,23 +182,6 @@ td.middle {
     padding-left: 1em;
 }
 
-.category-images .carousel-indicators {
-    position: relative;
-    margin:30px 0 0 0;
-    padding:0;
-    left:0;
-    width: auto;
-}
-
-.category-images .carousel-indicators li {
-    border-color: #ddd;
-}
-
-.category-images .carousel-indicators .active {
-    background-color: #ddd;
-
-}
-
 .addresses .table.address {
     margin-bottom: 0;
 }
@@ -209,12 +191,12 @@ td.middle {
     border-top: 0 !important;
 }
 
-.slider.banner li { width:1200px; }
-@media (max-width: 768px) {
-    .slider.banner li { width:800px; }
+.collection-file .slider li {
+    width:1140px;
 }
 
-.products div.thumbnail {
+
+.item .thumbnail {
     border: none;
 }
 

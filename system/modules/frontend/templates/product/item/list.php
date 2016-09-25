@@ -1,4 +1,4 @@
-<div class="col-md-12 list product-item">
+<div class="col-md-12 list product item">
   <div class="panel">
     <div class="panel-body">
       <div class="row">

@@ -1,4 +1,4 @@
-<div class="grid product-item col-md-3 col-sm-4 col-xs-6">
+<div class="grid product item col-md-3 col-sm-4 col-xs-6">
   <div class="thumbnail">
     <a href="<?php echo $this->escape($product['url']); ?>">
       <img class="img-responsive thumbnail" title="<?php echo $this->escape($product['title']); ?>" alt="<?php echo $this->escape($product['title']); ?>" src="<?php echo $this->escape($product['thumb']); ?>">

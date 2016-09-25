@@ -107,13 +107,13 @@
     Frontend.attach.slider = function () {
 
         if ($.fn.lightSlider) {
-            $('.banners .slider').lightSlider({
+            $('.collection-file .slider').lightSlider({
                 auto: true,
                 loop: true,
-                //autoWidth: true,
                 pager:false,
+                autoWidth: true,
                 pauseOnHover: true,
-                item: 1,
+                item: 2,
 
             });
         }

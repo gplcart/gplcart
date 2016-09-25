@@ -43,7 +43,7 @@ class Front extends FrontendController
         
         $this->setRegionBannerFront();
         $this->setRegionFeaturedFront();
-        
+        $this->setRegionPageFront();
         
         $this->setTitleIndexFront();
         $this->outputIndexFront();
@@ -73,6 +73,20 @@ class Front extends FrontendController
         if (!empty($collection_id)) {
             $options = array('collection_id' => $collection_id);
             $html = $this->renderCollectionFile($options);
+            $this->setRegion('region_content', $html);
+        }
+    }
+    
+    /**
+     * Adds a block with pages on the front page
+     */
+    protected function setRegionPageFront()
+    {
+        $collection_id = $this->store->config('collection_page');
+
+        if (!empty($collection_id)) {
+            $options = array('collection_id' => $collection_id);
+            $html = $this->renderCollectionPage($options);
             $this->setRegion('region_content', $html);
         }
     }
