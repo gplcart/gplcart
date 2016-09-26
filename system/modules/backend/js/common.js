@@ -303,6 +303,10 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.wysiwyg = function () {
 
+        if (!$.fn.summernote) {
+            return;
+        }
+        
         var input = $('textarea.summernote');
         var lang = GplCart.settings.lang_region;
 
@@ -364,6 +368,10 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @returns {undefined}
      */
     Backend.attach.fileUpload = function () {
+        
+        if (!$.fn.fileupload) {
+            return;
+        }
 
         var fileinput = $('#fileinput');
         var container = $(Backend.settings.imageContainer);

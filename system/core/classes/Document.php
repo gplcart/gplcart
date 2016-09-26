@@ -9,6 +9,7 @@
 
 namespace core\classes;
 
+use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
 
@@ -35,81 +36,91 @@ class Document
 
     /**
      * Adds a JS file or inline code to the page
-     * @staticvar array $scripts
      * @param string $script
      * @param string $position
      * @param integer|null $weight
+     * @param boolean $compress
      * @return mixed
      */
-    public function js($script = '', $position = 'top', $weight = null)
+    public function js($script = '', $position = 'top', $weight = null, $compress = true)
     {
         $scripts = &Cache::memory('document.js');
 
         if (empty($script)) {
-
-            if (!empty($position)) {
-                return empty($scripts[$position]) ? array() : $scripts[$position];
-            }
-
-            return $scripts;
+            return empty($scripts[$position]) ? array() : $scripts[$position];
         }
 
-        $key = $this->getAssetKey($script, 'js');
-
-        if (empty($key)) {
-            return array();
-        }
-
-        if (!isset($weight)) {
-            $weight = empty($scripts[$position]) ? 0 : count($scripts[$position]) + 1;
-        }
-
-        $is_text = (0 === strpos($key, 'text.'));
-
-        $scripts[$position][$key] = array(
-            'weight' => (int) $weight,
-            'text' => $is_text ? $script : false,
-            'path' => $is_text ? false : $script
+        $data = array(
+            'type' => 'js',
+            'asset' => $script,
+            'weight' => $weight,
+            'position' => $position,
+            'compress' => $compress
         );
 
+        $scripts = $this->setAsset($data, (array) $scripts);
         return $scripts;
     }
 
     /**
      * Adds a CSS style to the page
-     * @staticvar array $styles
      * @param string $css
      * @param integer|null $weight
+     * @param boolean $compress
      * @return array
      */
-    public function css($css = '', $weight = null)
+    public function css($css = '', $weight = null, $compress = true)
     {
         $styles = &Cache::memory('document.css');
 
         if (empty($css)) {
-            return $styles;
+            return (array) $styles;
         }
 
-        $key = $this->getAssetKey($css, 'css');
+        $data = array(
+            'asset' => $css,
+            'type' => 'css',
+            'weight' => $weight,
+            'compress' => $compress
+        );
+
+        $styles = $this->setAsset($data, (array) $styles);
+        return $styles;
+    }
+
+    /**
+     * Adds an asset
+     * @param array $data
+     * @param array $assets
+     * @return array
+     */
+    public function setAsset(array $data, array $assets)
+    {
+        $key = $this->getAssetKey($data['asset'], $data['type']);
 
         if (empty($key)) {
-            return array();
+            return $assets;
         }
 
-        if (!isset($weight)) {
-            $weight = empty($styles) ? 0 : count($styles);
-            $weight++;
+        $position = empty($data['position']) ? array() : array($data['position']);
+
+        if (!isset($data['weight'])) {
+            $elements = Tool::getArrayValue($assets, $position);
+            $data['weight'] = empty($elements) ? 0 : count($elements) + 1;
         }
 
         $is_text = (0 === strpos($key, 'text.'));
 
-        $styles[$key] = array(
-            'weight' => (int) $weight,
-            'text' => $is_text ? $css : false,
-            'path' => $is_text ? false : $css
+        $asset = array(
+            'weight' => (int) $data['weight'],
+            'compress' => !empty($data['compress']),
+            'text' => $is_text ? $data['asset'] : false,
+            'path' => $is_text ? false : $data['asset']
         );
 
-        return $styles;
+        $position[] = $key;
+        Tool::setArrayValue($assets, $position, $asset);
+        return $assets;
     }
 
     /**
@@ -195,7 +206,7 @@ class Document
      * @param string $string
      * @return string
      */
-    protected function getAssetKey($string, $type)
+    public function getAssetKey($string, $type)
     {
         if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
             $file = GC_ROOT_DIR . '/' . $string;

@@ -1220,7 +1220,14 @@ class Controller
      */
     public function getCss()
     {
-        return $this->document->css();
+        $css = $this->document->css();
+
+        if ($this->config('compress_css', 0)) {
+            return $this->getCompressedAssets($css, 'css');
+        }
+
+        Tool::sortWeight($css);
+        return $css;
     }
 
     /**
@@ -1230,7 +1237,68 @@ class Controller
      */
     public function getJs($region)
     {
-        return $this->document->js(null, $region);
+        $scripts = $this->document->js(null, $region);
+
+        if ($this->config('compress_js', 0)) {
+            return $this->getCompressedAssets($scripts, 'js', "-$region");
+        }
+
+        Tool::sortWeight($scripts);
+        return $scripts;
+    }
+
+    /**
+     * Returns an array of asset files including the compressed version
+     * @param array $assets
+     * @param string $type
+     * @param string $id
+     * @return array
+     */
+    protected function getCompressedAssets(array $assets, $type, $id = '')
+    {
+        if (empty($assets)) {
+            return array();
+        }
+
+        $file = "files/assets/compressed/$type/{$this->theme}$id.$type";
+
+        if (!file_exists(GC_ROOT_DIR . "/$file")) {
+            $compressor = Container::instance('core\\classes\\Compressor');
+        }
+
+        $weights = array();
+        foreach ($assets as $path => $asset) {
+
+            if (empty($asset['compress'])) {
+                continue;
+            }
+
+            $weights[] = $asset['weight'];
+
+            if (!isset($compressor)) {
+                unset($assets[$path]);
+                continue;
+            }
+
+            $source = $asset['path'] ? $asset['path'] : $asset['text'];
+            $compressor->{$type}('add', $source);
+            unset($assets[$path]);
+        }
+
+        if (isset($compressor)) {
+            $compressor->{$type}('minify', GC_ROOT_DIR . "/$file");
+        }
+
+        $data = array(
+            'type' => $type,
+            'asset' => $file,
+            'compress' => false,
+            'weight' => (min($weights) - 10)
+        );
+
+        $results = $this->document->setAsset($data, $assets);
+        Tool::sortWeight($results);
+        return $results;
     }
 
     /**
@@ -1243,15 +1311,9 @@ class Controller
         $this->data['page_title'] = $this->getPageTitle();
         $this->data['breadcrumb'] = $this->getBreadcrumbs();
 
-        // Sort and add styles and javascripts
         $this->data['css'] = $this->getCss();
-        Tool::sortWeight($this->data['css']);
-
         $this->data['js_top'] = $this->getJs('top');
-        Tool::sortWeight($this->data['js_top']);
-
         $this->data['js_bottom'] = $this->getJs('bottom');
-        Tool::sortWeight($this->data['js_bottom']);
     }
 
     /**
