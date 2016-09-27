@@ -339,16 +339,17 @@ class User extends Model
      */
     public function login(array $data)
     {
-        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+        $result = array(
+            'redirect' => null,
+            'severity' => 'warning',
+            'message' => $this->language->text('Invalid E-mail and/or password')
+        );
 
         $this->hook->fire('login.before', $data, $result);
 
         if (empty($data['email']) || empty($data['password'])) {
             return $result;
         }
-
-        $result['severity'] = 'warning';
-        $result['message'] = $this->language->text('Invalid E-mail and/or password');
 
         $user = $this->getByEmail($data['email']);
 

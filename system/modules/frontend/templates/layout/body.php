@@ -50,7 +50,7 @@
             </span>
             <?php } ?>
           </li>
-          <?php if ($uid) { ?>
+          <?php if ($this->uid) { ?>
           <li class="dropdown account">
             <a href="<?php echo $this->url("account/{$this->uid}"); ?>" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-user"></i></a>

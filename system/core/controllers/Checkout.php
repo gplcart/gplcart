@@ -68,7 +68,7 @@ class Checkout extends FrontendController
      * @var string
      */
     protected $cart_action;
-    
+
     /**
      * Cart content for the current user
      * @var array
@@ -127,7 +127,7 @@ class Checkout extends FrontendController
         $this->state = $state;
         $this->address = $address;
         $this->country = $country;
-        
+
         $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
         static::$total_quantity = 0;
@@ -152,17 +152,17 @@ class Checkout extends FrontendController
     {
         $this->setTitleIndexCheckout();
         $this->setBreadcrumbIndexCheckout();
-        
+
         $this->controlAccessCheckout();
-        
+
         $this->setFormDataBeforeCheckout();
-        
+
         $this->submitActionsCheckout();
-        
+
         $this->setFormDataAfterCheckout();
-        
+
         $this->setDataFormCheckout();
-        
+
         $this->outputCheckout();
     }
 
@@ -173,8 +173,8 @@ class Checkout extends FrontendController
     protected function setFormDataBeforeCheckout()
     {
         $this->form_data['order'] = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id,
+            //'user_id' => $this->cart_uid,
+            //'store_id' => $this->store_id,
             'total' => $this->cart_content['total'],
             'currency' => $this->cart_content['currency']
         );
@@ -184,9 +184,13 @@ class Checkout extends FrontendController
         $this->form_data['payment_services'] = $this->order->getPaymentMethods($this->cart_content, $this->form_data['order']);
         $this->form_data['shipping_services'] = $this->order->getShippingMethods($this->cart_content, $this->form_data['order']);
     }
-    
+
     protected function setFormDataAfterCheckout()
     {
+        if (empty($this->cart_content)) {
+            return; // Required
+        }
+
         $this->address_form = empty($this->form_data['addresses']);
 
         //$data['order'] = $this->request->post('order', array()) + $data['order'];
@@ -222,7 +226,7 @@ class Checkout extends FrontendController
         $this->form_data['pane_payment_services'] = $this->render('checkout/panes/payment_services', $this->form_data);
         $this->form_data['pane_shipping_address'] = $this->render('checkout/panes/shipping_address', $this->form_data);
         $this->form_data['pane_shipping_services'] = $this->render('checkout/panes/shipping_services', $this->form_data);
-        
+
         $this->form_data['settings'] = json_encode($this->form_data['settings'], JSON_FORCE_OBJECT);
     }
 
@@ -258,11 +262,13 @@ class Checkout extends FrontendController
     protected function submitActionsCheckout()
     {
         $this->setSubmitted('order');
-        
+        $this->setSubmitted('user_id', $this->cart_uid);
+        $this->setSubmitted('store_id', $this->store_id);
+
         $default = array('country' => $this->country_code);
         $this->submitted_address = $this->getSubmitted('address', $default);
-        
-        if(!empty($this->submitted_address)){
+
+        if (!empty($this->submitted_address)) {
             $this->address_form = true;
         }
 
@@ -297,14 +303,12 @@ class Checkout extends FrontendController
     {
         if ($this->isPosted('login')) {
             $this->login_form = true;
-            $result = $this->loginCheckout();
-            $this->setError('login', $result['message']);
+            $this->loginCheckout();
         }
     }
 
     /**
      * Logs in a customer during checkout
-     * @return array
      */
     protected function loginCheckout()
     {
@@ -319,7 +323,7 @@ class Checkout extends FrontendController
             $this->redirect($result['redirect'], $result['message'], $result['severity']);
         }
 
-        return $result;
+        $this->setError('login', $result['message']);
     }
 
     /**
@@ -360,13 +364,13 @@ class Checkout extends FrontendController
         if (!$this->address_form) {
             return;
         }
-        
+
         $user_id = $this->form_data['order']['user_id'];
         $this->submitted_address['user_id'] = $user_id;
         $address = $this->address->add($this->submitted_address);
-        
+
         $this->setSubmitted('shipping_address', $address);
-        
+
 
         $this->address->controlLimit($user_id);
         return true;
@@ -390,7 +394,7 @@ class Checkout extends FrontendController
             }
         }
     }
-    
+
     /**
      * Validates checkout form
      * @return boolean
@@ -398,29 +402,29 @@ class Checkout extends FrontendController
     protected function validateOrderCheckout()
     {
         /*
-        $has_error = false;
+          $has_error = false;
 
-        if (!$this->address_form && empty($this->form_data['order']['shipping_address'])) {
-            $this->errors['address'] = $this->text('Invalid address');
-            $has_error = true;
-        }
+          if (!$this->address_form && empty($this->form_data['order']['shipping_address'])) {
+          $this->errors['address'] = $this->text('Invalid address');
+          $has_error = true;
+          }
 
-        if (!empty($this->form_data['shipping_services']) && empty($this->form_data['order']['shipping'])) {
-            $this->errors['shipping'] = $this->text('Invalid shipping service');
-            $has_error = true;
-        }
+          if (!empty($this->form_data['shipping_services']) && empty($this->form_data['order']['shipping'])) {
+          $this->errors['shipping'] = $this->text('Invalid shipping service');
+          $has_error = true;
+          }
 
-        if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
-            $this->errors['payment'] = $this->text('Invalid payment service');
-            $has_error = true;
-        }
+          if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
+          $this->errors['payment'] = $this->text('Invalid payment service');
+          $has_error = true;
+          }
 
-        if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
-            $this->errors['payment'] = $this->text('Invalid payment service');
-            $has_error = true;
-        }
+          if (!empty($this->form_data['payment_services']) && empty($this->form_data['order']['payment'])) {
+          $this->errors['payment'] = $this->text('Invalid payment service');
+          $has_error = true;
+          }
 
-        return !$has_error;
+          return !$has_error;
          * *
          */
     }
@@ -495,13 +499,13 @@ class Checkout extends FrontendController
     protected function submitCartCheckout()
     {
         $items = $this->getSubmitted('cart.items');
-        
+
         if ($this->isPosted('update') && empty($items)) {
             return;
         }
-        
-        //$_SESSION['mytest'][] = $this->getSubmitted();
-        
+
+
+
         $this->quantityCartCheckout();
 
         $this->moveCartWishlistCheckout();
@@ -519,7 +523,7 @@ class Checkout extends FrontendController
         if (empty($sku)) {
             return;
         }
-        
+
         $options = array(
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
@@ -530,9 +534,9 @@ class Checkout extends FrontendController
         if (empty($result['wishlist_id'])) {
             return;
         }
-        
+
         $this->form_data['settings']['quantity']['cart'] = $this->cart->getQuantity($options, 'total');
-        $this->form_data['settings']['quantity']['wishlist'] =  $this->wishlist->getList($options + array('count' => true));
+        $this->form_data['settings']['quantity']['wishlist'] = $this->wishlist->getList($options + array('count' => true));
 
         $this->form_data['messages']['cart'] = $result['message'];
         $this->setSubmitted('cart.action.update', true);
@@ -544,44 +548,40 @@ class Checkout extends FrontendController
      */
     protected function quantityCartCheckout()
     {
-        
         $items = $this->getSubmitted('cart.items');
-        
         $plus = $this->getSubmitted('cart.action.plus');
         $minus = $this->getSubmitted('cart.action.minus');
-        
-        
-        
+
         if (isset($plus)) {
-            
-            
-            
-            //if (!empty($this->quantity_limit_sku) && $this->cart_content['items'][$this->cart_action]['quantity'] < $this->quantity_limit_sku) {
-                $items[$plus]['quantity'] ++;
-                $cart_id = $this->cart_content['items'][$plus]['cart_id'];
-            //}
+            $sku = $plus;
+            $items[$sku]['quantity'] ++;
         }
 
-        /*
-        if (!empty($this->submitted['minus'])) {
-
-            if ($this->cart_content['items'][$this->cart_action]['quantity'] > 1) {
-                $this->cart_content['items'][$this->cart_action]['quantity'] --;
-            }
+        if (isset($minus) && $items[$minus]['quantity'] > 1) {
+            $sku = $minus;
+            $items[$sku]['quantity'] --;
         }
-         * */
 
+        if (empty($sku)) {
+            return;
+        }
 
+        $cart_id = $this->cart_content['items'][$sku]['cart_id'];
+        $product = $this->cart_content['items'][$sku]['product'];
 
-        if(isset($cart_id)){
-            
+        // Set data for validator
+        $this->setSubmitted('sku', $sku);
+        $this->setSubmitted('quantity', 1);
+
+        if (isset($plus)) {
+            $this->addValidator('cart', array('cart_limits' => array()));
+            $errors = $this->setValidators($product);
+        }
+
+        if (empty($errors)) {
             $this->setSubmitted('cart.action.update', true);
-
-        $this->cart->update($cart_id, array('quantity' => $items[$plus]['quantity']));
-        return true;           
+            $this->cart->update($cart_id, array('quantity' => $items[$sku]['quantity']));
         }
-
-
     }
 
     /**
@@ -602,11 +602,11 @@ class Checkout extends FrontendController
      */
     protected function refreshCartCheckout()
     {
-        if(!$this->isSubmitted('cart.action.update')){
+        if (!$this->isSubmitted('cart.action.update')) {
             return;
         }
-        
-        
+
+
         $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
         if (!$this->request->isAjax()) {
@@ -634,8 +634,8 @@ class Checkout extends FrontendController
      * @param array $order
      * @return array
      */
-    protected function prepareOrderComponentsCheckout(array $calculated, array $cart,
-            array $order)
+    protected function prepareOrderComponentsCheckout(array $calculated,
+            array $cart, array $order)
     {
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -671,12 +671,12 @@ class Checkout extends FrontendController
     protected function validateCouponCheckout()
     {
         $code = (string) $this->request->post('check_code');
-        
-        if(empty($code)){
+
+        if (empty($code)) {
             return;
         }
-        
-        
+
+
         $code = '';
         if (isset($this->form_data['order']['code'])) {
             $code = $this->form_data['order']['code'];
@@ -739,7 +739,5 @@ class Checkout extends FrontendController
 
         return $order;
     }
-
-
 
 }

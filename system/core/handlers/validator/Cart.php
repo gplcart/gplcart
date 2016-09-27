@@ -110,11 +110,14 @@ class Cart
 
         $sku = $options['submitted']['sku'];
         $user_id = $options['submitted']['user_id'];
-
         $store_id = $options['submitted']['store_id'];
-        $stock = (int) $options['submitted']['stock'];
+        
+        $stock = $product['stock'];
+        if(isset($options['submitted']['stock'])){
+            $stock = $options['submitted']['stock'];
+        }
+        
         $quantity = (int) $options['submitted']['quantity'];
-
         $conditions = array('user_id' => $user_id, 'store_id' => $store_id);
         $existing_quantity = $this->cart->getQuantity($conditions);
 
@@ -125,7 +128,7 @@ class Cart
             $expected_quantity_sku += $existing_quantity['sku'][$sku];
         }
 
-        if ($product['subtract'] && $quantity > $stock) {
+        if ($product['subtract'] && $quantity > (int) $stock) {
             return $this->language->text('Too low stock level');
         }
 
