@@ -115,7 +115,8 @@ class Cart
         $stock = (int) $options['submitted']['stock'];
         $quantity = (int) $options['submitted']['quantity'];
 
-        $existing_quantity = $this->cart->getQuantity($user_id, $store_id);
+        $conditions = array('user_id' => $user_id, 'store_id' => $store_id);
+        $existing_quantity = $this->cart->getQuantity($conditions);
 
         $expected_quantity_sku = $quantity;
         $expected_quantity_total = $existing_quantity['total'] + $quantity;

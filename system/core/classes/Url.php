@@ -40,6 +40,10 @@ class Url
      */
     public function redirect($url = '', array $options = array(), $full = false)
     {
+        if (!isset($url)) {
+            return;
+        }
+
         if (!empty($url) && ($full || $this->isAbsolute($url))) {
             header("Location: $url");
             exit;
@@ -78,10 +82,10 @@ class Url
 
         if ($absolute) {
             //if (strpos($url, '://') !== false) {
-                $url = $path;
+            $url = $path;
             //} else {
-                //$scheme = $this->request->scheme();
-                //$url = $scheme . $this->request->host() . $url;
+            //$scheme = $this->request->scheme();
+            //$url = $scheme . $this->request->host() . $url;
             //}
         }
 

@@ -426,21 +426,27 @@ class Order extends Model
      * Submits an order
      * @param array $data
      * @param array $cart
-     * @return array|boolean
+     * @return array
      */
     public function submit(array $data, array $cart)
     {
         $this->hook->fire('submit.order.before', $data, $cart);
 
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->language->text('An error occurred')
+        );
+
         if (empty($data)) {
-            return false; // Blocked by a module
+            return $result; // Blocked by a module
         }
 
         $this->setComponents($data, $cart);
         $order_id = $this->add($data);
 
         if (empty($order_id)) {
-            return false; // Blocked by a module
+            return $result; // Blocked by a module
         }
 
         // Get fresh order from the database
@@ -453,7 +459,10 @@ class Order extends Model
 
         $result = array(
             'order' => $order,
-            'redirect' => "checkout/complete/$order_id");
+            'message' => '',
+            'severity' => 'success',
+            'redirect' => "checkout/complete/$order_id"
+        );
 
         $this->hook->fire('submit.order.after', $order, $cart, $result);
         return $result;
@@ -490,19 +499,38 @@ class Order extends Model
     public function getCompleteMessage(array $order)
     {
         if (is_numeric($order['user_id'])) {
-
-            $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
-            $message = $this->config->get('order_complete_message', $default);
-
-            $variables = array(
-                '!order_id' => $order['order_id'],
-                '!url' => $this->request->base() . "account/{$order['user_id']}",
-                '!status' => $this->getStatusName($order['status'])
-            );
-
-            return $this->language->text($message, $variables);
+            return $this->getCompleteMessageLogged($order);
         }
 
+        return $this->getCompleteMessageAnonymous($order);
+    }
+
+    /**
+     * Returns a message for a logged in user when checkout is completed
+     * @param array $order
+     * @return string
+     */
+    protected function getCompleteMessageLogged(array $order)
+    {
+        $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
+        $message = $this->config->get('order_complete_message', $default);
+
+        $variables = array(
+            '!order_id' => $order['order_id'],
+            '!url' => $this->request->base() . "account/{$order['user_id']}",
+            '!status' => $this->getStatusName($order['status'])
+        );
+
+        return $this->language->text($message, $variables);
+    }
+
+    /**
+     * Returns a message for an anonymous user when checkout is completed
+     * @param array $order
+     * @return string
+     */
+    protected function getCompleteMessageAnonymous(array $order)
+    {
         $default = 'Thank you for your order! Order ID: !order_id, status: !status';
         $message = $this->config->get('order_complete_message_anonymous', $default);
 
@@ -643,19 +671,25 @@ class Order extends Model
     }
 
     /**
-     * Returns services by a type
-     * @param string $type
+     * Returns all available shipping methods
      * @param array $cart
      * @param array $order
      * @return array
      */
-    public function getServices($type, array $cart, array $order)
+    public function getShippingMethods(array $cart, array $order)
     {
-        if (in_array($type, array('shipping', 'payment'))) {
-            return $this->{$type}->getServices($cart, $order);
-        }
+        return $this->shipping->getMethods($cart, $order);
+    }
 
-        return array();
+    /**
+     * Returns all available payment methods
+     * @param array $cart
+     * @param array $order
+     * @return array
+     */
+    public function getPaymentMethods(array $cart, array $order)
+    {
+        return $this->payment->getMethods($cart, $order);
     }
 
     /**

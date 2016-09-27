@@ -1475,8 +1475,9 @@ class Controller
 
         $this->data['messages'] = $this->session->getMessage();
         $this->data['languages'] = $this->languages;
-        $route_class = str_replace('/', '-', preg_replace("/[^A-Za-z0-9\/]/", '', $this->current_route['pattern']));
-        $this->data['body_classes'] = array($route_class);
+        
+        $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
+        $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
         $this->data['current_store'] = $this->current_store;
     }
 

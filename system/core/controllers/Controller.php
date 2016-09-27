@@ -172,31 +172,31 @@ class Controller extends BaseController
      */
     protected function setFrontendProperties()
     {
-        if (!$this->url->isInstall()) {
-
-            $this->viewed = $this->getViewed();
-            $this->cart_uid = $this->cart->uid();
-            $this->category_tree = $this->getCategories();
-            $this->compare_content = $this->compare->get();
-
-            $this->cart_quantity = $this->cart->getQuantity($this->cart_uid, $this->store_id);
-            $this->catalog_pricerules = $this->store->config('catalog_pricerule');
-
-            $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
-
-            $wishlist = array(
-                'user_id' => $this->cart_uid,
-                'store_id' => $this->store_id
-            );
-
-            // Don't count, use the same arguments to avoid an extra query
-            // see $this->setItemProductWishlist()
-            $this->wishlist_content = $this->wishlist->getList($wishlist);
-
-            $this->data['cart_quantity'] = $this->cart_quantity;
-            $this->data['wishlist_quantity'] = count($this->wishlist_content);
-            $this->data['compare_content'] = $this->compare_content;
+        if ($this->url->isInstall()) {
+            return;
         }
+
+        $this->viewed = $this->getViewed();
+        $this->cart_uid = $this->cart->uid();
+        $this->category_tree = $this->getCategories();
+        $this->compare_content = $this->compare->get();
+        $this->catalog_pricerules = $this->store->config('catalog_pricerule');
+        $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
+
+        $options = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+
+        $this->cart_quantity = $this->cart->getQuantity($options);
+
+        // Don't count, use the same arguments to avoid an extra query
+        // see $this->setItemProductWishlist()
+        $this->wishlist_content = $this->wishlist->getList($options);
+
+        $this->data['cart_quantity'] = $this->cart_quantity;
+        $this->data['wishlist_quantity'] = count($this->wishlist_content);
+        $this->data['compare_content'] = $this->compare_content;
     }
 
     /**

@@ -13,7 +13,7 @@
           <?php } ?>
           <label>
             <input type="radio" name="order[shipping]" value="<?php echo $service_id; ?>"<?php echo (isset($order['shipping']) && $order['shipping'] == $service_id) ? ' checked' : ''; ?>>
-            <?php echo $this->escape($service['name']); ?>
+            <?php echo $this->escape($service['title']); ?>
             <?php if (!empty($service['price'])) { ?>
             <strong><?php echo $this->escape($service['price_formatted']); ?></strong>
             <?php } ?>

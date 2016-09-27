@@ -78,13 +78,7 @@ class User extends FrontendController
     {
         $data = $this->getSubmitted();
         $result = $this->user->login($data);
-
-        if (!empty($result)) {
-            $this->redirect($result['redirect'], $result['message'], $result['severity']);
-        }
-
-        $message = $this->text('Invalid E-mail and/or password');
-        $this->setMessage($message, 'danger');
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**

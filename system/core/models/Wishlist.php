@@ -39,13 +39,13 @@ class Wishlist extends Model
      * @var \core\Logger $logger
      */
     protected $logger;
-    
+
     /**
      * Url class instance
      * @var \core\classes\Url $url
      */
     protected $url;
-    
+
     /**
      * Constructor
      * @param ModelsUser $user
@@ -103,7 +103,7 @@ class Wishlist extends Model
         if (empty($data)) {
             return $result;
         }
-        
+
         $href = $this->url->get('wishlist');
 
         if ($this->exists($data)) {
@@ -132,7 +132,7 @@ class Wishlist extends Model
                 'user_id' => $data['user_id'],
                 'store_id' => $data['store_id']
             );
-            
+
             $exists = $this->getList($options);
 
             $result = array(
@@ -147,7 +147,7 @@ class Wishlist extends Model
         $this->hook->fire('add.product.wishlist.after', $data, $result);
         return $result;
     }
-    
+
     /**
      * Removes a product from wishlist and returns
      * an array of result data
@@ -156,16 +156,16 @@ class Wishlist extends Model
      */
     public function deleteProduct(array $data)
     {
-        $this->hook->fire('delete.product.wishlist.before', $data);
+        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+
+        $this->hook->fire('delete.product.wishlist.before', $data, $result);
 
         if (empty($data)) {
-            return array();
+            return $result;
         }
 
-        $result = array(
-            'severity' => 'warning',
-            'message' => $this->language->text('Product has not been deleted from wishlist')
-        );
+        $result['severity'] = 'warning';
+        $result['message'] = $this->language->text('Product has not been deleted from wishlist');
 
         $deleted = (bool) $this->delete($data);
 
@@ -176,10 +176,10 @@ class Wishlist extends Model
             $existing = $this->getList($data);
 
             $result = array(
+                'message' => '',
                 'severity' => 'success',
                 'quantity' => count($existing),
-                'redirect' => empty($existing) ? 'wishlist' : '',
-                'message' => $this->language->text('Product has been deleted from wishlist')
+                'redirect' => empty($existing) ? 'wishlist' : ''
             );
         }
 
@@ -283,7 +283,7 @@ class Wishlist extends Model
     public function getList(array $data = array())
     {
         ksort($data);
-        
+
         $cache_key = 'wishlist.' . md5(json_encode($data));
 
         $items = &Cache::memory($cache_key);

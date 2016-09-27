@@ -1,16 +1,21 @@
 <?php if (!empty($cart['items'])) { ?>
-<form method="post" class="form-horizontal" id="checkout">
+<form method="post" class="form-horizontal" id="checkout" data-settings='<?php echo $settings; ?>'>
   <input type="hidden" name="token" value="<?php echo $this->token; ?>">
   <div class="row">
     <div class="col-md-12">
       <?php if ($login_form) { ?>
       <?php echo $pane_login; ?>
       <?php } else if (empty($this->uid)) { ?>
-      <div class="form-group">
-        <div class="col-md-12">
-          <button class="btn btn-default btn-block" name="checkout_login" value="1">
-            <?php echo $this->text('Already registered? Click to login'); ?>
-          </button>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="col-md-2 control-label"><?php echo $this->text('Already registered?'); ?></label>
+            <div class="col-md-3">
+              <button class="btn btn-default form-control" name="checkout_login" value="1">
+                <?php echo $this->text('Click to login'); ?>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <?php } ?>

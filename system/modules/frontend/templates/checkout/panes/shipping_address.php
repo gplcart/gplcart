@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Shipping address'); ?></div>
   <div class="panel-body">
-    <?php if ($addresses && !$address_form) { ?>
+    <?php if ($addresses && empty($address_form)) { ?>
     <div class="form-group">
       <div class="col-md-12">
         <div class="btn-group margin-top-20 saved-addresses" data-toggle="buttons">
@@ -27,20 +27,21 @@
     <div class="form-group">
       <div class="col-md-12">
         <table class="table table-borderless table-striped table-condensed margin-top-20 shipping-address">
+          <?php if(!empty($countries)) { ?>
           <tr>
             <td class="middle"><?php echo $this->text('Country'); ?></td>
             <td>
               <div class="btn-toolbar">
-                <div class="btn-group country<?php echo isset($this->errors['address']['country']) ? ' has-error' : ''; ?>">
-                  <select class="form-control" name="address[country]">
+                <div class="btn-group country<?php echo isset($this->errors['order']['address']['country']) ? ' has-error' : ''; ?>">
+                  <select class="form-control" name="order[address][country]">
                     <?php foreach ($countries as $code => $name) { ?>
                     <option value="<?php echo $this->escape($code); ?>"<?php echo ($country_code == $code) ? ' selected' : ''; ?>>
                     <?php echo $this->escape($name); ?>
                     </option>
                     <?php } ?>
                   </select>
-                  <?php if (isset($this->errors['address']['country'])) { ?>
-                  <div class="help-block"><?php echo $this->errors['address']['country']; ?></div>
+                  <?php if (isset($this->errors['order']['address']['country'])) { ?>
+                  <div class="help-block"><?php echo $this->errors['order']['address']['country']; ?></div>
                   <?php } ?>
                 </div>
                 <div class="btn-group hidden-js">
@@ -51,6 +52,7 @@
               </div>
             </td>
           </tr>
+          <?php } ?>
           <?php foreach ($format as $key => $data) { ?>
           <?php if ($key !== 'country') { ?>
           <tr>
@@ -58,21 +60,21 @@
               <?php echo $this->escape($data['name']); ?>
             </td>
             <td>
-              <div class="<?php echo $key; ?><?php echo isset($this->errors['address'][$key]) ? ' has-error' : ''; ?>">
+              <div class="<?php echo $key; ?><?php echo isset($this->errors['order']['address'][$key]) ? ' has-error' : ''; ?>">
                 <?php if ($key === 'state_id') { ?>
-                <select class="form-control" name="address[state_id]">
+                <select class="form-control" name="order[address][state_id]">
                   <option value="" disabled selected><?php echo $this->text('Select'); ?></option>
                   <?php foreach ($states as $state_id => $state) { ?>
-                  <option value="<?php echo $state_id; ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : ''; ?>>
+                  <option value="<?php echo $state_id; ?>"<?php echo (isset($order['address']['state_id']) && $order['address']['state_id'] == $state_id) ? ' selected' : ''; ?>>
                   <?php echo $state['name']; ?>
                   </option>
                   <?php } ?>
                 </select>
                 <?php } else { ?>
-                <input name="address[<?php echo $key; ?>]" maxlength="255" class="form-control" value="<?php echo isset($address[$key]) ? $this->escape($address[$key]) : ''; ?>">
+                <input name="order[address][<?php echo $key; ?>]" maxlength="255" class="form-control" value="<?php echo isset($order['address'][$key]) ? $this->escape($order['address'][$key]) : ''; ?>">
                 <?php } ?>
-                <?php if (isset($this->errors['address'][$key])) { ?>
-                <div class="help-block"><?php echo $this->errors['address'][$key]; ?></div>
+                <?php if (isset($this->errors['order']['address'][$key])) { ?>
+                <div class="help-block"><?php echo $this->errors['order']['address'][$key]; ?></div>
                 <?php } ?>
               </div>
             </td>

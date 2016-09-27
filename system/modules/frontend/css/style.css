@@ -27,6 +27,14 @@ body {
     margin-bottom: 0;
 }
 
+body.checkout .navbar .cart {
+    display: none;
+}
+
+.badge:empty + .fa {
+    display:none;
+}
+
 .breadcrumb h1 {
     margin:0;
     padding: 0;
@@ -193,6 +201,10 @@ td.middle {
 
 .collection-file .slider li {
     width:1140px;
+}
+
+body:not(.front) .region.content {
+    margin-top: 20px;
 }
 
 

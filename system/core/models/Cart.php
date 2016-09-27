@@ -238,17 +238,12 @@ class Cart extends Model
     /**
      * Returns an array containing total number of products
      * and number of products per SKU for the given user and store
-     * @param string $user_id
-     * @param integer $store_id
-     * @return array
+     * @param array $conditions
+     * @param null|string $key
+     * @return array|integer
      */
-    public function getQuantity($user_id, $store_id)
+    public function getQuantity(array $conditions, $key = null)
     {
-        $conditions = array(
-            'user_id' => $user_id,
-            'store_id' => $store_id
-        );
-
         $items = $this->getList($conditions);
 
         $result = array('total' => 0, 'sku' => array());
@@ -256,6 +251,10 @@ class Cart extends Model
         foreach ($items as $item) {
             $result['total'] += (int) $item['quantity'];
             $result['sku'][$item['sku']] = (int) $item['quantity'];
+        }
+
+        if (isset($key)) {
+            return $result[$key];
         }
 
         return $result;
@@ -312,7 +311,8 @@ class Cart extends Model
 
         if (!empty($cart_id)) {
 
-            $existing = $this->getQuantity($data['user_id'], $data['store_id']);
+            $options = array('user_id' => $data['user_id'], 'store_id' => $data['store_id']);
+            $existing = $this->getQuantity($options);
 
             $result = array(
                 'cart_id' => $cart_id,
@@ -453,45 +453,49 @@ class Cart extends Model
 
     /**
      * Moves a cart item to the wishlist
-     * @param string $sku
-     * @param string|integer $user_id
-     * @param insteger $store_id
-     * @return boolean
+     * @param array $data
+     * @return array
      */
-    public function moveToWishlist($sku, $user_id, $store_id)
+    public function moveToWishlist(array $data)
     {
-        $this->hook->fire('move.cart.wishlist.before', $sku, $user_id, $store_id);
+        $this->hook->fire('move.cart.wishlist.before', $data);
 
-        if (empty($sku)) {
-            return false;
+        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+
+        if (empty($data)) {
+            return $result;
         }
 
-        $skuinfo = $this->sku->get($sku, $store_id);
+        $skuinfo = $this->sku->get($data['sku'], $data['store_id']);
 
         if (empty($skuinfo['product_id'])) {
-            return false;
+            return $result;
         }
 
-        $data = array(
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'product_id' => $skuinfo['product_id']
-        );
+        $this->db->delete('cart', $data);
 
-        $this->db->delete('wishlist', $data);
-        $wishlist_id = $this->wishlist->addProduct($data);
+        $data['product_id'] = $skuinfo['product_id'];
 
-        $conditions = array(
-            'sku' => $sku,
-            'user_id' => $user_id
-        );
+        $conditions = $data;
+        unset($conditions['sku']);
+        $this->db->delete('wishlist', $conditions);
 
-        $this->db->delete('cart', $conditions);
+        $data['wishlist_id'] = $this->wishlist->addProduct($data);
 
         Cache::clearMemory();
 
-        $this->hook->fire('move.cart.wishlist.after', $sku, $user_id, $store_id);
-        return $wishlist_id;
+        $url = $this->request->base() . 'wishlist';
+        $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $url));
+
+        $result = array(
+            'redirect' => '',
+            'message' => $message,
+            'severity' => 'success',
+            'wishlist_id' => $data['wishlist_id']
+        );
+
+        $this->hook->fire('move.cart.wishlist.after', $data, $result);
+        return $result;
     }
 
     /**
@@ -502,9 +506,10 @@ class Cart extends Model
     public function login(array $user, array $cart)
     {
         $this->hook->fire('cart.login.before', $user, $cart);
+        $result = array('redirect' => null, 'severity' => '', 'message' => '');
 
         if (empty($user) || empty($cart)) {
-            return false;
+            return $result;
         }
 
         $conditions = array('user_id' => $user['user_id']);
@@ -520,8 +525,15 @@ class Cart extends Model
         $this->deleteCookie();
         $this->logLoginCheckout($user);
 
-        $this->hook->fire('cart.login.after', $user, $cart);
-        return true;
+        $result = array(
+            'user' => $user,
+            'redirect' => 'checkout',
+            'severity' => 'success',
+            'message' => $this->language->text('Hello, %name. Now you\'re logged in', array(
+                '%name' => $user['name'])));
+
+        $this->hook->fire('cart.login.after', $user, $cart, $result);
+        return $result;
     }
 
     /**

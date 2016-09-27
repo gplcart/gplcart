@@ -12,7 +12,7 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li>
+          <li class="cart">
             <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
               <?php if (!empty($cart_quantity['total'])) { ?>
               <span class="badge" id="cart-quantity"><?php echo $cart_quantity['total']; ?></span>
@@ -22,19 +22,20 @@
               <i class="fa fa-shopping-cart"></i>
             </a>
           </li>
-          <li>
+          <li class="wishlist">
             <a rel="nofollow" id="wishlist-link" href="<?php echo $this->url('wishlist'); ?>">
               <?php if (!empty($wishlist_quantity)) { ?>
               <span class="badge" id="wishlist-quantity">
               <?php echo $wishlist_quantity; ?>
               </span>
-              <?php } else { ?>
-              <span class="badge" id="wishlist-quantity" style="display:none;"></span>
-              <?php } ?>
               <i class="fa fa-heart"></i>
+              <?php } else { ?>
+              <span class="badge" id="wishlist-quantity"></span>
+              <i class="fa fa-heart"></i>
+              <?php } ?>
             </a>
           </li>
-          <li>
+          <li class="compare">
             <?php if (!empty($compare_content)) { ?>
             <a rel="nofollow" id="compare-link" href="<?php echo $this->url('compare'); ?>">
               <span class="badge" id="compare-quantity">
@@ -49,8 +50,8 @@
             </span>
             <?php } ?>
           </li>
-          <?php if ($this->uid) { ?>
-          <li class="dropdown">
+          <?php if ($uid) { ?>
+          <li class="dropdown account">
             <a href="<?php echo $this->url("account/{$this->uid}"); ?>" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-user"></i></a>
             <ul class="dropdown-menu dropdown-menu-right">

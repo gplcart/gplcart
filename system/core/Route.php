@@ -202,7 +202,7 @@ class Route
 
         $routes['checkout'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'checkout')
+                'controller' => array('core\\controllers\\Checkout', 'indexCheckout')
             )
         );
 

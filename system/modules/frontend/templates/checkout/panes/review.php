@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Review'); ?></div>
 <div class="panel-body">
-  <?php foreach ($cart['items'] as $cart_id => $item) { ?>
+  <?php foreach ($cart['items'] as $sku => $item) { ?>
   <div class="form-group">
         <div class="col-md-2">
           <a target="_blank" href="<?php echo $this->url("product/{$item['product']['product_id']}"); ?>">
@@ -17,13 +17,13 @@
           <div>
             <div class="input-group input-group-sm">
               <span class="input-group-btn minus">
-                <button class="btn btn-default" name="cart[minus]" value="<?php echo $cart_id; ?>">
+                <button class="btn btn-default" name="order[cart][action][minus]" value="<?php echo $sku; ?>">
                   <span class="fa fa-minus"></span>
                 </button>
               </span>
-              <input class="form-control text-center" type="number" min="1" step="1" maxlength="2" name="cart[items][<?php echo $cart_id; ?>][quantity]" value="<?php echo $item['quantity']; ?>">
+              <input class="form-control text-center" type="number" min="1" step="1" maxlength="2" name="order[cart][items][<?php echo $sku; ?>][quantity]" value="<?php echo $item['quantity']; ?>">
               <span class="input-group-btn plus">
-                <button class="btn btn-default" name="cart[plus]" value="<?php echo $cart_id; ?>">
+                <button class="btn btn-default" name="order[cart][action][plus]" value="<?php echo $sku; ?>">
                   <span class="fa fa-plus"></span>
                 </button>
               </span>
@@ -38,10 +38,10 @@
         </div>
         <div class="col-md-3">
           <div class="btn-toolbar">
-            <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-default btn-sm" name="cart[delete]" value="<?php echo $cart_id; ?>">
+            <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-default btn-sm" name="order[cart][action][delete]" value="<?php echo $item['cart_id']; ?>">
               <i class="fa fa-trash"></i>
             </button>
-            <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default btn-sm" name="cart[wishlist]" value="<?php echo $item['sku']; ?>">
+            <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default btn-sm" name="order[cart][action][wishlist]" value="<?php echo $sku; ?>">
               <i class="fa fa-star"></i>
             </button>
           </div>

@@ -163,7 +163,6 @@ class User extends Model
         $result = ($updated > 0);
 
         $this->hook->fire('update.user.after', $user_id, $data, $result);
-
         return (bool) $result;
     }
 
@@ -340,20 +339,25 @@ class User extends Model
      */
     public function login(array $data)
     {
-        $this->hook->fire('login.before', $data);
+        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+
+        $this->hook->fire('login.before', $data, $result);
 
         if (empty($data['email']) || empty($data['password'])) {
-            return false;
+            return $result;
         }
+
+        $result['severity'] = 'warning';
+        $result['message'] = $this->language->text('Invalid E-mail and/or password');
 
         $user = $this->getByEmail($data['email']);
 
         if (empty($user['status'])) {
-            return false;
+            return $result;
         }
 
         if (!Tool::hashEquals($user['hash'], Tool::hash($data['password'], $user['hash'], false))) {
-            return false;
+            return $result;
         }
 
         if (!$this->session->regenerate(true)) {
@@ -383,13 +387,25 @@ class User extends Model
      */
     public function register(array $data)
     {
-        $this->hook->fire('register.user.before', $data);
+        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+
+        $this->hook->fire('register.user.before', $data, $result);
+
+        if (empty($data)) {
+            return $result;
+        }
 
         $login = $this->config->get('user_registration_login', true);
         $status = $this->config->get('user_registration_status', true);
 
         $data['status'] = $status;
         $data['user_id'] = $this->add($data);
+
+        if (empty($data['user_id'])) {
+            $result['severity'] = 'warning';
+            $result['message'] = $this->language->text('An error occurred');
+            return $result;
+        }
 
         $this->logRegistration($data);
         $this->emailRegistration($data);
@@ -463,10 +479,12 @@ class User extends Model
     public function logout()
     {
         $user_id = $this->id();
-        $this->hook->fire('logout.before', $user_id);
+        $result = array('message' => '', 'severity' => '', 'redirect' => '/');
+
+        $this->hook->fire('logout.before', $user_id, $result);
 
         if (empty($user_id)) {
-            return array('message' => '', 'severity' => '', 'redirect' => '/');
+            return $result;
         }
 
         if (!$this->session->delete()) {
@@ -484,7 +502,7 @@ class User extends Model
             'redirect' => $this->getLogOutRedirect($user),
         );
 
-        $this->hook->fire('logout.after', $result);
+        $this->hook->fire('logout.after', $user_id, $result);
         return $result;
     }
 
@@ -505,10 +523,12 @@ class User extends Model
      */
     public function resetPassword(array $data)
     {
-        $this->hook->fire('reset.password.before', $data);
+        $result = array('redirect' => null, 'message' => '', 'severity' => '');
+
+        $this->hook->fire('reset.password.before', $data, $result);
 
         if (empty($data['user']['user_id'])) {
-            return array('message' => '', 'severity' => '', 'redirect' => '');
+            return $result;
         }
 
         if (isset($data['password'])) {
@@ -559,11 +579,13 @@ class User extends Model
         $this->update($user['user_id'], $user);
         $this->mail->set('user_changed_password', array($user));
 
-        return array(
+        $result = array(
             'redirect' => 'login',
             'severity' => 'success',
             'message' => $this->language->text('Your password has been successfully changed')
         );
+
+        return $result;
     }
 
     /**
@@ -572,10 +594,12 @@ class User extends Model
      */
     public function getPasswordLength()
     {
-        return array(
+        $data = array(
             'min' => $this->config->get('user_password_min_length', 8),
             'max' => $this->config->get('user_password_max_length', 255)
         );
+
+        return $data;
     }
 
     /**
@@ -623,8 +647,7 @@ class User extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'email', 'role_id', 'store_id', 'status', 'created');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created DESC";
