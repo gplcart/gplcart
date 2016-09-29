@@ -521,6 +521,22 @@ class Tool
     }
 
     /**
+     * Transforms a multi-dimensional array into simple 2 dimensional array
+     * @param array $array
+     * @return array
+     */
+    public static function flattenArray(array $array)
+    {
+        $return = array();
+
+        array_walk_recursive($array, function($a) use (&$return) {
+            $return[] = $a;
+        });
+
+        return $return;
+    }
+
+    /**
      * Parses and extracts arguments from a string
      * @param string $string
      * @param string $pattern

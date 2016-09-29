@@ -28,24 +28,24 @@
             <?php } ?>
             <?php if (in_array('wishlist_add', $buttons)) { ?>
             <?php if (empty($product['in_wishlist'])) { ?>
-                <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
-                  <i class="fa fa-heart"></i>
-                </button>
+            <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
+              <i class="fa fa-heart"></i>
+            </button>
             <?php } else { ?>
-                <a rel="nofollow" title="<?php echo $this->text('Already in wishlist'); ?>" href="<?php echo $this->url('wishlist'); ?>" class="btn btn-default active">
-                  <i class="fa fa-heart"></i>
-                </a>
+            <a rel="nofollow" title="<?php echo $this->text('Already in wishlist'); ?>" href="<?php echo $this->url('wishlist'); ?>" class="btn btn-default active">
+              <i class="fa fa-heart"></i>
+            </a>
             <?php } ?>
             <?php } ?>
             <?php if (in_array('compare_add', $buttons)) { ?>
             <?php if (empty($product['in_comparison'])) { ?>
-                <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
-                  <i class="fa fa-balance-scale"></i>
-                </button>
+            <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
+              <i class="fa fa-balance-scale"></i>
+            </button>
             <?php } else { ?>
-                <a rel="nofollow" title="<?php echo $this->text('Already in comparison'); ?>" href="<?php echo $this->url('compare'); ?>" class="btn btn-default active">
-                  <i class="fa fa-balance-scale"></i>
-                </a>
+            <a rel="nofollow" title="<?php echo $this->text('Already in comparison'); ?>" href="<?php echo $this->url('compare'); ?>" class="btn btn-default active">
+              <i class="fa fa-balance-scale"></i>
+            </a>
             <?php } ?>
             <?php } ?>
             <?php if (in_array('cart_add', $buttons)) { ?>

@@ -25,7 +25,7 @@ $config = array();
 # $config['cart_login_merge'] = 0; // Whether to merge old and current cart items on login when a customer is checking out
 # $config['cart_preview_limit'] = 5; // Max number of cart items to be shown in the cart preview
 # $config['cart_sku_limit'] = 10; // Max number of cart items per SKU that customer may have
-# $config['cart_total_limit'] = 20; // Max number of all cart items that customer may have
+# $config['cart_item_limit'] = 20; // Max total number of cart items that customer may have
 # $config['category_alias_pattern'] = '%t.html'; // Pattern used to generate a category alias
 # $config['category_alias_placeholder'] = array('%t' => 'title'); // Replacement rule used to generate a category alias
 # $config['category_image_dirname'] = 'category'; // Category image upload directory

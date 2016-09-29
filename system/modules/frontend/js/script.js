@@ -553,8 +553,6 @@
 
         $(document).on('blur', 'form#checkout [name$="[quantity]"]', function () {
             queueSubmit = setTimeout(function () {
-
-                $('form#checkout').append($("<input type='hidden'>").attr({name: 'update', value: 1}));
                 $('form#checkout').submit();
 
             }, 100);

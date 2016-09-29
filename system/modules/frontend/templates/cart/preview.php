@@ -1,5 +1,11 @@
 <div id="cart-preview">
-  <?php if(!empty($cart['items'])) { ?>
+  <?php if(empty($cart['items'])) { ?>
+  <div class="row items">
+    <div class="col-md-12">
+      <?php echo $this->text('Your shopping cart is empty'); ?>
+    </div>
+  </div>
+  <?php } else { ?>
   <div class="row items">
     <div class="col-md-12 pre-scrollable">
       <?php foreach($cart['items'] as $item) { ?>
@@ -26,12 +32,6 @@
   <div class="row buttons">
     <div class="col-md-12 checkout">
     <a href="<?php echo $this->url('checkout'); ?>" class="btn btn-block btn-success"><?php echo $this->text('Cart / Checkout'); ?></a>
-    </div>
-  </div>
-  <?php } else { ?>
-  <div class="row items">
-    <div class="col-md-12">
-      <?php echo $this->text('Your shopping cart is empty'); ?>
     </div>
   </div>
   <?php } ?>

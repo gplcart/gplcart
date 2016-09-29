@@ -166,7 +166,6 @@ class Cart extends Model
         $cart['currency'] = $current_currency;
 
         $this->hook->fire('get.cart.after', $user_id, $cart);
-
         return $cart;
     }
 
@@ -262,7 +261,7 @@ class Cart extends Model
     {
         $limits = array(
             'sku' => (int) $this->config->get('cart_sku_limit', 10),
-            'total' => (int) $this->config->get('cart_total_limit', 20)
+            'item' => (int) $this->config->get('cart_item_limit', 20)
         );
 
         return isset($item) ? $limits[$item] : $limits;
@@ -290,8 +289,8 @@ class Cart extends Model
 
             return array(
                 'severity' => 'warning',
-                'redirect' => $this->request->base() . "product/{$product['product_id']}",
-                'message' => $this->text('Please select product options before adding to the cart')
+                'redirect' => "product/{$product['product_id']}",
+                'message' => $this->language->text('Please select product options before adding to the cart')
             );
         }
 

@@ -2,7 +2,8 @@
   <div class="panel-heading"><?php echo $this->text('Review'); ?></div>
 <div class="panel-body">
   <?php foreach ($cart['items'] as $sku => $item) { ?>
-  <div class="form-group">
+  
+  <div class="form-group<?php echo isset($this->errors['cart']['items'][$sku]) ? ' has-error' : ''; ?>">
         <div class="col-md-2">
           <a target="_blank" href="<?php echo $this->url("product/{$item['product']['product_id']}"); ?>">
             <img class="img-responsive thumbnail" src="<?php echo $this->escape($item['thumb']); ?>">
@@ -16,17 +17,8 @@
           <span class="price"><?php echo $this->text('Price'); ?> : <?php echo $this->escape($item['price_formatted']); ?></span>
           <div>
             <div class="input-group input-group-sm">
-              <span class="input-group-btn minus">
-                <button class="btn btn-default" name="order[cart][action][minus]" value="<?php echo $sku; ?>">
-                  <span class="fa fa-minus"></span>
-                </button>
-              </span>
-              <input class="form-control text-center" type="number" min="1" step="1" maxlength="2" name="order[cart][items][<?php echo $sku; ?>][quantity]" value="<?php echo $item['quantity']; ?>">
-              <span class="input-group-btn plus">
-                <button class="btn btn-default" name="order[cart][action][plus]" value="<?php echo $sku; ?>">
-                  <span class="fa fa-plus"></span>
-                </button>
-              </span>
+              <input class="form-control text-center" maxlength="2" name="order[cart][items][<?php echo $sku; ?>][quantity]" value="<?php echo $item['quantity']; ?>">
+            
             </div>
             <div class="input-group input-group-sm hidden-js">
               <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-sm" name="update" value="1">
@@ -47,22 +39,17 @@
           </div>
         </div>
       </div>
+  <hr>
   <?php } ?>
   <?php if (isset($messages['cart'])) { ?>
-      <div class="alert alert-success alert-dismissible">
+  <?php foreach($messages['cart'] as $severity => $text) { ?>
+      <div class="alert alert-<?php echo $severity; ?> alert-dismissible">
         <button type="button" class="close" data-dismiss="alert">
           <span aria-hidden="true">&times;</span>
         </button>
-        <?php echo $messages['cart']; ?>
-      </div>
+        <?php echo $text; ?>
+      </div>   
   <?php } ?>
-  <?php if (isset($this->errors['cart'])) { ?>
-      <div class="alert alert-danger alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <?php echo $this->errors['cart']; ?>
-      </div>
   <?php } ?>
   <div class="form-group">
     <div class="col-md-12">

@@ -9,6 +9,7 @@
 
 namespace core\controllers;
 
+use core\classes\Tool;
 use core\models\State as ModelsState;
 use core\models\Order as ModelsOrder;
 use core\models\Address as ModelsAddress;
@@ -141,8 +142,6 @@ class Checkout extends FrontendController
         $this->submitted_address = array();
 
         $this->country_code = $this->country->getDefault();
-        $this->quantity_limit = $this->cart->getLimits('total');
-        $this->quantity_limit_sku = $this->cart->getLimits('sku');
     }
 
     /**
@@ -172,6 +171,7 @@ class Checkout extends FrontendController
      */
     protected function setFormDataBeforeCheckout()
     {
+        
         $this->form_data['order'] = array(
             //'user_id' => $this->cart_uid,
             //'store_id' => $this->store_id,
@@ -500,13 +500,11 @@ class Checkout extends FrontendController
     {
         $items = $this->getSubmitted('cart.items');
 
-        if ($this->isPosted('update') && empty($items)) {
+        if (empty($items)) {
             return;
         }
 
-
-
-        $this->quantityCartCheckout();
+        $this->quantityCartCheckout($items);
 
         $this->moveCartWishlistCheckout();
         $this->deleteCartCheckout();
@@ -546,41 +544,31 @@ class Checkout extends FrontendController
      * Applies an action to the cart items
      * @return boolean
      */
-    protected function quantityCartCheckout()
-    {
-        $items = $this->getSubmitted('cart.items');
-        $plus = $this->getSubmitted('cart.action.plus');
-        $minus = $this->getSubmitted('cart.action.minus');
+    protected function quantityCartCheckout($items)
+    {      
+        foreach ($items as $sku => $item) {
+            
+            $item += array(
+                'sku' => $sku,
+                'user_id' => $this->cart_uid,
+                'store_id' => $this->store_id
+            );
+            
+            $cart_id = $this->cart_content['items'][$sku]['cart_id'];
+            $product = $this->cart_content['items'][$sku]['product'];
 
-        if (isset($plus)) {
-            $sku = $plus;
-            $items[$sku]['quantity'] ++;
-        }
-
-        if (isset($minus) && $items[$minus]['quantity'] > 1) {
-            $sku = $minus;
-            $items[$sku]['quantity'] --;
-        }
-
-        if (empty($sku)) {
-            return;
-        }
-
-        $cart_id = $this->cart_content['items'][$sku]['cart_id'];
-        $product = $this->cart_content['items'][$sku]['product'];
-
-        // Set data for validator
-        $this->setSubmitted('sku', $sku);
-        $this->setSubmitted('quantity', 1);
-
-        if (isset($plus)) {
-            $this->addValidator('cart', array('cart_limits' => array()));
+            $this->addValidator("cart.items.$sku.quantity", array('numeric' => array(), 'length' => array('min' => 1, 'max' => 2)));
+            $this->addValidator("cart.items.$sku", array('cart_limits' => array('increment' => false)));
             $errors = $this->setValidators($product);
-        }
 
-        if (empty($errors)) {
-            $this->setSubmitted('cart.action.update', true);
-            $this->cart->update($cart_id, array('quantity' => $items[$sku]['quantity']));
+            if (empty($errors)) {
+                $this->setSubmitted('cart.action.update', true);
+                $this->cart->update($cart_id, array('quantity' => $item['quantity']));
+                continue;
+            }
+            
+            $messages = Tool::flattenArray($errors);
+            $this->form_data['messages']['cart']['warning'] = implode('<br>', $messages);
         }
     }
 

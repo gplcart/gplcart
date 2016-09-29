@@ -78,9 +78,11 @@ class Cart
 
             return array(
                 'result' => array(
-                    'sku' => $product['sku'],
-                    'stock' => $product['stock']
-            ));
+                    'cart' => array(
+                        'sku' => $product['sku'],
+                        'stock' => $product['stock']
+                    ))
+            );
         }
 
         $combination_id = $this->sku->getCombinationId($options, $product['product_id']);
@@ -91,10 +93,12 @@ class Cart
 
         return array(
             'result' => array(
-                'combination_id' => $combination_id,
-                'sku' => $product['combination'][$combination_id]['sku'],
-                'stock' => $product['combination'][$combination_id]['stock']
-        ));
+                'cart' => array(
+                    'combination_id' => $combination_id,
+                    'sku' => $product['combination'][$combination_id]['sku'],
+                    'stock' => $product['combination'][$combination_id]['stock']
+                ))
+        );
     }
 
     /**
@@ -105,42 +109,43 @@ class Cart
      */
     public function limits($value, array $options = array())
     {
+        if (empty($value)) {
+            return false;
+        }
+
+        $options += array('increment' => true);
         $product = $options['data'];
 
-        $sku = $options['submitted']['sku'];
-        $user_id = $options['submitted']['user_id'];
-        $store_id = $options['submitted']['store_id'];
-        
+        $sku = $value['sku'];
+        $user_id = $value['user_id'];
+        $store_id = $value['store_id'];
+
         $stock = $product['stock'];
-        if(isset($options['submitted']['stock'])){
-            $stock = $options['submitted']['stock'];
+        if (isset($value['stock'])) {
+            $stock = $value['stock'];
         }
-        
-        $quantity = (int) $options['submitted']['quantity'];
+
+        $quantity = (int) $value['quantity'];
         $conditions = array('user_id' => $user_id, 'store_id' => $store_id);
         $existing_quantity = $this->cart->getQuantity($conditions);
 
         $expected_quantity_sku = $quantity;
-        $expected_quantity_total = $existing_quantity['total'] + $quantity;
-
-        if (isset($existing_quantity['sku'][$sku])) {
+        if (!empty($options['increment']) && isset($existing_quantity['sku'][$sku])) {
             $expected_quantity_sku += $existing_quantity['sku'][$sku];
         }
 
-        if ($product['subtract'] && $quantity > (int) $stock) {
+        if ($product['subtract'] && $expected_quantity_sku > (int) $stock) {
             return $this->language->text('Too low stock level');
         }
 
         $limit_sku = $this->cart->getLimits('sku');
-        $limit_total = $this->cart->getLimits('total');
+        $limit_item = $this->cart->getLimits('item');
 
-        // First check total items limit
-        if (!empty($limit_total) && ($expected_quantity_total > $limit_total)) {
+        if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku]) && (count($existing_quantity['sku']) >= $limit_item)) {
             return $this->language->text('Sorry, you cannot have more than %num items in your cart', array(
-                        '%num' => $limit_total));
+                        '%num' => $limit_item));
         }
 
-        // then limits per SKU
         if (!empty($limit_sku) && ($expected_quantity_sku > $limit_sku)) {
             return $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
                         '%num' => $limit_sku));

@@ -626,10 +626,10 @@ class Controller extends BaseController
             return $this->completeSubmit();
         }
 
-        $submitted = $this->getSubmitted();
+        $cart = $this->getSubmitted('cart');
         $product = $this->getSubmitted('product');
-
-        $result = $this->cart->addProduct($product, $submitted);
+        
+        $result = $this->cart->addProduct($product, $cart);
         $this->completeSubmit($result);
     }
 
@@ -740,15 +740,6 @@ class Controller extends BaseController
      */
     protected function validateAddToCart()
     {
-        $quantity = $this->getSubmitted('quantity');
-
-        if (empty($quantity)) {
-            $this->setSubmitted('quantity', 1);
-        }
-
-        $this->setSubmitted('user_id', $this->cart_uid);
-        $this->setSubmitted('store_id', $this->store_id);
-
         // Check if the product exists
         // and set its loaded array to the data array
         // see the argument for $this->setValidators()
@@ -759,8 +750,14 @@ class Controller extends BaseController
                 'required' => true
             )
         ));
+        
+       $quantity = $this->getSubmitted('cart.quantity', 1);
+       $this->setSubmitted('cart.quantity', $quantity);
 
-        $this->addValidator('quantity', array(
+       $this->setSubmitted('cart.user_id', $this->cart_uid);
+       $this->setSubmitted('cart.store_id', $this->store_id);
+
+        $this->addValidator('cart.quantity', array(
             'required' => array(),
             'numeric' => array(),
             'length' => array('max' => 2)
@@ -772,7 +769,7 @@ class Controller extends BaseController
             'cart_options' => array('set_submitted' => true)
         ));
 
-        $this->addValidator('limit', array(
+        $this->addValidator('cart', array(
             'cart_limits' => array('control_errors' => true)
         ));
 
