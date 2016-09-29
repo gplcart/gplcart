@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\classes\Tool;
-use core\models\Price as ModelsPrice;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -27,21 +26,13 @@ class Sku extends Model
     protected $language;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
      * Constructor
-     * @param ModelsPrice $price
      * @param ModelsLanguage $language
      */
-    public function __construct(ModelsPrice $price, ModelsLanguage $language)
+    public function __construct(ModelsLanguage $language)
     {
         parent::__construct();
 
-        $this->price = $price;
         $this->language = $language;
     }
 
@@ -135,10 +126,6 @@ class Sku extends Model
 
         if (empty($data)) {
             return false;
-        }
-
-        if (!empty($data['price'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
         $data['product_sku_id'] = $this->db->insert('product_sku', $data);

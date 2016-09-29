@@ -132,19 +132,10 @@ class Product extends Model
             'currency' => $this->config->get('currency', 'USD'),
         );
 
-        if (!empty($data['price'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
-        }
-
         $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslation($data, false);
         $this->setImages($data);
-
-        if (empty($data['sku'])) {
-            $data['sku'] = $this->createSku($data);
-        }
-
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
         $this->setOptions($data, false);
@@ -264,16 +255,16 @@ class Product extends Model
     /**
      * Deletes and/or adds product translations
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    protected function setTranslation(array $data, $delete = true)
+    protected function setTranslation(array $data, $update = true)
     {
         if (empty($data['translation'])) {
             return false;
         }
 
-        if ($delete) {
+        if ($update) {
             $this->deleteTranslation($data['product_id']);
         }
 
@@ -781,17 +772,25 @@ class Product extends Model
     /**
      * Deletes and/or adds a new base SKU
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return bool
      */
-    protected function setSku(array &$data, $delete = true)
+    protected function setSku(array &$data, $update = true)
     {
         if (empty($data['sku']) || !isset($data['store_id'])) {
             return false;
         }
 
-        if ($delete) {
+        if ($update) {
             $this->sku->delete($data['product_id'], array('base' => true));
+        }
+
+        if (!$update && !empty($data['price'])) {
+            $data['price'] = $this->price->amount($data['price'], $data['currency']);
+        }
+
+        if (!$update && empty($data['sku'])) {
+            $data['sku'] = $this->createSku($data);
         }
 
         return (bool) $this->sku->add($data);
@@ -809,23 +808,22 @@ class Product extends Model
         }
 
         $data['images'] = $this->image->setMultiple('product_id', $data['product_id'], $data['images']);
-
         return !empty($data['images']);
     }
 
     /**
      * Deletes and/or adds an alias
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    protected function setAlias(array $data, $delete = true)
+    protected function setAlias(array $data, $update = true)
     {
         if (empty($data['alias'])) {
             return false;
         }
 
-        if ($delete) {
+        if ($update) {
             $this->alias->delete('product_id', $data['product_id']);
         }
 
@@ -835,40 +833,51 @@ class Product extends Model
     /**
      * Deletes and/or adds product combinations
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    protected function setSkuCombinations(array $data, $delete = true)
+    protected function setSkuCombinations(array $data, $update = true)
     {
         if (empty($data['combination'])) {
             return false;
         }
 
-        if (isset($data['store_id']) && $delete) {
+        if (isset($update)) {
             $this->sku->delete($data['product_id'], array('combinations' => true));
         }
 
         foreach ($data['combination'] as $combination) {
-            
-            if(empty($combination['fields'])){
+
+            if (empty($combination['fields'])) {
                 continue;
             }
-            
-            $combination['product_id'] = $data['product_id'];
-            $combination['combination_id'] = $this->getCombinationId($combination['fields'], $data['product_id']);
+
+            if (!$update && !empty($combination['price'])) {
+                $combination['price'] = $this->price->amount($combination['price'], $data['currency']);
+            }
+
+            $sku = array(
+                'price' => $combination['price'],
+                'stock' => $combination['stock'],
+                'product_id' => $data['product_id'],
+                'file_id' => $combination['file_id'],
+                'combination_id' => $this->sku->getCombinationId($combination['fields'], $data['product_id'])
+            );
 
             if (isset($combination['path']) && isset($data['images'][$combination['path']])) {
-                $combination['file_id'] = $data['images'][$combination['path']];
+                $sku['file_id'] = $data['images'][$combination['path']];
             }
 
             if (empty($combination['sku'])) {
-                $sku_pattern = $data['sku'] . '-' . crc32(uniqid('', true));
-                $combination['sku'] = $this->sku->generate($sku_pattern, array(), array('store_id' => $data['store_id']));
+                $pattern = $data['sku'] . '-' . crc32(uniqid('', true));
+                $sku['sku'] = $this->sku->generate($pattern, array(), array('store_id' => $data['store_id']));
+            } else {
+                $sku['sku'] = $combination['sku'];
             }
 
             if (isset($data['store_id'])) {
-                $combination['store_id'] = $data['store_id'];
-                $this->sku->add($combination);
+                $sku['store_id'] = $data['store_id'];
+                $this->sku->add($sku);
             }
         }
 
@@ -878,16 +887,16 @@ class Product extends Model
     /**
      * Deletes and/or adds product option fields
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    protected function setOptions(array $data, $delete = true)
+    protected function setOptions(array $data, $update = true)
     {
         if (empty($data['combination'])) {
             return false;
         }
 
-        if ($delete) {
+        if ($update) {
             $this->product_field->delete('option', $data['product_id']);
         }
 
@@ -914,10 +923,10 @@ class Product extends Model
     /**
      * Deletes and/or adds product attribute fields
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    protected function setAttributes(array $data, $delete = true)
+    protected function setAttributes(array $data, $update = true)
     {
         if (empty($data['field']['attribute'])) {
             return false;
@@ -925,7 +934,7 @@ class Product extends Model
 
         $product_id = $data['product_id'];
 
-        if ($delete) {
+        if ($update) {
             $this->product_field->delete('attribute', $product_id);
         }
 
