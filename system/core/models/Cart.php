@@ -149,14 +149,8 @@ class Cart extends Model
                 continue; // Store has been changed for this product
             }
 
-            $price = $item['product']['price'];
             $currency = $item['product']['currency'];
-
-            if (empty($item['product']['combination_id'])) {
-                $price = $this->currency->convert($price, $currency, $current_currency);
-            } elseif (!empty($item['product']['option_file_id'])) {
-                $price = $this->currency->convert($item['product']['option_price'], $currency, $current_currency);
-            }
+            $price = $this->currency->convert($item['product']['price'], $currency, $current_currency);
 
             $item['price'] = $price;
             $item['total'] = $item['price'] * $item['quantity'];

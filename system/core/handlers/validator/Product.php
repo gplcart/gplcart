@@ -12,7 +12,6 @@ namespace core\handlers\validator;
 use core\models\Sku as ModelsSku;
 use core\models\Product as ModelsProduct;
 use core\models\Language as ModelsLanguage;
-use core\models\Combination as ModelsCombination;
 
 /**
  * Provides methods to validate various product data
@@ -57,26 +56,17 @@ class Product
     protected $sku;
 
     /**
-     * Combination model instance
-     * @var \core\model\Combination $combination
-     */
-    protected $combination;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsProduct $product
      * @param ModelsSku $sku
-     * @param ModelsCombination $combination
      */
     public function __construct(ModelsLanguage $language,
-            ModelsProduct $product, ModelsSku $sku,
-            ModelsCombination $combination)
+            ModelsProduct $product, ModelsSku $sku)
     {
         $this->sku = $sku;
         $this->product = $product;
         $this->language = $language;
-        $this->combination = $combination;
     }
 
     /**
@@ -203,7 +193,7 @@ class Product
                 continue;
             }
 
-            $combination_id = $this->combination->id($combination['fields']);
+            $combination_id = $this->sku->getCombinationId($combination['fields']);
 
             if (isset($this->processed_combinations[$combination_id])) {
                 $error = $this->language->text('Option combination already defined');

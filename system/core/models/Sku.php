@@ -11,6 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\classes\Tool;
+use core\models\Price as ModelsPrice;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to product SKUs
@@ -19,11 +21,28 @@ class Sku extends Model
 {
 
     /**
-     * Constructor
+     * Language model instance
+     * @var \core\models\Language $language
      */
-    public function __construct()
+    protected $language;
+
+    /**
+     * Price model instance
+     * @var \core\models\Price $price
+     */
+    protected $price;
+
+    /**
+     * Constructor
+     * @param ModelsPrice $price
+     * @param ModelsLanguage $language
+     */
+    public function __construct(ModelsPrice $price, ModelsLanguage $language)
     {
         parent::__construct();
+
+        $this->price = $price;
+        $this->language = $language;
     }
 
     /**
@@ -95,10 +114,14 @@ class Sku extends Model
             return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'product_sku_id'));
-        $this->hook->fire('sku.list', $list);
+        $results = $this->db->fetchAll($sql, $where, array('index' => 'product_sku_id'));
 
-        return $list;
+        foreach ($results as &$result) {
+            $result['fields'] = $this->getFieldValues($result['combination_id']);
+        }
+
+        $this->hook->fire('sku.list', $results);
+        return $results;
     }
 
     /**
@@ -112,6 +135,10 @@ class Sku extends Model
 
         if (empty($data)) {
             return false;
+        }
+
+        if (!empty($data['price'])) {
+            $data['price'] = $this->price->amount($data['price'], $data['currency']);
         }
 
         $data['product_sku_id'] = $this->db->insert('product_sku', $data);
@@ -170,6 +197,87 @@ class Sku extends Model
         }
 
         return $sku;
+    }
+
+    /**
+     * Returns an array of field value Ids from a combination ID
+     * @param string $combination_id
+     * @return array
+     */
+    public function getFieldValues($combination_id)
+    {
+        $field_value_ids = explode('_', substr($combination_id, strpos($combination_id, '-') + 1));
+        sort($field_value_ids);
+
+        return $field_value_ids;
+    }
+
+    /**
+     * Creates a field combination id from the field value ids
+     * @param array $field_value_ids
+     * @param null|integer $product_id
+     * @return string
+     */
+    public function getCombinationId(array $field_value_ids, $product_id = null)
+    {
+        sort($field_value_ids);
+
+        if (!empty($product_id)) {
+            return $product_id . '-' . implode('_', $field_value_ids);
+        }
+
+        return implode('_', $field_value_ids);
+    }
+
+    /**
+     * 
+     * @param array $product
+     * @param array $field_value_ids
+     * @return boolean|string
+     */
+    public function selectCombination(array $product, array $field_value_ids)
+    {
+        $this->hook->fire('select.sku.combination.before', $product, $field_value_ids);
+
+        $response = array(
+            'modal' => '',
+            'cart_access' => true,
+            'severity' => '',
+            'combination' => array(),
+            'message' => ''
+        );
+
+        if (empty($product['status'])) {
+            $response['severity'] = 'danger';
+            $response['message'] = $this->language->text('Unavailable product');
+            return $response;
+        }
+
+        if (empty($field_value_ids)) {
+            $response['severity'] = 'warning';
+            $response['message'] = $this->language->text('No option selected');
+            return $response;
+        }
+
+        $combination_id = $this->getCombinationId($field_value_ids, $product['product_id']);
+
+        if (empty($product['combination'][$combination_id])) {
+            $response['severity'] = 'danger';
+            $response['message'] = $this->language->text('Invalid option combination');
+            return $response;
+        }
+
+        $response['combination'] = $product['combination'][$combination_id];
+        $response['combination']['currency'] = $product['currency'];
+
+        if (empty($response['combination']['stock']) && $product['subtract']) {
+            $response['cart_access'] = false;
+            $response['severity'] = 'warning';
+            $response['message'] = $this->language->text('Out of stock');
+        }
+
+        $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
+        return $response;
     }
 
     /**

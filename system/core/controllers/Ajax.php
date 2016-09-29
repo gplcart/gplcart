@@ -9,6 +9,7 @@
 
 namespace core\controllers;
 
+use core\models\Sku as ModelsSku;
 use core\models\File as ModelsFile;
 use core\models\State as ModelsState;
 use core\models\Search as ModelsSearch;
@@ -16,7 +17,6 @@ use core\models\Rating as ModelsRating;
 use core\models\Country as ModelsCountry;
 use core\models\Collection as ModelsCollection;
 use core\models\CollectionItem as ModelsCollectionItem;
-use core\models\Combination as ModelsCombination;
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -56,10 +56,10 @@ class Ajax extends FrontendController
     protected $rating;
 
     /**
-     * Combination model instance
-     * @var \core\models\Combination $combination
+     * Sku model instance
+     * @var \core\models\Sku $sku
      */
-    protected $combination;
+    protected $sku;
 
     /**
      * Collection model instance
@@ -80,24 +80,24 @@ class Ajax extends FrontendController
      * @param ModelsSearch $search
      * @param ModelsFile $file
      * @param ModelsRating $rating
-     * @param ModelsCombination $combination
+     * @param ModelsSku $sku
      * @param ModelsCollection $collection
      * @param ModelsCollectionItem $collection_item
      */
     public function __construct(ModelsCountry $country, ModelsState $state,
             ModelsSearch $search, ModelsFile $file, ModelsRating $rating,
-            ModelsCombination $combination, ModelsCollection $collection,
+            ModelsSku $sku, ModelsCollection $collection,
             ModelsCollectionItem $collection_item)
     {
         parent::__construct();
 
+        $this->sku = $sku;
         $this->file = $file;
         $this->state = $state;
         $this->rating = $rating;
         $this->search = $search;
         $this->country = $country;
         $this->collection = $collection;
-        $this->combination = $combination;
         $this->collection_item = $collection_item;
     }
 
@@ -209,7 +209,7 @@ class Ajax extends FrontendController
         $field_value_ids = (array) $this->request->post('values');
 
         $product = $this->product->get($product_id);
-        $response = $this->combination->select($product, $field_value_ids);
+        $response = $this->sku->selectCombination($product, $field_value_ids);
 
         $options = array(
             'calculate' => false,

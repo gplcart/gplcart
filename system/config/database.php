@@ -263,16 +263,6 @@ $tables['module'] = array(
     )
 );
 
-$tables['option_combination'] = array(
-    'fields' => array(
-        'combination_id' => array('type' => 'varchar', 'length' => 255, 'primary' => true),
-        'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0)
-    )
-);
-
 $tables['orders'] = array(
     'fields' => array(
         'order_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
@@ -342,10 +332,8 @@ $tables['product'] = array(
         'status' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 1),
         'subtract' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 1),
         'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'brand_category_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
@@ -399,7 +387,10 @@ $tables['product_sku'] = array(
         'sku' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'combination_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-        'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true)
+        'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+        'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+        'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0)
     )
 );
 

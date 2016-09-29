@@ -460,8 +460,8 @@ class Controller extends BaseController
             $options['path'] = $imagefile['path'];
         }
 
-        if (!empty($item['product']['option_file_id']) && !empty($item['product']['images'][$item['product']['option_file_id']]['path'])) {
-            $options['path'] = $item['product']['images'][$item['product']['option_file_id']]['path'];
+        if (!empty($item['product']['file_id']) && !empty($item['product']['images'][$item['product']['file_id']]['path'])) {
+            $options['path'] = $item['product']['images'][$item['product']['file_id']]['path'];
         }
 
         $this->setItemThumb($item, $options);

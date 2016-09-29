@@ -42,12 +42,6 @@ class Product extends Model
     protected $alias;
 
     /**
-     * Combination model instance
-     * @var \core\models\Combination $combination
-     */
-    protected $combination;
-
-    /**
      * Product field model instance
      * @var \core\models\ProductField $product_field
      */
@@ -98,15 +92,13 @@ class Product extends Model
      * @param ModelsLanguage $language
      * @param ModelsSku $sku
      * @param ModelsSearch $search
-     * @param ModelsCombination $combination
      * @param ModelsProductField $product_field
      * @param Request $request
      */
     public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
             ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
             ModelsSku $sku, ModelsSearch $search,
-            ModelsCombination $combination, ModelsProductField $product_field,
-            Request $request)
+            ModelsProductField $product_field, Request $request)
     {
         parent::__construct();
 
@@ -118,7 +110,6 @@ class Product extends Model
         $this->request = $request;
         $this->language = $language;
         $this->pricerule = $pricerule;
-        $this->combination = $combination;
         $this->product_field = $product_field;
     }
 
@@ -154,9 +145,10 @@ class Product extends Model
             $data['sku'] = $this->createSku($data);
         }
 
-        $this->setCombinations($data, false);
-        $this->setAttributes($data, false);
         $this->setSku($data, false);
+        $this->setSkuCombinations($data, false);
+        $this->setOptions($data, false);
+        $this->setAttributes($data, false);
 
         $translit_alias = $generate_alias = true;
         if (isset($options['translit_alias']) && !$options['translit_alias']) {
@@ -202,13 +194,14 @@ class Product extends Model
         }
 
         $conditions = array('product_id' => $product_id);
-        $updated = (int) $this->db->update('product', $data, $conditions);
 
+        $updated = (int) $this->db->update('product', $data, $conditions);
         $updated += (int) $this->setSku($data);
         $updated += (int) $this->setTranslation($data);
         $updated += (int) $this->setImages($data);
         $updated += (int) $this->setAlias($data);
-        $updated += (int) $this->setCombinations($data);
+        $updated += (int) $this->setSkuCombinations($data);
+        $updated += (int) $this->setOptions($data);
         $updated += (int) $this->setAttributes($data);
         $updated += (int) $this->setRelated($data);
 
@@ -336,7 +329,7 @@ class Product extends Model
         $product = $this->db->fetch($sql, array($product_id));
 
         $this->attachFields($product);
-        $this->attachCombinations($product);
+        $this->attachSku($product);
         $this->attachImage($product, $language);
         $this->attachTranslation($product, $language);
 
@@ -419,8 +412,8 @@ class Product extends Model
         }
 
         $product['field'] = $this->product_field->getList($product['product_id']);
-        
-        if(empty($product['field']['option'])){
+
+        if (empty($product['field']['option'])) {
             return;
         }
 
@@ -434,21 +427,24 @@ class Product extends Model
      * Adds option combinations to the product
      * @param array $product
      */
-    protected function attachCombinations(array &$product)
+    protected function attachSku(array &$product)
     {
         if (empty($product)) {
             return;
         }
 
-        $product['combination'] = $this->combination->getList($product['product_id']);
+        $skus = $this->sku->getList(array('product_id' => $product['product_id']));
 
-        $sku_codes = $this->sku->getByProduct($product['product_id']);
-        $product['sku'] = $sku_codes['base'];
+        foreach ($skus as $sku) {
 
-        foreach ($product['combination'] as $combination_id => &$combination) {
-            if (isset($sku_codes['combinations'][$combination_id])) {
-                $combination['sku'] = $sku_codes['combinations'][$combination_id];
+            if ($sku['combination_id'] !== '') {
+                $product['combination'][$sku['combination_id']] = $sku;
+                continue;
             }
+
+            $product['sku'] = $sku['sku'];
+            $product['price'] = $sku['price'];
+            $product['stock'] = $sku['stock'];
         }
     }
 
@@ -466,11 +462,9 @@ class Product extends Model
         }
 
         $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . ' oc.combination_id, oc.price AS option_price,'
-                . ' oc.file_id AS option_file_id, oc.stock AS option_stock'
+                . ' ps.sku, ps.price, ps.stock, ps.file_id'
                 . ' FROM product p'
                 . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
-                . ' LEFT JOIN option_combination oc ON(ps.combination_id=oc.combination_id)'
                 . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id AND pt.language=:language)'
                 . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
 
@@ -513,14 +507,11 @@ class Product extends Model
             $this->db->delete('cart', $conditions);
             $this->db->delete('review', $conditions);
             $this->db->delete('rating', $conditions);
-
             $this->db->delete('wishlist', $conditions);
             $this->db->delete('product_sku', $conditions);
             $this->db->delete('rating_user', $conditions);
             $this->db->delete('product_field', $conditions);
-            $this->db->delete('option_combination', $conditions);
             $this->db->delete('product_translation', $conditions);
-
             $this->db->delete('file', $conditions2);
             $this->db->delete('alias', $conditions2);
             $this->db->delete('search_index', $conditions2);
@@ -625,7 +616,7 @@ class Product extends Model
         $this->hook->fire('get.product.list.before', $data);
 
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""),'
-                . 'p.title) AS title, pt.language, ps.sku';
+                . 'p.title) AS title, pt.language, ps.sku, ps.price, ps.stock, ps.file_id';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
@@ -669,7 +660,7 @@ class Product extends Model
         }
 
         if (isset($data['price']) && isset($data['currency'])) {
-            $sql .= ' AND p.price = ?';
+            $sql .= ' AND ps.price = ?';
             $where[] = $this->price->amount((int) $data['price'], $data['currency']);
         }
 
@@ -679,7 +670,7 @@ class Product extends Model
         }
 
         if (isset($data['stock'])) {
-            $sql .= ' AND p.stock = ?';
+            $sql .= ' AND ps.stock = ?';
             $where[] = (int) $data['stock'];
         }
 
@@ -703,11 +694,16 @@ class Product extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'sku', 'price', 'currency', 'stock',
-            'status', 'store_id', 'product_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY p.{$data['sort']} {$data['order']}";
+        $allowed_sort = array(
+            'title' => 'p.title', 'sku' => 'ps.sku', 'price' => 'ps.price',
+            'currency' => 'p.currency', 'stock' => 'ps.stock',
+            'status' => 'p.status', 'store_id' => 'p.store_id',
+            'product_id' => 'p.product_id'
+        );
+
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY p.created DESC";
         }
@@ -743,7 +739,7 @@ class Product extends Model
 
         array_unshift($existing, $product_id);
         $saved = array_unique($existing);
-        
+
         $this->controlViewedLimit($saved, $limit);
 
         Tool::setCookie('viewed_products', implode('|', $saved), $lifespan);
@@ -762,7 +758,7 @@ class Product extends Model
         $this->controlViewedLimit($products, $limit);
         return $products;
     }
-    
+
     /**
      * Reduces an array of recently viewed products
      * If the limit is set to X and > 0,
@@ -771,12 +767,13 @@ class Product extends Model
      * @param integer $limit
      * @return array
      */
-    protected function controlViewedLimit(array &$items, $limit){
-        
+    protected function controlViewedLimit(array &$items, $limit)
+    {
+
         if (empty($limit)) {
             return $items;
         }
-        
+
         $items = array_slice($items, 0, $limit + 1);
         return $items;
     }
@@ -841,28 +838,24 @@ class Product extends Model
      * @param boolean $delete
      * @return boolean
      */
-    protected function setCombinations(array $data, $delete = true)
+    protected function setSkuCombinations(array $data, $delete = true)
     {
         if (empty($data['combination'])) {
             return false;
         }
 
-        $product_id = $data['product_id'];
-
-        if ($delete) {
-            $this->product_field->delete('option', $product_id);
-            $this->combination->delete($product_id);
-        }
-
         if (isset($data['store_id']) && $delete) {
-            $this->sku->delete($product_id, array('combinations' => true));
+            $this->sku->delete($data['product_id'], array('combinations' => true));
         }
 
-        $i = 1;
         foreach ($data['combination'] as $combination) {
-
-            $combination['product_id'] = $product_id;
-            $combination['currency'] = $data['currency'];
+            
+            if(empty($combination['fields'])){
+                continue;
+            }
+            
+            $combination['product_id'] = $data['product_id'];
+            $combination['combination_id'] = $this->getCombinationId($combination['fields'], $data['product_id']);
 
             if (isset($combination['path']) && isset($data['images'][$combination['path']])) {
                 $combination['file_id'] = $data['images'][$combination['path']];
@@ -873,12 +866,32 @@ class Product extends Model
                 $combination['sku'] = $this->sku->generate($sku_pattern, array(), array('store_id' => $data['store_id']));
             }
 
-            $combination['combination_id'] = $this->combination->add($combination);
-
             if (isset($data['store_id'])) {
                 $combination['store_id'] = $data['store_id'];
                 $this->sku->add($combination);
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes and/or adds product option fields
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setOptions(array $data, $delete = true)
+    {
+        if (empty($data['combination'])) {
+            return false;
+        }
+
+        if ($delete) {
+            $this->product_field->delete('option', $data['product_id']);
+        }
+
+        foreach ($data['combination'] as $combination) {
 
             if (empty($combination['fields'])) {
                 continue;
@@ -889,17 +902,13 @@ class Product extends Model
                 $options = array(
                     'type' => 'option',
                     'field_id' => $field_id,
-                    'product_id' => $product_id,
+                    'product_id' => $data['product_id'],
                     'field_value_id' => $field_value_id
                 );
 
                 $this->product_field->add($options);
             }
-
-            $i++;
         }
-
-        return true;
     }
 
     /**
