@@ -14,7 +14,7 @@ use core\models\Module as ModelsModule;
 use modules\frontend\Frontend as ModulesFrontend;
 use core\controllers\admin\Controller as BackendController;
 
-class Frontend extends BackendController
+class Settings extends BackendController
 {
 
     /**
@@ -54,9 +54,9 @@ class Frontend extends BackendController
     /**
      * Displays the module settings page
      */
-    public function editFrontend()
+    public function editSettings()
     {
-        $this->submitFrontend();
+        $this->submitSettings();
 
         $imagestyles = $this->image->getStyleNames();
         $settings = $this->config->module('frontend');
@@ -64,18 +64,18 @@ class Frontend extends BackendController
         $this->setData('settings', $settings);
         $this->setData('imagestyles', $imagestyles);
 
-        $this->setTitleEditFrontend();
-        $this->setBreadcrumbEditFrontend();
-        $this->outputEditFrontend();
+        $this->setTitleEditSettings();
+        $this->setBreadcrumbEditSettings();
+        $this->outputEditSettings();
     }
 
     /**
      * Saves the submitted settings
      */
-    protected function submitFrontend()
+    protected function submitSettings()
     {
         if ($this->isPosted('reset')) {
-            return $this->resetFrontend();
+            return $this->resetSettings();
         }
 
         if (!$this->isPosted('save')) {
@@ -83,17 +83,17 @@ class Frontend extends BackendController
         }
 
         $this->setSubmitted('settings');
-        $this->validateFrontend();
+        $this->validateSettings();
 
         if (!$this->hasErrors('settings')) {
-            $this->updateFrontend();
+            $this->updateSettings();
         }
     }
 
     /**
      * Resets module settings to default values
      */
-    protected function resetFrontend()
+    protected function resetSettings()
     {
         $this->controlAccess('module_edit');
         $this->module->setSettings('frontend', array());
@@ -105,7 +105,7 @@ class Frontend extends BackendController
     /**
      * Updates module settings with an array of submitted values
      */
-    protected function updateFrontend()
+    protected function updateSettings()
     {
         $this->controlAccess('module_edit');
 
@@ -119,7 +119,7 @@ class Frontend extends BackendController
     /**
      * Validates an array of submitted settings
      */
-    protected function validateFrontend()
+    protected function validateSettings()
     {
         $this->addValidator('catalog_limit', array(
             'numeric' => array(),
@@ -132,7 +132,7 @@ class Frontend extends BackendController
     /**
      * Sets breadcrumbs on the module settings page
      */
-    protected function setBreadcrumbEditFrontend()
+    protected function setBreadcrumbEditSettings()
     {
         $breadcrumbs = array();
 
@@ -152,7 +152,7 @@ class Frontend extends BackendController
     /**
      * Renders the module settings page templates
      */
-    protected function outputEditFrontend()
+    protected function outputEditSettings()
     {
         $this->output('frontend|settings');
     }
@@ -160,7 +160,7 @@ class Frontend extends BackendController
     /**
      * Sets titles on the module settings page
      */
-    protected function setTitleEditFrontend()
+    protected function setTitleEditSettings()
     {
         $title = $this->text('Edit %module settings', array(
             '%module' => $this->text('Frontend')));

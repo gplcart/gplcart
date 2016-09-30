@@ -36,7 +36,7 @@ class Payment extends Model
 
         $this->language = $language;
     }
-    
+
     /**
      * Returns an array of payment methods
      * @param boolean $enabled
@@ -59,9 +59,20 @@ class Payment extends Model
                 return !empty($method['status']);
             });
         }
-        
+
         Tool::sortWeight($methods);
         return $methods;
+    }
+
+    /**
+     * Returns a payment method
+     * @param string $method_id
+     * @return array
+     */
+    public function getMethod($method_id)
+    {
+        $methods = $this->getMethods();
+        return empty($methods[$method_id]) ? array() : $methods[$method_id];
     }
 
     /**
@@ -77,8 +88,7 @@ class Payment extends Model
             'description' => $this->language->text('Payment for an order is made at the time of delivery'),
             'image' => '',
             'status' => true,
-            'weight' => 0,
-            'template' => array('select' => '', 'submit' => '')
+            'weight' => 0
         );
 
         return $methods;

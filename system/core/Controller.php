@@ -361,17 +361,7 @@ class Controller
             return $this->text('No template file provided');
         }
 
-        $module = $this->theme;
-
-        if (strpos($file, '|') !== false) {
-            $fullpath = false;
-            $parts = explode('|', $file, 2);
-            $type = $parts[0];
-            $file = $parts[1];
-            $module = isset($this->{"theme_$type"}) ? $this->{"theme_$type"} : $this->theme;
-        }
-
-        $template = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
+        $template = $this->getModuleTemplatePath($file, $fullpath);
         $extension = isset($this->theme_settings['twig']) ? '.twig' : '.php';
 
         if ((substr($template, -strlen($extension)) !== $extension)) {
@@ -391,6 +381,26 @@ class Controller
         }
 
         return $this->renderPhp($template, $data);
+    }
+
+    /**
+     * Returns a full path to a module template
+     * @param string $file
+     * @param boolean $fullpath
+     * @return string
+     */
+    protected function getModuleTemplatePath($file, $fullpath)
+    {
+        $module = $this->theme;
+
+        if (strpos($file, '|') !== false) {
+            $fullpath = false;
+            $parts = explode('|', $file, 2);
+            $module = $parts[0];
+            $file = $parts[1];
+        }
+
+        return $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
     }
 
     /**
@@ -1475,7 +1485,7 @@ class Controller
 
         $this->data['messages'] = $this->session->getMessage();
         $this->data['languages'] = $this->languages;
-        
+
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
         $this->data['current_store'] = $this->current_store;

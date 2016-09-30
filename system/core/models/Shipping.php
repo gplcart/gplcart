@@ -57,11 +57,21 @@ class Shipping extends Model
                 return !empty($method['status']);
             });
         }
-        
+
         $this->hook->fire('shipping.method', $methods);
 
         Tool::sortWeight($methods);
         return $methods;
+    }
+    
+    /**
+     * Returns a shipping method
+     * @param string $method_id
+     * @return array
+     */
+    public function getMethod($method_id){
+        $methods = $this->getMethods();
+        return empty($methods[$method_id]) ? array() : $methods[$method_id];
     }
 
     /**
@@ -77,8 +87,7 @@ class Shipping extends Model
             'description' => $this->language->text('Customer must pick up his items himself at the store'),
             'image' => '',
             'status' => true,
-            'weight' => 0,
-            'template' => array('select' => '', 'submit' => ''),
+            'weight' => 0
         );
 
         return $methods;

@@ -41,7 +41,7 @@ class Frontend
         $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
             'handlers' => array(
-                'controller' => array('modules\\frontend\\controllers\\Frontend', 'editFrontend')
+                'controller' => array('modules\\frontend\\controllers\\Settings', 'editSettings')
             )
         );
     }

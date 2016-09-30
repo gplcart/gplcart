@@ -48,11 +48,6 @@
               </a>
             </th>
             <th>
-              <a href="<?php echo $sort_type; ?>">
-                <?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
-            <th>
               <a href="<?php echo $sort_code; ?>">
                 <?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i>
               </a>
@@ -68,11 +63,6 @@
               </a>
             </th>
             <th>
-              <a href="<?php echo $sort_store_id; ?>">
-                <?php echo $this->text('Store'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
-            <th>
               <a href="<?php echo $sort_status; ?>">
                 <?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i>
               </a>
@@ -84,22 +74,9 @@
             <th>
               <input class="form-control" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
-            <th>
-              <select class="form-control" name="type">
-                <option value="">
-                <?php echo $this->text('Any'); ?>
-                </option>
-                <option value="order"<?php echo ($filter_type == 'order') ? ' selected' : ''; ?>>
-                <?php echo $this->text('Order'); ?>
-                </option>
-                <option value="catalog"<?php echo ($filter_type == 'catalog') ? ' selected' : ''; ?>>
-                <?php echo $this->text('Catalog'); ?>
-                </option>
-              </select>
-            </th>
             <th><input class="form-control" name="code" value="<?php echo $filter_code; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
             <th>
-              <input class="form-control" name="value" pattern="\d*" type="number" min="0" step="any" maxlength="32" value="<?php echo $filter_value; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+              <input class="form-control" name="value" value="<?php echo $filter_value; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th>
               <select class="form-control" name="value_type">
@@ -112,18 +89,6 @@
                 <option value="fixed"<?php echo ($filter_value_type == 'fixed') ? ' selected' : ''; ?>>
                 <?php echo $this->text('Fixed'); ?>
                 </option>
-              </select>
-            </th>
-            <th>
-              <select class="form-control" name="store_id">
-                <option value=""<?php echo isset($filter_store_id) ? '' : ' selected'; ?>>
-                <?php echo $this->text('Any'); ?>
-                </option>
-                <?php foreach ($stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo ($filter_store_id == $store_id) ? ' selected' : ''; ?>>
-                <?php echo $this->escape($store); ?>
-                </option>
-                <?php } ?>
               </select>
             </th>
             <th class="text-center">
@@ -152,7 +117,7 @@
         <tbody>
           <?php if ($filtering && empty($price_rules)) { ?>
            <tr>
-             <td class="middle" colspan="10">
+             <td class="middle" colspan="8">
                <?php echo $this->text('No results'); ?>
                <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
              </td>
@@ -166,7 +131,6 @@
               <input type="hidden" value="<?php echo $this->escape($rule['currency']); ?>" name="price_rule[currency]">
             </td>
             <td class="middle"><?php echo $this->escape($rule['name']); ?></td>
-            <td class="middle"><?php echo $this->text($rule['type']); ?></td>
             <td class="middle"><?php echo $this->escape($rule['code']); ?></td>
             <td class="middle"><?php echo $this->escape($rule['value']); ?></td>
             <td class="middle">
@@ -174,13 +138,6 @@
               <?php echo $this->text('Percent'); ?>
               <?php } else { ?>
               <?php echo $this->text('Fixed'); ?>
-              <?php } ?>
-            </td>
-            <td class="middle">
-              <?php if (isset($stores[$rule['store_id']])) { ?>
-              <?php echo $this->escape($stores[$rule['store_id']]); ?>
-              <?php } else { ?>
-              <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
             </td>
             <td class="middle">

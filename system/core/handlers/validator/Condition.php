@@ -361,12 +361,12 @@ class Condition
      */
     public function shipping($key, $operator, array &$values, array $data)
     {
-        $exists = array_filter($values, function ($service) {
-            return (bool) $this->shipping->getService($service);
+        $exists = array_filter($values, function ($method_id) {
+            return (bool) $this->shipping->getMethod($method_id);
         });
 
         if (count($values) != count($exists)) {
-            return $this->language->text('Some shipping services do not exist');
+            return $this->language->text('Some shipping methods do not exist');
         }
 
         return true;
@@ -382,12 +382,12 @@ class Condition
      */
     public function payment($key, $operator, array &$values, array $data)
     {
-        $exists = array_filter($values, function ($service) {
-            return (bool) $this->payment->getService($service);
+        $exists = array_filter($values, function ($method_id) {
+            return (bool) $this->payment->getMethod($method_id);
         });
 
         if (count($values) != count($exists)) {
-            return $this->language->text('Some payment services do not exist');
+            return $this->language->text('Some payment methods do not exist');
         }
 
         return true;

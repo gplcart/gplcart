@@ -80,7 +80,7 @@ class PriceRule extends BackendController
         $this->setData('stores', $stores);
 
         $filters = array('name', 'code', 'value', 'value_type',
-            'weight', 'status', 'store_id');
+            'weight', 'status');
 
         $this->setFilter($filters, $query);
 
@@ -230,6 +230,8 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbEditPriceRule()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin'));

@@ -146,25 +146,8 @@ class Checkout extends FrontendController
     {
         $this->form_data['settings'] = array();
         $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_uid);
-        $this->form_data['payment_methods'] = $this->order->getPaymentMethods();
-        $this->form_data['shipping_methods'] = $this->order->getShippingMethods();
-    }
-    
-    protected function prepareShippingMethods(){
-        
-        /*
-        $methods = $this->order->getShippingMethods();
-        
-        foreach($methods as $method_id => $method){
-            
-            
-            
-            
-        }
-        
-        return $methods;
-         * */
-
+        $this->form_data['payment_methods'] = $this->order->getPaymentMethods(true);
+        $this->form_data['shipping_methods'] = $this->order->getShippingMethods(true);
     }
 
     protected function setFormDataAfterCheckout()
@@ -202,11 +185,9 @@ class Checkout extends FrontendController
 
         $this->form_data['pane_login'] = $this->render('checkout/panes/login', $this->form_data);
         $this->form_data['pane_review'] = $this->render('checkout/panes/review', $this->form_data);
-
         $this->form_data['pane_payment_methods'] = $this->render('checkout/panes/payment_methods', $this->form_data);
         $this->form_data['pane_shipping_methods'] = $this->render('checkout/panes/shipping_methods', $this->form_data);
         $this->form_data['pane_shipping_address'] = $this->render('checkout/panes/shipping_address', $this->form_data);
-
         $this->form_data['settings'] = json_encode($this->form_data['settings'], JSON_FORCE_OBJECT);
     }
 
@@ -270,8 +251,13 @@ class Checkout extends FrontendController
             $this->login_form = false;
         }
 
-        $this->submitOrderCheckout();
         $this->validateCouponCheckout();
+
+        if ($this->hasErrors('order', false)) {
+            return;
+        }
+
+        $this->submitOrderCheckout();
         $this->submitCartCheckout();
     }
 
@@ -525,17 +511,17 @@ class Checkout extends FrontendController
         if (empty($items)) {
             return;
         }
-        
+
         foreach ($items as $sku => $item) {
-            
+
             $item += array(
                 'sku' => $sku,
                 'user_id' => $this->cart_uid,
                 'store_id' => $this->store_id
             );
-            
+
             $this->setSubmitted("cart.items.$sku", $item);
-            
+
             $cart_id = $this->cart_content['items'][$sku]['cart_id'];
             $product = $this->cart_content['items'][$sku]['product'];
 
@@ -547,7 +533,7 @@ class Checkout extends FrontendController
             $this->addValidator("cart.items.$sku", array(
                 'cart_limits' => array('increment' => false)
             ));
-            
+
             $errors = $this->setValidators($product);
 
             if (empty($errors)) {
@@ -555,7 +541,7 @@ class Checkout extends FrontendController
                 $this->cart->update($cart_id, array('quantity' => $item['quantity']));
                 continue;
             }
-            
+
             $messages = Tool::flattenArray($errors);
             $this->form_data['messages']['cart']['warning'] = implode('<br>', $messages);
         }
@@ -596,9 +582,9 @@ class Checkout extends FrontendController
     protected function calculateCheckout()
     {
         $submitted = $this->getSubmitted();
-        
+
         $this->form_data = Tool::merge($this->form_data, $submitted);
-        
+
         $calculated = $this->order->calculate($this->cart_content, $this->form_data);
         $this->form_data['total_formatted'] = $this->price->format($calculated['total'], $calculated['currency']);
         $this->form_data['total'] = $calculated['total'];
@@ -646,28 +632,28 @@ class Checkout extends FrontendController
 
     /**
      * Validates a coupon code
-     * @return boolean
      */
     protected function validateCouponCheckout()
     {
-        $code = (string) $this->request->post('check_code');
+        $price_rule_id = (int) $this->request->post('check_pricerule');
 
-        if (empty($code)) {
+        if (empty($price_rule_id)) {
+            return;
+        }
+        
+        $code = $this->getSubmitted('pricerule_code', '');
+        
+        if($code === ''){
             return;
         }
 
-
-        $code = '';
-        if (isset($this->form_data['order']['code'])) {
-            $code = $this->form_data['order']['code'];
+        if ($this->order->codeMatches($price_rule_id, $code)) {
+            $this->form_data['messages']['components']['success'] = $this->text('Code is valid');
+            return;
         }
-
-        if (!empty($code) && $this->order->codeMatches($price_rule_id, $code)) {
-            return true;
-        }
-
-        $this->errors['code'] = $this->text('Invalid code');
-        return false;
+        
+        $this->setError('pricerule_code', $this->text('Invalid code'));
+        $this->form_data['messages']['components']['warning'] = $this->text('Invalid code');
     }
 
     /**

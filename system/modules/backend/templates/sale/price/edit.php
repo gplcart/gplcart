@@ -24,7 +24,7 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Trigger'); ?></label>
         <div class="col-md-4">
           <select name="price_rule[trigger_id]" class="form-control">
-            <option value=""><?php echo $this->text('- select -'); ?></option>
+            <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($triggers as $trigger_id => $trigger) { ?>
             <option value="<?php echo $trigger_id; ?>"<?php echo (isset($price_rule['trigger_id']) && $price_rule['trigger_id'] == $trigger_id) ? ' selected' : ''; ?>>
             <?php echo $this->escape($trigger['name']); ?>

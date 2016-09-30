@@ -324,7 +324,7 @@ class Condition
      */
     public function shipping(array $condition, array $data)
     {
-        if (!isset($data['data']['order']['shipping'])) {
+        if (!isset($data['data']['shipping'])) {
             return false;
         }
 
@@ -334,7 +334,7 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->condition->compareString($data['data']['order']['shipping'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['shipping'], $condition_value, $condition['operator']);
     }
 
     /**
@@ -345,7 +345,7 @@ class Condition
      */
     public function payment(array $condition, array $data)
     {
-        if (!isset($data['data']['order']['payment'])) {
+        if (!isset($data['data']['payment'])) {
             return false;
         }
 
@@ -355,7 +355,7 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->condition->compareString($data['data']['order']['payment'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['payment'], $condition_value, $condition['operator']);
     }
 
     /**
@@ -366,12 +366,12 @@ class Condition
      */
     public function shippingAddressId(array $condition, array $data)
     {
-        if (empty($data['data']['order']['shipping_address'])) {
+        if (empty($data['data']['shipping_address'])) {
             return false;
         }
 
         $condition_value = (array) $condition['value'];
-        $address_id = $data['data']['order']['shipping_address'];
+        $address_id = $data['data']['shipping_address'];
 
         if (!in_array($condition['operator'], array('=', '!='))) {
             $condition_value = (int) reset($condition_value);
@@ -399,11 +399,11 @@ class Condition
             return $this->condition->compareString($country, $condition_value, $condition['operator']);
         }
 
-        if (!isset($data['data']['order']['shipping_address'])) {
+        if (!isset($data['data']['shipping_address'])) {
             return false;
         }
 
-        $address_id = $data['data']['order']['shipping_address'];
+        $address_id = $data['data']['shipping_address'];
         $address = $this->address->get($address_id);
 
         if (empty($address['country'])) {
@@ -432,11 +432,11 @@ class Condition
             return $this->condition->compareNumeric($country, $condition_value, $condition['operator']);
         }
 
-        if (!isset($data['data']['order']['shipping_address'])) {
+        if (!isset($data['data']['shipping_address'])) {
             return false;
         }
 
-        $address_id = $data['data']['order']['shipping_address'];
+        $address_id = $data['data']['shipping_address'];
         $address = $this->address->get($address_id);
 
         if (empty($address['state_id'])) {

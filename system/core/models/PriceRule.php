@@ -11,6 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\classes\Cache;
+use core\models\Trigger as ModelsTrigger;
 use core\models\Currency as ModelsCurrency;
 use core\models\Language as ModelsLanguage;
 
@@ -33,15 +34,23 @@ class PriceRule extends Model
     protected $language;
 
     /**
+     * Trigger model instance
+     * @var \core\models\Trigger $trigger
+     */
+    protected $trigger;
+
+    /**
      * Constructor
      * @param ModelsCurrency $currency
+     * @param ModelsTrigger $trigger
      * @param ModelsLanguage $language
      */
     public function __construct(ModelsCurrency $currency,
-            ModelsLanguage $language)
+            ModelsTrigger $trigger, ModelsLanguage $language)
     {
         parent::__construct();
 
+        $this->trigger = $trigger;
         $this->currency = $currency;
         $this->language = $language;
     }
@@ -54,7 +63,7 @@ class PriceRule extends Model
     public function getList(array $data = array())
     {
         ksort($data);
-        
+
         $price_rules = &Cache::memory('price.rules.' . md5(json_encode($data)));
 
         if (isset($price_rules)) {
@@ -76,12 +85,14 @@ class PriceRule extends Model
             $sql .= ' WHERE price_rule_id IN(' . $placeholders . ')';
             $where = array_merge($where, $ids);
         } else {
-            $sql .= ' WHERE price_rule_id IS NOT NULL';
+            $sql .= ' WHERE price_rule_id > 0';
         }
 
-        if (isset($data['trigger_id'])) {
-            $sql .= ' AND trigger_id = ?';
-            $where[] = $data['trigger_id'];
+        if (!empty($data['trigger_id'])) {
+            $ids = (array) $data['trigger_id'];
+            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+            $sql .= ' AND trigger_id IN(' . $placeholders . ')';
+            $where = array_merge($where, $ids);
         }
 
         if (isset($data['name'])) {
@@ -252,43 +263,44 @@ class PriceRule extends Model
     public function calculate(&$total, array $cart, array $data,
             array &$components)
     {
-        $rules = $this->getSuited('order', array('cart' => $cart, 'data' => $data));
+
+        $options = array('store_id' => $data['store_id'], 'status' => 1);
+        $rules = $this->getTriggered($options, array('cart' => $cart, 'data' => $data));
 
         foreach ($rules as $rule) {
-            try {
-                $this->calculateComponent($total, $cart, $data, $components, $rule);
-            } catch (\Exception $exception) {
-                throw $exception;
-            }
+            $this->calculateComponent($total, $cart, $data, $components, $rule);
         }
     }
 
     /**
      * Returns an array of suitable rules for a given context
-     * @param string $type
      * @param array $data
      * @return array
      */
-    public function getSuited($type, array $data)
+    public function getTriggered(array $options, array $data)
     {
-        $this->hook->fire('suited.price.rules.before', $type, $data);
+        
+        $triggers = $this->trigger->getFired($options, $data);
 
-        $rules = $this->getList(array('status' => 1));
+        if (empty($triggers)) {
+            return array();
+        }
+
+        $options['trigger_id'] = $triggers;
+
+        $rules = $this->getList($options);
 
         $coupons = 0;
         $results = array();
 
         foreach ($rules as $id => $rule) {
-            if (!$this->conditionsMet($rule, $data)) {
-                continue;
+
+            if (!empty($rule['code'])) {
+                $coupons++;
             }
 
-            if ($type === 'order' && !empty($rule['code'])) {
-                $coupons++;
-
-                if ($coupons > 1) {
-                    continue;
-                }
+            if ($coupons > 1) {
+                continue;
             }
 
             $results[$id] = $rule;
@@ -298,7 +310,6 @@ class PriceRule extends Model
             return empty($a['code']) ? -1 : 1; // Coupons always bottom
         });
 
-        $this->hook->fire('suited.price.rules.after', $results, $data);
         return $results;
     }
 
@@ -316,8 +327,8 @@ class PriceRule extends Model
     {
         $rule_id = $rule['price_rule_id'];
 
-        if ($rule['type'] === 'order' && !empty($rule['code'])) {
-            if (empty($data['order']['code']) || !$this->codeMatches($rule_id, $data['order']['code'])) {
+        if ($rule['code'] !== '') {
+            if (!isset($data['pricerule_code']) || !$this->codeMatches($rule_id, $data['pricerule_code'])) {
                 $components[$rule_id] = array('rule' => $rule, 'price' => 0);
                 return $amount;
             }

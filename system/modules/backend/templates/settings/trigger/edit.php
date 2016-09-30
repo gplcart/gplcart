@@ -73,7 +73,7 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
-          <div class="form-group required<?php echo isset($this->errors['data']['conditions']) ? ' has-error' : ''; ?>">
+          <div class="form-group<?php echo isset($this->errors['data']['conditions']) ? ' has-error' : ''; ?>">
             <label class="col-md-3 control-label"><?php echo $this->text('Conditions'); ?></label>
             <div class="col-md-9">
               <textarea name="trigger[data][conditions]" rows="6" class="form-control" placeholder="<?php echo $this->text('E.g, user is logged in: user_id > 0'); ?>"><?php echo empty($trigger['data']['conditions']) ? '' : $this->escape($trigger['data']['conditions']); ?></textarea>
