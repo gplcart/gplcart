@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
 
@@ -35,56 +36,52 @@ class Payment extends Model
 
         $this->language = $language;
     }
-
+    
     /**
-     * Returns an array of payment methods and services
-     * @return type
+     * Returns an array of payment methods
+     * @param boolean $enabled
+     * @return array
      */
-    public function getMethods()
+    public function getMethods($enabled = false)
     {
-        $methods = &Cache::memory('payment.methods');
+        $methods = &Cache::memory('payment.method');
 
         if (isset($methods)) {
             return $methods;
         }
 
+        $methods = $this->getDefault();
+
+        $this->hook->fire('payment.method', $methods);
+
+        if ($enabled) {
+            $methods = array_filter($methods, function ($method) {
+                return !empty($method['status']);
+            });
+        }
+        
+        Tool::sortWeight($methods);
+        return $methods;
+    }
+
+    /**
+     * Returns an array of default payment methods
+     * @return array
+     */
+    protected function getDefault()
+    {
         $methods = array();
 
         $methods['cod'] = array(
             'title' => $this->language->text('Cash on delivery'),
             'description' => $this->language->text('Payment for an order is made at the time of delivery'),
-            'services' => array(
-                'cod' => array(
-                    'title' => '',
-                    'description' => '',
-                    'image' => '',
-                    'status' => true,
-                    'price' => $this->config->get('payment_cod_price', 0),
-                    'currency' => $this->config->get('currency', 'USD')
-                )
-            )
+            'image' => '',
+            'status' => true,
+            'weight' => 0,
+            'template' => array('select' => '', 'submit' => '')
         );
 
-        $this->hook->fire('payment.method', $methods);
         return $methods;
-    }
-
-    /**
-     * Returns an array of calculated prices per payment service 
-     * @param array $cart
-     * @param array $order
-     * @return array
-     */
-    public function calculate(array $cart, array $order)
-    {
-        $results = array();
-        $methods = $this->getMethods();
-
-        // Code
-
-        $data = array('cart' => $cart, 'order' => $order);
-        $this->hook->fire('payment.calculate', $results, $methods, $data);
-        return $results;
     }
 
 }

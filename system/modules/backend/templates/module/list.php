@@ -19,7 +19,6 @@
       <thead>
         <tr class="active">
           <th><?php echo $this->text('Name'); ?></th>
-          <th><?php echo $this->text('Description'); ?></th>
           <th><?php echo $this->text('Version'); ?></th>
           <th><?php echo $this->text('Core'); ?></th>
           <th><?php echo $this->text('Type'); ?></th>
@@ -36,9 +35,6 @@
                 <?php echo $this->truncate($this->escape($info['name'])); ?>
               </a>
             </div>
-          </td>
-          <td class="middle">
-            <?php echo $info['description'] ? $this->truncate($this->xss($info['description']), 50) : ''; ?>
           </td>
           <td class="middle">
             <?php echo $info['version'] ? $this->escape($info['version']) : $this->text('Unknown'); ?>

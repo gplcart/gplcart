@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\classes\Tool;
 use core\classes\Cache;
 use core\models\Language as ModelsLanguage;
 
@@ -37,10 +38,11 @@ class Shipping extends Model
     }
 
     /**
-     * Returns an array of shipping methods and services
+     * Returns an array of shipping methods
+     * @param boolean $enabled
      * @return array
      */
-    public function getMethods()
+    public function getMethods($enabled = false)
     {
         $methods = &Cache::memory('shipping.methods');
 
@@ -48,43 +50,38 @@ class Shipping extends Model
             return $methods;
         }
 
+        $methods = $this->getDefault();
+
+        if ($enabled) {
+            $methods = array_filter($methods, function ($method) {
+                return !empty($method['status']);
+            });
+        }
+        
+        $this->hook->fire('shipping.method', $methods);
+
+        Tool::sortWeight($methods);
+        return $methods;
+    }
+
+    /**
+     * Returns an array of default shipping methods
+     * @return array
+     */
+    protected function getDefault()
+    {
         $methods = array();
 
         $methods['pickup'] = array(
             'title' => $this->language->text('Pickup'),
             'description' => $this->language->text('Customer must pick up his items himself at the store'),
-            'services' => array(
-                'pickup' => array(
-                    'title' => '',
-                    'description' => '',
-                    'image' => '',
-                    'status' => true,
-                    'price' => $this->config->get('shipping_pickup_price', 0),
-                    'currency' => $this->config->get('currency', 'USD')
-                )
-            )
+            'image' => '',
+            'status' => true,
+            'weight' => 0,
+            'template' => array('select' => '', 'submit' => ''),
         );
 
-        $this->hook->fire('shipping.method', $methods);
         return $methods;
-    }
-
-    /**
-     * Returns an array of calculated prices per shipping service 
-     * @param array $cart
-     * @param array $order
-     * @return array
-     */
-    public function calculate(array $cart, array $order)
-    {
-        $results = array();
-        $methods = $this->getMethods();
-
-        // Code
-
-        $data = array('cart' => $cart, 'order' => $order);
-        $this->hook->fire('shipping.calculate', $results, $methods, $data);
-        return $results;
     }
 
 }

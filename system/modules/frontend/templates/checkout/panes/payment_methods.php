@@ -3,22 +3,25 @@
   <div class="panel-body">
     <div class="form-group">
       <div class="col-md-12">
-        <?php foreach ($payment_services as $service_id => $service) { ?>
-        <?php if (isset($service['html'])) { ?>
-        <?php echo $service['html']; ?>
+        <?php foreach ($payment_methods as $method_id => $method) { ?>
+        
+        
+        
+        
+        
+        
+        <?php if (!empty($method['template']['select'])) { ?>
+        <?php echo $method['template']['select']; ?>
         <?php } else { ?>
         <div class="radio">
-          <?php if (!empty($service['image'])) { ?>
+          <?php if (!empty($method['image'])) { ?>
           <div class="image">
-            <img class="img-responsive" src="<?php echo $this->escape($service['image']); ?>">
+            <img class="img-responsive" src="<?php echo $this->escape($method['image']); ?>">
           </div>
           <?php } ?>
           <label>
-            <input type="radio" name="order[payment]" value="<?php echo $service_id; ?>"<?php echo (isset($order['payment']) && $order['payment'] == $service_id) ? ' checked' : ''; ?>>
-            <?php echo $this->escape($service['title']); ?>
-            <?php if (!empty($service['price'])) { ?>
-            <strong><?php echo $this->escape($service['price_formatted']); ?></strong>
-            <?php } ?>
+            <input type="radio" name="order[payment]" value="<?php echo $method_id; ?>"<?php echo (isset($order['payment']) && $order['payment'] == $method_id) ? ' checked' : ''; ?>>
+            <?php echo $this->escape($method['title']); ?>
           </label>
         </div>
         <?php } ?>

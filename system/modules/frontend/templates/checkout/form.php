@@ -23,12 +23,12 @@
   </div>
   <div class="row">
     <div class="col-md-4"><?php echo $pane_shipping_address; ?></div>
-    <?php if ($shipping_services || $payment_services) { ?>
+    <?php if ($shipping_methods || $payment_methods) { ?>
         <div class="col-md-3">
           <div class="form-group">
             <div class="col-md-12">
-              <?php if ($shipping_services) { ?><?php echo $pane_shipping_services; ?><?php } ?>
-              <?php if ($payment_services) { ?><?php echo $pane_payment_services; ?><?php } ?>
+              <?php if ($shipping_methods) { ?><?php echo $pane_shipping_methods; ?><?php } ?>
+              <?php if ($payment_methods) { ?><?php echo $pane_payment_methods; ?><?php } ?>
             </div>
           </div>
         </div>

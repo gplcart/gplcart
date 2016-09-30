@@ -94,9 +94,12 @@ class Hook
      * @param mixed $a
      * @param mixed $b
      * @param mixed $c
+     * @param mixed $d
+     * @param mixed $e
      * @return boolean
      */
-    public function fire($hook, &$a = null, &$b = null, &$c = null)
+    public function fire($hook, &$a = null, &$b = null, &$c = null, &$d = null,
+            &$e = null)
     {
         $method = 'hook' . strtolower(str_replace(".", "", $hook));
 
@@ -112,10 +115,10 @@ class Hook
             }
 
             try {
-                $instance->{$method}($a, $b, $c);
+                $instance->{$method}($a, $b, $c, $d, $e);
                 static::$called[$method][$namespace] = array($namespace, $method);
-            } catch (ModuleException $e) {
-                echo $e->getMessage();
+            } catch (ModuleException $exc) {
+                echo $exc->getMessage();
             }
         }
 

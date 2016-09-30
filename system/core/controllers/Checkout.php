@@ -65,12 +65,6 @@ class Checkout extends FrontendController
     protected $cart_updated;
 
     /**
-     * Cart action
-     * @var string
-     */
-    protected $cart_action;
-
-    /**
      * Cart content for the current user
      * @var array
      */
@@ -83,34 +77,16 @@ class Checkout extends FrontendController
     protected $country_code;
 
     /**
-     * Cart items limit
-     * @var integer
-     */
-    protected $quantity_limit;
-
-    /**
      * Template data array
      * @var array
      */
     protected $form_data;
 
     /**
-     * Whether the cart reached the limit
-     * @var boolean
-     */
-    protected $limit_reached;
-
-    /**
      * Submitted address
      * @var array
      */
     protected $submitted_address;
-
-    /**
-     * Total cart items quantity
-     * @var integer
-     */
-    protected static $total_quantity;
 
     /**
      * Constructor
@@ -131,12 +107,9 @@ class Checkout extends FrontendController
 
         $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
-        static::$total_quantity = 0;
-
         $this->login_form = false;
         $this->cart_updated = false;
         $this->address_form = false;
-        $this->limit_reached = false;
 
         $this->form_data = array();
         $this->submitted_address = array();
@@ -171,18 +144,27 @@ class Checkout extends FrontendController
      */
     protected function setFormDataBeforeCheckout()
     {
-        
-        $this->form_data['order'] = array(
-            //'user_id' => $this->cart_uid,
-            //'store_id' => $this->store_id,
-            'total' => $this->cart_content['total'],
-            'currency' => $this->cart_content['currency']
-        );
-
         $this->form_data['settings'] = array();
         $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_uid);
-        $this->form_data['payment_services'] = $this->order->getPaymentMethods($this->cart_content, $this->form_data['order']);
-        $this->form_data['shipping_services'] = $this->order->getShippingMethods($this->cart_content, $this->form_data['order']);
+        $this->form_data['payment_methods'] = $this->order->getPaymentMethods();
+        $this->form_data['shipping_methods'] = $this->order->getShippingMethods();
+    }
+    
+    protected function prepareShippingMethods(){
+        
+        /*
+        $methods = $this->order->getShippingMethods();
+        
+        foreach($methods as $method_id => $method){
+            
+            
+            
+            
+        }
+        
+        return $methods;
+         * */
+
     }
 
     protected function setFormDataAfterCheckout()
@@ -192,8 +174,6 @@ class Checkout extends FrontendController
         }
 
         $this->address_form = empty($this->form_data['addresses']);
-
-        //$data['order'] = $this->request->post('order', array()) + $data['order'];
 
         if (isset($this->submitted_address['country'])) {
             $this->country_code = $this->submitted_address['country'];
@@ -223,9 +203,9 @@ class Checkout extends FrontendController
         $this->form_data['pane_login'] = $this->render('checkout/panes/login', $this->form_data);
         $this->form_data['pane_review'] = $this->render('checkout/panes/review', $this->form_data);
 
-        $this->form_data['pane_payment_services'] = $this->render('checkout/panes/payment_services', $this->form_data);
+        $this->form_data['pane_payment_methods'] = $this->render('checkout/panes/payment_methods', $this->form_data);
+        $this->form_data['pane_shipping_methods'] = $this->render('checkout/panes/shipping_methods', $this->form_data);
         $this->form_data['pane_shipping_address'] = $this->render('checkout/panes/shipping_address', $this->form_data);
-        $this->form_data['pane_shipping_services'] = $this->render('checkout/panes/shipping_services', $this->form_data);
 
         $this->form_data['settings'] = json_encode($this->form_data['settings'], JSON_FORCE_OBJECT);
     }
@@ -498,13 +478,7 @@ class Checkout extends FrontendController
      */
     protected function submitCartCheckout()
     {
-        $items = $this->getSubmitted('cart.items');
-
-        if (empty($items)) {
-            return;
-        }
-
-        $this->quantityCartCheckout($items);
+        $this->quantityCartCheckout();
 
         $this->moveCartWishlistCheckout();
         $this->deleteCartCheckout();
@@ -544,8 +518,14 @@ class Checkout extends FrontendController
      * Applies an action to the cart items
      * @return boolean
      */
-    protected function quantityCartCheckout($items)
-    {      
+    protected function quantityCartCheckout()
+    {
+        $items = $this->getSubmitted('cart.items');
+
+        if (empty($items)) {
+            return;
+        }
+        
         foreach ($items as $sku => $item) {
             
             $item += array(
@@ -554,11 +534,20 @@ class Checkout extends FrontendController
                 'store_id' => $this->store_id
             );
             
+            $this->setSubmitted("cart.items.$sku", $item);
+            
             $cart_id = $this->cart_content['items'][$sku]['cart_id'];
             $product = $this->cart_content['items'][$sku]['product'];
 
-            $this->addValidator("cart.items.$sku.quantity", array('numeric' => array(), 'length' => array('min' => 1, 'max' => 2)));
-            $this->addValidator("cart.items.$sku", array('cart_limits' => array('increment' => false)));
+            $this->addValidator("cart.items.$sku.quantity", array(
+                'numeric' => array(),
+                'length' => array('min' => 1, 'max' => 2)
+            ));
+
+            $this->addValidator("cart.items.$sku", array(
+                'cart_limits' => array('increment' => false)
+            ));
+            
             $errors = $this->setValidators($product);
 
             if (empty($errors)) {
@@ -594,7 +583,6 @@ class Checkout extends FrontendController
             return;
         }
 
-
         $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
         if (!$this->request->isAjax()) {
@@ -607,11 +595,15 @@ class Checkout extends FrontendController
      */
     protected function calculateCheckout()
     {
+        $submitted = $this->getSubmitted();
+        
+        $this->form_data = Tool::merge($this->form_data, $submitted);
+        
         $calculated = $this->order->calculate($this->cart_content, $this->form_data);
         $this->form_data['total_formatted'] = $this->price->format($calculated['total'], $calculated['currency']);
         $this->form_data['total'] = $calculated['total'];
 
-        $components = $this->prepareOrderComponentsCheckout($calculated, $this->cart_content, $this->form_data['order']);
+        $components = $this->prepareOrderComponentsCheckout($calculated, $this->cart_content, $this->form_data);
         $this->form_data['price_components'] = $components;
     }
 

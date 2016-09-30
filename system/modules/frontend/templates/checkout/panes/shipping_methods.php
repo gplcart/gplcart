@@ -1,21 +1,21 @@
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Shipping'); ?></div>
   <div class="panel-body">
-    <?php foreach ($shipping_services as $service_id => $service) { ?>
-        <?php if (isset($service['html'])) { ?>
-        <?php echo $service['html']; ?>
+    <?php foreach ($shipping_methods as $method_id => $method) { ?>
+        <?php if (isset($method['html'])) { ?>
+        <?php echo $method['html']; ?>
         <?php } else { ?>
         <div class="radio">
-          <?php if (!empty($service['image'])) { ?>
+          <?php if (!empty($method['image'])) { ?>
           <div class="image">
-            <img class="img-responsive" src="<?php echo $this->escape($service['image']); ?>">
+            <img class="img-responsive" src="<?php echo $this->escape($method['image']); ?>">
           </div>
           <?php } ?>
           <label>
-            <input type="radio" name="order[shipping]" value="<?php echo $service_id; ?>"<?php echo (isset($order['shipping']) && $order['shipping'] == $service_id) ? ' checked' : ''; ?>>
-            <?php echo $this->escape($service['title']); ?>
-            <?php if (!empty($service['price'])) { ?>
-            <strong><?php echo $this->escape($service['price_formatted']); ?></strong>
+            <input type="radio" name="order[shipping]" value="<?php echo $method_id; ?>"<?php echo (isset($order['shipping']) && $order['shipping'] == $method_id) ? ' checked' : ''; ?>>
+            <?php echo $this->escape($method['title']); ?>
+            <?php if (!empty($method['price'])) { ?>
+            <strong><?php echo $this->escape($method['price_formatted']); ?></strong>
             <?php } ?>
           </label>
         </div>

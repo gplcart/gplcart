@@ -578,19 +578,23 @@ class Order extends Model
     {
         static $total = 0;
 
-        $order = $data['order'];
-        $total += (int) $cart['total'];
+        $total += $cart['total'];
 
         $components = array();
         foreach (array('shipping', 'payment') as $module) {
-            if (isset($order[$module]) && isset($data[$module . '_services'][$order[$module]]['price'])) {
-                $price = (int) $data[$module . '_services'][$order[$module]]['price'];
+
+            if (isset($data[$module]) && isset($data[$module . '_methods'][$data[$module]]['price'])) {
+                $price = $data[$module . '_methods'][$data[$module]]['price'];
                 $components[$module] = array('price' => $price);
-                $total += $price;
+                $total += $components[$module]['price'];
             }
+
+            $this->hook->fire("calculate.order.$module", $total, $cart, $data, $components);
         }
 
         $this->pricerule->calculate($total, $cart, $data, $components);
+        $this->hook->fire('calculate.order', $total, $cart, $data, $components);
+
         return array('total' => $total, 'currency' => $cart['currency'], 'components' => $components);
     }
 
@@ -672,24 +676,22 @@ class Order extends Model
 
     /**
      * Returns all available shipping methods
-     * @param array $cart
-     * @param array $order
+     * @param boolean $enabled
      * @return array
      */
-    public function getShippingMethods(array $cart, array $order)
+    public function getShippingMethods($enabled = false)
     {
-        return $this->shipping->getMethods($cart, $order);
+        return $this->shipping->getMethods($enabled);
     }
 
     /**
      * Returns all available payment methods
-     * @param array $cart
-     * @param array $order
+     * @param boolean $enabled
      * @return array
      */
-    public function getPaymentMethods(array $cart, array $order)
+    public function getPaymentMethods($enabled = false)
     {
-        return $this->payment->getMethods($cart, $order);
+        return $this->payment->getMethods($enabled);
     }
 
     /**
