@@ -135,6 +135,22 @@ class Tool
     }
 
     /**
+     * Finds all files matching a given pattern in a given directory
+     * @param string $path
+     * @param string $pattern Either an array of allowed extensions or a pattern for glob()
+     * @return array
+     */
+    public static function scanFiles($path, $pattern)
+    {
+        if (is_array($pattern)) {
+            $extensions = implode(',', $pattern);
+            return glob("$path/*.{{$extensions}}", GLOB_BRACE);
+        }
+
+        return glob("$path/$pattern");
+    }
+
+    /**
      * Recursive deletes files and directories
      * @param string $directory
      * @return boolean
@@ -164,22 +180,6 @@ class Tool
         }
 
         return rmdir($directory);
-    }
-
-    /**
-     * Finds all files matching a given pattern in a given directory
-     * @param string $path
-     * @param string $pattern Either an array of allowed extensions or a pattern for glob()
-     * @return array
-     */
-    public static function scanFiles($path, $pattern)
-    {
-        if (is_array($pattern)) {
-            $extensions = implode(',', $pattern);
-            return glob("$path/*.{{$extensions}}", GLOB_BRACE);
-        }
-
-        return glob("$path/$pattern");
     }
 
     /**
@@ -222,8 +222,8 @@ class Tool
     /**
      * Returns a hashed string
      * @param string $string
-     * @param type $salt
-     * @param type $iterations
+     * @param string $salt
+     * @param integer $iterations
      * @return string
      */
     public static function hash($string, $salt = '', $iterations = 10)

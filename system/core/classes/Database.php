@@ -39,26 +39,6 @@ class Database extends PDO
     }
 
     /**
-     * Returns an array of database scheme
-     * @param string $table
-     * @return array
-     */
-    public function getScheme($table = null)
-    {
-        $data = include GC_CONFIG_DATABASE;
-
-        if (empty($data)) {
-            throw new DatabaseException('Failed to load database scheme');
-        }
-
-        if (isset($table)) {
-            return empty($data[$table]) ? array() : $data[$table];
-        }
-
-        return $data;
-    }
-
-    /**
      * Returns a single column
      * @param string $sql
      * @param array $params
@@ -69,6 +49,25 @@ class Database extends PDO
     {
         $sth = $this->run($sql, $params);
         return $sth->fetchColumn($pos);
+    }
+
+    /**
+     * Runs a SQL query with an array of placeholders
+     * @param string $sql
+     * @param array $params
+     * @return object
+     */
+    public function run($sql, array $params = array())
+    {
+        $sth = $this->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $key = is_numeric($key) ? $key + 1 : ":$key";
+            $sth->bindValue($key, $value);
+        }
+
+        $sth->execute($params);
+        return $sth;
     }
 
     /**
@@ -101,6 +100,22 @@ class Database extends PDO
     }
 
     /**
+     * Prepares a single result, e.g unserialize serialized data
+     * @param array $data
+     * @param array $options
+     */
+    protected function prepareResult(array &$data, array $options)
+    {
+        if (empty($options['unserialize']) || empty($data)) {
+            return;
+        }
+
+        foreach ((array) $options['unserialize'] as $field) {
+            $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
+        }
+    }
+
+    /**
      * Returns an array of database records
      * @param string $sql
      * @param array $params
@@ -116,46 +131,11 @@ class Database extends PDO
     }
 
     /**
-     * Runs a SQL query with an array of placeholders
-     * @param string $sql
-     * @param array $params
-     * @return object
-     */
-    public function run($sql, array $params = array())
-    {
-        $sth = $this->prepare($sql);
-
-        foreach ($params as $key => $value) {
-            $key = is_numeric($key) ? $key + 1 : ":$key";
-            $sth->bindValue($key, $value);
-        }
-
-        $sth->execute($params);
-        return $sth;
-    }
-
-    /**
-     * 
-     * @param type $data
+     * Prepares an array of results
+     * @param array $results
      * @param array $options
      */
-    protected function prepareResult(&$data, array $options)
-    {
-        if (empty($options['unserialize']) || empty($data)) {
-            return;
-        }
-
-        foreach ((array) $options['unserialize'] as $field) {
-            $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
-        }
-    }
-
-    /**
-     * 
-     * @param type $results
-     * @param array $options
-     */
-    protected function prepareResults(&$results, array $options)
+    protected function prepareResults(array &$results, array $options)
     {
         $reindexed = array();
         foreach ($results as &$result) {
@@ -170,6 +150,97 @@ class Database extends PDO
         if (!empty($options['index'])) {
             $results = $reindexed;
         }
+    }
+
+    /**
+     * Performs an INSERT query
+     * @param string $table
+     * @param array $data
+     * @return mixed
+     */
+    public function insert($table, array $data, $prepare = true)
+    {
+        if ($prepare) {
+            $data = $this->prepareInsert($table, $data);
+        }
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $keys = array_keys($data);
+        $fields = implode(',', $keys);
+        $values = ':' . implode(',:', $keys);
+
+        $sth = $this->prepare("INSERT INTO $table ($fields) VALUES ($values)");
+
+        foreach ($data as $key => $value) {
+            $sth->bindValue(":$key", $value);
+        }
+
+        $sth->execute();
+        return $this->lastInsertId();
+    }
+
+    /**
+     * Returns an array of prepared values ready to insert into the database
+     * @param string $table
+     * @param array $data
+     * @return array
+     */
+    public function prepareInsert($table, array $data)
+    {
+        $data += $this->getDefaultValues($table);
+        return $this->filterValues($table, $data);
+    }
+
+    /**
+     * Returns an array of default field values for the given table
+     * @param string $table
+     * @return array
+     */
+    public function getDefaultValues($table)
+    {
+        $scheme = $this->getScheme($table);
+
+        if (empty($scheme['fields'])) {
+            return array();
+        }
+
+        $values = array();
+        foreach ($scheme['fields'] as $name => $info) {
+
+            if (array_key_exists('default', $info)) {
+                $values[$name] = $info['default'];
+                continue;
+            }
+
+            if (!empty($info['serialize'])) {
+                $values[$name] = array();
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Returns an array of database scheme
+     * @param string $table
+     * @return array
+     */
+    public function getScheme($table = null)
+    {
+        $data = include GC_CONFIG_DATABASE;
+
+        if (empty($data)) {
+            throw new DatabaseException('Failed to load database scheme');
+        }
+
+        if (isset($table)) {
+            return empty($data[$table]) ? array() : $data[$table];
+        }
+
+        return $data;
     }
 
     /**
@@ -224,77 +295,6 @@ class Database extends PDO
         if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
             $value = serialize($value); // Serialize arrays
         }
-    }
-
-    /**
-     * Returns an array of default field values for the given table
-     * @param string $table
-     * @return array
-     */
-    public function getDefaultValues($table)
-    {
-        $scheme = $this->getScheme($table);
-
-        if (empty($scheme['fields'])) {
-            return array();
-        }
-
-        $values = array();
-        foreach ($scheme['fields'] as $name => $info) {
-
-            if (array_key_exists('default', $info)) {
-                $values[$name] = $info['default'];
-                continue;
-            }
-
-            if (!empty($info['serialize'])) {
-                $values[$name] = array();
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * Returns an array of prepared values ready to insert into the database
-     * @param string $table
-     * @param array $data
-     * @return array
-     */
-    public function prepareInsert($table, array $data)
-    {
-        $data += $this->getDefaultValues($table);
-        return $this->filterValues($table, $data);
-    }
-
-    /**
-     * Performs an INSERT query
-     * @param string $table
-     * @param array $data
-     * @return mixed
-     */
-    public function insert($table, array $data, $prepare = true)
-    {
-        if ($prepare) {
-            $data = $this->prepareInsert($table, $data);
-        }
-
-        if (empty($data)) {
-            return false;
-        }
-
-        $keys = array_keys($data);
-        $fields = implode(',', $keys);
-        $values = ':' . implode(',:', $keys);
-
-        $sth = $this->prepare("INSERT INTO $table ($fields) VALUES ($values)");
-
-        foreach ($data as $key => $value) {
-            $sth->bindValue(":$key", $value);
-        }
-
-        $sth->execute();
-        return $this->lastInsertId();
     }
 
     /**
@@ -397,6 +397,21 @@ class Database extends PDO
     }
 
     /**
+     * Returns a string with SQL query to create a table
+     * @param string $table
+     * @param array $data
+     * @return string
+     */
+    protected function getSqlCreateTable($table, array $data)
+    {
+        $fields = $this->getSqlFields($data['fields']);
+        $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
+        $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
+
+        return "CREATE TABLE $table($fields) ENGINE=$engine CHARACTER SET utf8 COLLATE $collate";
+    }
+
+    /**
      * Returns a SQL that describes table fields.
      * Used to create tables
      * @param array $fields
@@ -438,21 +453,6 @@ class Database extends PDO
 
 
         return implode(',', $sql);
-    }
-
-    /**
-     * Returns a string with SQL query to create a table
-     * @param string $table
-     * @param array $data
-     * @return string
-     */
-    protected function getSqlCreateTable($table, array $data)
-    {
-        $fields = $this->getSqlFields($data['fields']);
-        $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
-        $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
-
-        return "CREATE TABLE $table($fields) ENGINE=$engine CHARACTER SET utf8 COLLATE $collate";
     }
 
     /**

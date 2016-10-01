@@ -42,6 +42,23 @@ class Curl
     }
 
     /**
+     * Returns an array of default curl options
+     * @param string $url
+     * @return array
+     */
+    protected function defaultOptions($url)
+    {
+        $options = array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_USERAGENT => 'GPL Cart Agent');
+
+        return $options;
+    }
+
+    /**
      * Returns an array of response info
      * @return array
      */
@@ -98,23 +115,6 @@ class Curl
 
         curl_close($ch);
         return $info;
-    }
-
-    /**
-     * Returns an array of default curl options
-     * @param string $url
-     * @return array
-     */
-    protected function defaultOptions($url)
-    {
-        $options = array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_USERAGENT => 'GPL Cart Agent');
-
-        return $options;
     }
 
 }

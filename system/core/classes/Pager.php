@@ -86,6 +86,16 @@ class Pager
     }
 
     /**
+     * Updates the current number of pages
+     * @return \core\classes\Pager
+     */
+    protected function updateNumPages()
+    {
+        $this->pages = ($this->limit == 0 ? 0 : (int) ceil($this->total / $this->limit));
+        return $this;
+    }
+
+    /**
      * Sets items per page
      * @param integer $num
      * @return \core\classes\Pager
@@ -138,15 +148,6 @@ class Pager
     }
 
     /**
-     * Returns number of items per page
-     * @return int
-     */
-    public function getItemsPerPage()
-    {
-        return $this->limit;
-    }
-
-    /**
      * Returns total number of items
      * @return int
      */
@@ -174,26 +175,47 @@ class Pager
     }
 
     /**
-     * Parses pager number placeholder
-     * @param int $num
+     * Render an HTML pagination control.
      * @return string
      */
-    public function getPageUrl($num)
+    public function render()
     {
-        return str_replace('%num', $num, $this->pattern);
+        if ($this->pages <= 1) {
+            return '';
+        }
+
+        $html = '<ul class="pagination">';
+        if ($this->getPrevUrl() !== '') {
+            $html .= '<li><a rel="prev" href="' . $this->getPrevUrl() . '">&laquo; ' . $this->previous_text . '</a></li>';
+        }
+
+        foreach ($this->getPages() as $page) {
+            if ($page['url']) {
+                $html .= '<li' . ($page['is_current'] ? ' class="active"' : '') . '><a href="' . $page['url'] . '">' . $page['num'] . '</a></li>';
+            } else {
+                $html .= '<li class="disabled"><span>' . $page['num'] . '</span></li>';
+            }
+        }
+
+        if ($this->getNextUrl() !== '') {
+            $html .= '<li><a rel="next" href="' . $this->getNextUrl() . '">' . $this->next_text . ' &raquo;</a></li>';
+        }
+        $html .= '</ul>';
+
+        return $html;
     }
 
     /**
-     * Returns the next page number
-     * @return integer
+     * Returns the previous pager URL
+     * @return string
      */
-    public function getNextPage()
+    public function getPrevUrl()
     {
-        if ($this->current < $this->pages) {
-            return $this->current + 1;
+        if ($this->getPrevPage() === 0) {
+            return '';
         }
 
-        return 0;
+        return $this->getPageUrl($this->getPrevPage());
     }
 
     /**
@@ -210,29 +232,13 @@ class Pager
     }
 
     /**
-     * Returns the next pager URL
+     * Parses pager number placeholder
+     * @param int $num
      * @return string
      */
-    public function getNextUrl()
+    public function getPageUrl($num)
     {
-        if ($this->getNextPage() === 0) {
-            return '';
-        }
-
-        return $this->getPageUrl($this->getNextPage());
-    }
-
-    /**
-     * Returns the previous pager URL
-     * @return string
-     */
-    public function getPrevUrl()
-    {
-        if ($this->getPrevPage() === 0) {
-            return '';
-        }
-
-        return $this->getPageUrl($this->getPrevPage());
+        return str_replace('%num', $num, $this->pattern);
     }
 
     /**
@@ -294,120 +300,6 @@ class Pager
     }
 
     /**
-     * Render an HTML pagination control.
-     * @return string
-     */
-    public function render()
-    {
-        if ($this->pages <= 1) {
-            return '';
-        }
-
-        $html = '<ul class="pagination">';
-        if ($this->getPrevUrl() !== '') {
-            $html .= '<li><a rel="prev" href="' . $this->getPrevUrl() . '">&laquo; ' . $this->previous_text . '</a></li>';
-        }
-
-        foreach ($this->getPages() as $page) {
-            if ($page['url']) {
-                $html .= '<li' . ($page['is_current'] ? ' class="active"' : '') . '><a href="' . $page['url'] . '">' . $page['num'] . '</a></li>';
-            } else {
-                $html .= '<li class="disabled"><span>' . $page['num'] . '</span></li>';
-            }
-        }
-
-        if ($this->getNextUrl() !== '') {
-            $html .= '<li><a rel="next" href="' . $this->getNextUrl() . '">' . $this->next_text . ' &raquo;</a></li>';
-        }
-        $html .= '</ul>';
-
-        return $html;
-    }
-
-    /**
-     * Returns the first item for the current page
-     * @return integer
-     */
-    public function getCurrentPageFirstItem()
-    {
-        $first = ($this->current - 1) * $this->limit;
-
-        if ($first > $this->total) {
-            return 0;
-        }
-
-        return $first;
-    }
-
-    /**
-     * Returns the last item for the current page
-     * @return integer
-     */
-    public function getCurrentPageLastItem()
-    {
-        $first = $this->getCurrentPageFirstItem();
-
-        if (empty($first)) {
-            return 0;
-        }
-
-        $last = $first + $this->limit - 1;
-
-        if ($last > $this->total) {
-            return $this->total;
-        }
-
-        return $last;
-    }
-
-    /**
-     * Returns a string with limits to be used in SQL LIMIT
-     * @return string
-     */
-    public function getLimit()
-    {
-        $start = $this->getCurrentPageFirstItem();
-
-        if ($start < 0) {
-            $start = 0;
-        }
-
-        return array($start, $this->getItemsPerPage());
-    }
-
-    /**
-     * Sets "Previous" text
-     * @param string $text
-     * @return \core\classes\Pager
-     */
-    public function setPreviousText($text)
-    {
-        $this->previous_text = $text;
-        return $this;
-    }
-
-    /**
-     * Sets "Next" text
-     * @param string $text
-     * @return \core\classes\Pager
-     */
-    public function setNextText($text)
-    {
-        $this->next_text = $text;
-        return $this;
-    }
-
-    /**
-     * Updates the current number of pages
-     * @return \core\classes\Pager
-     */
-    protected function updateNumPages()
-    {
-        $this->pages = ($this->limit == 0 ? 0 : (int) ceil($this->total / $this->limit));
-        return $this;
-    }
-
-    /**
      * Creates a page data structure
      * @param int $num
      * @param bool $is_current
@@ -433,6 +325,114 @@ class Pager
             'url' => '',
             'is_current' => false,
         );
+    }
+
+    /**
+     * Returns the next pager URL
+     * @return string
+     */
+    public function getNextUrl()
+    {
+        if ($this->getNextPage() === 0) {
+            return '';
+        }
+
+        return $this->getPageUrl($this->getNextPage());
+    }
+
+    /**
+     * Returns the next page number
+     * @return integer
+     */
+    public function getNextPage()
+    {
+        if ($this->current < $this->pages) {
+            return $this->current + 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Returns the last item for the current page
+     * @return integer
+     */
+    public function getCurrentPageLastItem()
+    {
+        $first = $this->getCurrentPageFirstItem();
+
+        if (empty($first)) {
+            return 0;
+        }
+
+        $last = $first + $this->limit - 1;
+
+        if ($last > $this->total) {
+            return $this->total;
+        }
+
+        return $last;
+    }
+
+    /**
+     * Returns the first item for the current page
+     * @return integer
+     */
+    public function getCurrentPageFirstItem()
+    {
+        $first = ($this->current - 1) * $this->limit;
+
+        if ($first > $this->total) {
+            return 0;
+        }
+
+        return $first;
+    }
+
+    /**
+     * Returns a string with limits to be used in SQL LIMIT
+     * @return string
+     */
+    public function getLimit()
+    {
+        $start = $this->getCurrentPageFirstItem();
+
+        if ($start < 0) {
+            $start = 0;
+        }
+
+        return array($start, $this->getItemsPerPage());
+    }
+
+    /**
+     * Returns number of items per page
+     * @return int
+     */
+    public function getItemsPerPage()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Sets "Previous" text
+     * @param string $text
+     * @return \core\classes\Pager
+     */
+    public function setPreviousText($text)
+    {
+        $this->previous_text = $text;
+        return $this;
+    }
+
+    /**
+     * Sets "Next" text
+     * @param string $text
+     * @return \core\classes\Pager
+     */
+    public function setNextText($text)
+    {
+        $this->next_text = $text;
+        return $this;
     }
 
 }

@@ -9,10 +9,6 @@
 
 namespace core\classes;
 
-use core\classes\Tool;
-use core\classes\Cache;
-use core\classes\Request;
-
 /**
  * Provides methods to work with HTML document
  */
@@ -63,32 +59,6 @@ class Document
     }
 
     /**
-     * Adds a CSS style to the page
-     * @param string $css
-     * @param integer|null $weight
-     * @param boolean $compress
-     * @return array
-     */
-    public function css($css = '', $weight = null, $compress = true)
-    {
-        $styles = &Cache::memory('document.css');
-
-        if (empty($css)) {
-            return (array) $styles;
-        }
-
-        $data = array(
-            'asset' => $css,
-            'type' => 'css',
-            'weight' => $weight,
-            'compress' => $compress
-        );
-
-        $styles = $this->setAsset($data, (array) $styles);
-        return $styles;
-    }
-
-    /**
      * Adds an asset
      * @param array $data
      * @param array $assets
@@ -121,6 +91,50 @@ class Document
         $position[] = $key;
         Tool::setArrayValue($assets, $position, $asset);
         return $assets;
+    }
+
+    /**
+     * Returns a string containing either asset URL or MD5 hash of its content
+     * @param string $string
+     * @return string
+     */
+    public function getAssetKey($string, $type)
+    {
+        if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
+            $file = GC_ROOT_DIR . '/' . $string;
+            if (!file_exists($file)) {
+                return false;
+            }
+            return $this->request->base(true) . $string . '?v=' . filemtime($file);
+        }
+
+        return 'text.' . md5($string);
+    }
+
+    /**
+     * Adds a CSS style to the page
+     * @param string $css
+     * @param integer|null $weight
+     * @param boolean $compress
+     * @return array
+     */
+    public function css($css = '', $weight = null, $compress = true)
+    {
+        $styles = &Cache::memory('document.css');
+
+        if (empty($css)) {
+            return (array) $styles;
+        }
+
+        $data = array(
+            'asset' => $css,
+            'type' => 'css',
+            'weight' => $weight,
+            'compress' => $compress
+        );
+
+        $styles = $this->setAsset($data, (array) $styles);
+        return $styles;
     }
 
     /**
@@ -199,24 +213,6 @@ class Document
 
         $title = $string;
         return $title;
-    }
-
-    /**
-     * Returns a string containing either asset URL or MD5 hash of its content
-     * @param string $string
-     * @return string
-     */
-    public function getAssetKey($string, $type)
-    {
-        if (pathinfo($string, PATHINFO_EXTENSION) === $type) {
-            $file = GC_ROOT_DIR . '/' . $string;
-            if (!file_exists($file)) {
-                return false;
-            }
-            return $this->request->base(true) . $string . '?v=' . filemtime($file);
-        }
-
-        return 'text.' . md5($string);
     }
 
 }

@@ -9,8 +9,6 @@
 
 namespace core\classes;
 
-use core\classes\Tool;
-
 /**
  * Provides methods to work with various server data
  */
@@ -39,8 +37,19 @@ class Request
     }
 
     /**
+     * Returns a data from $_SERVER variable
+     * @param string $var
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function server($var, $default = '')
+    {
+        return isset($_SERVER[$var]) ? trim($_SERVER[$var]) : $default;
+    }
+
+    /**
      * Returns the current base path
-     * @param type $exclude_langcode
+     * @param boolean $exclude_langcode
      * @return string
      */
     public function base($exclude_langcode = false)
@@ -197,6 +206,16 @@ class Request
     }
 
     /**
+     * Cleans up an array of values
+     * @param array $array
+     * @param bool $filter
+     */
+    protected function sanitize(array &$array, $filter = true)
+    {
+        Tool::trimArray($array, $filter);
+    }
+
+    /**
      * Returns a data from the $_REQUEST superglobal
      * @param string $name
      * @param mixed $default
@@ -265,27 +284,6 @@ class Request
         }
 
         return $files;
-    }
-
-    /**
-     * Returns a data from $_SERVER variable
-     * @param string $var
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function server($var, $default = '')
-    {
-        return isset($_SERVER[$var]) ? trim($_SERVER[$var]) : $default;
-    }
-
-    /**
-     * Cleans up an array of values
-     * @param array $array
-     * @param bool $filter
-     */
-    protected function sanitize(array &$array, $filter = true)
-    {
-        Tool::trimArray($array, $filter);
     }
 
 }

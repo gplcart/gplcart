@@ -99,12 +99,12 @@ class Csv
      * Sets file to parse
      * @param string $file
      * @param integer $filesize
-     * @return \core\classes\Csv
+     * @return self
      */
     public function setFile($file, $filesize = null)
     {
         $this->file = $file;
-        $this->total = isset($filesize) ? (int) $filesize : filesize($file);
+        $this->total = isset($filesize) ? (int)$filesize : filesize($file);
         $this->handle = fopen($file, 'r');
         return $this;
     }
@@ -112,18 +112,18 @@ class Csv
     /**
      * Sets max lines to parse
      * @param integer $limit
-     * @return \Csv
+     * @return self
      */
     public function setLimit($limit)
     {
-        $this->limit = (int) $limit;
+        $this->limit = (int)$limit;
         return $this;
     }
 
     /**
      * Sets separator between columns
      * @param string $character
-     * @return \Csv
+     * @return self
      */
     public function setDelimiter($character)
     {
@@ -139,15 +139,15 @@ class Csv
     {
         $this->limit = 1;
         $header = $this->read();
-        return empty($header) ? array(): reset($header);
+        return empty($header) ? array() : reset($header);
     }
 
     /**
      * Sets header (first line)
-     * @param type $header
-     * @return \core\classes\Csv
+     * @param array $header
+     * @return self
      */
-    public function setHeader($header)
+    public function setHeader(array $header)
     {
         $this->header = $header;
         return $this;
@@ -265,49 +265,6 @@ class Csv
     }
 
     /**
-     * Get latest file pointer offset in bytes
-     * @return integer
-     */
-    public function getOffset()
-    {
-        return $this->last_position;
-    }
-
-    /**
-     * Sets initial file offset in bytes
-     * @param integer $offset
-     * @return \Csv
-     */
-    public function setOffset($offset)
-    {
-        $this->offset = $offset;
-        return $this;
-    }
-
-    /**
-     * Force to skip first row (header)
-     * @return \Csv
-     */
-    public function skipHeader()
-    {
-        $this->skip_header = true;
-        return $this;
-    }
-
-    /**
-     * Parses CSV into multidimensional array
-     * @return array
-     */
-    public function parse()
-    {
-        if (!empty($this->total)) {
-            return $this->read();
-        }
-
-        return array();
-    }
-
-    /**
      * Moves pointer to a certain position
      * @param integer $position Bytes
      */
@@ -331,7 +288,7 @@ class Csv
             return $this->current_line;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -359,6 +316,49 @@ class Csv
     protected function currentPosition()
     {
         return $this->current_position;
+    }
+
+    /**
+     * Get latest file pointer offset in bytes
+     * @return integer
+     */
+    public function getOffset()
+    {
+        return $this->last_position;
+    }
+
+    /**
+     * Sets initial file offset in bytes
+     * @param integer $offset
+     * @return self
+     */
+    public function setOffset($offset)
+    {
+        $this->offset = $offset;
+        return $this;
+    }
+
+    /**
+     * Force to skip first row (header)
+     * @return self
+     */
+    public function skipHeader()
+    {
+        $this->skip_header = true;
+        return $this;
+    }
+
+    /**
+     * Parses CSV into multidimensional array
+     * @return array
+     */
+    public function parse()
+    {
+        if (!empty($this->total)) {
+            return $this->read();
+        }
+
+        return array();
     }
 
 }

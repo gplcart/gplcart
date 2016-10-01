@@ -29,6 +29,15 @@ class Session
     }
 
     /**
+     * Returns the current session status
+     * @return bool
+     */
+    protected function started()
+    {
+        return (session_status() === PHP_SESSION_ACTIVE);
+    }
+
+    /**
      * Regenerates the current session
      * @param boolean $delete_old_session
      * @return boolean
@@ -161,15 +170,6 @@ class Session
         }
 
         return $this->get('token');
-    }
-
-    /**
-     * Returns the current session status
-     * @return bool
-     */
-    protected function started()
-    {
-        return (session_status() === PHP_SESSION_ACTIVE);
     }
 
 }

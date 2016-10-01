@@ -49,30 +49,41 @@ class Response
     }
 
     /**
-     * Displays 404 Not Found error
-     * @param boolean $message
+     * Sends headers
+     * @return boolean
      */
-    public function error404($message = true)
+    protected function sendHeaders()
     {
-        $this->addHeader(404)->sendHeaders();
+        if (!headers_sent()) {
+            foreach ($this->headers as $header) {
+                header($header, true);
+            }
 
-        if (!$message) {
-            exit;
+            return true;
         }
 
-        $text = '<html>';
-        $text .= '<head>';
-        $text .= '<title>404 Error - Page Not Found</title>';
-        $text .= '</head>';
-        $text .= '<body>';
-        $text .= '<h1>404 Error - Page Not Found</h1>';
-        $text .= '<p>Page you requested cannot be found.<p>';
-        $text .= '</body>';
-        $text .= '</html>';
-        // IE hack. Content length must not be shorter than 512 chars
-        $text .= str_repeat(' ', 512);
+        $this->headers = array();
+        return false;
+    }
 
-        exit($text);
+    /**
+     * Adds a header
+     * @param mixed $name Header name or numeric code (for status headers)
+     * @param string $value Optional second part of header name
+     * @return \core\classes\Response
+     */
+    protected function addHeader($name, $value = null)
+    {
+        if (is_numeric($name)) {
+            $status = $this->statuses($name);
+            if (!empty($status)) {
+                $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
+            }
+        } elseif (isset($value)) {
+            $this->headers[] = "$name: $value";
+        }
+
+        return $this;
     }
 
     /**
@@ -146,6 +157,19 @@ class Response
     }
 
     /**
+     * Adds headers from deliver options
+     * @param array $options
+     */
+    protected function addOptionalHeaders($options)
+    {
+        if (!empty($options['headers'])) {
+            foreach ((array) $options['headers'] as $header) {
+                call_user_func_array(array($this, 'addHeader'), (array) $header);
+            }
+        }
+    }
+
+    /**
      * Displays a static HTML
      * @param string $html
      * @param array $options
@@ -214,54 +238,30 @@ class Response
     }
 
     /**
-     * Sends headers
-     * @return boolean
+     * Displays 404 Not Found error
+     * @param boolean $message
      */
-    protected function sendHeaders()
+    public function error404($message = true)
     {
-        if (!headers_sent()) {
-            foreach ($this->headers as $header) {
-                header($header, true);
-            }
+        $this->addHeader(404)->sendHeaders();
 
-            return true;
+        if (!$message) {
+            exit;
         }
 
-        $this->headers = array();
-        return false;
-    }
+        $text = '<html>';
+        $text .= '<head>';
+        $text .= '<title>404 Error - Page Not Found</title>';
+        $text .= '</head>';
+        $text .= '<body>';
+        $text .= '<h1>404 Error - Page Not Found</h1>';
+        $text .= '<p>Page you requested cannot be found.<p>';
+        $text .= '</body>';
+        $text .= '</html>';
+        // IE hack. Content length must not be shorter than 512 chars
+        $text .= str_repeat(' ', 512);
 
-    /**
-     * Adds a header
-     * @param mixed $name Header name or numeric code (for status headers)
-     * @param string $value Optional second part of header name
-     * @return \core\classes\Response
-     */
-    protected function addHeader($name, $value = null)
-    {
-        if (is_numeric($name)) {
-            $status = $this->statuses($name);
-            if (!empty($status)) {
-                $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
-            }
-        } elseif (isset($value)) {
-            $this->headers[] = "$name: $value";
-        }
-
-        return $this;
-    }
-
-    /**
-     * Adds headers from deliver options
-     * @param array $options
-     */
-    protected function addOptionalHeaders($options)
-    {
-        if (!empty($options['headers'])) {
-            foreach ((array) $options['headers'] as $header) {
-                call_user_func_array(array($this, 'addHeader'), (array) $header);
-            }
-        }
+        exit($text);
     }
 
 }
