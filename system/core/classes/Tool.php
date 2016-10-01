@@ -51,7 +51,10 @@ class Tool
      * @param bool $filter
      * @return mixed
      */
-    public static function getCookie($name = null, $default = null, $filter = true
+    public static function getCookie(
+        $name = null,
+        $default = null,
+        $filter = true
     ) {
 
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;

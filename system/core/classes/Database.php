@@ -312,11 +312,7 @@ class Database extends PDO
      * @param bool $filter
      * @return bool|int
      */
-    public function update(
-        $table,
-        array $data,
-        array $conditions,
-        $filter = true
+    public function update($table, array $data, array $conditions, $filter = true
     ) {
         if ($filter) {
             $data = $this->filterValues($table, $data);
