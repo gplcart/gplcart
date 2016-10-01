@@ -51,9 +51,11 @@ class Tool
      * @param bool $filter
      * @return mixed
      */
-    public static function getCookie($name = null, $default = null,
-            $filter = true)
-    {
+    public static function getCookie(
+        $name = null,
+        $default = null,
+        $filter = true
+    ) {
 
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
 
@@ -97,7 +99,7 @@ class Tool
     public static function deleteCookie($name = null)
     {
         if (!isset($name)) {
-            foreach ((array) $_COOKIE as $key => $value) {
+            foreach ((array)$_COOKIE as $key => $value) {
                 if (0 === strpos($key, GC_COOKIE_PREFIX)) {
                     static::deleteCookie($key);
                 }
@@ -283,8 +285,7 @@ class Tool
      * @param array $data
      * @return string
      */
-    public static function replacePlaceholders($pattern, array $placeholders,
-            array $data)
+    public static function replacePlaceholders($pattern, array $placeholders, array $data)
     {
         foreach ($placeholders as $placeholder => $data_key) {
             if (!isset($data[$data_key]) || !is_string($data[$data_key])) {
@@ -350,9 +351,8 @@ class Tool
 
     /**
      * Splits a text by new lines
-     * @param string $string A text
-     * @limit integer $limit If set the returned array will contain a maximum of
-     * limit elements with the last element containing the rest of string
+     * @param string $string
+     * @param null|int $limit
      * @return array
      */
     public static function stringToArray($string, $limit = null)
@@ -384,7 +384,8 @@ class Tool
                     break;
                 case '%':
                 default:
-                    $arguments[$key] = '<i class="placeholder">' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '</i>';
+                    $arguments[$key] = '<i class="placeholder">' . htmlspecialchars($value, ENT_QUOTES,
+                            'UTF-8') . '</i>';
             }
         }
 
@@ -400,9 +401,13 @@ class Tool
      * @param integer $limit Max file size
      * @return boolean Returns true on success, false otherwise
      */
-    public static function writeCsv($file, array $data, $delimiter = ',',
-            $enclosure = '"', $limit = 0)
-    {
+    public static function writeCsv(
+        $file,
+        array $data,
+        $delimiter = ',',
+        $enclosure = '"',
+        $limit = 0
+    ) {
 
         $handle = fopen($file, 'a+');
 
@@ -445,10 +450,10 @@ class Tool
             return array();
         }
 
-        $expected = trim(str_replace('/', $glue, (string) $url), $glue);
+        $expected = trim(str_replace('/', $glue, (string)$url), $glue);
 
         $candidates = array();
-        $files = static::scanFiles($dir, (array) $ext);
+        $files = static::scanFiles($dir, (array)$ext);
 
         foreach ($files as $file) {
 
@@ -456,7 +461,9 @@ class Tool
 
             if (0 === strpos($expected, $filename)) {
                 $candidates[strlen($filename)] = array(
-                    'path' => $file, 'filename' => $filename);
+                    'path' => $file,
+                    'filename' => $filename
+                );
             }
         }
 
@@ -500,9 +507,12 @@ class Tool
      * @param mixed $value
      * @param string $glue
      */
-    public static function setArrayValue(array &$array, $parents, $value,
-            $glue = '.')
-    {
+    public static function setArrayValue(
+        array &$array,
+        $parents,
+        $value,
+        $glue = '.'
+    ) {
         $ref = &$array;
 
         if (is_string($parents)) {
@@ -529,7 +539,7 @@ class Tool
     {
         $return = array();
 
-        array_walk_recursive($array, function($a) use (&$return) {
+        array_walk_recursive($array, function ($a) use (&$return) {
             $return[] = $a;
         });
 
