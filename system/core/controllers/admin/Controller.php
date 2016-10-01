@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\Container;
 use core\classes\Tool;
+use core\Container;
 use core\Controller as BaseController;
 
 /**
@@ -24,7 +24,11 @@ class Controller extends BaseController
      * @var array
      */
     protected $current_job = array();
-    
+
+    /**
+     * Search model instance
+     * @var object
+     */
     protected $search;
 
     /**
@@ -33,46 +37,59 @@ class Controller extends BaseController
     public function __construct()
     {
         parent::__construct();
-        
-        /* @var $job \core\models\Job */
+
+        /* @var $search \core\models\Search */
         $this->search = Container::instance('core\\models\\Search');
 
         $this->setJobProperties();
 
         $this->data['admin_menu'] = $this->getAdminMenu();
         $this->data['help_summary'] = $this->getHelpSummary();
-        
         $this->data['store_list'] = $this->store->getList();
         $this->data['search_handlers'] = $this->search->getHandlers();
-        
-        
+
         $this->hook->fire('init.backend', $this);
     }
 
     /**
-     * Returns a rendered help link depending on the current URL
+     * Sets a batch job from the current URL
+     * @return null
+     */
+    protected function setJobProperties()
+    {
+        $job_id = (string)$this->request->get('job_id');
+
+        if (empty($job_id)) {
+            return;
+        }
+
+        /* @var $job \core\models\Job */
+        $job = Container::instance('core\\models\\Job');
+
+        $this->current_job = $job->get($job_id);
+
+        if (empty($this->current_job['status'])) {
+            return;
+        }
+
+        $this->setJsSettings('job', $this->current_job, -60);
+
+        $process_job_id = (string)$this->request->get('process_job');
+
+        if ($this->request->isAjax() && $process_job_id === $job_id) {
+            $response = $job->process($this->current_job);
+            $this->response->json($response);
+        }
+    }
+
+    /**
+     * Returns rendered admin menu
      * @return string
      */
-    public function getHelpSummary()
+    public function getAdminMenu()
     {
-        $folder = $this->langcode ? $this->langcode : 'en';
-        $directory = GC_HELP_DIR . "/$folder";
-
-        $file = Tool::contexUrltFile($directory, 'php', $this->path);
-
-        if (empty($file)) {
-            return '';
-        }
-
-        $content = $this->render($file['path'], array(), true);
-        $parts = $this->explodeText($content);
-
-        if (empty($parts)) {
-            return '';
-        }
-        
-        $data = array('content' => array_map('trim', $parts), 'file' => $file);
-        return $this->render('help/summary', $data);
+        $items = $this->getAdminMenuArray();
+        return $this->render('common/menu', array('items' => $items));
     }
 
     /**
@@ -105,7 +122,7 @@ class Controller extends BaseController
                 'url' => $this->url($path),
                 'depth' => (substr_count($path, '/') - 1),
                 'text' => $this->text($route['menu']['admin']),
-                    //'weight' => isset($route['weight']) ? $route['weight'] : 0
+                //'weight' => isset($route['weight']) ? $route['weight'] : 0
             );
 
             $array[$path] = $data;
@@ -118,52 +135,37 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns rendered admin menu
+     * Returns a rendered help link depending on the current URL
      * @return string
      */
-    public function getAdminMenu()
+    public function getHelpSummary()
     {
-        $items = $this->getAdminMenuArray();
-        return $this->render('common/menu', array('items' => $items));
+        $folder = $this->langcode ? $this->langcode : 'en';
+        $directory = GC_HELP_DIR . "/$folder";
+
+        $file = Tool::contexUrltFile($directory, 'php', $this->path);
+
+        if (empty($file)) {
+            return '';
+        }
+
+        $content = $this->render($file['path'], array(), true);
+        $parts = $this->explodeText($content);
+
+        if (empty($parts)) {
+            return '';
+        }
+
+        $data = array('content' => array_map('trim', $parts), 'file' => $file);
+        return $this->render('help/summary', $data);
     }
 
     /**
-     * Displays nesated admin categories
+     * Displays nested admin categories
      */
     public function adminSections()
     {
         $this->redirect('admin'); // TODO: replace with real content
-    }
-
-    /**
-     * Sets a batch job from the current URL
-     * @return null
-     */
-    protected function setJobProperties()
-    {
-        $job_id = (string) $this->request->get('job_id');
-
-        if (empty($job_id)) {
-            return;
-        }
-
-        /* @var $job \core\models\Job */
-        $job = Container::instance('core\\models\\Job');
-
-        $this->current_job = $job->get($job_id);
-
-        if (empty($this->current_job['status'])) {
-            return;
-        }
-
-        $this->setJsSettings('job', $this->current_job, -60);
-
-        $process_job_id = (string) $this->request->get('process_job');
-
-        if ($this->request->isAjax() && $process_job_id === $job_id) {
-            $response = $job->process($this->current_job);
-            $this->response->json($response);
-        }
     }
 
     /**

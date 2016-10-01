@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\Field as ModelsField;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Field as ModelsField;
 
 /**
  * Handles incoming requests and outputs data related to product fields
@@ -60,34 +60,29 @@ class Field extends BackendController
     }
 
     /**
-     * Displays the field edit form
-     * @param integer|null $field_id
+     * Applies an action to the selected fields
      */
-    public function editField($field_id = null)
+    protected function actionField()
     {
-        $field = $this->getField($field_id);
-        $widget_types = $this->field->widgetTypes();
+        $action = (string)$this->request->post('action');
 
-        $this->setData('field', $field);
-        $this->setData('widget_types', $widget_types);
+        if (empty($action)) {
+            return;
+        }
 
-        $this->submitField($field);
+        $selected = (array)$this->request->post('selected', array());
 
-        $this->setTitleEditField($field);
-        $this->setBreadcrumbEditField();
-        $this->outputEditField();
-    }
+        $deleted = 0;
+        foreach ($selected as $field_id) {
+            if ($action === 'delete' && $this->access('field_delete')) {
+                $deleted += (int)$this->field->delete($field_id);
+            }
+        }
 
-    /**
-     * Returns an array of fields
-     * @param array $limit
-     * @param array $query
-     * @return array
-     */
-    protected function getListField(array $limit, array $query)
-    {
-        $query['limit'] = $limit;
-        return $this->field->getList($query);
+        if ($deleted > 0) {
+            $message = $this->text('Fields have been deleted');
+            $this->setMessage($message, 'success', true);
+        }
     }
 
     /**
@@ -102,11 +97,15 @@ class Field extends BackendController
     }
 
     /**
-     * Renders the field overview page
+     * Returns an array of fields
+     * @param array $limit
+     * @param array $query
+     * @return array
      */
-    protected function outputListField()
+    protected function getListField(array $limit, array $query)
     {
-        $this->output('content/field/list');
+        $query['limit'] = $limit;
+        return $this->field->getList($query);
     }
 
     /**
@@ -124,48 +123,37 @@ class Field extends BackendController
     {
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
-     * Renders the field edit page
+     * Renders the field overview page
      */
-    protected function outputEditField()
+    protected function outputListField()
     {
-        $this->output('content/field/edit');
+        $this->output('content/field/list');
     }
 
     /**
-     * Sets titles on the field edit form
-     * @param array $field
+     * Displays the field edit form
+     * @param integer|null $field_id
      */
-    protected function setTitleEditField(array $field)
+    public function editField($field_id = null)
     {
-        if (isset($field['field_id'])) {
-            $title = $this->text('Edit field %name', array('%name' => $field['title']));
-        } else {
-            $title = $this->text('Add field');
-        }
+        $field = $this->getField($field_id);
+        $widget_types = $this->field->widgetTypes();
 
-        $this->setTitle($title);
-    }
+        $this->setData('field', $field);
+        $this->setData('widget_types', $widget_types);
 
-    /**
-     * Sets breadcrumbs on the field edit form
-     */
-    protected function setBreadcrumbEditField()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+        $this->submitField($field);
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/content/field'),
-            'text' => $this->text('Fields'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setTitleEditField($field);
+        $this->setBreadcrumbEditField();
+        $this->outputEditField();
     }
 
     /**
@@ -189,6 +177,35 @@ class Field extends BackendController
     }
 
     /**
+     * Saves a submitted field values
+     * @param array $field
+     * @return null|void
+     */
+    protected function submitField(array $field)
+    {
+        if ($this->isPosted('delete')) {
+            return $this->deleteField($field);
+        }
+
+        if (!$this->isPosted('save')) {
+            return null;
+        }
+
+        $this->setSubmitted('field');
+        $this->validateField($field);
+
+        if ($this->hasErrors('field')) {
+            return null;
+        }
+
+        if (isset($field['field_id'])) {
+            return $this->updateField($field);
+        }
+
+        return $this->addField();
+    }
+
+    /**
      * Deletes a field
      * @param array $field
      */
@@ -204,92 +221,9 @@ class Field extends BackendController
         }
 
         $message = $this->text('Unable to delete this field.'
-                . ' The most probable reason - it is used by one or more products');
+            . ' The most probable reason - it is used by one or more products');
 
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Applies an action to the selected fields
-     */
-    protected function actionField()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $selected = (array) $this->request->post('selected', array());
-
-        $deleted = 0;
-        foreach ($selected as $field_id) {
-            if ($action === 'delete' && $this->access('field_delete')) {
-                $deleted += (int) $this->field->delete($field_id);
-            }
-        }
-
-        if ($deleted > 0) {
-            $message = $this->text('Fields have been deleted');
-            $this->setMessage($message, 'success', true);
-        }
-    }
-
-    /**
-     * Saves a submitted field values
-     * @param array $field
-     */
-    protected function submitField(array $field)
-    {
-        if ($this->isPosted('delete')) {
-            return $this->deleteField($field);
-        }
-
-        if (!$this->isPosted('save')) {
-            return;
-        }
-
-        $this->setSubmitted('field');
-        $this->validateField($field);
-
-        if ($this->hasErrors('field')) {
-            return;
-        }
-
-        if (isset($field['field_id'])) {
-            return $this->updateField($field);
-        }
-
-        $this->addField();
-    }
-
-    /**
-     * Updates a field
-     * @param array $field
-     */
-    protected function updateField(array $field)
-    {
-        $this->controlAccess('field_edit');
-
-        $values = $this->getSubmitted();
-        $this->field->update($field['field_id'], $values);
-
-        $message = $this->text('Field has been updated');
-        $this->redirect('admin/content/field', $message, 'success');
-    }
-
-    /**
-     * Adds a new field
-     */
-    protected function addField()
-    {
-        $this->controlAccess('field_add');
-
-        $values = $this->getSubmitted();
-        $this->field->add($values);
-
-        $message = $this->text('Field has been added');
-        $this->redirect('admin/content/field', $message, 'success');
     }
 
     /**
@@ -323,6 +257,76 @@ class Field extends BackendController
         ));
 
         $this->setValidators($field);
+    }
+
+    /**
+     * Updates a field
+     * @param array $field
+     */
+    protected function updateField(array $field)
+    {
+        $this->controlAccess('field_edit');
+
+        $values = $this->getSubmitted();
+        $this->field->update($field['field_id'], $values);
+
+        $message = $this->text('Field has been updated');
+        $this->redirect('admin/content/field', $message, 'success');
+    }
+
+    /**
+     * Adds a new field
+     */
+    protected function addField()
+    {
+        $this->controlAccess('field_add');
+
+        $values = $this->getSubmitted();
+        $this->field->add($values);
+
+        $message = $this->text('Field has been added');
+        $this->redirect('admin/content/field', $message, 'success');
+    }
+
+    /**
+     * Sets titles on the field edit form
+     * @param array $field
+     */
+    protected function setTitleEditField(array $field)
+    {
+        if (isset($field['field_id'])) {
+            $title = $this->text('Edit field %name', array('%name' => $field['title']));
+        } else {
+            $title = $this->text('Add field');
+        }
+
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the field edit form
+     */
+    protected function setBreadcrumbEditField()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/content/field'),
+            'text' => $this->text('Fields')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the field edit page
+     */
+    protected function outputEditField()
+    {
+        $this->output('content/field/edit');
     }
 
 }

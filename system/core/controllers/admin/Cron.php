@@ -10,8 +10,8 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
-use core\models\Report as ModelsReport;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Report as ModelsReport;
 
 /**
  * Handles incoming requests and outputs data related to cron jobs
@@ -56,20 +56,12 @@ class Cron extends BackendController
     }
 
     /**
-     * Handles PHP shutdown
-     */
-    public function shutdownHandlerCron()
-    {
-        $this->config->set('cron_last_run', GC_TIME);
-    }
-
-    /**
      * Controls access to execute cron
      * @return null
      */
     protected function controlAccessExecuteCron()
     {
-        $key = (string) $this->request->get('key', '');
+        $key = (string)$this->request->get('key', '');
 
         if (strcmp($key, $this->cron_key) !== 0) {
             exit;
@@ -93,7 +85,7 @@ class Cron extends BackendController
     {
         // Delete expired records from history table
         $sth = $this->config->getDb()->prepare('DELETE FROM history WHERE time < :time');
-        $time = (GC_TIME - (int) $this->config('history_lifespan', 2628000));
+        $time = (GC_TIME - (int)$this->config('history_lifespan', 2628000));
         $sth->execute(array(':time' => $time));
 
         // Delete old files
@@ -112,7 +104,8 @@ class Cron extends BackendController
 
             $log = array(
                 'message' => 'Deleted @num expired files',
-                'variables' => array('@num' => $deleted));
+                'variables' => array('@num' => $deleted)
+            );
 
             $this->logger->log('cron', $log);
         }
@@ -122,11 +115,19 @@ class Cron extends BackendController
         $result = $this->report->checkFilesystem();
 
         if ($result !== true) {
-            foreach ((array) $result as $message) {
+            foreach ((array)$result as $message) {
                 $log = array('message' => $message);
                 $this->logger->log('system_status', $log, 'warning');
             }
         }
+    }
+
+    /**
+     * Handles PHP shutdown
+     */
+    public function shutdownHandlerCron()
+    {
+        $this->config->set('cron_last_run', GC_TIME);
     }
 
 }

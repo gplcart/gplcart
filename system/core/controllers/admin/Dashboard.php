@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\models\Price as ModelsPrice;
+use core\controllers\admin\Controller as BackendController;
+use core\models\Analytics as ModelsAnalytics;
 use core\models\Order as ModelsOrder;
+use core\models\Price as ModelsPrice;
+use core\models\Product as ModelsProduct;
 use core\models\Report as ModelsReport;
 use core\models\Review as ModelsReview;
-use core\models\Product as ModelsProduct;
-use core\models\Analytics as ModelsAnalytics;
-use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to admin dashboard
@@ -74,10 +74,14 @@ class Dashboard extends BackendController
      * @param ModelsAnalytics $analytics
      * @param ModelsReview $review
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price,
-            ModelsOrder $order, ModelsReport $report,
-            ModelsAnalytics $analytics, ModelsReview $review)
-    {
+    public function __construct(
+        ModelsProduct $product,
+        ModelsPrice $price,
+        ModelsOrder $order,
+        ModelsReport $report,
+        ModelsAnalytics $analytics,
+        ModelsReview $review
+    ) {
         parent::__construct();
 
         $this->price = $price;
@@ -87,7 +91,7 @@ class Dashboard extends BackendController
         $this->product = $product;
         $this->analytics = $analytics;
 
-        $this->dashboard_limit = (int) $this->config('dashboard_limit', 10);
+        $this->dashboard_limit = (int)$this->config('dashboard_limit', 10);
     }
 
     /**
@@ -118,36 +122,6 @@ class Dashboard extends BackendController
             $this->config->reset('intro');
             $this->redirect();
         }
-    }
-
-    /**
-     * Sets Java Scripts on the dashboard page
-     */
-    protected function setJsDashboard()
-    {
-        $this->setJs('files/assets/chart/Chart.min.js', 'top');
-    }
-
-    /**
-     * Renders the admin dashboard page
-     */
-    protected function outputDashboard()
-    {
-        $intro = (bool) $this->config('intro', 0);
-
-        if ($intro && $this->isSuperadmin()) {
-            $this->output('dashboard/intro');
-        }
-
-        $this->output('dashboard/dashboard');
-    }
-
-    /**
-     * Sets titles on the admin dashboard page
-     */
-    protected function setTitleDashboard()
-    {
-        $this->setTitle($this->text('Dashboard'), false);
     }
 
     /**
@@ -193,28 +167,13 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Sets summary panel
-     */
-    protected function setDataSummaryDashboard()
-    {
-        $data = array(
-            'user_total' => $this->user->getList(array('count' => true)),
-            'order_total' => $this->order->getList(array('count' => true)),
-            'review_total' => $this->review->getList(array('count' => true)),
-            'product_total' => $this->product->getList(array('count' => true))
-        );
-
-        $html = $this->render('dashboard/panels/summary', $data);
-        $this->setData('dashboard_panel_summary', $html);
-    }
-
-    /**
      * Sets recent users panel
      */
     protected function setDataUsersDashboard()
     {
         $options = array(
-            'limit' => array(0, $this->dashboard_limit));
+            'limit' => array(0, $this->dashboard_limit)
+        );
 
         $users = $this->user->getList($options);
 
@@ -258,7 +217,7 @@ class Dashboard extends BackendController
             $items = $this->report->getList($options);
 
             foreach ($items as &$item) {
-                $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
+                $variables = empty($item['data']['variables']) ? array() : (array)$item['data']['variables'];
                 $message = empty($item['translatable']) ? $item['text'] : $this->text($item['text'], $variables);
                 $item['message'] = strip_tags($message);
             }
@@ -294,7 +253,8 @@ class Dashboard extends BackendController
             'options' => array(
                 'responsive' => true,
                 'maintainAspectRatio' => false
-        ));
+            )
+        );
 
         $i = 0;
         foreach ($results as $severity => $count) {
@@ -305,6 +265,52 @@ class Dashboard extends BackendController
         }
 
         $this->setJsSettings('chart_events', $chart);
+    }
+
+    /**
+     * Sets summary panel
+     */
+    protected function setDataSummaryDashboard()
+    {
+        $data = array(
+            'user_total' => $this->user->getList(array('count' => true)),
+            'order_total' => $this->order->getList(array('count' => true)),
+            'review_total' => $this->review->getList(array('count' => true)),
+            'product_total' => $this->product->getList(array('count' => true))
+        );
+
+        $html = $this->render('dashboard/panels/summary', $data);
+        $this->setData('dashboard_panel_summary', $html);
+    }
+
+    /**
+     * Sets Java Scripts on the dashboard page
+     */
+    protected function setJsDashboard()
+    {
+        $this->setJs('files/assets/chart/Chart.min.js', 'top');
+    }
+
+    /**
+     * Sets titles on the admin dashboard page
+     */
+    protected function setTitleDashboard()
+    {
+        $this->setTitle($this->text('Dashboard'), false);
+    }
+
+    /**
+     * Renders the admin dashboard page
+     */
+    protected function outputDashboard()
+    {
+        $intro = (bool)$this->config('intro', 0);
+
+        if ($intro && $this->isSuperadmin()) {
+            $this->output('dashboard/intro');
+        }
+
+        $this->output('dashboard/dashboard');
     }
 
 }

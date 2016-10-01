@@ -10,10 +10,10 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
-use core\models\Job as ModelsJob;
-use core\models\Export as ModelsExport;
-use core\models\Product as ModelsProduct;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Export as ModelsExport;
+use core\models\Job as ModelsJob;
+use core\models\Product as ModelsProduct;
 
 /**
  * Handles incoming requests and outputs data related to export operations
@@ -45,9 +45,11 @@ class Export extends BackendController
      * @param ModelsExport $export
      * @param ModelsProduct $product
      */
-    public function __construct(ModelsJob $job, ModelsExport $export,
-            ModelsProduct $product)
-    {
+    public function __construct(
+        ModelsJob $job,
+        ModelsExport $export,
+        ModelsProduct $product
+    ) {
         parent::__construct();
 
         $this->job = $job;
@@ -66,6 +68,44 @@ class Export extends BackendController
         $this->setTitleListExport();
         $this->setBreadcrumbListExport();
         $this->outputListExport();
+    }
+
+    /**
+     * Returns an array of export operations
+     * @return array
+     */
+    protected function getOperationsExport()
+    {
+        return $this->export->getOperations();
+    }
+
+    /**
+     * Sets titles on the operations overview page
+     */
+    protected function setTitleListExport()
+    {
+        $this->setTitle($this->text('Export'));
+    }
+
+    /**
+     * Sets breadcrumbs on the operations overview page
+     */
+    protected function setBreadcrumbListExport()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the operations overview page
+     */
+    protected function outputListExport()
+    {
+        $this->output('tool/export/list');
     }
 
     /**
@@ -91,70 +131,6 @@ class Export extends BackendController
     }
 
     /**
-     * Sets titles on the operations overview page
-     */
-    protected function setTitleListExport()
-    {
-        $this->setTitle($this->text('Export'));
-    }
-
-    /**
-     * Sets breadcrumbs on the operations overview page
-     */
-    protected function setBreadcrumbListExport()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the operations overview page
-     */
-    protected function outputListExport()
-    {
-        $this->output('tool/export/list');
-    }
-
-    /**
-     * Renders the export page
-     */
-    protected function outputEditExport()
-    {
-        $this->output('tool/export/edit');
-    }
-
-    /**
-     * Sets titles on the export page
-     * @param array $operation
-     */
-    protected function setTitleEditExport(array $operation)
-    {
-        $text = $this->text('Export %operation', array(
-            '%operation' => $operation['name']));
-
-        $this->setTitle($text);
-    }
-
-    /**
-     * Sets breadcrumbs on the export page
-     */
-    protected function setBreadcrumbEditExport()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Operations'),
-            'url' => $this->url('admin/tool/export'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
      * Returns an array of operation data
      * @param string $operation_id
      * @return array
@@ -168,15 +144,6 @@ class Export extends BackendController
         }
 
         return $operation;
-    }
-
-    /**
-     * Returns an array of export operations
-     * @return array
-     */
-    protected function getOperationsExport()
-    {
-        return $this->export->getOperations();
     }
 
     /**
@@ -210,35 +177,6 @@ class Export extends BackendController
     }
 
     /**
-     * Sets and performs export job
-     * @param array $operation
-     */
-    protected function setJobExport(array $operation)
-    {
-        $submitted = $this->getSubmitted();
-
-        $finish_message = $this->text('Successfully exported %count items. <a href="!href">Download</a>', array(
-            '!href' => $this->url(false, array('download' => 1)),
-            '%count' => $submitted['total']));
-
-        $redirect_error_message = $this->text('Errors: %errors. <a href="!url">See error log</a>', array(
-            '!url' => $this->url(false, array('download_errors' => 1))));
-
-        $job = array(
-            'id' => $operation['job_id'],
-            'data' => $submitted,
-            'total' => $submitted['total'],
-            'redirect_message' => array('finish' => $finish_message)
-        );
-
-        if (!empty($operation['log']['errors'])) {
-            $job['redirect_message']['errors'] = $redirect_error_message;
-        }
-
-        $this->job->submit($job);
-    }
-
-    /**
      * Validates an array of csv export data
      * @param array $operation
      * @return null
@@ -262,7 +200,8 @@ class Export extends BackendController
         if (file_put_contents($operation['file'], '') === false) {
 
             $message = $this->text('Failed to create file %path', array(
-                '%path' => $operation['file']));
+                '%path' => $operation['file']
+            ));
 
             $this->setError('error', $message);
             return;
@@ -272,6 +211,76 @@ class Export extends BackendController
         Tool::writeCsv($operation['file'], $operation['csv']['header'], $delimiter);
 
         $this->setSubmitted('operation', $operation);
+    }
+
+    /**
+     * Sets and performs export job
+     * @param array $operation
+     */
+    protected function setJobExport(array $operation)
+    {
+        $submitted = $this->getSubmitted();
+
+        $finish_message = $this->text('Successfully exported %count items. <a href="@href">Download</a>', array(
+            '@href' => $this->url(false, array('download' => 1)),
+            '%count' => $submitted['total']
+        ));
+
+        $redirect_error_message = $this->text('Errors: %errors. <a href="!url">See error log</a>', array(
+            '!url' => $this->url(false, array('download_errors' => 1))
+        ));
+
+        $job = array(
+            'id' => $operation['job_id'],
+            'data' => $submitted,
+            'total' => $submitted['total'],
+            'redirect_message' => array('finish' => $finish_message)
+        );
+
+        if (!empty($operation['log']['errors'])) {
+            $job['redirect_message']['errors'] = $redirect_error_message;
+        }
+
+        $this->job->submit($job);
+    }
+
+    /**
+     * Sets titles on the export page
+     * @param array $operation
+     */
+    protected function setTitleEditExport(array $operation)
+    {
+        $text = $this->text('Export %operation', array(
+            '%operation' => $operation['name']
+        ));
+
+        $this->setTitle($text);
+    }
+
+    /**
+     * Sets breadcrumbs on the export page
+     */
+    protected function setBreadcrumbEditExport()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Operations'),
+            'url' => $this->url('admin/tool/export')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the export page
+     */
+    protected function outputEditExport()
+    {
+        $this->output('tool/export/edit');
     }
 
 }

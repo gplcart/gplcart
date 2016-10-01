@@ -9,9 +9,9 @@
 
 namespace core\controllers\admin;
 
-use core\models\Zone as ModelsZone;
-use core\models\Country as ModelsCountry;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Country as ModelsCountry;
+use core\models\Zone as ModelsZone;
 
 /**
  * Handles incoming requests and outputs data related to countries
@@ -70,40 +70,54 @@ class Country extends BackendController
     }
 
     /**
-     * Displays the country add/edit form
-     * @param string|null $code
+     * Applies an action to the selected countries
+     * @return null
      */
-    public function editCountry($code = null)
+    protected function actionCountry()
     {
-        $country = $this->getCountry($code);
-        $zones = $this->zone->getList(array('status' => 1));
-        $can_delete = (!empty($code) && $this->access('country_delete') && empty($country['default']) && $this->country->canDelete($code));
+        $action = (string)$this->request->post('action');
 
-        $this->setData('zones', $zones);
-        $this->setData('country', $country);
-        $this->setData('can_delete', $can_delete);
+        if (empty($action)) {
+            return null;
+        }
 
-        $this->submitCountry($country);
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
 
-        $this->setTitleEditCountry($country);
-        $this->setBreadcrumbEditCountry();
-        $this->outputEditCountry();
-    }
+        if ($action === 'weight' && $this->access('country_edit')) {
+            foreach ($selected as $code => $weight) {
+                $this->country->update($code, array('weight' => $weight));
+            }
 
-    /**
-     * Displays the address format items for a given country
-     * @param string $country_code
-     */
-    public function formatCountry($country_code)
-    {
-        $country = $this->getCountry($country_code);
-        $this->setData('format', $country['format']);
+            $this->response->json(array(
+                'success' => $this->text('Countries have been reordered')
+            ));
+        }
 
-        $this->submitFormatCountry($country);
+        $updated = $deleted = 0;
 
-        $this->setTitleFormatCountry($country);
-        $this->setBreadcrumbFormatCountry();
-        $this->outputFormatCountry();
+        foreach ($selected as $code) {
+
+            if ($action === 'status' && $this->access('country_edit')) {
+                $updated += (int)$this->country->update($code, array('status' => $value));
+            }
+
+            if ($action === 'delete' && $this->access('country_delete')) {
+                $deleted += (int)$this->country->delete($code);
+            }
+        }
+
+        if ($updated > 0) {
+            $message = $this->text('Countries have been updated');
+            $this->setMessage($message, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $message = $this->text('Countries have been deleted');
+            $this->setMessage($message, 'success', true);
+        }
+
+        return null;
     }
 
     /**
@@ -130,14 +144,6 @@ class Country extends BackendController
     }
 
     /**
-     * Renders the country overview page
-     */
-    protected function outputListCountry()
-    {
-        $this->output('settings/country/list');
-    }
-
-    /**
      * Sets titles on the country overview page
      */
     protected function setTitleListCountry()
@@ -154,51 +160,41 @@ class Country extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
-     * Renders the country edit page
+     * Renders the country overview page
      */
-    protected function outputEditCountry()
+    protected function outputListCountry()
     {
-        $this->output('settings/country/edit');
+        $this->output('settings/country/list');
     }
 
     /**
-     * Sets titles on the country edit page
-     * @param array $country
+     * Displays the country add/edit form
+     * @param string|null $code
      */
-    protected function setTitleEditCountry(array $country)
+    public function editCountry($code = null)
     {
-        if (isset($country['name'])) {
-            $title = $this->text('Edit country %name', array(
-                '%name' => $country['name']));
-        } else {
-            $title = $this->text('Add country');
-        }
+        $country = $this->getCountry($code);
+        $zones = $this->zone->getList(array('status' => 1));
 
-        $this->setTitle($title);
-    }
+        $can_delete = (!empty($code) && $this->access('country_delete')
+            && empty($country['default']) && $this->country->canDelete($code));
 
-    /**
-     * Sets breadcrumbs on the country edit page
-     */
-    protected function setBreadcrumbEditCountry()
-    {
-        $breadcrumbs = array();
+        $this->setData('zones', $zones);
+        $this->setData('country', $country);
+        $this->setData('can_delete', $can_delete);
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+        $this->submitCountry($country);
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setTitleEditCountry($country);
+        $this->setBreadcrumbEditCountry();
+        $this->outputEditCountry();
     }
 
     /**
@@ -222,6 +218,35 @@ class Country extends BackendController
     }
 
     /**
+     * Saves a submitted country data
+     * @param array $country
+     * @return mixed
+     */
+    protected function submitCountry(array $country)
+    {
+        if ($this->isPosted('delete')) {
+            return $this->deleteCountry($country);
+        }
+
+        if (!$this->isPosted('save')) {
+            return null;
+        }
+
+        $this->setSubmitted('country');
+        $this->validateCountry($country);
+
+        if ($this->hasErrors('country')) {
+            return null;
+        }
+
+        if (isset($country['code'])) {
+            return $this->updateCountry($country);
+        }
+
+        return $this->addCountry();
+    }
+
+    /**
      * Deletes a country
      * @param array $country
      */
@@ -241,80 +266,47 @@ class Country extends BackendController
     }
 
     /**
-     * Applies an action to the selected countries
-     * @return boolean
-     */
-    protected function actionCountry()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        if ($action === 'weight' && $this->access('country_edit')) {
-            foreach ($selected as $code => $weight) {
-                $this->country->update($code, array('weight' => $weight));
-            }
-
-            $this->response->json(array(
-                'success' => $this->text('Countries have been reordered')));
-        }
-
-        $updated = $deleted = 0;
-
-        foreach ($selected as $code) {
-
-            if ($action === 'status' && $this->access('country_edit')) {
-                $updated += (int) $this->country->update($code, array('status' => $value));
-            }
-
-            if ($action === 'delete' && $this->access('country_delete')) {
-                $deleted += (int) $this->country->delete($code);
-            }
-        }
-
-        if ($updated > 0) {
-            $message = $this->text('Countries have been updated');
-            $this->setMessage($message, 'success', true);
-        }
-
-        if ($deleted > 0) {
-            $message = $this->text('Countries have been deleted');
-            $this->setMessage($message, 'success', true);
-        }
-    }
-
-    /**
-     * Saves a submitted country data
+     * Validates a country data
      * @param array $country
-     * @return null
      */
-    protected function submitCountry(array $country)
+    protected function validateCountry(array $country)
     {
-        if ($this->isPosted('delete')) {
-            return $this->deleteCountry($country);
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('default');
+
+        $is_default = $this->getSubmitted('default');
+
+        if ($is_default) {
+            $this->setSubmitted('status', 1);
         }
 
-        if (!$this->isPosted('save')) {
-            return;
+        $this->addValidator('code', array(
+            'regexp' => array(
+                'pattern' => '/^[A-Z]{2}$/',
+                'required' => true
+            ),
+            'country_code_unique' => array()
+        ));
+
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('native_name', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->addValidator('weight', array(
+            'numeric' => array(),
+            'length' => array('max' => 2)
+        ));
+
+        $errors = $this->setValidators($country);
+
+        if (empty($errors) && !$is_default) {
+            $code = $this->getSubmitted('code');
+            $this->country->unsetDefault($code);
         }
-
-        $this->setSubmitted('country');
-        $this->validateCountry($country);
-
-        if ($this->hasErrors('country')) {
-            return;
-        }
-
-        if (isset($country['code'])) {
-            return $this->updateCountry($country);
-        }
-
-        $this->addCountry();
     }
 
     /**
@@ -347,84 +339,64 @@ class Country extends BackendController
     }
 
     /**
-     * Validates a country data
+     * Sets titles on the country edit page
      * @param array $country
      */
-    protected function validateCountry(array $country)
+    protected function setTitleEditCountry(array $country)
     {
-        $this->setSubmittedBool('status');
-        $this->setSubmittedBool('default');
-
-        $is_default = $this->getSubmitted('default');
-
-        if ($is_default) {
-            $this->setSubmitted('status', 1);
+        if (isset($country['name'])) {
+            $title = $this->text('Edit country %name', array(
+                '%name' => $country['name']
+            ));
+        } else {
+            $title = $this->text('Add country');
         }
 
-        $this->addValidator('code', array(
-            'regexp' => array(
-                'pattern' => '/^[A-Z]{2}$/',
-                'required' => true),
-            'country_code_unique' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('native_name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        $errors = $this->setValidators($country);
-
-        if (empty($errors) && !$is_default) {
-            $code = $this->getSubmitted('code');
-            $this->country->unsetDefault($code);
-        }
+        $this->setTitle($title);
     }
 
     /**
-     * Renders the country format page
+     * Sets breadcrumbs on the country edit page
      */
-    protected function outputFormatCountry()
-    {
-        $this->output('settings/country/format');
-    }
-
-    /**
-     * Sets titles on the county formats page
-     * @param array $country
-     */
-    protected function setTitleFormatCountry(array $country)
-    {
-        $text = $this->text('Address format of %country', array(
-            '%country' => $country['name']));
-
-        $this->setTitle($text);
-    }
-
-    /**
-     * Sets breadcrumbs on the country format edit page
-     */
-    protected function setBreadcrumbFormatCountry()
+    protected function setBreadcrumbEditCountry()
     {
         $breadcrumbs = array();
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
+            'text' => $this->text('Countries')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the country edit page
+     */
+    protected function outputEditCountry()
+    {
+        $this->output('settings/country/edit');
+    }
+
+    /**
+     * Displays the address format items for a given country
+     * @param string $country_code
+     */
+    public function formatCountry($country_code)
+    {
+        $country = $this->getCountry($country_code);
+        $this->setData('format', $country['format']);
+
+        $this->submitFormatCountry($country);
+
+        $this->setTitleFormatCountry($country);
+        $this->setBreadcrumbFormatCountry();
+        $this->outputFormatCountry();
     }
 
     /**
@@ -466,6 +438,47 @@ class Country extends BackendController
 
         $this->country->update($country['code'], array('format' => $format));
         $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+    }
+
+    /**
+     * Sets titles on the county formats page
+     * @param array $country
+     */
+    protected function setTitleFormatCountry(array $country)
+    {
+        $text = $this->text('Address format of %country', array(
+            '%country' => $country['name']
+        ));
+
+        $this->setTitle($text);
+    }
+
+    /**
+     * Sets breadcrumbs on the country format edit page
+     */
+    protected function setBreadcrumbFormatCountry()
+    {
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the country format page
+     */
+    protected function outputFormatCountry()
+    {
+        $this->output('settings/country/format');
     }
 
 }
