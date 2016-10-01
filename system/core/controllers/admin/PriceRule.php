@@ -183,6 +183,8 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbListPriceRule()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')

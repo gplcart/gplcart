@@ -203,6 +203,8 @@ class Language extends BackendController
      */
     protected function setBreadcrumbEditLanguage()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

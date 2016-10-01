@@ -138,6 +138,8 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListEventReport()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

@@ -389,6 +389,8 @@ class State extends BackendController
      */
     protected function setBreadcrumbEditState(array $country)
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

@@ -192,6 +192,8 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbEditUserRole()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
