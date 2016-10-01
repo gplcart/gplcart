@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\UserRole as ModelsUserRole;
 use core\controllers\admin\Controller as BackendController;
+use core\models\UserRole as ModelsUserRole;
 
 /**
  * Handles incoming requests and outputs data related to user roles
@@ -56,69 +56,29 @@ class UserRole extends BackendController
     }
 
     /**
-     * Displays the roles overview page
+     * Returns a role
+     * @param integer $role_id
+     * @return array
      */
-    public function listUserRole()
+    protected function getUserRole($role_id)
     {
-        $this->actionUserRole();
-
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalUserRole($query);
-        $limit = $this->setPager($total, $query);
-        $roles = $this->getListUserRole($limit, $query);
-
-        $this->setData('roles', $roles);
-
-        $filters = array('name', 'role_id', 'status', 'created');
-        $this->setFilter($filters, $query);
-
-        $this->setTitleListUserRole();
-        $this->setBreadcrumbListUserRole();
-        $this->outputListUserRole();
-    }
-
-    /**
-     * Renders the role edit page
-     */
-    protected function outputEditUserRole()
-    {
-        $this->output('user/role/edit');
-    }
-
-    /**
-     * Sets breadcrumbs on the role edit form
-     */
-    protected function setBreadcrumbEditUserRole()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Roles'),
-            'url' => $this->url('admin/user/role'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Sets titles on the role edit form
-     * @param array $role
-     */
-    protected function setTitleEditUserRole(array $role)
-    {
-        if (isset($role['role_id'])) {
-            $title = $this->text('Edit role %name', array('%name' => $role['name']));
-        } else {
-            $title = $this->text('Add role');
+        if (!is_numeric($role_id)) {
+            return array();
         }
 
-        $this->setTitle($title);
+        $role = $this->role->get($role_id);
+
+        if (empty($role)) {
+            $this->outputError(404);
+        }
+
+        return $role;
     }
 
     /**
      * Saves a submitted user role
      * @param array $role
+     * @return null|void
      */
     protected function submitUserRole(array $role)
     {
@@ -127,21 +87,60 @@ class UserRole extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('role');
         $this->validateUserRole($role);
 
         if ($this->hasErrors('role')) {
-            return;
+            return null;
         }
 
         if (isset($role['role_id'])) {
             return $this->updateUserRole($role);
         }
 
-        $this->addUserRole();
+        return $this->addUserRole();
+    }
+
+    /**
+     * Deletes a role
+     * @param array $role
+     */
+    protected function deleteUserRole(array $role)
+    {
+        $this->controlAccess('user_role_delete');
+
+        $deleted = $this->role->delete($role['role_id']);
+
+        if ($deleted) {
+            $message = $this->text('Role has been deleted');
+            $this->redirect('admin/user/role', $message, 'success');
+        }
+
+        $message = $this->text('Unable to delete this role');
+        $this->redirect('', $message, 'danger');
+    }
+
+    /**
+     * Validates a submitted user role
+     * @param array $role
+     */
+    protected function validateUserRole(array $role)
+    {
+        $permissions = $this->getSubmitted('permissions');
+        if (empty($permissions)) {
+            $this->setSubmitted('permissions', array());
+        }
+
+        $this->setSubmittedBool('status');
+
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
+
+        $this->setValidators($role);
     }
 
     /**
@@ -174,42 +173,107 @@ class UserRole extends BackendController
     }
 
     /**
-     * Deletes a role
+     * Sets titles on the role edit form
      * @param array $role
      */
-    protected function deleteUserRole(array $role)
+    protected function setTitleEditUserRole(array $role)
     {
-        $this->controlAccess('user_role_delete');
-
-        $deleted = $this->role->delete($role['role_id']);
-
-        if ($deleted) {
-            $message = $this->text('Role has been deleted');
-            $this->redirect('admin/user/role', $message, 'success');
+        if (isset($role['role_id'])) {
+            $title = $this->text('Edit role %name', array('%name' => $role['name']));
+        } else {
+            $title = $this->text('Add role');
         }
 
-        $message = $this->text('Unable to delete this role');
-        $this->redirect('', $message, 'danger');
+        $this->setTitle($title);
     }
 
     /**
-     * Returns a role
-     * @param integer $role_id
-     * @return array
+     * Sets breadcrumbs on the role edit form
      */
-    protected function getUserRole($role_id)
+    protected function setBreadcrumbEditUserRole()
     {
-        if (!is_numeric($role_id)) {
-            return array();
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Roles'),
+            'url' => $this->url('admin/user/role')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the role edit page
+     */
+    protected function outputEditUserRole()
+    {
+        $this->output('user/role/edit');
+    }
+
+    /**
+     * Displays the roles overview page
+     */
+    public function listUserRole()
+    {
+        $this->actionUserRole();
+
+        $query = $this->getFilterQuery();
+        $total = $this->getTotalUserRole($query);
+        $limit = $this->setPager($total, $query);
+        $roles = $this->getListUserRole($limit, $query);
+
+        $this->setData('roles', $roles);
+
+        $filters = array('name', 'role_id', 'status', 'created');
+        $this->setFilter($filters, $query);
+
+        $this->setTitleListUserRole();
+        $this->setBreadcrumbListUserRole();
+        $this->outputListUserRole();
+    }
+
+    /**
+     * Applies an action to user roles
+     */
+    protected function actionUserRole()
+    {
+        $action = (string)$this->request->post('action');
+
+        if (empty($action)) {
+            return;
         }
 
-        $role = $this->role->get($role_id);
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
 
-        if (empty($role)) {
-            $this->outputError(404);
+        $deleted = $updated = 0;
+        foreach ($selected as $role_id) {
+
+            if ($action == 'status' && $this->access('user_role_edit')) {
+                $updated += (int)$this->role->update($role_id, array('status' => $value));
+            }
+
+            if ($action == 'delete' && $this->access('user_role_delete')) {
+                $deleted += (int)$this->role->delete($role_id);
+            }
         }
 
-        return $role;
+        if ($updated > 0) {
+            $text = $this->text('Updated %num user roles', array(
+                '%num' => $updated
+            ));
+            $this->setMessage($text, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $text = $this->text('Deleted %num user roles', array(
+                '%num' => $deleted
+            ));
+            $this->setMessage($text, 'success', true);
+        }
     }
 
     /**
@@ -221,34 +285,6 @@ class UserRole extends BackendController
     {
         $query['count'] = true;
         return $this->role->getList($query);
-    }
-
-    /**
-     * Renders the roles overview page
-     */
-    protected function outputListUserRole()
-    {
-        $this->output('user/role/list');
-    }
-
-    /**
-     * Sets breadcrumbs on the roles overview page
-     */
-    protected function setBreadcrumbListUserRole()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Sets titles on the roles overview page
-     */
-    protected function setTitleListUserRole()
-    {
-        $this->setTitle($this->text('Roles'));
     }
 
     /**
@@ -274,61 +310,32 @@ class UserRole extends BackendController
     }
 
     /**
-     * Applies an action to user roles
+     * Sets titles on the roles overview page
      */
-    protected function actionUserRole()
+    protected function setTitleListUserRole()
     {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        $deleted = $updated = 0;
-        foreach ($selected as $role_id) {
-
-            if ($action == 'status' && $this->access('user_role_edit')) {
-                $updated += (int) $this->role->update($role_id, array('status' => $value));
-            }
-
-            if ($action == 'delete' && $this->access('user_role_delete')) {
-                $deleted += (int) $this->role->delete($role_id);
-            }
-        }
-
-        if ($updated > 0) {
-            $text = $this->text('Updated %num user roles', array(
-                '%num' => $updated));
-            $this->setMessage($text, 'success', true);
-        }
-
-        if ($deleted > 0) {
-            $text = $this->text('Deleted %num user roles', array(
-                '%num' => $deleted));
-            $this->setMessage($text, 'success', true);
-        }
+        $this->setTitle($this->text('Roles'));
     }
 
     /**
-     * Validates a submitted user role
+     * Sets breadcrumbs on the roles overview page
      */
-    protected function validateUserRole(array $role)
+    protected function setBreadcrumbListUserRole()
     {
-        $permissions = $this->getSubmitted('permissions');
-        if (empty($permissions)) {
-            $this->setSubmitted('permissions', array());
-        }
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
 
-        $this->setSubmittedBool('status');
+        $this->setBreadcrumbs($breadcrumbs);
+    }
 
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->setValidators($role);
+    /**
+     * Renders the roles overview page
+     */
+    protected function outputListUserRole()
+    {
+        $this->output('user/role/list');
     }
 
 }

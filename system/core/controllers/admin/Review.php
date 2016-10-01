@@ -9,9 +9,9 @@
 
 namespace core\controllers\admin;
 
-use core\models\Review as ModelsReview;
-use core\models\Product as ModelsProduct;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Product as ModelsProduct;
+use core\models\Review as ModelsReview;
 
 /**
  * Handles incoming requests and outputs data related to user reviews
@@ -58,8 +58,13 @@ class Review extends BackendController
 
         $this->setData('reviews', $reviews);
 
-        $filters = array('product_id', 'email',
-            'status', 'created', 'text');
+        $filters = array(
+            'product_id',
+            'email',
+            'status',
+            'created',
+            'text'
+        );
 
         $this->setFilter($filters, $query);
         $this->setDataListReview($query);
@@ -70,39 +75,40 @@ class Review extends BackendController
     }
 
     /**
-     * Displays the review add/edit form
-     * @param integer|null $review_id
+     * Applies an action to the selected reviews
      */
-    public function editReview($review_id = null)
+    protected function actionReview()
     {
-        $review = $this->getReview($review_id);
-        $this->setData('review', $review);
+        $action = (string)$this->request->post('action');
 
-        $this->submitReview($review);
-        $this->setDataEditReview($review);
+        if (empty($action)) {
+            return;
+        }
 
-        $this->setTitleEditReview($review);
-        $this->setBreadcrumbEditReview();
-        $this->outputEditReview();
-    }
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
 
-    /**
-     * Sets an additional data to be passed to templates
-     * @param array $review
-     */
-    protected function setDataEditReview(array $review)
-    {
-        $user_id = $this->getData('review.user_id');
-        $product_id = $this->getData('review.product_id');
+        $updated = $deleted = 0;
+        foreach ($selected as $review_id) {
 
-        $user = $this->user->get($user_id);
-        $email = isset($user['email']) ? $user['email'] : '';
-        $this->setData('review.email', $email);
+            if ($action == 'status' && $this->access('review_edit')) {
+                $updated += (int)$this->review->update($review_id, array('status' => $value));
+            }
 
-        $product = $this->product->get($product_id);
-        $title = isset($product['title']) ? $product['title'] : '';
-        $this->setData('review.product', $title);
+            if ($action == 'delete' && $this->access('review_delete')) {
+                $deleted += (int)$this->review->delete($review_id);
+            }
+        }
 
+        if ($updated > 0) {
+            $message = $this->text('Updated %num reviews', array('%num' => $updated));
+            $this->setMessage($message, 'success', true);
+        }
+
+        if ($deleted > 1) {
+            $message = $this->text('Deleted %num reviews', array('%num' => $deleted));
+            $this->setMessage($message, 'success', true);
+        }
     }
 
     /**
@@ -139,43 +145,6 @@ class Review extends BackendController
     }
 
     /**
-     * Applies an action to the selected reviews
-     */
-    protected function actionReview()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        $updated = $deleted = 0;
-        foreach ($selected as $review_id) {
-
-            if ($action == 'status' && $this->access('review_edit')) {
-                $updated += (int) $this->review->update($review_id, array('status' => $value));
-            }
-
-            if ($action == 'delete' && $this->access('review_delete')) {
-                $deleted += (int) $this->review->delete($review_id);
-            }
-        }
-
-        if ($updated > 0) {
-            $message = $this->text('Updated %num reviews', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
-        }
-
-        if ($deleted > 1) {
-            $message = $this->text('Deleted %num reviews', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
-        }
-    }
-
-    /**
      * Modifies template variables on the reviews page
      * @param array $query
      */
@@ -205,7 +174,8 @@ class Review extends BackendController
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -216,6 +186,23 @@ class Review extends BackendController
     protected function outputListReview()
     {
         $this->output('content/review/list');
+    }
+
+    /**
+     * Displays the review add/edit form
+     * @param integer|null $review_id
+     */
+    public function editReview($review_id = null)
+    {
+        $review = $this->getReview($review_id);
+        $this->setData('review', $review);
+
+        $this->submitReview($review);
+        $this->setDataEditReview();
+
+        $this->setTitleEditReview($review);
+        $this->setBreadcrumbEditReview();
+        $this->outputEditReview();
     }
 
     /**
@@ -239,6 +226,35 @@ class Review extends BackendController
     }
 
     /**
+     * Saves a review
+     * @param array $review
+     * @return null|void
+     */
+    protected function submitReview(array $review)
+    {
+        if ($this->isPosted('delete') && isset($review['review_id'])) {
+            return $this->deleteReview($review);
+        }
+
+        if (!$this->isPosted('save')) {
+            return null;
+        }
+
+        $this->setSubmitted('review');
+        $this->validateReview($review);
+
+        if ($this->hasErrors('review')) {
+            return null;
+        }
+
+        if (isset($review['review_id'])) {
+            return $this->updateReview($review);
+        }
+
+        return $this->addReview();
+    }
+
+    /**
      * Deletes a review
      * @param array $review
      * @return null
@@ -253,32 +269,37 @@ class Review extends BackendController
     }
 
     /**
-     * Saves a review
+     * Validates a submitted review
      * @param array $review
-     * @return null
      */
-    protected function submitReview(array $review)
+    protected function validateReview(array $review)
     {
-        if ($this->isPosted('delete') && isset($review['review_id'])) {
-            return $this->deleteReview($review);
-        }
+        $this->addValidator('text', array(
+            'length' => $this->review->getLimits()
+        ));
 
-        if (!$this->isPosted('save')) {
-            return;
-        }
+        $this->addValidator('created', array(
+            'required' => array(),
+            'date' => array('required' => true)
+        ));
 
-        $this->setSubmitted('review');
-        $this->validateReview($review);
+        $this->addValidator('product_id', array(
+            'required' => array(),
+            'product_exists' => array('required' => true)
+        ));
 
-        if ($this->hasErrors('review')) {
-            return;
-        }
+        $this->addValidator('email', array(
+            'required' => array(),
+            'user_email_exists' => array('required' => true)
+        ));
 
-        if (isset($review['review_id'])) {
-            return $this->updateReview($review);
-        }
+        $this->setValidators($review);
 
-        $this->addReview();
+        $user = $this->getValidatorResult('email');
+        $timestamp = $this->getValidatorResult('created');
+
+        $this->setSubmitted('created', $timestamp);
+        $this->setSubmitted('user_id', $user['user_id']);
     }
 
     /**
@@ -311,36 +332,21 @@ class Review extends BackendController
     }
 
     /**
-     * Validates a submitted review
-     * @param array $review
+     * Sets an additional data to be passed to templates
      */
-    protected function validateReview(array $review)
+    protected function setDataEditReview()
     {
-        $this->addValidator('text', array(
-            'length' => $this->review->getLimits()));
+        $user_id = $this->getData('review.user_id');
+        $product_id = $this->getData('review.product_id');
 
-        $this->addValidator('created', array(
-            'required' => array(),
-            'date' => array('required' => true)
-        ));
+        $user = $this->user->get($user_id);
+        $email = isset($user['email']) ? $user['email'] : '';
+        $this->setData('review.email', $email);
 
-        $this->addValidator('product_id', array(
-            'required' => array(),
-            'product_exists' => array('required' => true)
-        ));
+        $product = $this->product->get($product_id);
+        $title = isset($product['title']) ? $product['title'] : '';
+        $this->setData('review.product', $title);
 
-        $this->addValidator('email', array(
-            'required' => array(),
-            'user_email_exists' => array('required' => true)
-        ));
-
-        $this->setValidators($review);
-
-        $user = $this->getValidatorResult('email');
-        $timestamp = $this->getValidatorResult('created');
-
-        $this->setSubmitted('created', $timestamp);
-        $this->setSubmitted('user_id', $user['user_id']);
     }
 
     /**
@@ -365,11 +371,13 @@ class Review extends BackendController
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $breadcrumbs[] = array(
             'text' => $this->text('Reviews'),
-            'url' => $this->url('admin/content/review'));
+            'url' => $this->url('admin/content/review')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }

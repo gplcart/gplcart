@@ -10,8 +10,8 @@
 namespace core\controllers\admin;
 
 use core\classes\Curl;
-use core\models\Module as ModelsModule;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Module as ModelsModule;
 
 /**
  * Handles incoming requests and outputs data related to modules
@@ -46,7 +46,6 @@ class Module extends BackendController
 
     /**
      * Displays the module admin overview page
-     * @param null|string $type
      */
     public function listModule()
     {
@@ -65,7 +64,7 @@ class Module extends BackendController
      */
     protected function actionModule()
     {
-        $action = (string) $this->request->get('action');
+        $action = (string)$this->request->get('action');
 
         if (empty($action)) {
             return;
@@ -73,7 +72,7 @@ class Module extends BackendController
 
         $this->controlToken();
 
-        $module_id = (string) $this->request->get('module_id');
+        $module_id = (string)$this->request->get('module_id');
 
         if (empty($module_id)) {
             $this->outputError(403);
@@ -104,8 +103,8 @@ class Module extends BackendController
             $this->redirect('', $message, 'danger');
         }
 
-        foreach ((array) $result as $error) {
-            $this->setMessage((string) $error, 'danger', true);
+        foreach ((array)$result as $error) {
+            $this->setMessage((string)$error, 'danger', true);
         }
 
         $this->redirect();
@@ -140,9 +139,12 @@ class Module extends BackendController
      */
     protected function setBreadcrumbListModule()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -189,7 +191,7 @@ class Module extends BackendController
 
         if ($result === true) {
             $message = $this->text('The module has been <a href="!href">uploaded and installed</a>.'
-                    . ' You have to enable it manually', array('!href' => $this->url('admin/module/list')));
+                . ' You have to enable it manually', array('!href' => $this->url('admin/module/list')));
 
             $this->redirect('', $message, 'success');
         }
@@ -223,13 +225,17 @@ class Module extends BackendController
      */
     protected function setBreadcrumbUploadModule()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $breadcrumbs[] = array(
             'text' => $this->text('Modules'),
-            'url' => $this->url('admin/module/list'));
+            'url' => $this->url('admin/module/list')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -266,8 +272,14 @@ class Module extends BackendController
         $query['limit'] = $this->setPager($total, $query);
         $results = $this->getListMarketplaceModule($query);
 
-        $fields = array('category_id', 'price', 'views',
-            'rating', 'title', 'downloads');
+        $fields = array(
+            'category_id',
+            'price',
+            'views',
+            'rating',
+            'title',
+            'downloads'
+        );
 
         $this->setFilter($fields);
         $this->setData('marketplace', $results);
@@ -278,35 +290,16 @@ class Module extends BackendController
     }
 
     /**
-     * Sets titles on the marketplace overview page
+     * Returns total marketplace items found for the given conditions
+     * @param array $options
+     * @return integer
      */
-    protected function setTitleMarketplaceModule()
+    protected function getTotalMarketplaceModule(array $options = array())
     {
-        $this->setTitle($this->text('Marketplace'));
-    }
+        $options['count'] = true;
+        $result = $this->getListMarketplaceModule($options);
 
-    /**
-     * Sets breadcrumbs on the marketplace overview page
-     */
-    protected function setBreadcrumbMarketplaceModule()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/module/list'),
-            'text' => $this->text('Modules'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders an outputs the marketplace overview page
-     */
-    protected function outputMarketplaceModule()
-    {
-        $this->output('module/marketplace');
+        return empty($result['total']) ? 0 : (int)$result['total'];
     }
 
     /**
@@ -339,16 +332,39 @@ class Module extends BackendController
     }
 
     /**
-     * Returns total marketplace items found for the given conditions
-     * @param array $options
-     * @return integer
+     * Sets titles on the marketplace overview page
      */
-    protected function getTotalMarketplaceModule(array $options = array())
+    protected function setTitleMarketplaceModule()
     {
-        $options['count'] = true;
-        $result = $this->getListMarketplaceModule($options);
+        $this->setTitle($this->text('Marketplace'));
+    }
 
-        return empty($result['total']) ? 0 : (int) $result['total'];
+    /**
+     * Sets breadcrumbs on the marketplace overview page
+     */
+    protected function setBreadcrumbMarketplaceModule()
+    {
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/module/list'),
+            'text' => $this->text('Modules')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders an outputs the marketplace overview page
+     */
+    protected function outputMarketplaceModule()
+    {
+        $this->output('module/marketplace');
     }
 
 }

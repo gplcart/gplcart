@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\Language as ModelsLanguage;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Handles incoming requests and outputs data related to languages
@@ -55,78 +55,29 @@ class Language extends BackendController
     }
 
     /**
-     * Displays the language overview page
+     * Returns a language
+     * @param string $code
+     * @return array
      */
-    public function listLanguage()
+    protected function getLanguage($code)
     {
-        $this->refreshLanguage();
-
-        $languages = $this->language->getList();
-        $this->setData('languages', $languages);
-
-        $this->setTitleListLanguage();
-        $this->setBreadcrumbListLanguage();
-        $this->outputListLanguage();
-    }
-
-    /**
-     * Removes cached translations for the given language
-     */
-    protected function refreshLanguage()
-    {
-        $code = (string) $this->request->get('refresh');
-
-        if (!empty($code)) {
-            $this->language->refresh($code);
-            $message = $this->text('Cache for language %code has been deleted', array(
-                '%code' => $code));
-            $this->redirect('', $message, 'success');
-        }
-    }
-
-    /**
-     * Sets titles on the edit language page
-     * @param array $language
-     */
-    protected function setTitleEditLanguage(array $language)
-    {
-        if (isset($language['code'])) {
-            $title = $this->text('Edit language %name', array(
-                '%name' => $language['native_name']));
-        } else {
-            $title = $this->text('Add language');
+        if (empty($code)) {
+            return array();
         }
 
-        $this->setTitle($title);
-    }
+        $language = $this->language->get($code);
 
-    /**
-     * Sets breadcrumbs on the edit language page
-     */
-    protected function setBreadcrumbEditLanguage()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+        if (empty($language)) {
+            $this->outputError(404);
+        }
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/settings/language'),
-            'text' => $this->text('Languages'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the edit language page templates
-     */
-    protected function outputEditLanguage()
-    {
-        $this->output('settings/language/edit');
+        return $language;
     }
 
     /**
      * Saves a submitted language
      * @param array $language
+     * @return null|void
      */
     protected function submitLanguage(array $language)
     {
@@ -135,50 +86,21 @@ class Language extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('language');
         $this->validateLanguage($language);
 
         if ($this->hasErrors('language')) {
-            return;
+            return null;
         }
 
         if (isset($language['code'])) {
             return $this->updateLanguage($language);
         }
 
-        $this->addLanguage();
-    }
-
-    /**
-     * Adds a new language
-     */
-    protected function addLanguage()
-    {
-        $this->controlAccess('language_add');
-
-        $values = $this->getSubmitted();
-        $this->language->add($values);
-
-        $message = $this->text('Language has been added');
-        $this->redirect('admin/settings/language', $message, 'success');
-    }
-
-    /**
-     * Updates a language
-     * @param array $language
-     */
-    protected function updateLanguage(array $language)
-    {
-        $this->controlAccess('language_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->language->update($language['code'], $submitted);
-
-        $message = $this->text('Language has been updated');
-        $this->redirect('admin/settings/language', $message, 'success');
+        return $this->addLanguage();
     }
 
     /**
@@ -198,57 +120,9 @@ class Language extends BackendController
         }
 
         $message = $this->text('Unable to delete this language.'
-                . ' The most probable reason - it is default language or blocked by a module');
+            . ' The most probable reason - it is default language or blocked by a module');
 
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Sets titles on the language overview page
-     */
-    protected function setTitleListLanguage()
-    {
-        $this->setTitle($this->text('Languages'));
-    }
-
-    /**
-     * Sets breadcrumbs on the language overview page
-     */
-    protected function setBreadcrumbListLanguage()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the language overview page templates
-     */
-    protected function outputListLanguage()
-    {
-        $this->output('settings/language/list');
-    }
-
-    /**
-     * Returns a language
-     * @param string $code
-     * @return array
-     */
-    protected function getLanguage($code)
-    {
-        if (empty($code)) {
-            return array();
-        }
-
-        $language = $this->language->get($code);
-
-        if (empty($language)) {
-            $this->outputError(404);
-        }
-
-        return $language;
     }
 
     /**
@@ -276,6 +150,138 @@ class Language extends BackendController
         ));
 
         $this->setValidators($language);
+    }
+
+    /**
+     * Updates a language
+     * @param array $language
+     */
+    protected function updateLanguage(array $language)
+    {
+        $this->controlAccess('language_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->language->update($language['code'], $submitted);
+
+        $message = $this->text('Language has been updated');
+        $this->redirect('admin/settings/language', $message, 'success');
+    }
+
+    /**
+     * Adds a new language
+     */
+    protected function addLanguage()
+    {
+        $this->controlAccess('language_add');
+
+        $values = $this->getSubmitted();
+        $this->language->add($values);
+
+        $message = $this->text('Language has been added');
+        $this->redirect('admin/settings/language', $message, 'success');
+    }
+
+    /**
+     * Sets titles on the edit language page
+     * @param array $language
+     */
+    protected function setTitleEditLanguage(array $language)
+    {
+        if (isset($language['code'])) {
+            $title = $this->text('Edit language %name', array(
+                '%name' => $language['native_name']
+            ));
+        } else {
+            $title = $this->text('Add language');
+        }
+
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the edit language page
+     */
+    protected function setBreadcrumbEditLanguage()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/settings/language'),
+            'text' => $this->text('Languages')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the edit language page templates
+     */
+    protected function outputEditLanguage()
+    {
+        $this->output('settings/language/edit');
+    }
+
+    /**
+     * Displays the language overview page
+     */
+    public function listLanguage()
+    {
+        $this->refreshLanguage();
+
+        $languages = $this->language->getList();
+        $this->setData('languages', $languages);
+
+        $this->setTitleListLanguage();
+        $this->setBreadcrumbListLanguage();
+        $this->outputListLanguage();
+    }
+
+    /**
+     * Removes cached translations for the given language
+     */
+    protected function refreshLanguage()
+    {
+        $code = (string)$this->request->get('refresh');
+
+        if (!empty($code)) {
+            $this->language->refresh($code);
+            $message = $this->text('Cache for language %code has been deleted', array(
+                '%code' => $code
+            ));
+            $this->redirect('', $message, 'success');
+        }
+    }
+
+    /**
+     * Sets titles on the language overview page
+     */
+    protected function setTitleListLanguage()
+    {
+        $this->setTitle($this->text('Languages'));
+    }
+
+    /**
+     * Sets breadcrumbs on the language overview page
+     */
+    protected function setBreadcrumbListLanguage()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the language overview page templates
+     */
+    protected function outputListLanguage()
+    {
+        $this->output('settings/language/list');
     }
 
 }

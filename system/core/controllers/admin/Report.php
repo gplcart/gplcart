@@ -9,9 +9,9 @@
 
 namespace core\controllers\admin;
 
-use core\models\Report as ModelsReport;
-use core\models\Analytics as ModelsAnalytics;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Analytics as ModelsAnalytics;
+use core\models\Report as ModelsReport;
 
 /**
  * Handles incoming requests and outputs data related to system reports
@@ -27,9 +27,9 @@ class Report extends BackendController
 
     /**
      * Analytics model instance
-     * @var \core\models\Analytics $ga
+     * @var \core\models\Analytics $analytics
      */
-    protected $ga;
+    protected $analytics;
 
     /**
      * Constructor
@@ -72,6 +72,94 @@ class Report extends BackendController
     }
 
     /**
+     * Deletes all system events from the database
+     */
+    protected function clearEventReport()
+    {
+        if ($this->isQuery('clear')) {
+            $this->report->clear();
+            $this->redirect('admin/report/events');
+        }
+    }
+
+    /**
+     * Returns a number of total system events for pager
+     * @param array $query
+     * @return integer
+     */
+    protected function getTotalEventReport(array $query)
+    {
+        $query['count'] = true;
+        return $this->report->getList($query);
+    }
+
+    /**
+     * Returns an array of system events
+     * @param array $limit
+     * @param array $query
+     * @return array
+     */
+    protected function getListEventReport(array $limit, array $query)
+    {
+        $query['limit'] = $limit;
+        $records = $this->report->getList($query);
+
+        foreach ($records as &$record) {
+
+            $variables = array();
+            if (!empty($record['data']['variables'])) {
+                $variables = $record['data']['variables'];
+            }
+
+            $record['time'] = $this->date($record['time']);
+            $record['type'] = $this->text("event_{$record['type']}");
+
+            if (!empty($record['translatable'])) {
+                $record['text'] = $this->text($record['text'], $variables);
+            }
+
+            $record['summary'] = $this->truncate($record['text']);
+            $record['severity_text'] = $this->text($record['severity']);
+        }
+
+        return $records;
+    }
+
+    /**
+     * Sets titles on the system events overview page
+     */
+    protected function setTitleListEventReport()
+    {
+        $this->setTitle($this->text('System events'));
+    }
+
+    /**
+     * Sets breadcrumbs on the system events overview page
+     */
+    protected function setBreadcrumbListEventReport()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/report/ga'),
+            'text' => $this->text('Google Analytics')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the system events overview page
+     */
+    protected function outputListEventReport()
+    {
+        $this->output('report/events');
+    }
+
+    /**
      * Displays Google Analytics page
      */
     public function listGaReport()
@@ -80,7 +168,7 @@ class Report extends BackendController
         $this->setBreadcrumbListGaReport();
 
         $default_store = $this->store->getDefault();
-        $store_id = (int) $this->request->get('store_id', $default_store);
+        $store_id = (int)$this->request->get('store_id', $default_store);
         $stores = $this->store->getList();
         $store = $this->store->get($store_id);
 
@@ -116,12 +204,46 @@ class Report extends BackendController
     }
 
     /**
+     * Sets titles on the GA page
+     */
+    protected function setTitleListGaReport()
+    {
+        $this->setTitle($this->text('Google Analytics'));
+    }
+
+    /**
+     * Sets breadcrumbs on the GA page
+     */
+    protected function setBreadcrumbListGaReport()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/report/events'),
+            'text' => $this->text('System events')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the GA page templates
+     */
+    protected function outputListGaReport()
+    {
+        $this->output('report/ga/ga');
+    }
+
+    /**
      * Listen to URL parameter and updates cached GA data for the store ID
      * @param integer $store_id
      */
     protected function updateGaReport($store_id)
     {
-        $view = (string) $this->request->get('ga_view');
+        $view = (string)$this->request->get('ga_view');
 
         if ($this->isQuery('ga_update') && !empty($view)) {
             $this->report->clearGaCache($view);
@@ -131,14 +253,37 @@ class Report extends BackendController
     }
 
     /**
-     * Sets Keywords statistic panel
+     * Sets Traffic statistic panel
      */
-    protected function setDataGaKeywordsReport()
+    protected function setDataGaTrafficReport()
     {
-        $items = $this->analytics->get('keywords');
-        $html = $this->render('report/ga/panels/keywords', array('items' => $items));
+        $chart = $this->report->buildTrafficChart($this->analytics);
 
-        $this->setData('panel_keywords', $html);
+        $this->setJsSettings('chart_traffic', $chart);
+        $this->setJs('files/assets/chart/Chart.min.js', 'top');
+
+        $html = $this->render('report/ga/panels/traffic');
+        $this->setData('panel_traffic', $html);
+    }
+
+    /**
+     * Sets Software statistic panel
+     */
+    protected function setDataGaSoftwareReport()
+    {
+        $items = array();
+        foreach ($this->analytics->get('software') as $i => $result) {
+
+            $os_version = ($result[1] === "(not set)") ? '' : $result[1];
+            $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
+
+            $items[$i][0] = $result[0] . " $os_version";
+            $items[$i][1] = $result[2] . " $browser_version";
+            $items[$i][2] = $result[4];
+        }
+
+        $html = $this->render('report/ga/panels/software', array('items' => $items));
+        $this->setData('panel_software', $html);
     }
 
     /**
@@ -170,37 +315,14 @@ class Report extends BackendController
     }
 
     /**
-     * Sets Software statistic panel
+     * Sets Keywords statistic panel
      */
-    protected function setDataGaSoftwareReport()
+    protected function setDataGaKeywordsReport()
     {
-        $items = array();
-        foreach ($this->analytics->get('software') as $i => $result) {
+        $items = $this->analytics->get('keywords');
+        $html = $this->render('report/ga/panels/keywords', array('items' => $items));
 
-            $os_version = ($result[1] === "(not set)") ? '' : $result[1];
-            $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
-
-            $items[$i][0] = $result[0] . " $os_version";
-            $items[$i][1] = $result[2] . " $browser_version";
-            $items[$i][2] = $result[4];
-        }
-
-        $html = $this->render('report/ga/panels/software', array('items' => $items));
-        $this->setData('panel_software', $html);
-    }
-
-    /**
-     * Sets Traffic statistic panel
-     */
-    protected function setDataGaTrafficReport()
-    {
-        $chart = $this->report->buildTrafficChart($this->analytics);
-
-        $this->setJsSettings('chart_traffic', $chart);
-        $this->setJs('files/assets/chart/Chart.min.js', 'top');
-
-        $html = $this->render('report/ga/panels/traffic');
-        $this->setData('panel_traffic', $html);
+        $this->setData('panel_keywords', $html);
     }
 
     /**
@@ -230,124 +352,6 @@ class Report extends BackendController
     }
 
     /**
-     * Returns a number of total system events for pager
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalEventReport(array $query)
-    {
-        $query['count'] = true;
-        return $this->report->getList($query);
-    }
-
-    /**
-     * Deletes all system events from the database
-     */
-    protected function clearEventReport()
-    {
-        if ($this->isQuery('clear')) {
-            $this->report->clear();
-            $this->redirect('admin/report/events');
-        }
-    }
-
-    /**
-     * Returns an array of system events
-     * @param array $limit
-     * @param array $query
-     * @return array
-     */
-    protected function getListEventReport(array $limit, array $query)
-    {
-        $query['limit'] = $limit;
-        $records = $this->report->getList($query);
-
-        foreach ($records as &$record) {
-
-            $variables = array();
-            if (!empty($record['data']['variables'])) {
-                $variables = $record['data']['variables'];
-            }
-
-            $record['time'] = $this->date($record['time']);
-            $record['type'] = $this->text("event_{$record['type']}");
-            
-            if(!empty($record['translatable'])){
-                $record['text'] = $this->text($record['text'], $variables);
-            }
-            
-            $record['summary'] = $this->truncate($record['text']);
-            $record['severity_text'] = $this->text($record['severity']);
-        }
-
-        return $records;
-    }
-
-    /**
-     * Sets titles on the system events overview page
-     */
-    protected function setTitleListEventReport()
-    {
-        $this->setTitle($this->text('System events'));
-    }
-
-    /**
-     * Sets breadcrumbs on the system events overview page
-     */
-    protected function setBreadcrumbListEventReport()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/report/ga'),
-            'text' => $this->text('Google Analytics'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the system events overview page
-     */
-    protected function outputListEventReport()
-    {
-        $this->output('report/events');
-    }
-
-    /**
-     * Sets titles on the GA page
-     */
-    protected function setTitleListGaReport()
-    {
-        $this->setTitle($this->text('Google Analytics'));
-    }
-
-    /**
-     * Sets breadcrumbs on the GA page
-     */
-    protected function setBreadcrumbListGaReport()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/report/events'),
-            'text' => $this->text('System events'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the GA page templates
-     */
-    protected function outputListGaReport()
-    {
-        $this->output('report/ga/ga');
-    }
-
-    /**
      * Sets titles on the system status page
      */
     protected function setTitleListStatusReport()
@@ -362,7 +366,8 @@ class Report extends BackendController
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }

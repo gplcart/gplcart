@@ -10,10 +10,10 @@
 namespace core\controllers\admin;
 
 use core\classes\Curl;
-use core\models\Job as ModelsJob;
+use core\controllers\admin\Controller as BackendController;
 use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
-use core\controllers\admin\Controller as BackendController;
+use core\models\Job as ModelsJob;
 
 /**
  * Handles incoming requests and outputs data related to import operations
@@ -52,9 +52,12 @@ class Import extends BackendController
      * @param ModelsFile $file
      * @param Curl $curl
      */
-    public function __construct(ModelsJob $job, ModelsImport $import,
-            ModelsFile $file, Curl $curl)
-    {
+    public function __construct(
+        ModelsJob $job,
+        ModelsImport $import,
+        ModelsFile $file,
+        Curl $curl
+    ) {
         parent::__construct();
 
         $this->job = $job;
@@ -99,15 +102,6 @@ class Import extends BackendController
     }
 
     /**
-     * Returns an array of import operations
-     * @return array
-     */
-    protected function getOperationsImport()
-    {
-        return $this->import->getOperations();
-    }
-
-    /**
      * Checks if demo site is connected
      * The site contains images to be attached to the demo products
      * @return boolean
@@ -120,8 +114,7 @@ class Import extends BackendController
             return true;
         }
 
-        $message = $this->text('Unable to connect to external server that provides demo images.'
-                . ' Check your internet connection');
+        $message = $this->text('Unable to connect to external server that provides demo images. Check your internet connection');
 
         $this->setMessage($message, 'warning');
         return false;
@@ -165,18 +158,74 @@ class Import extends BackendController
             $job['message'] = array(
                 'start' => $this->text('Starting to create demo products...'),
                 'process' => $this->text('Creating demo products.'
-                        . ' It may take some time to download images from an external site.'),
+                    . ' It may take some time to download images from an external site.'),
             );
 
             $job['redirect_message'] = array(
                 'finish' => $this->text('Finished. <a href="!href">See demo products</a>', array(
-                    '!href' => $this->url('admin/content/product'))),
+                    '!href' => $this->url('admin/content/product')
+                )),
                 'errors' => $this->text('An error occurred while creating demo products.'
-                        . ' A possible reason might be you have duplicated category names.'),
+                    . ' A possible reason might be you have duplicated category names.'),
             );
         }
 
         $this->job->submit($job);
+    }
+
+    /**
+     * Loads an operation
+     * @param string $operation_id
+     * @return array
+     */
+    protected function getOperationImport($operation_id)
+    {
+        $operation = $this->import->getOperation($operation_id);
+
+        if (empty($operation)) {
+            $this->outputError(404);
+        }
+
+        return $operation;
+    }
+
+    /**
+     * Returns an array of import operations
+     * @return array
+     */
+    protected function getOperationsImport()
+    {
+        return $this->import->getOperations();
+    }
+
+    /**
+     * Sets titles on the import operations overview page
+     */
+    protected function setTitleListImport()
+    {
+        $this->setTitle($this->text('Import'));
+    }
+
+    /**
+     * Sets breadcrumbs on the import operations overview page
+     */
+    protected function setBreadcrumbListImport()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the import operations overview page
+     */
+    protected function outputListImport()
+    {
+        $this->output('tool/import/list');
     }
 
     /**
@@ -218,87 +267,6 @@ class Import extends BackendController
     }
 
     /**
-     * Sets titles on the import operations overview page
-     */
-    protected function setTitleListImport()
-    {
-        $this->setTitle($this->text('Import'));
-    }
-
-    /**
-     * Sets breadcrumbs on the import operations overview page
-     */
-    protected function setBreadcrumbListImport()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the import operations overview page
-     */
-    protected function outputListImport()
-    {
-        $this->output('tool/import/list');
-    }
-
-    /**
-     * Sets titles on the import form page
-     * @param array $operation
-     */
-    protected function setTitleEditImport(array $operation)
-    {
-        $text = $this->text('Import %operation', array(
-            '%operation' => $operation['name']));
-
-        $this->setTitle($text);
-    }
-
-    /**
-     * Sets breadcrumbs on the import form page
-     */
-    protected function setBreadcrumbEditImport()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Import'),
-            'url' => $this->url('admin/tool/import'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the import page templates
-     */
-    protected function outputEditImport()
-    {
-        $this->output('tool/import/edit');
-    }
-
-    /**
-     * Loads an operation
-     * @param string $operation_id
-     * @return array
-     */
-    protected function getOperationImport($operation_id)
-    {
-        $operation = $this->import->getOperation($operation_id);
-
-        if (empty($operation)) {
-            $this->outputError(404);
-        }
-
-        return $operation;
-    }
-
-    /**
      * Starts import
      * @param array $operation
      */
@@ -314,31 +282,6 @@ class Import extends BackendController
         if (!$this->hasErrors('import')) {
             $this->setJobImport($operation);
         }
-    }
-
-    protected function setJobImport(array $operation)
-    {
-        $submitted = $this->getSubmitted();
-
-        $job = array(
-            'data' => $submitted,
-            'id' => $operation['job_id'],
-            'total' => $submitted['filesize'],
-            'redirect_message' => array(
-                'finish' => 'Data has been successfully imported. Inserted: %inserted, updated: %updated'
-            )
-        );
-
-        if (!empty($operation['log']['errors'])) {
-
-            $error_message = $this->text('Inserted: %inserted, updated: %updated,'
-                    . ' errors: %errors. <a href="!url">See error log</a>', array(
-                '!url' => $this->url(false, array('download_errors' => 1))));
-
-            $job['redirect_message']['errors'] = $error_message;
-        }
-
-        $this->job->submit($job);
     }
 
     /**
@@ -358,7 +301,8 @@ class Import extends BackendController
                 'handler' => 'csv',
                 'path' => 'private/import',
                 'file' => $this->request->file('file')
-        )));
+            )
+        ));
 
         $errors = $this->setValidators($operation);
 
@@ -377,6 +321,71 @@ class Import extends BackendController
                 $this->setError('file', $result);
             }
         }
+    }
+
+    protected function setJobImport(array $operation)
+    {
+        $submitted = $this->getSubmitted();
+
+        $job = array(
+            'data' => $submitted,
+            'id' => $operation['job_id'],
+            'total' => $submitted['filesize'],
+            'redirect_message' => array(
+                'finish' => 'Data has been successfully imported. Inserted: %inserted, updated: %updated'
+            )
+        );
+
+        if (!empty($operation['log']['errors'])) {
+
+            $error_message = $this->text('Inserted: %inserted, updated: %updated,'
+                . ' errors: %errors. <a href="!url">See error log</a>', array(
+                '!url' => $this->url(false, array('download_errors' => 1))
+            ));
+
+            $job['redirect_message']['errors'] = $error_message;
+        }
+
+        $this->job->submit($job);
+    }
+
+    /**
+     * Sets titles on the import form page
+     * @param array $operation
+     */
+    protected function setTitleEditImport(array $operation)
+    {
+        $text = $this->text('Import %operation', array(
+            '%operation' => $operation['name']
+        ));
+
+        $this->setTitle($text);
+    }
+
+    /**
+     * Sets breadcrumbs on the import form page
+     */
+    protected function setBreadcrumbEditImport()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Import'),
+            'url' => $this->url('admin/tool/import')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the import page templates
+     */
+    protected function outputEditImport()
+    {
+        $this->output('tool/import/edit');
     }
 
 }

@@ -9,11 +9,11 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Route;
-use core\classes\Tool;
 use core\classes\Cache;
-use core\models\Translit;
+use core\classes\Tool;
+use core\Model;
+use core\models\Translit as ModelsTranslit;
+use core\Route;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -22,36 +22,36 @@ class Language extends Model
 {
 
     /**
+     * Array of processed translations
+     * @var array
+     */
+    protected static $processed = array();
+    /**
      * Route class instance
-     * @var \core\Route $route;
+     * @var \core\Route $route ;
      */
     protected $route;
-
     /**
      * Translit library instance
-     * @var \libraries\translit\Translit $translit;
+     * @var \core\models\Translit $translit ;
      */
     protected $translit;
-
     /**
      * Current language code
      * @var string
      */
     protected $langcode = '';
-
     /**
      * Directory that holds main translation file for the current language
      * @var string
      */
     protected $language_directory = '';
-
     /**
      * Path to directory that keeps complied .csv translations
      * for the current language
      * @var string
      */
     protected $compiled_directory_csv = '';
-
     /**
      * Path to directory that keeps complied js translations
      * for the current language
@@ -60,17 +60,11 @@ class Language extends Model
     protected $compiled_directory_js = '';
 
     /**
-     * Array of processed translations
-     * @var array
-     */
-    protected static $processed = array();
-
-    /**
      * Constructor
-     * @param Translit $translit
+     * @param ModelsTranslit $translit
      * @param Route $route
      */
-    public function __construct(Translit $translit, Route $route)
+    public function __construct(ModelsTranslit $translit, Route $route)
     {
         parent::__construct();
 
@@ -87,44 +81,14 @@ class Language extends Model
     }
 
     /**
-     * Performs some initial tasks: sets up folders, object properties etc...
+     * Whether the language exists, i.e available
+     * @param string $code
+     * @return boolean
      */
-    protected function init()
-    {
-        if (empty($this->langcode)) {
-            return;
-        }
-
-        $this->language_directory = GC_LOCALE_DIR . "/{$this->langcode}";
-        $this->compiled_directory_csv = "{$this->language_directory}/compiled";
-        $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
-
-        if (!file_exists($this->compiled_directory_csv)) {
-            mkdir($this->compiled_directory_csv, 0755, true);
-        }
-
-        if (!file_exists($this->compiled_directory_js)) {
-            mkdir($this->compiled_directory_js, 0755, true);
-        }
-    }
-
-    /**
-     * Returns a sorted array of available languages
-     * @param boolean $enabled If true disabled languages will be excluded
-     * @return array
-     */
-    public function getlist($enabled = false)
+    public function exists($code)
     {
         $languages = $this->getAll();
-
-        if ($enabled) {
-            $languages = array_filter($languages, function ($language) {
-                return !empty($language['status']);
-            });
-        }
-
-        Tool::sortWeight($languages);
-        return $languages;
+        return isset($languages[$code]);
     }
 
     /**
@@ -149,11 +113,20 @@ class Language extends Model
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
             $language['default'] = ($code == $default);
-            $language['weight'] = isset($language['weight']) ? (int) $language['weight'] : 0;
+            $language['weight'] = isset($language['weight']) ? (int)$language['weight'] : 0;
         }
 
         $this->hook->fire('languages', $languages);
         return $languages;
+    }
+
+    /**
+     * Returns a default language code
+     * @return string
+     */
+    public function getDefault()
+    {
+        return $this->config->get('language', '');
     }
 
     /**
@@ -187,23 +160,44 @@ class Language extends Model
     }
 
     /**
-     * Whether the language exists, i.e available
-     * @param string $code
-     * @return boolean
+     * Performs some initial tasks: sets up folders, object properties etc...
      */
-    public function exists($code)
+    protected function init()
     {
-        $languages = $this->getAll();
-        return isset($languages[$code]);
+        if (empty($this->langcode)) {
+            return;
+        }
+
+        $this->language_directory = GC_LOCALE_DIR . "/{$this->langcode}";
+        $this->compiled_directory_csv = "{$this->language_directory}/compiled";
+        $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
+
+        if (!file_exists($this->compiled_directory_csv)) {
+            mkdir($this->compiled_directory_csv, 0755, true);
+        }
+
+        if (!file_exists($this->compiled_directory_js)) {
+            mkdir($this->compiled_directory_js, 0755, true);
+        }
     }
 
     /**
-     * Returns a default language code
-     * @return string
+     * Returns a sorted array of available languages
+     * @param boolean $enabled If true disabled languages will be excluded
+     * @return array
      */
-    public function getDefault()
+    public function getList($enabled = false)
     {
-        return $this->config->get('language', '');
+        $languages = $this->getAll();
+
+        if ($enabled) {
+            $languages = array_filter($languages, function ($language) {
+                return !empty($language['status']);
+            });
+        }
+
+        Tool::sortWeight($languages);
+        return $languages;
     }
 
     /**
@@ -234,7 +228,7 @@ class Language extends Model
             'code' => $data['code'],
             'status' => !empty($data['status']),
             'default' => !empty($data['default']),
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
+            'weight' => isset($data['weight']) ? (int)$data['weight'] : 0,
             'name' => empty($data['name']) ? $data['code'] : $data['name'],
             'native_name' => empty($data['native_name']) ? $data['code'] : $data['native_name']
         );
@@ -305,51 +299,6 @@ class Language extends Model
     }
 
     /**
-     * Returns an array of translations from CSV files
-     * @param string $filename
-     * @return array
-     */
-    public function load($filename = '')
-    {
-        $cache_key = "translations.{$this->langcode}";
-
-        if (!empty($filename)) {
-            $cache_key .= ".$filename";
-        }
-
-        $translations = &Cache::memory($cache_key);
-
-        if (isset($translations)) {
-            return (array) $translations;
-        }
-
-        $file = "{$this->language_directory}/common.csv";
-
-        if (!empty($filename)) {
-            $file = "{$this->compiled_directory_csv}/$filename.csv";
-        }
-
-        if (!file_exists($file)) {
-            return array();
-        }
-
-        $rows = array_map('str_getcsv', file($file));
-
-        if (empty($rows)) {
-            return array();
-        }
-
-        // Reindex the array
-        // First column (source string) becomes a key
-        foreach ($rows as $row) {
-            $key = array_shift($row);
-            $translations[$key] = $row;
-        }
-
-        return $translations;
-    }
-
-    /**
      * Translates a string
      * @param string $string
      * @param array $arguments
@@ -394,15 +343,62 @@ class Language extends Model
      * @param array $data
      * @return string
      */
-    protected function formatString($source, array $arguments,
-            array $data = array())
-    {
+    protected function formatString(
+        $source,
+        array $arguments,
+        array $data = array()
+    ) {
 
         if (!isset($data[0]) || $data[0] === '') {
             return Tool::formatString($source, $arguments);
         }
 
         return Tool::formatString($data[0], $arguments);
+    }
+
+    /**
+     * Returns an array of translations from CSV files
+     * @param string $filename
+     * @return array
+     */
+    public function load($filename = '')
+    {
+        $cache_key = "translations.{$this->langcode}";
+
+        if (!empty($filename)) {
+            $cache_key .= ".$filename";
+        }
+
+        $translations = &Cache::memory($cache_key);
+
+        if (isset($translations)) {
+            return (array)$translations;
+        }
+
+        $file = "{$this->language_directory}/common.csv";
+
+        if (!empty($filename)) {
+            $file = "{$this->compiled_directory_csv}/$filename.csv";
+        }
+
+        if (!file_exists($file)) {
+            return array();
+        }
+
+        $rows = array_map('str_getcsv', file($file));
+
+        if (empty($rows)) {
+            return array();
+        }
+
+        // Reindex the array
+        // First column (source string) becomes a key
+        foreach ($rows as $row) {
+            $key = array_shift($row);
+            $translations[$key] = $row;
+        }
+
+        return $translations;
     }
 
     /**
@@ -431,7 +427,7 @@ class Language extends Model
         $result = fputcsv($fp, $data);
         fclose($fp);
 
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -446,7 +442,7 @@ class Language extends Model
         $jsfile = "{$this->compiled_directory_js}/$filename.js";
         $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';' . PHP_EOL;
 
-        return (bool) file_put_contents($jsfile, $json, FILE_APPEND);
+        return (bool)file_put_contents($jsfile, $json, FILE_APPEND);
     }
 
     /**
@@ -489,6 +485,7 @@ class Language extends Model
 
     /**
      * Returns an array of common languages with their English and native names
+     * @param null|string $code
      * @return array
      */
     public function getIso($code = null)
@@ -496,7 +493,7 @@ class Language extends Model
         $data = include GC_CONFIG_LANGUAGE;
 
         if (isset($code)) {
-            return isset($data[$code]) ? (array) $data[$code] : array();
+            return isset($data[$code]) ? (array)$data[$code] : array();
         }
 
         return $data;

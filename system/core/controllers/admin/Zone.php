@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\Zone as ModelsZone;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Zone as ModelsZone;
 
 /**
  * Handles incoming requests and outputs data related to geo zones
@@ -62,36 +62,38 @@ class Zone extends BackendController
      */
     protected function actionZone()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string)$this->request->post('action');
 
         if (empty($action)) {
             return;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
             if ($action == 'status' && $this->access('zone_edit')) {
-                $updated += (int) $this->zone->update($id, array('status' => $value));
+                $updated += (int)$this->zone->update($id, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('zone_delete')) {
-                $deleted += (int) $this->zone->delete($id);
+                $deleted += (int)$this->zone->delete($id);
             }
         }
 
         if ($updated > 0) {
             $message = $this->text('Updated %num zones', array(
-                '%num' => $updated));
+                '%num' => $updated
+            ));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num zones', array(
-                '%num' => $deleted));
+                '%num' => $deleted
+            ));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -136,7 +138,8 @@ class Zone extends BackendController
 
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -191,6 +194,7 @@ class Zone extends BackendController
     /**
      * Saves a submitted zone
      * @param array $zone
+     * @return null|void
      */
     protected function submitZone(array $zone)
     {
@@ -199,21 +203,21 @@ class Zone extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('zone');
         $this->validateZone($zone);
 
         if ($this->hasErrors('zone')) {
-            return;
+            return null;
         }
 
         if (isset($zone['zone_id'])) {
             return $this->updateZone($zone);
         }
 
-        $this->addZone();
+        return $this->addZone();
     }
 
     /**
@@ -244,7 +248,8 @@ class Zone extends BackendController
         $this->setSubmittedBool('status');
 
         $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)));
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
         $this->setValidators($zone);
     }
@@ -286,7 +291,8 @@ class Zone extends BackendController
     {
         if (isset($zone['zone_id'])) {
             $title = $this->text('Edit zone %name', array(
-                '%name' => $zone['title']));
+                '%name' => $zone['title']
+            ));
         } else {
             $title = $this->text('Add zone');
         }
@@ -303,11 +309,13 @@ class Zone extends BackendController
 
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $breadcrumbs[] = array(
             'text' => $this->text('Zones'),
-            'url' => $this->url('admin/settings/zone'));
+            'url' => $this->url('admin/settings/zone')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }

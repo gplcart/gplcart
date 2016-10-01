@@ -10,9 +10,9 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
+use core\controllers\admin\Controller as BackendController;
 use core\models\File as ModelsFile;
 use core\models\Image as ModelsImage;
-use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to images
@@ -66,38 +66,11 @@ class ImageStyle extends BackendController
      */
     protected function clearCacheImageStyle()
     {
-        $style_id = (string) $this->request->get('clear');
+        $style_id = (string)$this->request->get('clear');
 
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }
-    }
-
-    /**
-     * Displays the image style edit form
-     * @param integer|null $style_id
-     */
-    public function editImageStyle($style_id = null)
-    {
-        $imagestyle = $this->getImageStyle($style_id);
-
-        $this->setData('imagestyle', $imagestyle);
-
-        $this->submitImageStyle($imagestyle);
-
-        $this->setDataEditImageStyle();
-
-        $this->setTitleEditImageStyle($imagestyle);
-        $this->setBreadcrumbEditImageStyle();
-        $this->outputEditImageStyle();
-    }
-
-    /**
-     * Renders the image styles page
-     */
-    protected function outputListImageStyle()
-    {
-        $this->output('settings/image/list');
     }
 
     /**
@@ -117,49 +90,35 @@ class ImageStyle extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
-     * Renders the image style edit page
+     * Renders the image styles page
      */
-    protected function outputEditImageStyle()
+    protected function outputListImageStyle()
     {
-        $this->output('settings/image/edit');
+        $this->output('settings/image/list');
     }
 
     /**
-     * Sets titles on the edit imagestyle page
-     * @param array $imagestyle
+     * Displays the image style edit form
+     * @param integer|null $style_id
      */
-    protected function setTitleEditImageStyle(array $imagestyle)
+    public function editImageStyle($style_id = null)
     {
-        if (isset($imagestyle['imagestyle_id'])) {
-            $title = $this->text('Edit image style %name', array(
-                '%name' => $imagestyle['name']));
-        } else {
-            $title = $this->text('Add image style');
-        }
+        $imagestyle = $this->getImageStyle($style_id);
+        $this->setData('imagestyle', $imagestyle);
 
-        $this->setTitle($title);
-    }
+        $this->submitImageStyle($imagestyle);
 
-    /**
-     * Sets breadcrumbs on the edit imagestyle page
-     */
-    protected function setBreadcrumbEditImageStyle()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/settings/imagestyle'),
-            'text' => $this->text('Image styles'));
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setDataEditImageStyle();
+        $this->setTitleEditImageStyle($imagestyle);
+        $this->setBreadcrumbEditImageStyle();
+        $this->outputEditImageStyle();
     }
 
     /**
@@ -180,27 +139,6 @@ class ImageStyle extends BackendController
         }
 
         return $imagestyle;
-    }
-
-    /**
-     * Deletes an image style
-     * @param array $imagestyle
-     * @return void
-     */
-    protected function deleteImageStyle(array $imagestyle)
-    {
-        $this->controlAccess('image_style_delete');
-
-        $this->image->deleteStyle($imagestyle['imagestyle_id']);
-        $this->image->clearCache($imagestyle['imagestyle_id']);
-
-        if (empty($imagestyle['default'])) {
-            $message = $this->text('Image style has been deleted');
-        } else {
-            $message = $this->text('Image style has been reverted to default settings');
-        }
-
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
     }
 
     /**
@@ -233,32 +171,23 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Updates an imagestyles using an array of submitted values
+     * Deletes an image style
      * @param array $imagestyle
+     * @return void
      */
-    protected function updateImageStyle(array $imagestyle)
+    protected function deleteImageStyle(array $imagestyle)
     {
-        $this->controlAccess('image_style_edit');
+        $this->controlAccess('image_style_delete');
 
-        $submitted = $this->getSubmitted();
-        $this->image->updateStyle($imagestyle['imagestyle_id'], $submitted);
+        $this->image->deleteStyle($imagestyle['imagestyle_id']);
         $this->image->clearCache($imagestyle['imagestyle_id']);
 
-        $message = $this->text('Image style has been updated');
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
-    }
+        if (empty($imagestyle['default'])) {
+            $message = $this->text('Image style has been deleted');
+        } else {
+            $message = $this->text('Image style has been reverted to default settings');
+        }
 
-    /**
-     * Adds a new imagestyle using an array of submitted values
-     */
-    protected function addImageStyle()
-    {
-        $this->controlAccess('image_style_add');
-
-        $submitted = $this->getSubmitted();
-        $this->image->addStyle($submitted);
-
-        $message = $this->text('Image style has been added');
         $this->redirect('admin/settings/imagestyle', $message, 'success');
     }
 
@@ -286,7 +215,37 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Modifies imagestyle actions
+     * Updates an image styles using an array of submitted values
+     * @param array $imagestyle
+     */
+    protected function updateImageStyle(array $imagestyle)
+    {
+        $this->controlAccess('image_style_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->image->updateStyle($imagestyle['imagestyle_id'], $submitted);
+        $this->image->clearCache($imagestyle['imagestyle_id']);
+
+        $message = $this->text('Image style has been updated');
+        $this->redirect('admin/settings/imagestyle', $message, 'success');
+    }
+
+    /**
+     * Adds a new image style using an array of submitted values
+     */
+    protected function addImageStyle()
+    {
+        $this->controlAccess('image_style_add');
+
+        $submitted = $this->getSubmitted();
+        $this->image->addStyle($submitted);
+
+        $message = $this->text('Image style has been added');
+        $this->redirect('admin/settings/imagestyle', $message, 'success');
+    }
+
+    /**
+     * Modifies image style actions
      * @return null
      */
     protected function setDataEditImageStyle()
@@ -308,6 +267,49 @@ class ImageStyle extends BackendController
 
             $this->setData('imagestyle.actions', implode("\n", $modified));
         }
+    }
+
+    /**
+     * Sets titles on the edit image style page
+     * @param array $imagestyle
+     */
+    protected function setTitleEditImageStyle(array $imagestyle)
+    {
+        if (isset($imagestyle['imagestyle_id'])) {
+            $title = $this->text('Edit image style %name', array(
+                '%name' => $imagestyle['name']
+            ));
+        } else {
+            $title = $this->text('Add image style');
+        }
+
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the edit image style page
+     */
+    protected function setBreadcrumbEditImageStyle()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/settings/imagestyle'),
+            'text' => $this->text('Image styles')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the image style edit page
+     */
+    protected function outputEditImageStyle()
+    {
+        $this->output('settings/image/edit');
     }
 
 }

@@ -23,8 +23,8 @@ class FieldValue extends BackendController
 
     /**
      * Field model instance
-* @var \core\models\Field $field
-*/
+     * @var \core\models\Field $field
+     */
     protected $field;
 
     /**

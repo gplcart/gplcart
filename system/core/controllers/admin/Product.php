@@ -9,14 +9,14 @@
 
 namespace core\controllers\admin;
 
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
-use core\models\Alias as ModelsAlias;
-use core\models\Product as ModelsProduct;
-use core\models\Currency as ModelsCurrency;
-use core\models\Category as ModelsCategory;
-use core\models\ProductClass as ModelsProductClass;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Alias as ModelsAlias;
+use core\models\Category as ModelsCategory;
+use core\models\Currency as ModelsCurrency;
+use core\models\Image as ModelsImage;
+use core\models\Price as ModelsPrice;
+use core\models\Product as ModelsProduct;
+use core\models\ProductClass as ModelsProductClass;
 
 /**
  * Handles incoming requests and outputs data related to products
@@ -76,11 +76,15 @@ class Product extends BackendController
      * @param ModelsImage $image
      * @param ModelsAlias $alias
      */
-    public function __construct(ModelsProduct $product,
-            ModelsProductClass $product_class, ModelsCategory $category,
-            ModelsPrice $price, ModelsCurrency $currency, ModelsImage $image,
-            ModelsAlias $alias)
-    {
+    public function __construct(
+        ModelsProduct $product,
+        ModelsProductClass $product_class,
+        ModelsCategory $category,
+        ModelsPrice $price,
+        ModelsCurrency $currency,
+        ModelsImage $image,
+        ModelsAlias $alias
+    ) {
         parent::__construct();
 
 
@@ -112,14 +116,130 @@ class Product extends BackendController
         $this->setData('products', $products);
         $this->setData('currencies', $currencies);
 
-        $filters = array('title', 'sku', 'price', 'stock', 'status',
-            'store_id', 'product_id', 'currency');
+        $filters = array(
+            'title',
+            'sku',
+            'price',
+            'stock',
+            'status',
+            'store_id',
+            'product_id',
+            'currency'
+        );
 
         $this->setFilter($filters, $query);
 
         $this->setTitleListProduct();
         $this->setBreadcrumbListProduct();
         $this->outputListProduct();
+    }
+
+    /**
+     * Applies an action to products
+     */
+    protected function actionProduct()
+    {
+        $action = (string)$this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
+
+        $deleted = $updated = 0;
+        foreach ($selected as $id) {
+
+            if ($action == 'status' && $this->access('product_edit')) {
+                $updated += (int)$this->product->update($id, array('status' => $value));
+            }
+
+            if ($action == 'delete' && $this->access('product_delete')) {
+                $deleted += (int)$this->product->delete($id);
+            }
+        }
+
+        if ($updated > 0) {
+            $message = $this->text('Updated %num products', array('%num' => $updated));
+            $this->setMessage($message, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $message = $this->text('Deleted %num products', array('%num' => $deleted));
+            $this->setMessage($message, 'success', true);
+        }
+    }
+
+    /**
+     * Return a number of total products for pager
+     * @param array $query
+     * @return integer
+     */
+    protected function getTotalProduct(array $query)
+    {
+        $query['count'] = true;
+        return $this->product->getList($query);
+    }
+
+    /**
+     * Returns an array of products
+     * @param array $limit
+     * @param array $query
+     * @return array
+     */
+    protected function getListProduct(array $limit, array $query)
+    {
+        $query['limit'] = $limit;
+
+        $stores = $this->store->getList();
+        $products = $this->product->getList($query);
+
+        if (empty($products)) {
+            return array();
+        }
+
+        foreach ($products as &$product) {
+            $product['view_url'] = '';
+            if (isset($stores[$product['store_id']])) {
+                $store = $stores[$product['store_id']];
+                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
+                    . "/product/{$product['product_id']}";
+            }
+
+            $product['price'] = $this->price->decimal($product['price'], $product['currency']);
+        }
+
+        return $products;
+    }
+
+    /**
+     * Sets titles on the product overview page
+     */
+    protected function setTitleListProduct()
+    {
+        $this->setTitle($this->text('Products'));
+    }
+
+    /**
+     * Sets breadcrumbs on the product overview page
+     */
+    protected function setBreadcrumbListProduct()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders product overview page templates
+     */
+    protected function outputListProduct()
+    {
+        $this->output('content/product/list');
     }
 
     /**
@@ -154,20 +274,11 @@ class Product extends BackendController
     }
 
     /**
-     * Sets Java scripts on the edit product page
-     * @param array $product
-     */
-    protected function setJsEditProduct(array $product)
-    {
-        $this->setJsSettings('product', $product);
-    }
-
-    /**
      * Outputs a JSON string containing brand and catalog categories
      */
     protected function outputCategoriesProduct()
     {
-        $store_id = (int) $this->request->get('store_id');
+        $store_id = (int)$this->request->get('store_id');
 
         if (!empty($store_id) && $this->request->isAjax()) {
             $response = $this->getListCategoryProduct($store_id);
@@ -189,179 +300,6 @@ class Product extends BackendController
         }
 
         return $categories;
-    }
-
-    /**
-     * Return a number of total products for pager
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalProduct(array $query)
-    {
-        $query['count'] = true;
-        return $this->product->getList($query);
-    }
-
-    /**
-     * Sets titles on the product overview page
-     */
-    protected function setTitleListProduct()
-    {
-        $this->setTitle($this->text('Products'));
-    }
-
-    /**
-     * Sets breadcrumbs on the product overview page
-     */
-    protected function setBreadcrumbListProduct()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders product overview page templates
-     */
-    protected function outputListProduct()
-    {
-        $this->output('content/product/list');
-    }
-
-    /**
-     * Applies an action to products
-     */
-    protected function actionProduct()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        $deleted = $updated = 0;
-        foreach ($selected as $id) {
-
-            if ($action == 'status' && $this->access('product_edit')) {
-                $updated += (int) $this->product->update($id, array('status' => $value));
-            }
-
-            if ($action == 'delete' && $this->access('product_delete')) {
-                $deleted += (int) $this->product->delete($id);
-            }
-        }
-
-        if ($updated > 0) {
-            $message = $this->text('Updated %num products', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
-        }
-
-        if ($deleted > 0) {
-            $message = $this->text('Deleted %num products', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
-        }
-    }
-
-    /**
-     * Returns an array of products
-     * @param array $limit
-     * @param array $query
-     * @return array
-     */
-    protected function getListProduct(array $limit, array $query)
-    {
-        $query['limit'] = $limit;
-
-        $stores = $this->store->getList();
-        $products = $this->product->getList($query);
-        
-        if(empty($products)){
-            return array();
-        }
-
-        foreach ($products as &$product) {
-            $product['view_url'] = '';
-            if (isset($stores[$product['store_id']])) {
-                $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/product/{$product['product_id']}";
-            }
-
-            $product['price'] = $this->price->decimal($product['price'], $product['currency']);
-        }
-
-        return $products;
-    }
-
-    /**
-     * Sets titles on the product edit form
-     * @param array $product
-     */
-    protected function setTitleEditProduct(array $product)
-    {
-        if (isset($product['product_id'])) {
-            $title = $this->text('Edit %title', array('%title' => $product['title']));
-        } else {
-            $title = $this->text('Add product');
-        }
-
-        $this->setTitle($title);
-    }
-
-    /**
-     * Sets breadcrumbs on the product edit page
-     */
-    protected function setBreadcrumbEditProduct()
-    {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Products'),
-            'url' => $this->url('admin/content/product'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders product edit page templates
-     */
-    protected function outputEditProduct()
-    {
-        $this->output('content/product/edit');
-    }
-
-    /**
-     * Returns an array of related products
-     * @param array $product
-     * @return array
-     */
-    protected function getRelatedProduct(array $product)
-    {
-        if (empty($product['product_id'])) {
-            return array();
-        }
-
-        $stores = $this->store->getList();
-        $products = $this->product->getRelated($product['product_id'], true, array(
-            'store_id' => $product['store_id']));
-
-        foreach ($products as &$product) {
-            $product['view_url'] = '';
-            if (isset($stores[$product['store_id']])) {
-                $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/product/{$product['product_id']}";
-            }
-        }
-
-        return $products;
     }
 
     /**
@@ -406,6 +344,64 @@ class Product extends BackendController
     }
 
     /**
+     * Returns an array of related products
+     * @param array $product
+     * @return array
+     */
+    protected function getRelatedProduct(array $product)
+    {
+        if (empty($product['product_id'])) {
+            return array();
+        }
+
+        $stores = $this->store->getList();
+        $products = $this->product->getRelated($product['product_id'], true, array(
+            'store_id' => $product['store_id']
+        ));
+
+        foreach ($products as &$product) {
+            $product['view_url'] = '';
+            if (isset($stores[$product['store_id']])) {
+                $store = $stores[$product['store_id']];
+                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
+                    . "/product/{$product['product_id']}";
+            }
+        }
+
+        return $products;
+    }
+
+    /**
+     * Saves a product
+     * @param array $product
+     * @return null|void
+     */
+    protected function submitProduct(array $product = array())
+    {
+        if ($this->isPosted('delete')) {
+            return $this->deleteProduct($product);
+        }
+
+        if (!$this->isPosted('save')) {
+            return null;
+        }
+
+        $this->setSubmitted('product', null, 'raw');
+
+        $this->validateProduct($product);
+
+        if ($this->hasErrors('product')) {
+            return null;
+        }
+
+        if (isset($product['product_id'])) {
+            return $this->updateProduct($product);
+        }
+
+        return $this->addProduct();
+    }
+
+    /**
      * Deletes a product
      * @param array $product
      * @return null
@@ -423,157 +419,6 @@ class Product extends BackendController
 
         $message = $this->text('Unable to delete this product');
         $this->redirect('admin/content/product', $message, 'danger');
-    }
-
-    /**
-     * Renders the product field forms
-     */
-    protected function setDataEditProduct()
-    {
-
-        $user_id = $this->getData('product.user_id');
-
-        if (isset($user_id)) {
-            $user = $this->user->get($user_id);
-            $this->setData('product.author', $user['email']);
-        }
-
-        $output_field_form = false;
-        $product_class_id = $this->getData('product.product_class_id', 0);
-        $get_product_class_id = $this->request->get('product_class_id');
-
-        if (isset($get_product_class_id)) {
-            $output_field_form = true;
-            $product_class_id = $get_product_class_id;
-        }
-
-        $data = array(
-            'product' => $this->getData('product'),
-            'fields' => $this->product_class->getFieldData($product_class_id)
-        );
-
-        $options = $this->render('content/product/options', $data);
-        $attributes = $this->render('content/product/attributes', $data);
-
-        $this->setData('option_form', $options);
-        $this->setData('attribute_form', $attributes);
-
-        if ($output_field_form) {
-            $this->response->html($attributes . $options);
-        }
-
-        $related = $this->getData('product.related');
-
-        if (!empty($related)) {
-            $products = $this->product->getList(array('product_id' => $related));
-            $this->setData('related', $products);
-        }
-
-        $images = $this->getData('product.images');
-
-        if (!empty($images)) {
-
-            $preset = $this->config('admin_image_preset', 2);
-
-            foreach ($images as &$image) {
-                $image['thumb'] = $this->image->url($preset, $image['path']);
-                $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
-            }
-
-            $data = array(
-                'images' => $images,
-                'name_prefix' => 'product',
-                'languages' => $this->languages
-            );
-
-            $attached = $this->render('common/image/attache', $data);
-            $this->setData('attached_images', $attached);
-        }
-
-        $store_id = $this->getData('store_id');
-        $categories = $this->getListCategoryProduct($store_id);
-
-        $this->setData('categories', $categories);
-    }
-
-    /**
-     * Saves a product
-     * @param array $product
-     */
-    protected function submitProduct(array $product = array())
-    {
-        if ($this->isPosted('delete')) {
-            return $this->deleteProduct($product);
-        }
-
-        if (!$this->isPosted('save')) {
-            return;
-        }
-
-        $this->setSubmitted('product', null, 'raw');
-
-        $this->validateProduct($product);
-
-        if ($this->hasErrors('product')) {
-            return;
-        }
-
-        if (isset($product['product_id'])) {
-            return $this->updateProduct($product);
-        }
-
-        $this->addProduct();
-    }
-
-    /**
-     * Updates a product with submitted values
-     * @param array $product
-     */
-    protected function updateProduct(array $product)
-    {
-        $this->controlAccess('product_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->product->update($product['product_id'], $submitted);
-
-        $this->deleteImagesProduct();
-
-        $message = $this->text('Product has been updated');
-        $this->redirect('admin/content/product', $message, 'success');
-    }
-
-    /**
-     * Deletes product images
-     */
-    protected function deleteImagesProduct()
-    {
-        $images = (array) $this->request->post('delete_image', array());
-
-        if (!empty($images)) {
-            foreach (array_values($images) as $file_id) {
-                $this->image->delete($file_id);
-            }
-        }
-    }
-
-    /**
-     * Adds a new product using an array of submitted values
-     */
-    protected function addProduct()
-    {
-        $this->controlAccess('product_add');
-
-        $submitted = $this->getSubmitted();
-
-        $submitted += array(
-            'user_id' => $this->uid,
-            'currency' => $this->currency->getDefault()
-        );
-
-        $this->product->add($submitted);
-
-        $message = $this->text('Product has been added');
-        $this->redirect('admin/content/product', $message, 'success');
     }
 
     /**
@@ -690,7 +535,9 @@ class Product extends BackendController
 
             $this->addValidator('combination', array(
                 'product_combinations' => array(
-                    'fields' => $fields, 'control_errors' => true)
+                    'fields' => $fields,
+                    'control_errors' => true
+                )
             ));
         }
 
@@ -719,6 +566,178 @@ class Product extends BackendController
 
             $this->setSubmitted('related', array_flip($modified));
         }
+    }
+
+    /**
+     * Updates a product with submitted values
+     * @param array $product
+     */
+    protected function updateProduct(array $product)
+    {
+        $this->controlAccess('product_edit');
+
+        $submitted = $this->getSubmitted();
+        $this->product->update($product['product_id'], $submitted);
+
+        $this->deleteImagesProduct();
+
+        $message = $this->text('Product has been updated');
+        $this->redirect('admin/content/product', $message, 'success');
+    }
+
+    /**
+     * Deletes product images
+     */
+    protected function deleteImagesProduct()
+    {
+        $images = (array)$this->request->post('delete_image', array());
+
+        if (!empty($images)) {
+            foreach (array_values($images) as $file_id) {
+                $this->image->delete($file_id);
+            }
+        }
+    }
+
+    /**
+     * Adds a new product using an array of submitted values
+     */
+    protected function addProduct()
+    {
+        $this->controlAccess('product_add');
+
+        $submitted = $this->getSubmitted();
+
+        $submitted += array(
+            'user_id' => $this->uid,
+            'currency' => $this->currency->getDefault()
+        );
+
+        $this->product->add($submitted);
+
+        $message = $this->text('Product has been added');
+        $this->redirect('admin/content/product', $message, 'success');
+    }
+
+    /**
+     * Renders the product field forms
+     */
+    protected function setDataEditProduct()
+    {
+
+        $user_id = $this->getData('product.user_id');
+
+        if (isset($user_id)) {
+            $user = $this->user->get($user_id);
+            $this->setData('product.author', $user['email']);
+        }
+
+        $output_field_form = false;
+        $product_class_id = $this->getData('product.product_class_id', 0);
+        $get_product_class_id = $this->request->get('product_class_id');
+
+        if (isset($get_product_class_id)) {
+            $output_field_form = true;
+            $product_class_id = $get_product_class_id;
+        }
+
+        $data = array(
+            'product' => $this->getData('product'),
+            'fields' => $this->product_class->getFieldData($product_class_id)
+        );
+
+        $options = $this->render('content/product/options', $data);
+        $attributes = $this->render('content/product/attributes', $data);
+
+        $this->setData('option_form', $options);
+        $this->setData('attribute_form', $attributes);
+
+        if ($output_field_form) {
+            $this->response->html($attributes . $options);
+        }
+
+        $related = $this->getData('product.related');
+
+        if (!empty($related)) {
+            $products = $this->product->getList(array('product_id' => $related));
+            $this->setData('related', $products);
+        }
+
+        $images = $this->getData('product.images');
+
+        if (!empty($images)) {
+
+            $preset = $this->config('admin_image_preset', 2);
+
+            foreach ($images as &$image) {
+                $image['thumb'] = $this->image->url($preset, $image['path']);
+                $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
+            }
+
+            $data = array(
+                'images' => $images,
+                'name_prefix' => 'product',
+                'languages' => $this->languages
+            );
+
+            $attached = $this->render('common/image/attache', $data);
+            $this->setData('attached_images', $attached);
+        }
+
+        $store_id = $this->getData('store_id');
+        $categories = $this->getListCategoryProduct($store_id);
+
+        $this->setData('categories', $categories);
+    }
+
+    /**
+     * Sets Java scripts on the edit product page
+     * @param array $product
+     */
+    protected function setJsEditProduct(array $product)
+    {
+        $this->setJsSettings('product', $product);
+    }
+
+    /**
+     * Sets titles on the product edit form
+     * @param array $product
+     */
+    protected function setTitleEditProduct(array $product)
+    {
+        if (isset($product['product_id'])) {
+            $title = $this->text('Edit %title', array('%title' => $product['title']));
+        } else {
+            $title = $this->text('Add product');
+        }
+
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the product edit page
+     */
+    protected function setBreadcrumbEditProduct()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Products'),
+            'url' => $this->url('admin/content/product')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders product edit page templates
+     */
+    protected function outputEditProduct()
+    {
+        $this->output('content/product/edit');
     }
 
 }

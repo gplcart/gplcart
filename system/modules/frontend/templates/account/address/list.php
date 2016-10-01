@@ -19,7 +19,7 @@
     </a>
   </div>
   <div class="col-md-9">
-    <?php if ($addresses) { ?>
+    <?php if (!empty($addresses)) { ?>
     <div class="row addresses">
       <?php foreach ($addresses as $address_id => $address) { ?>
       <div class="col-md-4">

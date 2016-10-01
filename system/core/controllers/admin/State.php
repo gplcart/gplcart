@@ -9,10 +9,10 @@
 
 namespace core\controllers\admin;
 
-use core\models\Zone as ModelsZone;
-use core\models\State as ModelsState;
-use core\models\Country as ModelsCountry;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Country as ModelsCountry;
+use core\models\State as ModelsState;
+use core\models\Zone as ModelsZone;
 
 /**
  * Handles incoming requests and outputs data related to country states
@@ -31,13 +31,13 @@ class State extends BackendController
      * @var \core\models\State $state
      */
     protected $state;
-    
+
     /**
      * Zone model instance
      * @var \core\models\Zone $zone
      */
     protected $zone;
-    
+
     /**
      * Constructor
      * @param ModelsCountry $country
@@ -81,25 +81,60 @@ class State extends BackendController
     }
 
     /**
-     * Displays the state edit page
-     * @param string $country_code
-     * @param integer|null $state_id
+     * Returns a country
+     * @param string $code
+     * @return array
      */
-    public function editState($country_code, $state_id = null)
+    protected function getCountry($code)
     {
-        $state = $this->getState($state_id);
-        $country = $this->getCountry($country_code);
-        $zones = $this->zone->getList(array('status' => 1));
+        $country = $this->country->get($code);
 
-        $this->setData('state', $state);
-        $this->setData('zones', $zones);
-        $this->setData('country', $country);
+        if (empty($country)) {
+            $this->outputError(404);
+        }
 
-        $this->submitState($country, $state);
+        return $country;
+    }
 
-        $this->setTitleEditState($country, $state);
-        $this->setBreadcrumbEditState($country);
-        $this->outputEditState();
+    /**
+     * Applies an action to the selected country states
+     */
+    protected function actionState()
+    {
+        $action = (string)$this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
+
+        $deleted = $updated = 0;
+        foreach ($selected as $id) {
+
+            if ($action == 'status' && $this->access('state_edit')) {
+                $updated += (int)$this->state->update($id, array('status' => $value));
+            }
+
+            if ($action == 'delete' && $this->access('state_delete')) {
+                $deleted += (int)$this->state->delete($id);
+            }
+        }
+
+        if ($updated > 0) {
+            $text = $this->text('Updated %num country states', array(
+                '%num' => $updated
+            ));
+            $this->setMessage($text, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $text = $this->text('Deleted %num country states', array(
+                '%num' => $deleted
+            ));
+            $this->setMessage($text, 'success', true);
+        }
     }
 
     /**
@@ -112,7 +147,8 @@ class State extends BackendController
     {
         $options = array(
             'count' => true,
-            'country' => $code);
+            'country' => $code
+        );
 
         $options += $query;
         return $this->state->getList($options);
@@ -137,21 +173,14 @@ class State extends BackendController
     }
 
     /**
-     * Renders the state overview page
-     */
-    protected function outputListState()
-    {
-        $this->output('settings/state/list');
-    }
-
-    /**
      * Sets titles on the states overview page
      * @param array $country
      */
     protected function setTitleListState(array $country)
     {
         $text = $this->text('States of %country', array(
-            '%country' => $country['name']));
+            '%country' => $country['name']
+        ));
 
         $this->setTitle($text);
     }
@@ -163,77 +192,96 @@ class State extends BackendController
     {
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
+            'text' => $this->text('Countries')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
-     * Returns a country
-     * @param string $code
+     * Renders the state overview page
+     */
+    protected function outputListState()
+    {
+        $this->output('settings/state/list');
+    }
+
+    /**
+     * Displays the state edit page
+     * @param string $country_code
+     * @param integer|null $state_id
+     */
+    public function editState($country_code, $state_id = null)
+    {
+        $state = $this->getState($state_id);
+        $country = $this->getCountry($country_code);
+        $zones = $this->zone->getList(array('status' => 1));
+
+        $this->setData('state', $state);
+        $this->setData('zones', $zones);
+        $this->setData('country', $country);
+
+        $this->submitState($country, $state);
+
+        $this->setTitleEditState($country, $state);
+        $this->setBreadcrumbEditState($country);
+        $this->outputEditState();
+    }
+
+    /**
+     * Returns a state
+     * @param integer $state_id
      * @return array
      */
-    protected function getCountry($code)
+    protected function getState($state_id)
     {
-        $country = $this->country->get($code);
+        if (!is_numeric($state_id)) {
+            return array();
+        }
 
-        if (empty($country)) {
+        $state = $this->state->get($state_id);
+
+        if (empty($state)) {
             $this->outputError(404);
         }
 
-        return $country;
+        return $state;
     }
 
     /**
-     * Renders the state edit page
-     */
-    protected function outputEditState()
-    {
-        $this->output('settings/state/edit');
-    }
-
-    /**
-     * Set breadcrumbs on the state edit page
-     * @param array $country
-     */
-    protected function setBreadcrumbEditState(array $country)
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
-
-        $breadcrumbs[] = array(
-            'url' => $this->url("admin/settings/states/{$country['code']}"),
-            'text' => $this->text('States of %country', array(
-                '%country' => $country['code'])));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Sets titles on the state edit page
+     * Saves a state
      * @param array $country
      * @param array $state
+     * @return null|void
      */
-    protected function setTitleEditState(array $country, array $state)
+    protected function submitState(array $country, array $state)
     {
-        if (isset($state['state_id'])) {
-            $title = $this->text('Edit state %name', array(
-                '%name' => $state['name']));
-        } else {
-            $title = $this->text('Add state for %country', array(
-                '%country' => $country['name']));
+        if ($this->isPosted('delete')) {
+            $this->deleteState($country, $state);
         }
 
-        $this->setTitle($title);
+        if (!$this->isPosted('save')) {
+            return null;
+        }
+
+        $this->setSubmitted('state');
+
+        $this->validateState($country, $state);
+
+        if ($this->hasErrors('state')) {
+            return null;
+        }
+
+        if (isset($state['state_id'])) {
+            return $this->updateState($country, $state);
+        }
+
+        return $this->addState($country);
     }
 
     /**
@@ -259,73 +307,29 @@ class State extends BackendController
     }
 
     /**
-     * Applies an action to the selected country states
-     */
-    protected function actionState()
-    {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
-
-        $deleted = $updated = 0;
-        foreach ($selected as $id) {
-
-            if ($action == 'status' && $this->access('state_edit')) {
-                $updated += (int) $this->state->update($id, array('status' => $value));
-            }
-
-            if ($action == 'delete' && $this->access('state_delete')) {
-                $deleted += (int) $this->state->delete($id);
-            }
-        }
-
-        if ($updated > 0) {
-            $text = $this->text('Updated %num country states', array(
-                '%num' => $updated));
-            $this->setMessage($text, 'success', true);
-        }
-
-        if ($deleted > 0) {
-            $text = $this->text('Deleted %num country states', array(
-                '%num' => $deleted));
-            $this->setMessage($text, 'success', true);
-        }
-    }
-
-    /**
-     * Saves a state
+     * Validates a state
      * @param array $country
      * @param array $state
-     * @return null
      */
-    protected function submitState(array $country, array $state)
+    protected function validateState(array $country, array $state)
     {
-        if ($this->isPosted('delete')) {
-            $this->deleteState($country, $state);
-        }
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('country', $country['code']);
 
-        if (!$this->isPosted('save')) {
-            return;
-        }
+        $this->addValidator('country', array(
+            'required' => array()
+        ));
 
-        $this->setSubmitted('state');
+        $this->addValidator('name', array(
+            'length' => array('min' => 1, 'max' => 255)
+        ));
 
-        $this->validateState($country, $state);
+        $this->addValidator('code', array(
+            'length' => array('min' => 1, 'max' => 255),
+            'state_code_unique' => array()
+        ));
 
-        if ($this->hasErrors('state')) {
-            return;
-        }
-
-        if (isset($state['state_id'])) {
-            return $this->updateState($country, $state);
-        }
-
-        $this->addState($country);
+        $this->setValidators(array('country' => $country, 'state' => $state));
     }
 
     /**
@@ -360,49 +364,57 @@ class State extends BackendController
     }
 
     /**
-     * Returns a state
-     * @param integer $state_id
-     * @return array
-     */
-    protected function getState($state_id)
-    {
-        if (!is_numeric($state_id)) {
-            return array();
-        }
-
-        $state = $this->state->get($state_id);
-
-        if (empty($state)) {
-            $this->outputError(404);
-        }
-
-        return $state;
-    }
-
-    /**
-     * Validates a state
+     * Sets titles on the state edit page
      * @param array $country
      * @param array $state
      */
-    protected function validateState(array $country, array $state)
+    protected function setTitleEditState(array $country, array $state)
     {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('country', $country['code']);
+        if (isset($state['state_id'])) {
+            $title = $this->text('Edit state %name', array(
+                '%name' => $state['name']
+            ));
+        } else {
+            $title = $this->text('Add state for %country', array(
+                '%country' => $country['name']
+            ));
+        }
 
-        $this->addValidator('country', array(
-            'required' => array()
-        ));
+        $this->setTitle($title);
+    }
 
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
+    /**
+     * Set breadcrumbs on the state edit page
+     * @param array $country
+     */
+    protected function setBreadcrumbEditState(array $country)
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
-        $this->addValidator('code', array(
-            'length' => array('min' => 1, 'max' => 255),
-            'state_code_unique' => array()
-        ));
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin/settings/country'),
+            'text' => $this->text('Countries')
+        );
 
-        $this->setValidators(array('country' => $country, 'state' => $state));
+        $breadcrumbs[] = array(
+            'url' => $this->url("admin/settings/states/{$country['code']}"),
+            'text' => $this->text('States of %country', array(
+                '%country' => $country['code']
+            ))
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders the state edit page
+     */
+    protected function outputEditState()
+    {
+        $this->output('settings/state/edit');
     }
 
 }

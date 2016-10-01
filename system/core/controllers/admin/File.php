@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\File as ModelsFile;
 use core\controllers\admin\Controller as BackendController;
+use core\models\File as ModelsFile;
 
 /**
  * Handles incoming requests and outputs data related to files
@@ -59,41 +59,61 @@ class File extends BackendController
     }
 
     /**
+     * Downloads a file using a file id from the URL
+     */
+    protected function downloadFile()
+    {
+        if ($this->isQuery('download')) {
+
+            $file_id = (int)$this->request->get('download');
+            $file = $this->file->get($file_id);
+
+            $filepath = GC_FILE_DIR . '/' . $file['path'];
+            $this->response->download($filepath);
+        }
+    }
+
+    /**
+     * Applies an action to the selected files
+     * @return null|void
+     */
+    protected function actionFile()
+    {
+        $action = (string)$this->request->post('action');
+
+        if (empty($action)) {
+            return null;
+        }
+
+        $selected = (array)$this->request->post('selected', array());
+
+        $deleted_disk = $deleted_database = 0;
+
+        foreach ($selected as $file_id) {
+            if ($action === 'delete' && $this->access('file_delete')) {
+                $result = $this->file->deleteAll($file_id);
+                $deleted_disk += $result['disk'];
+                $deleted_database += $result['database'];
+            }
+        }
+
+        $message = $this->text('Deleted from database: %db, disk: %disk', array(
+            '%db' => $deleted_database,
+            '%disk' => $deleted_disk
+        ));
+
+        return $this->setMessage($message, 'success', true);
+    }
+
+    /**
      * Returns total number of files depending on the current conditions
      * @param array $query
+     * @return int
      */
     protected function getTotalFile(array $query)
     {
         $query['count'] = true;
-        return $this->file->getList($query);
-    }
-
-    /**
-     * Renders the files overview page
-     */
-    protected function outputListFile()
-    {
-        $this->output('content/file/list');
-    }
-
-    /**
-     * Sets titles on the files overview page
-     */
-    protected function setTitleListFile()
-    {
-        $this->setTitle($this->text('Files'));
-    }
-
-    /**
-     * Sets breadcrumbs on the files overview page
-     */
-    protected function setBreadcrumbListFile()
-    {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
-
-        $this->setBreadcrumb($breadcrumb);
+        return (int)$this->file->getList($query);
     }
 
     /**
@@ -121,47 +141,32 @@ class File extends BackendController
     }
 
     /**
-     * Applies an action to the selected files
+     * Sets titles on the files overview page
      */
-    protected function actionFile()
+    protected function setTitleListFile()
     {
-        $action = (string) $this->request->post('action');
-
-        if (empty($action)) {
-            return;
-        }
-
-        $selected = (array) $this->request->post('selected', array());
-
-        $deleted_disk = $deleted_database = 0;
-
-        foreach ($selected as $file_id) {
-            if ($action === 'delete' && $this->access('file_delete')) {
-                $result = $this->file->deleteAll($file_id);
-                $deleted_disk += $result['disk'];
-                $deleted_database += $result['database'];
-            }
-        }
-
-        $message = $this->text('Deleted from database: %db, disk: %disk', array(
-            '%db' => $deleted_database, '%disk' => $deleted_disk));
-
-        $this->setMessage($message, 'success', true);
+        $this->setTitle($this->text('Files'));
     }
 
     /**
-     * Downloads a file using a file id from the URL
+     * Sets breadcrumbs on the files overview page
      */
-    protected function downloadFile()
+    protected function setBreadcrumbListFile()
     {
-        if ($this->isQuery('download')) {
+        $breadcrumb = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
 
-            $file_id = (int) $this->request->get('download');
-            $file = $this->file->get($file_id);
+        $this->setBreadcrumb($breadcrumb);
+    }
 
-            $filepath = GC_FILE_DIR . '/' . $file['path'];
-            $this->response->download($filepath);
-        }
+    /**
+     * Renders the files overview page
+     */
+    protected function outputListFile()
+    {
+        $this->output('content/file/list');
     }
 
     /**
@@ -182,13 +187,34 @@ class File extends BackendController
         $this->setData('extensions', $extensions);
 
         $this->setTitleEditFile($file);
-        $this->setBreadcrumbEditFile($file);
+        $this->setBreadcrumbEditFile();
         $this->outputEditFile();
+    }
+
+    /**
+     * Returns an array of file data
+     * @param integer $file_id
+     * @return array
+     */
+    protected function getFile($file_id)
+    {
+        if (!is_numeric($file_id)) {
+            return array();
+        }
+
+        $file = $this->file->get($file_id);
+
+        if (empty($file)) {
+            $this->outputError(404);
+        }
+
+        return $file;
     }
 
     /**
      * Saves an array of submitted values
      * @param array $file
+     * @return null|void
      */
     protected function submitFile(array $file)
     {
@@ -197,21 +223,39 @@ class File extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('file');
         $this->validateFile($file);
 
         if ($this->hasErrors('file')) {
-            return;
+            return null;
         }
 
         if (isset($file['file_id'])) {
             return $this->updateFile($file);
         }
 
-        $this->addFile();
+        return $this->addFile();
+    }
+
+    /**
+     * Completely deletes a file from the database an disk
+     * @param array $file
+     */
+    protected function deleteFile(array $file)
+    {
+        $this->controlAccess('file_delete');
+        $result = $this->file->deleteAll($file['file_id']);
+
+        if (array_sum($result) === 2) {
+            $message = $this->text('File has been deleted from database and disk');
+            $this->redirect('admin/content/file', $message, 'success');
+        }
+
+        $message = $this->text('An error occurred while deleting the file');
+        $this->redirect('admin/content/file', $message, 'warning');
     }
 
     /**
@@ -240,7 +284,8 @@ class File extends BackendController
                     'control_errors' => true,
                     'path' => 'image/upload/common',
                     'file' => $this->request->file('file')
-            )));
+                )
+            ));
         }
 
         $errors = $this->setValidators($file);
@@ -249,24 +294,6 @@ class File extends BackendController
             $uploaded = $this->getValidatorResult('file');
             $this->setSubmitted('path', $uploaded);
         }
-    }
-
-    /**
-     * Completely deletes a file from the database an disk
-     * @param array $file
-     */
-    protected function deleteFile(array $file)
-    {
-        $this->controlAccess('file_delete');
-        $result = $this->file->deleteAll($file['file_id']);
-
-        if (array_sum($result) === 2) {
-            $message = $this->text('File has been deleted from database and disk');
-            $this->redirect('admin/content/file', $message, 'success');
-        }
-
-        $message = $this->text('An error occurred while deleting the file');
-        $this->redirect('admin/content/file', $message, 'warning');
     }
 
     /**
@@ -347,26 +374,6 @@ class File extends BackendController
     protected function outputEditFile()
     {
         $this->output('content/file/edit');
-    }
-
-    /**
-     * Returns an array of file data
-     * @param integer $file_id
-     * @return array
-     */
-    protected function getFile($file_id)
-    {
-        if (!is_numeric($file_id)) {
-            return array();
-        }
-
-        $file = $this->file->get($file_id);
-
-        if (empty($file)) {
-            $this->outputError(404);
-        }
-
-        return $file;
     }
 
 }

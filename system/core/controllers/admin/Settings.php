@@ -45,34 +45,6 @@ class Settings extends BackendController
     }
 
     /**
-     * Sets titles on the settings form page
-     */
-    protected function setTitleEditSettings()
-    {
-        $this->setTitle($this->text('Settings'));
-    }
-
-    /**
-     * Sets breadcrumbs on the settings form page
-     */
-    protected function setBreadcrumbEditSettings()
-    {
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders settings page
-     */
-    protected function outputEditSettings()
-    {
-        $this->output('settings/settings');
-    }
-
-    /**
      * Returns an array of settings with their default values
      * @return array
      */
@@ -95,15 +67,6 @@ class Settings extends BackendController
     }
 
     /**
-     * Prepares settings values before passing them to template
-     */
-    protected function setDataEditSettings()
-    {
-        $smtp_host = $this->getData('settings.smtp_host');
-        $this->setData('settings.smtp_host', implode("\n", (array) $smtp_host));
-    }
-
-    /**
      * Saves submitted settings
      */
     protected function submitSettings()
@@ -120,30 +83,6 @@ class Settings extends BackendController
         }
 
         $this->updateSettings();
-    }
-
-    /**
-     * Updates common setting with submitted values
-     */
-    protected function updateSettings()
-    {
-        $this->controlAccess('settings_edit');
-
-        if ($this->isPosted('delete_gapi_certificate')) {
-            unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
-            $this->config->reset('gapi_certificate');
-        }
-
-        $allowed = $this->config->get();
-        $submitted = $this->getSubmitted();
-        $save = array_intersect_key($submitted, $allowed);
-
-        foreach ($save as $key => $value) {
-            $this->config->set($key, $value);
-        }
-
-        $message = $this->text('Settings have been updated');
-        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -172,6 +111,68 @@ class Settings extends BackendController
 
         $uploaded = $this->getValidatorResult('gapi_certificate');
         $this->setSubmitted('gapi_certificate', $uploaded);
+    }
+
+    /**
+     * Updates common setting with submitted values
+     */
+    protected function updateSettings()
+    {
+        $this->controlAccess('settings_edit');
+
+        if ($this->isPosted('delete_gapi_certificate')) {
+            unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
+            $this->config->reset('gapi_certificate');
+        }
+
+        $allowed = $this->config->get();
+        $submitted = $this->getSubmitted();
+        $save = array_intersect_key($submitted, $allowed);
+
+        foreach ($save as $key => $value) {
+            $this->config->set($key, $value);
+        }
+
+        $message = $this->text('Settings have been updated');
+        $this->redirect('', $message, 'success');
+    }
+
+    /**
+     * Prepares settings values before passing them to template
+     */
+    protected function setDataEditSettings()
+    {
+        $smtp_host = $this->getData('settings.smtp_host');
+        $this->setData('settings.smtp_host', implode("\n", (array)$smtp_host));
+    }
+
+    /**
+     * Sets titles on the settings form page
+     */
+    protected function setTitleEditSettings()
+    {
+        $this->setTitle($this->text('Settings'));
+    }
+
+    /**
+     * Sets breadcrumbs on the settings form page
+     */
+    protected function setBreadcrumbEditSettings()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders settings page
+     */
+    protected function outputEditSettings()
+    {
+        $this->output('settings/settings');
     }
 
 }

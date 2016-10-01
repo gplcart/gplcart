@@ -2,7 +2,8 @@
   <div class="col-md-3">
     <div class="list-group">
       <a href="<?php echo $this->url("account/{$user['user_id']}"); ?>" class="list-group-item">
-        <h4 class="list-group-item-heading h5"><b><?php echo $this->truncate($this->escape($user['name']), 20); ?></b></h4>
+        <h4 class="list-group-item-heading h5"><b><?php echo $this->truncate($this->escape($user['name']),
+                20); ?></b></h4>
         <p class="list-group-item-text"><?php echo $this->escape($user['email']); ?></p>
       </a>
       <a class="list-group-item active disabled">
@@ -19,13 +20,11 @@
     </a>
   </div>
   <div class="col-md-9">
-    
-          <a class="btn btn-default" href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>">
-              <?php echo $this->text('Cancel'); ?>
-          </a>
-    
+    <a class="btn btn-default" href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>">
+      <?php echo $this->text('Cancel'); ?>
+    </a>
     <div id="address-form-wrapper">
-    <?php echo $address_form; ?>
+      <?php echo $address_form; ?>
     </div>
   </div>
 </div>
