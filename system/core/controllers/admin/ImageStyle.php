@@ -113,6 +113,8 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbListImageStyle()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard'));
@@ -181,9 +183,9 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Deletes an imagestyle
+     * Deletes an image style
      * @param array $imagestyle
-     * @return boolean
+     * @return void
      */
     protected function deleteImageStyle(array $imagestyle)
     {
@@ -202,8 +204,9 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Saves an imagestyle
+     * Saves an image style
      * @param array $imagestyle
+     * @return bool|null|void
      */
     protected function submitImageStyle(array $imagestyle)
     {
@@ -212,21 +215,21 @@ class ImageStyle extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('imagestyle');
         $this->validateImageStyle($imagestyle);
 
         if ($this->hasErrors('imagestyle')) {
-            return;
+            return null;
         }
 
         if (isset($imagestyle['imagestyle_id'])) {
             return $this->updateImageStyle($imagestyle);
         }
 
-        $this->addImageStyle();
+        return $this->addImageStyle();
     }
 
     /**
