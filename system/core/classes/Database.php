@@ -9,9 +9,9 @@
 
 namespace core\classes;
 
+use core\exceptions\DatabaseException;
 use PDO;
 use PDOException;
-use core\exceptions\DatabaseException;
 
 /**
  * Provides wrappers for PDO methods
@@ -21,7 +21,9 @@ class Database extends PDO
 
     /**
      * Sets up the database connection
+     * Database constructor.
      * @param array $config
+     * @throws DatabaseException
      */
     public function __construct(array $config = array())
     {
@@ -96,7 +98,7 @@ class Database extends PDO
         $result = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->prepareResult($result, $options);
-        return empty($result) ? array() : (array) $result;
+        return empty($result) ? array() : (array)$result;
     }
 
     /**
@@ -110,7 +112,7 @@ class Database extends PDO
             return;
         }
 
-        foreach ((array) $options['unserialize'] as $field) {
+        foreach ((array)$options['unserialize'] as $field) {
             $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
         }
     }
@@ -127,7 +129,7 @@ class Database extends PDO
         $sth = $this->run($sql, $params);
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         $this->prepareResults($result, $options);
-        return empty($result) ? array() : (array) $result;
+        return empty($result) ? array() : (array)$result;
     }
 
     /**
@@ -154,9 +156,10 @@ class Database extends PDO
 
     /**
      * Performs an INSERT query
-     * @param string $table
+     * @param $table
      * @param array $data
-     * @return mixed
+     * @param bool $prepare
+     * @return bool|string
      */
     public function insert($table, array $data, $prepare = true)
     {
@@ -225,8 +228,9 @@ class Database extends PDO
 
     /**
      * Returns an array of database scheme
-     * @param string $table
-     * @return array
+     * @param null $table
+     * @return array|mixed
+     * @throws DatabaseException
      */
     public function getScheme($table = null)
     {
@@ -277,9 +281,12 @@ class Database extends PDO
      * @param string $field
      * @param mixed $value
      */
-    protected function filterValue(array $scheme, array &$values, $field,
-            &$value)
-    {
+    protected function filterValue(
+        array $scheme,
+        array &$values,
+        $field,
+        &$value
+    ) {
         if (!empty($scheme['fields'][$field]['auto_increment'])) {
             unset($values[$field]); // Remove autoincremented fields
         }
@@ -299,14 +306,18 @@ class Database extends PDO
 
     /**
      * Performs a UPDATE query
-     * @param string $table
+     * @param $table
      * @param array $data
      * @param array $conditions
-     * @return integer|boolean
+     * @param bool $filter
+     * @return bool|int
      */
-    public function update($table, array $data, array $conditions,
-            $filter = true)
-    {
+    public function update(
+        $table,
+        array $data,
+        array $conditions,
+        $filter = true
+    ) {
         if ($filter) {
             $data = $this->filterValues($table, $data);
         }
@@ -374,6 +385,7 @@ class Database extends PDO
     /**
      * Creates tables using an array of scheme data
      * @param array $tables
+     * @return bool
      */
     public function import(array $tables)
     {
