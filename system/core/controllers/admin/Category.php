@@ -9,11 +9,11 @@
 
 namespace core\controllers\admin;
 
+use core\controllers\admin\Controller as BackendController;
 use core\models\Alias as ModelsAlias;
-use core\models\Image as ModelsImage;
 use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
-use core\controllers\admin\Controller as BackendController;
+use core\models\Image as ModelsImage;
 
 /**
  * Handles incoming requests and outputs data related to categories
@@ -52,9 +52,12 @@ class Category extends BackendController
      * @param ModelsImage $image
      * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(ModelsCategory $category, ModelsAlias $alias,
-            ModelsImage $image, ModelsCategoryGroup $category_group)
-    {
+    public function __construct(
+        ModelsCategory $category,
+        ModelsAlias $alias,
+        ModelsImage $image,
+        ModelsCategoryGroup $category_group
+    ) {
         parent::__construct();
 
         $this->alias = $alias;
@@ -104,14 +107,14 @@ class Category extends BackendController
      */
     protected function actionCategory()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string)$this->request->post('action');
 
         if (empty($action)) {
             return;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
 
@@ -127,12 +130,13 @@ class Category extends BackendController
         foreach ($selected as $category_id) {
 
             if ($action === 'status' && $this->access('category_edit')) {
-                $updated += (int) $this->category->update($category_id, array(
-                            'status' => $value));
+                $updated += (int)$this->category->update($category_id, array(
+                    'status' => $value
+                ));
             }
 
             if ($action === 'delete' && $this->access('category_delete')) {
-                $deleted += (int) $this->category->delete($category_id);
+                $deleted += (int)$this->category->delete($category_id);
             }
         }
 
@@ -157,14 +161,15 @@ class Category extends BackendController
         $store = $this->store->get($category_group['store_id']);
 
         $categories = $this->category->getTree(array(
-            'category_group_id' => $category_group['category_group_id']));
+            'category_group_id' => $category_group['category_group_id']
+        ));
 
         $category_ids = array();
         foreach ($categories as &$category) {
             $category_ids[] = $category['category_id'];
             $category['indentation'] = str_repeat('— ', $category['depth']);
             $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                    . "/category/{$category['category_id']}";
+                . "/category/{$category['category_id']}";
         }
 
         $aliases = $this->alias->getMultiple('category_id', $category_ids);
@@ -178,7 +183,7 @@ class Category extends BackendController
             if (!empty($aliases[$category['category_id']])) {
                 $category['alias'] = $aliases[$category['category_id']];
                 $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/{$category['alias']}";
+                    . "/{$category['alias']}";
             }
         }
 
@@ -192,11 +197,13 @@ class Category extends BackendController
     {
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
-            'text' => $this->text('Category groups'));
+            'text' => $this->text('Category groups')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -208,7 +215,8 @@ class Category extends BackendController
     protected function setTitleListCategory(array $category_group)
     {
         $text = $this->text('Categories of group %name', array(
-            '%name' => $category_group['title']));
+            '%name' => $category_group['title']
+        ));
 
         $this->setTitle($text);
     }
@@ -232,7 +240,7 @@ class Category extends BackendController
         $category_group = $this->getCategoryGroup($category_group_id);
         $categories = $this->category->getOptionList($category_group_id, 0);
 
-        $parent_category = (int) $this->request->get('parent_id');
+        $parent_category = (int)$this->request->get('parent_id');
         $can_delete = (isset($category['category_id']) && $this->category->canDelete($category_id));
 
         $this->setData('category', $category);
@@ -268,14 +276,14 @@ class Category extends BackendController
             return $category;
         }
 
-        $this->outputError(404);
+        return $this->outputError(404);
     }
 
     /**
      * Saves a submitted category
      * @param array $category_group
      * @param array $category
-     * @return null
+     * @return mixed
      */
     protected function submitCategory(array $category_group, array $category)
     {
@@ -284,21 +292,21 @@ class Category extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('category', null, false);
         $this->validateCategory($category);
 
         if ($this->hasErrors('category')) {
-            return;
+            return null;
         }
 
         if (isset($category['category_id'])) {
             return $this->updateCategory($category_group, $category);
         }
 
-        $this->addCategory($category_group);
+        return $this->addCategory($category_group);
     }
 
     /**
@@ -319,7 +327,7 @@ class Category extends BackendController
         }
 
         $message = $this->text('Unable to delete this category.'
-                . 'The most probable reason - it is used by one or more products');
+            . 'The most probable reason - it is used by one or more products');
 
         $this->redirect('', $message, 'danger');
     }
@@ -478,10 +486,12 @@ class Category extends BackendController
     {
         if (isset($category['category_id'])) {
             $title = $this->text('Edit category %name', array(
-                '%name' => $category['title']));
+                '%name' => $category['title']
+            ));
         } else {
             $title = $this->text('Add category to %group', array(
-                '%group' => $group['title']));
+                '%group' => $group['title']
+            ));
         }
 
         $this->setTitle($title);
@@ -495,16 +505,19 @@ class Category extends BackendController
     {
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
-            'text' => $this->text('Category groups'));
+            'text' => $this->text('Category groups')
+        );
 
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/content/category/{$category_group['category_group_id']}"),
-            'text' => $this->text('Categories'));
+            'text' => $this->text('Categories')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }

@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\Alias as ModelsAlias;
 use core\controllers\admin\Controller as BackendController;
+use core\models\Alias as ModelsAlias;
 
 /**
  * Handles incoming requests and outputs data related to the URL aliases
@@ -41,7 +41,7 @@ class Alias extends BackendController
     public function listAlias()
     {
         $this->actionAlias();
-        
+
         $query = $this->getFilterQuery();
         $total = $this->getTotalAlias($query);
         $limit = $this->setPager($total, $query);
@@ -62,17 +62,16 @@ class Alias extends BackendController
 
     /**
      * Applies an action to the selected aliases
-     * @return boolean
      */
     protected function actionAlias()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string)$this->request->post('action');
 
-        if(empty($action)){
-           return;
+        if (empty($action)) {
+            return;
         }
 
-        $selected = (array) $this->request->post('selected', array());
+        $selected = (array)$this->request->post('selected', array());
 
         $deleted = 0;
         foreach ($selected as $id) {
@@ -89,7 +88,7 @@ class Alias extends BackendController
             }
 
             if ($action === 'delete') {
-                $deleted += (int) $this->alias->delete($id);
+                $deleted += (int)$this->alias->delete($id);
             }
         }
 
@@ -107,7 +106,7 @@ class Alias extends BackendController
     protected function getTotalAlias(array $query)
     {
         $query['count'] = true;
-        return (int) $this->alias->getList($query);
+        return (int)$this->alias->getList($query);
     }
 
     /**
@@ -137,7 +136,8 @@ class Alias extends BackendController
     {
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin'));
+            'url' => $this->url('admin')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }

@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\models\CategoryGroup as ModelsCategoryGroup;
 use core\controllers\admin\Controller as BackendController;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 
 /**
  * Handles incoming requests and outputs data related to category groups
@@ -96,7 +96,8 @@ class CategoryGroup extends BackendController
     {
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -154,7 +155,7 @@ class CategoryGroup extends BackendController
     /**
      * Saves a submitted category group
      * @param array $category_group
-     * @return null
+     * @return mixed
      */
     protected function submitCategoryGroup(array $category_group)
     {
@@ -163,21 +164,21 @@ class CategoryGroup extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('category_group');
         $this->validateCategoryGroup($category_group);
 
         if ($this->hasErrors('category_group')) {
-            return;
+            return null;
         }
 
         if (isset($category_group['category_group_id'])) {
             return $this->updateCategoryGroup($category_group);
         }
 
-        $this->addCategoryGroup();
+        return $this->addCategoryGroup();
     }
 
     /**
@@ -226,7 +227,8 @@ class CategoryGroup extends BackendController
         $this->addValidator('type', array(
             'category_group_type_unique' => array(
                 'store_id' => $this->getSubmitted('store_id'),
-                'category_group_id' => $category_group_id)
+                'category_group_id' => $category_group_id
+            )
         ));
 
         $this->setValidators($category_group);
@@ -269,7 +271,8 @@ class CategoryGroup extends BackendController
     {
         if (isset($category_group['category_group_id'])) {
             $title = $this->text('Edit category group %name', array(
-                '%name' => $category_group['title']));
+                '%name' => $category_group['title']
+            ));
         } else {
             $title = $this->text('Add category group');
         }
@@ -284,11 +287,13 @@ class CategoryGroup extends BackendController
     {
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
-            'text' => $this->text('Category groups'));
+            'text' => $this->text('Category groups')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }

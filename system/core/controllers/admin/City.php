@@ -9,11 +9,11 @@
 
 namespace core\controllers\admin;
 
-use core\models\City as ModelsCity;
-use core\models\Zone as ModelsZone;
-use core\models\State as ModelsState;
-use core\models\Country as ModelsCountry;
 use core\controllers\admin\Controller as BackendController;
+use core\models\City as ModelsCity;
+use core\models\Country as ModelsCountry;
+use core\models\State as ModelsState;
+use core\models\Zone as ModelsZone;
 
 /**
  * Handles incoming requests and outputs data related to cities
@@ -38,13 +38,13 @@ class City extends BackendController
      * @var \core\models\City $city
      */
     protected $city;
-    
+
     /**
      * Zone model instance
      * @var \core\models\Zone $zone
      */
     protected $zone;
-    
+
     /**
      * Constructor
      * @param ModelsCountry $country
@@ -52,9 +52,12 @@ class City extends BackendController
      * @param ModelsCity $city
      * @param ModelsZone $zone
      */
-    public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsCity $city, ModelsZone $zone)
-    {
+    public function __construct(
+        ModelsCountry $country,
+        ModelsState $state,
+        ModelsCity $city,
+        ModelsZone $zone
+    ) {
         parent::__construct();
 
         $this->zone = $zone;
@@ -130,24 +133,24 @@ class City extends BackendController
      */
     protected function actionCity()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string)$this->request->post('action');
 
         if (empty($action)) {
             return;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int)$this->request->post('value');
+        $selected = (array)$this->request->post('selected', array());
 
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
             if ($action === 'status' && $this->access('city_edit')) {
-                $updated += (int) $this->city->update($id, array('status' => $value));
+                $updated += (int)$this->city->update($id, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('city_delete')) {
-                $deleted += (int) $this->city->delete($id);
+                $deleted += (int)$this->city->delete($id);
             }
         }
 
@@ -205,7 +208,8 @@ class City extends BackendController
     protected function setTitleListCity(array $state)
     {
         $text = $this->text('Cities of state %state', array(
-            '%state' => $state['name']));
+            '%state' => $state['name']
+        ));
 
         $this->setTitle($text);
     }
@@ -217,19 +221,23 @@ class City extends BackendController
     protected function setBreadcrumbListCity(array $country)
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
+            'text' => $this->text('Countries')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$country['code']}"),
             'text' => $this->text('States of %country', array(
-                '%country' => $country['name'])));
+                '%country' => $country['name']
+            ))
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
@@ -292,7 +300,7 @@ class City extends BackendController
      * @param array $country
      * @param array $state
      * @param array $city
-     * @return null
+     * @return mixed
      */
     protected function submitCity(array $country, array $state, array $city)
     {
@@ -301,21 +309,21 @@ class City extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('city');
         $this->validateCity($country, $state, $city);
 
         if ($this->hasErrors('city')) {
-            return;
+            return null;
         }
 
         if (isset($city['city_id'])) {
             return $this->updateCity($country, $state, $city);
         }
 
-        $this->addCity($country, $state);
+        return $this->addCity($country, $state);
     }
 
     /**
@@ -323,7 +331,6 @@ class City extends BackendController
      * @param array $country
      * @param array $state
      * @param array $city
-     * @return null
      */
     protected function deleteCity(array $country, array $state, array $city)
     {
@@ -335,13 +342,15 @@ class City extends BackendController
 
             $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
             $message = $this->text('City %name has been deleted', array(
-                '%name' => $city['name']));
+                '%name' => $city['name']
+            ));
 
             $this->redirect($url, $message, 'success');
         }
 
         $message = $this->text('Cannot delete city %name.', array(
-            '%name' => $city['name']));
+            '%name' => $city['name']
+        ));
 
         $this->redirect('', $message, 'warning');
     }
@@ -380,7 +389,8 @@ class City extends BackendController
 
         $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
         $message = $this->text('City %name has been updated', array(
-            '%name' => $city['name']));
+            '%name' => $city['name']
+        ));
 
         $this->redirect($url, $message, 'success');
     }
@@ -424,14 +434,16 @@ class City extends BackendController
     protected function setBreadcrumbEditCity()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
-            'text' => $this->text('Countries'));
+            'text' => $this->text('Countries')
+        );
 
         $this->setBreadcrumbs($breadcrumbs);
     }
