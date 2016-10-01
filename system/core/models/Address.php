@@ -46,14 +46,14 @@ class Address extends Model
         $this->hook->fire('get.address.before', $address_id);
 
         $sql = 'SELECT a.*, c.name AS country_name,'
-                . ' c.native_name AS country_native_name,'
-                . ' c.format AS country_format, s.name AS state_name,'
-                . ' ci.name AS city_name FROM address a'
-                . ' LEFT JOIN country c ON(a.country=c.code)'
-                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
-                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-                . ' WHERE a.address_id = ?';
-        
+            . ' c.native_name AS country_native_name,'
+            . ' c.format AS country_format, s.name AS state_name,'
+            . ' ci.name AS city_name FROM address a'
+            . ' LEFT JOIN country c ON(a.country=c.code)'
+            . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
+            . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+            . ' WHERE a.address_id = ?';
+
         $options = array('unserialize' => array('data', 'country_format'));
         $address = $this->db->fetch($sql, array($address_id), $options);
 
@@ -101,6 +101,69 @@ class Address extends Model
     }
 
     /**
+     * Returns a list of addresses for a given user
+     * @param array $data
+     * @return array
+     */
+    public function getList(array $data = array())
+    {
+        $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, ci.city_id) AS city_name,'
+            . ' c.name AS country_name, ci.status AS city_status,'
+            . ' c.native_name AS country_native_name, c.format AS country_format,'
+            . ' s.name AS state_name'
+            . ' FROM address a'
+            . ' LEFT JOIN country c ON(a.country=c.code)'
+            . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
+            . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+            . ' WHERE a.address_id > 0';
+
+        $where = array();
+
+        if (isset($data['status'])) {
+
+            // TODO: optimize this. Select addresses if no countries at all
+            $countries = $this->country->getList();
+
+            if (!empty($countries)) {
+                $sql .= ' AND c.status = ?';
+                $where[] = (int)$data['status'];
+            }
+
+            //$sql .= ' AND s.status = ?';
+            //$where[] = (int) $data['status'];
+        }
+
+        if (isset($data['user_id'])) {
+            $sql .= ' AND a.user_id = ?';
+            $where[] = $data['user_id'];
+        }
+
+        $sql .= ' ORDER BY a.created ASC';
+
+
+        $options = array(
+            'index' => 'address_id',
+            'unserialize' => array('data', 'country_format')
+        );
+
+        $results = $this->db->fetchAll($sql, $where, $options);
+
+        // TODO: Fix this shit. Everything should be done in the SQL above
+        $list = array();
+        foreach ($results as $address_id => $address) {
+            // City ID can be not numeric (user input). Make this check in the query?
+            if (!empty($data['status']) && empty($address['city_status']) && is_numeric($address['city_id'])) {
+                continue;
+            }
+
+            $list[$address_id] = $address;
+        }
+
+        $this->hook->fire('address.list', $data, $list);
+        return $list;
+    }
+
+    /**
      * Returns an array of translated address fields
      * @param array $address
      * @param boolean $both
@@ -137,68 +200,6 @@ class Address extends Model
     }
 
     /**
-     * Returns a list of addresses for a given user
-     * @return array
-     */
-    public function getList(array $data = array())
-    {
-        $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, ci.city_id) AS city_name,'
-                . ' c.name AS country_name, ci.status AS city_status,'
-                . ' c.native_name AS country_native_name, c.format AS country_format,'
-                . ' s.name AS state_name'
-                . ' FROM address a'
-                . ' LEFT JOIN country c ON(a.country=c.code)'
-                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
-                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-                . ' WHERE a.address_id > 0';
-
-        $where = array();
-
-        if (isset($data['status'])) {
-
-            // TODO: optimize this. Select addresses if no countries at all 
-            $countries = $this->country->getList();
-
-            if (!empty($countries)) {
-                $sql .= ' AND c.status = ?';
-                $where[] = (int) $data['status'];
-            }
-
-            //$sql .= ' AND s.status = ?';
-            //$where[] = (int) $data['status'];
-        }
-
-        if (isset($data['user_id'])) {
-            $sql .= ' AND a.user_id = ?';
-            $where[] = $data['user_id'];
-        }
-
-        $sql .= ' ORDER BY a.created ASC';
-        
-        
-        $options = array(
-            'index' => 'address_id',
-            'unserialize' => array('data', 'country_format')
-        );
-        
-        $results = $this->db->fetchAll($sql, $where, $options);
-
-        // TODO: Fix this shit. Everything should be done in the SQL above
-        $list = array();
-        foreach ($results as $address_id => $address) {
-            // City ID can be not numeric (user input). Make this check in the query?
-            if (!empty($data['status']) && empty($address['city_status']) && is_numeric($address['city_id'])) {
-                continue;
-            }
-            
-            $list[$address_id] = $address;
-        }
-
-        $this->hook->fire('address.list', $data, $list);
-        return $list;
-    }
-
-    /**
      * Returns a string containing formatted geocode query
      * @param array $data
      * @return string
@@ -219,46 +220,12 @@ class Address extends Model
     }
 
     /**
-     * Deletes an address
-     * @param integer $address_id
-     * @return boolean
+     * Returns an array of address fields to be used to format geocoding query
+     * @return array
      */
-    public function delete($address_id)
+    protected function getGeocodeFields()
     {
-        $this->hook->fire('delete.address.before', $address_id);
-
-        if (empty($address_id)) {
-            return false;
-        }
-
-        if (!$this->canDelete($address_id)) {
-            return false;
-        }
-
-        $conditions = array('address_id' => $address_id);
-        $result = $this->db->delete('address', $conditions);
-        $this->hook->fire('delete.address.after', $address_id, $result);
-
-        return (bool) $result;
-    }
-
-    /**
-     * Whether the address can be deleted
-     * @param integer $address_id
-     * @return boolean
-     */
-    public function canDelete($address_id)
-    {
-        return !$this->isReferenced($address_id);
-    }
-
-    /**
-     * Returns a number of addresses that a user can have
-     * @return integer
-     */
-    public function getLimit()
-    {
-        return (int) $this->config->get('user_address_limit', 6);
+        return array('address_1', 'state_id', 'city_id', 'country');
     }
 
     /**
@@ -287,6 +254,49 @@ class Address extends Model
     }
 
     /**
+     * Returns a number of addresses that a user can have
+     * @return integer
+     */
+    public function getLimit()
+    {
+        return (int)$this->config->get('user_address_limit', 6);
+    }
+
+    /**
+     * Deletes an address
+     * @param integer $address_id
+     * @return boolean
+     */
+    public function delete($address_id)
+    {
+        $this->hook->fire('delete.address.before', $address_id);
+
+        if (empty($address_id)) {
+            return false;
+        }
+
+        if (!$this->canDelete($address_id)) {
+            return false;
+        }
+
+        $conditions = array('address_id' => $address_id);
+        $result = $this->db->delete('address', $conditions);
+        $this->hook->fire('delete.address.after', $address_id, $result);
+
+        return (bool)$result;
+    }
+
+    /**
+     * Whether the address can be deleted
+     * @param integer $address_id
+     * @return boolean
+     */
+    public function canDelete($address_id)
+    {
+        return !$this->isReferenced($address_id);
+    }
+
+    /**
      * Returns true if the address has no references
      * @param integer $address_id
      * @return boolean
@@ -294,7 +304,7 @@ class Address extends Model
     public function isReferenced($address_id)
     {
         $sql = 'SELECT order_id FROM orders WHERE shipping_address=?';
-        return (bool) $this->db->fetch($sql, array($address_id));
+        return (bool)$this->db->fetch($sql, array($address_id));
     }
 
     /**
@@ -315,16 +325,7 @@ class Address extends Model
         $result = $this->db->update('address', $data, $conditions);
 
         $this->hook->fire('update.address.after', $address_id, $data, $result);
-        return (bool) $result;
-    }
-
-    /**
-     * Returns an array of address fields to be used to format geocoding query
-     * @return array
-     */
-    protected function getGeocodeFields()
-    {
-        return array('address_1', 'state_id', 'city_id', 'country');
+        return (bool)$result;
     }
 
 }

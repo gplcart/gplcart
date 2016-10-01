@@ -9,12 +9,12 @@
 
 namespace core\models;
 
-use core\Model;
 use core\classes\Cache;
-use core\models\Image as ModelsImage;
+use core\Model;
 use core\models\Alias as ModelsAlias;
-use core\models\Language as ModelsLanguage;
 use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\models\Image as ModelsImage;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -53,9 +53,12 @@ class Category extends Model
      * @param ModelsLanguage $language
      * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(ModelsImage $image, ModelsAlias $alias,
-            ModelsLanguage $language, ModelsCategoryGroup $category_group)
-    {
+    public function __construct(
+        ModelsImage $image,
+        ModelsAlias $alias,
+        ModelsLanguage $language,
+        ModelsCategoryGroup $category_group
+    ) {
         parent::__construct();
 
         $this->image = $image;
@@ -78,10 +81,10 @@ class Category extends Model
         $conditions = array($category_id);
 
         $sql = 'SELECT c.*, cg.store_id'
-                . ' FROM category c'
-                . ' LEFT JOIN category_group cg'
-                . ' ON(c.category_group_id=cg.category_group_id)'
-                . ' WHERE c.category_id=?';
+            . ' FROM category c'
+            . ' LEFT JOIN category_group cg'
+            . ' ON(c.category_group_id=cg.category_group_id)'
+            . ' WHERE c.category_id=?';
 
         if (isset($store_id)) {
             $sql .= ' AND cg.store_id=?';
@@ -120,6 +123,17 @@ class Category extends Model
     }
 
     /**
+     * Returns an array of category translations
+     * @param integer $category_id
+     * @return array
+     */
+    public function getTranslation($category_id)
+    {
+        $sql = 'SELECT * FROM category_translation WHERE category_id=?';
+        return $this->db->fetchAll($sql, array($category_id));
+    }
+
+    /**
      * Adds images to the category
      * @param array $category
      * @param null|string $language
@@ -146,17 +160,6 @@ class Category extends Model
         }
 
         $category['images'] = $images;
-    }
-
-    /**
-     * Returns an array of category translations
-     * @param integer $category_id
-     * @return array
-     */
-    public function getTranslation($category_id)
-    {
-        $sql = 'SELECT * FROM category_translation WHERE category_id=?';
-        return $this->db->fetchAll($sql, array($category_id));
     }
 
     /**
@@ -189,9 +192,11 @@ class Category extends Model
      * @param boolean $hierarchy
      * @return array
      */
-    public function getOptionList($group_id = null, $parent_id = 0,
-            $hierarchy = true)
-    {
+    public function getOptionList(
+        $group_id = null,
+        $parent_id = 0,
+        $hierarchy = true
+    ) {
         $conditions = array(
             'status' => 1,
             'parent_id' => $parent_id,
@@ -221,7 +226,7 @@ class Category extends Model
     public function getTree(array $data)
     {
         ksort($data);
-        
+
         $tree = &Cache::memory('category.tree.' . md5(json_encode($data)));
 
         if (isset($tree)) {
@@ -233,14 +238,14 @@ class Category extends Model
         $parents_tree = array();
         $categories_tree = array();
 
-        $parent = isset($data['parent_id']) ? (int) $data['parent_id'] : 0;
+        $parent = isset($data['parent_id']) ? (int)$data['parent_id'] : 0;
 
         $sql = 'SELECT c.*, a.alias, COALESCE(NULLIF(ct.title, ""), c.title) AS title'
-                . ' FROM category c'
-                . ' LEFT JOIN category_group cg ON(c.category_group_id = cg.category_group_id)'
-                . ' LEFT JOIN category_translation ct ON(c.category_id=ct.category_id AND ct.language=?)'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
-                . ' WHERE c.category_id > 0';
+            . ' FROM category c'
+            . ' LEFT JOIN category_group cg ON(c.category_group_id = cg.category_group_id)'
+            . ' LEFT JOIN category_translation ct ON(c.category_id=ct.category_id AND ct.language=?)'
+            . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
+            . ' WHERE c.category_id > 0';
 
         $language = isset($data['language']) ? $data['language'] : $this->language->current();
 
@@ -248,12 +253,12 @@ class Category extends Model
 
         if (isset($data['category_group_id'])) {
             $sql .= ' AND c.category_group_id=?';
-            $where[] = (int) $data['category_group_id'];
+            $where[] = (int)$data['category_group_id'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND cg.store_id=?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         if (isset($data['type'])) {
@@ -263,17 +268,17 @@ class Category extends Model
 
         if (isset($data['status'])) {
             $sql .= ' AND c.status=?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND cg.store_id=?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         if (isset($data['type'])) {
             $sql .= ' AND cg.type=?';
-            $where[] = (string) $data['type'];
+            $where[] = (string)$data['type'];
         }
 
         $sql .= ' ORDER BY c.weight ASC';
@@ -286,7 +291,7 @@ class Category extends Model
             $categories_tree[$category['category_id']] = $category;
         }
 
-        $max_depth = isset($data['depth']) ? (int) $data['depth'] : count($children_tree);
+        $max_depth = isset($data['depth']) ? (int)$data['depth'] : count($children_tree);
 
         $process_parents = array();
         $process_parents[] = $parent;
@@ -378,16 +383,16 @@ class Category extends Model
     public function getList(array $data = array())
     {
         $sql = 'SELECT c.*, cg.type, cg.store_id,'
-                . ' COALESCE(NULLIF(ct.title, ""), c.title) AS title';
+            . ' COALESCE(NULLIF(ct.title, ""), c.title) AS title';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(c.category_id)';
         }
 
         $sql .= ' FROM category c'
-                . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
-                . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
-                . ' WHERE c.category_id > 0';
+            . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
+            . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
+            . ' WHERE c.category_id > 0';
 
         $language = $this->language->current();
         $where = array($language);
@@ -401,7 +406,7 @@ class Category extends Model
 
         if (isset($data['category_group_id'])) {
             $sql .= ' AND c.category_group_id=?';
-            $where[] = (int) $data['category_group_id'];
+            $where[] = (int)$data['category_group_id'];
         }
 
         if (isset($data['type'])) {
@@ -416,7 +421,7 @@ class Category extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'category_id');
@@ -455,6 +460,29 @@ class Category extends Model
     }
 
     /**
+     * Deletes and/or adds category translations
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setTranslation(array $data, $delete = true)
+    {
+        if (empty($data['translation'])) {
+            return false;
+        }
+
+        if ($delete) {
+            $this->deleteTranslation($data['category_id']);
+        }
+
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($data['category_id'], $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
      * Deletes category translation(s)
      * @param integer $category_id
      * @param null|string $language
@@ -462,13 +490,13 @@ class Category extends Model
      */
     public function deleteTranslation($category_id, $language = null)
     {
-        $conditions = array('category_id' => (int) $category_id);
+        $conditions = array('category_id' => (int)$category_id);
 
         if (isset($language)) {
             $conditions['language'] = $language;
         }
 
-        return (bool) $this->db->delete('category_translation', $conditions);
+        return (bool)$this->db->delete('category_translation', $conditions);
     }
 
     /**
@@ -487,6 +515,20 @@ class Category extends Model
     }
 
     /**
+     * Adds category images
+     * @param array $data
+     * @return boolean
+     */
+    protected function setImages(array $data)
+    {
+        if (empty($data['images'])) {
+            return false;
+        }
+
+        return (bool)$this->image->setMultiple('category_id', $data['category_id'], $data['images']);
+    }
+
+    /**
      * Returns a string containing a generated URL alias
      * @param array $data
      * @return string
@@ -497,6 +539,25 @@ class Category extends Model
         $placeholders = $this->config->get('category_alias_placeholder', array('%t' => 'title'));
 
         return $this->alias->generate($pattern, $placeholders, $data);
+    }
+
+    /**
+     * Deletes and/or adds an alias
+     * @param array $data
+     * @param boolean $delete
+     * @return boolean
+     */
+    protected function setAlias(array $data, $delete = true)
+    {
+        if (empty($data['alias'])) {
+            return false;
+        }
+
+        if ($delete) {
+            $this->alias->delete('category_id', $data['category_id']);
+        }
+
+        return (bool)$this->alias->add('category_id', $data['category_id'], $data['alias']);
     }
 
     /**
@@ -513,14 +574,14 @@ class Category extends Model
             return false;
         }
 
-        $conditions = array('category_id' => (int) $category_id);
-        $updated = (int) $this->db->update('category', $data, $conditions);
+        $conditions = array('category_id' => (int)$category_id);
+        $updated = (int)$this->db->update('category', $data, $conditions);
 
         $data['category_id'] = $category_id;
 
-        $updated += (int) $this->setTranslation($data);
-        $updated += (int) $this->setImages($data);
-        $updated += (int) $this->setAlias($data);
+        $updated += (int)$this->setTranslation($data);
+        $updated += (int)$this->setImages($data);
+        $updated += (int)$this->setAlias($data);
 
         $result = ($updated > 0);
 
@@ -545,8 +606,8 @@ class Category extends Model
             return false;
         }
 
-        $conditions = array('category_id' => (int) $category_id);
-        $conditions2 = array('id_key' => 'category_id', 'id_value' => (int) $category_id);
+        $conditions = array('category_id' => (int)$category_id);
+        $conditions2 = array('id_key' => 'category_id', 'id_value' => (int)$category_id);
 
         $this->db->delete('category', $conditions);
         $this->db->delete('category_translation', $conditions);
@@ -566,67 +627,11 @@ class Category extends Model
     public function canDelete($category_id)
     {
         $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:id)'
-                . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)'
-                . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
-                . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
+            . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)'
+            . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
+            . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
 
-        return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
-    }
-
-    /**
-     * Deletes and/or adds category translations
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $delete = true)
-    {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        if ($delete) {
-            $this->deleteTranslation($data['category_id']);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['category_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes and/or adds an alias
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setAlias(array $data, $delete = true)
-    {
-        if (empty($data['alias'])) {
-            return false;
-        }
-
-        if ($delete) {
-            $this->alias->delete('category_id', $data['category_id']);
-        }
-
-        return (bool) $this->alias->add('category_id', $data['category_id'], $data['alias']);
-    }
-
-    /**
-     * Adds category images
-     * @param array $data
-     * @return boolean
-     */
-    protected function setImages(array $data)
-    {
-        if (empty($data['images'])) {
-            return false;
-        }
-
-        return (bool) $this->image->setMultiple('category_id', $data['category_id'], $data['images']);
+        return (bool)$this->db->fetchColumn($sql, array('id' => $category_id));
     }
 
 }

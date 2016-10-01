@@ -82,7 +82,7 @@ class Analytics extends Model
         try {
 
             $this->credentials = new \Google_Auth_AssertionCredentials(
-                    $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
+                $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
             );
 
             $this->client->setAssertionCredentials($this->credentials);
@@ -95,6 +95,8 @@ class Analytics extends Model
         } catch (\Google_Auth_Exception $e) {
             $this->logger->log('ga', $e->getMessage(), 'danger', false);
         }
+
+        return $this;
     }
 
     /**

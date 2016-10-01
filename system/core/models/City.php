@@ -39,14 +39,14 @@ class City extends Model
         }
 
         $sql .= ' FROM city c'
-                . ' LEFT JOIN state s ON(c.state_id = s.state_id)'
-                . ' WHERE c.city_id > 0';
+            . ' LEFT JOIN state s ON(c.state_id = s.state_id)'
+            . ' WHERE c.city_id > 0';
 
         $where = array();
 
         if (isset($data['status'])) {
             $sql .= ' AND c.status = ?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         if (isset($data['country'])) {
@@ -73,7 +73,8 @@ class City extends Model
         $allowed_sort = array('name', 'city_id', 'status');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            && isset($data['order']) && in_array($data['order'], $allowed_order)
+        ) {
             $sql .= " ORDER BY c.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY c.name ASC';
@@ -84,7 +85,7 @@ class City extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $cities = $this->db->fetchAll($sql, $where, array('index' => 'city_id'));
@@ -140,11 +141,11 @@ class City extends Model
             return false;
         }
 
-        $conditions = array('city_id' => (int) $city_id);
+        $conditions = array('city_id' => (int)$city_id);
         $result = $this->db->delete('city', $conditions);
 
         $this->hook->fire('delete.city.after', $city_id, $result);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -177,7 +178,7 @@ class City extends Model
         $result = $this->db->update('city', $data, $conditions);
 
         $this->hook->fire('update.city.after', $city_id, $data, $result);
-        return (bool) $result;
+        return (bool)$result;
     }
 
 }

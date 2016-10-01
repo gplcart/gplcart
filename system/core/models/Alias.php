@@ -57,7 +57,7 @@ class Alias extends Model
         $values = array(
             'alias' => $alias,
             'id_key' => $id_key,
-            'id_value' => (int) $id_value
+            'id_value' => (int)$id_value
         );
 
         return $this->db->insert('alias', $values);
@@ -122,7 +122,7 @@ class Alias extends Model
     /**
      * Returns an array of aliases
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
@@ -147,15 +147,17 @@ class Alias extends Model
         }
 
         if (!empty($data['id_value'])) {
-            $placeholders = rtrim(str_repeat('?, ', count((array) $data['id_value'])), ', ');
+            $placeholders = rtrim(str_repeat('?, ', count((array)$data['id_value'])), ', ');
             $sql .= " AND id_value IN($placeholders)";
-            $where = array_merge($where, (array) $data['id_value']);
+            $where = array_merge($where, (array)$data['id_value']);
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('id_value', 'id_key', 'alias');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'],
+                $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)
+        ) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY alias DESC";
@@ -166,7 +168,7 @@ class Alias extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'alias_id');
@@ -191,9 +193,13 @@ class Alias extends Model
      * @param string $language
      * @return string
      */
-    public function generate($pattern, array $placeholders = array(),
-            array $data = array(), $translit = true, $language = null)
-    {
+    public function generate(
+        $pattern,
+        array $placeholders = array(),
+        array $data = array(),
+        $translit = true,
+        $language = null
+    ) {
         $alias = $pattern;
 
         if ($placeholders) {

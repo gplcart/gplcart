@@ -9,8 +9,8 @@
 
 namespace core\models;
 
-use core\Model;
 use core\classes\Cache;
+use core\Model;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -26,7 +26,8 @@ class Collection extends Model
     protected $language;
 
     /**
-     * Constructor
+     * Collection constructor.
+     * @param Language $language
      */
     public function __construct(ModelsLanguage $language)
     {
@@ -54,12 +55,12 @@ class Collection extends Model
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         if (isset($data['type'])) {
@@ -75,7 +76,9 @@ class Collection extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'type', 'store_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'],
+                    $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))
+        ) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         }
 
@@ -84,7 +87,7 @@ class Collection extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'collection_id');
@@ -146,13 +149,13 @@ class Collection extends Model
      */
     protected function deleteTranslation($collection_id, $language = null)
     {
-        $conditions = array('collection_id' => (int) $collection_id);
+        $conditions = array('collection_id' => (int)$collection_id);
 
         if (isset($language)) {
             $conditions['language'] = $language;
         }
 
-        return (bool) $this->db->delete('collection_translation', $conditions);
+        return (bool)$this->db->delete('collection_translation', $conditions);
     }
 
     /**
@@ -226,8 +229,8 @@ class Collection extends Model
     public function getTranslation($collection_id)
     {
         $sql = 'SELECT *'
-                . ' FROM collection_translation'
-                . ' WHERE collection_id=?';
+            . ' FROM collection_translation'
+            . ' WHERE collection_id=?';
 
         return $this->db->fetchAll($sql, array($collection_id));
     }
@@ -245,7 +248,7 @@ class Collection extends Model
             return false;
         }
 
-        $conditions = array('collection_id' => (int) $collection_id);
+        $conditions = array('collection_id' => (int)$collection_id);
         $result = $this->db->delete('collection', $conditions);
 
         if (!empty($result)) {
@@ -253,7 +256,7 @@ class Collection extends Model
         }
 
         $this->hook->fire('delete.collection.after', $collection_id, $result);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -264,8 +267,8 @@ class Collection extends Model
     public function canDelete($collection_id)
     {
         $sql = 'SELECT collection_item_id'
-                . ' FROM collection_item'
-                . ' WHERE collection_id=?';
+            . ' FROM collection_item'
+            . ' WHERE collection_id=?';
 
         $result = $this->db->fetchColumn($sql, array($collection_id));
         return empty($result);
@@ -287,16 +290,16 @@ class Collection extends Model
 
         unset($data['type']); // Cannot change item type!
 
-        $conditions = array('collection_id' => (int) $collection_id);
-        $updated = (int) $this->db->update('collection', $data, $conditions);
+        $conditions = array('collection_id' => (int)$collection_id);
+        $updated = (int)$this->db->update('collection', $data, $conditions);
 
         $data['collection_id'] = $collection_id;
-        $updated += (int) $this->setTranslation($data);
+        $updated += (int)$this->setTranslation($data);
 
         $result = ($updated > 0);
 
         $this->hook->fire('update.collection.after', $collection_id, $data, $result);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**

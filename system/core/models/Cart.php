@@ -9,16 +9,16 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Logger;
-use core\classes\Tool;
 use core\classes\Cache;
 use core\classes\Request;
-use core\models\Sku as ModelsSku;
-use core\models\User as ModelsUser;
-use core\models\Product as ModelsProduct;
+use core\classes\Tool;
+use core\Logger;
+use core\Model;
 use core\models\Currency as ModelsCurrency;
 use core\models\Language as ModelsLanguage;
+use core\models\Product as ModelsProduct;
+use core\models\Sku as ModelsSku;
+use core\models\User as ModelsUser;
 use core\models\Wishlist as ModelsWishlist;
 
 /**
@@ -86,11 +86,16 @@ class Cart extends Model
      * @param Request $request
      * @param Logger $logger
      */
-    public function __construct(ModelsProduct $product, ModelsSku $sku,
-            ModelsCurrency $currency, ModelsUser $user,
-            ModelsWishlist $wishlist, ModelsLanguage $language,
-            Request $request, Logger $logger)
-    {
+    public function __construct(
+        ModelsProduct $product,
+        ModelsSku $sku,
+        ModelsCurrency $currency,
+        ModelsUser $user,
+        ModelsWishlist $wishlist,
+        ModelsLanguage $language,
+        Request $request,
+        Logger $logger
+    ) {
         parent::__construct();
 
         $this->sku = $sku;
@@ -155,8 +160,8 @@ class Cart extends Model
             $item['price'] = $price;
             $item['total'] = $item['price'] * $item['quantity'];
 
-            $total += (int) $item['total'];
-            $quantity += (int) $item['quantity'];
+            $total += (int)$item['total'];
+            $quantity += (int)$item['quantity'];
 
             $cart['items'][$cart_id] = $item;
         }
@@ -167,30 +172,6 @@ class Cart extends Model
 
         $this->hook->fire('get.cart.after', $user_id, $cart);
         return $cart;
-    }
-
-    /**
-     * Returns a cart user ID
-     * @return string
-     */
-    public function uid()
-    {
-        $user_id = $this->user->id();
-
-        if (!empty($user_id)) {
-            return (string) $user_id;
-        }
-
-        $cookie_name = $this->config->get('user_cookie_name', 'user_id');
-        $user_id = $this->request->cookie($cookie_name);
-
-        if (!empty($user_id)) {
-            return (string) $user_id;
-        }
-
-        $user_id = '_' . Tool::randomString(6); // Add prefix to prevent from being "numeric"
-        Tool::setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
-        return (string) $user_id;
     }
 
     /**
@@ -214,12 +195,12 @@ class Cart extends Model
 
         if (isset($data['order_id'])) {
             $sql .= ' AND order_id=?';
-            $where[] = (int) $data['order_id'];
+            $where[] = (int)$data['order_id'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND store_id=?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         $sql .= ' ORDER BY created DESC';
@@ -229,39 +210,15 @@ class Cart extends Model
     }
 
     /**
-     * Returns an array containing total number of products
-     * and number of products per SKU for the given user and store
-     * @param array $conditions
-     * @param null|string $key
-     * @return array|integer
-     */
-    public function getQuantity(array $conditions, $key = null)
-    {
-        $items = $this->getList($conditions);
-
-        $result = array('total' => 0, 'sku' => array());
-
-        foreach ($items as $item) {
-            $result['total'] += (int) $item['quantity'];
-            $result['sku'][$item['sku']] = (int) $item['quantity'];
-        }
-
-        if (isset($key)) {
-            return $result[$key];
-        }
-
-        return $result;
-    }
-
-    /**
      * Returns cart limit(s)
-     * @return mixed
+     * @param null|string $item
+     * @return array|int
      */
     public function getLimits($item = null)
     {
         $limits = array(
-            'sku' => (int) $this->config->get('cart_sku_limit', 10),
-            'item' => (int) $this->config->get('cart_item_limit', 20)
+            'sku' => (int)$this->config->get('cart_sku_limit', 10),
+            'item' => (int)$this->config->get('cart_item_limit', 20)
         );
 
         return isset($item) ? $limits[$item] : $limits;
@@ -269,6 +226,7 @@ class Cart extends Model
 
     /**
      * Adds a product to the cart
+     * @param array $product
      * @param array $data
      * @return array
      */
@@ -311,8 +269,10 @@ class Cart extends Model
                 'cart_id' => $cart_id,
                 'severity' => 'success',
                 'quantity' => $existing['total'],
-                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
-                    '!href' => $this->request->base() . 'checkout'))
+                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>',
+                    array(
+                        '!href' => $this->request->base() . 'checkout'
+                    ))
             );
 
             $this->logAddToCart($product, $data);
@@ -323,6 +283,30 @@ class Cart extends Model
     }
 
     /**
+     * Returns a cart user ID
+     * @return string
+     */
+    public function uid()
+    {
+        $user_id = $this->user->id();
+
+        if (!empty($user_id)) {
+            return (string)$user_id;
+        }
+
+        $cookie_name = $this->config->get('user_cookie_name', 'user_id');
+        $user_id = $this->request->cookie($cookie_name);
+
+        if (!empty($user_id)) {
+            return (string)$user_id;
+        }
+
+        $user_id = '_' . Tool::randomString(6); // Add prefix to prevent from being "numeric"
+        Tool::setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
+        return (string)$user_id;
+    }
+
+    /**
      * Adds/updates products in the cart
      * @param array $data
      * @return integer
@@ -330,11 +314,11 @@ class Cart extends Model
     protected function setProduct(array $data)
     {
         $sql = 'SELECT cart_id, quantity'
-                . ' FROM cart'
-                . ' WHERE sku=?'
-                . ' AND user_id=?'
-                . ' AND store_id=?'
-                . ' AND order_id=?';
+            . ' FROM cart'
+            . ' WHERE sku=?'
+            . ' AND user_id=?'
+            . ' AND store_id=?'
+            . ' AND order_id=?';
 
         $conditions = array($data['sku'], $data['user_id'], $data['store_id'], 0);
         $existing = $this->db->fetch($sql, $conditions);
@@ -349,40 +333,6 @@ class Cart extends Model
         $this->update($existing['cart_id'], $conditions2);
 
         return $existing['cart_id'];
-    }
-
-    /**
-     * Updates a cart
-     * @param integer $cart_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($cart_id, array $data)
-    {
-        $this->hook->fire('update.cart.before', $cart_id, $data);
-
-        if (empty($cart_id)) {
-            return false;
-        }
-
-        $data += array('modified' => GC_TIME);
-        $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
-
-        Cache::clearMemory();
-
-        $this->hook->fire('update.cart.after', $cart_id, $data, $result);
-
-        return (bool) $result;
-    }
-
-    /**
-     * Loads a cart from the database
-     * @param integer $cart_id
-     * @return array
-     */
-    public function get($cart_id)
-    {
-        return $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
     }
 
     /**
@@ -409,6 +359,55 @@ class Cart extends Model
     }
 
     /**
+     * Updates a cart
+     * @param integer $cart_id
+     * @param array $data
+     * @return boolean
+     */
+    public function update($cart_id, array $data)
+    {
+        $this->hook->fire('update.cart.before', $cart_id, $data);
+
+        if (empty($cart_id)) {
+            return false;
+        }
+
+        $data += array('modified' => GC_TIME);
+        $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
+
+        Cache::clearMemory();
+
+        $this->hook->fire('update.cart.after', $cart_id, $data, $result);
+
+        return (bool)$result;
+    }
+
+    /**
+     * Returns an array containing total number of products
+     * and number of products per SKU for the given user and store
+     * @param array $conditions
+     * @param null|string $key
+     * @return array|integer
+     */
+    public function getQuantity(array $conditions, $key = null)
+    {
+        $items = $this->getList($conditions);
+
+        $result = array('total' => 0, 'sku' => array());
+
+        foreach ($items as $item) {
+            $result['total'] += (int)$item['quantity'];
+            $result['sku'][$item['sku']] = (int)$item['quantity'];
+        }
+
+        if (isset($key)) {
+            return $result[$key];
+        }
+
+        return $result;
+    }
+
+    /**
      * Logs adding products to the cart
      * @param array $product
      * @param array $data
@@ -431,17 +430,13 @@ class Cart extends Model
     }
 
     /**
-     * Logs logging in during checkout
-     * @param array $user
+     * Loads a cart from the database
+     * @param integer $cart_id
+     * @return array
      */
-    protected function logLoginCheckout(array $user)
+    public function get($cart_id)
     {
-        $log = array(
-            'message' => 'User has logged in during checkout using %email',
-            'variables' => array('%email' => $user['email'])
-        );
-
-        $this->logger->log('checkout', $log);
+        return $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
     }
 
     /**
@@ -478,7 +473,8 @@ class Cart extends Model
         Cache::clearMemory();
 
         $url = $this->request->base() . 'wishlist';
-        $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $url));
+        $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>',
+            array('!href' => $url));
 
         $result = array(
             'redirect' => '',
@@ -495,6 +491,7 @@ class Cart extends Model
      * Performs all needed tastks when customer logged in during checkout
      * @param array $user
      * @param array $cart
+     * @return array
      */
     public function login(array $user, array $cart)
     {
@@ -523,7 +520,9 @@ class Cart extends Model
             'redirect' => 'checkout',
             'severity' => 'success',
             'message' => $this->language->text('Hello, %name. Now you\'re logged in', array(
-                '%name' => $user['name'])));
+                '%name' => $user['name']
+            ))
+        );
 
         $this->hook->fire('cart.login.after', $user, $cart, $result);
         return $result;
@@ -552,15 +551,16 @@ class Cart extends Model
 
             $conditions = array(
                 'user_id' => $arguments['user_id'],
-                'order_id' => $arguments['order_id']);
+                'order_id' => $arguments['order_id']
+            );
         }
 
-        $result = (bool) $this->db->delete('cart', $conditions);
+        $result = (bool)$this->db->delete('cart', $conditions);
 
         Cache::clearMemory();
 
         $this->hook->fire('delete.cart.after', $arguments, $result);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -571,6 +571,20 @@ class Cart extends Model
     {
         $cookie = $this->config->get('user_cookie_name', 'user_id');
         return Tool::deleteCookie($cookie);
+    }
+
+    /**
+     * Logs logging in during checkout
+     * @param array $user
+     */
+    protected function logLoginCheckout(array $user)
+    {
+        $log = array(
+            'message' => 'User has logged in during checkout using %email',
+            'variables' => array('%email' => $user['email'])
+        );
+
+        $this->logger->log('checkout', $log);
     }
 
 }
