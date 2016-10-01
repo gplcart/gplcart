@@ -401,13 +401,8 @@ class Tool
      * @param integer $limit Max file size
      * @return boolean Returns true on success, false otherwise
      */
-    public static function writeCsv(
-        $file,
-        array $data,
-        $delimiter = ',',
-        $enclosure = '"',
-        $limit = 0
-    ) {
+    public static function writeCsv($file, array $data, $delimiter = ',', $enclosure = '"', $limit = 0)
+    {
 
         $handle = fopen($file, 'a+');
 
@@ -507,12 +502,8 @@ class Tool
      * @param mixed $value
      * @param string $glue
      */
-    public static function setArrayValue(
-        array &$array,
-        $parents,
-        $value,
-        $glue = '.'
-    ) {
+    public static function setArrayValue(array &$array, $parents, $value, $glue = '.')
+    {
         $ref = &$array;
 
         if (is_string($parents)) {
