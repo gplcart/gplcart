@@ -101,10 +101,10 @@ class Database extends PDO
 
     /**
      * Prepares a single result, e.g unserialize serialized data
-     * @param array $data
+     * @param mixed $data
      * @param array $options
      */
-    protected function prepareResult(array &$data, array $options)
+    protected function prepareResult(&$data, array $options)
     {
         if (empty($options['unserialize']) || empty($data)) {
             return;
