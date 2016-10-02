@@ -704,6 +704,15 @@ class Controller
     }
 
     /**
+     * Removes a value by a key from an array of template data
+     * @param string|array $key
+     */
+    public function unsetData($key)
+    {
+        Tool::unsetArrayValue($this->data, $key);
+    }
+
+    /**
      * Sets an error
      * @param string|array $key
      * @param mixed $value
@@ -711,6 +720,15 @@ class Controller
     public function setError($key, $value)
     {
         Tool::setArrayValue($this->errors, $key, $value);
+    }
+
+    /**
+     * Removes an error by a key from an array of errors
+     * @param string|array $key
+     */
+    public function unsetError($key)
+    {
+        Tool::unsetArrayValue($this->errors, $key);
     }
 
     /**
@@ -734,6 +752,15 @@ class Controller
 
         Tool::setArrayValue($this->submitted, $key, $value);
         return $this->submitted;
+    }
+
+    /**
+     * Removes a value(s) from an array of submitted data
+     * @param string|array $key
+     */
+    public function unsetSubmitted($key)
+    {
+        Tool::unsetArrayValue($this->submitted, $key);
     }
 
     /**

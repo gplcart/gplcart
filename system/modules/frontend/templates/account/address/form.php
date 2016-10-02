@@ -13,8 +13,7 @@
                 <option value=""><?php echo $this->text('- select -'); ?></option>
               <?php } ?>
               <?php foreach ($countries as $code => $name) { ?>
-                <option
-                    value="<?php echo $code; ?>"<?php echo (isset($address['country']) && $address['country'] == $code) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+                <option value="<?php echo $code; ?>"<?php echo (isset($address['country']) && $address['country'] == $code) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
               <?php } ?>
             </select>
             <?php if (isset($this->errors['format']['country'])) { ?>
@@ -34,8 +33,7 @@
           <div class="col-md-6">
             <select class="form-control" name="address[state_id]">
               <?php foreach ($states as $state_id => $state) { ?>
-                <option
-                    value="<?php echo $state_id; ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : ''; ?>><?php echo $this->escape($state['name']); ?></option>
+                <option value="<?php echo $state_id; ?>"<?php echo (isset($address['state_id']) && $address['state_id'] == $state_id) ? ' selected' : ''; ?>><?php echo $this->escape($state['name']); ?></option>
               <?php } ?>
             </select>
             <?php if (isset($this->errors['format']['state_id'])) { ?>
@@ -46,8 +44,7 @@
       <?php } ?>
       <?php if (empty($countries) || !empty($address['country'])) { ?>
         <?php foreach ($format as $key => $value) { ?>
-          <div
-              class="form-group <?php echo $key; ?><?php echo isset($this->errors['format'][$key]) ? ' has-error' : ''; ?>">
+          <div class="form-group <?php echo $key; ?><?php echo isset($this->errors['format'][$key]) ? ' has-error' : ''; ?>">
             <label class="col-md-3 control-label">
               <?php if (!empty($value['required'])) { ?>
                 <span class="text-danger">* </span>

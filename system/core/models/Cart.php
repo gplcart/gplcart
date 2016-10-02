@@ -255,7 +255,8 @@ class Cart extends Model
         $data += array(
             'quantity' => 1,
             'user_id' => $this->uid(),
-            'store_id' => $product['store_id']
+            'store_id' => $product['store_id'],
+            'product_id' => $product['product_id']
         );
 
         $cart_id = $this->setProduct($data);

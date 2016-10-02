@@ -9,7 +9,7 @@
             <?php if (!empty($method['image'])) { ?>
             <img class="img-responsive" src="<?php echo $this->escape($method['image']); ?>">
             <?php } ?>
-            <input type="radio" name="order[payment]" value="<?php echo $method_id; ?>"<?php echo (isset($payment) && $payment == $method_id) ? ' checked' : ''; ?>>
+            <input type="radio" name="order[payment]" value="<?php echo $method_id; ?>"<?php echo (isset($order['payment']) && $order['payment'] == $method_id) ? ' checked' : ''; ?>>
             <?php echo $this->escape($method['title']); ?>
           </label>
         </div>

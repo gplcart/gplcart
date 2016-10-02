@@ -658,23 +658,6 @@ class Order extends Model
     }
 
     /**
-     * Returns a service (e.g shipping service)
-     * @param string $id
-     * @param string $type
-     * @param array $cart
-     * @param array $order
-     * @return array
-     */
-    public function getService($id, $type, array $cart, array $order)
-    {
-        if (in_array($type, array('shipping', 'payment'))) {
-            return $this->{$type}->getService($id, $cart, $order);
-        }
-
-        return array();
-    }
-
-    /**
      * Returns all available shipping methods
      * @param boolean $enabled
      * @return array

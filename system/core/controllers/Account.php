@@ -313,7 +313,7 @@ class Account extends FrontendController
     protected function setBreadcrumbEditAccount(array $user)
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Shop')
@@ -401,7 +401,7 @@ class Account extends FrontendController
     protected function setBreadcrumbListAddressAccount(array $user)
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Shop')
@@ -498,7 +498,6 @@ class Account extends FrontendController
 
     /**
      * Displays edit address form
-     * @param array $address
      */
     protected function outputEditAddressFormAccount()
     {
@@ -562,14 +561,20 @@ class Account extends FrontendController
      */
     protected function validateAddressAccount(array $user)
     {
-        $this->setSubmitted('store_id', $this->store_id);
-        $this->setSubmitted('user_id', $user['user_id']);
+        // Add submitted values to the "format" key
+        $this->setSubmitted('format', $this->getSubmitted());
 
         $this->addValidator('format', array(
             'country_format' => array()
         ));
 
         $this->setValidators($user);
+
+        // The "format" was used only for validation
+        $this->unsetSubmitted('format');
+
+        $this->setSubmitted('store_id', $this->store_id);
+        $this->setSubmitted('user_id', $user['user_id']);
     }
 
     /**
@@ -579,6 +584,7 @@ class Account extends FrontendController
     protected function addAddressAccount(array $user)
     {
         $address = $this->getSubmitted();
+
         $result = $this->address->add($address);
         $this->address->controlLimit($user['user_id']);
 

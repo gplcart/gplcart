@@ -103,7 +103,12 @@ class Common
             }
         }
 
-        return $this->language->text('Only numeric values allowed');
+        $message = $this->language->text('Only numeric values allowed');
+        if (isset($options['message'])) {
+            $message = $options['message'];
+        }
+
+        return $message;
     }
 
     /**
@@ -135,7 +140,12 @@ class Common
             }
         }
 
-        return $this->language->text('Invalid E-mail');
+        $message = $this->language->text('Invalid E-mail');
+        if (isset($options['message'])) {
+            $message = $options['message'];
+        }
+
+        return $message;
     }
 
     /**
@@ -191,7 +201,12 @@ class Common
             return true;
         }
 
-        return $this->language->text('Invalid format');
+        $message = $this->language->text('Invalid format');
+        if (isset($options['message'])) {
+            $message = $options['message'];
+        }
+
+        return $message;
     }
 
     /**
@@ -202,8 +217,13 @@ class Common
      */
     public function required($subject, array $options = array())
     {
+        $message = $this->language->text('Required field');
+        if (isset($options['message'])) {
+            $message = $options['message'];
+        }
+
         if (empty($subject)) {
-            return $this->language->text('Required field');
+            return $message;
         }
 
         return true;
@@ -223,8 +243,13 @@ class Common
 
         $timestamp = strtotime($subject);
 
+        $message = $this->language->text('Date is not valid English textual datetime');
+        if (isset($options['message'])) {
+            $message = $options['message'];
+        }
+
         if (empty($timestamp)) {
-            return $this->text('Date is not valid English textual datetime');
+            return $message;
         }
 
         return array('result' => $timestamp);

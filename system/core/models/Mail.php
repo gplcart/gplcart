@@ -228,7 +228,7 @@ class Mail extends Model
      */
     public function signatureText(array $options)
     {
-        $signature[] = array();
+        $signature = array();
 
         if (!empty($options['owner'])) {
             $signature[] = "!owner";
@@ -327,8 +327,6 @@ class Mail extends Model
      */
     protected function log($address, $options)
     {
-        $options['smtp_password'] = '***';
-
         $severity = 'info';
         $message = 'E-mail to !address has been sent.';
 
@@ -337,15 +335,14 @@ class Mail extends Model
             $message = 'Failed to send E-mail to !address.';
         }
 
-        $message .= '<br>Options:<pre>!options</pre>Errors: <pre>!errors</pre>Debugging info:<pre>!debug</pre>';
+        $message .= '<br>Errors: <pre>!errors</pre>Debugging info:<pre>!debug</pre>';
 
         $log = array(
             'message' => $message,
             'variables' => array(
                 '!address' => $address,
                 '!debug' => $this->debug,
-                '!errors' => $this->errors,
-                '!options' => print_r($options, true)
+                '!errors' => $this->errors
             )
         );
 

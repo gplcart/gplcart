@@ -208,7 +208,7 @@ class Route
 
         $routes['checkout/complete/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'complete')
+                'controller' => array('core\\controllers\\Checkout', 'completeCheckout')
             )
         );
 

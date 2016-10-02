@@ -69,6 +69,11 @@ body.checkout .navbar .cart {
     background-color: #fff;
 }
 
+.table-borderless tr,
+.table-borderless td {
+    border: none !important;
+}
+
 .section {
     margin-bottom: 20px;
 }

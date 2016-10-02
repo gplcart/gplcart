@@ -264,7 +264,7 @@ class PriceRule extends Model
             array &$components)
     {
 
-        $options = array('store_id' => $data['store_id'], 'status' => 1);
+        $options = array('store_id' => $data['order']['store_id'], 'status' => 1);
         $rules = $this->getTriggered($options, array('cart' => $cart, 'data' => $data));
 
         foreach ($rules as $rule) {

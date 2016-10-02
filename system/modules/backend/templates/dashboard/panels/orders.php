@@ -8,7 +8,7 @@
     <table class="table table-responsive table-condensed">
       <tbody>
         <?php foreach ($orders as $order) { ?>
-        <tr class="<?php echo ($this->isNew($order)) ? 'danger' : ''; ?>">
+        <tr>
           <td><?php echo $order['html']; ?></td>
         </tr>
         <?php } ?>

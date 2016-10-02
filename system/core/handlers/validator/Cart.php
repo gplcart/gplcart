@@ -112,9 +112,14 @@ class Cart
         if (empty($value)) {
             return false;
         }
+        
+        $product = $options['data'];
+        
+        if(empty($product)){
+            return false;
+        }
 
         $options += array('increment' => true);
-        $product = $options['data'];
 
         $sku = $value['sku'];
         $user_id = $value['user_id'];

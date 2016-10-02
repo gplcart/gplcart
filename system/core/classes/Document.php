@@ -38,9 +38,10 @@ class Document
      * @param boolean $compress
      * @return mixed
      */
-    public function js($script = '', $position = 'top', $weight = null, $compress = true)
+    public function js($script = '', $position = 'top', $weight = null,
+            $compress = true)
     {
-        $scripts = &Cache::memory('document.js');
+        static $scripts = array();
 
         if (empty($script)) {
             return empty($scripts[$position]) ? array() : $scripts[$position];
@@ -120,7 +121,7 @@ class Document
      */
     public function css($css = '', $weight = null, $compress = true)
     {
-        $styles = &Cache::memory('document.css');
+        static $styles = array();
 
         if (empty($css)) {
             return (array) $styles;
@@ -145,7 +146,7 @@ class Document
      */
     public function meta($data = null)
     {
-        $meta = &Cache::memory('document.meta');
+        static $meta = array();
 
         if (!isset($data)) {
             return $meta;
@@ -163,7 +164,7 @@ class Document
      */
     public function breadcrumb($breadcrumb = null)
     {
-        $breadcrumbs = &Cache::memory('document.breadcrumbs');
+        static $breadcrumbs = array();
 
         if (!isset($breadcrumb)) {
             return $breadcrumbs;
@@ -182,7 +183,7 @@ class Document
      */
     public function title($string = '', $both = true)
     {
-        $title = &Cache::memory('document.title');
+        static $title = array();
 
         if ($string === '') {
             return $title;
@@ -205,7 +206,7 @@ class Document
      */
     public function ptitle($string = '')
     {
-        $title = &Cache::memory('document.ptitle');
+        static $title = array();
 
         if ($string === '') {
             return $title;

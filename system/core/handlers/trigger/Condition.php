@@ -324,7 +324,7 @@ class Condition
      */
     public function shipping(array $condition, array $data)
     {
-        if (!isset($data['data']['shipping'])) {
+        if (!isset($data['data']['order']['shipping'])) {
             return false;
         }
 
@@ -334,7 +334,7 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->condition->compareString($data['data']['shipping'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['order']['shipping'], $condition_value, $condition['operator']);
     }
 
     /**
@@ -345,7 +345,7 @@ class Condition
      */
     public function payment(array $condition, array $data)
     {
-        if (!isset($data['data']['payment'])) {
+        if (!isset($data['data']['order']['payment'])) {
             return false;
         }
 
@@ -355,7 +355,7 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        return $this->condition->compareString($data['data']['payment'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['order']['payment'], $condition_value, $condition['operator']);
     }
 
     /**

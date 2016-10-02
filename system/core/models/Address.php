@@ -109,8 +109,8 @@ class Address extends Model
     {
         $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, ci.city_id) AS city_name,'
             . ' c.name AS country_name, ci.status AS city_status,'
-            . ' c.native_name AS country_native_name, c.format AS country_format,'
-            . ' s.name AS state_name'
+            . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
+            . ' s.name AS state_name, s.status AS state_status'
             . ' FROM address a'
             . ' LEFT JOIN country c ON(a.country=c.code)'
             . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
@@ -119,20 +119,6 @@ class Address extends Model
 
         $where = array();
 
-        if (isset($data['status'])) {
-
-            // TODO: optimize this. Select addresses if no countries at all
-            $countries = $this->country->getList();
-
-            if (!empty($countries)) {
-                $sql .= ' AND c.status = ?';
-                $where[] = (int)$data['status'];
-            }
-
-            //$sql .= ' AND s.status = ?';
-            //$where[] = (int) $data['status'];
-        }
-
         if (isset($data['user_id'])) {
             $sql .= ' AND a.user_id = ?';
             $where[] = $data['user_id'];
@@ -140,26 +126,58 @@ class Address extends Model
 
         $sql .= ' ORDER BY a.created ASC';
 
-
         $options = array(
             'index' => 'address_id',
             'unserialize' => array('data', 'country_format')
         );
 
         $results = $this->db->fetchAll($sql, $where, $options);
+        
+        $list = $this->prepareList($results, $data);
+        
+        $this->hook->fire('address.list', $data, $list);
+        return $list;
+    }
+    
+    /**
+     * Returns an array of filtered addresses
+     * @param array $addresses
+     * @param array $data
+     * @return array
+     */
+    protected function prepareList(array $addresses, array $data)
+    {
+        $countries = $this->country->getList();
 
-        // TODO: Fix this shit. Everything should be done in the SQL above
         $list = array();
-        foreach ($results as $address_id => $address) {
-            // City ID can be not numeric (user input). Make this check in the query?
-            if (!empty($data['status']) && empty($address['city_status']) && is_numeric($address['city_id'])) {
+        foreach ($addresses as $address_id => $address) {
+
+            $list[$address_id] = $address;
+
+            if (empty($data['status'])) {
+                continue; // Do not check enabled country, state and city
+            }
+
+            if (empty($countries)) {
+                continue; // No countries defined in the system
+            }
+
+            if ($address['country'] !== '' && $address['country_status'] == 0) {
+                unset($list[$address_id]);
                 continue;
             }
 
-            $list[$address_id] = $address;
-        }
+            if (!empty($address['state_id']) && $address['state_status'] == 0) {
+                unset($list[$address_id]);
+                continue;
+            }
 
-        $this->hook->fire('address.list', $data, $list);
+            // City ID can also be not numeric (user input)
+            if (is_numeric($address['city_id']) && $address['city_status'] == 0) {
+                unset($list[$address_id]);
+            }
+        }
+        
         return $list;
     }
 
