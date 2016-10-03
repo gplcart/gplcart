@@ -1,7 +1,6 @@
 <form method="post" id="edit-module-settings" class="form-horizontal twocheckout" onsubmit="return confirm();">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
-    <div class="panel-heading"><?php echo $this->text('API access'); ?></div>
     <div class="panel-body">
       <div class="form-group">
         <label class="col-md-2 control-label">
