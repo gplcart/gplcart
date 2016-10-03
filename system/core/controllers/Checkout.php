@@ -751,7 +751,7 @@ class Checkout extends FrontendController
     /**
      * Returns an order
      * @param integer $order_id
-     * @return array|void
+     * @return array
      */
     protected function getOrderCheckout($order_id)
     {
