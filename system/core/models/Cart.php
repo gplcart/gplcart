@@ -181,29 +181,32 @@ class Cart extends Model
      */
     public function getList(array $data = array())
     {
+        $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title'
+                . ' FROM cart c'
+                . ' LEFT JOIN product p ON(c.product_id=p.product_id)'
+                . ' LEFT JOIN product_translation pt ON(c.product_id = pt.product_id AND pt.language=?)'
+                . ' WHERE cart_id > 0';
 
-        $sql = 'SELECT * FROM cart WHERE cart_id > 0';
-
-        $where = array();
+        $where = array($this->language->current());
 
         $data += array('order_id' => 0);
 
         if (isset($data['user_id'])) {
-            $sql .= ' AND user_id=?';
+            $sql .= ' AND c.user_id=?';
             $where[] = $data['user_id'];
         }
 
         if (isset($data['order_id'])) {
-            $sql .= ' AND order_id=?';
+            $sql .= ' AND c.order_id=?';
             $where[] = (int)$data['order_id'];
         }
 
         if (isset($data['store_id'])) {
-            $sql .= ' AND store_id=?';
+            $sql .= ' AND c.store_id=?';
             $where[] = (int)$data['store_id'];
         }
 
-        $sql .= ' ORDER BY created DESC';
+        $sql .= ' ORDER BY c.created DESC';
 
         $options = array('unserialize' => 'data', 'index' => 'sku');
         return $this->db->fetchAll($sql, $where, $options);

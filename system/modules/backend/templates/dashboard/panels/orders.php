@@ -9,7 +9,7 @@
       <tbody>
         <?php foreach ($orders as $order) { ?>
         <tr>
-          <td><?php echo $order['html']; ?></td>
+          <td><?php echo $order['rendered']; ?></td>
         </tr>
         <?php } ?>
       </tbody>

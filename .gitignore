@@ -1,6 +1,7 @@
 # Ignore IDE configs
 .idea
 nbproject
+*sublime*
 
 # Config folder. Ignore all but default config
 system/config/*

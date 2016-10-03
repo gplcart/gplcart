@@ -192,7 +192,7 @@ class Dashboard extends BackendController
 
         array_walk($orders, function (&$order) {
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-            $order['render'] = $this->render('settings/search/suggestion/order', array('order' => $order));
+            $order['rendered'] = $this->render('search/suggestion/order', array('order' => $order));
         });
 
         $html = $this->render('dashboard/panels/orders', array('orders' => $orders));

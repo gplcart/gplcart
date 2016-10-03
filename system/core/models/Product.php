@@ -606,8 +606,8 @@ class Product extends Model
     {
         $this->hook->fire('get.product.list.before', $data);
 
-        $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""),'
-                . 'p.title) AS title, pt.language, ps.sku, ps.price, ps.stock, ps.file_id';
+        $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
+                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';

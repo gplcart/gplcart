@@ -86,6 +86,7 @@ class Payment extends Model
         $methods['cod'] = array(
             'title' => $this->language->text('Cash on delivery'),
             'description' => $this->language->text('Payment for an order is made at the time of delivery'),
+            'template' => array('complete' => ''),
             'image' => '',
             'status' => true,
             'weight' => 0

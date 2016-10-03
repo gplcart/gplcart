@@ -94,12 +94,13 @@ class Url
         $url = strtok($url, '?');
 
         if ($absolute) {
-            //if (strpos($url, '://') !== false) {
-            $url = $path;
-            //} else {
-            //$scheme = $this->request->scheme();
-            //$url = $scheme . $this->request->host() . $url;
-            //}
+            if ($this->isAbsolute($url)) {
+                $url = $path;
+            } else {
+                $host = $this->request->host();
+                $scheme = $this->request->scheme();
+                $url = "$scheme$host$url";
+            }
         }
 
         $url = rtrim($url, '/');

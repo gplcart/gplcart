@@ -17,10 +17,8 @@ use core\models\Mail as ModelsMail;
 use core\models\Cart as ModelsCart;
 use core\models\User as ModelsUser;
 use core\models\Price as ModelsPrice;
-use core\models\Payment as ModelsPayment;
 use core\models\Product as ModelsProduct;
 use core\models\Language as ModelsLanguage;
-use core\models\Shipping as ModelsShipping;
 use core\models\PriceRule as ModelsPriceRule;
 
 /**
@@ -84,18 +82,6 @@ class Order extends Model
     protected $request;
 
     /**
-     * Shipping model instance
-     * @var \core\models\Shipping $shipping
-     */
-    protected $shipping;
-
-    /**
-     * Payment model instance
-     * @var \core\models\Payment $payment
-     */
-    protected $payment;
-
-    /**
      * Constructor
      * @param ModelsUser $user
      * @param ModelsPrice $price
@@ -104,15 +90,12 @@ class Order extends Model
      * @param ModelsCart $cart
      * @param ModelsLanguage $language
      * @param ModelsMail $mail
-     * @param ModelsShipping $shipping
-     * @param ModelsPayment $payment
      * @param Request $request
      * @param Logger $logger
      */
     public function __construct(ModelsUser $user, ModelsPrice $price,
             ModelsPriceRule $pricerule, ModelsProduct $product,
-            ModelsCart $cart, ModelsLanguage $language, ModelsMail $mail,
-            ModelsShipping $shipping, ModelsPayment $payment, Request $request,
+            ModelsCart $cart, ModelsLanguage $language, ModelsMail $mail, Request $request,
             Logger $logger)
     {
         parent::__construct();
@@ -123,10 +106,8 @@ class Order extends Model
         $this->price = $price;
         $this->logger = $logger;
         $this->product = $product;
-        $this->payment = $payment;
         $this->request = $request;
         $this->language = $language;
-        $this->shipping = $shipping;
         $this->pricerule = $pricerule;
     }
 
@@ -271,9 +252,22 @@ class Order extends Model
                 . ' WHERE o.order_id=?';
 
         $order = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
+        
+        $this->attachCart($order);
 
         $this->hook->fire('get.order.after', $order_id, $order);
         return $order;
+    }
+    
+    /**
+     * Sets cart items to the order
+     * @param array $order
+     */
+    protected function attachCart(array &$order)
+    {
+        if (isset($order['order_id'])) {
+            $order['cart'] = $this->cart->getList(array('order_id' => $order['order_id']));
+        }
     }
 
     /**
@@ -290,16 +284,6 @@ class Order extends Model
         }
 
         return $default;
-    }
-
-    /**
-     * Returns an array of cart items for the given order ID
-     * @param integer $order_id
-     * @return array
-     */
-    public function getCart($order_id)
-    {
-        return $this->cart->getList(array('order_id' => $order_id));
     }
 
     /**
@@ -499,10 +483,13 @@ class Order extends Model
     public function getCompleteMessage(array $order)
     {
         if (is_numeric($order['user_id'])) {
-            return $this->getCompleteMessageLogged($order);
+            $message = $this->getCompleteMessageLogged($order);
+        } else {
+            $message = $this->getCompleteMessageAnonymous($order);
         }
-
-        return $this->getCompleteMessageAnonymous($order);
+        
+        $this->hook->fire('order.complete.message', $message, $order);
+        return $message;
     }
 
     /**
@@ -658,26 +645,6 @@ class Order extends Model
     }
 
     /**
-     * Returns all available shipping methods
-     * @param boolean $enabled
-     * @return array
-     */
-    public function getShippingMethods($enabled = false)
-    {
-        return $this->shipping->getMethods($enabled);
-    }
-
-    /**
-     * Returns all available payment methods
-     * @param boolean $enabled
-     * @return array
-     */
-    public function getPaymentMethods($enabled = false)
-    {
-        return $this->payment->getMethods($enabled);
-    }
-
-    /**
      * Logs the order submit event
      * @param array $order
      */
@@ -725,7 +692,7 @@ class Order extends Model
      */
     public function getComponents(array $order)
     {
-        $cart = $this->getCart($order['order_id']);
+        $cart = $this->cart->getList(array('order_id' => $order['order_id']));
 
         $prepared = array();
         foreach ($order['data']['components'] as $name => $component) {

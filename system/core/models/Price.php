@@ -55,7 +55,7 @@ class Price extends Model
     }
 
     /**
-     * Formats a price value
+     * Formats a price value as a currency string
      * @param integer $amount
      * @param string $currency_code
      * @param boolean $convert
@@ -69,7 +69,8 @@ class Price extends Model
             $amount = $this->decimal($amount, $currency_code);
         }
 
-        $price = number_format($this->round(abs($amount), $currency), $currency['decimals'], $currency['decimal_separator'], $currency['thousands_separator']);
+        $rounded = $this->round(abs($amount), $currency);
+        $price = number_format($rounded, $currency['decimals'], $currency['decimal_separator'], $currency['thousands_separator']);
 
         $replacement = array(
             '%s%s%s%s%s%s%s%s%s',
@@ -86,6 +87,16 @@ class Price extends Model
 
         $string = call_user_func_array('sprintf', $replacement);
         return trim($string);
+    }
+
+    /**
+     * Extracts a decimal part of a string including decimal separators
+     * @param string $string
+     * @return string
+     */
+    public function filterDecimal($string)
+    {
+        return filter_var($string, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
 
     /**

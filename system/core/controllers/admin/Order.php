@@ -256,7 +256,7 @@ class Order extends BackendController
             return array();
         }
 
-        $cart = $this->order->getCart($order['order_id']);
+        $cart = $this->cart->getList(array('order_id' => $order['order_id']));
 
         $components = array();
         foreach ($order['data']['components'] as $type => $component) {

@@ -1,8 +1,10 @@
-
-<form method="post" class="form-horizontal" id="checkout-complete">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
-
-<div class="row margin-top-20">
-  <div class="col-md-12"><?php echo $text; ?></div>
+<div class="panel panel-default complete">
+  <div class="panel-body">
+    <?php echo $complete_message; ?>
+    <?php if (!empty($templates)) { ?>
+    <?php foreach ($templates as $template) { ?>
+    <?php echo $template; ?>
+    <?php } ?>
+    <?php } ?>
+  </div>
 </div>
-</form>

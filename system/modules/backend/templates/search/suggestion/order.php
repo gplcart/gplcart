@@ -10,7 +10,7 @@
     <br>
     <span class="small">
     <?php echo $order['country']; ?>
-    <?php echo $order['city']; ?>
+    <?php echo $order['city_id']; ?>
     <?php echo $order['address_1']; ?>
     <?php if($order['address_2']) { ?>
     , <?php echo $order['address_2']; ?>

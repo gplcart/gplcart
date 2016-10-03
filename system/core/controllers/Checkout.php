@@ -14,6 +14,8 @@ use core\models\State as ModelsState;
 use core\models\Order as ModelsOrder;
 use core\models\Address as ModelsAddress;
 use core\models\Country as ModelsCountry;
+use core\models\Payment as ModelsPayment;
+use core\models\Shipping as ModelsShipping;
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -45,6 +47,18 @@ class Checkout extends FrontendController
      * @var \core\models\State $state
      */
     protected $state;
+    
+    /**
+     * Shipping model instance
+     * @var \core\models\Shipping $shipping
+     */
+    protected $shipping;
+
+    /**
+     * Payment model instance
+     * @var \core\models\Payment $payment
+     */
+    protected $payment;
 
     /**
      * Current state of address form
@@ -81,16 +95,18 @@ class Checkout extends FrontendController
      * @var array
      */
     protected $form_data;
-
+    
     /**
      * Constructor
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsAddress $address
      * @param ModelsOrder $order
+     * @param ModelsShipping $shipping
+     * @param ModelsPayment $payment
      */
     public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsAddress $address, ModelsOrder $order)
+            ModelsAddress $address, ModelsOrder $order, ModelsShipping $shipping, ModelsPayment $payment)
     {
         parent::__construct();
 
@@ -98,13 +114,14 @@ class Checkout extends FrontendController
         $this->state = $state;
         $this->address = $address;
         $this->country = $country;
+        $this->payment = $payment;
+        $this->shipping = $shipping;
 
         $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
 
         $this->cart_updated = false;
         $this->login_form = false;
         $this->address_form = false;
-
         $this->form_data = array();
 
         $this->country_code = $this->country->getDefault();
@@ -175,8 +192,8 @@ class Checkout extends FrontendController
         $this->form_data['settings'] = array();
         $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_uid);
 
-        $this->form_data['payment_methods'] = $this->order->getPaymentMethods(true);
-        $this->form_data['shipping_methods'] = $this->order->getShippingMethods(true);
+        $this->form_data['payment_methods'] = $this->payment->getMethods(true);
+        $this->form_data['shipping_methods'] = $this->shipping->getMethods(true);
     }
 
     /**
@@ -602,8 +619,8 @@ class Checkout extends FrontendController
     protected function prepareOrderComponentsCheckout(array $calculated,
             array $data)
     {
-        $payment_methods = $this->order->getPaymentMethods();
-        $shipping_methods = $this->order->getShippingMethods();
+        $payment_methods = $this->shipping->getMethods();
+        $shipping_methods = $this->payment->getMethods();
 
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -663,11 +680,51 @@ class Checkout extends FrontendController
         $this->controlAccessCompleteCheckout($order);
 
         $message = $this->getCompleteMessageCheckout($order);
-        $this->setData('text', $message);
+        $templates = $this->getCompleteTemplatesCheckout($order);
+        
+        $this->setData('complete_message', $message);
+        $this->setData('templates', $templates);
 
         $this->setTitleCompleteCheckout($order);
         $this->setBreadcrumbCompleteCheckout($order);
         $this->outputCompleteCheckout();
+    }
+    
+    /**
+     * Returns an array of rendered templates
+     * provided by payment/shipping methods and used on the order complete page
+     * @param array $order
+     * @return array
+     */
+    protected function getCompleteTemplatesCheckout(array $order)
+    {
+        $templates = array();
+        foreach (array('payment', 'shipping') as $type) {
+            
+            $method = $this->{$type}->getMethod($order[$type]);
+
+            if (empty($method['status']) || empty($method['template']['complete'])) {
+                continue;
+            }
+
+            $settings = array();
+            $template = $method['template']['complete'];
+
+            if (!empty($method['module'])) {
+                $template = "{$method['module']}|$template";
+                $settings = $this->config->module($method['module']);
+            }
+
+            $options = array(
+                'order' => $order,
+                'method' => $method,
+                'settings' => $settings
+            );
+            
+            $templates[$type] = $this->render($template, $options);
+        }
+
+        return $templates;
     }
 
     /**
@@ -704,6 +761,8 @@ class Checkout extends FrontendController
             $this->outputError(404);
         }
 
+        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+        $order['total_formatted_decimal'] = $this->price->filterDecimal($order['total_formatted']);
         return $order;
     }
 

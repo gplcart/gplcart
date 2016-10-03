@@ -125,9 +125,9 @@ class Route
             )
         );
 
-        $routes['action'] = array(
+        $routes['transaction/success/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Action', 'getResponseAction')
+                'controller' => array('core\\controllers\\Transaction', 'successTransaction')
             )
         );
 

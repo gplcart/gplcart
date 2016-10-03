@@ -273,7 +273,8 @@ $tables['orders'] = array(
         'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'total' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'creator' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true, 'default' => ''),
+        'transaction_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
+        'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
         'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
@@ -488,9 +489,11 @@ $tables['transaction'] = array(
     'fields' => array(
         'transaction_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'total' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'payment_service' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'service_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+        'payment_method' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'remote_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

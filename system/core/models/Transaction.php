@@ -10,6 +10,8 @@
 namespace core\models;
 
 use core\Model;
+use core\models\Order as ModelsOrder;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to payment transactions
@@ -18,11 +20,28 @@ class Transaction extends Model
 {
 
     /**
-     * Constructor
+     * Order model instance
+     * @var \core\models\Order $order
      */
-    public function __construct()
+    protected $order;
+
+    /**
+     * Language model instance
+     * @var \core\models\Language $language
+     */
+    protected $language;
+
+    /**
+     * Constructor
+     * @param ModelsOrder $order
+     * @param ModelsLanguage $language
+     */
+    public function __construct(ModelsOrder $order, ModelsLanguage $language)
     {
         parent::__construct();
+
+        $this->order = $order;
+        $this->language = $language;
     }
 
     /**
@@ -52,21 +71,20 @@ class Transaction extends Model
             $where[] = (int) $data['created'];
         }
 
-        if (isset($data['payment_service'])) {
-            $sql .= ' AND t.payment_service LIKE ?';
-            $where[] = "%{$data['payment_service']}%";
+        if (isset($data['payment_method'])) {
+            $sql .= ' AND t.payment_method LIKE ?';
+            $where[] = "%{$data['payment_method']}%";
         }
 
-        if (isset($data['service_transaction_id'])) {
-            $sql .= ' AND t.service_transaction_id LIKE ?';
-            $where[] = "%{$data['service_transaction_id']}%";
+        if (isset($data['remote_transaction_id'])) {
+            $sql .= ' AND t.remote_transaction_id LIKE ?';
+            $where[] = "%{$data['remote_transaction_id']}%";
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('order_id', 'created', 'payment_service', 'service_transaction_id');
+        $allowed_sort = array('order_id', 'created', 'payment_method', 'remote_transaction_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY t.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY t.created DESC';
@@ -160,6 +178,52 @@ class Transaction extends Model
 
         $this->hook->fire('update.transaction.after', $transaction_id, $data, $result);
         return (bool) $result;
+    }
+
+    /**
+     * Processes a remote transaction for the given order ID
+     * @param integer $order_id
+     * @param array $request
+     */
+    public function remote($order_id, array $request = array())
+    {
+        $order = $this->order->get($order_id);
+
+        $error = array(
+            'redirect' => '/',
+            'severity' => 'danger',
+            'message' => $this->language->text('An error occurred')
+        );
+
+        if (empty($order['status'])) {
+            return $error;
+        }
+
+        $result = array('redirect' => '/', 'message' => '', 'severity' => '');
+
+        $this->hook->fire('remote.transaction', $order, $request, $result);
+
+        if (empty($result['remote_transaction_id'])) {
+            return $error;
+        }
+
+        $transaction = array(
+            'data' => $request,
+            'order_id' => $order_id,
+            'total' => $order['total'],
+            'currency' => $order['currency'],
+            'payment_method' => $order['payment'],
+            'remote_transaction_id' => $result['remote_transaction_id']
+        );
+
+        $transaction_id = $this->add($transaction);
+
+        if (empty($transaction_id)) {
+            return $error;
+        }
+        
+        $this->order->update($order_id, array('transaction_id' => $transaction_id));
+        return $result;
     }
 
 }

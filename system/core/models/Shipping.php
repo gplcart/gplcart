@@ -85,6 +85,7 @@ class Shipping extends Model
         $methods['pickup'] = array(
             'title' => $this->language->text('Pickup'),
             'description' => $this->language->text('Customer must pick up his items himself at the store'),
+            'template' => array('complete' => ''),
             'image' => '',
             'status' => true,
             'weight' => 0
