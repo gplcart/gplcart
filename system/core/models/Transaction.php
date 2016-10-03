@@ -221,8 +221,13 @@ class Transaction extends Model
         if (empty($transaction_id)) {
             return $error;
         }
-        
-        $this->order->update($order_id, array('transaction_id' => $transaction_id));
+
+        $options = array(
+            'status' => 'processing',
+            'transaction_id' => $transaction_id
+        );
+
+        $this->order->update($order_id, $options);
         return $result;
     }
 
