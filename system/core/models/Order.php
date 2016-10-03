@@ -476,6 +476,15 @@ class Order extends Model
     }
 
     /**
+     * Returns an initial order status
+     * @return string
+     */
+    public function getInitialStatus()
+    {
+        return $this->getDefaultStatus();
+    }
+
+    /**
      * Returns a default message to be shown on the order complete page
      * @param array $order
      * @return string

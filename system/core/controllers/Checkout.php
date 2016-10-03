@@ -185,6 +185,7 @@ class Checkout extends FrontendController
         $this->form_data['order'] = array(
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id,
+            'status' => $this->order->getInitialStatus(),
             'currency' => $this->cart_content['currency']
         );
 
@@ -734,6 +735,10 @@ class Checkout extends FrontendController
     protected function controlAccessCompleteCheckout(array $order)
     {
         if (strcmp((string) $order['user_id'], $this->cart_uid) !== 0) {
+            $this->outputError(403);
+        }
+
+        if($order['status'] !== $this->order->getInitialStatus()){
             $this->outputError(403);
         }
     }
