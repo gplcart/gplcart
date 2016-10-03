@@ -22,7 +22,7 @@ class TwoCheckout
      * Config instance
      * @var \core\Config $config
      */
-    protected $congig;
+    protected $config;
 
     /**
      * Language model instance
