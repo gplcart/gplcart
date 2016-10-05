@@ -1,5 +1,5 @@
 /* global GplCart, Backend */
-(function ($) {
+(function (GplCart, $) {
 
     Backend.include.category = Backend.include.category || {attach: {}};
 
@@ -9,22 +9,23 @@
      */
     Backend.include.category.attach.sortable = function () {
 
+        var id,
+                weight = {},
+                params = {
+                    action: 'weight',
+                    selected: weight,
+                    token: GplCart.settings.token
+                };
+
         $('table.categories tbody').sortable({
             cursor: 'n-resize',
             handle: '.handle',
             stop: function () {
 
-                var weight = {};
                 $('table.categories tbody tr').each(function (i) {
-                    var id = $(this).attr('data-category-id');
+                    id = $(this).attr('data-category-id');
                     weight[id] = i;
                 });
-
-                var params = {
-                    action: 'weight',
-                    selected: weight,
-                    token: GplCart.settings.token
-                };
 
                 $.ajax({
                     data: params,
@@ -59,4 +60,4 @@
         GplCart.attach(Backend.include.category);
     });
 
-})(jQuery);
+})(GplCart, jQuery);

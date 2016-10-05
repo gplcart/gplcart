@@ -1,5 +1,5 @@
 /* global GplCart, Backend */
-(function ($) {
+(function (GplCart, $) {
 
     Backend.include.page = Backend.include.page || {attach: {}, helper: {}};
 
@@ -10,7 +10,7 @@
      */
     Backend.include.page.helper.selectpickerRefresh = function (selector) {
         selector.selectpicker('refresh');
-    }
+    };
 
     /**
      * Updates categories depending on chosen store
@@ -18,14 +18,20 @@
      */
     Backend.include.page.attach.updateCategories = function () {
 
-        var store = $('select[name$="[store_id]"]');
-        var category = $('select[name$="[category_id]"]');
+        var i,
+                g,
+                data,
+                cats,
+                storeId,
+                options = '',
+                store = $('select[name$="[store_id]"]'),
+                category = $('select[name$="[category_id]"]');
 
         store.change(function () {
 
-            var storeId = $(this).find('option:selected').val();
+            storeId = $(this).find('option:selected').val();
 
-            var data = {
+            data = {
                 store_id: storeId,
                 action: 'categories',
                 token: GplCart.settings.token
@@ -40,14 +46,13 @@
                     store.prop('disabled', true);
                     category.prop('disabled', true);
                 },
-                success: function (data) {
-                    if (typeof data === 'object') {
+                success: function (response) {
+                    if (typeof response === 'object') {
 
-                        var options = '';
-                        for (var g in data) {
+                        for (g in response) {
                             options += '<optgroup label="' + g + '">';
-                            var cats = data[g];
-                            for (var i in cats) {
+                            cats = response[g];
+                            for (i in cats) {
                                 options += '<option value="' + i + '">' + cats[i] + '</option>';
                             }
                         }
@@ -76,4 +81,4 @@
         GplCart.attach(Backend.include.page);
     });
 
-})(jQuery);
+})(GplCart, jQuery);

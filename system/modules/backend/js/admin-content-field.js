@@ -1,5 +1,5 @@
 /* global GplCart, Backend  */
-(function ($) {
+(function (GplCart, $) {
 
     Backend.include.field = Backend.include.field || {attach: {}};
 
@@ -9,22 +9,23 @@
      */
     Backend.include.field.attach.sortable = function () {
 
+        var id,
+                weight = {},
+                data = {
+                    action: 'weight',
+                    selected: weight,
+                    token: GplCart.settings.token
+                };
+
         $('.field-values tbody').sortable({
             cursor: 'n-resize',
             handle: '.handle',
             stop: function () {
 
-                var weight = {};
                 $('.field-values tbody tr').each(function (i) {
-                    var id = $(this).attr('data-field-value-id');
+                    id = $(this).attr('data-field-value-id');
                     weight[id] = i;
                 });
-
-                var data = {
-                    action: 'weight',
-                    selected: weight,
-                    token: GplCart.settings.token
-                };
 
                 $.ajax({
                     data: data,
@@ -66,4 +67,4 @@
     });
 
 
-})(jQuery);
+})(GplCart, jQuery);

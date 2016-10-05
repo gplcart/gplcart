@@ -1,7 +1,7 @@
-(function ($) {
+/* global GplCart, Frontend */
+var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
 
-    /* global GplCart, Frontend */
-    var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
+(function (window, document, GplCart, $) {
 
     /**
      * Returns HTML of modal pop-up
@@ -35,10 +35,10 @@
      */
     Frontend.html.buttonInCompare = function () {
 
-        var url = GplCart.settings.base + 'compare';
-        var title = GplCart.text('Already in comparison');
+        var html = '',
+                url = GplCart.settings.base + 'compare',
+                title = GplCart.text('Already in comparison');
 
-        var html = '';
         html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
         html += '<i class="fa fa-balance-scale"></i></a>';
 
@@ -51,13 +51,12 @@
      */
     Frontend.html.buttonInWishlist = function () {
 
-        var url = GplCart.settings.base + 'wishlist';
-        var title = GplCart.text('Already in wishlist');
+        var html = '',
+                url = GplCart.settings.base + 'wishlist',
+                title = GplCart.text('Already in wishlist');
 
-        var html = '';
         html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
         html += '<i class="fa fa-heart"></i></a>';
-
         return html;
     };
 
@@ -166,18 +165,19 @@
      * @returns {undefined}
      */
     Frontend.attach.cartPreview = function () {
-        $('#cart-link').click(function () {
 
-            var data = {
-                action: 'getCartPreviewAjax',
-                token: GplCart.settings.token
-            };
+        var post = {
+            action: 'getCartPreviewAjax',
+            token: GplCart.settings.token
+        };
+
+        $('#cart-link').click(function () {
 
             $.ajax({
                 type: 'POST',
                 url: GplCart.settings.base + 'ajax',
                 dataType: 'json',
-                data: data,
+                data: post,
                 success: function (data) {
                     if (data.preview) {
                         Frontend.ui.modal(data.preview, 'cart-preview', GplCart.text('Cart'));
@@ -206,12 +206,14 @@
      */
     Frontend.attach.submit = function () {
 
+        var button, action, header = '';
+
         $(':button[name][data-ajax="true"]').click(function (e) {
 
             e.preventDefault();
 
-            var button = $(this);
-            var action = button.attr('name');
+            button = $(this);
+            action = button.attr('name');
 
             if (!action) {
                 return false;
@@ -234,8 +236,6 @@
                     }
 
                     if (data.modal) {
-
-                        var header = '';
                         if (action === 'add_to_cart') {
                             header = GplCart.text('Cart');
                         }
@@ -353,16 +353,18 @@
      */
     Frontend.attach.updateOptions = function () {
 
+        var element, input, data, values, wrapper;
+
         $('form.add-to-cart [name^="product[options]"]').change(function () {
 
-            var element = $(this);
-            var input = '[name^="product[options]"]:checked, [name^="product[options]"] option:selected';
+            element = $(this);
+            input = '[name^="product[options]"]:checked, [name^="product[options]"] option:selected';
 
-            var values = $(input).map(function () {
+            values = $(input).map(function () {
                 return this.value;
             }).get();
 
-            var data = {
+            data = {
                 values: values,
                 token: GplCart.settings.token,
                 action: 'switchProductOptionsAjax',
@@ -381,7 +383,7 @@
                         return false;
                     }
 
-                    var wrapper = $('#combination-message');
+                    wrapper = $('#combination-message');
                     wrapper.empty().hide();
 
                     if (data.message) {
@@ -421,6 +423,9 @@
      * @returns {undefined}
      */
     Frontend.attach.compareDiff = function () {
+
+        var row, values, count = 0;
+
         $('#compare-difference').change(function () {
 
             if ($(this).not(':checked')) {
@@ -430,13 +435,13 @@
 
             $('table.compare tr.togglable').each(function () {
 
-                var row = this;
+                row = this;
 
-                var values = $('.value', this).map(function () {
+                values = $('.value', this).map(function () {
                     return $(this).text();
                 });
 
-                var count = 0;
+                count = 0;
                 $(values).each(function () {
                     if (this === values[0]) {
                         count++;
@@ -467,9 +472,12 @@
      * @returns {undefined}
      */
     Frontend.attach.updateAdressFields = function () {
+
+        var data, form;
+
         $(document).on('change', '#edit-address [name$="[country]"]', function () {
 
-            var data = {
+            data = {
                 country: $(this).val(),
                 token: GplCart.settings.token
             };
@@ -480,7 +488,7 @@
                 dataType: 'html',
                 url: GplCart.settings.urn,
                 success: function (data) {
-                    var form = $(data).find('#address-form-wrapper').html();
+                    form = $(data).find('#address-form-wrapper').html();
                     $('#address-form-wrapper').html(form);
                 }
             });
@@ -493,19 +501,19 @@
      */
     Frontend.attach.searchAutocomplete = function () {
 
-        var input = $('input[name="q"]');
+        var params,
+                url = GplCart.settings.base + 'ajax',
+                input = $('input[name="q"]');
 
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
 
-                var params = {
+                params = {
                     term: request.term,
                     action: 'searchProductsAjax',
                     token: GplCart.settings.token
                 };
-
-                var url = GplCart.settings.base + 'ajax';
 
                 $.post(url, params, function (data) {
                     response($.map(data, function (value, key) {
@@ -545,7 +553,7 @@
      */
     Frontend.attach.submitCheckout = function () {
 
-        var clicked, queueSubmit;
+        var clicked, queueSubmit, settings;
 
         $(document).on('focus', 'form#checkout [name$="[quantity]"]', function () {
             clearTimeout(queueSubmit);
@@ -584,16 +592,16 @@
                     $('form#checkout :input').prop('disabled', true);
                 },
                 success: function (data) {
-                    
+
                     if (!data.length) {
                         return;
                     }
-                        
+
                     $('#checkout-form-wrapper').html(data);
 
-                    var settings = $(data).data('settings');
+                    settings = $(data).data('settings');
 
-                    if(typeof settings === "object" && settings.quantity){
+                    if (typeof settings === "object" && settings.quantity) {
                         Frontend.helper.updateWishlistQuantity(settings.quantity.wishlist);
                     }
 
@@ -611,4 +619,4 @@
         GplCart.attach(Frontend);
     });
 
-})(jQuery);
+})(window, document, GplCart, jQuery);

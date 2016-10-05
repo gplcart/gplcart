@@ -1,5 +1,5 @@
 /* global GplCart, Backend */
-(function ($) {
+(function (GplCart, $) {
 
     Backend.include.review = Backend.include.review || {attach: {}};
 
@@ -17,14 +17,15 @@
      */
     Backend.include.review.attach.autocompleteUser = function () {
 
-        var inputName = $('#edit-review input[name$="[email]"], #reviews input[name="email"]');
-        var inputId = $('#edit-review input[name$="[user_id]"], #reviews input[name="user_id"]');
+        var params,
+                inputName = $('#edit-review input[name$="[email]"], #reviews input[name="email"]'),
+                inputId = $('#edit-review input[name$="[user_id]"], #reviews input[name="user_id"]');
 
         inputName.autocomplete({
             minLength: 2,
             source: function (request, response) {
 
-                var params = {
+                params = {
                     term: request.term,
                     action: 'getUsersAjax',
                     token: GplCart.settings.token
@@ -34,12 +35,10 @@
 
                     response($.map(data, function (value, key) {
 
-                        var result = {
+                        return {
                             value: value.email,
                             label: value.email
                         };
-
-                        return result;
                     }));
                 });
             },
@@ -59,14 +58,15 @@
      */
     Backend.include.review.attach.autocompleteProduct = function () {
 
-        var inputName = $('#edit-review [name$="[product]"], #reviews input.product');
-        var inputId = $('#edit-review [name$="[product_id]"], #reviews [name="product_id"]');
+        var params,
+                inputName = $('#edit-review [name$="[product]"], #reviews input.product'),
+                inputId = $('#edit-review [name$="[product_id]"], #reviews [name="product_id"]');
 
         inputName.autocomplete({
             minLength: 2,
             source: function (request, response) {
 
-                var params = {
+                params = {
                     term: request.term,
                     action: 'getProductsAjax',
                     token: GplCart.settings.token
@@ -76,12 +76,10 @@
 
                     response($.map(data, function (value, key) {
 
-                        var result = {
+                        return {
                             value: value.product_id,
                             label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
                         };
-
-                        return result;
                     }));
                 });
             },
@@ -106,4 +104,4 @@
         GplCart.attach(Backend.include.review);
     });
 
-})(jQuery);
+})(GplCart, jQuery);

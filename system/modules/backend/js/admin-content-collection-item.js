@@ -1,18 +1,19 @@
 /* global GplCart, Backend  */
-(function ($) {
+(function (GplCart, $) {
 
     Backend.include.collection = Backend.include.collection || {attach: {}};
 
     Backend.include.collection.attach.autocomplete = function () {
 
-        var input = $('form#edit-collection-item input[name$="[input]"]');
-        var value = $('form#edit-collection-item input[name$="[value]"]');
+        var params,
+                input = $('form#edit-collection-item input[name$="[input]"]'),
+                value = $('form#edit-collection-item input[name$="[value]"]');
 
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
 
-                var params = {
+                params = {
                     term: request.term,
                     token: GplCart.settings.token,
                     action: 'getCollectionItemAjax',
@@ -22,12 +23,10 @@
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
 
-                        var result = {
+                        return {
                             value: key,
                             label: value.title ? value.title + ' (' + key + ')' : '--'
                         };
-
-                        return result;
                     }));
                 });
             },
@@ -50,22 +49,23 @@
      */
     Backend.include.collection.attach.sortable = function () {
 
+        var id,
+                weight = {},
+                data = {
+                    action: 'weight',
+                    selected: weight,
+                    token: GplCart.settings.token
+                };
+
         $('.collection-items tbody').sortable({
             cursor: 'n-resize',
             handle: '.handle',
             stop: function () {
 
-                var weight = {};
                 $('.collection-items tbody tr').each(function (i) {
-                    var id = $(this).attr('data-collection-item-id');
+                    id = $(this).attr('data-collection-item-id');
                     weight[id] = i;
                 });
-
-                var data = {
-                    action: 'weight',
-                    selected: weight,
-                    token: GplCart.settings.token
-                };
 
                 $.ajax({
                     data: data,
@@ -98,5 +98,5 @@
         GplCart.attach(Backend.include.collection);
     });
 
-})(jQuery);
+})(GplCart, jQuery);
 

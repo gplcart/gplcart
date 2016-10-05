@@ -1,7 +1,7 @@
 /* global GplCart, Backend */
 var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {}};
 
-(function ($) {
+(function (window, document, GplCart, $) {
 
     /**
      * Module settings
@@ -74,13 +74,16 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.html.options = function (items, selected) {
 
-        var options = '';
+        var i, attr = '', options = '';
 
-        for (var i in items) {
-            if (selected === i) {
-                options += '<option value="' + i + '" selected>' + items[i] + '</option>';
-            } else {
-                options += '<option value="' + i + '">' + items[i] + '</option>';
+        for (i in items) {
+            if (items.hasOwnProperty(i)) {
+
+                if (selected === i) {
+                    attr = ' selected';
+                }
+
+                options += '<option value="' + i + '"' + attr + '>' + items[i] + '</option>';
             }
         }
 
@@ -112,10 +115,12 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.ui.loading = function (mode) {
 
+        var html;
+
         if (mode === false) {
             $('body').find('.loading').remove();
         } else {
-            var html = Backend.html.loading();
+            html = Backend.html.loading();
             $('body').append(html);
         }
     };
@@ -127,13 +132,16 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @returns {undefined}
      */
     Backend.ui.alert = function (text, severity) {
+
+        var settings, message;
+
         if ($.fn.puigrowl) {
 
             $('.growl-message').remove();
             $('body').append('<div class="growl-message"></div>');
 
-            var settings = {life: 1000};
-            var message = [{severity: severity, summary: '', detail: text}];
+            settings = {life: 1000};
+            message = [{severity: severity, summary: '', detail: text}];
             $('.growl-message').puigrowl(settings).puigrowl('show', message);
         }
     };
@@ -146,29 +154,32 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.ui.chart = function (source, type) {
 
+        var el,
+                data,
+                options,
+                key = 'chart_' + source,
+                settings = GplCart.settings;
+
         if (typeof Chart === 'undefined') {
             return;
         }
-
-        var key = 'chart_' + source;
-        var settings = GplCart.settings;
 
         if (!settings[key] || !settings[key].datasets) {
             return;
         }
 
-        var el = document.getElementById('chart-' + source);
+        el = document.getElementById('chart-' + source);
 
         if (!el) {
             return;
         }
 
-        var data = {
+        data = {
             labels: settings[key].labels,
             datasets: settings[key].datasets
         };
 
-        var options = {
+        options = {
             type: type,
             data: data,
             options: settings[key].options
@@ -183,12 +194,13 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.bulkAction = function () {
 
-        var selector = $('*[data-action]');
-        var inputs = $('input[name^="selected"]');
+        var conf,
+                selected = [],
+                selector = $('*[data-action]'),
+                inputs = $('input[name^="selected"]');
 
         selector.click(function () {
 
-            var selected = [];
             inputs.each(function () {
                 if ($(this).is(':checked')) {
                     selected.push($(this).val());
@@ -199,7 +211,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                 return false;
             }
 
-            var conf = confirm($(this).data('action-confirm'));
+            conf = confirm($(this).data('action-confirm'));
 
             if (!conf) {
                 return false;
@@ -224,7 +236,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                     Backend.ui.loading(false);
                 }
             });
-            
+
             return false;
         });
     };
@@ -235,8 +247,8 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.selectAll = function () {
 
-        var input = $('.select-all');
-        var selector = $('#select-all');
+        var input = $('.select-all'),
+                selector = $('#select-all');
 
         selector.click(function () {
             input.prop('checked', $(this).is(':checked'));
@@ -260,12 +272,14 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.filterQuery = function () {
 
-        var input = $('.filters :input');
-        var selector = $('.filters .filter');
+        var url,
+                query,
+                input = $('.filters :input'),
+                selector = $('.filters .filter');
 
         selector.click(function () {
 
-            var query = input.filter(function (i, e) {
+            query = input.filter(function (i, e) {
                 return $(e).val() !== "";
             }).serialize();
 
@@ -273,7 +287,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                 return false;
             }
 
-            var url = GplCart.settings.urn.split("?")[0] + '?' + query;
+            url = GplCart.settings.urn.split("?")[0] + '?' + query;
             window.location.replace(url);
             return false;
         });
@@ -285,12 +299,11 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.countdown = function () {
 
+        var format = '%M:%S',
+                result = $('#session-expires'),
+                limit = GplCart.settings.session_limit;
+
         if ($.fn.countdown) {
-
-            var format = '%M:%S';
-            var result = $('#session-expires');
-            var limit = GplCart.settings.session_limit;
-
             result.countdown(limit, function (event) {
                 $(this).html(event.strftime(format));
             });
@@ -303,26 +316,23 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.wysiwyg = function () {
 
-        if (!$.fn.summernote) {
-            return;
+        var input = $('textarea.summernote'),
+                lang = GplCart.settings.lang_region,
+                settings = {
+                    height: 150,
+                    lang: lang,
+                    toolbar: [
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['style', ['style']],
+                        ['para', ['ul', 'ol']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'hr']],
+                        ['view', ['fullscreen', 'codeview']]
+                    ]};
+
+        if ($.fn.summernote) {
+            input.summernote(settings);
         }
-        
-        var input = $('textarea.summernote');
-        var lang = GplCart.settings.lang_region;
-
-        var settings = {
-            height: 150,
-            lang: lang,
-            toolbar: [
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['style', ['style']],
-                ['para', ['ul', 'ol']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'hr']],
-                ['view', ['fullscreen', 'codeview']]
-            ]};
-
-        input.summernote(settings);
     };
 
     /**
@@ -331,13 +341,14 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.deleteImages = function () {
 
-        var item = 'div.thumb';
-        var selector = '.image-container .delete-image';
-        var container = Backend.settings.imageContainer;
+        var input,
+                item = 'div.thumb',
+                selector = '.image-container .delete-image',
+                container = Backend.settings.imageContainer;
 
         $(document).on('click', selector, function () {
             $(this).closest(item).remove();
-            var input = '<input name="delete_image[]" value="' + $(this).attr('data-file-id') + '" type="hidden">';
+            input = '<input name="delete_image[]" value="' + $(this).attr('data-file-id') + '" type="hidden">';
             $(container).append(input);
             return false;
         });
@@ -357,9 +368,9 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                     $(this).val(i);
                 });
             }
-        };
+        },
+        container = Backend.settings.imageContainer;
 
-        var container = Backend.settings.imageContainer;
         $(container).sortable(params);
     };
 
@@ -368,13 +379,13 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @returns {undefined}
      */
     Backend.attach.fileUpload = function () {
-        
+
+        var fileinput = $('#fileinput'),
+                container = $(Backend.settings.imageContainer);
+
         if (!$.fn.fileupload) {
             return;
         }
-
-        var fileinput = $('#fileinput');
-        var container = $(Backend.settings.imageContainer);
 
         fileinput.fileupload({
             dataType: 'json',
@@ -408,27 +419,25 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.searchAutocomplete = function () {
 
-        var keyword = $('#search-form [name="q"]');
-        var type = $('#search-form [name="search_id"]');
-
-        var position = {
-            my: "right top",
-            at: "right bottom"
-        };
+        var url,
+                params,
+                keyword = $('#search-form [name="q"]'),
+                type = $('#search-form [name="search_id"]'),
+                position = {my: "right top", at: "right bottom"};
 
         keyword.autocomplete({
             minLength: 2,
             position: position,
             source: function (request, response) {
 
-                var params = {
+                params = {
                     id: type.val(),
                     term: request.term,
                     action: 'adminSearchAjax',
                     token: GplCart.settings.token
                 };
 
-                var url = GplCart.settings.base + 'ajax';
+                url = GplCart.settings.base + 'ajax';
 
                 $.post(url, params, function (data) {
                     response($.map(data, function (value, key) {
@@ -457,11 +466,16 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.searchMemorize = function () {
 
-        var cookie_id = 'search-id';
-        var cookie_settings = {expires: 365, path: '/'};
-        var input = $('#search-form [name="search_id"]');
+        var search_id,
+                cookie_id = 'search-id',
+                cookie_settings = {expires: 365, path: '/'},
+        input = $('#search-form [name="search_id"]');
 
-        var search_id = Cookies.get(cookie_id);
+        if (typeof Cookies === 'undefined') {
+            return;
+        }
+
+        search_id = Cookies.get(cookie_id);
 
         if (search_id) {
             input.val(search_id);
@@ -479,7 +493,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     Backend.attach.chartTraffic = function () {
         Backend.ui.chart('traffic', 'line');
     };
-    
+
     /**
      * Sets up Google Map
      * @returns {undefined}
@@ -498,4 +512,4 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         GplCart.attach(Backend);
     });
 
-})(jQuery);
+})(window, document, GplCart, jQuery);

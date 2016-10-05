@@ -1,5 +1,5 @@
 /* global GplCart, Backend */
-(function ($) {
+(function (GplCart, $) {
 
     Backend.include.country = Backend.include.country || {attach: {}};
 
@@ -42,4 +42,4 @@
         GplCart.attach(Backend.include.country);
     });
 
-})(jQuery);
+})(GplCart, jQuery);
