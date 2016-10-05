@@ -67,6 +67,7 @@ $config = array();
 # $config['theme_mobile'] = 'mobile';
 # $config['no_image'] = 'image/misc/no-image.png';
 # $config['order_status'] = 'pending';
+# $config['order_status_initial'] = 'pending';
 # $config['page_alias_check'] = 1;
 # $config['page_alias_pattern'] = '%t.html';
 # $config['page_alias_placeholder'] = array('%t' => 'title');

@@ -425,14 +425,14 @@ class Route
             'access' => 'order',
             'menu' => array('admin' => 'Orders'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Order', 'orders')
+                'controller' => array('core\\controllers\\admin\\Order', 'listOrder')
             )
         );
 
         $routes['admin/sale/order/(\d+)'] = array(
             'access' => 'order',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Order', 'order')
+                'controller' => array('core\\controllers\\admin\\Order', 'viewOrder')
             )
         );
 

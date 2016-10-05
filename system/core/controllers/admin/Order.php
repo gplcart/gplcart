@@ -93,16 +93,12 @@ class Order extends BackendController
      * @param ModelsPriceRule $pricerule
      */
     public function __construct(
-        ModelsOrder $order,
-        ModelsCountry $country,
-        ModelsState $state,
-        ModelsAddress $address,
-        ModelsPrice $price,
-        ModelsCurrency $currency,
-        ModelsCart $cart,
-        ModelsProduct $product,
-        ModelsPriceRule $pricerule
-    ) {
+    ModelsOrder $order, ModelsCountry $country, ModelsState $state,
+            ModelsAddress $address, ModelsPrice $price,
+            ModelsCurrency $currency, ModelsCart $cart, ModelsProduct $product,
+            ModelsPriceRule $pricerule
+    )
+    {
         parent::__construct();
 
         $this->cart = $cart;
@@ -120,28 +116,59 @@ class Order extends BackendController
      * Displays the order overview page
      * @param integer $order_id
      */
-    public function order($order_id)
+    public function viewOrder($order_id)
     {
-        $order = $this->get($order_id);
+        $order = $this->getOrder($order_id);
         $this->order->setViewed($order);
 
-        $this->data['order'] = $order;
-        $this->data['pane_summary'] = $this->renderPaneSummary($order);
-        $this->data['pane_customer'] = $this->renderPaneCustomer($order);
-        $this->data['pane_components'] = $this->renderPaneComponents($order);
-        $this->data['pane_shipping_address'] = $this->renderPaneShippingAddress($order);
+        $this->setData('order', $order);
 
-        $store = $this->store->get($order['store_id']);
+        $this->setDataSummaryOrder($order);
+        $this->setDataCustomerOrder($order);
+        $this->setDataComponentsOrder($order);
+        $this->setDataShippingAddressOrder($order);
 
-        if (!empty($store['name'])) {
-            $order['store_name'] = $store['name'];
-        }
+        $this->setTitleViewOrder($order);
+        $this->setBreadcrumbViewOrder();
+        $this->outputViewOrder();
+    }
 
-        $this->setTitle($this->text('Order #@order_id', array('@order_id' => $order['order_id'])));
-        $this->setBreadcrumb(array('text' => $this->text('Dashboard'), 'url' => $this->url('admin')));
-        $this->setBreadcrumb(array('text' => $this->text('Orders'), 'url' => $this->url('admin/sale/order')));
-
+    /**
+     * Renders order overview page templates
+     */
+    protected function outputViewOrder()
+    {
         $this->output('sale/order/order');
+    }
+
+    /**
+     * Sets titles on the order overview page
+     * @param array $order
+     */
+    protected function setTitleViewOrder(array $order)
+    {
+        $this->setTitle($this->text('Order #@order_id', array(
+                    '@order_id' => $order['order_id'])));
+    }
+
+    /**
+     * Sets breadcrumbs on the order overview page
+     */
+    protected function setBreadcrumbViewOrder()
+    {
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Orders'),
+            'url' => $this->url('admin/sale/order')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -149,7 +176,7 @@ class Order extends BackendController
      * @param integer $order_id
      * @return array|void
      */
-    protected function get($order_id)
+    protected function getOrder($order_id)
     {
         if (!is_numeric($order_id)) {
             return array();
@@ -165,23 +192,20 @@ class Order extends BackendController
     }
 
     /**
-     * Modifies order's array before rendering
+     * Adds some extra data to the order array
      * @param array $order
      * @return array
      */
     protected function prepareOrder(array $order)
     {
+        $store = $this->store->get($order['store_id']);
+
+        if (!empty($store['name'])) {
+            $order['store_name'] = $store['name'];
+        }
+
         $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         $order['customer'] = $this->text('Anonymous');
-
-        /**
-         * if (is_numeric($order['user_id'])) {
-         * $user = $this->user->get($order['user_id']);
-         * if (isset($user['user_id'])) {
-         * $order['customer'] = "{$user['name']} ({$user['email']})";
-         * }
-         * }
-         */
         $order['creator_formatted'] = $this->text('Customer');
 
         if (!empty($order['creator'])) {
@@ -193,31 +217,29 @@ class Order extends BackendController
             }
         }
 
-
         return $order;
     }
 
     /**
-     * Returns rendered order summary pane
+     * Sets summary pane on the order overview page
      * @param array $order
-     * @return string
      */
-    protected function renderPaneSummary(array $order)
+    protected function setDataSummaryOrder(array $order)
     {
         $data = array(
             'order' => $order,
             'statuses' => $this->order->getStatuses(),
         );
 
-        return $this->render('sale/order/panes/summary', $data);
+        $html = $this->render('sale/order/panes/summary', $data);
+        $this->setData('pane_summary', $html);
     }
 
     /**
-     * Returns rendered customer pane
+     * Sets customer pane on the order overview page
      * @param array $order
-     * @return string
      */
-    protected function renderPaneCustomer(array $order)
+    protected function setDataCustomerOrder(array $order)
     {
         $user_id = $order['user_id'];
 
@@ -229,10 +251,12 @@ class Order extends BackendController
         $data = array(
             'user' => $user,
             'order' => $order,
-            'placed' => $this->getTotalPlacedOrders($user_id),
+            'placed' => $this->getTotalPlacedOrder($user_id),
         );
 
-        return $this->render('sale/order/panes/customer', $data);
+        $html = $this->render('sale/order/panes/customer', $data);
+
+        $this->setData('pane_customer', $html);
     }
 
     /**
@@ -240,18 +264,32 @@ class Order extends BackendController
      * @param integer|string $user_id
      * @return integer
      */
-    protected function getTotalPlacedOrders($user_id)
+    protected function getTotalPlacedOrder($user_id)
     {
-        return (int)$this->order->getList(array('count' => true, 'user_id' => $user_id));
+        $options = array('count' => true, 'user_id' => $user_id);
+        return (int) $this->order->getList($options);
     }
 
     /**
-     * Returns rendered components pane
+     * Sets order components pane on the order overview page
      * @param array $order
-     * @return string
      */
-    protected function renderPaneComponents(array $order)
+    protected function setDataComponentsOrder(array $order)
     {
+        $components = $this->getComponentsOrder($order);
+
+        $html = $this->render('sale/order/panes/components', array('components' => $components));
+        $this->setData('pane_components', $html);
+    }
+
+    /**
+     * Returns an array of prepared order components
+     * @param array $order
+     * @return array
+     */
+    protected function getComponentsOrder(array $order)
+    {
+
         if (empty($order['data']['components'])) {
             return array();
         }
@@ -260,44 +298,47 @@ class Order extends BackendController
 
         $components = array();
         foreach ($order['data']['components'] as $type => $component) {
+
             if ($type === 'cart') {
-                $components[$type] = $this->renderComponentCart($type, $component, $cart, $order);
+                $components[$type] = $this->renderComponentCartOrder($component, $cart, $order);
                 continue;
             }
 
             if (in_array($type, array('shipping', 'payment'))) {
-                $components[$type] = $this->renderComponentService($type, $component, $cart, $order);
+                $components[$type] = $this->renderComponentMethodOrder($type, $component, $cart, $order);
                 continue;
             }
 
             if (is_numeric($type)) {
-                $components["rule_$type"] = $this->renderComponentRule($type, $component, $cart, $order);
+                $components["rule_$type"] = $this->renderComponentRuleOrder($type, $component);
             }
         }
 
         ksort($components);
-
-        return $this->render('sale/order/panes/components', array('components' => $components));
+        return $components;
     }
 
     /**
      * Returns rendered cart component
-     * @param string $type
      * @param array $component
      * @param array $cart
      * @param array $order
      * @return string
      */
-    protected function renderComponentCart($type, array $component, array $cart, array $order)
+    protected function renderComponentCartOrder(array $component, array $cart,
+            array $order)
     {
         $products = array();
         foreach ($component as $cart_id => $price) {
-            if (isset($cart[$cart_id]['sku'])) {
-                $product = $this->product->getBySku($cart[$cart_id]['sku'], $order['store_id']);
-                $product['cart'] = $cart[$cart_id];
-                $product['cart']['price_formatted'] = $this->price->format($price, $order['currency']);
-                $products[] = $product;
+
+            if (!isset($cart[$cart_id]['sku'])) {
+                continue;
             }
+
+            $product = $this->product->getBySku($cart[$cart_id]['sku'], $order['store_id']);
+            $product['cart'] = $cart[$cart_id];
+            $product['cart']['price_formatted'] = $this->price->format($price, $order['currency']);
+            $products[] = $product;
         }
 
         return $this->render('sale/order/panes/components/cart', array('products' => $products));
@@ -311,7 +352,8 @@ class Order extends BackendController
      * @param array $order
      * @return string
      */
-    protected function renderComponentService($type, $component, array $cart, array $order)
+    protected function renderComponentMethodOrder($type, $component,
+            array $cart, array $order)
     {
         $service = $this->order->getService($order[$type], $type, $cart, $order);
         $service['name'] = isset($service['name']) ? $service['name'] : $this->text('Unknown');
@@ -325,24 +367,23 @@ class Order extends BackendController
      * Returns rendered price rule component
      * @param integer $rule_id
      * @param integer $price
-     * @param array $cart
-     * @param array $order
      * @return string
      */
-    protected function renderComponentRule($rule_id, $price, array $cart, array $order)
+    protected function renderComponentRuleOrder($rule_id, $price)
     {
         $rule = $this->pricerule->get($rule_id);
-        return $this->render('sale/order/panes/components/rule', array('rule' => $rule, 'price' => $price));
+
+        $data = array('rule' => $rule, 'price' => $price);
+        return $this->render('sale/order/panes/components/rule', $data);
     }
 
     /**
      * Returns rendered shipping address pane
      * @param array $order
-     * @return string
      */
-    protected function renderPaneShippingAddress(array $order)
+    protected function setDataShippingAddressOrder(array $order)
     {
-        $address = $this->getAddress($order['shipping_address']);
+        $address = $this->address->get($order['shipping_address']);
         $translated = $this->address->getTranslated($address);
         $geocode = $this->address->getGeocodeQuery($translated);
 
@@ -354,49 +395,64 @@ class Order extends BackendController
             'items' => $this->address->getTranslated($address, true)
         );
 
-        return $this->render('sale/order/panes/shipping_address', $data);
-    }
-
-    /**
-     * Returns an address
-     * @param integer $address_id
-     * @return array
-     */
-    protected function getAddress($address_id)
-    {
-        return $this->address->get($address_id);
+        $html = $this->render('sale/order/panes/shipping_address', $data);
+        $this->setData('pane_shipping_address', $html);
     }
 
     /**
      * Displays the order admin overview page
      */
-    public function orders()
+    public function listOrder()
     {
+        $stores = $this->store->getNames();
+        $statuses = $this->order->getStatuses();
+        $currencies = $this->currency->getList();
+
+        $this->setData('stores', $stores);
+        $this->setData('statuses', $statuses);
+        $this->setData('currencies', $currencies);
+
         $query = $this->getFilterQuery();
-        $total = $this->setPager($this->getTotalOrders($query), $query);
+        $total = $this->getTotalOrder($query);
+        $limit = $this->setPager($total, $query);
+        $orders = $this->getListOrder($limit, $query);
 
-        $this->data['orders'] = $this->getOrders($total, $query);
-        $this->data['statuses'] = $this->order->getStatuses();
-        $this->data['stores'] = $this->store->getNames();
+        $allowed = array('store_id', 'order_id', 'status', 'created',
+            'creator', 'user_id', 'total', 'currency');
 
-        array_walk($this->data['orders'], function (&$order) {
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-        });
+        $this->setFilter($allowed, $query);
+        $this->setData('orders', $orders);
 
-        $this->data['currencies'] = $this->currency->getList();
+        $this->setTitleListOrder();
+        $this->setBreadcrumbListOrder();
+        $this->outputListOrder();
+    }
 
-        $sort_order = (string)$this->request->get('order');
-
-        foreach (array('store_id', 'status', 'created', 'creator', 'customer', 'total', 'currency') as $filter) {
-            $this->data["filter_$filter"] = (string)$this->request->get($filter);
-            $this->data["sort_$filter"] = $this->url(false, array(
-                    'sort' => $filter,
-                    'order' => ($sort_order === 'desc') ? 'asc' : 'desc'
-                ) + $query);
-        }
-
+    /**
+     * Sets titles on the orders overview page
+     */
+    protected function setTitleListOrder()
+    {
         $this->setTitle($this->text('Orders'));
-        $this->setBreadcrumb(array('url' => $this->url('admin'), 'text' => $this->text('Dashboard')));
+    }
+
+    /**
+     * Sets breadcrumbs on the orders overview page
+     */
+    protected function setBreadcrumbListOrder()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard'));
+
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Renders overview orders page templates
+     */
+    protected function outputListOrder()
+    {
         $this->output('sale/order/list');
     }
 
@@ -405,9 +461,10 @@ class Order extends BackendController
      * @param array $query
      * @return integer
      */
-    protected function getTotalOrders(array $query)
+    protected function getTotalOrder(array $query)
     {
-        return $this->order->getList(array('count' => true) + $query);
+        $query['count'] = true;
+        return (int) $this->order->getList($query);
     }
 
     /**
@@ -416,10 +473,11 @@ class Order extends BackendController
      * @param array $query
      * @return array
      */
-    protected function getOrders($limit, $query)
+    protected function getListOrder($limit, array $query)
     {
-        $orders = $this->order->getList(array('limit' => $limit) + $query);
-        return $this->prepareOrders($orders);
+        $query['limit'] = $limit;
+        $orders = $this->order->getList($query);
+        return $this->prepareListOrder($orders);
     }
 
     /**
@@ -427,11 +485,13 @@ class Order extends BackendController
      * @param array $orders
      * @return array
      */
-    protected function prepareOrders($orders)
+    protected function prepareListOrder(array $orders)
     {
         foreach ($orders as &$order) {
+            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
             $order['is_new'] = $this->order->isNew($order);
         }
+
         return $orders;
     }
 

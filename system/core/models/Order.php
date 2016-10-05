@@ -481,7 +481,8 @@ class Order extends Model
      */
     public function getInitialStatus()
     {
-        return $this->getDefaultStatus();
+        $default = $this->getDefaultStatus();
+        return $this->config->get('order_status_initial', $default);
     }
 
     /**

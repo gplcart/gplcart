@@ -47,7 +47,7 @@ class Checkout extends FrontendController
      * @var \core\models\State $state
      */
     protected $state;
-    
+
     /**
      * Shipping model instance
      * @var \core\models\Shipping $shipping
@@ -95,7 +95,7 @@ class Checkout extends FrontendController
      * @var array
      */
     protected $form_data;
-    
+
     /**
      * Constructor
      * @param ModelsCountry $country
@@ -106,7 +106,8 @@ class Checkout extends FrontendController
      * @param ModelsPayment $payment
      */
     public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsAddress $address, ModelsOrder $order, ModelsShipping $shipping, ModelsPayment $payment)
+            ModelsAddress $address, ModelsOrder $order,
+            ModelsShipping $shipping, ModelsPayment $payment)
     {
         parent::__construct();
 
@@ -554,7 +555,7 @@ class Checkout extends FrontendController
     {
         $submitted = $this->getSubmitted();
         $submitted += $this->form_data['order'];
-        
+
         $result = $this->order->submit($submitted, $this->cart_content);
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
@@ -567,7 +568,7 @@ class Checkout extends FrontendController
         if (empty($this->cart_content)) {
             return; // Required
         }
-        
+
         $this->form_data['address'] = $this->getSubmitted('address', array());
 
         $this->form_data['login_form'] = $this->login_form;
@@ -682,7 +683,7 @@ class Checkout extends FrontendController
 
         $message = $this->getCompleteMessageCheckout($order);
         $templates = $this->getCompleteTemplatesCheckout($order);
-        
+
         $this->setData('complete_message', $message);
         $this->setData('templates', $templates);
 
@@ -690,7 +691,7 @@ class Checkout extends FrontendController
         $this->setBreadcrumbCompleteCheckout($order);
         $this->outputCompleteCheckout();
     }
-    
+
     /**
      * Returns an array of rendered templates
      * provided by payment/shipping methods and used on the order complete page
@@ -701,7 +702,7 @@ class Checkout extends FrontendController
     {
         $templates = array();
         foreach (array('payment', 'shipping') as $type) {
-            
+
             $method = $this->{$type}->getMethod($order[$type]);
 
             if (empty($method['status']) || empty($method['template']['complete'])) {
@@ -721,7 +722,7 @@ class Checkout extends FrontendController
                 'method' => $method,
                 'settings' => $settings
             );
-            
+
             $templates[$type] = $this->render($template, $options);
         }
 
@@ -738,7 +739,7 @@ class Checkout extends FrontendController
             $this->outputError(403);
         }
 
-        if($order['status'] !== $this->order->getInitialStatus()){
+        if ($order['status'] !== $this->order->getInitialStatus()) {
             $this->outputError(403);
         }
     }
