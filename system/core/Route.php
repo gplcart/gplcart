@@ -450,6 +450,13 @@ class Route
             )
         );
 
+        $routes['admin/sale/order-snapshot/(\d+)'] = array(
+            'access' => 'order',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\admin\\Order', 'snapshotOrder')
+            )
+        );
+
         $routes['admin/sale/price'] = array(
             'access' => 'price_rule',
             'menu' => array('admin' => 'Prices'),

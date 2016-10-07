@@ -256,6 +256,7 @@ $tables['log'] = array(
 $tables['order_log'] = array(
     'fields' => array(
         'order_log_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+        'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'text' => array('type' => 'text', 'not_null' => true),

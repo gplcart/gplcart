@@ -730,7 +730,7 @@ class Checkout extends FrontendController
 
         $this->addValidator('log', array(
             'length' => array(
-                'min' => 10,
+                'min' => 1,
                 'required' => !empty($this->order_id))));
 
         $this->setValidators();
@@ -769,7 +769,7 @@ class Checkout extends FrontendController
         $this->controlAccess('order_edit');
 
         $this->order->update($order_id, $submitted);
-        $this->order->addLog($submitted['log'], $order_id);
+        $this->order->addLog($submitted['log'], $this->uid, $order_id);
 
         $message = $this->text('Order has been updated');
         $this->redirect("admin/sale/order/$order_id", $message, 'success');

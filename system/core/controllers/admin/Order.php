@@ -129,6 +129,104 @@ class Order extends BackendController
     }
 
     /**
+     * Displays the order snapshot page
+     * @param integer $order_log_id
+     */
+    public function snapshotOrder($order_log_id)
+    {
+        $order = $this->getLogOrder($order_log_id);
+        $order = $this->prepareOrder($order);
+
+        $this->setDataOrder($order);
+        $this->setMessageSnapshotOrder($order);
+
+        $this->setTitleSnapshotOrder($order);
+        $this->setBreadcrumbSnapshotOrder($order);
+        $this->outputSnapshotOrder();
+    }
+
+    /**
+     * Sets a message on the order snapshot page
+     * @param array $order
+     */
+    protected function setMessageSnapshotOrder(array $order)
+    {
+
+        $message = $this->text('This is a saved snapshot of order #@order_id. You can see current state of the order <a href="@url">here</a>', array(
+            '@url' => $this->url("admin/sale/order/{$order['order_id']}"),
+            '@order_id' => $order['order_id']
+        ));
+
+        $this->setMessage($message, 'warning');
+    }
+
+    /**
+     * Sets titles on the order snapshot page
+     * @param array $order
+     */
+    protected function setTitleSnapshotOrder(array $order)
+    {
+        $title = $this->text('Snapshot of order #@order_id', array(
+            '@order_id' => $order['order_id']));
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the order snapshot page
+     * @param array $order
+     */
+    protected function setBreadcrumbSnapshotOrder(array $order)
+    {
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Dashboard'),
+            'url' => $this->url('admin')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Orders'),
+            'url' => $this->url('admin/sale/order')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Order #@order_id', array(
+                '@order_id' => $order['order_id'])),
+            'url' => $this->url("admin/sale/order/{$order['order_id']}")
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Renders order snapshot templates
+     */
+    protected function outputSnapshotOrder()
+    {
+        $this->output('sale/order/order');
+    }
+
+    /**
+     * Returns an order log
+     * @param integer $order_log_id
+     * @return array
+     */
+    protected function getLogOrder($order_log_id)
+    {
+        $log = $this->order->getLog($order_log_id);
+
+        if (empty($log['data'])) {
+            $this->outputError(404);
+        }
+
+        $order = $log['data'];
+        unset($log['data']);
+
+        $order['log'] = $log;
+        return $order;
+    }
+
+    /**
      * Displays the order overview page
      * @param integer $order_id
      */
@@ -137,13 +235,7 @@ class Order extends BackendController
         $order = $this->getOrder($order_id);
         $this->order->setViewed($order);
 
-        $this->setData('order', $order);
-
-        $this->setDataLogsOrder($order_id);
-        $this->setDataSummaryOrder($order);
-        $this->setDataCustomerOrder($order);
-        $this->setDataComponentsOrder($order);
-        $this->setDataShippingAddressOrder($order);
+        $this->setDataOrder($order);
 
         $this->setTitleViewOrder($order);
         $this->setBreadcrumbViewOrder();
@@ -151,13 +243,46 @@ class Order extends BackendController
     }
 
     /**
-     * Sets logs pane on the order overview page
-     * @param integer $order_id
+     * Sets teplate data to be used on the order overview page
+     * @param array $order
      */
-    protected function setDataLogsOrder($order_id)
+    protected function setDataOrder(array $order)
     {
-        $items = $this->order->getLogs($order_id);
-        $html = $this->render('sale/order/panes/log', array('items' => $items));
+        $this->setData('order', $order);
+        $this->setDataLogsOrder($order);
+        $this->setDataSummaryOrder($order);
+        $this->setDataCustomerOrder($order);
+        $this->setDataComponentsOrder($order);
+        $this->setDataShippingAddressOrder($order);
+    }
+
+    /**
+     * Sets logs pane on the order overview page
+     * @param array $order
+     */
+    protected function setDataLogsOrder(array $order)
+    {
+        $options = array(
+            'count' => true,
+            'order_id' => $order['order_id']
+        );
+
+        $query = $this->getFilterQuery();
+        $total = $this->order->getLogList($options);
+        $max = $this->config('order_log_limit', 5);
+        $limit = $this->setPager($total, $query, $max);
+
+        $options['limit'] = $limit;
+        unset($options['count']);
+        $items = $this->order->getLogList($options);
+
+        $data = array(
+            'order' => $order,
+            'items' => $items,
+            'pager' => $this->getPager()
+        );
+
+        $html = $this->render('sale/order/panes/log', $data);
         $this->setData('pane_log', $html);
     }
 

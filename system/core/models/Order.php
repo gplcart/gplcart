@@ -586,10 +586,11 @@ class Order extends Model
     /**
      * Adds an order log record to the database
      * @param string $message
+     * @param integer $user_id
      * @param array|integer $order
      * @return integer
      */
-    public function addLog($message, $order)
+    public function addLog($message, $user_id, $order)
     {
         if (is_numeric($order)) {
             $order = $this->get($order);
@@ -599,6 +600,7 @@ class Order extends Model
             'data' => $order,
             'text' => $message,
             'created' => GC_TIME,
+            'user_id' => $user_id,
             'order_id' => $order['order_id']
         );
 
@@ -607,20 +609,49 @@ class Order extends Model
 
     /**
      * Returns an array of log records for the given order ID
-     * @param integer $order_id
-     * @param array $options
+     * @param array $data
      * @return array
      */
-    public function getLogs($order_id, array $options = array())
+    public function getLogList(array $data)
     {
-        $sql = 'SELECT * FROM order_log WHERE order_id=? ORDER BY created DESC';
+        $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status';
         
-        if(!empty($options['limit'])){
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        if(!empty($data['count'])){
+            $sql = 'SELECT COUNT(ol.order_log_id)';
         }
         
-        $options = array('index' => 'order_log_id', 'unserialize' => 'data');
-        return $this->db->fetchAll($sql, array($order_id), $options);
+        $sql .= ' FROM order_log ol'
+                . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
+                . ' WHERE ol.order_id=?';
+        
+        if(!empty($data['count'])){
+            return (int) $this->db->fetchColumn($sql, array($data['order_id']));
+        }
+        
+        $sql .= ' ORDER BY ol.created DESC';
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        $params = array('index' => 'order_log_id', 'unserialize' => 'data');
+        return $this->db->fetchAll($sql, array($data['order_id']), $params);
+    }
+
+    /**
+     * Returns an order log
+     * @param integer $order_log_id
+     * @return array
+     */
+    public function getLog($order_log_id)
+    {
+        $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status'
+                . ' FROM order_log ol'
+                . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
+                . ' WHERE ol.order_log_id=?';
+
+        $params = array('unserialize' => 'data');
+        return $this->db->fetch($sql, array($order_log_id), $params);
     }
 
     /**

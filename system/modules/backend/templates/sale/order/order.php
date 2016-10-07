@@ -10,7 +10,7 @@
           <button class="btn btn-default" type="button" onclick="window.print();">
             <?php echo $this->text('Print'); ?>
           </button>
-          <?php if($this->access('order_edit')) { ?>
+          <?php if($this->access('order_edit') && empty($order['log'])) { ?>
           <a class="btn btn-default" href="<?php echo $this->url("checkout/edit/{$order['order_id']}"); ?>">
             <?php echo $this->text('Edit'); ?>
           </a>
