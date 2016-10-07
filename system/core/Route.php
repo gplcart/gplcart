@@ -202,13 +202,27 @@ class Route
 
         $routes['checkout'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'indexCheckout')
+                'controller' => array('core\\controllers\\Checkout', 'editCheckout')
             )
         );
 
         $routes['checkout/complete/(\d+)'] = array(
             'handlers' => array(
                 'controller' => array('core\\controllers\\Checkout', 'completeCheckout')
+            )
+        );
+
+        $routes['checkout/edit/(\d+)'] = array(
+            'access' => 'order_edit',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\Checkout', 'editOrderCheckout')
+            )
+        );
+
+        $routes['checkout/add/(\d+)'] = array(
+            'access' => 'order_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\Checkout', 'addUserOrderCheckout')
             )
         );
 

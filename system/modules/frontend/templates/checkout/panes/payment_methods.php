@@ -7,7 +7,7 @@
         <div class="radio">
           <label>
             <?php if (!empty($method['image'])) { ?>
-            <img class="img-responsive" src="<?php echo $this->escape($method['image']); ?>">
+            <img class="img-responsive" src="<?php echo $this->url($method['image'], array(), true); ?>">
             <?php } ?>
             <input type="radio" name="order[payment]" value="<?php echo $method_id; ?>"<?php echo (isset($order['payment']) && $order['payment'] == $method_id) ? ' checked' : ''; ?>>
             <?php echo $this->escape($method['title']); ?>

@@ -6,7 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-
 /**
  * Contains an array of database scheme used to create tables upon installation
  */
@@ -250,6 +249,16 @@ $tables['log'] = array(
         'type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'severity' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'translatable' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
+        'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+    )
+);
+
+$tables['order_log'] = array(
+    'fields' => array(
+        'order_log_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+        'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'text' => array('type' => 'text', 'not_null' => true),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

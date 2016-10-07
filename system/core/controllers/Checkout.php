@@ -82,13 +82,55 @@ class Checkout extends FrontendController
      * Cart content for the current user
      * @var array
      */
-    protected $cart_content = array();
+    protected $cart_content;
 
     /**
      * Current country code
      * @var string
      */
     protected $country_code;
+
+    /**
+     * Whether we're in admin mode
+     * @var boolean
+     */
+    protected $admin;
+
+    /**
+     * Admin user ID
+     * @var integer
+     */
+    protected $admin_user_id;
+
+    /**
+     * An array of order which is updating
+     * @var array
+     */
+    protected $order_data;
+
+    /**
+     * An array of customer user data
+     * @var array
+     */
+    protected $order_user_data;
+
+    /**
+     * Order user id. Greater than 0 when editing an order
+     * @var integer
+     */
+    protected $order_id;
+
+    /**
+     * Order customer ID. Default to cart UID
+     * @var string|integer 
+     */
+    protected $order_user_id;
+
+    /**
+     * Order store ID. Default to the current store
+     * @var integer
+     */
+    protected $order_store_id;
 
     /**
      * Template data array
@@ -118,41 +160,132 @@ class Checkout extends FrontendController
         $this->payment = $payment;
         $this->shipping = $shipping;
 
-        $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
+        $this->order_id = 0;
+        
+        $this->form_data = array();
+        $this->order_data = array();
+        $this->cart_content = array();
+        $this->order_user_data = array();
 
-        $this->cart_updated = false;
         $this->login_form = false;
         $this->address_form = false;
-        $this->form_data = array();
+        $this->cart_updated = false;
 
+        $this->order_user_id = $this->cart_uid;
+        $this->order_store_id = $this->store_id;
         $this->country_code = $this->country->getDefault();
+
+        $this->admin_user_id = $this->uid;
+    }
+
+    /**
+     * Page callback for add order form
+     * @param integer $user_id
+     */
+    public function addUserOrderCheckout($user_id)
+    {
+        $this->setAdminModeCheckout();
+        $this->setUserCheckout($user_id);
+        $this->editCheckout();
+    }
+
+    /**
+     * Page callback for edit order form
+     * @param integer $order_id
+     */
+    public function editOrderCheckout($order_id)
+    {
+        $this->setAdminModeCheckout();
+        $this->setOrderCheckout($order_id);
+        $this->editCheckout();
+    }
+
+    /**
+     * Sets flag that we're in admin mode, i.e adding/updating an order
+     */
+    protected function setAdminModeCheckout()
+    {
+        $this->admin = ($this->access('order_add') || $this->access('order_edit'));
+    }
+
+    /**
+     * Loads a user and sets properties for a new order
+     * @param integer $user_id
+     */
+    protected function setUserCheckout($user_id)
+    {
+        if (!is_numeric($user_id)) {
+            $this->outputError(403);
+        }
+
+        $user = $this->user->get($user_id);
+
+        if (empty($user['status'])) {
+            $this->outputError(404);
+        }
+
+        $this->order_user_data = $user;
+        $this->order_user_id = $user_id;
+        $this->order_store_id = $user['store_id'];
     }
 
     /**
      * Displays the checkout page
      */
-    public function indexCheckout()
+    public function editCheckout()
     {
-        $this->setTitleIndexCheckout();
-        $this->setBreadcrumbIndexCheckout();
+        $this->setCartContentCheckout();
 
+        $this->setTitleEditCheckout();
+        $this->setBreadcrumbEditCheckout();
         $this->controlAccessCheckout();
-
         $this->setFormDataBeforeCheckout();
-
         $this->submitCheckout();
-
         $this->setFormDataAfterCheckout();
-
         $this->setDataFormCheckout();
+        $this->outputEditCheckout();
+    }
 
-        $this->outputCheckout();
+    /**
+     * Sets an order data to be updated
+     * @param null|integer $order_id
+     */
+    protected function setOrderCheckout($order_id)
+    {
+        $order = $this->order->get($order_id);
+
+        if (empty($order)) {
+            $this->outputError(404);
+        }
+
+        $this->order_data = $order;
+        $this->order_id = $order_id;
+
+        $this->cart_uid = $order['user_id'];
+        $this->order_user_id = $order['user_id'];
+        $this->order_store_id = $order['store_id'];
+        $this->order_user_data = $this->user->get($order['user_id']);
+    }
+
+    /**
+     * Sets a cart content depending on whether we're editing an existing order
+     * or creating a new one during checkout
+     */
+    protected function setCartContentCheckout()
+    {
+        $data = array(
+            'user_id' => $this->cart_uid,
+            'order_id' => $this->order_id,
+            'store_id' => $this->order_store_id
+        );
+
+        $this->cart_content = $this->cart->getContent($data);
     }
 
     /**
      * Sets titles on the checkout page
      */
-    protected function setTitleIndexCheckout()
+    protected function setTitleEditCheckout()
     {
         $this->setTitle($this->text('Checkout'));
     }
@@ -160,9 +293,14 @@ class Checkout extends FrontendController
     /**
      * Sets breadcrumbs on the checkout page
      */
-    protected function setBreadcrumbIndexCheckout()
+    protected function setBreadcrumbEditCheckout()
     {
-        $this->setBreadcrumb(array('text' => $this->text('Home'), 'url' => $this->url('/')));
+        $breadcrumb = array(
+            'text' => $this->text('Home'),
+            'url' => $this->url('/')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -171,7 +309,10 @@ class Checkout extends FrontendController
     protected function controlAccessCheckout()
     {
         if (empty($this->cart_content['items'])) {
-            $form = $this->render('checkout/form');
+
+            $data = array('admin' => $this->admin);
+
+            $form = $this->render('checkout/form', $data);
             $this->setData('checkout_form', $form);
             $this->output('checkout/checkout');
         }
@@ -183,23 +324,69 @@ class Checkout extends FrontendController
      */
     protected function setFormDataBeforeCheckout()
     {
-        $this->form_data['order'] = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id,
+        $default_order = array(
+            'user_id' => $this->order_user_id,
+            'creator' => $this->admin_user_id,
+            'store_id' => $this->order_store_id,
             'status' => $this->order->getInitialStatus(),
             'currency' => $this->cart_content['currency']
         );
 
+        // Override with existing order values if we're editing the order
+        $order = Tool::merge($default_order, $this->order_data);
+
+        $this->form_data['order'] = $order;
         $this->form_data['messages'] = array();
         $this->form_data['settings'] = array();
-        $this->form_data['addresses'] = $this->address->getTranslatedList($this->cart_uid);
-
+        $this->form_data['admin'] = $this->admin;
+        $this->form_data['user'] = $this->order_user_data;
+        
+        $this->form_data['statuses'] = $this->order->getStatuses();
         $this->form_data['payment_methods'] = $this->payment->getMethods(true);
         $this->form_data['shipping_methods'] = $this->shipping->getMethods(true);
+        $this->form_data['addresses'] = $this->address->getTranslatedList($this->order_user_id);
     }
 
     /**
-     * 
+     * Prepares form data before passing them to templates
+     */
+    protected function setFormDataAfterCheckout()
+    {
+        if (empty($this->cart_content)) {
+            return; // Required
+        }
+
+        $this->form_data['address'] = $this->getSubmitted('address', array());
+
+        $this->form_data['login_form'] = $this->login_form;
+        $this->form_data['address_form'] = $this->address_form;
+        $this->form_data['country_code'] = $this->country_code;
+
+        $options = array('country' => $this->country_code, 'status' => 1);
+        $this->form_data['states'] = $this->state->getList($options);
+
+        $this->form_data['countries'] = $this->country->getNames(true);
+        $this->form_data['cart'] = $this->prepareCart($this->cart_content);
+        $this->form_data['format'] = $this->country->getFormat($this->country_code, true);
+
+        if (empty($this->form_data['states'])) {
+            unset($this->form_data['format']['state_id']);
+        }
+
+        $this->calculateCheckout();
+        
+        $this->form_data['pane_admin'] = $this->render('checkout/panes/admin', $this->form_data);
+        $this->form_data['pane_login'] = $this->render('checkout/panes/login', $this->form_data);
+        $this->form_data['pane_review'] = $this->render('checkout/panes/review', $this->form_data);
+        $this->form_data['settings'] = json_encode($this->form_data['settings'], JSON_FORCE_OBJECT);
+
+        $this->form_data['pane_payment_methods'] = $this->render('checkout/panes/payment_methods', $this->form_data);
+        $this->form_data['pane_shipping_methods'] = $this->render('checkout/panes/shipping_methods', $this->form_data);
+        $this->form_data['pane_shipping_address'] = $this->render('checkout/panes/shipping_address', $this->form_data);
+    }
+
+    /**
+     * Handles submitted actions
      */
     protected function submitCheckout()
     {
@@ -240,8 +427,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * 
-     * @return type
+     * Handles login action
      */
     protected function submitLoginCheckout()
     {
@@ -376,8 +562,8 @@ class Checkout extends FrontendController
     {
         $item += array(
             'sku' => $sku,
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
+            'user_id' => $this->order_user_id,
+            'store_id' => $this->order_store_id
         );
 
         $this->setSubmitted("cart.items.$sku", $item);
@@ -389,10 +575,12 @@ class Checkout extends FrontendController
             'length' => array('min' => 1, 'max' => 2)
         ));
 
-        $this->addValidator("cart.items.$sku", array(
-            'cart_limits' => array(
-                'increment' => false, 'data' => $product)
-        ));
+        if (!$this->admin) {
+            $this->addValidator("cart.items.$sku", array(
+                'cart_limits' => array(
+                    'increment' => false, 'data' => $product)
+            ));
+        }
 
         // Do not pass product data here
         // to avoid rewriting by the next validators
@@ -412,8 +600,8 @@ class Checkout extends FrontendController
         }
 
         $options = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
+            'user_id' => $this->order_user_id,
+            'store_id' => $this->order_store_id
         );
 
         $result = $this->cart->moveToWishlist($options + array('sku' => $sku));
@@ -458,13 +646,13 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $this->cart_content = $this->cart->getByUser($this->cart_uid, $this->store_id);
+        $this->setCartContentCheckout();
 
         if ($this->request->isAjax() || $this->isPosted('save')) {
             return null;
         }
 
-        $message = $this->text('Your cart has been updated');
+        $message = $this->text('Cart has been updated');
         return $this->redirect('', $message, 'success');
     }
 
@@ -487,7 +675,16 @@ class Checkout extends FrontendController
 
         $this->addAddressCheckout();
 
-        return $this->addOrderCheckout();
+        // Add / update an order
+        $submitted = $this->getSubmitted();
+        $submitted += $this->form_data['order'];
+        $submitted['cart'] = $this->cart_content;
+
+        if (empty($this->order_data['order_id'])) {
+            return $this->addOrderCheckout($submitted);
+        }
+
+        return $this->updateOrderCheckout($this->order_data['order_id'], $submitted);
     }
 
     /**
@@ -500,7 +697,7 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $this->setSubmitted('address.user_id', $this->cart_uid);
+        $this->setSubmitted('address.user_id', $this->order_user_id);
 
         $this->addValidator('address', array(
             'country_format' => array()
@@ -531,6 +728,11 @@ class Checkout extends FrontendController
                 'message' => $this->text('Please select a payment method'))
         ));
 
+        $this->addValidator('log', array(
+            'length' => array(
+                'min' => 10,
+                'required' => !empty($this->order_id))));
+
         $this->setValidators();
     }
 
@@ -544,56 +746,33 @@ class Checkout extends FrontendController
         if ($this->address_form && !empty($submitted)) {
             $address_id = $this->address->add($submitted);
             $this->setSubmitted('shipping_address', $address_id);
-            $this->address->controlLimit($this->cart_uid);
+            $this->address->controlLimit($this->order_user_id);
         }
     }
 
     /**
      * Adds a new order
      */
-    protected function addOrderCheckout()
+    protected function addOrderCheckout(array $submitted)
     {
-        $submitted = $this->getSubmitted();
-        $submitted += $this->form_data['order'];
-
-        $result = $this->order->submit($submitted, $this->cart_content);
+        $options = array('admin' => $this->admin);
+        $result = $this->order->submit($submitted, $this->cart_content, $options);
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
-     * Prepares form data before passing them to templates
+     * Updates an order
+     * @param type $order_id
      */
-    protected function setFormDataAfterCheckout()
+    protected function updateOrderCheckout($order_id, array $submitted)
     {
-        if (empty($this->cart_content)) {
-            return; // Required
-        }
+        $this->controlAccess('order_edit');
 
-        $this->form_data['address'] = $this->getSubmitted('address', array());
+        $this->order->update($order_id, $submitted);
+        $this->order->addLog($submitted['log'], $order_id);
 
-        $this->form_data['login_form'] = $this->login_form;
-        $this->form_data['address_form'] = $this->address_form;
-        $this->form_data['country_code'] = $this->country_code;
-
-        $options = array('country' => $this->country_code, 'status' => 1);
-        $this->form_data['states'] = $this->state->getList($options);
-
-        $this->form_data['countries'] = $this->country->getNames(true);
-        $this->form_data['cart'] = $this->prepareCart($this->cart_content);
-        $this->form_data['format'] = $this->country->getFormat($this->country_code, true);
-
-        if (empty($this->form_data['states'])) {
-            unset($this->form_data['format']['state_id']);
-        }
-
-        $this->calculateCheckout();
-
-        $this->form_data['pane_login'] = $this->render('checkout/panes/login', $this->form_data);
-        $this->form_data['pane_review'] = $this->render('checkout/panes/review', $this->form_data);
-        $this->form_data['settings'] = json_encode($this->form_data['settings'], JSON_FORCE_OBJECT);
-        $this->form_data['pane_payment_methods'] = $this->render('checkout/panes/payment_methods', $this->form_data);
-        $this->form_data['pane_shipping_methods'] = $this->render('checkout/panes/shipping_methods', $this->form_data);
-        $this->form_data['pane_shipping_address'] = $this->render('checkout/panes/shipping_address', $this->form_data);
+        $message = $this->text('Order has been updated');
+        $this->redirect("admin/sale/order/$order_id", $message, 'success');
     }
 
     /**
@@ -667,7 +846,7 @@ class Checkout extends FrontendController
     /**
      * Outputs the checkout page
      */
-    protected function outputCheckout()
+    protected function outputEditCheckout()
     {
         $this->output('checkout/checkout');
     }
@@ -735,7 +914,7 @@ class Checkout extends FrontendController
      */
     protected function controlAccessCompleteCheckout(array $order)
     {
-        if (strcmp((string) $order['user_id'], $this->cart_uid) !== 0) {
+        if (strcmp((string) $order['user_id'], $this->order_user_id) !== 0) {
             $this->outputError(403);
         }
 

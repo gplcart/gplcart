@@ -19,6 +19,8 @@ use core\models\Price as ModelsPrice;
 use core\models\PriceRule as ModelsPriceRule;
 use core\models\Product as ModelsProduct;
 use core\models\State as ModelsState;
+use core\models\Payment as ModelsPayment;
+use core\models\Shipping as ModelsShipping;
 
 /**
  * Provides data to the view and interprets user actions related to orders
@@ -81,6 +83,18 @@ class Order extends BackendController
     protected $product;
 
     /**
+     * Payment model instance
+     * @var \core\models\Payment $payment
+     */
+    protected $payment;
+
+    /**
+     * Shipping model instance
+     * @var \core\models\Shipping $shipping
+     */
+    protected $shipping;
+
+    /**
      * Constructor
      * @param ModelsOrder $order
      * @param ModelsCountry $country
@@ -92,11 +106,11 @@ class Order extends BackendController
      * @param ModelsProduct $product
      * @param ModelsPriceRule $pricerule
      */
-    public function __construct(
-    ModelsOrder $order, ModelsCountry $country, ModelsState $state,
-            ModelsAddress $address, ModelsPrice $price,
+    public function __construct(ModelsOrder $order, ModelsCountry $country,
+            ModelsState $state, ModelsAddress $address, ModelsPrice $price,
             ModelsCurrency $currency, ModelsCart $cart, ModelsProduct $product,
-            ModelsPriceRule $pricerule
+            ModelsPriceRule $pricerule, ModelsPayment $payment,
+            ModelsShipping $shipping
     )
     {
         parent::__construct();
@@ -108,6 +122,8 @@ class Order extends BackendController
         $this->product = $product;
         $this->country = $country;
         $this->address = $address;
+        $this->payment = $payment;
+        $this->shipping = $shipping;
         $this->currency = $currency;
         $this->pricerule = $pricerule;
     }
@@ -123,6 +139,7 @@ class Order extends BackendController
 
         $this->setData('order', $order);
 
+        $this->setDataLogsOrder($order_id);
         $this->setDataSummaryOrder($order);
         $this->setDataCustomerOrder($order);
         $this->setDataComponentsOrder($order);
@@ -131,6 +148,17 @@ class Order extends BackendController
         $this->setTitleViewOrder($order);
         $this->setBreadcrumbViewOrder();
         $this->outputViewOrder();
+    }
+
+    /**
+     * Sets logs pane on the order overview page
+     * @param integer $order_id
+     */
+    protected function setDataLogsOrder($order_id)
+    {
+        $items = $this->order->getLogs($order_id);
+        $html = $this->render('sale/order/panes/log', array('items' => $items));
+        $this->setData('pane_log', $html);
     }
 
     /**
@@ -147,8 +175,10 @@ class Order extends BackendController
      */
     protected function setTitleViewOrder(array $order)
     {
-        $this->setTitle($this->text('Order #@order_id', array(
-                    '@order_id' => $order['order_id'])));
+        $title = $this->text('Order #@order_id', array(
+            '@order_id' => $order['order_id']));
+
+        $this->setTitle($title);
     }
 
     /**
@@ -204,13 +234,12 @@ class Order extends BackendController
             $order['store_name'] = $store['name'];
         }
 
-        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         $order['customer'] = $this->text('Anonymous');
         $order['creator_formatted'] = $this->text('Customer');
+        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
 
         if (!empty($order['creator'])) {
             $order['creator_formatted'] = $this->text('Unknown');
-
             $user = $this->user->get($order['user_id']);
             if (isset($user['user_id'])) {
                 $order['creator_formatted'] = "{$user['name']} ({$user['email']})";
@@ -255,7 +284,6 @@ class Order extends BackendController
         );
 
         $html = $this->render('sale/order/panes/customer', $data);
-
         $this->setData('pane_customer', $html);
     }
 
@@ -266,7 +294,11 @@ class Order extends BackendController
      */
     protected function getTotalPlacedOrder($user_id)
     {
-        $options = array('count' => true, 'user_id' => $user_id);
+        $options = array(
+            'count' => true,
+            'user_id' => $user_id
+        );
+
         return (int) $this->order->getList($options);
     }
 
@@ -278,7 +310,8 @@ class Order extends BackendController
     {
         $components = $this->getComponentsOrder($order);
 
-        $html = $this->render('sale/order/panes/components', array('components' => $components));
+        $data = array('components' => $components);
+        $html = $this->render('sale/order/panes/components', $data);
         $this->setData('pane_components', $html);
     }
 
@@ -289,29 +322,15 @@ class Order extends BackendController
      */
     protected function getComponentsOrder(array $order)
     {
-
         if (empty($order['data']['components'])) {
             return array();
         }
 
-        $cart = $this->cart->getList(array('order_id' => $order['order_id']));
-
         $components = array();
-        foreach ($order['data']['components'] as $type => $component) {
-
-            if ($type === 'cart') {
-                $components[$type] = $this->renderComponentCartOrder($component, $cart, $order);
-                continue;
-            }
-
-            if (in_array($type, array('shipping', 'payment'))) {
-                $components[$type] = $this->renderComponentMethodOrder($type, $component, $cart, $order);
-                continue;
-            }
-
-            if (is_numeric($type)) {
-                $components["rule_$type"] = $this->renderComponentRuleOrder($type, $component);
-            }
+        foreach ($order['data']['components'] as $type => $value) {
+            $this->setComponentCartOrder($components, $type, $value, $order);
+            $this->setComponentMethodOrder($components, $type, $value, $order);
+            $this->setComponentRuleOrder($components, $type, $value);
         }
 
         ksort($components);
@@ -319,62 +338,113 @@ class Order extends BackendController
     }
 
     /**
-     * Returns rendered cart component
-     * @param array $component
-     * @param array $cart
+     * Sets rendered component "Cart"
+     * @param array $components
+     * @param string $type
+     * @param array $component_cart
      * @param array $order
-     * @return string
+     * @return null
      */
-    protected function renderComponentCartOrder(array $component, array $cart,
-            array $order)
+    protected function setComponentCartOrder(array &$components, $type,
+            $component_cart, array $order)
     {
-        $products = array();
-        foreach ($component as $cart_id => $price) {
-
-            if (!isset($cart[$cart_id]['sku'])) {
-                continue;
-            }
-
-            $product = $this->product->getBySku($cart[$cart_id]['sku'], $order['store_id']);
-            $product['cart'] = $cart[$cart_id];
-            $product['cart']['price_formatted'] = $this->price->format($price, $order['currency']);
-            $products[] = $product;
+        if ($type !== 'cart') {
+            return null;
         }
 
-        return $this->render('sale/order/panes/components/cart', array('products' => $products));
+        foreach ($component_cart as $sku => $price) {
+            $this->validateCarProductOrder($sku, $order);
+            $order['cart'][$sku]['price_formatted'] = $this->price->format($price, $order['currency']);
+        }
+
+        $html = $this->render('sale/order/panes/components/cart', array('order' => $order));
+        $components['cart'] = $html;
+        return null;
     }
 
     /**
-     * Returns rendered service component
-     * @param string $type
-     * @param integer $component
-     * @param array $cart
+     * Checks cart products and sets notifications for order manager
+     * @param string $sku
      * @param array $order
-     * @return string
      */
-    protected function renderComponentMethodOrder($type, $component,
-            array $cart, array $order)
+    protected function validateCarProductOrder($sku, array $order)
     {
-        $service = $this->order->getService($order[$type], $type, $cart, $order);
-        $service['name'] = isset($service['name']) ? $service['name'] : $this->text('Unknown');
-        $service['cart']['price_formatted'] = $this->price->format($component, $order['currency']);
-        $service['cart']['type'] = ($type === 'payment') ? $this->text('Payment') : $this->text('Shipping');
+        if (empty($order['cart'][$sku]) || empty($order['cart'][$sku]['product_id'])) {
+            $message = $this->text('SKU %sku is invalid', array('%sku' => $sku));
+            $this->setMessage($message, 'warning');
+            return; // Exit here to avoid "undefined" errors below
+        }
 
-        return $this->render('sale/order/panes/components/service', array('service' => $service));
+        if (empty($order['cart'][$sku]['product_status'])) {
+            $message = $this->text('Product %product_id is disabled', array(
+                '%product_id' => $order['cart'][$sku]['product_id']));
+            $this->setMessage($message, 'warning');
+        }
+
+        if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
+            $message = $this->text('Product %product_id does not belong to the order\'s store', array(
+                '%product_id' => $order['cart'][$sku]['product_id']));
+            $this->setMessage($message, 'warning');
+        }
     }
 
     /**
-     * Returns rendered price rule component
-     * @param integer $rule_id
+     * Sets rendered shipping/payment component
+     * @param array $components
+     * @param string $type
      * @param integer $price
-     * @return string
+     * @param array $order
+     * @return null
      */
-    protected function renderComponentRuleOrder($rule_id, $price)
+    protected function setComponentMethodOrder(array &$components, $type,
+            $price, array $order)
     {
+        if (!in_array($type, array('shipping', 'payment'))) {
+            return null;
+        }
+
+        $method = $this->{$type}->getMethod();
+        $method['name'] = isset($method['name']) ? $method['name'] : $this->text('Unknown');
+
+        if (abs($price) == 0) {
+            $price = 0;
+        }
+
+        $method['price_formatted'] = $this->price->format($price, $order['currency']);
+        $html = $this->render('sale/order/panes/components/method', array('method' => $method));
+
+        $components[$type] = $html;
+        return null;
+    }
+
+    /**
+     * Sets rendered rule component
+     * @param array $components
+     * @param string $rule_id
+     * @param integer $price
+     * @return null
+     */
+    protected function setComponentRuleOrder(array &$components, $rule_id,
+            $price)
+    {
+        if (!is_numeric($rule_id)) {
+            return null;
+        }
+
+        if (abs($price) == 0) {
+            $price = 0; // Avoid something like -0 USD
+        }
+
         $rule = $this->pricerule->get($rule_id);
 
-        $data = array('rule' => $rule, 'price' => $price);
-        return $this->render('sale/order/panes/components/rule', $data);
+        $data = array(
+            'rule' => $rule,
+            'price' => $this->price->format($price, $rule['currency'])
+        );
+
+        $html = $this->render('sale/order/panes/components/rule', $data);
+        $components["rule_$rule_id"] = $html;
+        return null;
     }
 
     /**
@@ -387,7 +457,12 @@ class Order extends BackendController
         $translated = $this->address->getTranslated($address);
         $geocode = $this->address->getGeocodeQuery($translated);
 
-        $this->setJsSettings('map', array('address' => $geocode));
+        $map = array(
+            'address' => $geocode,
+            'key' => $this->config('gapi_browser_key', '')
+        );
+
+        $this->setJsSettings('map', $map);
 
         $data = array(
             'order' => $order,
@@ -404,6 +479,8 @@ class Order extends BackendController
      */
     public function listOrder()
     {
+        $this->actionOrder();
+
         $stores = $this->store->getNames();
         $statuses = $this->order->getStatuses();
         $currencies = $this->currency->getList();
@@ -426,6 +503,44 @@ class Order extends BackendController
         $this->setTitleListOrder();
         $this->setBreadcrumbListOrder();
         $this->outputListOrder();
+    }
+
+    /**
+     * Applies an action to the selected orders
+     */
+    protected function actionOrder()
+    {
+        $action = (string) $this->request->post('action');
+
+        if (empty($action)) {
+            return;
+        }
+
+        $value = (string) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
+
+        $deleted = $updated = 0;
+
+        foreach ($selected as $id) {
+
+            if ($action === 'status' && $this->access('order_edit')) {
+                $updated += (int) $this->order->update($id, array('status' => $value));
+            }
+
+            if ($action === 'delete' && $this->access('order_delete')) {
+                $deleted += (int) $this->order->delete($id);
+            }
+        }
+
+        if ($updated > 0) {
+            $message = $this->text('Orders have been updated');
+            $this->setMessage($message, 'success', true);
+        }
+
+        if ($deleted > 0) {
+            $message = $this->text('Orders have been deleted');
+            $this->setMessage($message, 'success', true);
+        }
     }
 
     /**
@@ -488,8 +603,8 @@ class Order extends BackendController
     protected function prepareListOrder(array $orders)
     {
         foreach ($orders as &$order) {
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
             $order['is_new'] = $this->order->isNew($order);
+            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         }
 
         return $orders;

@@ -670,7 +670,7 @@ class Controller
             $this->response->error404();
         }
 
-        $this->theme_settings = $this->config->module($this->theme);
+        $this->theme_settings = $this->config->module($this->theme, null, array());
 
         if (isset($this->theme_settings['twig'])) {
             /* @var $twig \core\classes\Twig */

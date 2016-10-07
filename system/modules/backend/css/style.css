@@ -80,6 +80,11 @@ h1 {
     background-image: none !important;
 }
 
+#message .alert {
+    border-color: #fff;
+    border-width: 10px;
+}
+
 .no-border {
     border: none !important;
 }
@@ -121,6 +126,10 @@ h1 {
 
 .panel-footer .pagination {
     margin:0;
+}
+
+.panel-body table tr:first-child td {
+    border: none !important;
 }
 
 .note-group-select-from-files {
@@ -167,32 +176,32 @@ td .list-inline {
 
 /* Center modal */
 .modal-dialog {
-  margin-top: 0;
-  margin-bottom: 0;
-  height: 100vh;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 100vh;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
 }
 
 .modal.fade .modal-dialog {
-  -webkit-transform: translate(0, -100%);
-  transform: translate(0, -100%);
+    -webkit-transform: translate(0, -100%);
+    transform: translate(0, -100%);
 }
 
 .modal.in .modal-dialog {
-  -webkit-transform: translate(0, 0);
-  transform: translate(0, 0);
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
 }
 /* End center modal */
 

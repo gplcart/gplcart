@@ -725,7 +725,12 @@ class Controller extends BaseController
      */
     protected function getCartPreview()
     {
-        $cart = $this->cart->getByUser($this->cart_uid, $this->store_id);
+        $data = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+        
+        $cart = $this->cart->getContent($data);
 
         $options = array(
             'cart' => $this->prepareCart($cart),

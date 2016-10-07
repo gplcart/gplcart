@@ -1,4 +1,4 @@
-<footer class="footer">
+<footer class="footer hidden-print">
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-6">

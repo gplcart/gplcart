@@ -1,8 +1,18 @@
-<?php if (!empty($cart['items'])) { ?>
+<?php if (empty($cart['items'])) { ?>
+<div class="row">
+  <div class="col-md-12">
+    <?php echo $this->text('Shopping cart is empty.'); ?>
+    <?php if($this->access('order_add')) { ?>
+    <p><?php echo $this->text('If you want to add a new order for a customer, add all needed products to your cart then add an order for a <a href="@href">user</a>. Your cart items will be assigned to that user.', array('@href' => $this->url('admin/user/list'))); ?></p>
+    <?php } ?>
+  </div>
+</div>
+<?php } else { ?>
 <form method="post" class="form-horizontal" id="checkout" data-settings='<?php echo $settings; ?>'>
   <input type="hidden" name="token" value="<?php echo $this->token; ?>">
   <div class="row">
     <div class="col-md-12">
+      <?php echo $pane_admin; ?>
       <?php if ($login_form) { ?>
       <?php echo $pane_login; ?>
       <?php } else if (empty($this->uid)) { ?>
@@ -24,22 +34,16 @@
   <div class="row">
     <div class="col-md-4"><?php echo $pane_shipping_address; ?></div>
     <?php if ($shipping_methods || $payment_methods) { ?>
-        <div class="col-md-3">
-          <div class="form-group">
-            <div class="col-md-12">
-              <?php if ($shipping_methods) { ?><?php echo $pane_shipping_methods; ?><?php } ?>
-              <?php if ($payment_methods) { ?><?php echo $pane_payment_methods; ?><?php } ?>
-            </div>
-          </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <div class="col-md-12">
+          <?php if ($shipping_methods) { ?><?php echo $pane_shipping_methods; ?><?php } ?>
+          <?php if ($payment_methods) { ?><?php echo $pane_payment_methods; ?><?php } ?>
         </div>
+      </div>
+    </div>
     <?php } ?>
     <div class="col-md-5"><?php echo $pane_review; ?></div>
   </div>
 </form>
-<?php } else { ?>
-<div class="row">
-  <div class="col-md-12">
-    <?php echo $this->text('Your shopping cart is empty'); ?>
-  </div>
-</div>
 <?php } ?>

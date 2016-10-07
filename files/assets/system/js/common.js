@@ -102,32 +102,21 @@ var GplCart = GplCart || {settings: {}, translations: {}};
      * @param {type} lng
      * @returns {undefined}
      */
-    GplCart.gmap = function (lat, lng) {
-        $.getScript('https://www.google.com/jsapi', function () {
-            google.load('maps', '3', {callback: function () {
-                if (lng === false) {
-                        geocoder = new google.maps.Geocoder();
-                        geocoder.geocode({'address': lat}, function (results, status) {
-                            if (status === google.maps.GeocoderStatus.OK) {
+    GplCart.gmap = function (lat, lng, key) {
 
-                                var lat = results[0].geometry.location.lat();
-                                var lng = results[0].geometry.location.lng();
-                                var options = {zoom: 10, center: {lat: lat, lng: lng}};
+        var ifr = '',
+                src = 'https://www.google.com/maps/embed/v1/place?key=' + key + '&zoom=14';
 
-                                var map = new google.maps.Map(document.getElementById('map-container'), options);
-                                new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
+        src += '&q=' + lat;
 
-                            } else {
-                                console.log("Geocode was not successful for the following reason: " + status);
-                            }
-                        });
-                    } else {
-                        var options = {zoom: 10, center: {lat: lat, lng: lng}};
-                        var map = new google.maps.Map(document.getElementById('map-container'), options);
-                        new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
-                    }
-                }});
-        });
+        if (lng) {
+            src += ',' + lng;
+        }
+
+        ifr += '<iframe frameborder="0"';
+        ifr += 'style="border:0" src="' + src + '" allowfullscreen></iframe>';
+
+        $('#map-container').html(ifr);
     };
 
     /**

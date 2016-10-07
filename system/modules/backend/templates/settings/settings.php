@@ -137,7 +137,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('SMTP password'); ?></label>
         <div class="col-md-4">
-          <input name="settings[smtp_password]" type="password" class="form-control" value="<?php echo $this->escape($settings['smtp_password']); ?>">
+          <input name="settings[smtp_password]" type="password" class="form-control" autocomplete="new-password" value="<?php echo $this->escape($settings['smtp_password']); ?>">
           <div class="help-block">
             <?php echo $this->text('A password to be used for authentication on the SMTP server'); ?>
           </div>

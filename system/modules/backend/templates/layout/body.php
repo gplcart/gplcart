@@ -1,5 +1,5 @@
 <body class="<?php echo $this->escape(implode(' ', $body_classes)); ?>">
-  <nav class="navbar navbar-inverse navbar-fixed-top">
+  <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -76,7 +76,7 @@
     </div>
   </nav>
   <?php if ($page_title || $breadcrumb) { ?>
-  <div class="container-fluid content-header">
+  <div class="container-fluid content-header hidden-print">
     <div class="row">
       <div class="col-md-12">
         <?php if (!empty($breadcrumb)) { ?>
@@ -99,7 +99,7 @@
   <?php } ?>
   <div class="container-fluid content">
     <?php if (!empty($messages)) { ?>
-    <div class="row" id="message">
+    <div class="row hidden-print" id="message">
       <div class="col-md-12">
         <?php foreach ($messages as $type => $strings) { ?>
         <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in" role="alert">

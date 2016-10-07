@@ -10,16 +10,13 @@
             </button>
             <ul class="dropdown-menu">
               <?php if ($this->access('order_edit')) { ?>
+              <?php foreach($statuses as $status_id => $status_name) { ?>
               <li>
-                <a data-action="status" data-action-value="1" href="#">
-                  <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
+                <a data-action="status" data-action-value="<?php echo $this->escape($status_id); ?>" href="#">
+                  <?php echo $this->text('Status'); ?>: <?php echo $this->escape($status_name); ?>
                 </a>
               </li>
-              <li>
-                <a data-action="status" data-action-value="0" href="#">
-                  <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
-                </a>
-              </li>
+              <?php } ?>
               <?php } ?>
               <?php if ($this->access('order_delete')) { ?>
               <li>
@@ -170,7 +167,7 @@
                 </li>
                 <?php if ($this->access('order_edit')) { ?>
                 <li>
-                  <a href="<?php echo $this->url("admin/sale/order/edit/$id"); ?>">
+                  <a href="<?php echo $this->url("checkout/edit/$id"); ?>">
                     <?php echo strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
@@ -180,7 +177,7 @@
           </tr>
           <?php } ?>
         </tbody>
-      </table>   
+      </table>
     </div>
     <?php if (!empty($pager)) { ?>
     <div class="panel-footer text-right"><?php echo $pager; ?></div>
@@ -190,9 +187,9 @@
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
-    <?php echo $this->text('You have no orders yet'); ?>
+    <?php echo $this->text('You have no orders.'); ?>
     <?php if ($this->access('order_add')) { ?>
-    <a href="<?php echo $this->url('admin/sale/order/add'); ?>"><?php echo $this->text('Add'); ?></a>
+    <?php echo $this->text('You can add an order for an <a href="@url">existing user</a>', array('@url' => $this->url('admin/user/list'))); ?>
     <?php } ?>
   </div>
 </div>

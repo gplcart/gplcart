@@ -87,15 +87,11 @@ class Cart extends Model
      * @param Logger $logger
      */
     public function __construct(
-        ModelsProduct $product,
-        ModelsSku $sku,
-        ModelsCurrency $currency,
-        ModelsUser $user,
-        ModelsWishlist $wishlist,
-        ModelsLanguage $language,
-        Request $request,
-        Logger $logger
-    ) {
+    ModelsProduct $product, ModelsSku $sku, ModelsCurrency $currency,
+            ModelsUser $user, ModelsWishlist $wishlist,
+            ModelsLanguage $language, Request $request, Logger $logger
+    )
+    {
         parent::__construct();
 
         $this->sku = $sku;
@@ -110,26 +106,22 @@ class Cart extends Model
 
     /**
      * Returns a cart content for a given user ID
-     * @param string|integer $user_id
-     * @param integer $store_id
+     * @param array $data
      * @return array
      */
-    public function getByUser($user_id, $store_id)
+    public function getContent(array $data)
     {
-        $cart = &Cache::memory("cart.$user_id.$store_id");
+        $cache_key = 'cart.' . md5(json_encode($data));
+
+        $cart = &Cache::memory($cache_key);
 
         if (isset($cart)) {
             return $cart;
         }
 
-        $options = array(
-            'user_id' => $user_id,
-            'store_id' => $store_id
-        );
+        $items = $this->getList($data);
 
-        $products = $this->getList($options);
-
-        if (empty($products)) {
+        if (empty($items)) {
             return array();
         }
 
@@ -138,11 +130,7 @@ class Cart extends Model
         $current_currency = $this->currency->get();
 
         $cart = array();
-        foreach ($products as $cart_id => $item) {
-
-            if ($item['store_id'] != $store_id) {
-                continue;
-            }
+        foreach ($items as $sku => $item) {
 
             $item['product'] = $this->product->getBySku($item['sku'], $item['store_id']);
 
@@ -150,7 +138,7 @@ class Cart extends Model
                 continue; // Invalid / disabled product
             }
 
-            if ($store_id != $item['product']['store_id']) {
+            if (isset($data['store_id']) && $data['store_id'] != $item['product']['store_id']) {
                 continue; // Store has been changed for this product
             }
 
@@ -160,17 +148,17 @@ class Cart extends Model
             $item['price'] = $price;
             $item['total'] = $item['price'] * $item['quantity'];
 
-            $total += (int)$item['total'];
-            $quantity += (int)$item['quantity'];
+            $total += (int) $item['total'];
+            $quantity += (int) $item['quantity'];
 
-            $cart['items'][$cart_id] = $item;
+            $cart['items'][$sku] = $item;
         }
 
         $cart['total'] = $total;
         $cart['quantity'] = $quantity;
         $cart['currency'] = $current_currency;
 
-        $this->hook->fire('get.cart.after', $user_id, $cart);
+        $this->hook->fire('get.cart.after', $data, $cart);
         return $cart;
     }
 
@@ -181,7 +169,8 @@ class Cart extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title'
+        $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
+                . ' p.status AS product_status, p.store_id AS product_store_id'
                 . ' FROM cart c'
                 . ' LEFT JOIN product p ON(c.product_id=p.product_id)'
                 . ' LEFT JOIN product_translation pt ON(c.product_id = pt.product_id AND pt.language=?)'
@@ -198,12 +187,12 @@ class Cart extends Model
 
         if (isset($data['order_id'])) {
             $sql .= ' AND c.order_id=?';
-            $where[] = (int)$data['order_id'];
+            $where[] = (int) $data['order_id'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND c.store_id=?';
-            $where[] = (int)$data['store_id'];
+            $where[] = (int) $data['store_id'];
         }
 
         $sql .= ' ORDER BY c.created DESC';
@@ -220,8 +209,8 @@ class Cart extends Model
     public function getLimits($item = null)
     {
         $limits = array(
-            'sku' => (int)$this->config->get('cart_sku_limit', 10),
-            'item' => (int)$this->config->get('cart_item_limit', 20)
+            'sku' => (int) $this->config->get('cart_sku_limit', 10),
+            'item' => (int) $this->config->get('cart_item_limit', 20)
         );
 
         return isset($item) ? $limits[$item] : $limits;
@@ -273,10 +262,9 @@ class Cart extends Model
                 'cart_id' => $cart_id,
                 'severity' => 'success',
                 'quantity' => $existing['total'],
-                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>',
-                    array(
-                        '!href' => $this->request->base() . 'checkout'
-                    ))
+                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
+                    '!href' => $this->request->base() . 'checkout'
+                ))
             );
 
             $this->logAddToCart($product, $data);
@@ -295,19 +283,19 @@ class Cart extends Model
         $user_id = $this->user->id();
 
         if (!empty($user_id)) {
-            return (string)$user_id;
+            return (string) $user_id;
         }
 
         $cookie_name = $this->config->get('user_cookie_name', 'user_id');
         $user_id = $this->request->cookie($cookie_name);
 
         if (!empty($user_id)) {
-            return (string)$user_id;
+            return (string) $user_id;
         }
 
         $user_id = '_' . Tool::randomString(6); // Add prefix to prevent from being "numeric"
         Tool::setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
-        return (string)$user_id;
+        return (string) $user_id;
     }
 
     /**
@@ -318,11 +306,11 @@ class Cart extends Model
     protected function setProduct(array $data)
     {
         $sql = 'SELECT cart_id, quantity'
-            . ' FROM cart'
-            . ' WHERE sku=?'
-            . ' AND user_id=?'
-            . ' AND store_id=?'
-            . ' AND order_id=?';
+                . ' FROM cart'
+                . ' WHERE sku=?'
+                . ' AND user_id=?'
+                . ' AND store_id=?'
+                . ' AND order_id=?';
 
         $conditions = array($data['sku'], $data['user_id'], $data['store_id'], 0);
         $existing = $this->db->fetch($sql, $conditions);
@@ -383,7 +371,7 @@ class Cart extends Model
 
         $this->hook->fire('update.cart.after', $cart_id, $data, $result);
 
-        return (bool)$result;
+        return (bool) $result;
     }
 
     /**
@@ -400,8 +388,8 @@ class Cart extends Model
         $result = array('total' => 0, 'sku' => array());
 
         foreach ($items as $item) {
-            $result['total'] += (int)$item['quantity'];
-            $result['sku'][$item['sku']] = (int)$item['quantity'];
+            $result['total'] += (int) $item['quantity'];
+            $result['sku'][$item['sku']] = (int) $item['quantity'];
         }
 
         if (isset($key)) {
@@ -477,8 +465,7 @@ class Cart extends Model
         Cache::clearMemory();
 
         $url = $this->request->base() . 'wishlist';
-        $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>',
-            array('!href' => $url));
+        $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $url));
 
         $result = array(
             'redirect' => '',
@@ -559,12 +546,12 @@ class Cart extends Model
             );
         }
 
-        $result = (bool)$this->db->delete('cart', $conditions);
+        $result = (bool) $this->db->delete('cart', $conditions);
 
         Cache::clearMemory();
 
         $this->hook->fire('delete.cart.after', $arguments, $result);
-        return (bool)$result;
+        return (bool) $result;
     }
 
     /**

@@ -172,6 +172,13 @@
                     </a>
                   </li>
                   <?php } ?>
+                  <?php if ($this->access('order_add')) { ?>
+                  <li>
+                    <a href="<?php echo $this->url("checkout/add/$id"); ?>">
+                      <?php echo $this->text('add order'); ?>
+                    </a>
+                  </li>
+                  <?php } ?>
                 </ul>
             </td>
           </tr>

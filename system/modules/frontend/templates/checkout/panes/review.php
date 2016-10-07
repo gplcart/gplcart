@@ -33,9 +33,11 @@
           <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-default btn-sm" name="order[cart][action][delete]" value="<?php echo $item['cart_id']; ?>">
             <i class="fa fa-trash"></i>
           </button>
+          <?php if(!$admin) { ?>
           <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default btn-sm" name="order[cart][action][wishlist]" value="<?php echo $sku; ?>">
             <i class="fa fa-star"></i>
           </button>
+          <?php } ?>
         </div>
       </div>
     </div>
@@ -105,7 +107,13 @@
         <button class="btn btn-default" name="update" value="1"><i class="fa fa-refresh"></i> <?php echo $this->text('Update'); ?></button>
       </div>
       <div class="col-md-6">
-        <button class="btn btn-success" name="save" value="1"><?php echo $this->text('Place order now'); ?></button>
+        <button class="btn btn-success" name="save" value="1">
+          <?php if($admin) { ?>
+          <?php echo $this->text('Save'); ?>
+          <?php } else { ?>
+          <?php echo $this->text('Place order now'); ?>
+          <?php } ?>
+        </button>
       </div>
     </div>
   </div>

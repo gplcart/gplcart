@@ -2,7 +2,7 @@
   <?php if(empty($cart['items'])) { ?>
   <div class="row items">
     <div class="col-md-12">
-      <?php echo $this->text('Your shopping cart is empty'); ?>
+      <?php echo $this->text('Shopping cart is empty.'); ?>
     </div>
   </div>
   <?php } else { ?>

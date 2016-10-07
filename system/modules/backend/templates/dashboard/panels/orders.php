@@ -15,7 +15,7 @@
       </tbody>
     </table>
     <div class="text-right">
-      <a href="<?php echo $this->url('admin/order'); ?>">
+      <a href="<?php echo $this->url('admin/sale/order'); ?>">
         <?php echo $this->text('See all'); ?>
       </a>
     </div>

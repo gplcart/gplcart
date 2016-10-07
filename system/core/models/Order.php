@@ -95,8 +95,8 @@ class Order extends Model
      */
     public function __construct(ModelsUser $user, ModelsPrice $price,
             ModelsPriceRule $pricerule, ModelsProduct $product,
-            ModelsCart $cart, ModelsLanguage $language, ModelsMail $mail, Request $request,
-            Logger $logger)
+            ModelsCart $cart, ModelsLanguage $language, ModelsMail $mail,
+            Request $request, Logger $logger)
     {
         parent::__construct();
 
@@ -252,13 +252,13 @@ class Order extends Model
                 . ' WHERE o.order_id=?';
 
         $order = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
-        
+
         $this->attachCart($order);
 
         $this->hook->fire('get.order.after', $order_id, $order);
         return $order;
     }
-    
+
     /**
      * Sets cart items to the order
      * @param array $order
@@ -300,7 +300,11 @@ class Order extends Model
             return false;
         }
 
-        $data += array('modified' => GC_TIME);
+        $data['modified'] = GC_TIME;
+
+        if (!empty($data['cart'])) {
+            $this->setComponents($data, $data['cart']);
+        }
 
         $result = $this->db->update('orders', $data, array('order_id' => $order_id));
         $this->hook->fire('update.order.after', $order_id, $data, $result);
@@ -328,6 +332,7 @@ class Order extends Model
 
         if ($deleted) {
             $this->db->delete('cart', $conditions);
+            $this->db->delete('order_log', $conditions);
             $this->db->delete('history', $conditions2);
         }
 
@@ -410,11 +415,12 @@ class Order extends Model
      * Submits an order
      * @param array $data
      * @param array $cart
+     * @param array $options
      * @return array
      */
-    public function submit(array $data, array $cart)
+    public function submit(array $data, array $cart, array $options = array())
     {
-        $this->hook->fire('submit.order.before', $data, $cart);
+        $this->hook->fire('submit.order.before', $data, $cart, $options);
 
         $result = array(
             'redirect' => '',
@@ -439,16 +445,27 @@ class Order extends Model
         $this->logSubmit($order);
         $this->setPriceRule($order);
         $this->setCart($order, $cart);
-        $this->setNotification($order);
 
         $result = array(
             'order' => $order,
-            'message' => '',
             'severity' => 'success',
-            'redirect' => "checkout/complete/$order_id"
+            'redirect' => "admin/sale/order/$order_id",
+            'message' => $this->language->text('Order has been created')
         );
 
-        $this->hook->fire('submit.order.after', $order, $cart, $result);
+        if (empty($options['admin'])) {
+
+            $this->setNotification($order);
+
+            $result = array(
+                'message' => '',
+                'order' => $order,
+                'severity' => 'success',
+                'redirect' => "checkout/complete/$order_id"
+            );
+        }
+
+        $this->hook->fire('submit.order.after', $order, $cart, $options, $result);
         return $result;
     }
 
@@ -497,7 +514,7 @@ class Order extends Model
         } else {
             $message = $this->getCompleteMessageAnonymous($order);
         }
-        
+
         $this->hook->fire('order.complete.message', $message, $order);
         return $message;
     }
@@ -553,7 +570,9 @@ class Order extends Model
         }
 
         $order += array(
-            'created' => GC_TIME, 'status' => $this->getDefaultStatus());
+            'created' => GC_TIME,
+            'status' => $this->getDefaultStatus()
+        );
 
         if (empty($order['data']['user'])) {
             $order['data']['user'] = $this->getUserData();
@@ -562,6 +581,46 @@ class Order extends Model
         $order['order_id'] = $this->db->insert('orders', $order);
         $this->hook->fire('add.order.after', $order);
         return $order['order_id'];
+    }
+
+    /**
+     * Adds an order log record to the database
+     * @param string $message
+     * @param array|integer $order
+     * @return integer
+     */
+    public function addLog($message, $order)
+    {
+        if (is_numeric($order)) {
+            $order = $this->get($order);
+        }
+
+        $values = array(
+            'data' => $order,
+            'text' => $message,
+            'created' => GC_TIME,
+            'order_id' => $order['order_id']
+        );
+
+        return $this->db->insert('order_log', $values);
+    }
+
+    /**
+     * Returns an array of log records for the given order ID
+     * @param integer $order_id
+     * @param array $options
+     * @return array
+     */
+    public function getLogs($order_id, array $options = array())
+    {
+        $sql = 'SELECT * FROM order_log WHERE order_id=? ORDER BY created DESC';
+        
+        if(!empty($options['limit'])){
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+        
+        $options = array('index' => 'order_log_id', 'unserialize' => 'data');
+        return $this->db->fetchAll($sql, array($order_id), $options);
     }
 
     /**
@@ -612,7 +671,7 @@ class Order extends Model
      */
     protected function getDefaultStatuses()
     {
-        return array(
+        $statuses = array(
             'pending' => $this->language->text('Pending'),
             'processing' => $this->language->text('Processing'),
             'canceled' => $this->language->text('Canceled'),
@@ -620,6 +679,8 @@ class Order extends Model
             'delivered' => $this->language->text('Delivered'),
             'completed' => $this->language->text('Completed')
         );
+
+        return $statuses;
     }
 
     /**
@@ -629,6 +690,7 @@ class Order extends Model
     protected function setPriceRule(array $order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
+
             if (!is_numeric($component_id)) {
                 continue; // We need only rules
             }
@@ -636,7 +698,7 @@ class Order extends Model
             $rule = $this->pricerule->get($component_id);
 
             // Mark the coupon was used
-            if (isset($rule['type']) && $rule['type'] === 'order' && !empty($rule['code'])) {
+            if ($rule['code'] !== '') {
                 $this->pricerule->setUsed($rule['price_rule_id']);
             }
         }
@@ -650,7 +712,16 @@ class Order extends Model
     protected function setCart(array $order, array $cart)
     {
         foreach ($cart['items'] as $item) {
-            $this->cart->update($item['cart_id'], array('order_id' => $order['order_id']));
+
+            $values = array(
+                // Replace default order ID (0) with order ID we just created
+                'order_id' => $order['order_id'],
+                // Make sure that cart items have the same user ID with order.
+                // It can be different e.g admin adds an order using own cart items
+                'user_id' => $order['user_id']
+            );
+
+            $this->cart->update($item['cart_id'], $values);
         }
     }
 
@@ -674,25 +745,28 @@ class Order extends Model
      */
     protected function getUserData()
     {
-        return array(
+        $data = array(
             'ip' => $this->request->ip(),
             'agent' => $this->request->agent()
         );
+
+        return $data;
     }
 
     /**
      * Prepares order components
      * @param array $order
      * @param array $cart
-     * @return array
      */
     protected function setComponents(array &$order, array $cart)
     {
-        foreach ($cart['items'] as $cart_id => $item) {
-            $order['data']['components']['cart'][$cart_id] = $item['total'];
+        if (empty($cart['items'])) {
+            return;
         }
 
-        return $order;
+        foreach ($cart['items'] as $sku => $item) {
+            $order['data']['components']['cart'][$sku] = $item['total'];
+        }
     }
 
     /**
@@ -706,6 +780,7 @@ class Order extends Model
 
         $prepared = array();
         foreach ($order['data']['components'] as $name => $component) {
+
             if ($name === 'cart') {
                 $prepared[$name] = $this->prepareComponentCart($component, $cart, $order);
                 continue;

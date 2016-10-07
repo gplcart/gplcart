@@ -30,11 +30,8 @@ class Settings extends BackendController
     {
         $this->controlAccessSuperAdmin();
 
-        $default = $this->getDefaultSettings();
-
-        foreach ($default as $key => $value) {
-            $this->setData("settings.$key", $this->config($key, $value));
-        }
+        $settings = $this->getSettings();
+        $this->setData('settings', $settings);
 
         $this->submitSettings();
         $this->setDataEditSettings();
@@ -64,6 +61,18 @@ class Settings extends BackendController
             'smtp_password' => '',
             'smtp_port' => 587
         );
+    }
+
+    /**
+     * Returns an array of settings
+     * @return array
+     */
+    protected function getSettings()
+    {
+        $default = $this->getDefaultSettings();
+        $saved = $this->config();
+
+        return Tool::merge($default, $saved);
     }
 
     /**
@@ -125,11 +134,9 @@ class Settings extends BackendController
             $this->config->reset('gapi_certificate');
         }
 
-        $allowed = $this->config->get();
         $submitted = $this->getSubmitted();
-        $save = array_intersect_key($submitted, $allowed);
 
-        foreach ($save as $key => $value) {
+        foreach ($submitted as $key => $value) {
             $this->config->set($key, $value);
         }
 
@@ -143,7 +150,7 @@ class Settings extends BackendController
     protected function setDataEditSettings()
     {
         $smtp_host = $this->getData('settings.smtp_host');
-        $this->setData('settings.smtp_host', implode("\n", (array)$smtp_host));
+        $this->setData('settings.smtp_host', implode("\n", (array) $smtp_host));
     }
 
     /**
@@ -159,12 +166,12 @@ class Settings extends BackendController
      */
     protected function setBreadcrumbEditSettings()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

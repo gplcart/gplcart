@@ -1,4 +1,4 @@
-/* global GplCart, Backend */
+/* global GplCart, Backend, Chart */
 var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {}};
 
 (function (window, document, GplCart, $) {
@@ -468,8 +468,8 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
 
         var search_id,
                 cookie_id = 'search-id',
-                cookie_settings = {expires: 365, path: '/'},
-        input = $('#search-form [name="search_id"]');
+                input = $('#search-form [name="search_id"]'),
+                cookie_settings = {expires: 365, path: '/'};
 
         if (typeof Cookies === 'undefined') {
             return;
@@ -499,9 +499,31 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      * @returns {undefined}
      */
     Backend.attach.map = function () {
-        if (GplCart.settings.map) {
-            GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1]);
+
+        var key;
+
+        if (!GplCart.settings.map) {
+            return;
         }
+
+        if (!GplCart.settings.map.key) {
+            console.warn('Please specify a browser API key for Google Maps at admin/settings/common');
+            return;
+        }
+
+        key = GplCart.settings.map.key;
+
+        if (GplCart.settings.map.address) {
+            GplCart.gmap(GplCart.settings.map.address, false, key);
+            return;
+        }
+
+        if (GplCart.settings.map[0] && GplCart.settings.map[1]) {
+            GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1], key);
+            return;
+        }
+
+        console.warn('Invalid arguments for Google Maps');
     };
 
     /**
