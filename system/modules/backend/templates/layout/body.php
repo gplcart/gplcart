@@ -20,7 +20,7 @@
         <?php echo $admin_menu; ?>
         <form class="navbar-form navbar-left hidden-sm hidden-xs" id="search-form" action="<?php echo $this->url('admin/search'); ?>">
           <div class="input-group">
-            <input class="form-control" id="search-autocomplete" name="q" placeholder="<?php echo $this->text('Search'); ?>" value="<?php echo $search_query; ?>">
+            <input class="form-control" id="search-autocomplete" name="q" placeholder="<?php echo $this->text('Search'); ?>" value="<?php echo isset($search_query) ? $search_query : ''; ?>">
             <span class="input-group-btn">
               <select class="form-control" name="search_id">
                 <?php foreach ($search_handlers as $search_handler_id => $search_handler_data) { ?>
