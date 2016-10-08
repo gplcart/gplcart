@@ -294,23 +294,6 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     };
 
     /**
-     * Session time left counter
-     * @returns {undefined}
-     */
-    Backend.attach.countdown = function () {
-
-        var format = '%M:%S',
-                result = $('#session-expires'),
-                limit = GplCart.settings.session_limit;
-
-        if ($.fn.countdown) {
-            result.countdown(limit, function (event) {
-                $(this).html(event.strftime(format));
-            });
-        }
-    };
-
-    /**
      * Adds WYSIWYG editor to a textarea
      * @returns {undefined}
      */

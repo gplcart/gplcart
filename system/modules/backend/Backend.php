@@ -104,7 +104,6 @@ class Backend
         }
 
         $controller->setJs('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
-        $controller->setJs('files/assets/jquery/countdown/countdown.js', 'bottom');
     }
 
 }

@@ -115,12 +115,6 @@ class Controller
     protected $maintenance = false;
 
     /**
-     * UNIX timestamp of the last request stored in the session
-     * @var integer
-     */
-    protected $last_activity = 0;
-
-    /**
      * Array of template variables
      * @var array
      */
@@ -887,8 +881,6 @@ class Controller
             $this->url->redirect('login', array('target' => $this->path));
         }
 
-        // Control session timeout
-        $this->controlSessionTimeout();
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
     }
@@ -908,26 +900,6 @@ class Controller
         if (isset($token) && !$this->config->tokenValid($token)) {
             $this->response->error403();
         }
-    }
-
-    /**
-     * Controls session timeout
-     * @return integer Timestamp of the last activity
-     */
-    protected function controlSessionTimeout()
-    {
-        $time = GC_TIME;
-
-        $this->last_activity = (int) $this->session->get('last_activity');
-
-        if (!empty($this->last_activity) && ($time - $this->last_activity > GC_SESSION_TIMEOUT)) {
-            $this->session->delete();
-            $this->url->redirect('login', array('target' => $this->path));
-        }
-
-        $this->last_activity = $time;
-        $this->session->set('last_activity', null, $time);
-        return $time;
     }
 
     /**
@@ -1436,8 +1408,7 @@ class Controller
         // Settings
         $allowed = array(
             'token', 'base', 'lang',
-            'lang_region', 'urn', 'uri',
-            'path', 'last_activity', 'session_limit');
+            'lang_region', 'urn', 'uri', 'path');
 
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, -800);
@@ -1449,11 +1420,6 @@ class Controller
             $url = $this->url('cron', array('key' => $this->cron_key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
             $this->document->js($js, 'bottom');
-        }
-
-        if ($this->backend) {
-            $session_limit = GC_SESSION_TIMEOUT * 1000;
-            $this->document->js("GplCart.logout($session_limit);", 'bottom');
         }
     }
 
@@ -1501,8 +1467,6 @@ class Controller
         $this->data['urn'] = $this->urn;
         $this->data['uri'] = $this->uri;
         $this->data['path'] = $this->path;
-        $this->data['last_activity'] = $this->last_activity;
-        $this->data['session_limit'] = ($this->last_activity + GC_SESSION_TIMEOUT) * 1000;
 
         if (!empty($this->langcode) && strpos($this->langcode, '_') === false) {
             $this->data['lang_region'] = $this->langcode . '-' . strtoupper($this->langcode);
