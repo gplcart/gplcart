@@ -19,6 +19,7 @@
               <?php } ?>
               <?php } ?>
               <?php if ($this->access('order_delete')) { ?>
+              <li class="divider"></li>
               <li>
                 <a data-action="delete" href="#">
                   <?php echo $this->text('Delete'); ?>
