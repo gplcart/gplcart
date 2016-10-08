@@ -15,6 +15,9 @@ use core\models\Country as ModelsCountry;
 use core\models\Order as ModelsOrder;
 use core\models\State as ModelsState;
 use core\models\UserRole as ModelsUserRole;
+use core\models\PriceRule as ModelsPriceRule;
+use core\models\Payment as ModelsPayment;
+use core\models\Shipping as ModelsShipping;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
@@ -41,12 +44,6 @@ class Account extends FrontendController
     protected $state;
 
     /**
-     * Mail model instance
-     * @var \core\models\Mail $mail
-     */
-    protected $mail;
-
-    /**
      * Order model instance
      * @var \core\models\Order $order
      */
@@ -59,15 +56,38 @@ class Account extends FrontendController
     protected $role;
 
     /**
+     * Price rule model instance
+     * @var \core\models\PriceRule $pricerule
+     */
+    protected $pricerule;
+
+    /**
+     * Payment model instance
+     * @var \core\models\Payment $payment
+     */
+    protected $payment;
+
+    /**
+     * Shipping model instance
+     * @var \core\models\Shipping $shipping
+     */
+    protected $shipping;
+
+    /**
      * Constructor
      * @param ModelsAddress $address
      * @param ModelsCountry $country
      * @param ModelsState $state
      * @param ModelsOrder $order
      * @param ModelsUserRole $role
+     * @param ModelsPriceRule $pricerule
+     * @param ModelsPayment $payment
+     * @param ModelsShipping $shipping
      */
     public function __construct(ModelsAddress $address, ModelsCountry $country,
-            ModelsState $state, ModelsOrder $order, ModelsUserRole $role)
+            ModelsState $state, ModelsOrder $order, ModelsUserRole $role,
+            ModelsPriceRule $pricerule, ModelsPayment $payment,
+            ModelsShipping $shipping)
     {
         parent::__construct();
 
@@ -76,6 +96,9 @@ class Account extends FrontendController
         $this->order = $order;
         $this->country = $country;
         $this->address = $address;
+        $this->pricerule = $pricerule;
+        $this->payment = $payment;
+        $this->shipping = $shipping;
     }
 
     /**
@@ -85,7 +108,7 @@ class Account extends FrontendController
     public function indexAccount($user_id)
     {
         $user = $this->getUserAccount($user_id);
-        $default_limit = $this->config('account_order_limit', 10);
+        $default_limit = $this->config('account_order_limit', 5);
 
         $query = $this->getFilterQuery();
         $total = $this->getTotalOrderAccount($user_id);
@@ -94,9 +117,6 @@ class Account extends FrontendController
 
         $this->setData('user', $user);
         $this->setData('orders', $orders);
-
-        $filters = array('order_id', 'created', 'total', 'status');
-        $this->setFilter($filters, $query);
 
         $this->setBreadcrumbIndexAccount($user);
         $this->setTitleIndexAccount();
@@ -132,7 +152,8 @@ class Account extends FrontendController
     {
         $options = array(
             'count' => true,
-            'user_id' => $user_id);
+            'user_id' => $user_id
+        );
 
         return $this->order->getList($options);
     }
@@ -153,14 +174,15 @@ class Account extends FrontendController
         );
 
         $query['user_id'] = $user_id;
-
         $orders = $this->order->getList($query);
 
-        foreach ($orders as &$order) {
+        foreach ($orders as $order_id => &$order) {
 
-            $address_id = $order['shipping_address'];
-            $address = $this->address->get($address_id);
-            $components = $this->order->getComponents($order);
+            $order['cart'] = $this->cart->getList(array('order_id' => $order_id));
+            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+
+            $components = $this->getOrderComponentsAccount($order);
+            $address = $this->address->get($order['shipping_address']);
             $translated_address = $this->address->getTranslated($address, true);
 
             $data = array(
@@ -169,24 +191,122 @@ class Account extends FrontendController
                 'shipping_address' => $translated_address
             );
 
-            $order['render'] = $this->render('account/order', $data);
+            $order['rendered'] = $this->render('account/order', $data);
         }
 
         return $orders;
     }
 
     /**
-     * Sets breadcrumbs on the account index page
+     * Returns an array of order components
+     * @param array $order
+     * @return array
+     */
+    public function getOrderComponentsAccount(array $order)
+    {
+        $components = array();
+        foreach ($order['data']['components'] as $type => $value) {
+            $this->setComponentCartAccount($components, $type, $value, $order);
+            $this->setComponentMethodAccount($components, $type, $value, $order);
+            $this->setComponentRuleAccount($components, $type, $value);
+        }
+
+        ksort($components);
+        return $components;
+    }
+
+    /**
+     * Sets rendered component "Cart"
+     * @param array $components
+     * @param string $type
+     * @param array $component_cart
+     * @param array $order
+     */
+    protected function setComponentCartAccount(array &$components, $type,
+            $component_cart, array $order)
+    {
+        if ($type === 'cart') {
+
+            foreach ($component_cart as $sku => $price) {
+                $order['cart'][$sku]['price_formatted'] = $this->price->format($price, $order['currency']);
+            }
+
+            $html = $this->render('backend|sale/order/panes/components/cart', array('order' => $order));
+            $components['cart'] = $html;
+        }
+    }
+
+    /**
+     * Sets a rendered payment/shipping component
+     * @param array $components
+     * @param string $type
+     * @param integer $price
+     * @param array $order
+     * @return null
+     */
+    protected function setComponentMethodAccount(array &$components, $type,
+            $price, array $order)
+    {
+        if (!in_array($type, array('shipping', 'payment'))) {
+            return null;
+        }
+
+        $method = $this->{$type}->getMethod();
+        $method['name'] = isset($method['name']) ? $method['name'] : $this->text('Unknown');
+
+        if (abs($price) == 0) {
+            $price = 0; // No negative values
+        }
+
+        $method['price_formatted'] = $this->price->format($price, $order['currency']);
+        $html = $this->render('backend|sale/order/panes/components/method', array('method' => $method));
+
+        $components[$type] = $html;
+        return null;
+    }
+
+    /**
+     * Sets a rendered price rule component
+     * @param array $components
+     * @param integer $rule_id
+     * @param integer $price
+     * @return null
+     */
+    protected function setComponentRuleAccount(array &$components, $rule_id,
+            $price)
+    {
+        if (!is_numeric($rule_id)) {
+            return null;
+        }
+
+        if (abs($price) == 0) {
+            $price = 0;
+        }
+
+        $rule = $this->pricerule->get($rule_id);
+
+        $data = array(
+            'rule' => $rule,
+            'price' => $this->price->format($price, $rule['currency'])
+        );
+
+        $html = $this->render('backend|sale/order/panes/components/rule', $data);
+        $components['rule'][$rule_id] = $html;
+        return null;
+    }
+
+    /**
+     * Sets breadcrumbs on the account page
      * @param array $user
      */
     protected function setBreadcrumbIndexAccount(array $user)
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('/'),
             'text' => $this->text('Shop')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -230,7 +350,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Displays 403 error page if the current user has no access to edit the page
+     * Controls user access to the edit account page
      * @param array $user
      */
     protected function controlAccessEditAccount(array $user)
@@ -241,7 +361,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Saves user account settings
+     * Saves submitted user account settings
      * @param array $user
      */
     protected function submitEditAccount(array $user)

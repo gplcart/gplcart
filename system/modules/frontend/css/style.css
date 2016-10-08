@@ -11,10 +11,14 @@ body {
 .panel {
     border: none;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 0 !important;
 }
 
-.panel-default>.panel-heading {
+#orders .panel {
+    border: 1px solid #ddd;
+}
+
+.panel-default > .panel-heading {
     background-color: #fff;
 }
 
@@ -173,6 +177,14 @@ td.middle {
     vertical-align: middle !important;
 }
 
+.table-auto {
+   width: auto !important;
+}
+
+.panel-title {
+    font-size: 100%;
+}
+
 .hidden-js {
     display: none !important;
 }
@@ -321,20 +333,4 @@ ul.ui-autocomplete.ui-menu li a:hover {
 .table.price-components .form-group {
     padding: 0;
     margin: 0;
-}
-
-/******** Account ************/
-
-.order-details table {
-    background-color: transparent !important;
-}
-
-.order-details table td {
-    padding: 0 !important;
-    border: none !important;
-}
-
-.order-details .heading {
-    font-weight: bold;
-    padding: 5px 0;
 }

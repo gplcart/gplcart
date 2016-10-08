@@ -608,7 +608,7 @@ class Order extends Model
     }
 
     /**
-     * Returns an array of log records for the given order ID
+     * Returns an array of log records
      * @param array $data
      * @return array
      */
@@ -704,11 +704,11 @@ class Order extends Model
     {
         $statuses = array(
             'pending' => $this->language->text('Pending'),
-            'processing' => $this->language->text('Processing'),
             'canceled' => $this->language->text('Canceled'),
-            'dispatched' => $this->language->text('Dispatched'),
             'delivered' => $this->language->text('Delivered'),
-            'completed' => $this->language->text('Completed')
+            'completed' => $this->language->text('Completed'),
+            'processing' => $this->language->text('Processing'),
+            'dispatched' => $this->language->text('Dispatched')
         );
 
         return $statuses;
@@ -799,90 +799,4 @@ class Order extends Model
             $order['data']['components']['cart'][$sku] = $item['total'];
         }
     }
-
-    /**
-     * Returns an array of order components
-     * @param array $order
-     * @return array
-     */
-    public function getComponents(array $order)
-    {
-        $cart = $this->cart->getList(array('order_id' => $order['order_id']));
-
-        $prepared = array();
-        foreach ($order['data']['components'] as $name => $component) {
-
-            if ($name === 'cart') {
-                $prepared[$name] = $this->prepareComponentCart($component, $cart, $order);
-                continue;
-            }
-
-            if (in_array($name, array('shipping', 'payment'))) {
-                $prepared['service'][$name] = $this->prepareComponentService($name, $component, $cart, $order);
-                continue;
-            }
-
-            if (is_numeric($name)) {
-                $prepared['rule'][$name] = $this->prepareComponentPriceRule($name, $component, $cart, $order);
-            }
-        }
-
-        ksort($prepared);
-        return $prepared;
-    }
-
-    /**
-     * Prepares cart order component
-     * @param array $component
-     * @param array $cart
-     * @param array  $order
-     * @return array
-     */
-    protected function prepareComponentCart(array $component, array $cart,
-            array $order)
-    {
-        foreach ($component as $cart_id => $price) {
-            if (isset($cart[$cart_id]['sku'])) {
-                $cart[$cart_id]['component_price'] = $price;
-                $cart[$cart_id]['component_price_formatted'] = $this->price->format($price, $order['currency']);
-                $cart[$cart_id]['product'] = $this->product->getBySku($cart[$cart_id]['sku'], $order['store_id']);
-            }
-        }
-
-        return $cart;
-    }
-
-    /**
-     * Prepares service cart component
-     * @param string $type
-     * @param integer $price
-     * @param array $cart
-     * @param array $order
-     */
-    protected function prepareComponentService($type, $price, array $cart,
-            array $order)
-    {
-        $service = $this->getService($order[$type], $type, $cart, $order);
-        $service['component_price'] = $price;
-        $service['component_price_formatted'] = $this->price->format($price, $order['currency']);
-        return $service;
-    }
-
-    /**
-     * Prepares price rule order component
-     * @param integer $rule_id
-     * @param integer $price
-     * @param array $cart
-     * @param array $order
-     * @return array
-     */
-    protected function prepareComponentPriceRule($rule_id, $price, array $cart,
-            array $order)
-    {
-        $rule = $this->pricerule->get($rule_id);
-        $rule['component_price'] = $price;
-        $rule['component_price_formatted'] = $this->price->format($price, $order['currency']);
-        return $rule;
-    }
-
 }
