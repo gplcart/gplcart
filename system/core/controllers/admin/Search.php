@@ -59,7 +59,7 @@ class Search extends BackendController
         $handlers = $this->getHandlersSearch();
         $results = $this->getListResultsSearch($search_id, $term, $limit);
 
-        $this->setData('query', $term);
+        $this->setData('search_query', $term);
         $this->setData('results', $results);
         $this->setData('handlers', $handlers);
         $this->setData('search_id', $search_id);
@@ -98,11 +98,11 @@ class Search extends BackendController
     /**
      * Returns an array of rendered search results
      * @param string $search_id
-     * @param array $query
+     * @param string $term
      * @param int $total
      * @return array
      */
-    protected function getListResultsSearch($search_id, array $query, $total)
+    protected function getListResultsSearch($search_id, $term, $total)
     {
         $options = array(
             'prepare' => true,
@@ -112,7 +112,7 @@ class Search extends BackendController
         );
 
         $entityname = preg_replace('/_id$/', '', $search_id);
-        $results = $this->search->search($search_id, $query, $options);
+        $results = $this->search->search($search_id, $term, $options);
 
         $items = array();
         foreach ($results as $result) {

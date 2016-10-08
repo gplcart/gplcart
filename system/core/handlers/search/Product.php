@@ -227,7 +227,7 @@ class Product
     {
         $product_ids = array_keys($results);
 
-        $scheme = $this->$this->request->getScheme();
+        $scheme = $this->request->scheme();
 
         foreach ($results as $product_id => &$result) {
             $result['price_formatted'] = $this->price->format($result['price'], $result['currency']);

@@ -103,7 +103,6 @@ class Backend
             $controller->setJs("files/assets/jquery/summernote/lang/summernote-$lang_region.js", 'bottom');
         }
 
-        $controller->setJs('files/assets/jquery/cookie/js.cookie.js', 'bottom');
         $controller->setJs('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
         $controller->setJs('files/assets/jquery/countdown/countdown.js', 'bottom');
     }

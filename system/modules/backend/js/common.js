@@ -461,32 +461,6 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     };
 
     /**
-     * Memorize search type
-     * @returns {undefined}
-     */
-    Backend.attach.searchMemorize = function () {
-
-        var search_id,
-                cookie_id = 'search-id',
-                input = $('#search-form [name="search_id"]'),
-                cookie_settings = {expires: 365, path: '/'};
-
-        if (typeof Cookies === 'undefined') {
-            return;
-        }
-
-        search_id = Cookies.get(cookie_id);
-
-        if (search_id) {
-            input.val(search_id);
-        }
-
-        input.change(function () {
-            Cookies.set(cookie_id, $(this).val(), cookie_settings);
-        });
-    };
-
-    /**
      * Sets up traffic chart
      * @returns {undefined}
      */
