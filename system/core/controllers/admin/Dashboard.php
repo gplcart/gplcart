@@ -75,13 +75,11 @@ class Dashboard extends BackendController
      * @param ModelsReview $review
      */
     public function __construct(
-        ModelsProduct $product,
-        ModelsPrice $price,
-        ModelsOrder $order,
-        ModelsReport $report,
-        ModelsAnalytics $analytics,
-        ModelsReview $review
-    ) {
+    ModelsProduct $product, ModelsPrice $price, ModelsOrder $order,
+            ModelsReport $report, ModelsAnalytics $analytics,
+            ModelsReview $review
+    )
+    {
         parent::__construct();
 
         $this->price = $price;
@@ -91,7 +89,7 @@ class Dashboard extends BackendController
         $this->product = $product;
         $this->analytics = $analytics;
 
-        $this->dashboard_limit = (int)$this->config('dashboard_limit', 10);
+        $this->dashboard_limit = (int) $this->config('dashboard_limit', 10);
     }
 
     /**
@@ -187,13 +185,15 @@ class Dashboard extends BackendController
     protected function setDataOrdersDashboard()
     {
         $options = array('limit' => array(0, $this->dashboard_limit));
-
         $orders = $this->order->getList($options);
 
         array_walk($orders, function (&$order) {
+            $order['is_new'] = $this->order->isNew($order);
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
             $order['rendered'] = $this->render('search/suggestion/order', array('order' => $order));
         });
+
+
 
         $html = $this->render('dashboard/panels/orders', array('orders' => $orders));
         $this->setData('dashboard_panel_orders', $html);
@@ -217,7 +217,7 @@ class Dashboard extends BackendController
             $items = $this->report->getList($options);
 
             foreach ($items as &$item) {
-                $variables = empty($item['data']['variables']) ? array() : (array)$item['data']['variables'];
+                $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
                 $message = empty($item['translatable']) ? $item['text'] : $this->text($item['text'], $variables);
                 $item['message'] = strip_tags($message);
             }
@@ -304,7 +304,7 @@ class Dashboard extends BackendController
      */
     protected function outputDashboard()
     {
-        $intro = (bool)$this->config('intro', 0);
+        $intro = (bool) $this->config('intro', 0);
 
         if ($intro && $this->isSuperadmin()) {
             $this->output('dashboard/intro');

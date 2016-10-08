@@ -8,6 +8,6 @@
     </span>
     <span class="price">
       <?php echo $this->escape($product['price_formatted']); ?>
-    </div>
+    </span>
   </span>
 </span>
