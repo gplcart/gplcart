@@ -94,29 +94,23 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
             return;
         }
 
-        var slider = $('[data-slider="true"]');
-        var settings = slider.data('slider-settings') || {};
+        var slider = $('[data-slider="true"]'),
+                settings,
+                gSettings;
 
-        slider.lightSlider(settings);
-    };
+        slider.each(function () {
 
-    /**
-     * Setup image gallery
-     * @returns {undefined}
-     */
-    Frontend.attach.gallery = function () {
+            settings = $(this).data('slider-settings') || {};
+            gSettings = $(this).data('slider-gallery');
 
-        if (!$.fn.lightGallery) {
-            return;
-        }
+            if (!$.isEmptyObject(gSettings) && $.fn.lightGallery) {
+                settings.onSliderLoad = function (gallery) {
+                    gallery.lightGallery(gallery.data('slider-gallery'));
+                };
+            }
 
-        var settings = {
-            selector: '.item',
-            thumbnail: true,
-            download: false
-        };
-
-        $('#lg-gallery').lightGallery(settings);
+            $(this).lightSlider(settings);
+        });
     };
 
     /**

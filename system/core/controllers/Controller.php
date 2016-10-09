@@ -423,6 +423,7 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
+        
         if(empty($options['imagestyle'])){
             return $data;
         }

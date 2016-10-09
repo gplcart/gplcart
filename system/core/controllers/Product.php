@@ -277,11 +277,10 @@ class Product extends FrontendController
      */
     protected function setImagesProduct(array $product)
     {
-        $options = array(
-            'product' => $product,
-            'images' => $this->getImagesProduct($product),
-        );
+        $imagestyle = $this->setting('image_style_product', 5);
+        $this->setItemThumb($product, array('imagestyle' => $imagestyle));
 
+        $options = array('product' => $product);
         $html = $this->render('product/images', $options);
         $this->setData('images', $html);
     }
@@ -358,14 +357,14 @@ class Product extends FrontendController
         $limit = $this->config('product_recent_limit', 12);
         $lifespan = $this->config('product_recent_cookie_lifespan', 31536000);
         $product_ids = $this->product->setViewed($product_id, $limit, $lifespan);
-        
+
         $current = array_search($product_id, $product_ids);
         unset($product_ids[$current]); // Exclude the current product iD
-        
-        if(empty($product_ids)){
+
+        if (empty($product_ids)) {
             return array();
         }
-        
+
         return $this->getProducts(array('product_id' => $product_ids));
     }
 
@@ -402,35 +401,6 @@ class Product extends FrontendController
         }
 
         return $data;
-    }
-
-    /**
-     * Returns an array of product images
-     * @param array $product
-     * @return array
-     */
-    protected function getImagesProduct($product)
-    {
-        if (empty($product['images'])) {
-            return array();
-        }
-
-        $imagestyle = $this->setting('image_style_product', 5);
-        $imagestyle_extra = $this->setting('image_style_product_extra', 3);
-
-        $images = array();
-        foreach ($product['images'] as $image) {
-            $image += array(
-                'url_original' => $this->image->urlFromPath($image['path']),
-                'url_big' => $this->image->url($imagestyle, $image['path']),
-                'url_extra' => $this->image->url($imagestyle_extra, $image['path']),
-            );
-
-            $images[] = $image;
-        }
-
-        $main = array_shift($images);
-        return array('main' => $main, 'extra' => $images);
     }
 
 }
