@@ -25,7 +25,7 @@
     <div class="panel-heading"><?php echo $this->text('Images'); ?></div>
     <div class="panel-body">
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Category page (main)'); ?></label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Category page'); ?></label>
         <div class="col-md-4">
           <select name="settings[image_style_category]" class="form-control">
             <?php foreach ($imagestyles as $id => $name) { ?>
@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Product page (main)'); ?></label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Product page'); ?></label>
         <div class="col-md-4">
           <select name="settings[image_style_product]" class="form-control">
             <?php foreach ($imagestyles as $id => $name) { ?>
@@ -72,17 +72,17 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Product page (extra)'); ?></label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Page'); ?></label>
         <div class="col-md-4">
-          <select name="settings[image_style_product_extra]" class="form-control">
+          <select name="settings[image_style_page]" class="form-control">
             <?php foreach ($imagestyles as $id => $name) { ?>
-            <option value="<?php echo $id; ?>"<?php echo ($settings['image_style_product_extra'] == $id) ? ' selected' : ''; ?>>
+            <option value="<?php echo $id; ?>"<?php echo ($settings['image_style_page'] == $id) ? ' selected' : ''; ?>>
             <?php echo $this->escape($name); ?>
             </option>
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('An <a href="@href">image style</a> for additional (i.e starting from second) images on the product page', array('@href' => $this->url('admin/settings/imagestyle'))); ?>
+            <?php echo $this->text('An <a href="@href">image style</a> for page images', array('@href' => $this->url('admin/settings/imagestyle'))); ?>
           </div>
         </div>
       </div>

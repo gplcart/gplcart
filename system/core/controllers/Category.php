@@ -85,7 +85,8 @@ class Category extends FrontendController
      * @param integer $total
      * @param array $query
      */
-    protected function setDataNavbarCategory(array $products, $total, array $query)
+    protected function setDataNavbarCategory(array $products, $total,
+            array $query)
     {
         $options = array(
             'total' => $total,
@@ -159,7 +160,7 @@ class Category extends FrontendController
         $breadcrumb = array(
             'text' => $this->text('Home'),
             'url' => $this->url('/'));
-        
+
         $this->setBreadcrumb($breadcrumb);
     }
 

@@ -86,16 +86,15 @@ class Frontend
             'catalog_sort' => 'price',
             'catalog_order' => 'asc',
             'catalog_view' => 'grid',
+            'image_style_page' => 5,
             'image_style_category' => 3,
             'image_style_category_child' => 3,
             'image_style_product' => 5,
-            'image_style_product_extra' => 3,
             'image_style_product_grid' => 3,
             'image_style_product_list' => 3,
             'image_style_cart' => 3,
             'image_style_option' => 1,
-            'image_style_collection_banner' => 7,
-            'image_style_page' => 5
+            'image_style_collection_banner' => 7
         );
     }
 
