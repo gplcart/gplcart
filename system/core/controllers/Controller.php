@@ -423,7 +423,6 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
-        
         if(empty($options['imagestyle'])){
             return $data;
         }
@@ -921,6 +920,23 @@ class Controller extends BaseController
         }
 
         return $this->render('collection/list/file', array('files' => $files));
+    }
+    
+    /**
+     * Sets meta tags on the entity page
+     * @param array $data
+     */
+    protected function setMetaEntity(array $data)
+    {
+        if ($data['meta_title'] !== '') {
+            $this->setTitle($data['meta_title'], false);
+        }
+        
+        if ($data['meta_description'] !== '') {
+            $this->setMeta(array('name' => 'description', 'content' => $data['meta_description']));
+        }
+        
+        $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
     }
 
 }

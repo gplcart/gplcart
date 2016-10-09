@@ -47,8 +47,8 @@ class Page extends FrontendController
         $this->setData('page', $page);
 
         $this->setTitlePage($page);
+        $this->setMetaEntity($page);
         $this->setBreadcrumbPage($page);
-        $this->setMetaPage($page);
         $this->outputPage();
     }
 
@@ -72,21 +72,6 @@ class Page extends FrontendController
         );
 
         $this->setBreadcrumb($breadcrumb);
-    }
-    
-    /**
-     * Sets meta tags on the page
-     * @param array $page
-     */
-    protected function setMetaPage(array $page)
-    {
-        if ($page['meta_title'] !== '') {
-            $this->setTitle($page['meta_title'], false);
-        }
-        
-        if ($page['meta_description'] !== '') {
-            $this->setMeta(array('name' => 'description', 'content' => $page['meta_description']));
-        }
     }
 
     /**

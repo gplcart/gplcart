@@ -84,6 +84,8 @@ class Product extends FrontendController
 
         $this->setJsIndexProduct($product);
         $this->setTitleIndexProduct($product);
+        
+        $this->setMetaEntity($product);
         $this->outputIndexProduct();
     }
 

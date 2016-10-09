@@ -73,8 +73,8 @@ class Category extends FrontendController
         $this->setDataChildrenCategory($category_id);
         $this->setDataNavbarCategory($products, $total, $query);
 
-        $this->setMetaIndexCategory($category);
         $this->setTitleIndexCategory($category);
+        $this->setMetaEntity($category);
         $this->setBreadcrumbIndexCategory($category);
         $this->outputIndexCategory();
     }
@@ -162,22 +162,6 @@ class Category extends FrontendController
             'url' => $this->url('/'));
 
         $this->setBreadcrumb($breadcrumb);
-    }
-
-    /**
-     * Sets metatags on the category page
-     * @param array $category
-     */
-    protected function setMetaIndexCategory(array $category)
-    {
-        $meta_description = $category['meta_description'];
-
-        if ($meta_description === '') {
-            $meta_description = $this->truncate($category['description_1'], 160, '');
-        }
-
-        $this->setMeta(array('name' => 'description', 'content' => $meta_description));
-        $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
     }
 
     /**
