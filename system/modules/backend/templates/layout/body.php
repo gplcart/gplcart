@@ -18,23 +18,6 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <?php echo $admin_menu; ?>
-        <form class="navbar-form navbar-left hidden-sm hidden-xs" id="search-form" action="<?php echo $this->url('admin/search'); ?>">
-          <div class="input-group">
-            <input class="form-control" id="search-autocomplete" name="q" placeholder="<?php echo $this->text('Search'); ?>" value="<?php echo isset($search_query) ? $search_query : ''; ?>">
-            <span class="input-group-btn">
-              <select class="form-control" name="search_id">
-                <?php foreach ($search_handlers as $search_handler_id => $search_handler_data) { ?>
-                <option value="<?php echo $search_handler_id; ?>"<?php echo (isset($search_id) && $search_id == $search_handler_id) ? ' selected' : ''; ?>>
-                <?php echo $this->escape($search_handler_data['name']); ?>
-                </option>
-                <?php } ?>
-              </select>
-            </span>
-            <span class="input-group-btn">
-              <button class="btn btn-default"><i class="fa fa-search"></i></button>
-            </span>
-          </div>
-        </form>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">

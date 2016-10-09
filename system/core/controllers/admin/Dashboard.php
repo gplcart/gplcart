@@ -75,8 +75,11 @@ class Dashboard extends BackendController
      * @param ModelsReview $review
      */
     public function __construct(
-    ModelsProduct $product, ModelsPrice $price, ModelsOrder $order,
-            ModelsReport $report, ModelsAnalytics $analytics,
+            ModelsProduct $product,
+            ModelsPrice $price,
+            ModelsOrder $order,
+            ModelsReport $report,
+            ModelsAnalytics $analytics,
             ModelsReview $review
     )
     {
@@ -190,10 +193,7 @@ class Dashboard extends BackendController
         array_walk($orders, function (&$order) {
             $order['is_new'] = $this->order->isNew($order);
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-            $order['rendered'] = $this->render('search/suggestion/order', array('order' => $order));
         });
-
-
 
         $html = $this->render('dashboard/panels/orders', array('orders' => $orders));
         $this->setData('dashboard_panel_orders', $html);

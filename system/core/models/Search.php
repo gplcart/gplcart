@@ -128,7 +128,8 @@ class Search extends Model
         $filtered_query = $this->filterStopwords($query, $options['language']);
 
         if (!empty($filtered_query)) {
-            return Handler::call($this->getHandlers(), $id_key, 'search', array($filtered_query, $options));
+            $handlers = $this->getHandlers();
+            return Handler::call($handlers, $id_key, 'search', array($filtered_query, $options));
         }
 
         return array();
@@ -146,24 +147,15 @@ class Search extends Model
             return $handlers;
         }
 
-        $handlers = array(
-            'product_id' => array(
-                'name' => $this->language->text('Products'),
-                'handlers' => array(
-                    'search' => array('core\\handlers\\search\\Product', 'search'),
-                    'index' => array('core\\handlers\\search\\Product', 'index'),
-                    'total' => array('core\\handlers\\search\\Product', 'total')
-                )
-            ),
-            'order_id' => array(
-                'name' => $this->language->text('Orders'),
-                'handlers' => array(
-                    'search' => array('core\\handlers\\search\\Order', 'search'),
-                    'index' => array('core\\handlers\\search\\Order', 'index'),
-                    'total' => array('core\\handlers\\search\\Order', 'total')
-                )
-            )
-        );
+        $handlers = array();
+
+        $handlers['product_id'] = array(
+            'name' => $this->language->text('Products'),
+            'handlers' => array(
+                'search' => array('core\\handlers\\search\\Product', 'search'),
+                'index' => array('core\\handlers\\search\\Product', 'index'),
+                'total' => array('core\\handlers\\search\\Product', 'total')
+        ));
 
         $this->hook->fire('search.handlers', $handlers);
         return $handlers;
@@ -187,10 +179,10 @@ class Search extends Model
         $path = GC_PRIVATE_DIR . "/stopwords/$language.txt";
 
         if (is_readable($path)) {
-            $stopwords = array_map('trim', file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+            $array = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $stopwords = array_map('trim', $array);
         }
 
         return implode(' ', array_diff(explode(' ', $string), $stopwords));
     }
-
 }

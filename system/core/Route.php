@@ -420,14 +420,6 @@ class Route
             )
         );
 
-        $routes['admin/tool/search'] = array(
-            'access' => 'search_edit',
-            'menu' => array('admin' => 'Search'),
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Search', 'indexSearch')
-            )
-        );
-
         $routes['admin/sale'] = array(
             'menu' => array('admin' => 'Sales'),
             'handlers' => array(
@@ -484,13 +476,6 @@ class Route
             'menu' => array('admin' => 'Transactions'),
             'handlers' => array(
                 'controller' => array('core\\controllers\\admin\\Transaction', 'listTransaction')
-            )
-        );
-
-        $routes['admin/search'] = array(
-            'access' => 'search',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Search', 'listSearch')
             )
         );
 

@@ -342,8 +342,6 @@ class UserRole extends Model
             'import' => $this->language->text('Import: access'),
             'export' => $this->language->text('Export: access'),
             'settings' => $this->language->text('Settings: access'),
-            'search' => $this->language->text('Search: access'),
-            'search_edit' => $this->language->text('Search: edit'),
             'alias' => $this->language->text('Alias: access'),
             'zone' => $this->language->text('Zone: access'),
             'zone_edit' => $this->language->text('Zone: edit'),

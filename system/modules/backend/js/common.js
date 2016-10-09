@@ -397,53 +397,6 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     };
 
     /**
-     * Makes an input autocomplete
-     * @returns {undefined}
-     */
-    Backend.attach.searchAutocomplete = function () {
-
-        var url,
-                params,
-                keyword = $('#search-form [name="q"]'),
-                type = $('#search-form [name="search_id"]'),
-                position = {my: "right top", at: "right bottom"};
-
-        keyword.autocomplete({
-            minLength: 2,
-            position: position,
-            source: function (request, response) {
-
-                params = {
-                    id: type.val(),
-                    term: request.term,
-                    action: 'adminSearchAjax',
-                    token: GplCart.settings.token
-                };
-
-                url = GplCart.settings.base + 'ajax';
-
-                $.post(url, params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {suggestion: value};
-                    }));
-                });
-            },
-            select: function () {
-                return false;
-            }
-        }).autocomplete('instance')._renderItem = function (ul, item) {
-            return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
-        };
-
-        // Retain searching on focus
-        keyword.focus(function () {
-            if ($(this).val()) {
-                $(this).autocomplete("search");
-            }
-        });
-    };
-
-    /**
      * Sets up traffic chart
      * @returns {undefined}
      */
