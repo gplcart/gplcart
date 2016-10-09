@@ -42,10 +42,13 @@ class Page extends FrontendController
     public function indexPage($page_id)
     {
         $page = $this->getPage($page_id);
+
+        $this->setImagesPage($page);
         $this->setData('page', $page);
 
         $this->setTitlePage($page);
         $this->setBreadcrumbPage($page);
+        $this->setMetaPage($page);
         $this->outputPage();
     }
 
@@ -63,14 +66,27 @@ class Page extends FrontendController
      */
     protected function setBreadcrumbPage(array $page)
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('/'),
             'text' => $this->text('Home')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
+    }
+    
+    /**
+     * Sets meta tags on the page
+     * @param array $page
+     */
+    protected function setMetaPage(array $page)
+    {
+        if ($page['meta_title'] !== '') {
+            $this->setTitle($page['meta_title'], false);
+        }
+        
+        if ($page['meta_description'] !== '') {
+            $this->setMeta(array('name' => 'description', 'content' => $page['meta_description']));
+        }
     }
 
     /**
@@ -91,8 +107,12 @@ class Page extends FrontendController
     {
         $page = $this->page->get($page_id, $this->langcode);
 
-        if (empty($page['status'])) {
+        if (empty($page)) {
             $this->outputError(404);
+        }
+
+        if (empty($page['status']) && !$this->access('page')) {
+            $this->outputError(403);
         }
 
         if ($page['store_id'] != $this->store_id) {
@@ -100,6 +120,19 @@ class Page extends FrontendController
         }
 
         return $page;
+    }
+
+    /**
+     * Sets rendered page images
+     * @param array $page
+     */
+    protected function setImagesPage(array $page)
+    {
+        $imagestyle = $this->setting('image_style_page', 5);
+        $this->setItemThumb($page, array('imagestyle' => $imagestyle));
+
+        $html = $this->render('page/images', array('page' => $page));
+        $this->setData('images', $html);
     }
 
 }

@@ -325,9 +325,7 @@ class Product extends FrontendController
         }
 
         $product['fields'] = $this->getFieldsProduct($product);
-
         $this->setItemPrice($product);
-
         return $product;
     }
 
@@ -422,11 +420,13 @@ class Product extends FrontendController
 
         $images = array();
         foreach ($product['images'] as $image) {
-            $images[] = $image + array(
+            $image += array(
                 'url_original' => $this->image->urlFromPath($image['path']),
                 'url_big' => $this->image->url($imagestyle, $image['path']),
                 'url_extra' => $this->image->url($imagestyle_extra, $image['path']),
             );
+
+            $images[] = $image;
         }
 
         $main = array_shift($images);

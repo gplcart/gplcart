@@ -423,6 +423,10 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
+        if(empty($options['imagestyle'])){
+            return $data;
+        }
+
         if (isset($options['path'])) {
             $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
             return $data;
@@ -439,6 +443,7 @@ class Controller extends BaseController
 
         foreach ($data['images'] as &$image) {
             $image['thumb'] = $this->image->url($options['imagestyle'], $image['path']);
+            $image['url'] = $this->image->urlFromPath($image['path']);
         }
 
         return $data;

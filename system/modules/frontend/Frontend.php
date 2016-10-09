@@ -95,6 +95,7 @@ class Frontend
             'image_style_cart' => 3,
             'image_style_option' => 1,
             'image_style_collection_banner' => 7,
+            'image_style_page' => 5
         );
     }
 

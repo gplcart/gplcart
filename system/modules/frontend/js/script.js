@@ -85,27 +85,6 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
     };
 
     /**
-     * Setup multi-item (chunked) slider
-     * @returns {undefined}
-     */
-    Frontend.attach.multiSlider = function () {
-
-        if (!$.fn.lightSlider) {
-            return;
-        }
-
-        var settings = {
-            item: 4,
-            pager: false,
-            autoWidth: false,
-            slideMargin: 0
-        };
-
-        $('.multi-item-carousel').lightSlider(settings);
-
-    };
-
-    /**
      * Sets up lightSlider
      * @returns {undefined}
      */
@@ -115,16 +94,10 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
             return;
         }
 
-        var settings = {
-            auto: false,
-            loop: true,
-            pager: false,
-            autoWidth: true,
-            pauseOnHover: true,
-            item: 2,
-        };
+        var slider = $('[data-slider="true"]');
+        var settings = slider.data('slider-settings') || {};
 
-        $('.collection-file .slider').lightSlider(settings);
+        slider.lightSlider(settings);
     };
 
     /**

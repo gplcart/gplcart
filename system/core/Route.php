@@ -274,7 +274,6 @@ class Route
             )
         );
 
-        // Admin area
         $routes['admin'] = array(
             'access' => 'dashboard',
             'handlers' => array(

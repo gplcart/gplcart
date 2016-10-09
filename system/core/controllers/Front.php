@@ -17,13 +17,13 @@ use core\controllers\Controller as FrontendController;
  */
 class Front extends FrontendController
 {
-    
+
     /**
      * Collection item model instance
      * @var \core\models\CollectionItem $collection_item
      */
     protected $collection_item;
-    
+
     /**
      * Constructor
      * @param ModelsCollectionItem $collection_item
@@ -40,15 +40,15 @@ class Front extends FrontendController
      */
     public function indexFront()
     {
-        
+
         $this->setRegionBannerFront();
         $this->setRegionFeaturedFront();
         $this->setRegionPageFront();
-        
+
         $this->setTitleIndexFront();
         $this->outputIndexFront();
     }
-    
+
     /**
      * Adds a block with featured products on the front page
      */
@@ -62,7 +62,7 @@ class Front extends FrontendController
             $this->setRegion('region_content', $html);
         }
     }
-    
+
     /**
      * Adds a block with banners on the front page
      */
@@ -76,7 +76,7 @@ class Front extends FrontendController
             $this->setRegion('region_content', $html);
         }
     }
-    
+
     /**
      * Adds a block with pages on the front page
      */
