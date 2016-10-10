@@ -86,17 +86,6 @@ var GplCart = GplCart || {settings: {}, translations: {}};
     };
 
     /**
-     * Redirects user to logout after its session has expired
-     * @param {type} interval
-     * @returns {undefined}
-     */
-    GplCart.logout = function (interval) {
-        setInterval(function () {
-            window.location.replace(GplCart.settings.base + 'logout');
-        }, interval);
-    };
-
-    /**
      * Loads Google Maps
      * @param {type} lat
      * @param {type} lng
