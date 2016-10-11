@@ -183,7 +183,7 @@ class Document
      */
     public function title($string = '', $both = true)
     {
-        static $title = array();
+        static $title = '';
 
         if ($string === '') {
             return $title;
@@ -206,7 +206,7 @@ class Document
      */
     public function ptitle($string = '')
     {
-        static $title = array();
+        static $title = '';
 
         if ($string === '') {
             return $title;
