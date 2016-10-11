@@ -5,7 +5,6 @@ Disallow: /*sort=
 Disallow: /*view=
 Disallow: /*lang=
 Disallow: /account
-Disallow: /action
 Disallow: /admin
 Disallow: /ajax
 Disallow: /cache
