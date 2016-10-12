@@ -65,13 +65,13 @@ class Alias extends BackendController
      */
     protected function actionAlias()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
             return;
         }
 
-        $selected = (array)$this->request->post('selected', array());
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = 0;
         foreach ($selected as $id) {
@@ -88,7 +88,7 @@ class Alias extends BackendController
             }
 
             if ($action === 'delete') {
-                $deleted += (int)$this->alias->delete($id);
+                $deleted += (int) $this->alias->delete($id);
             }
         }
 
@@ -106,7 +106,7 @@ class Alias extends BackendController
     protected function getTotalAlias(array $query)
     {
         $query['count'] = true;
-        return (int)$this->alias->getList($query);
+        return (int) $this->alias->getList($query);
     }
 
     /**
