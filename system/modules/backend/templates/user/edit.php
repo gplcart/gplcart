@@ -88,7 +88,7 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
         <div class="col-md-4">
           <div class="input-group">
-            <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $this->escape($user['password']) : ''; ?>">
+            <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
             <span class="input-group-btn">
               <button class="btn btn-default" type="button" onclick="$(this).closest('.input-group').find('input').val(GplCart.randomString());">
                 <i class="fa fa-magic"></i>
