@@ -492,6 +492,10 @@ class Controller
             $timestamp = GC_TIME;
         }
 
+        if (empty($timestamp)) {
+            return '';
+        }
+
         $format = $this->config('date_prefix', 'd.m.y');
 
         if ($full) {
@@ -856,19 +860,12 @@ class Controller
             }
         }
 
-        // Prevent Cross-Site Request Forgery (CSRF)
-        if ($this->isPosted()) {
+        $this->controlCsrf();
 
-            if (!Tool::hashEquals($this->request->post('token'), $this->token)) {
-                $this->response->error403();
-            }
-
-            $file = $this->request->file();
-
-            // Check access to upload a file
-            if (!empty($file) && !$this->access('file_upload')) {
-                $this->response->error403();
-            }
+        // Check access to upload a file
+        $file = $this->request->file();
+        if (!empty($file) && !$this->access('file_upload')) {
+            $this->response->error403();
         }
 
         // Check access only on restricted areas
@@ -883,6 +880,27 @@ class Controller
 
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
+    }
+
+    /**
+     * Prevent Cross-Site Request Forgery (CSRF)
+     * @return boolean|void
+     */
+    protected function controlCsrf()
+    {
+        if (!$this->isPosted()) {
+            return true;
+        }
+
+        if (isset($this->current_route['token']) && empty($this->current_route['token'])) {
+            return true;
+        }
+
+        if (Tool::hashEquals($this->request->post('token'), $this->token)) {
+            return true;
+        }
+
+        return $this->response->error403();
     }
 
     /**

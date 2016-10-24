@@ -398,8 +398,8 @@ class User extends Model
 
         $login = $this->config->get('user_registration_login', true);
         $status = $this->config->get('user_registration_status', true);
-
-        $data['status'] = $status;
+        
+        $data += array('status' => $status, 'login' => $login);
         $data['user_id'] = $this->add($data);
 
         if (empty($data['user_id'])) {
@@ -416,7 +416,7 @@ class User extends Model
             'severity' => 'success',
             'message' => $this->language->text('Your account has been created'));
 
-        if ($login && $status) {
+        if (!empty($data['login']) && !empty($data['status'])) {
             $result = $this->login($data);
         }
 

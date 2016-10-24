@@ -183,13 +183,13 @@ class Route
 
         $routes['register'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\User', 'EditRegisterUser')
+                'controller' => array('core\\controllers\\User', 'editRegisterUser')
             )
         );
 
         $routes['forgot'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\User', 'EditResetPasswordUser')
+                'controller' => array('core\\controllers\\User', 'editResetPasswordUser')
             )
         );
 
