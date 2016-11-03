@@ -14,4 +14,3 @@ if (PHP_SAPI !== 'cli') {
 }
 
 require 'system/bootstrap.php';
-exit;
