@@ -41,6 +41,21 @@
       <?php } ?>
       <div class="row">
         <div class="col-md-12">
+          <?php if(count($installers) > 1){ ?>
+          <div class="panel panel-default installers">
+            <div class="panel-heading"><?php echo $this->text('Select installer'); ?></div>
+            <div class="panel-body">
+              <?php foreach($installers as $installer_id => $installer) { ?>
+              <p>
+              <div class="installer title">
+                <a href="<?php echo $this->escape($installer['url']); ?>"><?php echo $this->escape($installer['title']); ?></a>
+              </div>
+              <div class="installer description"><?php echo $this->xss($installer['description']); ?></div>
+              </p>
+              <?php } ?>
+            </div>
+          </div>
+          <?php } else { ?>
           <?php if ($issues) { ?>
           <div class="panel issues panel-<?php echo $severity; ?>">
             <div class="panel-heading"><?php echo $this->text('Issues'); ?></div>
@@ -186,6 +201,7 @@
               </button>
             </div>
           </div>
+          <?php } ?>
           <?php } ?>
         </div>
       </div>

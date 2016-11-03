@@ -46,7 +46,7 @@ class Install extends Model
      * PDO instance
      * @var \core\classes\Database $db
      */
-    protected $db;
+    protected $database;
 
     /**
      * Config class instance
@@ -63,9 +63,49 @@ class Install extends Model
     public function __construct(ModelsStore $store, ModelsLanguage $language,
             Request $request)
     {
+        parent::__construct();
+
         $this->store = $store;
         $this->request = $request;
         $this->language = $language;
+    }
+
+    /**
+     * Returns an array of defined installers
+     * @return string
+     */
+    public function getList()
+    {
+        $installers = array();
+        $this->hook->fire('installer', $installers);
+
+        // Default installer definition goes after the hook 
+        // to prevent changing form a module
+        $installers['default'] = array(
+            'weight' => 0,
+            'path' => 'install',
+            'title' => $this->language->text('Install'),
+            'description' => $this->language->text('Default system installer'),
+        );
+
+        // Append installer ID
+        array_walk($installers, function(&$value, $key) {
+            $value['id'] = $key;
+        });
+
+        Tool::sortWeight($installers);
+        return $installers;
+    }
+
+    /**
+     * Returns an installer
+     * @param string $installer
+     * @return array
+     */
+    public function get($installer)
+    {
+        $installers = $this->getList();
+        return empty($installers[$installer]) ? array() : $installers[$installer];
     }
 
     /**
@@ -160,13 +200,13 @@ class Install extends Model
     public function connect(array $settings)
     {
         try {
-            $this->db = new Database($settings);
+            $this->database = new Database($settings);
         } catch (DatabaseException $e) {
-            $this->db = null;
+            $this->database = null;
             return $e->getMessage();
         }
 
-        $existing = $this->db->query('SHOW TABLES')->fetchColumn();
+        $existing = $this->database->query('SHOW TABLES')->fetchColumn();
         if (!empty($existing)) {
             return $this->language->text('The database you specified already has tables');
         }
@@ -180,8 +220,8 @@ class Install extends Model
      */
     public function tables()
     {
-        $scheme = $this->db->getScheme();
-        return $this->db->import($scheme);
+        $scheme = $this->database->getScheme();
+        return $this->database->import($scheme);
     }
 
     /**
@@ -218,9 +258,9 @@ class Install extends Model
         Container::unregister(); // Remove old instances to prevent conflicts
 
         $this->config = Container::instance('core\\Config');
-        $this->db = $this->config->getDb();
+        $this->database = $this->config->getDb();
 
-        if (empty($this->db)) {
+        if (empty($this->database)) {
             return $this->language->text('Unable to connect to the database');
         }
 
@@ -251,13 +291,13 @@ class Install extends Model
             'title' => 'Banners',
             'description' => 'Block with banners on the front page',
         );
-        
+
         $collections[] = array(
             'type' => 'product',
             'title' => 'Featured products',
             'description' => 'Block with featured products on the front page',
         );
-        
+
         $collections[] = array(
             'type' => 'page',
             'title' => 'News/articles',
@@ -266,7 +306,7 @@ class Install extends Model
 
         foreach ($collections as $collection) {
             $collection += array('status' => 1, 'store_id' => $store_id);
-            $this->db->insert('collection', $collection);
+            $this->database->insert('collection', $collection);
         }
     }
 
@@ -283,7 +323,7 @@ class Install extends Model
 
         foreach ($groups as $group) {
             $group += array('store_id' => $store_id);
-            $this->db->insert('category_group', $group);
+            $this->database->insert('category_group', $group);
         }
     }
 
@@ -303,12 +343,12 @@ class Install extends Model
             'status' => 1,
             'data' => $data,
             'created' => GC_TIME,
-            'domain' => $this->request->host(),
             'name' => $settings['store']['title'],
-            'basepath' => trim($this->request->base(true), '/')
+            'domain' => $settings['store']['host'],
+            'basepath' => $settings['store']['basepath']
         );
 
-        $store_id = $this->db->insert('store', $store);
+        $store_id = $this->database->insert('store', $store);
         $this->config->set('store', $store_id);
 
         return $store_id;
@@ -331,7 +371,7 @@ class Install extends Model
             'hash' => Tool::hash($settings['user']['password'])
         );
 
-        $user_id = $this->db->insert('user', $user);
+        $user_id = $this->database->insert('user', $user);
         $this->config->set('user_superadmin', $user_id);
 
         return $user_id;
@@ -381,7 +421,7 @@ class Install extends Model
         $roles[] = array('name' => 'Content manager');
 
         foreach ($roles as $role) {
-            $this->db->insert('role', $role);
+            $this->database->insert('role', $role);
         }
     }
 
@@ -423,7 +463,7 @@ class Install extends Model
                 'store_id' => $store_id
             );
 
-            $page_id = $this->db->insert('page', $data);
+            $page_id = $this->database->insert('page', $data);
 
             $alias = array(
                 'alias' => $alias,
@@ -431,8 +471,32 @@ class Install extends Model
                 'id_value' => $page_id
             );
 
-            $this->db->insert('alias', $alias);
+            $this->database->insert('alias', $alias);
         }
+    }
+
+    /**
+     * Performs full system installation
+     * @param array $data
+     * @return boolean|string Either TRUE on success or a error message 
+     */
+    public function full(array $data)
+    {
+        if ($this->tables() !== true) {
+            return $this->language->text('Failed to create all necessary tables in the database');
+        }
+
+        if (!$this->config($data)) {
+            return $this->language->text('Failed to create config.php');
+        }
+
+        $result = $this->store($data);
+
+        if ($result !== true) {
+            return (string) $result;
+        }
+
+        return true;
     }
 
 }

@@ -10,6 +10,7 @@
 namespace core\handlers\job\import;
 
 use core\classes\Csv;
+use core\classes\Tool;
 use core\models\User as ModelsUser;
 use core\models\Alias as ModelsAlias;
 use core\models\Import as ModelsImport;
@@ -211,7 +212,7 @@ class Category
     {
         // Convert "yes, y, true, on" into boolean value
         if (isset($data['status'])) {
-            $data['status'] = $this->import->toBool($data['status']);
+            $data['status'] = Tool::toBool($data['status']);
         }
 
         if (isset($data['title']) && mb_strlen($data['title']) > 255) {

@@ -55,13 +55,13 @@ class Route
     protected $path;
 
     /**
-     * Current language code from the url
+     * The current language code from the url
      * @var string
      */
     protected $langcode = '';
 
     /**
-     * Current route
+     * The current route
      * @var array
      */
     protected $route;
@@ -1049,6 +1049,10 @@ class Route
 
             foreach ($this->getList() as $pattern => $route) {
 
+                if (empty($route['arguments'])) {
+                    $route['arguments'] = array();
+                }
+
                 if (!isset($route['alias'][0])) {
                     continue; // This route doesn't support aliases
                 }
@@ -1059,8 +1063,9 @@ class Route
                     continue; // Entity name not matching, try the next route
                 }
 
-                $route['arguments'] = array($info['id_value']);
+                $route['arguments'] += array($info['id_value']);
                 $this->route = $route + array('pattern' => $pattern);
+
                 Handler::call($route, null, 'controller', $route['arguments']);
                 throw new RouteException('An error occurred while processing the route');
             }
@@ -1110,9 +1115,7 @@ class Route
                 continue;
             }
 
-            $this->route = $route + array('pattern' => $pattern);
             $this->url->redirect($alias);
-            throw new RouteException('An error occurred while processing the route');
         }
     }
 
@@ -1155,16 +1158,20 @@ class Route
     {
         foreach ($this->getList() as $pattern => $route) {
 
+            if (empty($route['arguments'])) {
+                $route['arguments'] = array();
+            }
+
             $arguments = Tool::patternMatch($this->path, $pattern);
 
             if ($arguments === false) {
                 continue;
             }
 
-            $route['arguments'] = $arguments;
+            $route['arguments'] += $arguments;
             $this->route = $route + array('pattern' => $pattern);
 
-            Handler::call($route, null, 'controller', $arguments);
+            Handler::call($route, null, 'controller', $route['arguments']);
             throw new RouteException('An error occurred while processing the route');
         }
     }

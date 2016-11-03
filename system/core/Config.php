@@ -211,10 +211,12 @@ class Config
             return $modules;
         }
 
-        $modules = array();
+        $installation = !$this->exists();
         $saved_modules = $this->getInstalledModules();
 
+        $modules = array();
         foreach (scandir(GC_MODULE_DIR) as $module_dir) {
+
             if (!$this->validModuleId($module_dir)) {
                 continue;
             }
@@ -264,19 +266,23 @@ class Config
                 $module_info['status'] = 1;
             }
 
+            if ($module_info['type'] === 'installer') {
+                // Enable installers only when needed
+                $module_info['status'] = $installation;
+            }
+
             $modules[$module_info['id']] = $module_info;
         }
 
         return $modules;
     }
-    
+
     /**
      * Returns an array containing module info and instance
      * @param string $name
-     * @param array $saved_modules
      * @return boolean
      */
-    public function getModuleData($name, array $saved_modules = array())
+    public function getModuleData($name)
     {
         $class = $this->getModuleClass($name);
         $instance = Container::instance($class);
@@ -284,7 +290,7 @@ class Config
         if (empty($instance) || !is_callable(array($instance, 'info'))) {
             return false;
         }
-        
+
         $info = $instance->info();
         return array('class' => $class, 'info' => $info, 'instance' => $instance);
     }

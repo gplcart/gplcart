@@ -42,23 +42,27 @@ class Install extends FrontendController
         $this->install = $install;
         $this->install_language = $this->request->get('lang', '');
     }
-
+    
     /**
-     * Dispays install page
+     * Dispays the installation page
+     * @param null|string $installer_id
      */
-    public function install()
+    public function install($installer_id = null)
     {
         $this->controlAccessInstall();
-
-        $this->submitInstall();
+        $installer = $this->getInstall($installer_id);
+        $this->submitInstall($installer);
 
         $timezones = Tool::timezones();
         $languages = $this->getLanguagesInstall();
         $requirements = $this->getRequirementsInstall();
+        $installers = $this->getListInstall();
 
         $issues = $this->getRequirementErrorsInstall($requirements);
         $severity = $this->getSeverityInstall($issues);
 
+        $this->setData('installer', $installer);
+        $this->setData('installers', $installers);
         $this->setData('issues', $issues);
         $this->setData('severity', $severity);
         $this->setData('url_wiki', GC_WIKI_URL);
@@ -70,8 +74,47 @@ class Install extends FrontendController
         $this->setData('settings.store.language', $this->install_language);
 
         $this->setCssInstall();
-        $this->setTitleInstall();
+        $this->setTitleInstall($installer);
         $this->outputInstall();
+    }
+    
+    /**
+     * Returns a list of available installers
+     * @return array
+     */
+    protected function getListInstall()
+    {
+        $list = $this->install->getList();
+        
+        array_walk($list, function(&$value, $key) {
+            $value['url'] = $this->url($value['path'], $this->query);
+        });
+        
+        return $list;
+    }
+    
+    /**
+     * Returns an installer
+     * @param string $installer_id
+     * @return array
+     */
+    protected function getInstall($installer_id){
+        
+        if(empty($installer_id)){
+            $installer_id = 'default';
+        }
+        
+        $installer = $this->install->get($installer_id);
+        
+        if(empty($installer['path'])){
+            $this->redirect('install');
+        }
+        
+        if($installer['path'] !== $this->path){
+            $this->redirect($installer['path']);
+        }
+        
+        return $installer;
     }
 
     /**
@@ -132,23 +175,26 @@ class Install extends FrontendController
 
         return '';
     }
-
+    
     /**
      * Starts installing the system
+     * @param array $installer
+     * @return null
      */
-    protected function submitInstall()
+    protected function submitInstall(array $installer)
     {
         if (!$this->isPosted('install')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('settings');
-
-        $this->validateInstall();
+        $this->validateInstall($installer);
 
         if (!$this->hasErrors('settings')) {
-            $this->processInstall();
+            return $this->processInstall();
         }
+        
+        return null;
     }
 
     /**
@@ -156,65 +202,29 @@ class Install extends FrontendController
      */
     protected function processInstall()
     {
-        $this->processStartInstall();
-        $this->processTablesInstall();
-        $this->processConfigInstall();
-        $this->processStoreInstall();
+        $submitted = $this->getSubmitted();
+        $this->processStartInstall($submitted);
+        
+        $result = $this->install->full($submitted);
+        
+        if($result !== true){
+            $url = $this->url('', $this->query);
+            $this->redirect($url, $result, 'danger');
+        }
+        
         $this->processFinishInstall();
     }
-
+    
     /**
      * Prepares installation
+     * @param array $submitted
      */
-    protected function processStartInstall()
+    protected function processStartInstall(array $submitted)
     {
         ini_set('max_execution_time', 0);
-
-        $submitted = $this->getSubmitted();
-
         $this->session->delete('install');
         $this->session->set('install', 'processing', true);
         $this->session->set('install', 'settings', $submitted);
-    }
-
-    /**
-     * Imports tables from database config file
-     */
-    protected function processTablesInstall()
-    {
-        $result = $this->install->tables();
-
-        if ($result !== true) {
-            $url = $this->url('', $this->query);
-            $this->redirect($url, $this->text('Failed to create all necessary tables in the database'), 'danger');
-        }
-    }
-
-    /**
-     * Creates main config file
-     */
-    protected function processConfigInstall()
-    {
-        $submitted = $this->getSubmitted();
-
-        if (!$this->install->config($submitted)) {
-            $url = $this->url('', $this->query);
-            $this->redirect($url, $this->text('Failed to create config.php'), 'danger');
-        }
-    }
-
-    /**
-     * Sets up the store
-     */
-    protected function processStoreInstall()
-    {
-        $submitted = $this->getSubmitted();
-        $result = $this->install->store($submitted);
-
-        if ($result !== true) {
-            $url = $this->url('', $this->query);
-            $this->redirect($url, (string) $result, 'danger');
-        }
     }
 
     /**
@@ -228,13 +238,14 @@ class Install extends FrontendController
         $message = $this->text('Congratulations! You have successfully installed your store');
         $this->redirect('admin', $message, 'success');
     }
-
+    
     /**
      * Sets titles on the installation page
+     * @param array $installer
      */
-    protected function setTitleInstall()
+    protected function setTitleInstall(array $installer)
     {
-        $this->setTitle($this->text('Installing GPL Cart'));
+        $this->setTitle($installer['title']);
     }
 
     /**
@@ -258,11 +269,13 @@ class Install extends FrontendController
     {
         $this->setCss('system/modules/frontend/css/install.css', 99);
     }
-
+    
     /**
      * Validates an array of submitted form values
+     * @param array $installer
+     * @return array
      */
-    protected function validateInstall()
+    protected function validateInstall(array $installer)
     {
         $language = array(
             $this->install_language => $this->language->getIso($this->install_language)
@@ -302,7 +315,7 @@ class Install extends FrontendController
         $errors = $this->setValidators();
 
         if (!empty($errors)) {
-            return;
+            return null;
         }
 
         $db = $this->getSubmitted('database');
@@ -310,7 +323,11 @@ class Install extends FrontendController
 
         if ($connect !== true) {
             $this->setError('database.connect', $connect);
+            return null;
         }
+        
+        $this->setSubmitted('store.host', $this->request->host());
+        $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
     }
 
 }

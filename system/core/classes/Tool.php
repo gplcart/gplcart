@@ -577,4 +577,33 @@ class Tool
         return false;
     }
 
+    /**
+     * Converts string to boolean type
+     * @param string $value
+     * @return boolean
+     */
+    public static function toBool($value)
+    {
+        if (!is_string($value)) {
+            return (bool) $value;
+        }
+
+        $v = strtolower($value);
+
+        $map = array(
+            'y' => true,
+            'n' => false,
+            'yes' => true,
+            'no' => false,
+            'true' => true,
+            'false' => false,
+            '1' => true,
+            '0' => false,
+            'on' => true,
+            'off' => false,
+        );
+
+        return isset($map[$v]) ? $map[$v] : false;
+    }
+
 }

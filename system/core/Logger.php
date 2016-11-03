@@ -21,7 +21,7 @@ class Logger
      * Collected PHP errors
      * @var array
      */
-    protected static $errors;
+    protected static $errors = array();
 
     /**
      * Writes a log message to the CSV file
@@ -82,8 +82,7 @@ class Logger
             'severity' => mb_substr($severity, 0, 255, 'UTF-8')
         );
 
-        $result = $database->insert('log', $values);
-        return (bool) $result;
+        return (bool) $database->insert('log', $values);
     }
 
     /**
@@ -104,7 +103,6 @@ class Logger
 
         $this->log('php_error', $error, 'warning', false);
         $formatted = $this->getFormattedError($error);
-        error_log($formatted, 0);
         static::$errors['warning'][] = $formatted;
     }
 
@@ -128,7 +126,6 @@ class Logger
 
         if (in_array($error['type'], $types)) {
             $error['code'] = $error['type'];
-            error_log($this->getFormattedError($error), 0);
             $this->log('php_shutdown', $error, 'danger', false);
         }
     }
@@ -142,7 +139,6 @@ class Logger
         $this->log('php_exception', $error, 'danger', false);
 
         $message = $this->getFormattedError($error, 'PHP Exception');
-        error_log($message, 0);
         echo $message;
     }
 

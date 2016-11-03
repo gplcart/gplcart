@@ -241,29 +241,6 @@ class Import extends Model
     }
 
     /**
-     * Converts string to boolean type
-     * @param string $var
-     * @return boolean
-     */
-    public function toBool($var)
-    {
-        if (!is_string($var)) {
-            return (bool) $var;
-        }
-
-        switch (strtolower($var)) {
-            case '1':
-            case 'true':
-            case 'on':
-            case 'yes':
-            case 'y':
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
      * Returns a character used to separate key/value pair
      * @return string
      */

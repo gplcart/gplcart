@@ -10,6 +10,7 @@
 namespace core\handlers\job\import;
 
 use core\classes\Csv;
+use core\classes\Tool;
 use core\models\Sku as ModelsSku;
 use core\models\User as ModelsUser;
 use core\models\Store as ModelsStore;
@@ -847,7 +848,7 @@ class Product
     protected function validateStatus(array &$data, array &$errors, $line)
     {
         if (isset($data['status'])) {
-            $data['status'] = $this->import->toBool($data['status']);
+            $data['status'] = Tool::toBool($data['status']);
         }
     }
 

@@ -10,6 +10,7 @@
 namespace core\handlers\job\import;
 
 use core\classes\Csv;
+use core\classes\Tool;
 use core\models\User as ModelsUser;
 use core\models\State as ModelsState;
 use core\models\Import as ModelsImport;
@@ -198,7 +199,7 @@ class State
     protected function validateStatus(array &$data, array &$errors, $line)
     {
         if (isset($data['status'])) {
-            $data['status'] = $this->import->toBool($data['status']);
+            $data['status'] = Tool::toBool($data['status']);
         }
     }
 

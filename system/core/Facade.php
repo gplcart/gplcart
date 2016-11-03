@@ -53,7 +53,7 @@ class Facade
      * @var \core\Logger $logger
      */
     protected $logger;
-
+    
     /**
      * Constructor
      * @param Route $route
@@ -66,7 +66,6 @@ class Facade
     public function __construct(Route $route, Url $url, Session $session,
             Config $config, Hook $hook, Logger $logger)
     {
-
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;
@@ -84,18 +83,31 @@ class Facade
         $modules = $this->config->getEnabledModules();
         $this->hook->modules($modules);
     }
-
+    
     /**
      * Process the route
+     * @return mixed
      */
     public function route()
     {
-        // Redirect to installation if needed
-        if ((!$this->config->exists() || $this->session->get('install', 'processing')) && !$this->url->isInstall()) {
-            $this->url->redirect('install');
+        if (GC_CLI) {
+            // Process command line mode
+            return Container::instance('core\\CliRoute')->process();
         }
 
-        $this->route->process();
+        // Process normal HTTP request
+        $this->session->init();
+
+        // Redirect to installation if needed
+        $install = (!$this->config->exists() // No config/common.php exists
+                || $this->session->get('install', 'processing')) // Installation in progress
+                && !$this->url->isInstall(); // and not on /install page
+
+        if ($install) {
+            return $this->url->redirect('install');
+        }
+
+        return $this->route->process();
     }
 
     /**
@@ -132,9 +144,9 @@ class Facade
      */
     protected function setDebuggingTools()
     {
-        if ($this->config->get('kint', 0)) {
+        //if ($this->config->get('kint', 0)) {
             require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
-        }
+        //}
     }
 
 }
