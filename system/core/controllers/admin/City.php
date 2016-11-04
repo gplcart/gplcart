@@ -136,7 +136,7 @@ class City extends BackendController
         $action = (string)$this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
         $value = (int)$this->request->post('value');
@@ -145,6 +145,7 @@ class City extends BackendController
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
+            
             if ($action === 'status' && $this->access('city_edit')) {
                 $updated += (int)$this->city->update($id, array('status' => $value));
             }
@@ -163,6 +164,8 @@ class City extends BackendController
             $message = $this->text('Cities have been deleted');
             $this->setMessage($message, 'success', true);
         }
+        
+        return null;
     }
 
     /**
@@ -173,13 +176,8 @@ class City extends BackendController
      */
     protected function getTotalCity($state_id, array $query)
     {
-        $options = array(
-            'count' => true,
-            'state_id' => $state_id
-        );
-
+        $options = array('count' => true, 'state_id' => $state_id);
         $options += $query;
-
         return $this->city->getList($options);
     }
 
@@ -192,11 +190,7 @@ class City extends BackendController
      */
     protected function getListCity(array $limit, array $query, $state_id)
     {
-        $options = array(
-            'limit' => $limit,
-            'state_id' => $state_id
-        );
-
+        $options = array('limit' => $limit, 'state_id' => $state_id);
         $options += $query;
         return $this->city->getList($options);
     }
@@ -366,12 +360,8 @@ class City extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('country', $country['code']);
         $this->setSubmitted('state_id', $state['state_id']);
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->setValidators($city);
+        
+        $this->validate('city');
     }
 
     /**

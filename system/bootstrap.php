@@ -100,8 +100,7 @@ function gplcart_bootstrap_server()
 }
 
 /**
- * Checks server host variable.
- * If not - exit immediately.
+ * Validates server host variable
  */
 function gplcart_bootstrap_host()
 {

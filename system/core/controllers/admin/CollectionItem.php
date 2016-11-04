@@ -9,12 +9,12 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Collection as ModelsCollection;
 use core\models\CollectionItem as ModelsCollectionItem;
+use core\controllers\admin\Controller as BackendController;
 
 /**
- * Handles incoming requests and outputs data related to collections
+ * Handles incoming requests and outputs data related to collection items
  */
 class CollectionItem extends BackendController
 {
@@ -36,10 +36,9 @@ class CollectionItem extends BackendController
      * @param ModelsCollection $collection
      * @param ModelsCollectionItem $collection_item
      */
-    public function __construct(
-        ModelsCollection $collection,
-        ModelsCollectionItem $collection_item
-    ) {
+    public function __construct(ModelsCollection $collection,
+            ModelsCollectionItem $collection_item)
+    {
         parent::__construct();
 
         $this->collection = $collection;
@@ -48,7 +47,7 @@ class CollectionItem extends BackendController
 
     /**
      * Displays the collection items overview page
-     * @param int $collection_id
+     * @param integer $collection_id
      */
     public function listCollectionItem($collection_id)
     {
@@ -88,40 +87,34 @@ class CollectionItem extends BackendController
 
     /**
      * Applies an action to the selected collections
+     * @return null
      */
     protected function actionCollectionItem()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         // Update weight and returm JSON responce
         if ($action === 'weight' && $this->access('collection_item_edit')) {
-
-            foreach ($selected as $id => $weight) {
-                $this->collection_item->update($id, array('weight' => $weight));
-            }
-
-            $this->response->json(array(
-                'success' => $this->text('Collection items have been reordered')
-            ));
+            $this->updateWeight($selected);
+            return null;
         }
 
         $deleted = $updated = 0;
-
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('collection_item_edit')) {
-                $updated += (int)$this->collection_item->update($id, array('status' => $value));
+                $updated += (int) $this->collection_item->update($id, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('collection_item_delete')) {
-                $deleted += (int)$this->collection_item->delete($id);
+                $deleted += (int) $this->collection_item->delete($id);
             }
         }
 
@@ -134,6 +127,24 @@ class CollectionItem extends BackendController
             $message = $this->text('Collection items have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
+    }
+
+    /**
+     * Updates weight of collection items
+     * @param array $items
+     */
+    protected function updateWeight(array $items)
+    {
+        foreach ($items as $id => $weight) {
+            $this->collection_item->update($id, array('weight' => $weight));
+        }
+
+        $response = array(
+            'success' => $this->text('Collection items have been reordered'));
+
+        $this->response->json($response);
     }
 
     /**
@@ -233,11 +244,12 @@ class CollectionItem extends BackendController
     /**
      * Saves a submitted collection item
      * @param array $collection
+     * @return null
      */
     protected function submitCollectionItem(array $collection)
     {
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('collection_item');
@@ -246,6 +258,8 @@ class CollectionItem extends BackendController
         if (!$this->hasErrors('collection_item')) {
             $this->addCollectionItem($collection);
         }
+
+        return null;
     }
 
     /**
@@ -254,30 +268,9 @@ class CollectionItem extends BackendController
      */
     protected function validateCollectionItem(array $collection)
     {
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $collection['collection_id']);
-
-        $input = $this->getSubmitted('input');
-
-        if (is_numeric($input)) {
-            $this->setSubmitted('value', $input);
-        }
-
-        $this->addValidator('value', array(
-            'collection_item_value' => array()
-        ));
-
-        $this->addValidator('weight', array(
-            'length' => array('min' => 1, 'max' => 2),
-            'numeric' => array()
-        ));
-
-        $this->addValidator('data.url', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->setValidators($collection);
+        $this->validate('collection_item');
     }
 
     /**

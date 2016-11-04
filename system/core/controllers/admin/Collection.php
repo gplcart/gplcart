@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Collection as ModelsCollection;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to collections
@@ -67,25 +67,25 @@ class Collection extends BackendController
      */
     protected function actionCollection()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('collection_edit')) {
-                $updated += (int)$this->collection->update($id, array('status' => $value));
+                $updated += (int) $this->collection->update($id, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('collection_delete')) {
-                $deleted += (int)$this->collection->delete($id);
+                $deleted += (int) $this->collection->delete($id);
             }
         }
 
@@ -98,6 +98,8 @@ class Collection extends BackendController
             $message = $this->text('Collections have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -136,14 +138,12 @@ class Collection extends BackendController
      */
     protected function setBreadcrumbListCollection()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -154,19 +154,23 @@ class Collection extends BackendController
         $this->output('content/collection/list');
     }
 
+    /**
+     * Displays the edit collection page
+     * @param null|integer $collection_id
+     */
     public function editCollection($collection_id = null)
     {
         $collection = $this->getCollection($collection_id);
 
         $stores = $this->store->getNames();
-        $handlers = $this->collection->getHandlers();
+        $types = $this->collection->getTypes();
 
-        $can_delete = (isset($collection['collection_id'])
-            && $this->access('collection_delete')
-            && $this->collection->canDelete($collection['collection_id']));
+        $can_delete = (isset($collection['collection_id'])//
+                && $this->access('collection_delete')//
+                && $this->collection->canDelete($collection['collection_id']));
 
         $this->setData('stores', $stores);
-        $this->setData('handlers', $handlers);
+        $this->setData('types', $types);
         $this->setData('collection', $collection);
         $this->setData('can_delete', $can_delete);
 
@@ -252,26 +256,8 @@ class Collection extends BackendController
     protected function validateCollection(array $collection)
     {
         $this->setSubmittedBool('status');
-
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        if (empty($collection['collection_id'])) {
-            $this->addValidator('type', array(
-                'required' => array()
-            ));
-        }
-
-        $this->addValidator('store_id', array(
-            'required' => array()
-        ));
-
-        $this->setValidators($collection);
+        $this->setSubmitted('collection', $collection);
+        $this->validate('collection');
     }
 
     /**

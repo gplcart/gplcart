@@ -94,12 +94,12 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbListCategoryGroup()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -119,7 +119,9 @@ class CategoryGroup extends BackendController
         $stores = $this->store->getNames();
         $category_group = $this->getCategoryGroup($category_group_id);
 
-        $can_delete = (isset($category_group['category_group_id']) && $this->category_group->canDelete($category_group_id) && $this->access('category_group_delete'));
+        $can_delete = (isset($category_group['category_group_id'])//
+                && $this->category_group->canDelete($category_group_id)//
+                && $this->access('category_group_delete'));
 
         $this->setData('stores', $stores);
         $this->setData('can_delete', $can_delete);
@@ -207,31 +209,8 @@ class CategoryGroup extends BackendController
      */
     protected function validateCategoryGroup(array $category_group)
     {
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $this->addValidator('store_id', array(
-            'required' => array()
-        ));
-
-        $category_group_id = null;
-        if (isset($category_group['category_group_id'])) {
-            $category_group_id = $category_group['category_group_id'];
-        }
-
-        $this->addValidator('type', array(
-            'category_group_type_unique' => array(
-                'store_id' => $this->getSubmitted('store_id'),
-                'category_group_id' => $category_group_id
-            )
-        ));
-
-        $this->setValidators($category_group);
+        $this->setSubmitted('category_group', $category_group);
+        $this->validate('category_group');
     }
 
     /**
@@ -285,6 +264,8 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbEditCategoryGroup()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

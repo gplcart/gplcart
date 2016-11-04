@@ -13,21 +13,15 @@ use core\Handler;
 use core\models\File as ModelsFile;
 use core\models\Page as ModelsPage;
 use core\models\Product as ModelsProduct;
-use core\models\Language as ModelsLanguage;
 use core\models\Collection as ModelsCollection;
 use core\models\CollectionItem as ModelsCollectionItem;
+use core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate collection item data
  */
-class CollectionItem
+class CollectionItem extends BaseValidator
 {
-
-    /**
-     * Language model instance
-     * @var \core\models\Language $language
-     */
-    protected $language;
 
     /**
      * Product model instance
@@ -66,74 +60,160 @@ class CollectionItem
      * @param ModelsProduct $product
      * @param ModelsCollection $collection
      * @param ModelsCollectionItem $collection_item
-     * @param ModelsLanguage $language
      */
     public function __construct(ModelsFile $file, ModelsPage $page,
             ModelsProduct $product, ModelsCollection $collection,
-            ModelsCollectionItem $collection_item, ModelsLanguage $language)
+            ModelsCollectionItem $collection_item)
     {
+        
+        parent::__construct();
+        
         $this->file = $file;
         $this->page = $page;
         $this->product = $product;
-        $this->language = $language;
         $this->collection = $collection;
         $this->collection_item = $collection_item;
     }
 
     /**
-     * Validates collection item value
-     * @param string $value
+     * Performs full collection item entity validation
+     * @param array $submitted
      * @param array $options
-     * @return boolean|string
+     * @return null
      */
-    public function value($value, array $options = array())
+    public function collectionItem(array &$submitted, array $options = array())
     {
-        if (empty($value) || empty($options['data']['type'])) {
+        $this->validateStatus($submitted);
+        $this->validateWeight($submitted);
+        $this->validateUrlCollectionItem($submitted);
+        $this->validateCollectionCollectionItem($submitted);
+        $this->validateValueCollectionItem($submitted);
+        $this->validateEntityCollectionItem($submitted);
+        
+        return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
+     * Validates collection item URL
+     * @param array $submitted
+     */
+    protected function validateUrlCollectionItem(array $submitted)
+    {
+        if (isset($submitted['data']['url']) && mb_strlen($submitted['data']['url']) > 255) {
+            $options = array('@max' => 255, '@field' => $this->language->text('Url'));
+            $this->errors['data']['url'] = $this->language->text('@field must not be longer than @max characters', $options);
+        }
+    }
+
+    /**
+     * Validates that collection data is provided
+     * @param array $submitted
+     */
+    protected function validateCollectionCollectionItem(array &$submitted)
+    {
+        if (empty($submitted['collection_id'])) {
+            $this->errors['collection_id'] = $this->language->text('@field is required', array(
+                '@field' => $this->language->text('Collection ID')
+            ));
+            return false;
+        }
+
+        if (!is_numeric($submitted['collection_id'])) {
+            $options = array('@field' => $this->language->text('Collection ID'));
+            $this->errors['collection_id'] = $this->language->text('@field must be numeric', $options);
+            return false;
+        }
+
+        $collection = $this->collection->get($submitted['collection_id']);
+
+        if (empty($collection)) {
+            $this->errors['collection_id'] = $this->language->text('Object @name does not exist', array(
+                '@name' => $this->language->text('Collection ID')));
+            return false;
+        }
+
+        $submitted['collection'] = $collection;
+        return true;
+    }
+
+    /**
+     * Validates submitted value
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateValueCollectionItem(array &$submitted)
+    {
+        if (empty($submitted['collection'])) {
+            return null;
+        }
+
+        if (isset($submitted['input']) && is_numeric($submitted['input'])) {
+            $submitted['value'] = $submitted['input'];
+        }
+
+        if (empty($submitted['value'])) {
+            $this->errors['value'] = $this->language->text('@field is required', array(
+                '@field' => $this->language->text('Value')
+            ));
             return false;
         }
 
         $conditions = array(
-            'value' => $value,
-            'collection_id' => $options['data']['collection_id']
+            'value' => $submitted['value'],
+            'collection_id' => $submitted['collection']['collection_id']
         );
 
-        $existing = $this->collection_item->getList($conditions);
+        $item = $this->collection_item->getList($conditions);
 
-        if (!empty($existing)) {
-            return $this->language->text('Value already exists in this collection');
+        if (!empty($item)) {
+            $this->errors['value'] = $this->language->text('Value already exists in this collection');
+            return false;
         }
 
-        $handler_id = $options['data']['type'];
+        return true;
+    }
+
+    /**
+     * Validates collection item entities
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateEntityCollectionItem(array &$submitted)
+    {
+        if (empty($submitted['collection'])) {
+            return null;
+        }
+
+        $handler_id = $submitted['collection']['type'];
         $handlers = $this->collection->getHandlers();
-        $result = Handler::call($handlers, $handler_id, 'validate', array($value, $options));
+        $result = Handler::call($handlers, $handler_id, 'validate', array($submitted['value']));
 
         if ($result === true) {
             return true;
         }
 
-        return $result;
+        $errors = (array) $result;
+        $this->errors = array_merge($this->errors, $errors);
+        return false;
     }
 
     /**
      * Validates page collection item
      * @param string $page_id
-     * @param array $options
-     * @return boolean|string
+     * @return boolean
      */
-    public function page($page_id, array $options = array())
+    public function page($page_id)
     {
-        if (empty($page_id)) {
-            return false;
-        }
-
         $page = $this->page->get($page_id);
 
         if (empty($page)) {
-            return $this->language->text('Page does not exist');
+            return $this->language->text('Object @name does not exist', array(
+                        '@name' => $this->language->text('Page')));
         }
 
         if (empty($page['status'])) {
-            return $this->language->text('Page is disabled');
+            return $this->language->text('Object @name exists but disabled', array(
+                        '@name' => $this->language->text('Page')));
         }
 
         return true;
@@ -142,23 +222,20 @@ class CollectionItem
     /**
      * Validates product collection item
      * @param string $product_id
-     * @param array $options
      * @return boolean|string
      */
-    public function product($product_id, array $options = array())
+    public function product($product_id)
     {
-        if (empty($product_id)) {
-            return false;
-        }
-
         $product = $this->product->get($product_id);
 
         if (empty($product)) {
-            return $this->language->text('Product does not exist');
+            return $this->language->text('Object @name does not exist', array(
+                        '@name' => $this->language->text('Product')));
         }
 
         if (empty($product['status'])) {
-            return $this->language->text('Product is disabled');
+            return $this->language->text('Object @name exists but disabled', array(
+                        '@name' => $this->language->text('Product')));
         }
 
         return true;
@@ -167,19 +244,15 @@ class CollectionItem
     /**
      * Validates file collection item
      * @param string $file_id
-     * @param array $options
      * @return boolean|string
      */
-    public function file($file_id, array $options = array())
+    public function file($file_id)
     {
-        if (empty($file_id)) {
-            return false;
-        }
-
         $file = $this->file->get($file_id);
 
         if (empty($file)) {
-            return $this->language->text('File does not exist');
+            return $this->language->text('Object @name does not exist', array(
+                        '@name' => $this->language->text('File')));
         }
 
         return true;

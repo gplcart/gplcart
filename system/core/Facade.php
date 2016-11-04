@@ -53,7 +53,7 @@ class Facade
      * @var \core\Logger $logger
      */
     protected $logger;
-    
+
     /**
      * Constructor
      * @param Route $route
@@ -83,31 +83,55 @@ class Facade
         $modules = $this->config->getEnabledModules();
         $this->hook->modules($modules);
     }
-    
+
     /**
-     * Process the route
-     * @return mixed
+     * Routes incoming requests
      */
     public function route()
     {
-        if (GC_CLI) {
-            // Process command line mode
-            return Container::instance('core\\CliRoute')->process();
-        }
+        $this->routeCli();
+        $this->routeHttp();
+    }
 
-        // Process normal HTTP request
+    /**
+     * Routes command line requests
+     */
+    protected function routeCli()
+    {
+        if (GC_CLI) {
+
+            if ($this->config->get('cli_disabled', 0)) {
+                echo "CLI access has been disabled";
+                exit(1);
+            }
+
+            Container::instance('core\\CliRoute')->process();
+        }
+    }
+
+    /**
+     * Routes normal HTTP requests
+     */
+    protected function routeHttp()
+    {
         $this->session->init();
 
-        // Redirect to installation if needed
-        $install = (!$this->config->exists() // No config/common.php exists
-                || $this->session->get('install', 'processing')) // Installation in progress
-                && !$this->url->isInstall(); // and not on /install page
-
-        if ($install) {
-            return $this->url->redirect('install');
+        if ($this->isInstalling()) {
+            $this->url->redirect('install');
         }
 
-        return $this->route->process();
+        $this->route->process();
+    }
+
+    /**
+     * Whether the store is installing
+     * @return boolean
+     */
+    protected function isInstalling()
+    {
+        return (!$this->config->exists() // No config/common.php exists
+                || $this->session->get('install', 'processing')) // Installation in progress
+                && !$this->url->isInstall(); // and not on /install page
     }
 
     /**
@@ -145,7 +169,7 @@ class Facade
     protected function setDebuggingTools()
     {
         //if ($this->config->get('kint', 0)) {
-            require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+        require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
         //}
     }
 

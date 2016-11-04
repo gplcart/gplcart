@@ -52,14 +52,14 @@
         </label>
         <div class="col-md-4">
           <select name="collection[type]" class="form-control">
-            <?php foreach($handlers as $handler_id => $handler) { ?>
+            <?php foreach($types as $handler_id => $name) { ?>
             <?php if (isset($collection['type']) && $collection['type'] == $handler_id) { ?>
             <option value="<?php echo $this->escape($handler_id); ?>" selected>
-              <?php echo $this->escape($handler['title']); ?>
+              <?php echo $this->escape($name); ?>
             </option>
             <?php } else { ?>
             <option value="<?php echo $this->escape($handler_id); ?>">
-              <?php echo $this->escape($handler['title']); ?>
+              <?php echo $this->escape($name); ?>
             </option>
             <?php } ?>
             <?php } ?>

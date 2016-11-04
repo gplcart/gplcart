@@ -346,5 +346,21 @@ class Collection extends Model
         $this->hook->fire('collection.handlers', $handlers);
         return $handlers;
     }
+    
+    /**
+     * Returns an array of collection type names keyed by handler ID
+     * @return array
+     */
+    public function getTypes()
+    {
+        $handlers = $this->getHandlers();
+
+        $types = array();
+        foreach ($handlers as $handler_id => $handler) {
+            $types[$handler_id] = $handler['title'];
+        }
+
+        return $types;
+    }
 
 }

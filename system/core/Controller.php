@@ -1157,37 +1157,6 @@ class Controller
     }
 
     /**
-     * Adds validators for a submitted field
-     * @param string $field
-     * @param array $validators
-     */
-    protected function addValidator($field, array $validators = array())
-    {
-        $this->validator->add($field, $validators);
-    }
-
-    /**
-     * Starts validation and sets validation errors (if any)
-     * @param array $data
-     * @return array
-     */
-    protected function setValidators(array $data = array())
-    {
-        $this->errors = $this->validator->set($this->submitted, $data)->getError();
-        return $this->errors;
-    }
-
-    /**
-     * Returns validation result(s)
-     * @param string $field
-     * @return mixed
-     */
-    protected function getValidatorResult($field = null)
-    {
-        return $this->validator->getResult($field);
-    }
-
-    /**
      * Returns an array of default templates keyed by region
      * @return array
      */
@@ -1637,20 +1606,20 @@ class Controller
     /**
      * Returns true if an error occurred
      * and passes back to template the submitted data
+     * 
      * @param string $key
      * @param boolean $message
      * @return boolean
      */
     public function hasErrors($key = null, $message = true)
     {
-        $errors = $this->getError();
-
-        if (empty($errors)) {
+        if (empty($this->errors)) {
             return false;
         }
 
         if ($message) {
-            $this->setMessage($this->text('One or more errors occurred'), 'danger');
+            $errors = implode('<br>', Tool::flattenArray($this->errors));
+            $this->setMessage($errors, 'danger');
         }
 
         if (isset($key)) {
@@ -1658,6 +1627,24 @@ class Controller
         }
 
         return true;
+    }
+    
+    /**
+     * Validates a submitted data
+     * @param string $handler_id
+     * @param array $options
+     * @return boolean
+     */
+    protected function validate($handler_id, array $options = array())
+    {
+        $result = $this->validator->run($handler_id, $this->submitted, $options);
+
+        if ($result === true) {
+            return true;
+        }
+
+        $this->errors = (array) $result;
+        return false;
     }
 
     /**

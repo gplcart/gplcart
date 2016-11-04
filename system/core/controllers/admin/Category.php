@@ -52,12 +52,9 @@ class Category extends BackendController
      * @param ModelsImage $image
      * @param ModelsCategoryGroup $category_group
      */
-    public function __construct(
-        ModelsCategory $category,
-        ModelsAlias $alias,
-        ModelsImage $image,
-        ModelsCategoryGroup $category_group
-    ) {
+    public function __construct(ModelsCategory $category, ModelsAlias $alias,
+            ModelsImage $image, ModelsCategoryGroup $category_group)
+    {
         parent::__construct();
 
         $this->alias = $alias;
@@ -104,39 +101,34 @@ class Category extends BackendController
 
     /**
      * Applies an action to selected categories
+     * @return null
      */
     protected function actionCategory()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $categories = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
-
-            foreach ($selected as $category_id => $weight) {
-                $this->category->update($category_id, array('weight' => $weight));
-            }
-
-            $message = $this->text('Categories have been reordered');
-            $this->response->json(array('success' => $message));
+            $this->updateWeight($categories);
+            return null;
         }
 
         $updated = $deleted = 0;
-        foreach ($selected as $category_id) {
+        foreach ($categories as $category_id) {
 
             if ($action === 'status' && $this->access('category_edit')) {
-                $updated += (int)$this->category->update($category_id, array(
-                    'status' => $value
-                ));
+                $updated += (int) $this->category->update($category_id, array(
+                            'status' => $value));
             }
 
             if ($action === 'delete' && $this->access('category_delete')) {
-                $deleted += (int)$this->category->delete($category_id);
+                $deleted += (int) $this->category->delete($category_id);
             }
         }
 
@@ -149,6 +141,22 @@ class Category extends BackendController
             $message = $this->text('Categories have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
+    }
+
+    /**
+     * Updates weigth for an array of categories
+     * @param array $categories
+     */
+    protected function updateWeight(array $categories)
+    {
+        foreach ($categories as $category_id => $weight) {
+            $this->category->update($category_id, array('weight' => $weight));
+        }
+
+        $message = $this->text('Categories have been reordered');
+        $this->response->json(array('success' => $message));
     }
 
     /**
@@ -169,7 +177,7 @@ class Category extends BackendController
             $category_ids[] = $category['category_id'];
             $category['indentation'] = str_repeat('— ', $category['depth']);
             $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                . "/category/{$category['category_id']}";
+                    . "/category/{$category['category_id']}";
         }
 
         $aliases = $this->alias->getMultiple('category_id', $category_ids);
@@ -179,12 +187,15 @@ class Category extends BackendController
         }
 
         foreach ($categories as &$category) {
-            $category['alias'] = '';
-            if (!empty($aliases[$category['category_id']])) {
-                $category['alias'] = $aliases[$category['category_id']];
-                $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                    . "/{$category['alias']}";
+
+            if (empty($aliases[$category['category_id']])) {
+                continue;
             }
+
+            $category['alias'] = '';
+            $category['alias'] = $aliases[$category['category_id']];
+            $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
+                    . "/{$category['alias']}";
         }
 
         return $categories;
@@ -195,6 +206,8 @@ class Category extends BackendController
      */
     protected function setBreadcrumbListCategory()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
@@ -240,8 +253,10 @@ class Category extends BackendController
         $category_group = $this->getCategoryGroup($category_group_id);
         $categories = $this->category->getOptionList($category_group_id, 0);
 
-        $parent_category = (int)$this->request->get('parent_id');
-        $can_delete = (isset($category['category_id']) && $this->category->canDelete($category_id));
+        $parent_category = (int) $this->request->get('parent_id');
+
+        $can_delete = (isset($category['category_id'])//
+                && $this->category->canDelete($category_id));
 
         $this->setData('category', $category);
         $this->setData('can_delete', $can_delete);
@@ -261,7 +276,7 @@ class Category extends BackendController
     /**
      * Returns an array of category data
      * @param integer $category_id
-     * @return array
+     * @return array|void
      */
     protected function getCategory($category_id)
     {
@@ -271,19 +286,19 @@ class Category extends BackendController
 
         $category = $this->category->get($category_id);
 
-        if (!empty($category)) {
-            $category['alias'] = $this->alias->get('category_id', $category_id);
-            return $category;
+        if (empty($category)) {
+            $this->outputError(404);
         }
 
-        return $this->outputError(404);
+        $category['alias'] = $this->alias->get('category_id', $category_id);
+        return $category;
     }
 
     /**
      * Saves a submitted category
      * @param array $category_group
      * @param array $category
-     * @return mixed
+     * @return null|void
      */
     protected function submitCategory(array $category_group, array $category)
     {
@@ -306,7 +321,8 @@ class Category extends BackendController
             return $this->updateCategory($category_group, $category);
         }
 
-        return $this->addCategory($category_group);
+        $this->addCategory($category_group);
+        return null;
     }
 
     /**
@@ -326,9 +342,7 @@ class Category extends BackendController
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this category.'
-            . 'The most probable reason - it is used by one or more products');
-
+        $message = $this->text('Unable to delete this category');
         $this->redirect('', $message, 'danger');
     }
 
@@ -339,57 +353,8 @@ class Category extends BackendController
     protected function validateCategory(array $category)
     {
         $this->setSubmittedBool('status');
-
-        $this->addValidator('category_group_id', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('meta_title', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('meta_description', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('description_1', array(
-            'length' => array('max' => 65535)
-        ));
-
-        $this->addValidator('description_2', array(
-            'length' => array('max' => 65535)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $alias = $this->getSubmitted('alias');
-
-        if (empty($alias) && isset($category['category_id'])) {
-            $submitted = $this->getSubmitted();
-            $alias = $this->category->createAlias($submitted);
-            $this->setSubmitted('alias', $alias);
-        }
-
-        $this->addValidator('alias', array(
-            'length' => array('max' => 255),
-            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias_unique' => array()
-        ));
-
-        $this->addValidator('images', array(
-            'images' => array()
-        ));
-
-        $this->setValidators($category);
-
-        $images = $this->getValidatorResult('images');
-        $this->setSubmitted('images', $images);
+        $this->setSubmitted('category', $category);
+        $this->validate('category');
     }
 
     /**
@@ -435,46 +400,59 @@ class Category extends BackendController
     {
         $category_id = $this->getData('category.category_id');
 
-        if (isset($category_id)) {
-
-            $categories = $this->getData('categories');
-            $category_group_id = $this->getData('category_group.category_group_id');
-
-            $options = array(
-                'parent_id' => $category_id,
-                'category_group_id' => $category_group_id
-            );
-
-            $children = $this->category->getTree($options);
-
-            $exclude = array($category_id);
-            foreach ($children as $child) {
-                $exclude[] = $child['category_id'];
-            }
-
-            $modified = array_diff_key($categories, array_flip($exclude));
-            $this->setData('categories', $modified);
+        if (!isset($category_id)) {
+            return null;
         }
 
+        $categories = $this->getData('categories');
+        $category_group_id = $this->getData('category_group.category_group_id');
+
+        $options = array(
+            'parent_id' => $category_id,
+            'category_group_id' => $category_group_id
+        );
+
+        $children = $this->category->getTree($options);
+
+        $exclude = array($category_id);
+        foreach ($children as $child) {
+            $exclude[] = $child['category_id'];
+        }
+
+        $modified = array_diff_key($categories, array_flip($exclude));
+        $this->setData('categories', $modified);
+
+        $this->setDataImagesCategory();
+        return null;
+    }
+
+    /**
+     * Sets data with attached images
+     * @return null
+     */
+    protected function setDataImagesCategory()
+    {
         $images = $this->getData('category.images');
 
-        if (!empty($images)) {
-
-            $preset = $this->config('admin_image_preset', 2);
-
-            foreach ($images as &$image) {
-                $image['thumb'] = $this->image->url($preset, $image['path']);
-                $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
-            }
-
-            $attached = $this->render('common/image/attache', array(
-                'images' => $images,
-                'name_prefix' => 'category',
-                'languages' => $this->languages,
-            ));
-
-            $this->setData('attached_images', $attached);
+        if (empty($images)) {
+            return null;
         }
+
+        $preset = $this->config('admin_image_preset', 2);
+
+        foreach ($images as &$image) {
+            $image['thumb'] = $this->image->url($preset, $image['path']);
+            $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
+        }
+
+        $attached = $this->render('common/image/attache', array(
+            'images' => $images,
+            'name_prefix' => 'category',
+            'languages' => $this->languages,
+        ));
+
+        $this->setData('attached_images', $attached);
+        return null;
     }
 
     /**
@@ -503,6 +481,8 @@ class Category extends BackendController
      */
     protected function setBreadcrumbEditCategory(array $category_group)
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
@@ -512,7 +492,6 @@ class Category extends BackendController
             'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')
         );
-
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/content/category/{$category_group['category_group_id']}"),

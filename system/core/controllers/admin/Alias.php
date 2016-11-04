@@ -62,13 +62,14 @@ class Alias extends BackendController
 
     /**
      * Applies an action to the selected aliases
+     * @return null
      */
     protected function actionAlias()
     {
         $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
         $selected = (array) $this->request->post('selected', array());
@@ -96,6 +97,8 @@ class Alias extends BackendController
             $message = $this->text('Deleted %num aliases', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**

@@ -125,6 +125,7 @@ $config = array();
 # $config['user_superadmin'] = 1; // Superadmin database UID
 # $config['order_complete_message'] = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
 # $config['order_complete_message_anonymous'] = 'Thank you for your order! Order ID: !order_id, status: !status';
+# $config['cli_disabled'] = 0;
 # $config['cli_colors'] = array('info' => "\e[0;37;44m%s\e[0m\n", 'warning' => "\e[0;30;43m%s\e[0m\n", 'danger' => "\e[1;37;41m%s\e[0m\n");
 
 /**
