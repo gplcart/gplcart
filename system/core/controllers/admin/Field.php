@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Field as ModelsField;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to product fields
@@ -46,7 +46,7 @@ class Field extends BackendController
         $total = $this->getTotalField($query);
         $limit = $this->setPager($total, $query);
         $fields = $this->getListField($limit, $query);
-        $widget_types = $this->field->widgetTypes();
+        $widget_types = $this->field->getWidgetTypes();
 
         $this->setData('fields', $fields);
         $this->setData('widget_types', $widget_types);
@@ -64,18 +64,18 @@ class Field extends BackendController
      */
     protected function actionField()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $selected = (array)$this->request->post('selected', array());
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = 0;
         foreach ($selected as $field_id) {
             if ($action === 'delete' && $this->access('field_delete')) {
-                $deleted += (int)$this->field->delete($field_id);
+                $deleted += (int) $this->field->delete($field_id);
             }
         }
 
@@ -83,6 +83,8 @@ class Field extends BackendController
             $message = $this->text('Fields have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -121,12 +123,12 @@ class Field extends BackendController
      */
     protected function setBreadcrumbListField()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -144,9 +146,12 @@ class Field extends BackendController
     public function editField($field_id = null)
     {
         $field = $this->getField($field_id);
-        $widget_types = $this->field->widgetTypes();
+
+        $types = $this->field->getTypes();
+        $widget_types = $this->field->getWidgetTypes();
 
         $this->setData('field', $field);
+        $this->setData('types', $types);
         $this->setData('widget_types', $widget_types);
 
         $this->submitField($field);
@@ -221,7 +226,7 @@ class Field extends BackendController
         }
 
         $message = $this->text('Unable to delete this field.'
-            . ' The most probable reason - it is used by one or more products');
+                . ' The most probable reason - it is used by one or more products');
 
         $this->redirect('', $message, 'danger');
     }
@@ -232,31 +237,8 @@ class Field extends BackendController
      */
     protected function validateField(array $field)
     {
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        if (empty($field['field_id'])) {
-
-            $this->addValidator('type', array(
-                'required' => array()
-            ));
-        }
-
-        $this->addValidator('widget', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $this->setValidators($field);
+        $this->setSubmitted('field', $field);
+        $this->validate('field');
     }
 
     /**
@@ -308,6 +290,8 @@ class Field extends BackendController
      */
     protected function setBreadcrumbEditField()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

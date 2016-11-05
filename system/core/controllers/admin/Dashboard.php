@@ -9,13 +9,13 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Analytics as ModelsAnalytics;
 use core\models\Order as ModelsOrder;
 use core\models\Price as ModelsPrice;
 use core\models\Product as ModelsProduct;
 use core\models\Report as ModelsReport;
 use core\models\Review as ModelsReview;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to admin dashboard
@@ -74,13 +74,9 @@ class Dashboard extends BackendController
      * @param ModelsAnalytics $analytics
      * @param ModelsReview $review
      */
-    public function __construct(
-            ModelsProduct $product,
-            ModelsPrice $price,
-            ModelsOrder $order,
-            ModelsReport $report,
-            ModelsAnalytics $analytics,
-            ModelsReview $review
+    public function __construct(ModelsProduct $product, ModelsPrice $price,
+            ModelsOrder $order, ModelsReport $report,
+            ModelsAnalytics $analytics, ModelsReview $review
     )
     {
         parent::__construct();

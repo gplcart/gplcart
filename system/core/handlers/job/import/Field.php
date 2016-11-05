@@ -277,7 +277,7 @@ class Field
 
         $data['widget'] = strtolower($data['widget']);
 
-        $types = $this->field->widgetTypes();
+        $types = $this->field->getWidgetTypes();
 
         if (empty($types[$data['widget']])) {
             $errors[] = $this->language->text('Line @num: @error', array(

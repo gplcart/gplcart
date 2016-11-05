@@ -154,7 +154,6 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Symbol placement'); ?></label>
         <div class="col-md-4">
           <select class="form-control" name="currency[symbol_placement]">
-            <option value=""><?php echo $this->text('None'); ?></option>
             <option value="before"<?php echo (isset($currency['symbol_placement']) && $currency['symbol_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
             <option value="after"<?php echo (isset($currency['symbol_placement']) && $currency['symbol_placement'] == 'after') ? ' selected' : ''; ?>><?php echo $this->text('After'); ?></option>
           </select>
@@ -169,9 +168,8 @@
         </label>
         <div class="col-md-4">
           <select class="form-control" name="currency[code_placement]">
-            <option value=""><?php echo $this->text('None'); ?></option>
-            <option value="before"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
             <option value="after"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'after') ? ' selected' : ''; ?>><?php echo $this->text('After'); ?></option>
+            <option value="before"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
           </select>
           <div class="help-block">
             <?php echo $this->text('A position of the currency code, either before or after price value'); ?>

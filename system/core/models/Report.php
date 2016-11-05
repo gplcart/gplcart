@@ -159,7 +159,7 @@ class Report extends Model
      * Deletes expired logs
      * @param integer $interval
      */
-    public function clearExpired($interval)
+    public function deleteExpired($interval)
     {
         $time = (GC_TIME - (int) $interval);
         $this->db->run('DELETE FROM log WHERE time < ?', array($time));

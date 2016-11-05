@@ -23,8 +23,15 @@ use core\models\Language as ModelsLanguage;
 class Job extends Model
 {
 
-    const JOB_MAX_TIME = 1000;
-    const JOB_SESSION_KEY = 'jobs';
+    /**
+     * Max milliseconds for one iteration
+     */
+    const MAX_TIME = 1000;
+
+    /**
+     * A key for array of a job data in the session
+     */
+    const SESSION_KEY = 'jobs';
 
     /**
      * Language model instance
@@ -105,7 +112,7 @@ class Job extends Model
         $this->hook->fire('set.job.after', $job, $job['id']);
         return $job;
     }
-    
+
     /**
      * Returns an array of default job values
      * @return array
@@ -153,7 +160,7 @@ class Job extends Model
             return false;
         }
 
-        $this->session->delete(self::JOB_SESSION_KEY, $job_id);
+        $this->session->delete(self::SESSION_KEY, $job_id);
         $this->hook->fire('delete.job.after', $job_id);
         return true;
     }
@@ -199,7 +206,7 @@ class Job extends Model
 
         $start_time = microtime(true);
 
-        while (round((microtime(true) - $start_time) * 1000, 2) < self::JOB_MAX_TIME) {
+        while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
 
             $arguments = array($job, $done, $context);
 
@@ -272,11 +279,11 @@ class Job extends Model
     public function shutdownHandler(array $job)
     {
         $error = error_get_last();
-        
+
         if (isset($error['type']) && $error['type'] === E_ERROR) {
             $text = $this->language->text('An unexpected error has occurred.'
                     . ' The job has not been properly completed');
-            
+
             $this->session->setMessage($text, 'danger');
         }
     }
@@ -288,7 +295,7 @@ class Job extends Model
      */
     protected function getSession($job_id)
     {
-        return $this->session->get(self::JOB_SESSION_KEY, $job_id, array());
+        return $this->session->get(self::SESSION_KEY, $job_id, array());
     }
 
     /**
@@ -298,7 +305,7 @@ class Job extends Model
      */
     protected function setSession(array $job)
     {
-        return $this->session->set(self::JOB_SESSION_KEY, $job['id'], $job);
+        return $this->session->set(self::SESSION_KEY, $job['id'], $job);
     }
 
     /**
@@ -447,23 +454,6 @@ class Job extends Model
 
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
-    }
-
-    /**
-     * Starts performing a job
-     * @param array $job
-     */
-    public function submit(array $job)
-    {
-        $this->delete($job['id']);
-
-        if (!empty($job['data']['operation']['log']['errors'])) {
-            // create an empty error log file
-            file_put_contents($job['data']['operation']['log']['errors'], '');
-        }
-
-        $this->set($job);
-        $this->url->redirect('', array('job_id' => $job['id']));
     }
 
 }

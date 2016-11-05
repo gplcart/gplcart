@@ -9,9 +9,9 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
-use core\models\Country as ModelsCountry;
 use core\models\Zone as ModelsZone;
+use core\models\Country as ModelsCountry;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to countries
@@ -71,7 +71,7 @@ class Country extends BackendController
 
     /**
      * Applies an action to the selected countries
-     * @return null
+     * @return null|void
      */
     protected function actionCountry()
     {
@@ -85,17 +85,10 @@ class Country extends BackendController
         $selected = (array)$this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('country_edit')) {
-            foreach ($selected as $code => $weight) {
-                $this->country->update($code, array('weight' => $weight));
-            }
-
-            $this->response->json(array(
-                'success' => $this->text('Countries have been reordered')
-            ));
+            return $this->updateWeight($selected);
         }
 
         $updated = $deleted = 0;
-
         foreach ($selected as $code) {
 
             if ($action === 'status' && $this->access('country_edit')) {
@@ -118,6 +111,21 @@ class Country extends BackendController
         }
 
         return null;
+    }
+    
+    /**
+     * Updates an array of country with a new weight
+     * @param array $items
+     */
+    protected function updateWeight(array $items)
+    {
+        foreach ($items as $code => $weight) {
+            $this->country->update($code, array('weight' => $weight));
+        }
+
+        $this->response->json(array(
+            'success' => $this->text('Countries have been reordered')
+        ));
     }
 
     /**
@@ -156,14 +164,12 @@ class Country extends BackendController
      */
     protected function setBreadcrumbListCountry()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -183,8 +189,9 @@ class Country extends BackendController
         $country = $this->getCountry($code);
         $zones = $this->zone->getList(array('status' => 1));
 
-        $can_delete = (!empty($code) && $this->access('country_delete')
-            && empty($country['default']) && $this->country->canDelete($code));
+        $can_delete = (!empty($code)//
+                && $this->access('country_delete')//
+                && $this->country->canDelete($code));
 
         $this->setData('zones', $zones);
         $this->setData('country', $country);
@@ -273,40 +280,9 @@ class Country extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
-
-        $is_default = $this->getSubmitted('default');
-
-        if ($is_default) {
-            $this->setSubmitted('status', 1);
-        }
-
-        $this->addValidator('code', array(
-            'regexp' => array(
-                'pattern' => '/^[A-Z]{2}$/',
-                'required' => true
-            ),
-            'country_code_unique' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('native_name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        $errors = $this->setValidators($country);
-
-        if (empty($errors) && !$is_default) {
-            $code = $this->getSubmitted('code');
-            $this->country->unsetDefault($code);
-        }
+        $this->setSubmitted('country', $country);
+        
+        $this->validate('country');
     }
 
     /**

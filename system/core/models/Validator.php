@@ -40,11 +40,11 @@ class Validator extends Model
     /**
      * Performs validation using a given handler
      * @param string $handler_id
-     * @param array $submitted
+     * @param mixed $submitted
      * @param array $options
      * @return mixed
      */
-    public function run($handler_id, array &$submitted, array $options = array())
+    public function run($handler_id, &$submitted, array $options = array())
     {
         $this->hook->fire('validate.before', $submitted, $options);
 
@@ -56,7 +56,9 @@ class Validator extends Model
         if (!empty($handlers[$handler_id]['handlers']['validate'])) {
             $class = $handlers[$handler_id]['handlers']['validate'];
             $instance = Container::instance($class);
-            $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
+            if(is_object($instance)){
+                $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
+            }
         }
 
         $this->hook->fire('validate.after', $submitted, $options, $result);
@@ -85,7 +87,33 @@ class Validator extends Model
         }
 
         $handlers = array();
+        
+        // Files
+        $handlers['image'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\File', 'image')
+            ),
+        );
+        
+        $handlers['p12'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\File', 'p12')
+            ),
+        );
+        
+        $handlers['csv'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\File', 'csv')
+            ),
+        );
+        
+        $handlers['zip'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\File', 'zip')
+            ),
+        );
 
+        // Entity validators
         $handlers['category'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Category', 'category')
@@ -113,6 +141,24 @@ class Validator extends Model
         $handlers['collection_item'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\CollectionItem', 'collectionItem')
+            ),
+        );
+        
+        $handlers['country'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Country', 'country')
+            ),
+        );
+        
+        $handlers['currency'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Currency', 'currency')
+            ),
+        );
+        
+        $handlers['field'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Field', 'field')
             ),
         );
 

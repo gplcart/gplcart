@@ -10,22 +10,15 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
-use core\controllers\admin\Controller as BackendController;
 use core\models\Export as ModelsExport;
-use core\models\Job as ModelsJob;
 use core\models\Product as ModelsProduct;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to export operations
  */
 class Export extends BackendController
 {
-
-    /**
-     * Job model instance
-     * @var \core\models\Job $job
-     */
-    protected $job;
 
     /**
      * Export model instance
@@ -41,18 +34,13 @@ class Export extends BackendController
 
     /**
      * Constructor
-     * @param ModelsJob $job
      * @param ModelsExport $export
      * @param ModelsProduct $product
      */
-    public function __construct(
-        ModelsJob $job,
-        ModelsExport $export,
-        ModelsProduct $product
-    ) {
+    public function __construct(ModelsExport $export, ModelsProduct $product)
+    {
         parent::__construct();
 
-        $this->job = $job;
         $this->export = $export;
         $this->product = $product;
     }
@@ -92,12 +80,12 @@ class Export extends BackendController
      */
     protected function setBreadcrumbListExport()
     {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -152,7 +140,11 @@ class Export extends BackendController
      */
     protected function downloadExport(array $operation)
     {
-        if ($this->isQuery('download') && !empty($operation['file']) && file_exists($operation['file'])) {
+        $start = $this->isQuery('download')//
+                && !empty($operation['file'])//
+                && file_exists($operation['file']);
+
+        if ($start) {
             $this->response->download($operation['file']);
         }
     }
@@ -165,7 +157,7 @@ class Export extends BackendController
     protected function submitExport(array $operation)
     {
         if (!$this->isPosted('export')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('export');
@@ -174,6 +166,8 @@ class Export extends BackendController
         if (!$this->hasErrors('export')) {
             $this->setJobExport($operation);
         }
+
+        return null;
     }
 
     /**
@@ -194,7 +188,7 @@ class Export extends BackendController
 
         if (empty($total)) {
             $this->setError('error', $this->text('Nothing to export'));
-            return;
+            return null;
         }
 
         if (file_put_contents($operation['file'], '') === false) {
@@ -204,13 +198,14 @@ class Export extends BackendController
             ));
 
             $this->setError('error', $message);
-            return;
+            return null;
         }
 
         $delimiter = $this->export->getCsvDelimiter();
         Tool::writeCsv($operation['file'], $operation['csv']['header'], $delimiter);
-
         $this->setSubmitted('operation', $operation);
+
+        return null;
     }
 
     /**
@@ -241,7 +236,7 @@ class Export extends BackendController
             $job['redirect_message']['errors'] = $redirect_error_message;
         }
 
-        $this->job->submit($job);
+        $this->setJob($job);
     }
 
     /**
@@ -262,6 +257,8 @@ class Export extends BackendController
      */
     protected function setBreadcrumbEditExport()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')

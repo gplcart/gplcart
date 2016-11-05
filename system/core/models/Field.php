@@ -40,9 +40,9 @@ class Field extends Model
      * Returns an array of widget types
      * @return array
      */
-    public function widgetTypes()
+    public function getWidgetTypes()
     {
-        $types = &Cache::memory('widget.types');
+        $types = &Cache::memory('field.widget.types');
 
         if (isset($types)) {
             return $types;
@@ -55,7 +55,28 @@ class Field extends Model
             'color' => $this->language->text('Color picker')
         );
 
-        $this->hook->fire('widget.types', $types);
+        $this->hook->fire('field.widget.types', $types);
+        return $types;
+    }
+
+    /**
+     * Returns an array of field types
+     * @return array
+     */
+    public function getTypes()
+    {
+        $types = &Cache::memory('field.types');
+
+        if (isset($types)) {
+            return $types;
+        }
+
+        $types = array(
+            'option' => $this->language->text('Option'),
+            'attribute' => $this->language->text('Attribute')
+        );
+
+        $this->hook->fire('field.types', $types);
         return $types;
     }
 
@@ -183,7 +204,7 @@ class Field extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'type', 'widget');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY f.{$data['sort']} {$data['order']}";
         } else {

@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Currency as ModelsCurrency;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to currency
@@ -65,12 +65,12 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbListCurrency()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -93,10 +93,10 @@ class Currency extends BackendController
         $this->setData('currency', $currency);
         $this->setData('default_currency', $default_currency);
 
-        $can_delete = (isset($currency['code'])
-            && $this->access('currency_delete')
-            && ($default_currency != $currency['code'])
-            && !$this->isPosted());
+        $can_delete = (isset($currency['code'])//
+                && $this->access('currency_delete')//
+                && ($default_currency != $currency['code'])//
+                && !$this->isPosted());
 
         $this->setData('can_delete', $can_delete);
 
@@ -187,68 +187,8 @@ class Currency extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
-
-        // Default currency always enabled
-        if ($this->getSubmitted('default')) {
-            $this->setSubmitted('status', 1);
-        }
-
-        // Validate fields
-        $this->addValidator('code', array(
-            'regexp' => array(
-                'pattern' => '/^[A-Z]{3}$/', // latin upper-case, 3 chars
-                'required' => true
-            ),
-            'currency_code_unique' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 50)
-        ));
-
-        $this->addValidator('numeric_code', array(
-            'regexp' => array(
-                'pattern' => '/^[0-9]{3}$/', // numeric, 3 chars
-                'required' => true
-            )
-        ));
-
-        $this->addValidator('symbol', array(
-            'length' => array('min' => 1, 'max' => 10)
-        ));
-
-        $this->addValidator('major_unit', array(
-            'length' => array('min' => 1, 'max' => 50)
-        ));
-
-        $this->addValidator('minor_unit', array(
-            'length' => array('min' => 1, 'max' => 50)
-        ));
-
-        $this->addValidator('convertion_rate', array(
-            'length' => array('min' => 1, 'max' => 10),
-            'regexp' => array(
-                'required' => true,
-                'pattern' => '/^[0-9]\d*(\.\d+)?$/' // decimal or integer positive
-            )
-        ));
-
-        $this->addValidator('decimals', array(
-            'regexp' => array(
-                'pattern' => '/^[0-2]+$/', // numeric positive, 0-2
-                'required' => true
-            )
-        ));
-
-        $this->addValidator('rounding_step', array(
-            'length' => array('min' => 1, 'max' => 10),
-            'regexp' => array(
-                'required' => true,
-                'pattern' => '/^[0-9]\d*(\.\d+)?$/' // decimal or integer positive
-            )
-        ));
-
-        $this->setValidators($currency);
+        $this->setSubmitted('currency', $currency);
+        $this->validate('currency');
     }
 
     /**
@@ -305,6 +245,8 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbEditCurrency()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

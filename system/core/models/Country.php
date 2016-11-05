@@ -215,12 +215,12 @@ class Country extends Model
 
     /**
      * Whether a country is default
-     * @param string $country_code
+     * @param string $code
      * @return boolean
      */
-    public function isDefault($country_code)
+    public function isDefault($code)
     {
-        return ($country_code === $this->getDefault());
+        return ($code === $this->getDefault());
     }
 
     /**
@@ -237,6 +237,7 @@ class Country extends Model
         }
 
         if (!empty($data['default'])) {
+            $data['status'] = 1;
             $this->setDefault($data['code']);
         }
 
@@ -262,6 +263,7 @@ class Country extends Model
         }
 
         if (!empty($data['default'])) {
+            $data['status'] = 1;
             $this->setDefault($code);
         }
 
@@ -311,6 +313,10 @@ class Country extends Model
      */
     public function canDelete($code)
     {
+        if($this->isDefault($code)){
+            return false;
+        }
+        
         $sql = 'SELECT address_id FROM address WHERE country=?';
         $result = $this->db->fetchColumn($sql, array($code));
 
@@ -382,7 +388,9 @@ class Country extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
+                && isset($data['order'])//
+                && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';

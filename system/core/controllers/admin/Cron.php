@@ -10,8 +10,8 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
-use core\controllers\admin\Controller as BackendController;
 use core\models\Report as ModelsReport;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to cron jobs
@@ -44,82 +44,117 @@ class Cron extends BackendController
 
         register_shutdown_function(array($this, 'shutdownHandlerCron'));
         ini_set('max_execution_time', 0);
-
         $this->logger->log('cron', 'Cron has started', 'info', true);
 
         $this->processTasksCron();
 
         $this->hook->fire('cron');
         $this->config->set('cron_last_run', GC_TIME);
-
         $this->response->html($this->text('Cron has started'));
     }
 
     /**
      * Controls access to execute cron
-     * @return null
      */
     protected function controlAccessExecuteCron()
     {
-        $key = (string)$this->request->get('key', '');
+        $key = (string) $this->request->get('key', '');
 
         if (strcmp($key, $this->cron_key) !== 0) {
-            exit;
+            exit(1);
         }
 
-        if ($this->access('cron')) {
-            return;
-        }
+        $has_access = $this->access('cron') //
+                || (!empty($this->cron_interval) //
+                && ((GC_TIME - $this->cron_last_run) > $this->cron_interval));
 
-        if (!empty($this->cron_interval) && ((GC_TIME - $this->cron_last_run) > $this->cron_interval)) {
-            return;
+        if (!$has_access) {
+            exit(1);
         }
-
-        exit;
     }
 
     /**
-     * Deletes expired records from the history table
+     * Processes all defined tasks
      */
     protected function processTasksCron()
     {
-        // Delete expired records from history table
-        $sth = $this->config->getDb()->prepare('DELETE FROM history WHERE time < :time');
-        $time = (GC_TIME - (int)$this->config('history_lifespan', 2628000));
-        $sth->execute(array(':time' => $time));
+        $this->deleteExpiredHistoryCron();
+        $this->deleteExpiredFilesCron();
+        $this->deleteExpiredLogsCron();
+        $this->checkFilesystemCron();
+    }
 
-        // Delete old files
-        $dirs = array(
+    /**
+     * Deletes expired records from history table
+     */
+    protected function deleteExpiredHistoryCron()
+    {
+        $lifespan = (int) $this->config('history_lifespan', 2628000);
+        $ago = (GC_TIME - $lifespan);
+
+        /* @var $database \core\classes\Database */
+        $database = $this->config->getDb();
+        $database->run('DELETE FROM history WHERE time < ?', array($ago));
+    }
+
+    /**
+     * Deletes old expired files
+     */
+    protected function deleteExpiredFilesCron()
+    {
+        $directories = array(
             'log' => GC_PRIVATE_LOGS_DIR,
             'import' => GC_PRIVATE_IMPORT_DIR,
             'export' => GC_PRIVATE_DOWNLOAD_DIR
         );
 
         $deleted = 0;
-        foreach ($dirs as $key => $path) {
-            $deleted += Tool::deleteFiles($path, array('csv'), $this->config("{$key}_lifespan", 86400));
+        foreach ($directories as $key => $path) {
+            $extensions = array('csv');
+            $lifespan = $this->config("{$key}_lifespan", 86400);
+            $deleted += Tool::deleteFiles($path, $extensions, $lifespan);
         }
 
-        if ($deleted > 0) {
-
-            $log = array(
-                'message' => 'Deleted @num expired files',
-                'variables' => array('@num' => $deleted)
-            );
-
-            $this->logger->log('cron', $log);
+        if (empty($deleted)) {
+            return false;
         }
 
-        // Delete expired log records
-        $this->report->clearExpired($this->config('report_log_lifespan', 86400));
+        $log = array(
+            'message' => 'Deleted @num expired files',
+            'variables' => array('@num' => $deleted)
+        );
+
+        $this->logger->log('cron', $log);
+        return true;
+    }
+
+    /**
+     * Deletes expired log records
+     */
+    protected function deleteExpiredLogsCron()
+    {
+        $lifespan = $this->config('report_log_lifespan', 86400);
+        $this->report->deleteExpired($lifespan);
+    }
+
+    /**
+     * Checks filesystem and logs errors
+     * @return boolean
+     */
+    protected function checkFilesystemCron()
+    {
         $result = $this->report->checkFilesystem();
 
-        if ($result !== true) {
-            foreach ((array)$result as $message) {
-                $log = array('message' => $message);
-                $this->logger->log('system_status', $log, 'warning');
-            }
+        if ($result === true) {
+            return true;
         }
+
+        foreach ((array) $result as $message) {
+            $log = array('message' => $message);
+            $this->logger->log('system_status', $log, 'warning');
+        }
+
+        return false;
     }
 
     /**

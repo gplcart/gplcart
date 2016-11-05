@@ -47,12 +47,16 @@
         </label>
         <div class="col-md-4">
           <select name="field[type]" class="form-control">
-            <?php if (isset($field['type']) && $field['type'] == 'attribute') { ?>
-            <option value="attribute" selected><?php echo $this->text('Attribute'); ?></option>
-            <option value="option"><?php echo $this->text('Option'); ?></option>
+            <?php foreach($types as $type => $type_name) { ?>
+            <?php if (isset($field['type']) && $field['type'] == $type) { ?>
+            <option value="<?php echo $this->escape($type); ?>" selected>
+            <?php echo $this->escape($type_name); ?>
+            </option>
             <?php } else { ?>
-            <option value="attribute"><?php echo $this->text('Attribute'); ?></option>
-            <option value="option" selected><?php echo $this->text('Option'); ?></option>
+            <option value="<?php echo $this->escape($type); ?>">
+            <?php echo $this->escape($type_name); ?>
+            </option>
+            <?php } ?>
             <?php } ?>
           </select>
           <div class="help-block">

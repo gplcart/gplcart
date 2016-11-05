@@ -247,7 +247,7 @@ class FieldValue extends BackendController
     {
         $field = $this->getField($field_id);
         $field_value = $this->getFieldValue($field_value_id);
-        $widget_types = $this->field->widgetTypes();
+        $widget_types = $this->field->getWidgetTypes();
 
         $this->setData('field', $field);
         $this->setData('field_value', $field_value);
@@ -256,7 +256,6 @@ class FieldValue extends BackendController
         $this->submitFieldValue($field_value, $field);
 
         $this->setDataEditFieldValue();
-
         $this->setTitleEditFieldValue($field_value, $field);
         $this->setBreadcrumbEditFieldValue($field);
         $this->outputEditFieldValue();

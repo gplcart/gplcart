@@ -376,7 +376,7 @@ class File extends Model
             return $this->language->text('File size exceeds %s bytes', array('%s' => $this->handler['filesize']));
         }
 
-        $result = $this->validator->check($this->handler['validator'], $path, $this->handler);
+        $result = $this->validator->run($this->handler['validator'], $path, $this->handler);
 
         if ($result === true) {
             return true;

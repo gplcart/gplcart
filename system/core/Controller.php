@@ -1618,8 +1618,7 @@ class Controller
         }
 
         if ($message) {
-            $errors = implode('<br>', Tool::flattenArray($this->errors));
-            $this->setMessage($errors, 'danger');
+            $this->setMessage($this->text('One or more errors occurred'), 'danger');
         }
 
         if (isset($key)) {

@@ -52,13 +52,14 @@ class Currency extends Model
 
         $data += $this->defaultCurrencyValues();
 
+        if (!empty($data['default'])) {
+            $data['status'] = 1;
+            $this->config->set('currency', $data['code']);
+        }
+
         $currencies = $this->getList();
         $currencies[$data['code']] = $data;
         $this->config->set('currencies', $currencies);
-
-        if (!empty($data['default'])) {
-            $this->config->set('currency', $data['code']);
-        }
 
         $this->hook->fire('add.currency.after', $data);
         return true;
@@ -132,6 +133,7 @@ class Currency extends Model
         }
 
         if (!empty($data['default'])) {
+            $data['status'] = 1;
             $this->config->set('currency', $code);
         }
 
@@ -252,6 +254,24 @@ class Currency extends Model
 
         $currency = $this->getDefault();
         return $currency;
+    }
+
+    /**
+     * Returns a currency by a numeric code
+     * @param integer $code
+     * @return array
+     */
+    public function getByNumericCode($code)
+    {
+        $list = $this->getList();
+
+        foreach ($list as $currency) {
+            if ($currency['numeric_code'] == $code) {
+                return $currency;
+            }
+        }
+
+        return array();
     }
 
     /**

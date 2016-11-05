@@ -118,13 +118,24 @@ class Base
     }
 
     /**
-     * Sets status field to bool value
+     * Sets "Status" field to integer value
      * @param array $submitted
      */
     protected function validateStatus(array &$submitted)
     {
         if (isset($submitted['status'])) {
             $submitted['status'] = (int) Tool::toBool($submitted['status']);
+        }
+    }
+
+    /**
+     * Sets "Default" field to integer value
+     * @param array $submitted
+     */
+    protected function validateDefault(array &$submitted)
+    {
+        if (isset($submitted['default'])) {
+            $submitted['default'] = (int) Tool::toBool($submitted['default']);
         }
     }
 

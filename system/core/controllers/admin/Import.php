@@ -10,10 +10,9 @@
 namespace core\controllers\admin;
 
 use core\classes\Curl;
-use core\controllers\admin\Controller as BackendController;
 use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
-use core\models\Job as ModelsJob;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to import operations
@@ -34,12 +33,6 @@ class Import extends BackendController
     protected $import;
 
     /**
-     * Job model instance
-     * @var \core\models\Job $job
-     */
-    protected $job;
-
-    /**
      * File model instance
      * @var \core\models\File $file
      */
@@ -47,20 +40,15 @@ class Import extends BackendController
 
     /**
      * Constructor
-     * @param ModelsJob $job
      * @param ModelsImport $import
      * @param ModelsFile $file
      * @param Curl $curl
      */
-    public function __construct(
-        ModelsJob $job,
-        ModelsImport $import,
-        ModelsFile $file,
-        Curl $curl
-    ) {
+    public function __construct(ModelsImport $import, ModelsFile $file,
+            Curl $curl)
+    {
         parent::__construct();
 
-        $this->job = $job;
         $this->curl = $curl;
         $this->file = $file;
         $this->import = $import;
@@ -114,7 +102,8 @@ class Import extends BackendController
             return true;
         }
 
-        $message = $this->text('Unable to connect to external server that provides demo images. Check your internet connection');
+        $message = $this->text('Unable to connect to external server that provides demo images.'
+                . ' Check your internet connection');
 
         $this->setMessage($message, 'warning');
         return false;
@@ -142,6 +131,44 @@ class Import extends BackendController
             'total' => $data['filesize'],
         );
 
+        // First import categories, then - products
+        $this->setJobDemoCategoryImport($operation_id, $job);
+        $this->setJobDemoProductImport($operation_id, $job);
+        $this->setJob($job);
+    }
+
+    /**
+     * Sets job data for demo product import step
+     * @param string $operation_id
+     * @param array $job
+     */
+    protected function setJobDemoProductImport($operation_id, array &$job)
+    {
+        if ($operation_id == 'product') {
+
+            $job['message'] = array(
+                'start' => $this->text('Starting to create demo products...'),
+                'process' => $this->text('Creating demo products.'
+                        . ' It may take some time to download images from an external site.'),
+            );
+
+            $job['redirect_message'] = array(
+                'finish' => $this->text('Finished. <a href="!href">See demo products</a>', array(
+                    '!href' => $this->url('admin/content/product')
+                )),
+                'errors' => $this->text('An error occurred while creating demo products.'
+                        . ' A possible reason might be you have duplicated category names.'),
+            );
+        }
+    }
+
+    /**
+     * Sets job data for demo categories import step
+     * @param string $operation_id
+     * @param array $job
+     */
+    protected function setJobDemoCategoryImport($operation_id, array &$job)
+    {
         if ($operation_id == 'category') {
 
             $job['message'] = array(
@@ -152,25 +179,6 @@ class Import extends BackendController
             // Next step - create products
             $job['redirect']['finish'] = $this->url('', array('demo-next' => 'product'));
         }
-
-        if ($operation_id == 'product') {
-
-            $job['message'] = array(
-                'start' => $this->text('Starting to create demo products...'),
-                'process' => $this->text('Creating demo products.'
-                    . ' It may take some time to download images from an external site.'),
-            );
-
-            $job['redirect_message'] = array(
-                'finish' => $this->text('Finished. <a href="!href">See demo products</a>', array(
-                    '!href' => $this->url('admin/content/product')
-                )),
-                'errors' => $this->text('An error occurred while creating demo products.'
-                    . ' A possible reason might be you have duplicated category names.'),
-            );
-        }
-
-        $this->job->submit($job);
     }
 
     /**
@@ -211,13 +219,12 @@ class Import extends BackendController
      */
     protected function setBreadcrumbListImport()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -269,11 +276,12 @@ class Import extends BackendController
     /**
      * Starts import
      * @param array $operation
+     * @return null
      */
     protected function submitImport(array $operation)
     {
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('import');
@@ -282,12 +290,14 @@ class Import extends BackendController
         if (!$this->hasErrors('import')) {
             $this->setJobImport($operation);
         }
+
+        return null;
     }
 
     /**
      * Validates submitted import data
      * @param array $operation
-     * @return null
+     * @return boolean
      */
     protected function validateImport(array $operation)
     {
@@ -296,31 +306,30 @@ class Import extends BackendController
         $this->setSubmitted('limit', $limit);
         $this->setSubmitted('operation', $operation);
 
-        $this->addValidator('file', array(
-            'upload' => array(
-                'handler' => 'csv',
-                'path' => 'private/import',
-                'file' => $this->request->file('file')
-            )
-        ));
+        $result = $this->file->setUploadPath('private/import')
+                ->setHandler('csv')
+                ->upload($this->request->file('file'));
 
-        $errors = $this->setValidators($operation);
-
-        if (empty($errors)) {
-
-            $uploaded = $this->getValidatorResult('file');
-            $filepath = GC_FILE_DIR . "/$uploaded";
-            $filesize = filesize($filepath);
-
-            $this->setSubmitted('filepath', $filepath);
-            $this->setSubmitted('filesize', $filesize);
-
-            $result = $this->import->validateCsvHeader($filepath, $operation);
-
-            if ($result !== true) {
-                $this->setError('file', $result);
-            }
+        if ($result !== true) {
+            $this->setError('file', $result);
         }
+
+        if ($this->isError()) {
+            return false;
+        }
+
+        $uploaded = $this->file->getUploadedFile();
+
+        $this->setSubmitted('filepath', $uploaded);
+        $this->setSubmitted('filesize', filesize($uploaded));
+        $csv_result = $this->import->validateCsvHeader($uploaded, $operation);
+
+        if ($csv_result === true) {
+            return true;
+        }
+
+        $this->setError('file', $csv_result);
+        return false;
     }
 
     protected function setJobImport(array $operation)
@@ -339,14 +348,14 @@ class Import extends BackendController
         if (!empty($operation['log']['errors'])) {
 
             $error_message = $this->text('Inserted: %inserted, updated: %updated,'
-                . ' errors: %errors. <a href="!url">See error log</a>', array(
+                    . ' errors: %errors. <a href="!url">See error log</a>', array(
                 '!url' => $this->url(false, array('download_errors' => 1))
             ));
 
             $job['redirect_message']['errors'] = $error_message;
         }
 
-        $this->job->submit($job);
+        $this->setJob($job);
     }
 
     /**
@@ -367,6 +376,8 @@ class Import extends BackendController
      */
     protected function setBreadcrumbEditImport()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')

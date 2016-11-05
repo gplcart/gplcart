@@ -40,13 +40,6 @@ class File
      */
     public function image($file, array $options)
     {
-        $allowed = array('image/jpeg', 'image/gif', 'image/png');
-        $mimetype = $this->file->getMimeType($file);
-
-        if (!in_array($mimetype, $allowed)) {
-            return false;
-        }
-
         return (bool) getimagesize($file);
     }
 
@@ -64,7 +57,7 @@ class File
         if (empty($content)) {
             return false;
         }
-
+        
         return openssl_pkcs12_read($content, $info, $secret);
     }
 
@@ -78,7 +71,6 @@ class File
     {
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
         $mimetype = $this->file->getMimeType($file);
-        
         return in_array($mimetype, $allowed);
     }
 
@@ -90,46 +82,8 @@ class File
      */
     public function zip($file, array $options)
     {
-        $allowed = array('application/zip', 'multipart/x-zip');
-        $mimetype = $this->file->getMimeType($file);
-
-        if (!in_array($mimetype, $allowed)) {
-            return false;
-        }
-
         $zip = zip_open($file);
         return is_resource($zip);
-    }
-
-    /**
-     * Validates uploaded file
-     * @param string|null $file
-     * @param array $options
-     * @return boolean|array
-     */
-    public function upload($file, array $options)
-    {
-        if (empty($options['file']) && empty($options['required'])) {
-            return true;
-        }
-
-        if (!empty($options['path'])) {
-            $this->file->setUploadPath($options['path']);
-        }
-
-        if (!empty($options['handler'])) {
-            $this->file->setHandler($options['handler']);
-        }
-
-        $result = $this->file->upload($options['file']);
-
-        if ($result === true) {
-            $uploaded = $this->file->getUploadedFile();
-            $relative_path = $this->file->path($uploaded);
-            return array('result' => $relative_path);
-        }
-
-        return $result;
     }
 
 }

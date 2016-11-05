@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Tool;
 use core\Container;
+use core\classes\Tool;
 use core\Controller as BaseController;
 
 /**
@@ -26,10 +26,10 @@ class Controller extends BaseController
     protected $current_job = array();
 
     /**
-     * Search model instance
-     * @var object
+     * Job model instance
+     * @var \core\models\Job $job
      */
-    protected $search;
+    protected $job;
 
     /**
      * Constructor
@@ -38,17 +38,21 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        /* @var $search \core\models\Search */
-        $this->search = Container::instance('core\\models\\Search');
-
         $this->setJobProperties();
+        $this->processCurrentJob();
+        $this->setDataFrontend();
 
+        $this->hook->fire('init.backend', $this);
+    }
+
+    /**
+     * Sets template data
+     */
+    protected function setDataFrontend()
+    {
         $this->data['admin_menu'] = $this->getAdminMenu();
         $this->data['help_summary'] = $this->getHelpSummary();
         $this->data['store_list'] = $this->store->getList();
-        $this->data['search_handlers'] = $this->search->getHandlers();
-
-        $this->hook->fire('init.backend', $this);
     }
 
     /**
@@ -57,29 +61,52 @@ class Controller extends BaseController
      */
     protected function setJobProperties()
     {
-        $job_id = (string)$this->request->get('job_id');
-
-        if (empty($job_id)) {
-            return;
-        }
-
         /* @var $job \core\models\Job */
-        $job = Container::instance('core\\models\\Job');
+        $this->job = Container::instance('core\\models\\Job');
 
-        $this->current_job = $job->get($job_id);
+        $job_id = (string) $this->request->get('job_id');
 
+        if (!empty($job_id)) {
+            $this->current_job = $this->job->get($job_id);
+        }
+    }
+
+    /**
+     * Processes the current job
+     * @return null
+     */
+    protected function processCurrentJob()
+    {
         if (empty($this->current_job['status'])) {
-            return;
+            return null;
         }
 
         $this->setJsSettings('job', $this->current_job, -60);
+        $process_job_id = (string) $this->request->get('process_job');
 
-        $process_job_id = (string)$this->request->get('process_job');
-
-        if ($this->request->isAjax() && $process_job_id === $job_id) {
-            $response = $job->process($this->current_job);
+        if ($this->request->isAjax() && $process_job_id == $this->current_job['id']) {
+            $response = $this->job->process($this->current_job);
             $this->response->json($response);
         }
+
+        return null;
+    }
+
+    /**
+     * Submits a new job
+     * @param array $job
+     */
+    protected function setJob(array $job)
+    {
+        $this->job->delete($job['id']);
+
+        if (!empty($job['data']['operation']['log']['errors'])) {
+            // create an empty error log file
+            file_put_contents($job['data']['operation']['log']['errors'], '');
+        }
+
+        $this->job->set($job);
+        $this->url->redirect('', array('job_id' => $job['id']));
     }
 
     /**
@@ -122,7 +149,7 @@ class Controller extends BaseController
                 'url' => $this->url($path),
                 'depth' => (substr_count($path, '/') - 1),
                 'text' => $this->text($route['menu']['admin']),
-                //'weight' => isset($route['weight']) ? $route['weight'] : 0
+                    //'weight' => isset($route['weight']) ? $route['weight'] : 0
             );
 
             $array[$path] = $data;
