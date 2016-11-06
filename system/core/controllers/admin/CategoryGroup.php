@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to category groups
@@ -209,7 +209,7 @@ class CategoryGroup extends BackendController
      */
     protected function validateCategoryGroup(array $category_group)
     {
-        $this->setSubmitted('category_group', $category_group);
+        $this->setSubmitted('update', $category_group);
         $this->validate('category_group');
     }
 
@@ -248,12 +248,11 @@ class CategoryGroup extends BackendController
      */
     protected function setTitleEditCategoryGroup(array $category_group)
     {
+        $title = $this->text('Add category group');
+
         if (isset($category_group['category_group_id'])) {
             $title = $this->text('Edit category group %name', array(
-                '%name' => $category_group['title']
-            ));
-        } else {
-            $title = $this->text('Add category group');
+                '%name' => $category_group['title']));
         }
 
         $this->setTitle($title);

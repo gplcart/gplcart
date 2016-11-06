@@ -53,31 +53,54 @@ class Category extends BaseValidator
      */
     public function category(array &$submitted, array $options = array())
     {
+        $this->validateCategory($submitted);
         $this->validateWeight($submitted);
         $this->validateStatus($submitted);
-
         $this->validateTitle($submitted);
         $this->validateMetaTitle($submitted);
         $this->validateMetaDescription($submitted);
         $this->validateDescriptionCategory($submitted);
-
         $this->validateGroupCategory($submitted);
         $this->validateParentCategory($submitted);
-
         $this->validateTranslation($submitted);
-        $this->validateAliasCategory($submitted);
         $this->validateImages($submitted);
+        $this->validateAliasCategory($submitted);
 
         return empty($this->errors) ? true : $this->errors;
     }
 
     /**
-     * Validates a category group ID
+     * Validates a category to be updated
      * @param array $submitted
      * @return boolean
      */
+    protected function validateCategory(array &$submitted)
+    {
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+            $data = $this->category->get($submitted['update']);
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Category')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates a category group ID
+     * @param array $submitted
+     * @return boolean|null
+     */
     protected function validateGroupCategory(array $submitted)
     {
+        if (!empty($submitted['update']) && !isset($submitted['category_group_id'])) {
+            return null;
+        }
+
         if (empty($submitted['category_group_id']) || !is_numeric($submitted['category_group_id'])) {
             $options = array('@field' => $this->language->text('Category group'));
             $this->errors['category_group_id'] = $this->language->text('@field must be numeric', $options);
@@ -97,12 +120,12 @@ class Category extends BaseValidator
     /**
      * Validates parent category group ID
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateParentCategory(array $submitted)
     {
         if (empty($submitted['parent_id'])) {
-            return true;
+            return null;
         }
 
         if (!is_numeric($submitted['parent_id'])) {
@@ -152,18 +175,23 @@ class Category extends BaseValidator
     /**
      * Validates / creates an alias
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateAliasCategory(array &$submitted)
     {
+        if (!empty($this->errors)) {
+            return null;
+        }
+
         if (isset($submitted['alias'])//
-                && isset($submitted['category']['alias'])//
-                && ($submitted['category']['alias'] === $submitted['alias'])) {
+                && isset($submitted['update']['alias'])//
+                && ($submitted['update']['alias'] === $submitted['alias'])) {
             return true; // Do not check own alias on update
         }
 
-        if (empty($submitted['alias']) && empty($this->errors) && isset($submitted['category']['category_id'])) {
+        if (empty($submitted['alias']) && isset($submitted['update']['category_id'])) {
             $submitted['alias'] = $this->category->createAlias($submitted);
+            return true;
         }
 
         return $this->validateAlias($submitted);

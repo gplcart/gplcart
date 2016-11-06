@@ -201,6 +201,20 @@ class Tool
     }
 
     /**
+     * Returns a file mime type
+     * @param string $file
+     * @return string
+     */
+    public static function mime($file)
+    {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimetype = finfo_file($finfo, $file);
+        finfo_close($finfo);
+
+        return $mimetype;
+    }
+
+    /**
      * Recursively merges two arrays
      * @param array $array1
      * @param array $array2

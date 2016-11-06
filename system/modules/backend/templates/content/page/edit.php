@@ -85,7 +85,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo isset($this->errors['store_id']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Store'); ?></label>
         <div class="col-md-4">
           <select class="form-control" name="page[store_id]">
@@ -95,7 +95,10 @@
             <?php } ?>
           </select>
           <div class="help-block">
-          <?php echo $this->text('Select a store where to display this page'); ?>
+            <?php if(isset($this->errors['store_id'])) { ?>
+            <?php echo $this->escape($this->errors['store_id']); ?>
+            <?php } ?>
+            <div class="text-muted"><?php echo $this->text('Select a store where to display this page'); ?></div>
           </div>
         </div>
       </div>

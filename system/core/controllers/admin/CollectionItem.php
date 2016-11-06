@@ -102,8 +102,7 @@ class CollectionItem extends BackendController
 
         // Update weight and returm JSON responce
         if ($action === 'weight' && $this->access('collection_item_edit')) {
-            $this->updateWeight($selected);
-            return null;
+            return $this->updateWeight($selected);
         }
 
         $deleted = $updated = 0;

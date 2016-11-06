@@ -9,13 +9,21 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Request;
 use core\models\File as ModelsFile;
+use core\handlers\validator\Base as BaseValidator;
 
 /**
- * Provides methods to validate different types of files
+ * Provides methods to validate files to be stored in the database
  */
-class File
+class File extends BaseValidator
 {
+
+    /**
+     * Request class instance
+     * @var \core\classes\Request $request
+     */
+    protected $request;
 
     /**
      * File model instance
@@ -26,64 +34,118 @@ class File
     /**
      * Constructor
      * @param ModelsFile $file
+     * @param Request $request
      */
-    public function __construct(ModelsFile $file)
+    public function __construct(ModelsFile $file, Request $request)
     {
+        parent::__construct();
+
         $this->file = $file;
+        $this->request = $request;
     }
 
     /**
-     * Whether the file is an image
-     * @param string $file
-     * @param array $options
-     * @return boolean
+     * Performs full file data validation
+     * @param array $submitted
      */
-    public function image($file, array $options)
+    public function file(array &$submitted, array $options = array())
     {
-        return (bool) getimagesize($file);
+        $this->validateFile($submitted);
+        $this->validateTitleFile($submitted);
+        $this->validateDescription($submitted);
+        $this->validateWeight($submitted);
+        $this->validateTranslation($submitted);
+        $this->validatePathFile($submitted);
+
+        return empty($this->errors) ? true : $this->errors;
     }
 
     /**
-     * Whether the file is a .p12 sertificate
-     * @param string $file
-     * @param array $options
+     * Validates a file to be updated
+     * @param array $submitted
      * @return boolean
      */
-    public function p12($file, array $options)
+    protected function validateFile(array &$submitted)
     {
-        $content = file_get_contents($file);
-        $secret = isset($options['secret']) ? $options['secret'] : 'notasecret';
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
 
-        if (empty($content)) {
+            $file = $this->file->get($submitted['update']);
+
+            if (empty($file)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('File')));
+                return false;
+            }
+
+            $submitted['update'] = $file;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates a title field
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateTitleFile(array &$submitted)
+    {
+        if (isset($submitted['title']) && mb_strlen($submitted['title']) > 255) {
+            $options = array('@max' => 255, '@field' => $this->language->text('Title'));
+            $this->errors['title'] = $this->language->text('@field must not be longer than @max characters', $options);
             return false;
         }
-        
-        return openssl_pkcs12_read($content, $info, $secret);
+
+        return true;
     }
 
     /**
-     * Whether the file is a CSV file
-     * @param string $file
-     * @param array $options
+     * Validates a path of existing file or uploads a file
+     * @param array $submitted
      * @return boolean
      */
-    public function csv($file, array $options)
+    protected function validatePathFile(array &$submitted)
     {
-        $allowed = array('text/plain', 'text/csv', 'text/tsv');
-        $mimetype = $this->file->getMimeType($file);
-        return in_array($mimetype, $allowed);
-    }
+        if (!empty($submitted['update'])) {
+            return null; // Existing files cannot be changed
+        }
 
-    /**
-     * Whether the file is a ZIP file
-     * @param string $file
-     * @param array $options
-     * @return type
-     */
-    public function zip($file, array $options)
-    {
-        $zip = zip_open($file);
-        return is_resource($zip);
+        // Prevent uploading if errors have occurred before
+        if (!empty($this->errors)) {
+            return null;
+        }
+
+        //Validate an existing file if the path is provided
+        if (isset($submitted['path'])) {
+
+            if (is_readable(GC_FILE_DIR . "/{$submitted['path']}")) {
+                return true;
+            }
+
+            $this->errors['file'] = $this->language->text('Object @name does not exist', array(
+                '@name' => $this->language->text('File')));
+            return false;
+        }
+
+        $file = $this->request->file('file');
+
+        if (empty($file)) {
+            $this->errors['file'] = $this->language->text('@field is required', array(
+                '@field' => $this->language->text('File')
+            ));
+            return false;
+        }
+
+        $result = $this->file->setUploadPath('image/upload/common')->upload($file);
+
+        if ($result !== true) {
+            $this->errors['file'] = $result;
+            return false;
+        }
+
+        $uploaded = $this->file->getUploadedFile(true);
+        $submitted['path'] = $uploaded;
+        return true;
     }
 
 }

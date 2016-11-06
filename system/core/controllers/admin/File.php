@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\File as ModelsFile;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to files
@@ -65,7 +65,7 @@ class File extends BackendController
     {
         if ($this->isQuery('download')) {
 
-            $file_id = (int)$this->request->get('download');
+            $file_id = (int) $this->request->get('download');
             $file = $this->file->get($file_id);
 
             $filepath = GC_FILE_DIR . '/' . $file['path'];
@@ -75,17 +75,17 @@ class File extends BackendController
 
     /**
      * Applies an action to the selected files
-     * @return null|void
+     * @return null
      */
     protected function actionFile()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $selected = (array)$this->request->post('selected', array());
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted_disk = $deleted_database = 0;
 
@@ -102,7 +102,8 @@ class File extends BackendController
             '%disk' => $deleted_disk
         ));
 
-        return $this->setMessage($message, 'success', true);
+        $this->setMessage($message, 'success', true);
+        return null;
     }
 
     /**
@@ -113,7 +114,7 @@ class File extends BackendController
     protected function getTotalFile(array $query)
     {
         $query['count'] = true;
-        return (int)$this->file->getList($query);
+        return (int) $this->file->getList($query);
     }
 
     /**
@@ -128,10 +129,11 @@ class File extends BackendController
         $files = $this->file->getList($query);
 
         foreach ($files as &$file) {
-            $file['url'] = '';
+
             // Prevent php errors for invalid/empty paths
             $path = strval(str_replace("\0", "", $file['path']));
 
+            $file['url'] = '';
             if ($path && file_exists(GC_FILE_DIR . '/' . $path)) {
                 $file['url'] = $this->file->url($file['path']);
             }
@@ -180,7 +182,10 @@ class File extends BackendController
         $this->submitFile($file);
 
         $extensions = $this->file->supportedExtensions(true);
-        $can_delete = (isset($file['file_id']) && $this->access('file_delete') && $this->file->canDelete($file_id));
+
+        $can_delete = (isset($file['file_id'])//
+                && $this->access('file_delete')//
+                && $this->file->canDelete($file_id));
 
         $this->setData('file', $file);
         $this->setData('can_delete', $can_delete);
@@ -264,36 +269,8 @@ class File extends BackendController
      */
     protected function validateFile(array $file)
     {
-        $this->addValidator('title', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        if (empty($file['file_id'])) {
-            $this->addValidator('file', array(
-                'upload' => array(
-                    'required' => true,
-                    'control_errors' => true,
-                    'path' => 'image/upload/common',
-                    'file' => $this->request->file('file')
-                )
-            ));
-        }
-
-        $errors = $this->setValidators($file);
-
-        if (empty($errors) && empty($file['file_id'])) {
-            $uploaded = $this->getValidatorResult('file');
-            $this->setSubmitted('path', $uploaded);
-        }
+        $this->setSubmitted('update', $file);
+        $this->validate('file');
     }
 
     /**
@@ -303,6 +280,7 @@ class File extends BackendController
     protected function updateFile(array $file)
     {
         $this->controlAccess('file_edit');
+
         $submitted = $this->getSubmitted();
         $updated = $this->file->update($file['file_id'], $submitted);
 
@@ -321,6 +299,7 @@ class File extends BackendController
     protected function addFile()
     {
         $this->controlAccess('file_add');
+
         $submitted = $this->getSubmitted();
         $result = $this->file->add($submitted);
 

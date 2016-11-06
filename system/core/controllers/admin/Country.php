@@ -75,14 +75,14 @@ class Country extends BackendController
      */
     protected function actionCountry()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('country_edit')) {
             return $this->updateWeight($selected);
@@ -92,11 +92,11 @@ class Country extends BackendController
         foreach ($selected as $code) {
 
             if ($action === 'status' && $this->access('country_edit')) {
-                $updated += (int)$this->country->update($code, array('status' => $value));
+                $updated += (int) $this->country->update($code, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('country_delete')) {
-                $deleted += (int)$this->country->delete($code);
+                $deleted += (int) $this->country->delete($code);
             }
         }
 
@@ -112,7 +112,7 @@ class Country extends BackendController
 
         return null;
     }
-    
+
     /**
      * Updates an array of country with a new weight
      * @param array $items
@@ -123,9 +123,8 @@ class Country extends BackendController
             $this->country->update($code, array('weight' => $weight));
         }
 
-        $this->response->json(array(
-            'success' => $this->text('Countries have been reordered')
-        ));
+        $response = array('success' => $this->text('Countries have been reordered'));
+        $this->response->json($response);
     }
 
     /**
@@ -280,8 +279,7 @@ class Country extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
-        $this->setSubmitted('country', $country);
-        
+        $this->setSubmitted('update', $country);
         $this->validate('country');
     }
 
@@ -320,12 +318,10 @@ class Country extends BackendController
      */
     protected function setTitleEditCountry(array $country)
     {
+        $title = $this->text('Add country');
+
         if (isset($country['name'])) {
-            $title = $this->text('Edit country %name', array(
-                '%name' => $country['name']
-            ));
-        } else {
-            $title = $this->text('Add country');
+            $title = $this->text('Edit country %name', array('%name' => $country['name']));
         }
 
         $this->setTitle($title);
@@ -369,7 +365,6 @@ class Country extends BackendController
         $this->setData('format', $country['format']);
 
         $this->submitFormatCountry($country);
-
         $this->setTitleFormatCountry($country);
         $this->setBreadcrumbFormatCountry();
         $this->outputFormatCountry();
@@ -413,7 +408,9 @@ class Country extends BackendController
         }
 
         $this->country->update($country['code'], array('format' => $format));
-        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+
+        $message = $this->text('Country has been updated');
+        $this->redirect('admin/settings/country', $message, 'success');
     }
 
     /**
@@ -423,8 +420,7 @@ class Country extends BackendController
     protected function setTitleFormatCountry(array $country)
     {
         $text = $this->text('Address format of %country', array(
-            '%country' => $country['name']
-        ));
+            '%country' => $country['name']));
 
         $this->setTitle($text);
     }

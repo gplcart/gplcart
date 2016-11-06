@@ -41,24 +41,49 @@ class CategoryGroup extends BaseValidator
      */
     public function categoryGroup(array &$submitted, array $options = array())
     {
+        $this->validateCategoryGroup($submitted);
         $this->validateTitle($submitted);
         $this->validateTranslation($submitted);
         $this->validateStore($submitted);
-
-        // Goes after store validation
         $this->validateTypeCategoryGroup($submitted);
+
         return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
+     * Validates a category group to be updated
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateCategoryGroup(array &$submitted)
+    {
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+            $data = $this->category_group->get($submitted['update']);
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Category group')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
+        }
+
+        return true;
     }
 
     /**
      * Validates category group type
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateTypeCategoryGroup(array &$submitted)
     {
         if (isset($this->errors['store_id'])) {
-            return null; // We need valid store ID
+            return null;
+        }
+
+        if (!empty($submitted['update']) && !isset($submitted['type'])) {
+            return null;
         }
 
         if (empty($submitted['type'])) {
@@ -76,15 +101,15 @@ class CategoryGroup extends BaseValidator
         $list = $this->category_group->getList($arguments);
 
         // Remove own ID when updating the group
-        if (isset($submitted['category_group']['category_group_id'])) {
-            unset($list[$submitted['category_group']['category_group_id']]);
+        if (isset($submitted['update']['category_group_id'])) {
+            unset($list[$submitted['update']['category_group_id']]);
         }
 
         if (empty($list)) {
             return true;
         }
 
-        $this->errors['type'] = $this->language->text('Category group with same type already exists for this store');
+        $this->errors['type'] = $this->language->text('Category group of this type already exists for this store');
         return false;
     }
 

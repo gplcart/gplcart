@@ -225,9 +225,7 @@ class Field extends BackendController
             $this->redirect('admin/content/field', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this field.'
-                . ' The most probable reason - it is used by one or more products');
-
+        $message = $this->text('Unable to delete this field');
         $this->redirect('', $message, 'danger');
     }
 
@@ -237,7 +235,7 @@ class Field extends BackendController
      */
     protected function validateField(array $field)
     {
-        $this->setSubmitted('field', $field);
+        $this->setSubmitted('update', $field);
         $this->validate('field');
     }
 

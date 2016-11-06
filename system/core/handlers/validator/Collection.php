@@ -41,6 +41,7 @@ class Collection extends BaseValidator
      */
     public function collection(array &$submitted, array $options = array())
     {
+        $this->validateCollection($submitted);
         $this->validateStatus($submitted);
         $this->validateTitle($submitted);
         $this->validateDescription($submitted);
@@ -52,14 +53,35 @@ class Collection extends BaseValidator
     }
 
     /**
+     * Validates a collection to be updated
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateCollection(array &$submitted)
+    {
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+            $data = $this->collection->get($submitted['update']);
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Collection')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
+        }
+
+        return true;
+    }
+
+    /**
      * Validates collection type field
      * @param array $submitted
      * @return boolean
      */
     protected function validateTypeCollection(array &$submitted)
     {
-        if (isset($submitted['collection']['collection_id'])) {
-            return true; // Type cannot be changed on update
+        if (!empty($submitted['update'])) {
+            return true; // Type cannot be updated
         }
 
         if (empty($submitted['type'])) {

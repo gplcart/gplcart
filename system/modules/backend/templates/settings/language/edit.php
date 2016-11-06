@@ -104,7 +104,7 @@
           </button>
           <?php } ?>
         </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-4">
           <div class="btn-toolbar">
             <a href="<?php echo $this->url('admin/settings/language'); ?>" class="btn btn-default cancel"><i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?></a>
             <?php if ($this->access('language_edit') || $this->access('language_add')) { ?>

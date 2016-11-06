@@ -42,6 +42,7 @@ class Field extends BaseValidator
      */
     public function field(array &$submitted, array $options = array())
     {
+        $this->validateField($submitted);
         $this->validateTitle($submitted);
         $this->validateWeight($submitted);
         $this->validateTranslation($submitted);
@@ -52,14 +53,35 @@ class Field extends BaseValidator
     }
 
     /**
-     * Validates field type
+     * Validates a field to be updated
      * @param array $submitted
      * @return boolean
      */
+    protected function validateField(array &$submitted)
+    {
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+            $data = $this->field->get($submitted['update']);
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Field')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates field type
+     * @param array $submitted
+     * @return boolean|null
+     */
     protected function validateTypeField(array $submitted)
     {
-        if (isset($submitted['field']['field_id'])) {
-            return true; // We cannot change type of existing field
+        if (!empty($submitted['update'])) {
+            return null; // Cannot change type of existing field
         }
 
         if (empty($submitted['type'])) {
@@ -83,10 +105,14 @@ class Field extends BaseValidator
     /**
      * Validates field widget type
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateWidgetTypeField(array $submitted)
     {
+        if (!empty($submitted['update']) && !isset($submitted['widget'])) {
+            return null;
+        }
+
         if (empty($submitted['widget'])) {
             $this->errors['widget'] = $this->language->text('@field is required', array(
                 '@field' => $this->language->text('Widget')

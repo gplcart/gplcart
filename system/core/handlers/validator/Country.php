@@ -52,11 +52,12 @@ class Country extends BaseValidator
      */
     public function country(array &$submitted, array $options = array())
     {
+        $tis->validateCountry($submitted);
         $this->validateWeight($submitted);
         $this->validateDefault($submitted);
         $this->validateStatus($submitted);
         $this->validateCodeCountry($submitted);
-        $this->validateNameCountry($submitted);
+        $this->validateName($submitted);
         $this->validateNativeNameCountry($submitted);
         $this->validateZoneCountry($submitted);
 
@@ -65,6 +66,27 @@ class Country extends BaseValidator
         }
 
         return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
+     * Validates a country to be updated
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateCountry(array &$submitted)
+    {
+        if (!empty($submitted['update']) && is_string($submitted['update'])) {
+            $data = $this->country->get($submitted['update']);
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Country')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
+        }
+
+        return true;
     }
 
     /**
@@ -95,28 +117,16 @@ class Country extends BaseValidator
     }
 
     /**
-     * Validates a country name
-     * @param array $submitted
-     * @return boolean
-     */
-    protected function validateNameCountry(array &$submitted)
-    {
-        if (empty($submitted['name']) || mb_strlen($submitted['name']) > 255) {
-            $options = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Name'));
-            $this->errors['name'] = $this->language->text('@field must be @min - @max characters long', $options);
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Validates a native country name
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateNativeNameCountry(array &$submitted)
     {
+        if (!empty($submitted['update']) && !isset($submitted['native_name'])) {
+            return null;
+        }
+
         if (empty($submitted['native_name']) || mb_strlen($submitted['native_name']) > 255) {
             $options = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Native name'));
             $this->errors['native_name'] = $this->language->text('@field must be @min - @max characters long', $options);
@@ -129,10 +139,14 @@ class Country extends BaseValidator
     /**
      * Validates a country code
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCodeCountry(array &$submitted)
     {
+        if (!empty($submitted['update']) && !isset($submitted['code'])) {
+            return null;
+        }
+
         if (empty($submitted['code'])) {
             $this->errors['code'] = $this->language->text('@field is required', array(
                 '@field' => $this->language->text('Code')
@@ -141,7 +155,7 @@ class Country extends BaseValidator
         }
 
         if (!preg_match('/^[A-Z]{2}$/', $submitted['code'])) {
-            $this->errors['code'] = $this->language->text('Invalid country code. It must conform ISO 3166-2 standard');
+            $this->errors['code'] = $this->language->text('Invalid country code. It must conform to ISO 3166-2 standard');
             return false;
         }
 

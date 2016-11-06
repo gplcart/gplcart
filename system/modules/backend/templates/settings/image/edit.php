@@ -166,7 +166,7 @@
               <tr>
                 <td>colorize</td>
                 <td><?php echo $this->text('HEX color and decimal opacity, separated by comma, e.g #FF0000, 0.5'); ?></td>
-                <td><?php echo $this->text('Colorize with a specific color and opacity'); ?></td>
+                <td><?php echo $this->text('Colorize with the specified color and opacity'); ?></td>
               </tr>
               <tr>
                 <td>edges</td>

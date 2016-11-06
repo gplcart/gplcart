@@ -10,8 +10,8 @@
 namespace core\controllers\admin;
 
 use core\classes\Curl;
-use core\controllers\admin\Controller as BackendController;
 use core\models\Module as ModelsModule;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to modules
@@ -64,15 +64,15 @@ class Module extends BackendController
      */
     protected function actionModule()
     {
-        $action = (string)$this->request->get('action');
+        $action = (string) $this->request->get('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
         $this->controlToken();
 
-        $module_id = (string)$this->request->get('module_id');
+        $module_id = (string) $this->request->get('module_id');
 
         if (empty($module_id)) {
             $this->outputError(403);
@@ -103,8 +103,8 @@ class Module extends BackendController
             $this->redirect('', $message, 'danger');
         }
 
-        foreach ((array)$result as $error) {
-            $this->setMessage((string)$error, 'danger', true);
+        foreach ((array) $result as $error) {
+            $this->setMessage((string) $error, 'danger', true);
         }
 
         $this->redirect();
@@ -139,14 +139,12 @@ class Module extends BackendController
      */
     protected function setBreadcrumbListModule()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -165,7 +163,6 @@ class Module extends BackendController
         $this->controlAccess('module_install');
 
         $this->submitUploadModule();
-
         $this->setBreadcrumbUploadModule();
         $this->setTitleUploadModule();
         $this->outputUploadModule();
@@ -173,30 +170,40 @@ class Module extends BackendController
 
     /**
      * Installs a uploaded module
+     * @return null
      */
     protected function submitUploadModule()
     {
         if (!$this->isPosted('install')) {
-            return;
+            return null;
         }
 
         $this->validateUploadModule();
 
         if ($this->hasErrors()) {
-            return;
+            return null;
         }
 
+        $this->installUploadedModule();
+        return null;
+    }
+
+    /**
+     * Install a uploaded module
+     */
+    protected function installUploadedModule()
+    {
         $uploaded = $this->getSubmitted('destination');
         $result = $this->module->installFromZip($uploaded);
 
-        if ($result === true) {
-            $message = $this->text('The module has been <a href="!href">uploaded and installed</a>.'
-                . ' You have to enable it manually', array('!href' => $this->url('admin/module/list')));
-
-            $this->redirect('', $message, 'success');
+        if ($result !== true) {
+            $this->redirect('', $result, 'warning');
         }
 
-        $this->redirect('', $result, 'warning');
+        $options = array('!href' => $this->url('admin/module/list'));
+        $message = $this->text('The module has been <a href="!href">uploaded and installed</a>.'
+                . ' You have to enable it manually', $options);
+        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -205,19 +212,7 @@ class Module extends BackendController
      */
     protected function validateUploadModule()
     {
-        $options = array(
-            'required' => true,
-            'handler' => 'zip',
-            'path' => 'private/modules',
-            'file' => $this->request->file('file'),
-        );
-
-        $this->addValidator('file', array('upload' => $options));
-
-        $this->setValidators();
-        $path = $this->getValidatorResult('file');
-
-        $this->setSubmitted('destination', GC_FILE_DIR . "/$path");
+        $this->validate('module_upload');
     }
 
     /**
@@ -272,14 +267,8 @@ class Module extends BackendController
         $query['limit'] = $this->setPager($total, $query);
         $results = $this->getListMarketplaceModule($query);
 
-        $fields = array(
-            'category_id',
-            'price',
-            'views',
-            'rating',
-            'title',
-            'downloads'
-        );
+        $fields = array('category_id', 'price', 'views',
+            'rating', 'title', 'downloads');
 
         $this->setFilter($fields);
         $this->setData('marketplace', $results);
@@ -299,7 +288,7 @@ class Module extends BackendController
         $options['count'] = true;
         $result = $this->getListMarketplaceModule($options);
 
-        return empty($result['total']) ? 0 : (int)$result['total'];
+        return empty($result['total']) ? 0 : (int) $result['total'];
     }
 
     /**

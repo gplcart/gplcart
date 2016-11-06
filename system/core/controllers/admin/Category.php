@@ -9,11 +9,11 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Alias as ModelsAlias;
 use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
 use core\models\Image as ModelsImage;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to categories
@@ -115,8 +115,7 @@ class Category extends BackendController
         $categories = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
-            $this->updateWeight($categories);
-            return null;
+            return $this->updateWeight($categories);
         }
 
         $updated = $deleted = 0;
@@ -353,7 +352,7 @@ class Category extends BackendController
     protected function validateCategory(array $category)
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('category', $category);
+        $this->setSubmitted('update', $category);
         $this->validate('category');
     }
 

@@ -97,7 +97,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = $this->getMimeType(GC_FILE_DIR . '/' . $data['path']);
+            $data['mime_type'] = Tool::mime(GC_FILE_DIR . '/' . $data['path']);
         }
 
         if (empty($data['file_type'])) {
@@ -285,7 +285,7 @@ class File extends Model
     {
         $sql = 'SELECT'
                 . ' NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)'
-                . ' AND NOT EXISTS (SELECT file_id FROM option_combination WHERE file_id=:id)';
+                . ' AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $file_id));
     }
@@ -508,10 +508,15 @@ class File extends Model
 
     /**
      * Returns path of uploaded file
+     * @param bool $relative
      * @return string
      */
-    public function getUploadedFile()
+    public function getUploadedFile($relative = false)
     {
+        if ($relative) {
+            return $this->path($this->uploaded);
+        }
+
         return $this->uploaded;
     }
 
@@ -779,20 +784,6 @@ class File extends Model
 
         $this->uploaded = $destination;
         return true;
-    }
-
-    /**
-     * Returns file's MIME type
-     * @param string $file
-     * @return string
-     */
-    public function getMimeType($file)
-    {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimetype = finfo_file($finfo, $file);
-        finfo_close($finfo);
-
-        return $mimetype;
     }
 
 }

@@ -65,9 +65,9 @@ class CollectionItem extends BaseValidator
             ModelsProduct $product, ModelsCollection $collection,
             ModelsCollectionItem $collection_item)
     {
-        
+
         parent::__construct();
-        
+
         $this->file = $file;
         $this->page = $page;
         $this->product = $product;
@@ -89,7 +89,7 @@ class CollectionItem extends BaseValidator
         $this->validateCollectionCollectionItem($submitted);
         $this->validateValueCollectionItem($submitted);
         $this->validateEntityCollectionItem($submitted);
-        
+
         return empty($this->errors) ? true : $this->errors;
     }
 
@@ -166,7 +166,8 @@ class CollectionItem extends BaseValidator
         $item = $this->collection_item->getList($conditions);
 
         if (!empty($item)) {
-            $this->errors['value'] = $this->language->text('Value already exists in this collection');
+            $this->errors['value'] = $this->language->text('@object already exists', array(
+                '@object' => $this->language->text('Value')));
             return false;
         }
 

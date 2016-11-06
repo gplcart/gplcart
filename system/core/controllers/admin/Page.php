@@ -9,11 +9,11 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Alias as ModelsAlias;
 use core\models\Category as ModelsCategory;
 use core\models\Image as ModelsImage;
 use core\models\Page as ModelsPage;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to pages
@@ -52,12 +52,9 @@ class Page extends BackendController
      * @param ModelsAlias $alias
      * @param ModelsImage $image
      */
-    public function __construct(
-        ModelsPage $page,
-        ModelsCategory $category,
-        ModelsAlias $alias,
-        ModelsImage $image
-    ) {
+    public function __construct(ModelsPage $page, ModelsCategory $category,
+            ModelsAlias $alias, ModelsImage $image)
+    {
         parent::__construct();
 
         $this->page = $page;
@@ -83,14 +80,8 @@ class Page extends BackendController
         $this->setData('pages', $pages);
         $this->setData('stores', $stores);
 
-        $filters = array(
-            'title',
-            'store_id',
-            'page_id',
-            'status',
-            'created',
-            'email'
-        );
+        $filters = array('title', 'store_id', 'page_id',
+            'status', 'created', 'email');
 
         $this->setFilter($filters, $query);
 
@@ -104,31 +95,28 @@ class Page extends BackendController
      */
     protected function actionPage()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'categories') {
-            $default = $this->store->getDefault();
-            $store_id = (int)$this->request->post('store_id', $default);
-            $categories = $this->category->getOptionListByStore($store_id);
-            $this->response->json($categories);
+            $this->outputCategoriesPage();
         }
 
         $deleted = $updated = 0;
         foreach ($selected as $page_id) {
 
             if ($action == 'status' && $this->access('page_edit')) {
-                $updated += (int)$this->page->update($page_id, array('status' => $value));
+                $updated += (int) $this->page->update($page_id, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('page_delete')) {
-                $deleted += (int)$this->page->delete($page_id);
+                $deleted += (int) $this->page->delete($page_id);
             }
         }
 
@@ -139,6 +127,20 @@ class Page extends BackendController
         if ($deleted > 0) {
             $this->setMessage($this->text('Pages have been deleted'), 'success', true);
         }
+        
+        return null;
+    }
+    
+    /**
+     * Outputs JSON string with categories
+     */
+    protected function outputCategoriesPage()
+    {
+        $default = $this->store->getDefault();
+        $store_id = (int) $this->request->post('store_id', $default);
+        
+        $categories = $this->category->getOptionListByStore($store_id);
+        $this->response->json($categories);
     }
 
     /**
@@ -171,7 +173,7 @@ class Page extends BackendController
             if (isset($stores[$page['store_id']])) {
                 $store = $stores[$page['store_id']];
                 $page['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                    . "/page/{$page['page_id']}";
+                        . "/page/{$page['page_id']}";
             }
         }
 
@@ -191,12 +193,12 @@ class Page extends BackendController
      */
     protected function setBreadcrumbListPage()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -247,6 +249,16 @@ class Page extends BackendController
             $this->outputError(404);
         }
 
+        return $this->preparePage($page);
+    }
+    
+    /**
+     * Prepares an array of page data
+     * @param array $page
+     * @return array
+     */
+    protected function preparePage(array $page)
+    {
         $user = $this->user->get($page['user_id']);
 
         $page['author'] = $user['email'];
@@ -314,53 +326,13 @@ class Page extends BackendController
     protected function validatePage(array $page = array())
     {
         $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $page);
 
         if (empty($page['page_id'])) {
             $this->setSubmitted('user_id', $this->uid);
         }
 
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('description', array(
-            'length' => array('min' => 1, 'max' => 65535)
-        ));
-
-        $this->addValidator('meta_title', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('meta_description', array(
-            'length' => array('max' => 255)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $alias = $this->getSubmitted('alias');
-
-        if (empty($alias) && isset($page['page_id'])) {
-            $submitted = $this->getSubmitted();
-            $alias = $this->page->createAlias($submitted);
-            $this->setSubmitted('alias', $alias);
-        }
-
-        $this->addValidator('alias', array(
-            'length' => array('max' => 255),
-            'regexp' => array('pattern' => '/^[A-Za-z0-9_.-]+$/'),
-            'alias_unique' => array()
-        ));
-
-        $this->addValidator('images', array(
-            'images' => array()
-        ));
-
-        $this->setValidators($page);
-
-        $images = $this->getValidatorResult('images');
-        $this->setSubmitted('images', $images);
+        $this->validate('page');
     }
 
     /**
@@ -368,7 +340,7 @@ class Page extends BackendController
      */
     protected function deleteImagesPage()
     {
-        $images = (array)$this->request->post('delete_image');
+        $images = (array) $this->request->post('delete_image');
         $has_access = ($this->access('page_add') || $this->access('page_edit'));
 
         if (!$has_access || empty($images)) {

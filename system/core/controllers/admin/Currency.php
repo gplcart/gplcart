@@ -187,7 +187,7 @@ class Currency extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
-        $this->setSubmitted('currency', $currency);
+        $this->setSubmitted('update', $currency);
         $this->validate('currency');
     }
 

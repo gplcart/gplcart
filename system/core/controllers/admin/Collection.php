@@ -256,7 +256,7 @@ class Collection extends BackendController
     protected function validateCollection(array $collection)
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('collection', $collection);
+        $this->setSubmitted('update', $collection);
         $this->validate('collection');
     }
 
@@ -305,12 +305,11 @@ class Collection extends BackendController
      */
     protected function setTitleEditCollection(array $collection)
     {
+        $title = $this->text('Add collection');
+
         if (isset($collection['title'])) {
             $title = $this->text('Edit collection %name', array(
-                '%name' => $collection['title']
-            ));
-        } else {
-            $title = $this->text('Add collection');
+                '%name' => $collection['title']));
         }
 
         $this->setTitle($title);

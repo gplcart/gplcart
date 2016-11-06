@@ -10,29 +10,18 @@
 namespace core\controllers\admin;
 
 use core\controllers\admin\Controller as BackendController;
-use core\models\Language as ModelsLanguage;
 
 /**
  * Handles incoming requests and outputs data related to languages
  */
 class Language extends BackendController
 {
-
-    /**
-     * Language model instance
-     * @var \core\models\Language $language
-     */
-    protected $language;
-
     /**
      * Constructor
-     * @param ModelsLanguage $language
      */
-    public function __construct(ModelsLanguage $language)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->language = $language;
     }
 
     /**
@@ -120,7 +109,7 @@ class Language extends BackendController
         }
 
         $message = $this->text('Unable to delete this language.'
-            . ' The most probable reason - it is default language or blocked by a module');
+                . ' The most probable reason - it is default language or blocked by a module');
 
         $this->redirect('', $message, 'danger');
     }
@@ -131,25 +120,10 @@ class Language extends BackendController
      */
     protected function validateLanguage(array $language)
     {
-
-        $this->addValidator('code', array(
-            'regexp' => array('pattern' => '/^[A-Za-z-_]{1,10}$/')
-        ));
-
-        $this->addValidator('name', array(
-            'regexp' => array('pattern' => '/^[A-Za-z]{1,50}$/')
-        ));
-
-        $this->addValidator('native_name', array(
-            'length' => array('max' => 50)
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        $this->setValidators($language);
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('default');
+        $this->setSubmitted('update', $language);
+        $this->validate('language');
     }
 
     /**
@@ -243,18 +217,23 @@ class Language extends BackendController
 
     /**
      * Removes cached translations for the given language
+     * @return null|void
      */
     protected function refreshLanguage()
     {
-        $code = (string)$this->request->get('refresh');
+        $code = (string) $this->request->get('refresh');
 
-        if (!empty($code)) {
-            $this->language->refresh($code);
-            $message = $this->text('Cache for language %code has been deleted', array(
-                '%code' => $code
-            ));
-            $this->redirect('', $message, 'success');
+        if (empty($code)) {
+            return null;
         }
+
+        $this->language->refresh($code);
+
+        $message = $this->text('Cache for language @code has been deleted', array(
+            '@code' => $code
+        ));
+
+        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -270,12 +249,12 @@ class Language extends BackendController
      */
     protected function setBreadcrumbListLanguage()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

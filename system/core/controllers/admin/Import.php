@@ -301,37 +301,19 @@ class Import extends BackendController
      */
     protected function validateImport(array $operation)
     {
-        $limit = $this->import->getLimit();
+        $this->setSubmittedBool('unique');
 
+        $limit = $this->import->getLimit();
         $this->setSubmitted('limit', $limit);
         $this->setSubmitted('operation', $operation);
 
-        $result = $this->file->setUploadPath('private/import')
-                ->setHandler('csv')
-                ->upload($this->request->file('file'));
-
-        if ($result !== true) {
-            $this->setError('file', $result);
-        }
-
-        if ($this->isError()) {
-            return false;
-        }
-
-        $uploaded = $this->file->getUploadedFile();
-
-        $this->setSubmitted('filepath', $uploaded);
-        $this->setSubmitted('filesize', filesize($uploaded));
-        $csv_result = $this->import->validateCsvHeader($uploaded, $operation);
-
-        if ($csv_result === true) {
-            return true;
-        }
-
-        $this->setError('file', $csv_result);
-        return false;
+        $this->validate('import');
     }
 
+    /**
+     * Sets up the import job
+     * @param array $operation
+     */
     protected function setJobImport(array $operation)
     {
         $submitted = $this->getSubmitted();
@@ -341,18 +323,16 @@ class Import extends BackendController
             'id' => $operation['job_id'],
             'total' => $submitted['filesize'],
             'redirect_message' => array(
-                'finish' => 'Data has been successfully imported. Inserted: %inserted, updated: %updated'
+                'finish' => 'Success. Inserted: %inserted, updated: %updated'
             )
         );
 
         if (!empty($operation['log']['errors'])) {
+            $options = array('!url' => $this->url(false, array('download_errors' => 1)));
+            $error = $this->text('Inserted: %inserted, updated: %updated,'
+                    . ' errors: %errors. <a href="!url">See error log</a>', $options);
 
-            $error_message = $this->text('Inserted: %inserted, updated: %updated,'
-                    . ' errors: %errors. <a href="!url">See error log</a>', array(
-                '!url' => $this->url(false, array('download_errors' => 1))
-            ));
-
-            $job['redirect_message']['errors'] = $error_message;
+            $job['redirect_message']['errors'] = $error;
         }
 
         $this->setJob($job);
@@ -364,8 +344,8 @@ class Import extends BackendController
      */
     protected function setTitleEditImport(array $operation)
     {
-        $text = $this->text('Import %operation', array(
-            '%operation' => $operation['name']
+        $text = $this->text('Import @operation', array(
+            '@operation' => $operation['name']
         ));
 
         $this->setTitle($text);

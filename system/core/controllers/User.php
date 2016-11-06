@@ -86,6 +86,7 @@ class User extends FrontendController
      */
     protected function validateLoginUser()
     {
+        /*
         $this->addValidator('email', array(
             'required' => array()
         ));
@@ -95,6 +96,8 @@ class User extends FrontendController
         ));
 
         $this->setValidators();
+         * *
+         */
     }
 
     /**

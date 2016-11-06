@@ -79,11 +79,12 @@ class Page extends Model
      * Adds translations to the page
      * @param array $page
      * @param null|string $language
+     * @return null
      */
     protected function attachTranslation(array &$page, $language)
     {
         if (empty($page)) {
-            return;
+            return null;
         }
 
         $page['language'] = 'und';
@@ -97,16 +98,19 @@ class Page extends Model
         if (isset($language) && isset($page['translation'][$language])) {
             $page = $page['translation'][$language] + $page;
         }
+
+        return null;
     }
 
     /**
      * Adds images to the page
      * @param array $page
+     * @return null
      */
     protected function attachImage(array &$page)
     {
         if (empty($page)) {
-            return;
+            return null;
         }
 
         $images = $this->image->getList('page_id', $page['page_id']);
@@ -119,6 +123,7 @@ class Page extends Model
         }
 
         $page['images'] = $images;
+        return null;
     }
 
     /**
@@ -134,7 +139,7 @@ class Page extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data['created'] = GC_TIME;
         $data['page_id'] = $this->db->insert('page', $data);
 
         $this->setTranslation($data, false);
@@ -205,7 +210,7 @@ class Page extends Model
             return false;
         }
 
-        $data += array('modified' => GC_TIME);
+        $data['modified'] = GC_TIME;
         $conditions = array('page_id' => (int) $page_id);
 
         $updated = (int) $this->db->update('page', $data, $conditions);
@@ -272,9 +277,9 @@ class Page extends Model
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.page_id)';
         }
-        
+
         $language = $this->language->current();
-        $where = array($language, 'page_id');        
+        $where = array($language, 'page_id');
 
         $sql .= ' FROM page p'
                 . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
@@ -322,7 +327,7 @@ class Page extends Model
             'page_id' => 'p.page_id', 'status' => 'p.status',
             'created' => 'p.created', 'email' => 'u.email');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {

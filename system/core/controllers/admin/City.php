@@ -9,11 +9,11 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\City as ModelsCity;
 use core\models\Country as ModelsCountry;
 use core\models\State as ModelsState;
 use core\models\Zone as ModelsZone;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to cities
@@ -52,12 +52,9 @@ class City extends BackendController
      * @param ModelsCity $city
      * @param ModelsZone $zone
      */
-    public function __construct(
-        ModelsCountry $country,
-        ModelsState $state,
-        ModelsCity $city,
-        ModelsZone $zone
-    ) {
+    public function __construct(ModelsCountry $country, ModelsState $state,
+            ModelsCity $city, ModelsZone $zone)
+    {
         parent::__construct();
 
         $this->zone = $zone;
@@ -133,25 +130,25 @@ class City extends BackendController
      */
     protected function actionCity()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
-            
+
             if ($action === 'status' && $this->access('city_edit')) {
-                $updated += (int)$this->city->update($id, array('status' => $value));
+                $updated += (int) $this->city->update($id, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('city_delete')) {
-                $deleted += (int)$this->city->delete($id);
+                $deleted += (int) $this->city->delete($id);
             }
         }
 
@@ -164,7 +161,7 @@ class City extends BackendController
             $message = $this->text('Cities have been deleted');
             $this->setMessage($message, 'success', true);
         }
-        
+
         return null;
     }
 
@@ -358,9 +355,10 @@ class City extends BackendController
     protected function validateCity(array $country, array $state, array $city)
     {
         $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $city);
         $this->setSubmitted('country', $country['code']);
         $this->setSubmitted('state_id', $state['state_id']);
-        
+
         $this->validate('city');
     }
 

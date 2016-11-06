@@ -151,7 +151,6 @@ class Order extends BackendController
      */
     protected function setMessageSnapshotOrder(array $order)
     {
-
         $message = $this->text('This is a saved snapshot of order #@order_id. You can see current state of the order <a href="@url">here</a>', array(
             '@url' => $this->url("admin/sale/order/{$order['order_id']}"),
             '@order_id' => $order['order_id']
@@ -632,13 +631,14 @@ class Order extends BackendController
 
     /**
      * Applies an action to the selected orders
+     * @return null
      */
     protected function actionOrder()
     {
         $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
         $value = (string) $this->request->post('value');
@@ -666,6 +666,8 @@ class Order extends BackendController
             $message = $this->text('Orders have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**

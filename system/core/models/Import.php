@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\classes\Csv;
 use core\classes\Cache;
 use core\models\File as ModelsFile;
 use core\models\Language as ModelsLanguage;
@@ -35,12 +34,6 @@ class Import extends Model
     protected $file;
 
     /**
-     * CSV class instance
-     * @var \core\classes\Csv $csv
-     */
-    protected $csv;
-
-    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
@@ -50,15 +43,13 @@ class Import extends Model
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsFile $file
-     * @param Csv $csv
      * @param Logger $logger
      */
     public function __construct(ModelsLanguage $language, ModelsFile $file,
-            Csv $csv, Logger $logger)
+            Logger $logger)
     {
         parent::__construct();
 
-        $this->csv = $csv;
         $this->file = $file;
         $this->logger = $logger;
         $this->language = $language;
@@ -305,14 +296,14 @@ class Import extends Model
 
         $destination = 'image/upload/'
                 . $this->config->get("{$operation['id']}_image_dirname", $operation['id']);
-        
+
         $this->file->setUploadPath($destination)->setHandler('image');
 
         foreach ($images as $image) {
             if (0 === strpos($image, 'http')) {
-                
+
                 $result = $this->file->wget($image);
-                
+
                 if ($result === true) {
                     $uploaded = $this->file->getUploadedFile();
                     $return['images'][] = array('path' => $this->file->path($uploaded));
@@ -341,34 +332,6 @@ class Import extends Model
     public function getCsvDelimiterMultiple()
     {
         return $this->config->get('csv_delimiter_multiple', "|");
-    }
-
-    /**
-     * Validates CSV header
-     * @param string $file
-     * @param array $operation
-     * @return boolean|string
-     */
-    public function validateCsvHeader($file, array $operation)
-    {
-        $header = $operation['csv']['header'];
-
-        $real_header = $this->csv->setFile($file)
-                ->setHeader($header)
-                ->setDelimiter($this->getCsvDelimiter())
-                ->getHeader();
-
-        $header_id = reset($header);
-        $real_header_id = reset($real_header);
-
-        if (($header_id !== $real_header_id) || array_diff($header, $real_header)) {
-            $error = $this->language->text('Missing some header columns. Required format: %format', array(
-                '%format' => implode(' | ', $header)));
-
-            return $error;
-        }
-
-        return true;
     }
 
     /**

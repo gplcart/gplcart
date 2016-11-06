@@ -10,41 +10,91 @@
 namespace core\handlers\validator;
 
 use core\classes\Tool;
-use core\models\Language as ModelsLanguage;
+use core\models\Image as ModelsImage;
+use core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate image style data
  */
-class ImageStyle
+class ImageStyle extends BaseValidator
 {
 
     /**
-     * Language model instance
-     * @var \core\models\Language $language
+     * Image model instance
+     * @var \core\models\Image $image
      */
-    protected $language;
+    protected $image;
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
+     * @param ModelsImage $image
      */
-    public function __construct(ModelsLanguage $language)
+    public function __construct(ModelsImage $image)
     {
-        $this->language = $language;
+        parent::__construct();
+
+        $this->image = $image;
     }
 
     /**
-     * Validates actions
+     * Performs full image style validation
+     * @param array $submitted
+     * @param array $action
+     */
+    public function imageStyle(array &$submitted, array $action = array())
+    {
+        $this->validateImageStyle($submitted);
+
+        $this->validateName($submitted);
+        $this->validateStatus($submitted);
+        $this->validateActionsImageStyle($submitted);
+
+        return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
+     * Validates an image style to be updated
+     * @param array $submitted
      * @return boolean
      */
-    public function actions($actions, array $options = array())
+    protected function validateImageStyle(array &$submitted)
     {
-        if (empty($actions)) {
-            return true;
+        if (!empty($submitted['update']) && is_string($submitted['update'])) {
+            $imagestyle = $this->image->getStyle($submitted['update']);
+            if (empty($imagestyle)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Image style')));
+                return false;
+            }
+
+            $submitted['update'] = $imagestyle;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates image actions
+     * @param array $submitted
+     * @param array $options
+     * @return boolean
+     */
+    public function validateActionsImageStyle(&$submitted, $options = array())
+    {
+        if (!empty($submitted['update']) && !isset($submitted['actions'])) {
+            return null;
+        }
+
+        if (empty($submitted['actions'])) {
+            $this->errors['actions'] = $this->language->text('@field is required', array(
+                '@field' => $this->language->text('Actions')
+            ));
+
+            return false;
         }
 
         $modified = $errors = array();
-        $array = Tool::stringToArray($actions);
+        $array = Tool::stringToArray($submitted['actions']);
 
         foreach ($array as $line => $action) {
 
@@ -55,45 +105,27 @@ class ImageStyle
 
             switch ($action_id) {
                 case 'flip':
-                    $valid = $this->actionFlip($value);
-                    break;
                 case 'rotate':
-                    $valid = $this->actionRotate($value);
-                    break;
                 case 'brightness':
-                    $valid = $this->actionBrightness($value);
-                    break;
                 case 'contrast':
-                    $valid = $this->actionContrast($value);
-                    break;
                 case 'smooth':
-                    $valid = $this->actionSmooth($value);
-                    break;
                 case 'fill':
-                    $valid = $this->actionFill($value);
-                    break;
                 case 'colorize':
-                    $valid = $this->actionColorize($value);
-                    break;
                 case 'crop':
-                    $valid = $this->actionCrop($value);
-                    break;
                 case 'overlay':
-                    $valid = $this->actionOverlay($value);
-                    break;
                 case 'text':
-                    $valid = $this->actionText($value);
+                    $valid = $this->{"validateAction{$action_id}ImageStyle"}($value);
                     break;
                 case 'fit_to_width':
                 case 'fit_to_height':
                 case 'pixelate':
                 case 'opacity':
-                    $valid = $this->actionOpacity($value);
+                    $valid = $this->validateActionOpacityImageStyle($value);
                     break;
                 case 'resize':
                 case 'thumbnail':
                 case 'best_fit':
-                    $valid = $this->actionThumbnail($value);
+                    $valid = $this->validateActionThumbnailImageStyle($value);
                     break;
                 case 'auto_orient':
                 case 'desaturate':
@@ -105,6 +137,7 @@ class ImageStyle
                 case 'sketch':
                 case 'sepia':
                     $valid = empty($value);
+                    break;
             }
 
             if (!$valid) {
@@ -119,11 +152,13 @@ class ImageStyle
         }
 
         if (empty($errors)) {
-            return array('result' => $modified);
+            $submitted['actions'] = $modified;
+            return true;
         }
 
-        return $this->language->text('Error on lines %num', array(
-                    '%num' => implode(',', $errors)));
+        $this->errors['actions'] = $this->language->text('Error on lines %num', array(
+            '%num' => implode(',', $errors)));
+        return false;
     }
 
     /**
@@ -131,9 +166,9 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionFlip(array $value)
+    protected function validateActionFlipImageStyle(array $value)
     {
-        return ((count($value) == 1)
+        return ((count($value) == 1)//
                 && in_array($value[0], array('x', 'y'), true));
     }
 
@@ -142,11 +177,11 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionRotate(array $value)
+    protected function validateActionRotateImageStyle(array $value)
     {
-        return ((count($value) == 1)
-                && is_numeric($value[0])
-                && (0 <= (int) $value[0])
+        return ((count($value) == 1)//
+                && is_numeric($value[0])//
+                && (0 <= (int) $value[0])//
                 && ((int) $value[0] <= 360));
     }
 
@@ -155,11 +190,11 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionBrightness(array $value)
+    protected function validateActionBrightnessImageStyle(array $value)
     {
-        return ((count($value) == 1)
-                && is_numeric($value[0])
-                && (-255 <= (int) $value[0])
+        return ((count($value) == 1)//
+                && is_numeric($value[0])//
+                && (-255 <= (int) $value[0])//
                 && ((int) $value[0] <= 255));
     }
 
@@ -168,11 +203,12 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionContrast(array $value)
+    protected function validateActionContrastImageStyle(array $value)
     {
-        return ((count($value) == 1)
-                && is_numeric($value[0])
-                && (-100 <= (int) $value[0]) && ((int) $value[0] <= 100));
+        return ((count($value) == 1)//
+                && is_numeric($value[0])//
+                && (-100 <= (int) $value[0])//
+                && ((int) $value[0] <= 100));
     }
 
     /**
@@ -180,11 +216,11 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionSmooth(array $value)
+    protected function validateActionSmoothImageStyle(array $value)
     {
-        return ((count($value) == 1)
-                && is_numeric($value[0])
-                && (-10 <= (int) $value[0])
+        return ((count($value) == 1)//
+                && is_numeric($value[0])//
+                && (-10 <= (int) $value[0])//
                 && ((int) $value[0] <= 10));
     }
 
@@ -193,9 +229,9 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionFill(array $value)
+    protected function validateActionFillImageStyle(array $value)
     {
-        return ((count($value) == 1)
+        return ((count($value) == 1)//
                 && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]));
     }
 
@@ -204,10 +240,10 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionColorize(array $value)
+    protected function validateActionColorizeImageStyle(array $value)
     {
-        return ((count($value) == 2)
-                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0])
+        return ((count($value) == 2)//
+                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0])//
                 && is_numeric($value[1]));
     }
 
@@ -216,7 +252,7 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionCrop(array $value)
+    protected function validateActionCropImageStyle(array $value)
     {
         return (count(array_filter(array_slice($value, 0, 4), 'is_numeric')) == 4);
     }
@@ -226,9 +262,9 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionOverlay(array $value)
+    protected function validateActionOverlayImageStyle(array $value)
     {
-        return ((count($value) == 5) && is_numeric($value[2])
+        return ((count($value) == 5) && is_numeric($value[2])//
                 && is_numeric($value[3]) && is_numeric($value[4]));
     }
 
@@ -237,11 +273,11 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionText(array $value)
+    protected function validateActionTextImageStyle(array $value)
     {
-        return ((count($value) == 7)
-                && is_numeric($value[2])
-                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[3])
+        return ((count($value) == 7)//
+                && is_numeric($value[2])//
+                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[3])//
                 && is_numeric($value[5]) && is_numeric($value[6]));
     }
 
@@ -250,7 +286,7 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionOpacity(array $value)
+    protected function validateActionOpacityImageStyle(array $value)
     {
         return ((count($value) == 1) && is_numeric($value[0]));
     }
@@ -260,7 +296,7 @@ class ImageStyle
      * @param array $value
      * @return boolean
      */
-    protected function actionThumbnail(array $value)
+    protected function validateActionThumbnailImageStyle(array $value)
     {
         return (count(array_filter(array_slice($value, 0, 2), 'is_numeric')) == 2);
     }

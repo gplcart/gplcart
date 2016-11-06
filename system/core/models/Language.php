@@ -26,32 +26,38 @@ class Language extends Model
      * @var array
      */
     protected static $processed = array();
+
     /**
      * Route class instance
      * @var \core\Route $route ;
      */
     protected $route;
+
     /**
      * Translit library instance
      * @var \core\models\Translit $translit ;
      */
     protected $translit;
+
     /**
      * Current language code
      * @var string
      */
     protected $langcode = '';
+
     /**
      * Directory that holds main translation file for the current language
      * @var string
      */
     protected $language_directory = '';
+
     /**
      * Path to directory that keeps complied .csv translations
      * for the current language
      * @var string
      */
     protected $compiled_directory_csv = '';
+
     /**
      * Path to directory that keeps complied js translations
      * for the current language
@@ -113,7 +119,7 @@ class Language extends Model
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
             $language['default'] = ($code == $default);
-            $language['weight'] = isset($language['weight']) ? (int)$language['weight'] : 0;
+            $language['weight'] = isset($language['weight']) ? (int) $language['weight'] : 0;
         }
 
         $this->hook->fire('languages', $languages);
@@ -165,7 +171,7 @@ class Language extends Model
     protected function init()
     {
         if (empty($this->langcode)) {
-            return;
+            return null;
         }
 
         $this->language_directory = GC_LOCALE_DIR . "/{$this->langcode}";
@@ -179,6 +185,8 @@ class Language extends Model
         if (!file_exists($this->compiled_directory_js)) {
             mkdir($this->compiled_directory_js, 0755, true);
         }
+
+        return null;
     }
 
     /**
@@ -228,19 +236,20 @@ class Language extends Model
             'code' => $data['code'],
             'status' => !empty($data['status']),
             'default' => !empty($data['default']),
-            'weight' => isset($data['weight']) ? (int)$data['weight'] : 0,
+            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
             'name' => empty($data['name']) ? $data['code'] : $data['name'],
             'native_name' => empty($data['native_name']) ? $data['code'] : $data['native_name']
         );
 
         $languages = $this->getAll();
 
-        $languages[$data['code']] = $values;
-        $this->config->set('languages', $languages);
-
         if (!empty($values['default'])) {
+            $values['status'] = true;
             $this->config->set('language', $data['code']);
         }
+
+        $languages[$data['code']] = $values;
+        $this->config->set('languages', $languages);
 
         $this->hook->fire('add.language.after', $data);
         return true;
@@ -262,12 +271,17 @@ class Language extends Model
             return false;
         }
 
-        $languages[$code] = $data + $languages[$code];
-        $this->config->set('languages', $languages);
-
-        if (!empty($data['default'])) {
+        if (!empty($data['default']) && !$this->isDefault($code)) {
+            $data['status'] = true;
             $this->config->set('language', $code);
         }
+
+        if ($this->isDefault($code)) {
+            $data['status'] = true;
+        }
+
+        $languages[$code] = $data + $languages[$code];
+        $this->config->set('languages', $languages);
 
         $this->hook->fire('update.language.after', $code, $data);
         return true;
@@ -290,12 +304,22 @@ class Language extends Model
         unset($languages[$code]);
         $this->config->set('languages', $languages);
 
-        if ($code == $this->getDefault()) {
+        if ($this->isDefault($code)) {
             $this->config->reset('language');
         }
 
         $this->hook->fire('delete.language.after', $code, $languages);
         return true;
+    }
+
+    /**
+     * Whether the code is default
+     * @param string $code
+     * @return bool
+     */
+    public function isDefault($code)
+    {
+        return ($code == $this->getDefault());
     }
 
     /**
@@ -344,10 +368,9 @@ class Language extends Model
      * @return string
      */
     protected function formatString(
-        $source,
-        array $arguments,
-        array $data = array()
-    ) {
+    $source, array $arguments, array $data = array()
+    )
+    {
 
         if (!isset($data[0]) || $data[0] === '') {
             return Tool::formatString($source, $arguments);
@@ -372,7 +395,7 @@ class Language extends Model
         $translations = &Cache::memory($cache_key);
 
         if (isset($translations)) {
-            return (array)$translations;
+            return (array) $translations;
         }
 
         $file = "{$this->language_directory}/common.csv";
@@ -427,7 +450,7 @@ class Language extends Model
         $result = fputcsv($fp, $data);
         fclose($fp);
 
-        return (bool)$result;
+        return (bool) $result;
     }
 
     /**
@@ -442,7 +465,7 @@ class Language extends Model
         $jsfile = "{$this->compiled_directory_js}/$filename.js";
         $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';' . PHP_EOL;
 
-        return (bool)file_put_contents($jsfile, $json, FILE_APPEND);
+        return (bool) file_put_contents($jsfile, $json, FILE_APPEND);
     }
 
     /**
@@ -493,7 +516,7 @@ class Language extends Model
         $data = include GC_CONFIG_LANGUAGE;
 
         if (isset($code)) {
-            return isset($data[$code]) ? (array)$data[$code] : array();
+            return isset($data[$code]) ? (array) $data[$code] : array();
         }
 
         return $data;

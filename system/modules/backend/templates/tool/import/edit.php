@@ -10,7 +10,7 @@
       <div class="form-group<?php echo isset($this->errors['file']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('CSV file'); ?></label>
         <div class="col-md-4">
-          <input type="file" class="form-control" name="file" accept=".csv" required>
+          <input type="file" class="form-control" name="file" accept=".csv">
           <?php if (isset($this->errors['file'])) { ?>
           <div class="help-block"><?php echo $this->errors['file']; ?></div>
           <?php } ?>

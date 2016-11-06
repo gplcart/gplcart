@@ -9,6 +9,8 @@
 
 namespace core\classes;
 
+use UnexpectedValueException;
+
 /**
  * Provides methods to read CSV data
  */
@@ -75,7 +77,6 @@ class Csv
      */
     public function __construct()
     {
-
         $this->last_position = 0;
         $this->offset = 0;
         $this->header = array();
@@ -103,9 +104,15 @@ class Csv
      */
     public function setFile($file, $filesize = null)
     {
-        $this->file = $file;
-        $this->total = isset($filesize) ? (int)$filesize : filesize($file);
         $this->handle = fopen($file, 'r');
+
+        if (!is_resource($this->handle)) {
+            // This prevents server from hanging when opening up an invalid file
+            throw new UnexpectedValueException('Failed to open CSV file');
+        }
+
+        $this->file = $file;
+        $this->total = isset($filesize) ? (int) $filesize : filesize($file);
         return $this;
     }
 
@@ -116,7 +123,7 @@ class Csv
      */
     public function setLimit($limit)
     {
-        $this->limit = (int)$limit;
+        $this->limit = (int) $limit;
         return $this;
     }
 

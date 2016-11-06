@@ -9,18 +9,17 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
-use core\models\Field as ModelsField;
-use core\models\FieldValue as ModelsFieldValue;
 use core\models\File as ModelsFile;
 use core\models\Image as ModelsImage;
+use core\models\Field as ModelsField;
+use core\models\FieldValue as ModelsFieldValue;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to field values
  */
 class FieldValue extends BackendController
 {
-
     /**
      * Field model instance
      * @var \core\models\Field $field
@@ -58,12 +57,10 @@ class FieldValue extends BackendController
      * @param ModelsImage $image
      * @param ModelsFile $file
      */
-    public function __construct(
-        ModelsField $field,
-        ModelsFieldValue $field_value,
-        ModelsImage $image,
-        ModelsFile $file
-    ) {
+    public function __construct(ModelsField $field,
+            ModelsFieldValue $field_value, ModelsImage $image, ModelsFile $file
+    )
+    {
         parent::__construct();
 
         $this->file = $file;
@@ -119,38 +116,48 @@ class FieldValue extends BackendController
      */
     protected function actionFieldValue()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $selected = (array)$this->request->post('selected', array());
+        $selected = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('field_value_edit')) {
-
-            foreach ($selected as $field_value_id => $weight) {
-                $this->field_value->update($field_value_id, array('weight' => $weight));
-            }
-
-            $this->response->json(array(
-                'success' => $this->text('Field values have been reordered')
-            ));
+            return $this->updateWeight($selected);
         }
 
         $deleted = 0;
         foreach ($selected as $field_value_id) {
             if ($action === 'delete' && $this->access('field_value_delete')) {
-                $deleted += (int)$this->field_value->delete($field_value_id);
+                $deleted += (int) $this->field_value->delete($field_value_id);
             }
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num field values', array(
-                '%num' => $deleted
-            ));
+            $options = array('@num' => $deleted);
+            $message = $this->text('Deleted @num field values', $options);
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
+    }
+
+    /**
+     * Updates weight of selected field values
+     * @param array $items
+     */
+    protected function updateWeight(array $items)
+    {
+        foreach ($items as $field_value_id => $weight) {
+            $this->field_value->update($field_value_id, array('weight' => $weight));
+        }
+        
+        $response = array(
+            'success' => $this->text('Field values have been reordered'));
+
+        $this->response->json($response);
     }
 
     /**
@@ -293,16 +300,15 @@ class FieldValue extends BackendController
             return $this->deleteFieldValue($field_value, $field);
         }
 
-        if ($this->isPosted('delete_image')) {
-            return $this->deleteImageFieldValue($field_value);
-        }
-
         if (!$this->isPosted('save')) {
             return null;
         }
 
-        $this->setSubmitted('field_value');
+        if ($this->isPosted('delete_image')) {
+            $this->deleteImageFieldValue($field_value);
+        }
 
+        $this->setSubmitted('field_value');
         $this->validateFieldValue($field_value, $field);
 
         if ($this->hasErrors('field_value')) {
@@ -329,25 +335,19 @@ class FieldValue extends BackendController
 
         if ($deleted) {
             $url = "admin/content/field/value/{$field['field_id']}";
-            $message = $this->text('Field value %name has been deleted', array(
-                '%name' => $field_value['title']
-            ));
-
+            $options = array('@name' => $field_value['title']);
+            $message = $this->text('Field value @name has been deleted', $options);
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Failed to delete field value %name.'
-            . ' The most probable reason - it is used somewhere', array(
-            '%name' => $field_value['title']
-        ));
-
+        $options = array('@name' => $field_value['title']);
+        $message = $this->text('Failed to delete field value @name', $options);
         $this->redirect('', $message, 'warning');
     }
 
     /**
      * Deletes a saved field value image
      * @param array $field_value
-     * @return boolean
      */
     protected function deleteImageFieldValue(array $field_value)
     {
@@ -355,9 +355,9 @@ class FieldValue extends BackendController
 
         $this->field_value->update($field_value['field_value_id'], array('file_id' => 0));
         $file = $this->file->get($field_value['file_id']);
-        $this->file->delete($field_value['file_id']);
 
-        return $this->file->deleteFromDisk($file);
+        $this->file->delete($field_value['file_id']);
+        $this->file->deleteFromDisk($file);
     }
 
     /**
@@ -367,42 +367,9 @@ class FieldValue extends BackendController
      */
     protected function validateFieldValue(array $field_value, array $field)
     {
+        $this->setSubmitted('update', $field_value);
         $this->setSubmitted('field_id', $field['field_id']);
-
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        $this->addValidator('translation', array(
-            'translation' => array()
-        ));
-
-        $this->addValidator('color', array(
-            'regexp' => array(
-                'pattern' => '/#([a-fA-F0-9]{3}){1,2}\b/',
-                'required' => ($field['widget'] === 'color')
-            )
-        ));
-
-        $this->addValidator('file', array(
-            'upload' => array(
-                'control_errors' => true,
-                'path' => 'image/upload/field_value',
-                'file' => $this->request->file('file')
-            )
-        ));
-
-        $errors = $this->setValidators($field_value);
-
-        if (empty($errors)) {
-            $uploaded = $this->getValidatorResult('file');
-            $this->setSubmitted('path', $uploaded);
-        }
+        $this->validate('field_value');
     }
 
     /**
@@ -416,12 +383,11 @@ class FieldValue extends BackendController
 
         $submitted = $this->getSubmitted();
         $this->field_value->update($field_value['field_value_id'], $submitted);
-
+        
+        $options = array('@name' => $field_value['title']);
         $url = "admin/content/field/value/{$field['field_id']}";
-        $message = $this->text('Field value %name has been updated', array(
-            '%name' => $field_value['title']
-        ));
-
+        $message = $this->text('Field value @name has been updated', $options);
+        
         $this->redirect($url, $message, 'success');
     }
 
@@ -438,7 +404,6 @@ class FieldValue extends BackendController
 
         $url = "admin/content/field/value/{$field['field_id']}";
         $message = $this->text('Field value has been added');
-
         $this->redirect($url, $message, 'success');
     }
 

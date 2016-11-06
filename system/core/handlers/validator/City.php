@@ -70,8 +70,9 @@ class City extends BaseValidator
      */
     public function city(array &$submitted, array $options = array())
     {
+        $this->validateCity($submitted);
         $this->validateStatus($submitted);
-        $this->validateNameCity($submitted);
+        $this->validateName($submitted);
         $this->validateStateCity($submitted);
         $this->validateZoneCity($submitted);
         $this->validateCountryCity($submitted);
@@ -80,24 +81,37 @@ class City extends BaseValidator
     }
 
     /**
-     * Validates city name
+     * Validates a city to be updated
      * @param array $submitted
+     * @return boolean
      */
-    protected function validateNameCity(array $submitted)
+    protected function validateCity(array &$submitted)
     {
-        if (empty($submitted['name']) || mb_strlen($submitted['name']) > 255) {
-            $options = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Name'));
-            $this->errors['name'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+            $data = $this->city->get($submitted['update']);
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('City')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
         }
+
+        return true;
     }
 
     /**
      * Validates a state ID
      * @param array $submitted
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateStateCity(array $submitted)
     {
+        if (!empty($submitted['update']) && !isset($submitted['state_id'])) {
+            return null;
+        }
+
         if (empty($submitted['state_id'])) {
             $this->errors['state_id'] = $this->language->text('@field is required', array(
                 '@field' => $this->language->text('State')
@@ -118,12 +132,14 @@ class City extends BaseValidator
                 '@name' => $this->language->text('State')));
             return false;
         }
+
         return true;
     }
 
     /**
      * Validates a zone ID
      * @param array $submitted
+     * @return boolean
      */
     protected function validateZoneCity(array $submitted)
     {
@@ -144,16 +160,21 @@ class City extends BaseValidator
                 '@name' => $this->language->text('Zone')));
             return false;
         }
-        
+
         return true;
     }
 
     /**
      * Validates a country code
      * @param array $submitted
+     * @return boolean|null
      */
     protected function validateCountryCity(array $submitted)
     {
+        if (!empty($submitted['update']) && !isset($submitted['country'])) {
+            return null;
+        }
+
         if (empty($submitted['country'])) {
             $this->errors['country'] = $this->language->text('@field is required', array(
                 '@field' => $this->language->text('Country')

@@ -91,25 +91,25 @@ class Validator extends Model
         // Files
         $handlers['image'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\File', 'image')
+                'validate' => array('core\\handlers\\validator\\FileType', 'image')
             ),
         );
         
         $handlers['p12'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\File', 'p12')
+                'validate' => array('core\\handlers\\validator\\FileType', 'p12')
             ),
         );
         
         $handlers['csv'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\File', 'csv')
+                'validate' => array('core\\handlers\\validator\\FileType', 'csv')
             ),
         );
         
         $handlers['zip'] = array(
             'handlers' => array(
-                'validate' => array('core\\handlers\\validator\\File', 'zip')
+                'validate' => array('core\\handlers\\validator\\FileType', 'zip')
             ),
         );
 
@@ -159,6 +159,48 @@ class Validator extends Model
         $handlers['field'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Field', 'field')
+            ),
+        );
+        
+        $handlers['field_value'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\FieldValue', 'fieldValue')
+            ),
+        );
+        
+        $handlers['file'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\File', 'file')
+            ),
+        );
+        
+        $handlers['image_style'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\ImageStyle', 'imageStyle')
+            ),
+        );
+        
+        $handlers['import'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Import', 'import')
+            ),
+        );
+        
+        $handlers['language'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Language', 'language')
+            ),
+        );
+        
+        $handlers['module_upload'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Module', 'upload')
+            ),
+        );
+        
+        $handlers['page'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Page', 'page')
             ),
         );
 

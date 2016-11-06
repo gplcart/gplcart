@@ -10,9 +10,9 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
-use core\controllers\admin\Controller as BackendController;
 use core\models\File as ModelsFile;
 use core\models\Image as ModelsImage;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to images
@@ -53,7 +53,6 @@ class ImageStyle extends BackendController
         $this->clearCacheImageStyle();
 
         $imagestyles = $this->image->getStyleList();
-
         $this->setData('styles', $imagestyles);
 
         $this->setTitleListImageStyle();
@@ -66,7 +65,7 @@ class ImageStyle extends BackendController
      */
     protected function clearCacheImageStyle()
     {
-        $style_id = (string)$this->request->get('clear');
+        $style_id = (string) $this->request->get('clear');
 
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
@@ -86,14 +85,12 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbListImageStyle()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -197,21 +194,9 @@ class ImageStyle extends BackendController
      */
     protected function validateImageStyle(array $imagestyle)
     {
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('actions', array(
-            'required' => array(),
-            'imagestyle_actions' => array()
-        ));
-
-        $errors = $this->setValidators($imagestyle);
-
-        if (empty($errors)) {
-            $actions = $this->getValidatorResult('actions');
-            $this->setSubmitted('actions', $actions);
-        }
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $imagestyle);
+        $this->validate('image_style');
     }
 
     /**
