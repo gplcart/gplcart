@@ -203,6 +203,18 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Page', 'page')
             ),
         );
+        
+        $handlers['price_rule'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\PriceRule', 'priceRule')
+            ),
+        );
+        
+        $handlers['product'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Product', 'product')
+            ),
+        );
 
         $this->hook->fire('validator.handlers', $handlers);
         return $handlers;

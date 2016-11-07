@@ -119,6 +119,12 @@ class FieldValue extends BaseValidator
             ));
             return false;
         }
+        
+        if (!is_numeric($submitted['field_id'])) {
+            $options = array('@field' => $this->language->text('Field'));
+            $this->errors['field_id'] = $this->language->text('@field must be numeric', $options);
+            return false;
+        }
 
         $field = $this->field->get($submitted['field_id']);
 
