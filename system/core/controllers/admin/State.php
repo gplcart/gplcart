@@ -9,10 +9,10 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
-use core\models\Country as ModelsCountry;
-use core\models\State as ModelsState;
 use core\models\Zone as ModelsZone;
+use core\models\State as ModelsState;
+use core\models\Country as ModelsCountry;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to country states
@@ -44,7 +44,8 @@ class State extends BackendController
      * @param ModelsState $state
      * @param ModelsZone $zone
      */
-    public function __construct(ModelsCountry $country, ModelsState $state, ModelsZone $zone)
+    public function __construct(ModelsCountry $country, ModelsState $state,
+            ModelsZone $zone)
     {
         parent::__construct();
 
@@ -101,24 +102,24 @@ class State extends BackendController
      */
     protected function actionState()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
             if ($action == 'status' && $this->access('state_edit')) {
-                $updated += (int)$this->state->update($id, array('status' => $value));
+                $updated += (int) $this->state->update($id, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('state_delete')) {
-                $deleted += (int)$this->state->delete($id);
+                $deleted += (int) $this->state->delete($id);
             }
         }
 
@@ -135,6 +136,8 @@ class State extends BackendController
             ));
             $this->setMessage($text, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -190,6 +193,8 @@ class State extends BackendController
      */
     protected function setBreadcrumbListState()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
@@ -270,7 +275,6 @@ class State extends BackendController
         }
 
         $this->setSubmitted('state');
-
         $this->validateState($country, $state);
 
         if ($this->hasErrors('state')) {
@@ -314,22 +318,9 @@ class State extends BackendController
     protected function validateState(array $country, array $state)
     {
         $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $state);
         $this->setSubmitted('country', $country['code']);
-
-        $this->addValidator('country', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('code', array(
-            'length' => array('min' => 1, 'max' => 255),
-            'state_code_unique' => array()
-        ));
-
-        $this->setValidators(array('country' => $country, 'state' => $state));
+        $this->validate('state');
     }
 
     /**

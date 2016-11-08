@@ -409,7 +409,7 @@
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label">
-        <?php echo $this->text('Dimension unit'); ?>
+        <?php echo $this->text('Volume unit'); ?>
         </label>
         <div class="col-md-4">
           <?php $volume_unit = isset($product['volume_unit']) ? $product['volume_unit'] : $this->config->get('product_volume_unit', 'mm'); ?>

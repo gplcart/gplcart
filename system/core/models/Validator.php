@@ -215,6 +215,30 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Product', 'product')
             ),
         );
+        
+        $handlers['product_class'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\ProductClass', 'productClass')
+            ),
+        );
+        
+        $handlers['review'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Review', 'review')
+            ),
+        );
+        
+        $handlers['settings'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Settings', 'settings')
+            ),
+        );
+        
+        $handlers['state'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\State', 'state')
+            ),
+        );
 
         $this->hook->fire('validator.handlers', $handlers);
         return $handlers;

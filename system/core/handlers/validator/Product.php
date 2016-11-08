@@ -9,8 +9,11 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Tool;
 use core\models\Sku as ModelsSku;
 use core\models\Product as ModelsProduct;
+use core\models\Currency as ModelsCurrency;
+use core\models\Category as ModelsCategory;
 use core\models\ProductClass as ModelsProductClass;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -19,6 +22,7 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Product extends BaseValidator
 {
+
     /**
      * An array of combination stock levels to be summed up
      * @var array
@@ -44,6 +48,12 @@ class Product extends BaseValidator
     protected $product;
 
     /**
+     * Category model instance
+     * @var \core\models\Category $category
+     */
+    protected $category;
+
+    /**
      * Product class model instance
      * @var \core\models\ProductClass $product_class
      */
@@ -56,18 +66,29 @@ class Product extends BaseValidator
     protected $sku;
 
     /**
+     * Currency model instance
+     * @var \core\models\Currency $currency
+     */
+    protected $currency;
+
+    /**
      * Constructor
      * @param ModelsProduct $product
      * @param ModelsProductClass $product_class
      * @param ModelsSku $sku
+     * @param ModelsCurrency $currency
+     * @param ModelsCategory $category
      */
     public function __construct(ModelsProduct $product,
-            ModelsProductClass $product_class, ModelsSku $sku)
+            ModelsProductClass $product_class, ModelsSku $sku,
+            ModelsCurrency $currency, ModelsCategory $category)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->product = $product;
+        $this->currency = $currency;
+        $this->category = $category;
         $this->product_class = $product_class;
     }
 
@@ -79,6 +100,13 @@ class Product extends BaseValidator
     public function product(array &$submitted, array $options = array())
     {
         $this->validateProduct($submitted);
+        $this->validateSubtractProduct($submitted);
+        $this->validateStatus($submitted);
+
+        $this->validateCurrencyProduct($submitted);
+        $this->validateCategoryProduct($submitted);
+        $this->validateUnitProduct($submitted);
+
         $this->validatePriceProduct($submitted);
         $this->validateStockProduct($submitted);
         $this->validateTitle($submitted);
@@ -88,6 +116,7 @@ class Product extends BaseValidator
         $this->validateTranslation($submitted);
         $this->validateImages($submitted);
         $this->validateStore($submitted);
+        $this->validateUser($submitted);
         $this->validateDimensionProduct($submitted);
         $this->validateRelatedProduct($submitted);
         $this->validateClassProduct($submitted);
@@ -95,6 +124,8 @@ class Product extends BaseValidator
         $this->validateAttributeProduct($submitted);
         $this->validateCombinationProduct($submitted);
         $this->validateAliasProduct($submitted);
+
+        return empty($this->errors) ? true : $this->errors;
     }
 
     /**
@@ -116,6 +147,121 @@ class Product extends BaseValidator
         }
 
         return true;
+    }
+
+    /**
+     * Validates "Subtract" bool value
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateSubtractProduct(array &$submitted)
+    {
+        if (isset($submitted['subtract'])) {
+            $submitted['subtract'] = Tool::toBool($submitted['subtract']);
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates currency code
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateCurrencyProduct(array &$submitted)
+    {
+        if (!empty($submitted['update']) && !isset($submitted['currency'])) {
+            return null;
+        }
+
+        if (empty($submitted['currency'])) {
+            $this->errors['currency'] = $this->language->text('@field is required', array(
+                '@field' => $this->language->text('Currency')
+            ));
+            return false;
+        }
+
+        $currency = $this->currency->get($submitted['currency']);
+
+        if (empty($currency)) {
+            $this->errors['currency'] = $this->language->text('Object @name does not exist', array(
+                '@name' => $this->language->text('Currency')));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates product categories
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateCategoryProduct(array &$submitted)
+    {
+        $fields = array('category_id', 'brand_category_id');
+
+        $error = false;
+        foreach ($fields as $field) {
+
+            if (!isset($submitted[$field])) {
+                continue;
+            }
+
+            $name = ucfirst(strtok($field, '_'));
+
+            if (!is_numeric($submitted[$field])) {
+                $error = true;
+                $options = array('@field' => $this->language->text($name));
+                $this->errors[$field] = $this->language->text('@field must be numeric', $options);
+                continue;
+            }
+
+            if (empty($submitted[$field])) {
+                continue;
+            }
+
+            $category = $this->category->get($submitted[$field]);
+
+            if (empty($category)) {
+                $error = true;
+                $this->errors[$field] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text($name)));
+            }
+        }
+
+        return !$error;
+    }
+
+    /**
+     * Validates measurement units
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateUnitProduct(array &$submitted)
+    {
+        $fields = array(
+            'volume_unit' => array('mm', 'in', 'cm'),
+            'weight_unit' => array('g', 'kg', 'lb', 'oz')
+        );
+
+        $error = false;
+        foreach ($fields as $field => $units) {
+
+            if (!isset($submitted[$field])) {
+                continue;
+            }
+
+            $name = ucfirst(strtok($field, '_'));
+
+            if (!in_array($submitted[$field], $units)) {
+                $error = true;
+                $this->errors[$field] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text($name)));
+            }
+        }
+
+        return !$error;
     }
 
     /**
@@ -180,7 +326,6 @@ class Product extends BaseValidator
         $fields = array('width', 'height', 'length', 'weight');
 
         $error = false;
-
         foreach ($fields as $field) {
 
             if (!isset($submitted[$field])) {

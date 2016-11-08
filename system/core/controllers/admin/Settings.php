@@ -99,27 +99,8 @@ class Settings extends BackendController
      */
     protected function validateSettings()
     {
-        $this->setSubmittedArray('smtp_host');
-
-        $cron_key = $this->getSubmitted('cron_key');
-        if (empty($cron_key)) {
-            $this->setSubmitted('cron_key', Tool::randomString());
-        }
-
-        $this->addValidator('gapi_email', array(
-            'email' => array()
-        ));
-
-        $file = $this->request->file('gapi_certificate');
-
-        $this->addValidator('gapi_certificate', array(
-            'upload' => array('file' => $file)
-        ));
-
-        $this->setValidators();
-
-        $uploaded = $this->getValidatorResult('gapi_certificate');
-        $this->setSubmitted('gapi_certificate', $uploaded);
+        $this->setSubmittedBool('smtp_auth');
+        $this->validate('settings');
     }
 
     /**

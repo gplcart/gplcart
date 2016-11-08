@@ -9,12 +9,12 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
-use core\models\Analytics as ModelsAnalytics;
 use core\models\Report as ModelsReport;
+use core\models\Analytics as ModelsAnalytics;
+use core\controllers\admin\Controller as BackendController;
 
 /**
- * Handles incoming requests and outputs data related to system reports
+ * Handles incoming requests and outputs data related to various reports
  */
 class Report extends BackendController
 {
@@ -103,7 +103,16 @@ class Report extends BackendController
     {
         $query['limit'] = $limit;
         $records = $this->report->getList($query);
+        return $this->prepareListEventReport($records);
+    }
 
+    /**
+     * Adds an additional data to the event recors
+     * @param array $records
+     * @return array
+     */
+    protected function prepareListEventReport(array $records)
+    {
         foreach ($records as &$record) {
 
             $variables = array();
@@ -170,7 +179,7 @@ class Report extends BackendController
         $this->setBreadcrumbListGaReport();
 
         $default_store = $this->store->getDefault();
-        $store_id = (int)$this->request->get('store_id', $default_store);
+        $store_id = (int) $this->request->get('store_id', $default_store);
         $stores = $this->store->getList();
         $store = $this->store->get($store_id);
 
@@ -193,7 +202,6 @@ class Report extends BackendController
         $view = $store['data']['ga_view'];
         $this->analytics->setCredentials($email, $certificate, "Analytics for {$store['domain']}");
         $this->analytics->setView($view);
-
         $this->setData('ga_view', $view);
 
         $this->setDataGaTrafficReport();
@@ -218,6 +226,8 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListGaReport()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
@@ -245,7 +255,7 @@ class Report extends BackendController
      */
     protected function updateGaReport($store_id)
     {
-        $view = (string)$this->request->get('ga_view');
+        $view = (string) $this->request->get('ga_view');
 
         if ($this->isQuery('ga_update') && !empty($view)) {
             $this->report->clearGaCache($view);
@@ -295,7 +305,6 @@ class Report extends BackendController
     {
         $items = $this->analytics->get('sources');
         $html = $this->render('report/ga/panels/sources', array('items' => $items));
-
         $this->setData('panel_sources', $html);
     }
 
@@ -323,7 +332,6 @@ class Report extends BackendController
     {
         $items = $this->analytics->get('keywords');
         $html = $this->render('report/ga/panels/keywords', array('items' => $items));
-
         $this->setData('panel_keywords', $html);
     }
 
@@ -366,12 +374,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListStatusReport()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

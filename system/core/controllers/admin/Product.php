@@ -214,12 +214,12 @@ class Product extends BackendController
      */
     protected function setBreadcrumbListProduct()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -305,6 +305,16 @@ class Product extends BackendController
             $this->outputError(404);
         }
 
+        return $this->prepareProduct($product);
+    }
+
+    /**
+     * Adds an additional data to the product array data
+     * @param array $product
+     * @return array
+     */
+    protected function prepareProduct(array $product)
+    {
         if (!empty($product['combination'])) {
 
             $preset = $this->config('admin_image_preset', 2);
@@ -323,9 +333,8 @@ class Product extends BackendController
             }
         }
 
-        $product['alias'] = $this->alias->get('product_id', $product_id);
+        $product['alias'] = $this->alias->get('product_id', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
-
         return $product;
     }
 

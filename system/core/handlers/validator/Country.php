@@ -52,7 +52,7 @@ class Country extends BaseValidator
      */
     public function country(array &$submitted, array $options = array())
     {
-        $tis->validateCountry($submitted);
+        $this->validateCountry($submitted);
         $this->validateWeight($submitted);
         $this->validateDefault($submitted);
         $this->validateStatus($submitted);
@@ -92,11 +92,12 @@ class Country extends BaseValidator
     /**
      * Validates a zone ID
      * @param array $submitted
+     * @return boolean|null
      */
     protected function validateZoneCountry(array $submitted)
     {
         if (empty($submitted['zone_id'])) {
-            return true;
+            return null;
         }
 
         if (!is_numeric($submitted['zone_id'])) {
@@ -161,7 +162,8 @@ class Country extends BaseValidator
 
         $submitted['code'] = strtoupper($submitted['code']);
 
-        if (isset($submitted['country']['code']) && ($submitted['country']['code'] === $submitted['code'])) {
+        if (isset($submitted['country']['code'])//
+                && ($submitted['country']['code'] === $submitted['code'])) {
             return true;
         }
 

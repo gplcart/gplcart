@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['created']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo isset($this->errors['created']) ? ' has-error' : ''; ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Created'); ?></label>
         <div class="col-md-4">
           <input name="review[created]" class="form-control" value="<?php echo empty($review['created']) ? $this->date(null, false) : $this->date($review['created'], false); ?>">

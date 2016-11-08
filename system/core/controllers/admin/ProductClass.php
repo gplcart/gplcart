@@ -9,16 +9,15 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Field as ModelsField;
 use core\models\ProductClass as ModelsProductClass;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to product classes
  */
 class ProductClass extends BackendController
 {
-
     /**
      * Product model instance
      * @var \core\models\ProductClass $product_class
@@ -36,10 +35,9 @@ class ProductClass extends BackendController
      * @param ModelsProductClass $product_class
      * @param ModelsField $field
      */
-    public function __construct(
-        ModelsProductClass $product_class,
-        ModelsField $field
-    ) {
+    public function __construct(ModelsProductClass $product_class,
+            ModelsField $field)
+    {
         parent::__construct();
 
         $this->field = $field;
@@ -73,24 +71,24 @@ class ProductClass extends BackendController
      */
     protected function actionProductClass()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
             if ($action == 'status' && $this->access('product_class_edit')) {
-                $updated += (int)$this->product_class->update($id, array('status' => $value));
+                $updated += (int) $this->product_class->update($id, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('product_class_delete')) {
-                $deleted += (int)$this->product_class->delete($id);
+                $deleted += (int) $this->product_class->delete($id);
             }
         }
 
@@ -107,6 +105,8 @@ class ProductClass extends BackendController
             ));
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -145,12 +145,12 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbListProductClass()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -252,12 +252,8 @@ class ProductClass extends BackendController
     protected function validateProductClass(array $product_class)
     {
         $this->setSubmittedBool('status');
-
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->setValidators($product_class);
+        $this->setSubmitted('update', $product_class);
+        $this->validate('product_class');
     }
 
     /**
@@ -295,12 +291,12 @@ class ProductClass extends BackendController
      */
     protected function setTitleEditProductClass(array $product_class)
     {
+        $title = $this->text('Add product class');
+
         if (isset($product_class['product_class_id'])) {
             $title = $this->text('Edit product class %name', array(
                 '%name' => $product_class['title']
             ));
-        } else {
-            $title = $this->text('Add product class');
         }
 
         $this->setTitle($title);
@@ -311,6 +307,8 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditProductClass()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
@@ -414,9 +412,9 @@ class ProductClass extends BackendController
             $this->product_class->addField($field);
         }
 
-        $this->redirect('', $this->text('Product class %name has been updated', array(
-            '%name' => $product_class['title']
-        )), 'success');
+        $options = array('%name' => $product_class['title']);
+        $message = $this->text('Product class %name has been updated', $options);
+        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -437,6 +435,8 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbFieldsProductClass()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
@@ -510,7 +510,6 @@ class ProductClass extends BackendController
 
         $message = $this->text('Product class has been updated');
         $path = "admin/content/product-class/field/{$product_class['product_class_id']}";
-
         $this->redirect($path, $message, 'success');
     }
 
@@ -533,6 +532,8 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditFieldProductClass(array $product_class)
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')

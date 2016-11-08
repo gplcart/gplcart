@@ -28,7 +28,6 @@ use core\models\ProductField as ModelsProductField;
  */
 class Product extends Model
 {
-
     /**
      * Image model instance
      * @var \core\models\Image $image
@@ -126,12 +125,9 @@ class Product extends Model
         if (empty($data)) {
             return false;
         }
-
-        $data += array(
-            'created' => GC_TIME,
-            'currency' => $this->config->get('currency', 'USD'),
-        );
-
+        
+        $data['created'] = GC_TIME;
+        $data += array('currency' => $this->config->get('currency', 'USD'));
         $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslation($data, false);
