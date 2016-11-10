@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\UserRole as ModelsUserRole;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to user management
@@ -53,17 +53,9 @@ class User extends BackendController
         $this->setData('roles', $roles);
         $this->setData('stores', $stores);
 
-        $filters = array(
-            'name',
-            'email',
-            'role_id',
-            'store_id',
-            'status',
-            'created'
-        );
+        $filters = array('name', 'email', 'role_id', 'store_id', 'status', 'created');
 
         $this->setFilter($filters, $query);
-
         $this->setTitleListUser();
         $this->setBreadcrumbListUser();
         $this->outputListUser();
@@ -74,14 +66,14 @@ class User extends BackendController
      */
     protected function actionUser()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if ($action) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $uid) {
@@ -91,11 +83,11 @@ class User extends BackendController
             }
 
             if ($action == 'status' && $this->access('user_edit')) {
-                $updated += (int)$this->user->update($uid, array('status' => $value));
+                $updated += (int) $this->user->update($uid, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('user_delete')) {
-                $deleted += (int)$this->user->delete($uid);
+                $deleted += (int) $this->user->delete($uid);
             }
         }
 
@@ -108,6 +100,8 @@ class User extends BackendController
             $text = $this->text('Deleted %num users', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -138,7 +132,7 @@ class User extends BackendController
             if (isset($stores[$user['store_id']])) {
                 $store = $stores[$user['store_id']];
                 $user['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                    . "/account/{$user['user_id']}";
+                        . "/account/{$user['user_id']}";
             }
         }
 
@@ -158,12 +152,12 @@ class User extends BackendController
      */
     protected function setBreadcrumbListUser()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -186,8 +180,12 @@ class User extends BackendController
 
         $roles = $this->role->getList();
         $stores = $this->store->getNames();
-        $is_superadmin = (isset($user['user_id']) && $this->isSuperadmin($user['user_id']));
-        $can_delete = (isset($user['user_id']) && $this->user->canDelete($user['user_id']));
+
+        $is_superadmin = (isset($user['user_id'])//
+                && $this->isSuperadmin($user['user_id']));
+
+        $can_delete = (isset($user['user_id'])//
+                && $this->user->canDelete($user['user_id']));
 
         $this->setData('user', $user);
         $this->setData('roles', $roles);
@@ -284,29 +282,9 @@ class User extends BackendController
      */
     protected function validateUser(array $user)
     {
-        $this->addValidator('email', array(
-            'required' => array(),
-            'email' => array(),
-            'user_email_unique' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255),
-            'user_name_unique' => array()
-        ));
-
-        $length = $this->user->getPasswordLength();
-        $length += array('required' => empty($user['user_id']));
-
-        $this->addValidator('password', array(
-            'length' => $length
-        ));
-
-        $this->setValidators($user);
-
-        if (isset($user['user_id']) && $this->isSuperadmin($user['user_id'])) {
-            $this->setSubmitted('status', 1); //Superadmin is always enabled
-        }
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $user);
+        $this->validate('user');
     }
 
     /**
@@ -347,10 +325,10 @@ class User extends BackendController
      */
     protected function setTitleEditUser(array $user)
     {
+        $title = $this->text('Add user');
+
         if (isset($user['name'])) {
             $title = $this->text('Edit %user', array('%user' => $user['name']));
-        } else {
-            $title = $this->text('Add user');
         }
 
         $this->setTitle($title);

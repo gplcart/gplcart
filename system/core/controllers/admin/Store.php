@@ -9,10 +9,10 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
-use core\models\Collection as ModelsCollection;
 use core\models\Image as ModelsImage;
 use core\models\Module as ModelsModule;
+use core\models\Collection as ModelsCollection;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to multistore functionality
@@ -44,11 +44,9 @@ class Store extends BackendController
      * @param ModelsModule $module
      * @param ModelsCollection $collection
      */
-    public function __construct(
-        ModelsImage $image,
-        ModelsModule $module,
-        ModelsCollection $collection
-    ) {
+    public function __construct(ModelsImage $image, ModelsModule $module,
+            ModelsCollection $collection)
+    {
         parent::__construct();
 
         $this->image = $image;
@@ -80,27 +78,28 @@ class Store extends BackendController
 
     /**
      * Applies an action to the selected stores
+     * @return null
      */
     protected function actionStore()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if ($action) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
             if ($action == 'status' && $this->access('store_edit')) {
-                $updated += (int)$this->store->update($id, array('status' => (int)$value));
+                $updated += (int) $this->store->update($id, array('status' => (int) $value));
             }
 
             if ($action == 'delete' && $this->access('store_delete') && !$this->store->isDefault($id)) {
-                $deleted += (int)$this->store->delete($id);
+                $deleted += (int) $this->store->delete($id);
             }
         }
 
@@ -113,6 +112,8 @@ class Store extends BackendController
             $message = $this->text('Stores have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -151,10 +152,12 @@ class Store extends BackendController
      */
     protected function setBreadcrumbListStore()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
-        ));
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -175,8 +178,11 @@ class Store extends BackendController
         $themes = $this->getListThemeStore();
         $collections = $this->getListCollectionStore($store_id);
 
-        $is_default = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
-        $can_delete = (isset($store['store_id']) && $this->store->canDelete($store['store_id']));
+        $is_default = (isset($store['store_id'])//
+                && $this->store->isDefault($store['store_id']));
+
+        $can_delete = (isset($store['store_id'])//
+                && $this->store->canDelete($store['store_id']));
 
         $this->setData('store', $store);
         $this->setData('themes', $themes);
@@ -188,7 +194,6 @@ class Store extends BackendController
         $this->setDataEditStore();
 
         $this->setJsEditStore($store);
-
         $this->seTitleEditStore($store);
         $this->setBreadcrumbEditStore();
         $this->outputEditStore();
@@ -205,7 +210,7 @@ class Store extends BackendController
             return array('data' => $this->store->defaultConfig());
         }
 
-        $store = $this->store->get((int)$store_id);
+        $store = $this->store->get((int) $store_id);
 
         if (empty($store)) {
             $this->outputError(404);
@@ -251,7 +256,6 @@ class Store extends BackendController
      */
     protected function submitStore(array $store)
     {
-
         if ($this->isPosted('delete')) {
             $this->deleteStore($store);
         }
@@ -261,7 +265,6 @@ class Store extends BackendController
         }
 
         $this->setSubmitted('store');
-
         $this->validateStore($store);
 
         if ($this->hasErrors('store')) {
@@ -283,20 +286,14 @@ class Store extends BackendController
     protected function deleteStore(array $store)
     {
         $this->controlAccess('store_delete');
-
         $deleted = (isset($store['store_id']) && $this->store->delete($store['store_id']));
 
         if ($deleted) {
-            $message = $this->text('Store %s has been deleted', array(
-                '%s' => $store['name']
-            ));
+            $message = $this->text('Store %s has been deleted', array('%s' => $store['name']));
             $this->redirect('admin/settings/store', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete store %name', array(
-            '%name' => $store['name']
-        ));
-
+        $message = $this->text('Unable to delete store %name', array('%name' => $store['name']));
         $this->redirect('', $message, 'danger');
     }
 
@@ -306,114 +303,15 @@ class Store extends BackendController
      */
     protected function validateStore(array $store)
     {
-        $is_default = (isset($store['store_id']) && $this->store->isDefault($store['store_id']));
-
-        // Delete logo and favicon (if set)
-        if ($this->isSubmitted('delete_favicon')) {
-            $this->setSubmitted('data.favicon', '');
-        }
-
-        if ($this->isSubmitted('delete_logo')) {
-            $this->setSubmitted('data.logo', '');
-        }
-
-        $domain_pattern = '/^(?!\-)'
-            . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
-            . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
-
-        $this->addValidator('domain', array(
-            'regexp' => array(
-                'required' => !$is_default,
-                'pattern' => $domain_pattern
-            ),
-            'store_domain_unique' => array(
-                'required' => !$is_default
-            )
-        ));
-
-        $this->addValidator('basepath', array(
-            'regexp' => array(
-                'required' => !$is_default,
-                'pattern' => '/^[a-z0-9]{0,50}$/'
-            ),
-            'store_basepath_unique' => array(
-                'domain' => $this->getSubmitted('domain')
-            ),
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array(
-                'min' => 1,
-                'max' => 255,
-                'required' => true,
-            )
-        ));
-
-        $this->addValidator('data.email', array(
-            'email' => array(
-                'required' => true,
-                'explode' => true
-            )
-        ));
-
-        $this->addValidator('data.map', array(
-            'numeric' => array('explode' => true)
-        ));
-
-        $this->addValidator('data.title', array(
-            'length' => array(
-                'min' => 1,
-                'max' => 255,
-                'required' => true
-            )
-        ));
-
-        $this->addValidator('data.translation', array(
-            'translation' => array()
-        ));
-
-        $this->addValidator('data.catalog_limit', array(
-            'numeric' => array()
-        ));
-
-        $this->addValidator('logo', array(
-            'upload' => array(
-                'control_errors' => true,
-                'path' => 'image/upload/store',
-                'file' => $this->request->file('logo')
-            )
-        ));
-
-        $this->addValidator('favicon', array(
-            'upload' => array(
-                'control_errors' => true,
-                'path' => 'image/upload/store',
-                'file' => $this->request->file('favicon')
-            )
-        ));
-
-        $errors = $this->setValidators($store);
-
-        if (empty($errors)) {
-
-            $logo = $this->getValidatorResult('logo');
-            $favicon = $this->getValidatorResult('favicon');
-
-            $this->setSubmitted('data.logo', $logo);
-            $this->setSubmitted('data.favicon', $favicon);
-
-            $emails = $this->getValidatorResult('data.email');
-            $map = $this->getValidatorResult('data.map');
-
-            $this->setSubmitted('data.map', array_slice($map, 0, 2));
-            $this->setSubmitted('data.email', $emails);
-        }
-
-        $this->setSubmittedArray('data.fax');
-        $this->setSubmittedArray('data.phone');
-
+        $this->setSubmitted('update', $store);
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('data.anonymous_checkout');
+
+        foreach (array('email', 'phone', 'fax', 'map') as $field) {
+            $this->setSubmittedArray("data.$field");
+        }
+
+        $this->validate('store');
     }
 
     /**
@@ -461,7 +359,7 @@ class Store extends BackendController
         foreach (array('logo', 'favicon') as $field) {
             $value = $this->getData("store.data.$field");
             if (!empty($value)) {
-                $this->setData("store.data.$field", $this->image->urlFromPath($value));
+                $this->setData("store.{$field}_thumb", $this->image->urlFromPath($value));
             }
         }
 
@@ -471,7 +369,7 @@ class Store extends BackendController
         foreach ($multiline_fields as $field) {
             $value = $this->getData("store.data.$field");
             if (!empty($value)) {
-                $this->setData("store.data.$field", implode("\n", (array)$value));
+                $this->setData("store.data.$field", implode("\n", (array) $value));
             }
         }
     }
@@ -493,12 +391,10 @@ class Store extends BackendController
      */
     protected function seTitleEditStore(array $store)
     {
+        $title = $this->text('Add store');
+
         if (isset($store['store_id'])) {
-            $title = $this->text('Edit store %name', array(
-                '%name' => $store['name']
-            ));
-        } else {
-            $title = $this->text('Add store');
+            $title = $this->text('Edit store %name', array('%name' => $store['name']));
         }
 
         $this->setTitle($title);
@@ -509,15 +405,19 @@ class Store extends BackendController
      */
     protected function setBreadcrumbEditStore()
     {
-        $this->setBreadcrumb(array(
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
-        ));
+        );
 
-        $this->setBreadcrumb(array(
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/store'),
             'text' => $this->text('Stores')
-        ));
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

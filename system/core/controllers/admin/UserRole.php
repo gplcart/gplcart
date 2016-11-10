@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\UserRole as ModelsUserRole;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to user roles
@@ -129,18 +129,9 @@ class UserRole extends BackendController
      */
     protected function validateUserRole(array $role)
     {
-        $permissions = $this->getSubmitted('permissions');
-        if (empty($permissions)) {
-            $this->setSubmitted('permissions', array());
-        }
-
         $this->setSubmittedBool('status');
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->setValidators($role);
+        $this->setSubmitted('update', $role);
+        $this->validate('user_role');
     }
 
     /**
@@ -178,10 +169,10 @@ class UserRole extends BackendController
      */
     protected function setTitleEditUserRole(array $role)
     {
+        $title = $this->text('Add role');
+
         if (isset($role['role_id'])) {
             $title = $this->text('Edit role %name', array('%name' => $role['name']));
-        } else {
-            $title = $this->text('Add role');
         }
 
         $this->setTitle($title);
@@ -239,43 +230,42 @@ class UserRole extends BackendController
 
     /**
      * Applies an action to user roles
+     * @return null
      */
     protected function actionUserRole()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $role_id) {
 
             if ($action == 'status' && $this->access('user_role_edit')) {
-                $updated += (int)$this->role->update($role_id, array('status' => $value));
+                $updated += (int) $this->role->update($role_id, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('user_role_delete')) {
-                $deleted += (int)$this->role->delete($role_id);
+                $deleted += (int) $this->role->delete($role_id);
             }
         }
 
         if ($updated > 0) {
-            $text = $this->text('Updated %num user roles', array(
-                '%num' => $updated
-            ));
+            $text = $this->text('Updated %num user roles', array('%num' => $updated));
             $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $text = $this->text('Deleted %num user roles', array(
-                '%num' => $deleted
-            ));
+            $text = $this->text('Deleted %num user roles', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -302,10 +292,13 @@ class UserRole extends BackendController
         $permissions = $this->role->getPermissions();
 
         foreach ($roles as &$role) {
-            if (!empty($role['permissions'])) {
-                $list = array_intersect_key($permissions, array_flip($role['permissions']));
-                $role['permissions_list'] = array_chunk($list, 20);
+
+            if (empty($role['permissions'])) {
+                continue;
             }
+
+            $list = array_intersect_key($permissions, array_flip($role['permissions']));
+            $role['permissions_list'] = array_chunk($list, 20);
         }
 
         return $roles;
@@ -324,12 +317,12 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbListUserRole()
     {
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

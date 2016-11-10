@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Zone as ModelsZone;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to geo zones
@@ -59,27 +59,28 @@ class Zone extends BackendController
 
     /**
      * Applies an action to the selected zones
+     * @return null
      */
     protected function actionZone()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
             if ($action == 'status' && $this->access('zone_edit')) {
-                $updated += (int)$this->zone->update($id, array('status' => $value));
+                $updated += (int) $this->zone->update($id, array('status' => $value));
             }
 
             if ($action == 'delete' && $this->access('zone_delete')) {
-                $deleted += (int)$this->zone->delete($id);
+                $deleted += (int) $this->zone->delete($id);
             }
         }
 
@@ -96,6 +97,8 @@ class Zone extends BackendController
             ));
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -134,14 +137,12 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbListZone()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -159,7 +160,10 @@ class Zone extends BackendController
     public function editZone($zone_id = null)
     {
         $zone = $this->getZone($zone_id);
-        $can_delete = (!empty($zone) && $this->zone->canDelete($zone_id) && $this->access('zone_delete'));
+
+        $can_delete = (!empty($zone)//
+                && $this->zone->canDelete($zone_id)//
+                && $this->access('zone_delete'));
 
         $this->setData('zone', $zone);
         $this->setData('can_delete', $can_delete);
@@ -246,12 +250,8 @@ class Zone extends BackendController
     protected function validateZone(array $zone)
     {
         $this->setSubmittedBool('status');
-
-        $this->addValidator('title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->setValidators($zone);
+        $this->setSubmitted('update', $zone);
+        $this->validate('zone');
     }
 
     /**
@@ -289,12 +289,12 @@ class Zone extends BackendController
      */
     protected function setTitleEditZone(array $zone)
     {
+        $title = $this->text('Add zone');
+
         if (isset($zone['zone_id'])) {
             $title = $this->text('Edit zone %name', array(
                 '%name' => $zone['title']
             ));
-        } else {
-            $title = $this->text('Add zone');
         }
 
         $this->setTitle($title);

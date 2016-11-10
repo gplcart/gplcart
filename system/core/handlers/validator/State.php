@@ -160,7 +160,7 @@ class State extends BaseValidator
      */
     protected function validateZoneState(array $submitted)
     {
-        if (empty($submitted['zone_id'])) {
+        if (!isset($submitted['zone_id'])) {
             return null;
         }
 

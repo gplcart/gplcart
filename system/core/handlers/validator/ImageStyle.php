@@ -9,7 +9,6 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
 use core\models\Image as ModelsImage;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -41,10 +40,9 @@ class ImageStyle extends BaseValidator
      * @param array $submitted
      * @param array $action
      */
-    public function imageStyle(array &$submitted, array $action = array())
+    public function imageStyle(array &$submitted)
     {
         $this->validateImageStyle($submitted);
-
         $this->validateName($submitted);
         $this->validateStatus($submitted);
         $this->validateActionsImageStyle($submitted);
@@ -79,7 +77,7 @@ class ImageStyle extends BaseValidator
      * @param array $options
      * @return boolean
      */
-    public function validateActionsImageStyle(&$submitted, $options = array())
+    public function validateActionsImageStyle(&$submitted)
     {
         if (!empty($submitted['update']) && !isset($submitted['actions'])) {
             return null;
@@ -89,14 +87,11 @@ class ImageStyle extends BaseValidator
             $this->errors['actions'] = $this->language->text('@field is required', array(
                 '@field' => $this->language->text('Actions')
             ));
-
             return false;
         }
 
         $modified = $errors = array();
-        $array = Tool::stringToArray($submitted['actions']);
-
-        foreach ($array as $line => $action) {
+        foreach ($submitted['actions'] as $line => $action) {
 
             $valid = false;
             $parts = array_map('trim', explode(' ', trim($action)));
@@ -151,13 +146,16 @@ class ImageStyle extends BaseValidator
             );
         }
 
-        if (empty($errors)) {
+        if (!empty($errors)) {
+            $this->errors['actions'] = $this->language->text('Error on lines %num', array(
+                '%num' => implode(',', $errors)));
+        }
+
+        if (empty($this->errors)) {
             $submitted['actions'] = $modified;
             return true;
         }
 
-        $this->errors['actions'] = $this->language->text('Error on lines %num', array(
-            '%num' => implode(',', $errors)));
         return false;
     }
 

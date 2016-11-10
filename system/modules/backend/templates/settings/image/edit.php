@@ -5,8 +5,8 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="form-group<?php echo isset($this->errors['status']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label"><?php echo $this->text('Status'); ?></label>
-            <div class="col-md-9">
+            <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+            <div class="col-md-10">
               <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default<?php echo!empty($imagestyle['status']) ? ' active' : ''; ?>">
                   <input name="imagestyle[status]" type="radio" autocomplete="off" value="1"<?php echo!empty($imagestyle['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
@@ -21,8 +21,8 @@
             </div>
           </div>
           <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label"><?php echo $this->text('Name'); ?></label>
-            <div class="col-md-9">
+            <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
+            <div class="col-md-10">
               <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->escape($imagestyle['name']) : ''; ?>">
               <div class="help-block">
                 <?php if (isset($this->errors['name'])) { ?>
@@ -35,8 +35,8 @@
             </div>
           </div>
           <div class="form-group required<?php echo isset($this->errors['actions']) ? ' has-error' : ''; ?>">
-            <label class="col-md-3 control-label"><?php echo $this->text('Actions'); ?></label>
-            <div class="col-md-9">
+            <label class="col-md-2 control-label"><?php echo $this->text('Actions'); ?></label>
+            <div class="col-md-10">
               <textarea name="imagestyle[actions]" rows="6" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->escape($imagestyle['actions']); ?></textarea>
               <div class="help-block">
                 <?php if (isset($this->errors['actions'])) { ?>
@@ -64,7 +64,7 @@
               </button>
               <?php } ?>
             </div>
-            <div class="col-md-10 text-right">
+            <div class="col-md-10">
               <div class="btn-toolbar">
                 <a href="<?php echo $this->url('admin/settings/imagestyle'); ?>" class="btn btn-default cancel">
                   <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>

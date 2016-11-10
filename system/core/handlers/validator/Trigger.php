@@ -9,21 +9,15 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
-use core\models\Language as ModelsLanguage;
+use core\models\Trigger as ModelsTrigger;
 use core\models\Condition as ModelsCondition;
+use core\handlers\validator\Base as BaseValidator;
 
 /**
- * Provides methods to validate triggers related data
+ * Provides methods to validate trigger data
  */
-class Trigger
+class Trigger extends BaseValidator
 {
-
-    /**
-     * Language model instance
-     * @var \core\models\Language $language
-     */
-    protected $language;
 
     /**
      * Condition model instance
@@ -32,33 +26,86 @@ class Trigger
     protected $condition;
 
     /**
-     * Constructor
-     * @param ModelsLanguage $language
-     * @param ModelsCondition $condition
+     * Trigger model instance
+     * @var \core\models\Trigger $trigger
      */
-    public function __construct(ModelsLanguage $language,
-            ModelsCondition $condition)
+    protected $trigger;
+
+    /**
+     * Constructor
+     * @param ModelsCondition $condition
+     * @param ModelsTrigger $trigger
+     */
+    public function __construct(ModelsCondition $condition,
+            ModelsTrigger $trigger)
     {
-        $this->language = $language;
+        parent::__construct();
+
+        $this->trigger = $trigger;
         $this->condition = $condition;
     }
 
     /**
-     * Validates and modifies trigger conditions
-     * @return boolean|array
+     * Performs full trigger data validation
+     * @param array $trigger
      */
-    public function conditions($value, array $options = array())
+    public function trigger(array &$submitted)
     {
-        if (empty($value) && empty($options['required'])) {
-            return true;
+        $this->validateTrigger($submitted);
+        $this->validateStatus($submitted);
+        $this->validateName($submitted);
+        $this->validateStoreId($submitted);
+        $this->validateWeight($submitted);
+        $this->validateConditionsTrigger($submitted);
+
+        return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
+     * Validates a trigger to be updated
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateTrigger(array &$submitted)
+    {
+        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+
+            $data = $this->trigger->get($submitted['update']);
+
+            if (empty($data)) {
+                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                    '@name' => $this->language->text('Trigger')));
+                return false;
+            }
+
+            $submitted['update'] = $data;
         }
 
-        $modified = $errors = array();
+        return true;
+    }
+
+    /**
+     * Validates and modifies trigger conditions
+     * @return boolean
+     */
+    public function validateConditionsTrigger(array &$submitted)
+    {
+        if (!empty($submitted['update']) && !isset($submitted['data']['conditions'])) {
+            return null;
+        }
+
+        if (empty($submitted['data']['conditions'])) {
+            $this->errors['data']['conditions'] = $this->language->text('@field is required', array(
+                '@field' => $this->language->text('Conditions')
+            ));
+            return false;
+        }
+
+        $errors = $modified = array();
         $operators = $this->condition->getOperators();
         $prepared_operators = array_map('htmlspecialchars', array_keys($operators));
-        $conditions = Tool::stringToArray($value);
 
-        foreach ($conditions as $line => $condition) {
+        foreach ($submitted['data']['conditions'] as $line => $condition) {
             $line++;
 
             $condition = trim($condition);
@@ -88,7 +135,7 @@ class Trigger
                 continue;
             }
 
-            $result = call_user_func_array($validator, array($condition_id, $operator, &$parameters, $options['submitted']));
+            $result = call_user_func_array($validator, array($condition_id, $operator, &$parameters, $submitted));
 
             if ($result !== true) {
                 $error = empty($result) ? $this->language->text('did not pass validation') : (string) $result;
@@ -105,11 +152,16 @@ class Trigger
             );
         }
 
-        if (empty($errors)) {
-            return array('result' => $modified);
+        if (!empty($errors)) {
+            $this->errors['data']['conditions'] = implode('<br>', $errors);
         }
 
-        return implode('<br>', $errors);
+        if (empty($this->errors)) {
+            $submitted['data']['conditions'] = $modified;
+            return true;
+        }
+
+        return false;
     }
 
 }

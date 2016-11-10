@@ -46,7 +46,7 @@ class Collection extends BaseValidator
         $this->validateTitle($submitted);
         $this->validateDescription($submitted);
         $this->validateTranslation($submitted);
-        $this->validateStore($submitted);
+        $this->validateStoreId($submitted);
         $this->validateTypeCollection($submitted);
 
         return empty($this->errors) ? true : $this->errors;

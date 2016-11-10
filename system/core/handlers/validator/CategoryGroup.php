@@ -44,7 +44,7 @@ class CategoryGroup extends BaseValidator
         $this->validateCategoryGroup($submitted);
         $this->validateTitle($submitted);
         $this->validateTranslation($submitted);
-        $this->validateStore($submitted);
+        $this->validateStoreId($submitted);
         $this->validateTypeCategoryGroup($submitted);
 
         return empty($this->errors) ? true : $this->errors;

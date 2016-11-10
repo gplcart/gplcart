@@ -96,12 +96,9 @@ class User extends Model
         if (empty($data)) {
             return false;
         }
-
-        $data += array(
-            'created' => GC_TIME,
-            'hash' => Tool::hash($data['password'])
-        );
-
+        
+        $data['created'] = GC_TIME;
+        $data += array('hash' => Tool::hash($data['password']));
         $data['user_id'] = $this->db->insert('user', $data);
 
         $this->setAddress($data);
@@ -148,15 +145,19 @@ class User extends Model
         if (empty($user_id)) {
             return false;
         }
-
-        $data += array('modified' => GC_TIME, 'user_id' => $user_id);
+        
+        $data['modified'] = GC_TIME;
+        $data += array('user_id' => $user_id);
 
         if (!empty($data['password'])) {
             $data['hash'] = Tool::hash($data['password']);
         }
+        
+        if($this->isSuperadmin($user_id)){
+            $data['status'] = 1;
+        }
 
         $options = array('user_id' => $user_id);
-
         $updated = (int) $this->db->update('user', $data, $options);
         $updated += (int) $this->setAddress($data);
 

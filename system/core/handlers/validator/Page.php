@@ -57,9 +57,9 @@ class Page extends BaseValidator
         $this->validateMetaTitle($submitted);
         $this->validateMetaDescription($submitted);
         $this->validateTranslation($submitted);
-        $this->validateStore($submitted);
+        $this->validateStoreId($submitted);
         $this->validateCategoryPage($submitted);
-        $this->validateUser($submitted);
+        $this->validateUserId($submitted);
         $this->validateImages($submitted);
         $this->validateAliasPage($submitted);
 

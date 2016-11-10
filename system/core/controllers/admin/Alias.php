@@ -9,8 +9,8 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Alias as ModelsAlias;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to the URL aliases
@@ -76,6 +76,7 @@ class Alias extends BackendController
 
         $deleted = 0;
         foreach ($selected as $id) {
+
             $alias = $this->alias->get($id);
 
             if (empty($alias)) {
@@ -137,12 +138,12 @@ class Alias extends BackendController
      */
     protected function setBreadcrumbListAlias()
     {
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

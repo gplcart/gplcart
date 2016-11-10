@@ -113,8 +113,8 @@ class Base
      */
     protected function validateMetaTitle(array &$submitted)
     {
-        if (isset($submitted['meta_title']) && mb_strlen($submitted['meta_title']) > 255) {
-            $options = array('@max' => 255, '@field' => $this->language->text('Meta title'));
+        if (isset($submitted['meta_title']) && mb_strlen($submitted['meta_title']) > 60) {
+            $options = array('@max' => 60, '@field' => $this->language->text('Meta title'));
             $this->errors['meta_title'] = $this->language->text('@field must not be longer than @max characters', $options);
             return false;
         }
@@ -129,8 +129,8 @@ class Base
      */
     protected function validateMetaDescription(array &$submitted)
     {
-        if (isset($submitted['meta_description']) && mb_strlen($submitted['meta_description']) > 255) {
-            $options = array('@max' => 255, '@field' => $this->language->text('Meta description'));
+        if (isset($submitted['meta_description']) && mb_strlen($submitted['meta_description']) > 160) {
+            $options = array('@max' => 160, '@field' => $this->language->text('Meta description'));
             $this->errors['meta_description'] = $this->language->text('@field must not be longer than @max characters', $options);
             return false;
         }
@@ -208,11 +208,16 @@ class Base
         if (empty($submitted['translation'])) {
             return null;
         }
+        
+        $lengths = array('meta_title' => 60, 'meta_description' => 160);
 
         foreach ($submitted['translation'] as $lang => $translation) {
             foreach ($translation as $field => $value) {
-                if (mb_strlen($value) > 255) {
-                    $options = array('@field' => ucfirst(str_replace('_', '', $field)), '@lang' => $lang, '@max' => 255);
+                
+                $max = isset($lengths[$field]) ? $lengths[$field] : 255;
+                
+                if (mb_strlen($value) > $max) {
+                    $options = array('@field' => ucfirst(str_replace('_', '', $field)), '@lang' => $lang, '@max' => $max);
                     $this->errors['translation'][$lang][$field] = $this->language->text('@field in @lang must not be longer than @max characters', $options);
                 }
             }
@@ -295,7 +300,7 @@ class Base
      * @param array $submitted
      * @return boolean|null
      */
-    protected function validateStore(array $submitted)
+    protected function validateStoreId(array $submitted)
     {
         if (!empty($submitted['update']) && !isset($submitted['store_id'])) {
             return null;
@@ -330,7 +335,7 @@ class Base
      * @param array $submitted
      * @return boolean|null
      */
-    protected function validateUser(array $submitted)
+    protected function validateUserId(array $submitted)
     {
         if (!empty($submitted['update']) && !isset($submitted['user_id'])) {
             return null;

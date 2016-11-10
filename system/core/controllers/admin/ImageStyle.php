@@ -196,6 +196,7 @@ class ImageStyle extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $imagestyle);
+        $this->setSubmittedArray('actions');
         $this->validate('image_style');
     }
 
@@ -237,21 +238,31 @@ class ImageStyle extends BackendController
     {
         $actions = $this->getData('imagestyle.actions');
 
-        if (is_array($actions)) {
+        if (!is_array($actions)) {
+            return null;
+        }
 
-            Tool::sortWeight($actions);
+        Tool::sortWeight($actions);
 
-            $modified = array();
-            foreach ($actions as $action_id => $info) {
-                $action = $action_id;
-                if (!empty($info['value'])) {
-                    $action .= ' ' . implode(',', $info['value']);
-                }
-                $modified[] = $action;
+        $modified = array();
+        foreach ($actions as $action_id => $info) {
+
+            if (is_string($info)) {
+                $modified[] = $info;
+                continue;
             }
 
-            $this->setData('imagestyle.actions', implode("\n", $modified));
+            $action = $action_id;
+
+            if (!empty($info['value'])) {
+                $action .= ' ' . implode(',', $info['value']);
+            }
+
+            $modified[] = $action;
         }
+
+        $this->setData('imagestyle.actions', implode("\n", $modified));
+        return null;
     }
 
     /**

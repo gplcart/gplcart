@@ -115,8 +115,8 @@ class Product extends BaseValidator
         $this->validateMetaDescription($submitted);
         $this->validateTranslation($submitted);
         $this->validateImages($submitted);
-        $this->validateStore($submitted);
-        $this->validateUser($submitted);
+        $this->validateStoreId($submitted);
+        $this->validateUserId($submitted);
         $this->validateDimensionProduct($submitted);
         $this->validateRelatedProduct($submitted);
         $this->validateClassProduct($submitted);

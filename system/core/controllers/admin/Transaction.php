@@ -9,9 +9,9 @@
 
 namespace core\controllers\admin;
 
-use core\controllers\admin\Controller as BackendController;
 use core\models\Payment as ModelsPayment;
 use core\models\Transaction as ModelsTransaction;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to order payment transactions
@@ -36,10 +36,9 @@ class Transaction extends BackendController
      * @param ModelsTransaction $transaction
      * @param ModelsPayment $payment
      */
-    public function __construct(
-        ModelsTransaction $transaction,
-        ModelsPayment $payment
-    ) {
+    public function __construct(ModelsTransaction $transaction,
+            ModelsPayment $payment)
+    {
         parent::__construct();
 
         $this->payment = $payment;
@@ -63,12 +62,8 @@ class Transaction extends BackendController
         $this->setData('transactions', $transactions);
         $this->setData('payment_methods', $payment_methods);
 
-        $filters = array(
-            'created',
-            'order_id',
-            'payment_service',
-            'service_transaction_id'
-        );
+        $filters = array('created', 'order_id', 'payment_service',
+            'service_transaction_id');
 
         $this->setFilter($filters, $query);
 
@@ -83,24 +78,24 @@ class Transaction extends BackendController
      */
     protected function actionTransaction()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
             if ($action === 'delete' && $this->access('transaction_delete')) {
-                $deleted += (int)$this->transaction->delete($id);
+                $deleted += (int) $this->transaction->delete($id);
             }
 
             if ($action === 'status' && $this->access('transaction_edit')) {
-                $updated += (int)$this->transaction->update($id, array('status' => $value));
+                $updated += (int) $this->transaction->update($id, array('status' => $value));
             }
         }
 
@@ -125,7 +120,7 @@ class Transaction extends BackendController
     protected function getTotalTransaction(array $query)
     {
         $query['count'] = true;
-        return (int)$this->transaction->getList($query);
+        return (int) $this->transaction->getList($query);
     }
 
     /**
@@ -153,14 +148,12 @@ class Transaction extends BackendController
      */
     protected function setBreadcrumbListTransaction()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

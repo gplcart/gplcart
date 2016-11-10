@@ -9,10 +9,10 @@
 
 namespace core\controllers\admin;
 
+use core\models\Image as ModelsImage;
 use core\models\Alias as ModelsAlias;
 use core\models\Category as ModelsCategory;
 use core\models\CategoryGroup as ModelsCategoryGroup;
-use core\models\Image as ModelsImage;
 use core\controllers\admin\Controller as BackendController;
 
 /**
@@ -461,13 +461,13 @@ class Category extends BackendController
      */
     protected function setTitleEditCategory(array $group, array $category)
     {
+        $title = $this->text('Add category to %group', array(
+            '%group' => $group['title']
+        ));
+
         if (isset($category['category_id'])) {
             $title = $this->text('Edit category %name', array(
                 '%name' => $category['title']
-            ));
-        } else {
-            $title = $this->text('Add category to %group', array(
-                '%group' => $group['title']
             ));
         }
 

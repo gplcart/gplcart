@@ -18,7 +18,6 @@ use core\classes\Request;
  */
 class Store extends Model
 {
-
     /**
      * Request class instance
      * @var \core\classes\Request $request
@@ -101,7 +100,9 @@ class Store extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort'])//
+                && in_array($data['sort'], $allowed_sort)//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created ASC";
@@ -259,7 +260,7 @@ class Store extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data['created'] = GC_TIME;
         $data['store_id'] = $this->db->insert('store', $data);
 
         $this->hook->fire('add.store.after', $data);

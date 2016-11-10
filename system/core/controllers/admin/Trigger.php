@@ -10,9 +10,9 @@
 namespace core\controllers\admin;
 
 use core\classes\Tool;
-use core\controllers\admin\Controller as BackendController;
-use core\models\Condition as ModelsCondition;
 use core\models\Trigger as ModelsTrigger;
+use core\models\Condition as ModelsCondition;
+use core\controllers\admin\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to triggers
@@ -37,10 +37,9 @@ class Trigger extends BackendController
      * @param ModelsTrigger $trigger
      * @param ModelsCondition $condition
      */
-    public function __construct(
-        ModelsTrigger $trigger,
-        ModelsCondition $condition
-    ) {
+    public function __construct(ModelsTrigger $trigger,
+            ModelsCondition $condition)
+    {
         parent::__construct();
 
         $this->trigger = $trigger;
@@ -77,25 +76,25 @@ class Trigger extends BackendController
      */
     protected function actionTrigger()
     {
-        $action = (string)$this->request->post('action');
+        $action = (string) $this->request->post('action');
 
         if (empty($action)) {
-            return;
+            return null;
         }
 
-        $value = (int)$this->request->post('value');
-        $selected = (array)$this->request->post('selected', array());
+        $value = (int) $this->request->post('value');
+        $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('trigger_edit')) {
-                $updated += (int)$this->trigger->update($id, array('status' => $value));
+                $updated += (int) $this->trigger->update($id, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('trigger_delete')) {
-                $deleted += (int)$this->trigger->delete($id);
+                $deleted += (int) $this->trigger->delete($id);
             }
         }
 
@@ -108,6 +107,8 @@ class Trigger extends BackendController
             $message = $this->text('Triggers have been deleted');
             $this->setMessage($message, 'success', true);
         }
+
+        return null;
     }
 
     /**
@@ -146,14 +147,12 @@ class Trigger extends BackendController
      */
     protected function setBreadcrumbListTrigger()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -171,7 +170,6 @@ class Trigger extends BackendController
     public function editTrigger($trigger_id = null)
     {
         $trigger = $this->getTrigger($trigger_id);
-
         $stores = $this->store->getNames();
         $conditions = $this->condition->getHandlers();
         $operators = $this->condition->getOperators();
@@ -184,7 +182,6 @@ class Trigger extends BackendController
         $this->submitTrigger($trigger);
 
         $this->setDataEditTrigger();
-
         $this->setTitleEditTrigger($trigger);
         $this->setBreadcrumbEditTrigger();
         $this->outputEditTrigger();
@@ -264,30 +261,9 @@ class Trigger extends BackendController
     protected function validateTrigger(array $trigger)
     {
         $this->setSubmittedBool('status');
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $this->addValidator('store_id', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('weight', array(
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        $this->addValidator('data.conditions', array(
-            'trigger_conditions' => array('required' => true),
-        ));
-
-        $errors = $this->setValidators($trigger);
-
-        if (empty($errors)) {
-            $conditions = $this->getValidatorResult('data.conditions');
-            $this->setSubmitted('data.conditions', $conditions);
-        }
+        $this->setSubmitted('update', $trigger);
+        $this->setSubmittedArray('data.conditions');
+        $this->validate('trigger');
     }
 
     /**
@@ -337,17 +313,19 @@ class Trigger extends BackendController
     {
         $conditions = $this->getData('trigger.data.conditions');
 
-        if (!empty($conditions) && is_array($conditions)) {
-
-            Tool::sortWeight($conditions);
-
-            $modified = array();
-            foreach ($conditions as $condition) {
-                $modified[] = $condition['original'];
-            }
-
-            $this->setData('trigger.data.conditions', implode("\n", $modified));
+        if (empty($conditions) || !is_array($conditions)) {
+            return null;
         }
+
+        Tool::sortWeight($conditions);
+
+        $modified = array();
+        foreach ($conditions as $condition) {
+            $modified[] = is_string($condition) ? $condition : $condition['original'];
+        }
+
+        $this->setData('trigger.data.conditions', implode("\n", $modified));
+        return null;
     }
 
     /**
@@ -356,12 +334,12 @@ class Trigger extends BackendController
      */
     protected function setTitleEditTrigger(array $trigger)
     {
+        $title = $this->text('Add trigger');
+        
         if (isset($trigger['name'])) {
             $title = $this->text('Edit trigger %name', array(
                 '%name' => $trigger['name']
             ));
-        } else {
-            $title = $this->text('Add trigger');
         }
 
         $this->setTitle($title);
