@@ -527,7 +527,7 @@ class Order extends BackendController
             return null;
         }
 
-        $method = $this->{$type}->getMethod();
+        $method = $this->{$type}->get();
         $method['name'] = isset($method['name']) ? $method['name'] : $this->text('Unknown');
 
         if (abs($price) == 0) {

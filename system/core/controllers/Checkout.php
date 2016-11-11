@@ -342,18 +342,19 @@ class Checkout extends FrontendController
         $this->form_data['user'] = $this->order_user_data;
         
         $this->form_data['statuses'] = $this->order->getStatuses();
-        $this->form_data['payment_methods'] = $this->payment->getMethods(true);
-        $this->form_data['shipping_methods'] = $this->shipping->getMethods(true);
+        $this->form_data['payment_methods'] = $this->payment->getList(true);
+        $this->form_data['shipping_methods'] = $this->shipping->getList(true);
         $this->form_data['addresses'] = $this->address->getTranslatedList($this->order_user_id);
     }
-
+    
     /**
      * Prepares form data before passing them to templates
+     * @return null
      */
     protected function setFormDataAfterCheckout()
     {
         if (empty($this->cart_content)) {
-            return; // Required
+            return null; // Required
         }
 
         $this->form_data['address'] = $this->getSubmitted('address', array());
@@ -383,10 +384,12 @@ class Checkout extends FrontendController
         $this->form_data['pane_payment_methods'] = $this->render('checkout/panes/payment_methods', $this->form_data);
         $this->form_data['pane_shipping_methods'] = $this->render('checkout/panes/shipping_methods', $this->form_data);
         $this->form_data['pane_shipping_address'] = $this->render('checkout/panes/shipping_address', $this->form_data);
+        return null;
     }
-
+    
     /**
      * Handles submitted actions
+     * @return null
      */
     protected function submitCheckout()
     {
@@ -419,11 +422,12 @@ class Checkout extends FrontendController
         $this->validateCouponCheckout();
 
         if ($this->hasErrors('order', false)) {
-            return;
+            return null;
         }
 
         $this->submitCartCheckout();
         $this->submitOrderCheckout();
+        return null;
     }
 
     /**
@@ -455,31 +459,33 @@ class Checkout extends FrontendController
 
         $this->setError('login', $result['message']);
     }
-
+    
     /**
      * Validates a coupon code
+     * @return null
      */
     protected function validateCouponCheckout()
     {
         $price_rule_id = (int) $this->request->post('check_pricerule');
 
         if (empty($price_rule_id)) {
-            return;
+            return null;
         }
 
         $code = $this->getSubmitted('data.pricerule_code', '');
 
         if ($code === '') {
-            return;
+            return null;
         }
 
         if ($this->order->codeMatches($price_rule_id, $code)) {
             $this->setMessageFormCheckout('components.success', $this->text('Code is valid'));
-            return;
+            return null;
         }
 
         $this->setError('pricerule_code', $this->text('Invalid code'));
         $this->setMessageFormCheckout('components.warning', $this->text('Invalid code'));
+        return null;
     }
 
     /**
@@ -488,7 +494,6 @@ class Checkout extends FrontendController
     protected function submitCartCheckout()
     {
         $this->submitCartItemsCheckout();
-
         $this->moveCartWishlistCheckout();
         $this->deleteCartCheckout();
         $this->updateCartCheckout();
@@ -638,7 +643,7 @@ class Checkout extends FrontendController
 
     /**
      * Updates the current cart
-     * @return null|void
+     * @return null
      */
     protected function updateCartCheckout()
     {
@@ -653,7 +658,8 @@ class Checkout extends FrontendController
         }
 
         $message = $this->text('Cart has been updated');
-        return $this->redirect('', $message, 'success');
+        $this->redirect('', $message, 'success');
+        return null;
     }
 
     /**
@@ -698,12 +704,7 @@ class Checkout extends FrontendController
         }
 
         $this->setSubmitted('address.user_id', $this->order_user_id);
-
-        $this->addValidator('address', array(
-            'country_format' => array()
-        ));
-
-        return $this->setValidators();
+        return $this->validate('address', array('field' => 'address'));
     }
 
     /**
@@ -711,29 +712,7 @@ class Checkout extends FrontendController
      */
     protected function validateOrderCheckout()
     {
-        if (!$this->address_form) {
-            $this->addValidator('shipping_address', array(
-                'required' => array(
-                    'message' => $this->text('Please select a shipping address'))
-            ));
-        }
-
-        $this->addValidator('shipping', array(
-            'required' => array(
-                'message' => $this->text('Please select a shipping method'))
-        ));
-
-        $this->addValidator('payment', array(
-            'required' => array(
-                'message' => $this->text('Please select a payment method'))
-        ));
-
-        $this->addValidator('log', array(
-            'length' => array(
-                'min' => 1,
-                'required' => !empty($this->order_id))));
-
-        $this->setValidators();
+        $this->validate('order');
     }
 
     /**
@@ -800,8 +779,8 @@ class Checkout extends FrontendController
     protected function prepareOrderComponentsCheckout(array $calculated,
             array $data)
     {
-        $payment_methods = $this->shipping->getMethods();
-        $shipping_methods = $this->payment->getMethods();
+        $payment_methods = $this->shipping->getList();
+        $shipping_methods = $this->payment->getList();
 
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -882,7 +861,7 @@ class Checkout extends FrontendController
         $templates = array();
         foreach (array('payment', 'shipping') as $type) {
 
-            $method = $this->{$type}->getMethod($order[$type]);
+            $method = $this->{$type}->get($order[$type]);
 
             if (empty($method['status']) || empty($method['template']['complete'])) {
                 continue;

@@ -53,17 +53,74 @@ class Base
      */
     public function __construct()
     {
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\\models\\Language');
-
-        /* @var $alias \core\models\Alias */
-        $this->alias = Container::instance('core\\models\\Alias');
+        /* @var $user \core\models\User */
+        $this->user = Container::instance('core\\models\\User');
 
         /* @var $store \core\models\Store */
         $this->store = Container::instance('core\\models\\Store');
 
-        /* @var $user \core\models\User */
-        $this->user = Container::instance('core\\models\\User');
+        /* @var $alias \core\models\Alias */
+        $this->alias = Container::instance('core\\models\\Alias');
+
+        /* @var $language \core\models\Language */
+        $this->language = Container::instance('core\\models\\Language');
+    }
+
+    /**
+     * Returns a submitted value
+     * @param string $key
+     * @param array $submitted
+     * @param array $options
+     * @return mixed
+     */
+    protected function getSubmitted($key, $submitted, $options = array())
+    {
+        if (isset($options['field'])) {
+            $key = "{$options['field']}.$key";
+        }
+
+        return Tool::getArrayValue($submitted, $key);
+    }
+
+    /**
+     * Sets an error
+     * @param string|array $key
+     * @param mixed $value
+     */
+    protected function setError($key, $value, array $options = array())
+    {
+        if (isset($options['field'])) {
+            $key = "{$options['field']}.$key";
+        }
+
+        Tool::setArrayValue($this->errors, $key, $value);
+    }
+
+    /**
+     * Whether an error(s) exist
+     * @param string $key
+     * @param array $options
+     * @return boolean
+     */
+    protected function isError($key, $options = array())
+    {
+        $result = $this->getError($key, $options);
+        return !empty($result);
+    }
+
+    /**
+     * Returns an error
+     * @param string $key
+     * @param array $options
+     * @return mixed
+     */
+    protected function getError($key, array $options = array())
+    {
+        if (isset($options['field'])) {
+            $key = "{$options['field']}.$key";
+        }
+
+        return Tool::getArrayValue($this->errors, $key);
     }
 
     /**
@@ -208,16 +265,16 @@ class Base
         if (empty($submitted['translation'])) {
             return null;
         }
-        
+
         $lengths = array('meta_title' => 60, 'meta_description' => 160);
 
         foreach ($submitted['translation'] as $lang => $translation) {
             foreach ($translation as $field => $value) {
-                
+
                 $max = isset($lengths[$field]) ? $lengths[$field] : 255;
-                
+
                 if (mb_strlen($value) > $max) {
-                    $options = array('@field' => ucfirst(str_replace('_', '', $field)), '@lang' => $lang, '@max' => $max);
+                    $options = array('@field' => ucfirst(str_replace('_', ' ', $field)), '@lang' => $lang, '@max' => $max);
                     $this->errors['translation'][$lang][$field] = $this->language->text('@field in @lang must not be longer than @max characters', $options);
                 }
             }

@@ -362,7 +362,7 @@ class Condition
     public function shipping($key, $operator, array &$values, array $data)
     {
         $exists = array_filter($values, function ($method_id) {
-            return (bool) $this->shipping->getMethod($method_id);
+            return (bool) $this->shipping->get($method_id);
         });
 
         if (count($values) != count($exists)) {
@@ -383,7 +383,7 @@ class Condition
     public function payment($key, $operator, array &$values, array $data)
     {
         $exists = array_filter($values, function ($method_id) {
-            return (bool) $this->payment->getMethod($method_id);
+            return (bool) $this->payment->get($method_id);
         });
 
         if (count($values) != count($exists)) {

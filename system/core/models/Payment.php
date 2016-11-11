@@ -42,7 +42,7 @@ class Payment extends Model
      * @param boolean $enabled
      * @return array
      */
-    public function getMethods($enabled = false)
+    public function getList($enabled = false)
     {
         $methods = &Cache::memory('payment.method');
 
@@ -69,9 +69,9 @@ class Payment extends Model
      * @param string $method_id
      * @return array
      */
-    public function getMethod($method_id)
+    public function get($method_id)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getList();
         return empty($methods[$method_id]) ? array() : $methods[$method_id];
     }
 

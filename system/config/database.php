@@ -259,7 +259,7 @@ $tables['order_log'] = array(
         'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'order_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'text' => array('type' => 'text', 'not_null' => true),
+        'text' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

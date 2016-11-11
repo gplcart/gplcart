@@ -42,7 +42,7 @@ class Shipping extends Model
      * @param boolean $enabled
      * @return array
      */
-    public function getMethods($enabled = false)
+    public function getList($enabled = false)
     {
         $methods = &Cache::memory('shipping.methods');
 
@@ -63,14 +63,15 @@ class Shipping extends Model
         Tool::sortWeight($methods);
         return $methods;
     }
-    
+
     /**
      * Returns a shipping method
      * @param string $method_id
      * @return array
      */
-    public function getMethod($method_id){
-        $methods = $this->getMethods();
+    public function get($method_id)
+    {
+        $methods = $this->getList();
         return empty($methods[$method_id]) ? array() : $methods[$method_id];
     }
 

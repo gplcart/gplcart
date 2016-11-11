@@ -149,6 +149,12 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Country', 'country')
             ),
         );
+        
+        $handlers['address'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Address', 'address')
+            ),
+        );
 
         $handlers['currency'] = array(
             'handlers' => array(
@@ -267,6 +273,12 @@ class Validator extends Model
         $handlers['zone'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Zone', 'zone')
+            ),
+        );
+        
+        $handlers['order'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Order', 'order')
             ),
         );
 

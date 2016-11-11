@@ -216,7 +216,8 @@ class Order extends Model
             'creator' => 'u.email'
         );
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY o.created DESC";
@@ -568,11 +569,9 @@ class Order extends Model
         if (empty($order)) {
             return false;
         }
-
-        $order += array(
-            'created' => GC_TIME,
-            'status' => $this->getDefaultStatus()
-        );
+        
+        $order['created'] = GC_TIME;
+        $order += array('status' => $this->getDefaultStatus());
 
         if (empty($order['data']['user'])) {
             $order['data']['user'] = $this->getUserData();

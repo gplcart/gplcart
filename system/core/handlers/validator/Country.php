@@ -10,6 +10,7 @@
 namespace core\handlers\validator;
 
 use core\models\Zone as ModelsZone;
+use core\models\State as ModelsState;
 use core\models\Country as ModelsCountry;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -32,15 +33,24 @@ class Country extends BaseValidator
     protected $zone;
 
     /**
+     * State model instance
+     * @var \core\models\State $state
+     */
+    protected $state;
+
+    /**
      * Constructor
      * @param ModelsCountry $country
+     * @param ModelsState $state
      * @param ModelsZone $zone
      */
-    public function __construct(ModelsCountry $country, ModelsZone $zone)
+    public function __construct(ModelsCountry $country, ModelsState $state,
+            ModelsZone $zone)
     {
         parent::__construct();
 
         $this->zone = $zone;
+        $this->state = $state;
         $this->country = $country;
     }
 
@@ -176,54 +186,6 @@ class Country extends BaseValidator
         $this->errors['code'] = $this->language->text('@object already exists', array(
             '@object' => $this->language->text('Code')));
         return false;
-    }
-
-    /**
-     * Checks country format fields
-     * TODO: remove
-     * 
-     * @param string $value
-     * @param array $options
-     * @return boolean|array
-     */
-    public function format($value, array $options = array())
-    {
-        if (empty($value) && empty($options['required'])) {
-            return true;
-        }
-
-        $country = empty($value['country']) ? '' : $value['country'];
-
-        $countries = $this->country->getNames(true);
-        $format = $this->country->getFormat($country, true);
-
-        $conditions = array('status' => 1, 'country' => $country);
-        $states = $this->state->getList($conditions);
-
-        $errors = array();
-        foreach ($format as $field => $info) {
-
-            if ($field === 'state_id' && empty($states)) {
-                continue;
-            }
-
-            if ($field === 'country' && $country === '' && !empty($countries)) {
-                $errors['country'] = $this->language->text('Required field');
-            }
-
-            if (empty($info['required'])) {
-                continue;
-            }
-
-            if (empty($value[$field]) || mb_strlen($value[$field]) > 255) {
-                $errors[$field] = $this->language->text('Content must be %min - %max characters long', array(
-                    '%min' => 1,
-                    '%max' => 255
-                ));
-            }
-        }
-
-        return empty($errors) ? true : $errors;
     }
 
 }

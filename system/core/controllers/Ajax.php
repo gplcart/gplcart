@@ -231,7 +231,7 @@ class Ajax extends FrontendController
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
         );
-        
+
         $cart = $this->cart->getContent($options);
 
         if (empty($cart['items'])) {
@@ -362,20 +362,16 @@ class Ajax extends FrontendController
             $path .= '/' . $this->config("{$type}_image_dirname", $type);
         }
 
-        $this->addValidator('file', array(
-            'upload' => array(
-                'path' => $path,
-                'file' => $this->request->file('file')
-        )));
+        $result = $this->file->setUploadPath($path)
+                ->upload($this->request->file('file'));
 
-        $errors = $this->setValidators();
-
-        if (isset($errors['file'])) {
-            return array('error' => (string) $errors['file']);
+        if ($result !== true) {
+            return array('error' => (string) $result);
         }
 
         $response = array();
-        $uploaded = $this->getValidatorResult('file');
+
+        $uploaded = $this->file->getUploadedFile(true);
         $preset = $this->config('admin_image_preset', 2);
         $thumb = $this->image->url($preset, $uploaded, true);
 

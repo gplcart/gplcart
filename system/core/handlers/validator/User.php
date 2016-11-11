@@ -9,6 +9,7 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Tool;
 use core\models\UserRole as ModelsUserRole;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -47,6 +48,7 @@ class User extends BaseValidator
         $this->validateNameUser($submitted);
         $this->validateEmailUser($submitted);
         $this->validatePasswordUser($submitted);
+        $this->validatePasswordOldUser($submitted);
         $this->validateStoreId($submitted);
         $this->validateRoleUser($submitted);
 
@@ -155,7 +157,8 @@ class User extends BaseValidator
      */
     protected function validatePasswordUser(array $submitted)
     {
-        if (!empty($submitted['update']) && empty($submitted['password'])) {
+        if (!empty($submitted['update'])//
+                && (!isset($submitted['password']) || $submitted['password'] === '')) {
             return null;
         }
 
@@ -178,6 +181,37 @@ class User extends BaseValidator
     }
 
     /**
+     * Validates an old user password
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validatePasswordOldUser(array $submitted)
+    {
+        if (empty($submitted['update'])) {
+            return null;
+        }
+
+        if (!isset($submitted['password']) || $submitted['password'] === '') {
+            return null;
+        }
+
+        if (!isset($submitted['password_old']) || $submitted['password_old'] === '') {
+            $options = array('@field' => $this->language->text('Old password'));
+            $this->errors['password_old'] = $this->language->text('@field is required', $options);
+            return false;
+        }
+
+        $hash = Tool::hash($submitted['password_old'], $submitted['update']['hash'], false);
+
+        if (Tool::hashEquals($submitted['update']['hash'], $hash)) {
+            return true;
+        }
+
+        $this->errors['password_old'] = $this->language->text('Old and new password not matching');
+        return false;
+    }
+
+    /**
      * Validates a user role
      * @param array $submitted
      * @return boolean
@@ -192,6 +226,10 @@ class User extends BaseValidator
             $options = array('@field' => $this->language->text('Role'));
             $this->errors['role_id'] = $this->language->text('@field must be numeric', $options);
             return false;
+        }
+
+        if (empty($submitted['role_id'])) {
+            return true;
         }
 
         $role = $this->role->get($submitted['role_id']);

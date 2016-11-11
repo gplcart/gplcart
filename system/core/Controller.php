@@ -1632,18 +1632,18 @@ class Controller
      * Validates a submitted data
      * @param string $handler_id
      * @param array $options
-     * @return boolean
+     * @return array
      */
     protected function validate($handler_id, array $options = array())
     {
         $result = $this->validator->run($handler_id, $this->submitted, $options);
 
         if ($result === true) {
-            return true;
+            return array();
         }
 
         $this->errors = (array) $result;
-        return false;
+        return $this->errors;
     }
 
     /**

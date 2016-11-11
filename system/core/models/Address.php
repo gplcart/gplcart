@@ -9,8 +9,8 @@
 
 namespace core\models;
 
-use core\classes\Tool;
 use core\Model;
+use core\classes\Tool;
 use core\models\Country as ModelsCountry;
 
 /**
@@ -46,13 +46,13 @@ class Address extends Model
         $this->hook->fire('get.address.before', $address_id);
 
         $sql = 'SELECT a.*, c.name AS country_name,'
-            . ' c.native_name AS country_native_name,'
-            . ' c.format AS country_format, s.name AS state_name,'
-            . ' ci.name AS city_name FROM address a'
-            . ' LEFT JOIN country c ON(a.country=c.code)'
-            . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
-            . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-            . ' WHERE a.address_id = ?';
+                . ' c.native_name AS country_native_name,'
+                . ' c.format AS country_format, s.name AS state_name,'
+                . ' ci.name AS city_name FROM address a'
+                . ' LEFT JOIN country c ON(a.country=c.code)'
+                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
+                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+                . ' WHERE a.address_id = ?';
 
         $options = array('unserialize' => array('data', 'country_format'));
         $address = $this->db->fetch($sql, array($address_id), $options);
@@ -74,7 +74,7 @@ class Address extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data['created'] = GC_TIME;
         $data['address_id'] = $this->db->insert('address', $data);
 
         $this->hook->fire('add.address.after', $data);
@@ -108,14 +108,14 @@ class Address extends Model
     public function getList(array $data = array())
     {
         $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, ci.city_id) AS city_name,'
-            . ' c.name AS country_name, ci.status AS city_status,'
-            . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
-            . ' s.name AS state_name, s.status AS state_status'
-            . ' FROM address a'
-            . ' LEFT JOIN country c ON(a.country=c.code)'
-            . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
-            . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-            . ' WHERE a.address_id > 0';
+                . ' c.name AS country_name, ci.status AS city_status,'
+                . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
+                . ' s.name AS state_name, s.status AS state_status'
+                . ' FROM address a'
+                . ' LEFT JOIN country c ON(a.country=c.code)'
+                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
+                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+                . ' WHERE a.address_id > 0';
 
         $where = array();
 
@@ -132,13 +132,13 @@ class Address extends Model
         );
 
         $results = $this->db->fetchAll($sql, $where, $options);
-        
+
         $list = $this->prepareList($results, $data);
-        
+
         $this->hook->fire('address.list', $data, $list);
         return $list;
     }
-    
+
     /**
      * Returns an array of filtered addresses
      * @param array $addresses
@@ -177,7 +177,7 @@ class Address extends Model
                 unset($list[$address_id]);
             }
         }
-        
+
         return $list;
     }
 
@@ -277,7 +277,7 @@ class Address extends Model
      */
     public function getLimit()
     {
-        return (int)$this->config->get('user_address_limit', 6);
+        return (int) $this->config->get('user_address_limit', 6);
     }
 
     /**
@@ -301,7 +301,7 @@ class Address extends Model
         $result = $this->db->delete('address', $conditions);
         $this->hook->fire('delete.address.after', $address_id, $result);
 
-        return (bool)$result;
+        return (bool) $result;
     }
 
     /**
@@ -322,7 +322,7 @@ class Address extends Model
     public function isReferenced($address_id)
     {
         $sql = 'SELECT order_id FROM orders WHERE shipping_address=?';
-        return (bool)$this->db->fetch($sql, array($address_id));
+        return (bool) $this->db->fetch($sql, array($address_id));
     }
 
     /**
@@ -343,7 +343,16 @@ class Address extends Model
         $result = $this->db->update('address', $data, $conditions);
 
         $this->hook->fire('update.address.after', $address_id, $data, $result);
-        return (bool)$result;
+        return (bool) $result;
+    }
+
+    /**
+     * Returns an array of address types
+     * @return array
+     */
+    public function getTypes()
+    {
+        return array('shipping', 'payment');
     }
 
 }

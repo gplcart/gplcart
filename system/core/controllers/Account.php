@@ -251,7 +251,7 @@ class Account extends FrontendController
             return null;
         }
 
-        $method = $this->{$type}->getMethod();
+        $method = $this->{$type}->get();
         $method['name'] = isset($method['name']) ? $method['name'] : $this->text('Unknown');
 
         if (abs($price) == 0) {
@@ -383,34 +383,11 @@ class Account extends FrontendController
      * @param array $user
      * @return boolean
      */
-    protected function validateAccount(array $user = array())
+    protected function validateAccount(array $user)
     {
-        $this->addValidator('email', array(
-            'required' => array(),
-            'email' => array(),
-            'user_email_unique' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255),
-            'user_name_unique' => array()
-        ));
-
-        $options = array('required' => false);
-        $options += $this->user->getPasswordLength();
-
-        $this->addValidator('password', array(
-            'length' => $options
-        ));
-
-        $password = (string) $this->getSubmitted('password');
-
-        $this->addValidator('password_old', array(
-            'user_password' => array('required' => ($password !== ''))
-        ));
-
-        $this->setValidators($user);
+        $this->setSubmitted('update', $user);
         $this->setSubmitted('user_id', $user['user_id']);
+        $this->validate('user');
     }
 
     /**
@@ -500,7 +477,7 @@ class Account extends FrontendController
         $address_id = (int) $this->request->get('delete');
 
         if (empty($address_id)) {
-            return;
+            return null;
         }
 
         $deleted = $this->address->delete($address_id);
@@ -512,6 +489,7 @@ class Account extends FrontendController
 
         $message = $this->text('Address cannot be deleted');
         $this->redirect('', $message, 'warning');
+        return null;
     }
 
     /**
@@ -569,7 +547,6 @@ class Account extends FrontendController
         $this->submitAddressAccount($user, $address);
 
         $this->setDataEditAddressAccount();
-
         $this->setTitleEditAddressAccount();
         $this->outputEditAddressAccount();
     }
@@ -624,17 +601,18 @@ class Account extends FrontendController
         $code = (string) $this->request->post('country');
 
         if (empty($code)) {
-            return;
+            return null;
         }
 
         $country = $this->country->get($code);
 
         if (empty($country['status'])) {
-            return;
+            return null;
         }
 
         $form = $this->getEditAddressFormAccount(array('country' => $code));
         $this->response->html($form);
+        return null;
     }
 
     /**
@@ -665,7 +643,7 @@ class Account extends FrontendController
     protected function submitAddressAccount(array $user)
     {
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('address');
@@ -674,6 +652,8 @@ class Account extends FrontendController
         if (!$this->hasErrors('address')) {
             $this->addAddressAccount($user);
         }
+
+        return null;
     }
 
     /**
@@ -681,20 +661,8 @@ class Account extends FrontendController
      */
     protected function validateAddressAccount(array $user)
     {
-        // Add submitted values to the "format" key
-        $this->setSubmitted('format', $this->getSubmitted());
-
-        $this->addValidator('format', array(
-            'country_format' => array()
-        ));
-
-        $this->setValidators($user);
-
-        // The "format" was used only for validation
-        $this->unsetSubmitted('format');
-
-        $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $user['user_id']);
+        $this->validate('address');
     }
 
     /**
