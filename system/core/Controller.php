@@ -312,7 +312,6 @@ class Controller
      */
     public function __construct()
     {
-
         $this->setInstanceProperties();
 
         $this->token = $this->config->token();

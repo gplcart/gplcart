@@ -18,6 +18,12 @@ class CliController
 {
 
     /**
+     * Validator model instance
+     * @var \core\models\Validator $validator
+     */
+    protected $validator;
+
+    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
@@ -76,6 +82,9 @@ class CliController
      */
     public function __construct()
     {
+        /* @var $validator \core\models\Validator */
+        $this->validator = Container::instance('core\\models\\Validator');
+
         /* @var $config \core\Config */
         $this->config = Container::instance('core\\Config');
 
@@ -90,20 +99,32 @@ class CliController
 
         $this->outputHelp();
     }
-
+    
     /**
      * Sets an array of submitted mapped data
      * @param array $map
-     * @param bool $filter
+     * @param array $default
+     * @param boolean $filter
      * @return array
      */
-    protected function setSubmitted(array $map, $filter = true)
+    protected function setSubmittedMapped(array $map, $default = array(),
+            $filter = true)
     {
         $arguments = $this->getArguments($filter);
-        $this->submitted = $this->mapArguments($arguments, $map);
+        $mapped = $this->mapArguments($arguments, $map);
+        $this->submitted = Tool::merge($default, $mapped);
         return $this->submitted;
     }
     
+    /**
+     * Sets submitted data
+     * @param array $data
+     */
+    protected function setSubmitted(array $data)
+    {
+        $this->submitted = $data;
+    }
+
     /**
      * Returns a submitted value
      * @param string|array $key
@@ -175,9 +196,10 @@ class CliController
     protected function getColored($text, $sevetity)
     {
         $default = array(
-            'info' => "\e[0;37;44m%s\e[0m\n",
-            'warning' => "\e[0;30;43m%s\e[0m\n",
-            'danger' => "\e[1;37;41m%s\e[0m\n"
+            'info' => "\e[34m%s\e[0m\n",
+            'warning' => "\e[33m%s\e[0m\n",
+            'danger' => "\e[31m%s\e[0m\n",
+            'success' => "\e[32m%s\e[0m\n",
         );
 
         $map = $this->config->get('cli_colors', $default);
@@ -255,10 +277,13 @@ class CliController
      */
     protected function outputErrors($exit = true)
     {
-        foreach ($this->errors as $key => $error) {
+        $errors = Tool::flattenArray($this->errors);
+
+        foreach ($errors as $error) {
             fwrite(STDERR, $this->getColored($error, 'danger'));
-            unset($this->errors[$key]);
         }
+
+        $this->errors = array();
 
         if ($exit) {
             exit(1);
@@ -353,6 +378,24 @@ class CliController
 
         $this->setMessage($message);
         $this->output();
+    }
+
+    /**
+     * Validates a submitted data
+     * @param string $handler_id
+     * @param array $options
+     * @return array
+     */
+    protected function validate($handler_id, array $options = array())
+    {
+        $result = $this->validator->run($handler_id, $this->submitted, $options);
+
+        if ($result === true) {
+            return array();
+        }
+
+        $this->errors = (array) $result;
+        return $this->errors;
     }
 
 }

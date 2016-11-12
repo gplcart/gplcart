@@ -70,7 +70,6 @@ class Compare extends FrontendController
     public function selectCompare()
     {
         $this->setDataSelectCompare();
-
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
         $this->outputSelectCompare();
@@ -122,14 +121,12 @@ class Compare extends FrontendController
      */
     protected function setBreadcrumbSelectCompare()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('/'),
             'text' => $this->text('Home')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -182,7 +179,7 @@ class Compare extends FrontendController
         $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {
-            return;
+            return null;
         }
 
         $reindexed = $this->prepareProductsCompare($products);
@@ -210,6 +207,7 @@ class Compare extends FrontendController
         $this->setData('products', $products);
         $this->setData('option_fields', $fields['option']);
         $this->setData('attribute_fields', $fields['attribute']);
+        return null;
     }
 
     /**

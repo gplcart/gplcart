@@ -571,25 +571,14 @@ class Checkout extends FrontendController
             'store_id' => $this->order_store_id
         );
 
+        $this->setSubmitted('update', $item);
+        $this->setSubmitted('increment', false);
+        $this->setSubmitted('admin', $this->admin);
         $this->setSubmitted("cart.items.$sku", $item);
-
-        $product = $this->cart_content['items'][$sku]['product'];
-
-        $this->addValidator("cart.items.$sku.quantity", array(
-            'numeric' => array(),
-            'length' => array('min' => 1, 'max' => 2)
-        ));
-
-        if (!$this->admin) {
-            $this->addValidator("cart.items.$sku", array(
-                'cart_limits' => array(
-                    'increment' => false, 'data' => $product)
-            ));
-        }
-
+        
         // Do not pass product data here
         // to avoid rewriting by the next validators
-        return $this->setValidators();
+        return $this->validate('cart', array('parents' => "cart.items.$sku"));
     }
 
     /**
@@ -620,7 +609,6 @@ class Checkout extends FrontendController
         $this->form_data['settings']['quantity']['wishlist'] = $this->wishlist->getList($options + array('count' => true));
 
         $this->setMessageFormCheckout('cart.success', $result['message']);
-
         $this->setSubmitted('cart.action.update', true);
         return $result;
     }
@@ -704,7 +692,7 @@ class Checkout extends FrontendController
         }
 
         $this->setSubmitted('address.user_id', $this->order_user_id);
-        return $this->validate('address', array('field' => 'address'));
+        return $this->validate('address', array('parents' => 'address'));
     }
 
     /**

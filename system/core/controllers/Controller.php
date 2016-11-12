@@ -173,7 +173,7 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if ($this->url->isInstall()) {
-            return;
+            return null;
         }
 
         $this->viewed = $this->getViewed();
@@ -197,6 +197,7 @@ class Controller extends BaseController
         $this->data['cart_quantity'] = $this->cart_quantity;
         $this->data['wishlist_quantity'] = count($this->wishlist_content);
         $this->data['compare_content'] = $this->compare_content;
+        return null;
     }
 
     /**

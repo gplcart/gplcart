@@ -20,7 +20,6 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Address extends BaseValidator
 {
-
     /**
      * City model instance
      * @var \core\models\City $city

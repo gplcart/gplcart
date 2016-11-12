@@ -40,7 +40,6 @@ class Front extends FrontendController
      */
     public function indexFront()
     {
-
         $this->setRegionBannerFront();
         $this->setRegionFeaturedFront();
         $this->setRegionPageFront();

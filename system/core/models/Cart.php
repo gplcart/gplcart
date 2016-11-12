@@ -340,8 +340,7 @@ class Cart extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
-
+        $data['created'] = GC_TIME;
         $data['cart_id'] = $this->db->insert('cart', $data);
 
         Cache::clearMemory();
@@ -364,13 +363,12 @@ class Cart extends Model
             return false;
         }
 
-        $data += array('modified' => GC_TIME);
+        $data['modified'] = GC_TIME;
         $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
 
         Cache::clearMemory();
 
         $this->hook->fire('update.cart.after', $cart_id, $data, $result);
-
         return (bool) $result;
     }
 
@@ -384,7 +382,6 @@ class Cart extends Model
     public function getQuantity(array $conditions, $key = null)
     {
         $items = $this->getList($conditions);
-
         $result = array('total' => 0, 'sku' => array());
 
         foreach ($items as $item) {

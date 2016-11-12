@@ -78,14 +78,14 @@
           <?php } ?>
           <?php if ($issue_severity == 'danger') { ?>
           <div class="alert alert-danger">
-          <?php echo $this->text('Please fix all critical errors in your environment before continue'); ?>
+          <?php echo $this->text('Please fix all critical errors in your environment'); ?>
           </div>
           <?php } else { ?>
           <div class="panel panel-default database">
             <div class="panel-heading"><?php echo $this->text('Database'); ?></div>
             <div class="panel-body">
               <div class="required form-group<?php echo isset($this->errors['database']['name']) ? ' has-error' : ''; ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Database'); ?></label>
+                <label class="col-md-3 control-label"><?php echo $this->text('Database name'); ?></label>
                 <div class="col-md-6">
                   <input name="settings[database][name]" class="form-control" autocomplete="off" value="<?php echo isset($settings['database']['name']) ? $settings['database']['name'] : ''; ?>">
                   <?php if (isset($this->errors['database']['name'])) { ?>
@@ -94,7 +94,7 @@
                 </div>
               </div>
               <div class="required form-group<?php echo isset($this->errors['database']['user']) ? ' has-error' : ''; ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('User'); ?></label>
+                <label class="col-md-3 control-label"><?php echo $this->text('Database user'); ?></label>
                 <div class="col-md-6">
                   <input name="settings[database][user]" class="form-control" autocomplete="off" value="<?php echo isset($settings['database']['user']) ? $settings['database']['user'] : 'root'; ?>">
                   <?php if (isset($this->errors['database']['user'])) { ?>
@@ -103,7 +103,7 @@
                 </div>
               </div>
               <div class="form-group<?php echo isset($this->errors['database']['password']) ? ' has-error' : ''; ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Password'); ?></label>
+                <label class="col-md-3 control-label"><?php echo $this->text('Database password'); ?></label>
                 <div class="col-md-6">
                   <input type="password" name="settings[database][password]" autocomplete="off" class="form-control" value="">
                   <?php if (isset($this->errors['database']['password'])) { ?>
@@ -120,7 +120,7 @@
               <?php } ?>
               <div id="db-advanced" class="<?php echo empty($this->errors) ? ' collapse' : ''; ?>">
                 <div class="form-group">
-                  <label class="col-md-3 control-label"><?php echo $this->text('Type'); ?></label>
+                  <label class="col-md-3 control-label"><?php echo $this->text('Database type'); ?></label>
                   <div class="col-md-3">
                     <select name="settings[database][type]" class="form-control">
                       <option value="mysql"<?php echo (isset($settings['database']['type']) && $settings['database']['type'] == 'mysql') ? ' selected' : ''; ?>><?php echo $this->text('mysql'); ?></option>
@@ -129,7 +129,7 @@
                   </div>
                 </div>
                 <div class="required form-group<?php echo isset($this->errors['database']['port']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-3 control-label"><?php echo $this->text('Port'); ?></label>
+                  <label class="col-md-3 control-label"><?php echo $this->text('Database port'); ?></label>
                   <div class="col-md-3">
                     <input name="settings[database][port]" class="form-control" value="<?php echo isset($settings['database']['port']) ? $settings['database']['port'] : '3306'; ?>">
                     <?php if (isset($this->errors['database']['port'])) { ?>
@@ -138,7 +138,7 @@
                   </div>
                 </div>
                 <div class="required form-group<?php echo isset($this->errors['database']['host']) ? ' has-error' : ''; ?>">
-                  <label class="col-md-3 control-label"><?php echo $this->text('Host'); ?></label>
+                  <label class="col-md-3 control-label"><?php echo $this->text('Database host'); ?></label>
                   <div class="col-md-6">
                     <input name="settings[database][host]" class="form-control" value="<?php echo isset($settings['database']['host']) ? $settings['database']['host'] : 'localhost'; ?>">
                     <?php if (isset($this->errors['database']['host'])) { ?>

@@ -10,7 +10,6 @@
 namespace core\controllers\cli;
 
 use core\CliController;
-use core\classes\Tool;
 use core\models\User as ModelsUser;
 use core\models\Install as ModelsInstall;
 
@@ -50,127 +49,90 @@ class Install extends CliController
      */
     public function storeInstall()
     {
-        $map = $this->getMapInstall();
-        $submitted = $this->setSubmitted($map);
-        $generated_password = empty($submitted['user']['password']);
+        $mapping = $this->getMappingInstall();
+        $default = $this->getDefaultInstall();
+        $this->setSubmittedMapped($mapping, $default);
 
-        $this->validateStoreInstall($submitted);
+        $this->validateStoreInstall();
+        $this->processInstall();
+    }
 
+    /**
+     * Performs full system installation and outputs resulting messages
+     */
+    protected function processInstall()
+    {
         if ($this->isError()) {
             $this->output();
         }
 
-        $connect = $this->install->connect($submitted['database']);
-
-        if ($connect !== true) {
-            $this->setError($connect);
-            $this->output();
-        }
-
+        $submitted = $this->getSubmitted();
         $result = $this->install->full($submitted);
 
-        if ($result !== true) {
+        if ($result === true) {
+            $this->setMessageComplete($submitted);
+        } else {
             $this->setError($result);
         }
 
-        $message = "Success. Your store is installed.\n"
-                . "Go to {$submitted['store']['host']}/{$submitted['store']['basepath']}\n";
-        
-        if ($generated_password) {
-            $message .= "Your admin password: {$submitted['user']['password']}\n";
-        }
-
-        $this->setMessage($message);
         $this->output();
     }
 
     /**
-     * Validates submitted values
-     * @param array $data
+     * Sets a message on success installation
+     * @param array $submitted
      */
-    protected function validateStoreInstall(&$data)
+    protected function setMessageComplete(array $submitted)
     {
+        $url = trim("{$submitted['store']['host']}/{$submitted['store']['basepath']}", '/');
 
-        // Required
-        if (empty($data['database']['name'])) {
-            $this->setError('--db-name is required option');
+        $message = "\nSuccess. Your store is installed.\n";
+        $message .= "Front page: $url\n";
+        $message .= "Admin area: $url/admin\n";
+
+        if ($submitted['generated_password']) {
+            $message .= "Your admin password: {$submitted['user']['password']}\n";
         }
 
-        if (empty($data['user']['email'])) {
-            $this->setError('--user-email is required option');
-        } elseif (!filter_var($data['user']['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->setError('--user-email has invalid e-mail');
+        $message .= "Good luck!\n";
+
+        $this->setMessage($message, 'success');
+    }
+
+    /**
+     * Returns an array of default submitted values
+     * @return array
+     */
+    protected function getDefaultInstall()
+    {
+        $data = array();
+
+        $data['database']['port'] = 3306;
+        $data['database']['user'] = 'root';
+        $data['database']['type'] = 'mysql';
+        $data['database']['host'] = 'localhost';
+
+        $data['store']['basepath'] = '';
+        $data['store']['title'] = 'GPL Cart';
+        $data['store']['timezone'] = 'Europe/London';
+
+        return $data;
+    }
+
+    /**
+     * Validates submitted values
+     */
+    protected function validateStoreInstall()
+    {
+        $submitted = $this->getSubmitted();
+        $submitted['generated_password'] = empty($submitted['user']['password']);
+
+        if ($submitted['generated_password']) {
+            $submitted['user']['password'] = $this->user->generatePassword();
         }
 
-        if (empty($data['store']['host'])) {
-            $this->setError('--store-host is required option');
-        }
-
-        // Optional
-        if (empty($data['database']['user'])) {
-            $data['database']['user'] = 'root';
-        }
-
-        if (empty($data['database']['password'])) {
-            $data['database']['password'] = '';
-        }
-
-        if (empty($data['database']['host'])) {
-            $data['database']['host'] = 'localhost';
-        }
-
-        if (empty($data['database']['type'])) {
-            $data['database']['type'] = 'mysql';
-        }
-
-        if (empty($data['database']['port'])) {
-            $data['database']['port'] = 3306;
-        } else if (!is_numeric($data['database']['port'])) {
-            $this->setError('--db-port must be numeric');
-        }
-
-        if (empty($data['user']['password'])) {
-            $data['user']['password'] = $this->user->generatePassword();
-        } else {
-
-            $limit = $this->user->getPasswordLength();
-            $length = mb_strlen($data['user']['password']);
-
-            if ($length > $limit['max'] || $length < $limit['min']) {
-                $error = "--user-password must be {$limit['min']} - {$limit['max']} characters long";
-                $this->setError($error);
-            }
-        }
-
-        if (empty($data['store']['title'])) {
-            $data['store']['title'] = 'GPL Cart';
-        } else if (mb_strlen($data['store']['title']) > 255) {
-            $this->setError('--store-title must contain no more than 255 characters');
-        }
-
-        if (empty($data['store']['basepath'])) {
-            $data['store']['basepath'] = '';
-        } else if (mb_strlen($data['store']['basepath']) > 255) {
-            $this->setError('--store-basepath must contain no more than 255 characters');
-        }
-
-        if (empty($data['store']['timezone'])) {
-            $data['store']['timezone'] = 'Europe/London';
-        } else {
-
-            $timezones = Tool::timezones();
-            if (empty($timezones[$data['store']['timezone']])) {
-                $this->setError('--store-timezone has wrong value. You can skip it and change later from UI');
-            }
-        }
-
-        if (isset($data['installer'])) {
-            $exists = $this->install->get($data['installer']);
-            if (empty($exists)) {
-                $list = implode(',', array_keys($this->install->getList()));
-                $this->setError("--installer ID not found. Available installers: $list. You can skip this option for 'default'");
-            }
-        }
+        $this->setSubmitted($submitted);
+        $this->validate('install');
     }
 
     /**
@@ -179,7 +141,7 @@ class Install extends CliController
      * 
      * @return array
      */
-    protected function getMapInstall()
+    protected function getMappingInstall()
     {
         return array(
             'db-name' => 'database.name',

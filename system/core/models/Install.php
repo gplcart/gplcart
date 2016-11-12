@@ -12,7 +12,6 @@ namespace core\models;
 use core\Model;
 use core\Container;
 use core\classes\Tool;
-use core\classes\Request;
 use core\classes\Database;
 use core\models\Store as ModelsStore;
 use core\models\Language as ModelsLanguage;
@@ -37,12 +36,6 @@ class Install extends Model
     protected $language;
 
     /**
-     * Request class instance
-     * @var \core\classes\Request $request
-     */
-    protected $request;
-
-    /**
      * PDO instance
      * @var \core\classes\Database $db
      */
@@ -58,16 +51,22 @@ class Install extends Model
      * Constructor
      * @param ModelsStore $store
      * @param ModelsLanguage $language
-     * @param ClassesRequest $request
      */
-    public function __construct(ModelsStore $store, ModelsLanguage $language,
-            Request $request)
+    public function __construct(ModelsStore $store, ModelsLanguage $language)
     {
         parent::__construct();
 
         $this->store = $store;
-        $this->request = $request;
         $this->language = $language;
+    }
+
+    /**
+     * Whether the main config file exists
+     * @return boolean
+     */
+    public function isInstalled()
+    {
+        return is_readable(GC_CONFIG_COMMON);
     }
 
     /**
@@ -265,6 +264,7 @@ class Install extends Model
         }
 
         $this->config->set('intro', 1);
+        $this->config->set('timezone', $settings['store']['timezone']);
 
         $store_id = $this->createStore($settings);
         $user_id = $this->createSuperadmin($settings, $store_id);

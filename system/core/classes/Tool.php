@@ -436,13 +436,27 @@ class Tool
     }
 
     /**
-     * Validates module id
-     * @param string $string
+     * Validates a module id
+     * @param string $module_id
      * @return boolean
      */
-    public static function validModuleId($string)
+    public static function validModuleId($module_id)
     {
-        return preg_match('/^[a-z_]+$/', $string);
+        return (bool) preg_match('/^[a-z_]+$/', $module_id);
+    }
+
+    /**
+     * Validates a domain name, e.g domain.com
+     * @param string $domain
+     * @return boolean
+     */
+    public static function validDomain($domain)
+    {
+        $pattern = '/^(?!\-)'
+                . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
+                . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
+
+        return (bool) preg_match($pattern, $domain);
     }
 
     /**

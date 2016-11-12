@@ -9,6 +9,7 @@
 
 namespace core\handlers\validator;
 
+use core\classes\Tool;
 use core\classes\Request;
 use core\models\File as ModelsFile;
 use core\models\Module as ModelsModule;
@@ -126,11 +127,7 @@ class Store extends BaseValidator
             return true;
         }
 
-        $pattern = '/^(?!\-)'
-                . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
-                . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
-
-        if (!preg_match($pattern, $submitted['domain'])) {
+        if (!Tool::validDomain($submitted['domain'])) {
             $this->errors['domain'] = $this->language->text('Invalid domain');
             return false;
         }

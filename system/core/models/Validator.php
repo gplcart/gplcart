@@ -114,6 +114,12 @@ class Validator extends Model
         );
 
         // Entity validators
+        $handlers['cart'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Cart', 'cart')
+            ),
+        );
+
         $handlers['category'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Category', 'category')
@@ -149,7 +155,7 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Country', 'country')
             ),
         );
-        
+
         $handlers['address'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Address', 'address')
@@ -189,6 +195,12 @@ class Validator extends Model
         $handlers['import'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Import', 'import')
+            ),
+        );
+
+        $handlers['install'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Install', 'install')
             ),
         );
 
@@ -275,7 +287,7 @@ class Validator extends Model
                 'validate' => array('core\\handlers\\validator\\Zone', 'zone')
             ),
         );
-        
+
         $handlers['order'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Order', 'order')
