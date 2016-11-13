@@ -321,11 +321,12 @@ class Controller
         $this->setStoreProperties();
         $this->setThemeProperties();
         $this->setLanguageProperties();
-        $this->setAccessProperties();
-        $this->setCronProperties();
 
+        $this->setCronProperties();
         $this->setDefaultData();
         $this->setDefaultJs();
+
+        $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
         $this->hook->fire('init', $this);
@@ -609,7 +610,7 @@ class Controller
 
         if (!empty($device)) {
             $this->current_device = $device;
-            return;
+            return null;
         }
 
         $this->current_device = 'desktop';
@@ -619,7 +620,7 @@ class Controller
         }
 
         $this->session->set('device', null, $this->current_device);
-        return;
+        return null;
     }
 
     /**
@@ -844,7 +845,7 @@ class Controller
     protected function setAccessProperties()
     {
         if ($this->installing) {
-            return;
+            return null;
         }
 
         $this->controlToken(false);
@@ -853,7 +854,9 @@ class Controller
 
         if (!empty($this->uid)) {
             $this->current_user = $this->user->get($this->uid);
-            if (empty($this->current_user['status']) || $this->current_user['role_id'] != $this->user->roleId()) {
+
+            if (empty($this->current_user['status'])//
+                    || $this->current_user['role_id'] != $this->user->roleId()) {
                 $this->session->delete();
                 $this->url->redirect('login');
             }
@@ -879,27 +882,30 @@ class Controller
 
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
+        return null;
     }
 
     /**
      * Prevent Cross-Site Request Forgery (CSRF)
-     * @return boolean|void
+     * @return null
      */
     protected function controlCsrf()
     {
         if (!$this->isPosted()) {
-            return true;
+            return null;
         }
 
-        if (isset($this->current_route['token']) && empty($this->current_route['token'])) {
-            return true;
+        if (isset($this->current_route['token'])//
+                && empty($this->current_route['token'])) {
+            return null;
         }
 
         if (Tool::hashEquals($this->request->post('token'), $this->token)) {
-            return true;
+            return null;
         }
 
-        return $this->response->error403();
+        $this->response->error403();
+        return null;
     }
 
     /**
@@ -927,7 +933,7 @@ class Controller
     {
         // Check only admin pages
         if (!$this->backend) {
-            return;
+            return null;
         }
 
         if (!$this->isSuperadmin() && empty($this->current_user['role_status'])) {
@@ -942,6 +948,8 @@ class Controller
         if (!$this->access($this->access)) {
             $this->outputError(403);
         }
+
+        return null;
     }
 
     /**
@@ -963,19 +971,20 @@ class Controller
         $account_id = $this->url->isAccount();
 
         if (empty($account_id)) {
-            return; // This is not an account, exit
+            return null; // This is not an account, exit
         }
 
         // Allow customers to see their accounts
         if ($this->uid === $account_id) {
-            return;
+            return null;
         }
 
         if ($this->access('user')) {
-            return;
+            return null;
         }
 
         $this->outputError(403);
+        return null;
     }
 
     /**
@@ -983,7 +992,8 @@ class Controller
      */
     protected function controlMaintenanceMode()
     {
-        if (!$this->installing && !$this->backend && empty($this->current_store['status'])) {
+        if (!$this->installing && !$this->backend//
+                && empty($this->current_store['status'])) {
             $this->maintenance = true;
             $this->outputMaintenance();
         }
@@ -1011,7 +1021,7 @@ class Controller
         $honeypot = $this->request->request('url', '');
 
         if ($honeypot === '') {
-            return;
+            return null;
         }
 
         $ip = $this->request->ip();
@@ -1024,6 +1034,7 @@ class Controller
 
         $this->logger->log($type, $message, 'warning');
         $this->response->error403(false);
+        return null;
     }
 
     /**
@@ -1032,7 +1043,7 @@ class Controller
      * @param string $message
      * @param string $severity
      */
-    public function redirect($url = '', $message = '', $severity = 'info')
+    final public function redirect($url = '', $message = '', $severity = 'info')
     {
         if ($message !== '') {
             $this->setMessage($message, $severity, true);
@@ -1057,7 +1068,18 @@ class Controller
      * @param array|string $templates
      * @param array $options
      */
-    public function output($templates, array $options = array())
+    final public function output($templates, array $options = array())
+    {
+        $html = $this->renderOutput($templates);
+        $this->response->html($html, $options);
+    }
+
+    /**
+     * Renders all templates before sending them to a browser
+     * @param array|string $templates
+     * @return string
+     */
+    protected function renderOutput($templates)
     {
         if (is_string($templates)) {
             $templates = array('region_content' => $templates);
@@ -1068,7 +1090,6 @@ class Controller
         $this->prepareOutput();
 
         $templates += $this->templates;
-
         $layout_template = $templates['layout'];
         unset($templates['layout']);
 
@@ -1083,22 +1104,38 @@ class Controller
         $layout_data['region_head'] = $this->render($templates['region_head'], $this->data);
         $layout_data['region_body'] = $this->render($templates['region_body'], $body_data);
 
-        $this->response->html($this->render($layout_template, $layout_data), $options);
+        return $this->render($layout_template, $layout_data);
     }
 
     /**
      * Displays an error page
      * @param integer $code
      */
-    public function outputError($code = 403)
+    final public function outputError($code)
+    {
+        $this->setTitleError($code);
+
+        // TODO: rethink this.
+        // The problem: theme styles are added
+        // in hook init.* which is called in the child controller class
+        // and not available here, so we call the hook manually
+        $hook = $this->backend ? 'init.backend' : 'init.frontend';
+        $this->hook->fireModule($hook, $this->theme, $this);
+
+        $this->output("common/error/$code", array('headers' => $code));
+    }
+
+    /**
+     * Sets HTTP error page title
+     * @param integer $code
+     */
+    protected function setTitleError($code)
     {
         $title = (string) $this->response->statuses($code);
 
         if ($title !== '') {
             $this->setTitle($title, false);
         }
-
-        $this->output("common/error/$code", array('headers' => $code));
     }
 
     /**
@@ -1314,13 +1351,14 @@ class Controller
     /**
      * Sets php errors recorded by logger
      * @param array $data
+     * @return null
      */
     protected function setPhpErrors(array &$data)
     {
         $errors = $this->logger->getErrors();
 
         if (empty($errors)) {
-            return;
+            return null;
         }
 
         foreach ($errors as $severity => $messages) {
@@ -1330,6 +1368,8 @@ class Controller
 
             unset($errors[$severity]);
         }
+
+        return null;
     }
 
     /**
@@ -1369,7 +1409,7 @@ class Controller
     protected function setCronProperties()
     {
         if ($this->installing) {
-            return;
+            return null;
         }
 
         $this->cron_interval = (int) $this->config('cron_interval', 86400);
@@ -1380,6 +1420,8 @@ class Controller
             $this->cron_key = Tool::randomString();
             $this->config->set('cron_key', $this->cron_key);
         }
+
+        return null;
     }
 
     /**
@@ -1387,22 +1429,43 @@ class Controller
      */
     protected function setDefaultJs()
     {
-        // Libraries
-        $this->document->js('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -999);
-        $this->document->js('files/assets/system/js/common.js', 'top', -900);
+        $this->setDefaultJsAssets();
+        $this->setDefaultJsSettings();
+        $this->setDefaultJsCron();
+        $this->setDefaultJsTranslation();
+    }
 
-        // Settings
+    /**
+     * Sets global system JS files
+     */
+    protected function setDefaultJsAssets()
+    {
+        $this->setJs('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -999);
+        $this->setJs('files/assets/system/js/common.js', 'top', -900);
+    }
+
+    /**
+     * Sets default JS settings
+     */
+    protected function setDefaultJsSettings()
+    {
         $allowed = array(
             'token', 'base', 'lang',
             'lang_region', 'urn', 'uri', 'path');
 
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, -800);
+    }
 
-        $this->setJsTranslation();
+    /**
+     * Adds JS code to call cron URL
+     */
+    protected function setDefaultJsCron()
+    {
+        $add = ($this->backend && !empty($this->cron_interval)//
+                && (GC_TIME - $this->cron_last_run) > $this->cron_interval);
 
-        // Call cron
-        if ($this->backend && !empty($this->cron_interval) && (GC_TIME - $this->cron_last_run) > $this->cron_interval) {
+        if ($add) {
             $url = $this->url('cron', array('key' => $this->cron_key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
             $this->document->js($js, 'bottom');
@@ -1412,10 +1475,12 @@ class Controller
     /**
      * Adds context translation JS files
      */
-    protected function setJsTranslation()
+    protected function setDefaultJsTranslation()
     {
-        $classes[] = 'core\\models\\Language'; // text() called in modules
-        $classes[] = $this->current_route['handlers']['controller'][0];
+        $classes = array(
+            'core\\models\\Language', // text() called in modules
+            $this->current_route['handlers']['controller'][0]
+        );
 
         foreach ($classes as $class) {
             $filename = strtolower(str_replace('\\', '-', $class));
@@ -1447,12 +1512,12 @@ class Controller
      */
     protected function setDefaultData()
     {
-        $this->data['token'] = $this->token;
-        $this->data['base'] = $this->base;
-        $this->data['lang'] = empty($this->langcode) ? 'en' : $this->langcode;
         $this->data['urn'] = $this->urn;
         $this->data['uri'] = $this->uri;
         $this->data['path'] = $this->path;
+        $this->data['base'] = $this->base;
+        $this->data['token'] = $this->token;
+        $this->data['lang'] = empty($this->langcode) ? 'en' : $this->langcode;
 
         if (!empty($this->langcode) && strpos($this->langcode, '_') === false) {
             $this->data['lang_region'] = $this->langcode . '-' . strtoupper($this->langcode);
@@ -1460,12 +1525,12 @@ class Controller
             $this->data['lang_region'] = $this->langcode;
         }
 
-        $this->data['messages'] = $this->session->getMessage();
         $this->data['languages'] = $this->languages;
+        $this->data['current_store'] = $this->current_store;
+        $this->data['messages'] = $this->session->getMessage();
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
-        $this->data['current_store'] = $this->current_store;
     }
 
     /**
@@ -1583,11 +1648,15 @@ class Controller
      */
     public function setting($key = null, $default = null)
     {
-        if (isset($key)) {
-            return array_key_exists($key, $this->theme_settings) ? $this->theme_settings[$key] : $default;
+        if (!isset($key)) {
+            return $this->theme_settings;
         }
 
-        return $this->theme_settings;
+        if (array_key_exists($key, $this->theme_settings)) {
+            return $this->theme_settings[$key];
+        }
+
+        return $default;
     }
 
     /**
@@ -1626,7 +1695,7 @@ class Controller
 
         return true;
     }
-    
+
     /**
      * Validates a submitted data
      * @param string $handler_id
@@ -1656,9 +1725,10 @@ class Controller
         foreach ((array) $messages as $message) {
             if ($once) {
                 $this->session->setMessage($message, $severity);
-            } else {
-                $this->data['messages'][$severity][] = $message;
+                continue;
             }
+
+            $this->data['messages'][$severity][] = $message;
         }
     }
 

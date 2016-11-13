@@ -84,7 +84,7 @@ class Product extends FrontendController
 
         $this->setJsIndexProduct($product);
         $this->setTitleIndexProduct($product);
-        
+
         $this->setMetaEntity($product);
         $this->outputIndexProduct();
     }
@@ -92,6 +92,7 @@ class Product extends FrontendController
     /**
      * Sets list of reviews related to the product
      * @param array $product
+     * @return null
      */
     protected function setReviewsProduct(array $product)
     {
@@ -100,13 +101,13 @@ class Product extends FrontendController
         $editable = (bool) $this->config('review_editable', 1);
 
         if (!$enabled) {
-            return;
+            return null;
         }
 
         $total = $this->getTotalReviewsProduct($product['product_id']);
 
         if (empty($total)) {
-            return;
+            return null;
         }
 
         $query = $this->getFilterQuery();
@@ -125,6 +126,7 @@ class Product extends FrontendController
 
         $html = $this->render('review/list', $options);
         $this->setData('reviews', $html);
+        return null;
     }
 
     /**

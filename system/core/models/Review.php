@@ -38,7 +38,7 @@ class Review extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data['created'] = GC_TIME;
         $data['review_id'] = $this->db->insert('review', $data);
 
         $this->hook->fire('add.review.after', $data);
@@ -76,7 +76,6 @@ class Review extends Model
         }
 
         $data['modified'] = GC_TIME;
-
         $conditions = array('review_id' => $review_id);
         $result = $this->db->update('review', $data, $conditions);
 
@@ -99,9 +98,8 @@ class Review extends Model
 
         $ids = (array) $review_id;
         $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-
+        
         $sql = "DELETE FROM review WHERE review_id IN($placeholders)";
-
         $result = (bool) $this->db->run($sql, $ids)->rowCount();
 
         $this->hook->fire('delete.review.after', $review_id, $result);
@@ -172,7 +170,8 @@ class Review extends Model
             'product_id' => 'r.product_id', 'email' => 'u.email',
             'status' => 'r.status', 'created' => 'r.created', 'text' => 'r.text');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY r.created DESC";
@@ -198,10 +197,12 @@ class Review extends Model
      */
     public function getLimits()
     {
-        return array(
+        $limits = array(
             'min' => $this->config->get('review_min_length', 10),
             'max' => $this->config->get('review_max_length', 1000)
         );
+
+        return $limits;
     }
 
 }

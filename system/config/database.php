@@ -446,7 +446,7 @@ $tables['rating'] = array(
 
 $tables['rating_user'] = array(
     'fields' => array(
-        'id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+        'rating_user_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'rating' => array('type' => 'float', 'default' => 0),

@@ -240,6 +240,12 @@ class Validator extends Model
             ),
         );
 
+        $handlers['rating'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Rating', 'rating')
+            ),
+        );
+
         $handlers['review'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Review', 'review')
@@ -273,6 +279,18 @@ class Validator extends Model
         $handlers['user'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\User', 'user')
+            ),
+        );
+
+        $handlers['user_login'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\User', 'login')
+            ),
+        );
+
+        $handlers['user_reset_password'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\User', 'resetPassword')
             ),
         );
 

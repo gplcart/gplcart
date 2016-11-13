@@ -55,30 +55,41 @@ class User extends FrontendController
 
     /**
      * Logs in a user
+     * @return null
      */
     protected function submitLoginUser()
     {
         if (!$this->isPosted('login')) {
-            return;
+            return null;
         }
 
         $this->controlSpam('login');
         $this->setSubmitted('user', null, 'raw');
         $this->validateLoginUser();
 
-        if (!$this->hasErrors('user')) {
+        if (!$this->hasErrors('user', false)) {
             $this->loginUser();
         }
+
+        return null;
     }
 
     /**
      * Logs in a user
+     * @return null
      */
     protected function loginUser()
     {
         $data = $this->getSubmitted();
         $result = $this->user->login($data);
+
+        if (empty($result['user'])) {
+            $this->setMessage($result['message'], $result['severity']);
+            return null;
+        }
+
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        return null;
     }
 
     /**
@@ -86,18 +97,7 @@ class User extends FrontendController
      */
     protected function validateLoginUser()
     {
-        /*
-        $this->addValidator('email', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('password', array(
-            'required' => array()
-        ));
-
-        $this->setValidators();
-         * *
-         */
+        $this->validate('user_login');
     }
 
     /**
@@ -165,7 +165,7 @@ class User extends FrontendController
     protected function submitRegisterUser()
     {
         if (!$this->isPosted('register')) {
-            return;
+            return null;
         }
 
         $this->controlSpam('register');
@@ -175,6 +175,8 @@ class User extends FrontendController
         if (!$this->hasErrors('user')) {
             $this->registerUser();
         }
+
+        return null;
     }
 
     /**
@@ -192,25 +194,8 @@ class User extends FrontendController
      */
     protected function validateRegisterUser()
     {
-        $this->addValidator('email', array(
-            'required' => array(),
-            'email' => array(),
-            'user_email_unique' => array()
-        ));
-
-        $this->addValidator('name', array(
-            'length' => array('min' => 1, 'max' => 255),
-            'user_name_unique' => array()
-        ));
-
-        $options = $this->user->getPasswordLength();
-        $options['required'] = true;
-
-        $this->addValidator('password', array(
-            'length' => $options
-        ));
-
-        $this->setValidators();
+        $this->setSubmitted('store_id', $this->store_id);
+        $this->validate('user');
     }
 
     /**
@@ -321,7 +306,7 @@ class User extends FrontendController
     protected function submitResetPasswordUser(array $user)
     {
         if (!$this->isPosted('reset')) {
-            return;
+            return null;
         }
 
         $this->controlSpam('reset_password');
@@ -332,6 +317,8 @@ class User extends FrontendController
         if (!$this->hasErrors('user')) {
             $this->resetPasswordUser();
         }
+
+        return null;
     }
 
     /**
@@ -341,7 +328,6 @@ class User extends FrontendController
     {
         $submitted = $this->getSubmitted();
         $result = $this->user->resetPassword($submitted);
-
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
@@ -380,6 +366,8 @@ class User extends FrontendController
 
             $this->setSubmitted('user', $user);
         }
+
+        $this->validate('user_reset_password');
     }
 
     /**

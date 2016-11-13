@@ -165,7 +165,7 @@ class CliRoute
                 'options' => array(
                     '--db-name' => 'Required. Database name',
                     '--user-email' => 'Required. Admin e-mail',
-                    '--store-host' => 'Required. Domain name e.g "example.com" or "localhost". Do not use "http://" and slashes',
+                    '--store-host' => 'Optional. Domain name e.g "example.com". Do not use "http://" and slashes. Defaults to "localhost"',
                     '--db-user' => 'Optional. Database user. Defaults to "root"',
                     '--db-host' => 'Optional. Database host. Defaults to "localhost"',
                     '--db-password' => 'Optional. Database password. Defaults to empty string',

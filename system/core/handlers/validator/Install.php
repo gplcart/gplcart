@@ -50,21 +50,17 @@ class Install extends BaseValidator
 
         $this->validateUserEmailInstall($submitted);
         $this->validateUserPasswordInstall($submitted);
-
         $this->validateStoreHostInstall($submitted);
         $this->validateStoreTitleInstall($submitted);
         $this->validateStoreBasepathInstall($submitted);
         $this->validateStoreTimezoneInstall($submitted);
-
         $this->validateInstallerInstall($submitted);
-
         $this->validateDbNameInstall($submitted);
         $this->validateDbUserInstall($submitted);
         $this->validateDbPasswordInstall($submitted);
         $this->validateDbHostInstall($submitted);
         $this->validateDbTypeInstall($submitted);
         $this->validateDbPortInstall($submitted);
-
         $this->validateDbConnectInstall($submitted);
 
         return empty($this->errors) ? true : $this->errors;
@@ -167,17 +163,21 @@ class Install extends BaseValidator
     {
         if (empty($submitted['store']['host'])) {
             $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Domain')
+                '@field' => $this->language->text('Host')
             ));
             $this->setError('store.host', $error);
             return false;
+        }
+
+        if ($submitted['store']['host'] === 'localhost') {
+            return true;
         }
 
         if (Tool::validDomain($submitted['store']['host'])) {
             return true;
         }
 
-        $error = $this->language->text('Invalid domain');
+        $error = $this->language->text('Invalid host');
         $this->setError('store.host', $error);
         return false;
     }

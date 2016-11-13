@@ -47,10 +47,25 @@ class User extends BaseValidator
         $this->validateStatus($submitted);
         $this->validateNameUser($submitted);
         $this->validateEmailUser($submitted);
+        $this->validateEmailUniqueUser($submitted);
         $this->validatePasswordUser($submitted);
+        $this->validatePasswordLengthUser($submitted);
         $this->validatePasswordOldUser($submitted);
         $this->validateStoreId($submitted);
         $this->validateRoleUser($submitted);
+
+        return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
+     * Performs full login data validation
+     * @param array $submitted
+     * @return array|boolean
+     */
+    public function login(array &$submitted)
+    {
+        $this->validateEmailUser($submitted);
+        $this->validatePasswordUser($submitted);
 
         return empty($this->errors) ? true : $this->errors;
     }
@@ -134,6 +149,20 @@ class User extends BaseValidator
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Validates uniqueness of submitted E-mail
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateEmailUniqueUser(array $submitted)
+    {
+        if ($this->isError('email') || !isset($submitted['email'])) {
+            return null;
+        }
+
         if (isset($submitted['update']['email'])//
                 && ($submitted['update']['email'] === $submitted['email'])) {
             return true;
@@ -168,12 +197,26 @@ class User extends BaseValidator
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Validates password length
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validatePasswordLengthUser(array $submitted)
+    {
+        if ($this->isError('password') || !isset($submitted['password'])) {
+            return null;
+        }
+
         $limit = $this->user->getPasswordLength();
         $length = mb_strlen($submitted['password']);
 
         if ($length < $limit['min'] || $length > $limit['max']) {
-            $options = array('@min' => $limit['min'], '@max' => $limit['max'], '@field' => $this->language->text('Password'));
-            $this->errors['password'] = $this->language->text('@field must be @min - @max characters long', $options);
+            $vars = array('@min' => $limit['min'], '@max' => $limit['max'], '@field' => $this->language->text('Password'));
+            $this->errors['password'] = $this->language->text('@field must be @min - @max characters long', $vars);
             return false;
         }
 

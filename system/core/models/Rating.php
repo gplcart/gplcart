@@ -76,42 +76,42 @@ class Rating extends Model
 
     /**
      * Sets an rating for the given user and product
-     * @param integer $product_id
-     * @param string|integer $user_id
-     * @param float|integer $rating
-     * @return integer
+     * @param array $data
+     * @return boolean|integer
      */
-    public function set($product_id, $user_id, $rating)
+    public function set(array $data)
     {
-        $this->hook->fire('set.rating.before', $product_id, $user_id, $rating);
+        $this->hook->fire('set.rating.before', $data);
 
-        $conditions = array('product_id' => $product_id, 'user_id' => $user_id);
+        if (!isset($data['rating'])) {
+            return false;
+        }
+
+        $conditions = array(
+            'user_id' => $data['user_id'],
+            'product_id' => $data['product_id']
+        );
+
         $this->db->delete('rating_user', $conditions);
 
-        $this->addUser($product_id, $user_id, $rating);
-        return $this->setBayesian($product_id);
+        $this->addUser($data);
+        return $this->setBayesian($data['product_id']);
     }
 
     /**
      * Adds a user rating
-     * @param integer $product_id
-     * @param string|integer $user_id
-     * @param float|integer $rating
-     * @return boolean|integer
+     * @param array $data
+     * @return boolean
      */
-    protected function addUser($product_id, $user_id, $rating)
+    protected function addUser(array $data)
     {
-        if (empty($rating)) {
+        $this->hook->fire('add.rating.user.before', $data);
+
+        if (empty($data)) {
             return false;
         }
 
-        $values = array(
-            'rating' => $rating,
-            'user_id' => $user_id,
-            'product_id' => $product_id
-        );
-
-        return $this->db->insert('rating_user', $values);
+        return (bool) $this->db->insert('rating_user', $data);
     }
 
     /**

@@ -22,33 +22,6 @@ class Response
     protected $headers = array();
 
     /**
-     * Displays 403 Access Denied message
-     * @param string $message
-     */
-    public function error403($message = true)
-    {
-        $this->addHeader(403)->sendHeaders();
-
-        if (!$message) {
-            exit;
-        }
-
-        $text = '<html>';
-        $text .= '<head>';
-        $text .= '<title>403 Error - Permission Denied</title>';
-        $text .= '</head>';
-        $text .= '<body>';
-        $text .= '<h1>403 - Permission Denied</h1>';
-        $text .= '<p>You do not have permission to retrieve the URL or link you requested<p>';
-        $text .= '</body>';
-        $text .= '</html>';
-        // IE hack. Content length must not be shorter than 512 chars
-        $text .= str_repeat(' ', 512);
-
-        exit($text);
-    }
-
-    /**
      * Sends headers
      * @return boolean
      */
@@ -147,7 +120,7 @@ class Response
      * @param array $data
      * @param array $options
      */
-    public function json($data, $options = array())
+    final public function json($data, $options = array())
     {
         $this->addHeader('Content-Type', 'application/json');
         $this->addOptionalHeaders($options);
@@ -174,7 +147,7 @@ class Response
      * @param string $html
      * @param array $options
      */
-    public function html($html, $options = array())
+    final public function html($html, $options = array())
     {
         $this->addHeader('Content-Type', 'text/html; charset=utf-8');
         $this->addOptionalHeaders($options);
@@ -238,10 +211,26 @@ class Response
     }
 
     /**
-     * Displays 404 Not Found error
+     * Displays the 403 Access Denied message
+     * @param string $message
+     */
+    final public function error403($message = true)
+    {
+        $this->addHeader(403)->sendHeaders();
+
+        if (!$message) {
+            exit;
+        }
+
+        $text = $this->getMessageError403();
+        exit($text);
+    }
+
+    /**
+     * Displays the 404 Not Found error
      * @param boolean $message
      */
-    public function error404($message = true)
+    final public function error404($message = true)
     {
         $this->addHeader(404)->sendHeaders();
 
@@ -249,6 +238,37 @@ class Response
             exit;
         }
 
+        $text = $this->getMessageError404();
+        exit($text);
+    }
+
+    /**
+     * Returns a string with the error 403 text
+     * @return string
+     */
+    protected function getMessageError403()
+    {
+        $text = '<html>';
+        $text .= '<head>';
+        $text .= '<title>403 Error - Permission Denied</title>';
+        $text .= '</head>';
+        $text .= '<body>';
+        $text .= '<h1>403 - Permission Denied</h1>';
+        $text .= '<p>You do not have permission to retrieve the URL or link you requested<p>';
+        $text .= '</body>';
+        $text .= '</html>';
+        // IE hack. Content length must not be shorter than 512 chars
+        $text .= str_repeat(' ', 512);
+
+        return $text;
+    }
+
+    /**
+     * Returns a string with the error 404 text
+     * @return string
+     */
+    protected function getMessageError404()
+    {
         $text = '<html>';
         $text .= '<head>';
         $text .= '<title>404 Error - Page Not Found</title>';
@@ -261,7 +281,7 @@ class Response
         // IE hack. Content length must not be shorter than 512 chars
         $text .= str_repeat(' ', 512);
 
-        exit($text);
+        return $text;
     }
 
 }

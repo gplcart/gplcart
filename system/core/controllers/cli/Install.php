@@ -113,6 +113,7 @@ class Install extends CliController
         $data['database']['host'] = 'localhost';
 
         $data['store']['basepath'] = '';
+        $data['store']['host'] = 'localhost';
         $data['store']['title'] = 'GPL Cart';
         $data['store']['timezone'] = 'Europe/London';
 

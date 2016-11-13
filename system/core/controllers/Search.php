@@ -69,9 +69,9 @@ class Search extends FrontendController
      */
     protected function setTitleIndexSearch($term)
     {
-        if ($term === '') {
-            $title = $this->text('Search');
-        } else {
+        $title = $this->text('Search');
+
+        if ($term !== '') {
             $title = $this->text('Search for <small>%term</small>', array('%term' => $term));
         }
 

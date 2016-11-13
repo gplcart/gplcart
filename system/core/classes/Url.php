@@ -36,7 +36,8 @@ class Url
      * @param array $options
      * @param boolean $full
      */
-    public function redirect($url = '', array $options = array(), $full = false)
+    final public function redirect($url = '', array $options = array(),
+            $full = false)
     {
         if (!isset($url)) {
             return;

@@ -15,7 +15,7 @@ use core\controllers\Controller as FrontendController;
 /**
  * Handles incoming requests and outputs data related to payment transactions
  */
-class Cron extends FrontendController
+class Transaction extends FrontendController
 {
 
     /**

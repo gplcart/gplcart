@@ -25,7 +25,7 @@ class FileType
      */
     public function image($file, array $options)
     {
-        return (bool) getimagesize($file);
+        return is_array(getimagesize($file));
     }
 
     /**
