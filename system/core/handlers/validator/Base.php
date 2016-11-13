@@ -493,5 +493,50 @@ class Base
 
         return true;
     }
+    
+    
+    /**
+     * Validates a user cart ID
+     * @param array $submitted
+     * @param array $options
+     * @return boolean|null
+     */
+    protected function validateUserCartId(array &$submitted, array $options = array())
+    {
+        $user_id = $this->getSubmitted('user_id', $submitted, $options);
+
+        if (!empty($submitted['update']) && !isset($user_id)) {
+            return null;
+        }
+
+        if (empty($user_id)) {
+            $vars = array('@field' => $this->language->text('User'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('user_id', $error, $options);
+            return false;
+        }
+
+        if (strlen($user_id) > 255) {
+            $vars = array('@max' => 255, '@field' => $this->language->text('User'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
+            $this->setError('user_id', $error, $options);
+            return false;
+        }
+
+        if (!is_numeric($user_id)) {
+            return true; // Anonymous user
+        }
+
+        $user = $this->user->get($user_id);
+
+        if (empty($user)) {
+            $vars = array('@name' => $this->language->text('User'));
+            $error = $this->language->text('Object @name does not exist', $vars);
+            $this->setError('user_id', $error, $options);
+            return false;
+        }
+
+        return true;
+    }
 
 }

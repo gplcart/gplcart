@@ -102,11 +102,9 @@ class Product extends BaseValidator
         $this->validateProduct($submitted);
         $this->validateSubtractProduct($submitted);
         $this->validateStatus($submitted);
-
         $this->validateCurrencyProduct($submitted);
         $this->validateCategoryProduct($submitted);
         $this->validateUnitProduct($submitted);
-
         $this->validatePriceProduct($submitted);
         $this->validateStockProduct($submitted);
         $this->validateTitle($submitted);

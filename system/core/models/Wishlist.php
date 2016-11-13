@@ -63,6 +63,22 @@ class Wishlist extends Model
         $this->logger = $logger;
         $this->language = $language;
     }
+    
+    /**
+     * Returns a wishlist
+     * @param integer $wishlist_id
+     * @return array
+     */
+    public function get($wishlist_id)
+    {
+        $this->hook->fire('get.wishlist.before', $wishlist_id);
+
+        $sql = 'SELECT * FROM wishlist WHERE wishlist_id=?';
+        $wishlist = $this->db->fetch($sql, array($wishlist_id));
+
+        $this->hook->fire('get.wishlist.after', $wishlist);
+        return $wishlist;
+    }
 
     /**
      * Adds a product to a wishlist
@@ -77,7 +93,7 @@ class Wishlist extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data['created'] = GC_TIME;
         $data['wishlist_id'] = $this->db->insert('wishlist', $data);
 
         Cache::clearMemory();

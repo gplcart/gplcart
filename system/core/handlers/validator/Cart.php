@@ -44,7 +44,8 @@ class Cart extends BaseValidator
      * @param ModelsProduct $product
      * @param ModelsSku $sku
      */
-    public function __construct(ModelsCart $cart,ModelsProduct $product, ModelsSku $sku)
+    public function __construct(ModelsCart $cart, ModelsProduct $product,
+            ModelsSku $sku)
     {
         parent::__construct();
 
@@ -52,38 +53,39 @@ class Cart extends BaseValidator
         $this->cart = $cart;
         $this->product = $product;
     }
-    
-    public function cart(array &$submitted, array $options = array()){
-        
+
+    public function cart(array &$submitted, array $options = array())
+    {
+
         $this->validateCart($submitted);
         $this->validateStoreId($submitted, $options);
         $this->validateSkuCart($submitted, $options);
-        $this->validateUserCart($submitted, $options);
+        $this->validateUserCartId($submitted, $options);
         $this->validateProductCart($submitted, $options);
         $this->validateOrderCart($submitted, $options);
         $this->validateQuantityCart($submitted, $options);
         $this->validateLimitCart($submitted, $options);
-        
+        $this->validateOptionsCart($submitted, $options);
+
         unset($submitted['product']);
-        
+
         return empty($this->errors) ? true : $this->errors;
-        
     }
-    
+
     /**
-     * Validates a cart to by updated
+     * Validates a cart item to by updated
      * @param array $submitted
      * @return boolean
      */
-    protected function validateCart(array &$submitted){
-        
+    protected function validateCart(array &$submitted)
+    {
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
 
             $data = $this->cart->get($submitted['update']);
 
             if (empty($data)) {
-                $error = $this->language->text('Object @name does not exist', array(
-                    '@name' => $this->language->text('Address')));
+                $vars = array('@name' => $this->language->text('Cart'));
+                $error = $this->language->text('Object @name does not exist', $vars);
                 $this->setError('update', $error);
                 return false;
             }
@@ -93,7 +95,7 @@ class Cart extends BaseValidator
 
         return true;
     }
-    
+
     /**
      * Validates a cart item SKU
      * @param array $submitted
@@ -114,8 +116,8 @@ class Cart extends BaseValidator
         }
 
         if (empty($sku)) {
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('SKU')));
+            $vars = array('@field' => $this->language->text('SKU'));
+            $error = $this->language->text('@field is required', $vars);
             $this->setError('sku', $error, $options);
             return false;
         }
@@ -123,60 +125,13 @@ class Cart extends BaseValidator
         $product = $this->product->getBySku($sku, $store_id);
 
         if (empty($product)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Product')));
+            $vars = array('@name' => $this->language->text('Product'));
+            $error = $this->language->text('Object @name does not exist', $vars);
             $this->setError('sku', $error, $options);
             return false;
         }
-        
+
         $submitted['product'] = $product;
-        return true;
-    }
-
-    /**
-     * Validates a user ID
-     * @param array $submitted
-     * @param array $options
-     * @return boolean|null
-     */
-    protected function validateUserCart(array &$submitted, array $options)
-    {
-        $user_id = $this->getSubmitted('user_id', $submitted, $options);
-
-        if (!empty($submitted['update']) && !isset($user_id)) {
-            return null;
-        }
-
-        if (empty($user_id)) {
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('User')
-            ));
-            $this->setError('user_id', $error, $options);
-            return false;
-        }
-
-        if (strlen($user_id) > 255) {
-            $error = $this->language->text('@field must not be longer than @max characters', array(
-                '@max' => 255,
-                '@field' => $this->language->text('User')
-            ));
-            $this->setError('user_id', $error, $options);
-            return false;
-        }
-
-        if (!is_numeric($user_id)) {
-            return true; // Anonymous user
-        }
-
-        $user = $this->user->get($user_id);
-
-        if (empty($user)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('User')));
-            $this->setError('user_id', $error, $options);
-            return false;
-        }
-
         return true;
     }
 
@@ -195,25 +150,32 @@ class Cart extends BaseValidator
         }
 
         if (empty($product_id)) {
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Product')
-            ));
+            $vars = array('@field' => $this->language->text('Product'));
+            $error = $this->language->text('@field is required', $vars);
             $this->setError('product_id', $error, $options);
             return false;
         }
 
         if (!is_numeric($product_id)) {
-            $error = $this->language->text('@field must be numeric', array(
-                '@field' => $this->language->text('Product')));
+            $vars = array('@field' => $this->language->text('Product'));
+            $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('product_id', $error, $options);
             return false;
         }
 
         $product = $this->product->get($product_id);
 
-        if (empty($product)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Product')));
+        if (empty($product['status'])) {
+            $vars = array('@name' => $this->language->text('Product'));
+            $error = $this->language->text('Object @name does not exist', $vars);
+            $this->setError('product_id', $error, $options);
+            return false;
+        }
+
+        if (isset($submitted['product']['product_id'])//
+                && $submitted['product']['product_id'] != $product_id) {
+
+            $error = $this->language->text('Invalid products');
             $this->setError('product_id', $error, $options);
             return false;
         }
@@ -236,8 +198,8 @@ class Cart extends BaseValidator
         }
 
         if (!is_numeric($order_id)) {
-            $error = $this->language->text('@field must be numeric', array(
-                '@field' => $this->language->text('Order')));
+            $vars = array('@field' => $this->language->text('Order'));
+            $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('order_id', $error, $options);
             return false;
         }
@@ -245,8 +207,8 @@ class Cart extends BaseValidator
         $order = $this->order->get($order_id);
 
         if (empty($order)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Order')));
+            $vars = array('@name' => $this->language->text('Order'));
+            $error = $this->language->text('Object @name does not exist', $vars);
             $this->setError('order_id', $error, $options);
             return false;
         }
@@ -269,33 +231,29 @@ class Cart extends BaseValidator
         }
 
         if (empty($quantity)) {
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Quantity')
-            ));
+            $vars = array('@field' => $this->language->text('Quantity'));
+            $error = $this->language->text('@field is required', $vars);
             $this->setError('quantity', $error, $options);
             return false;
         }
 
         if (!is_numeric($quantity)) {
-            $error = $this->language->text('@field must be numeric', array(
-                '@field' => $this->language->text('Quantity')));
+            $vars = array('@field' => $this->language->text('Quantity'));
+            $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('quantity', $error, $options);
             return false;
         }
 
         if (strlen($quantity) > 2) {
-            $error = $this->language->text('@field must not be longer than @max characters', array(
-                '@max' => 2,
-                '@field' => $this->language->text('Quantity')
-            ));
+            $vars = array('@max' => 2, '@field' => $this->language->text('Quantity'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
             $this->setError('quantity', $error, $options);
             return false;
         }
 
         return true;
     }
-    
-    
+
     /**
      * Validates cart limits
      * @param array $submitted
@@ -304,14 +262,14 @@ class Cart extends BaseValidator
      */
     protected function validateLimitCart(array &$submitted, array $options)
     {
-        if(!empty($submitted['admin'])){
+        if (!empty($submitted['admin'])) {
             return null;
         }
-        
-        if(empty($submitted['product']) || $this->isError()){
+
+        if (empty($submitted['product']) || $this->isError()) {
             return null;
         }
-        
+
         $submitted += array('increment' => true);
 
         $sku = $this->getSubmitted('sku', $submitted, $options);
@@ -319,7 +277,7 @@ class Cart extends BaseValidator
         $user_id = $this->getSubmitted('user_id', $submitted, $options);
         $store_id = $this->getSubmitted('store_id', $submitted, $options);
         $quantity = $this->getSubmitted('quantity', $submitted, $options);
-        
+
         if (!isset($stock)) {
             $stock = $submitted['product']['stock'];
         }
@@ -341,16 +299,18 @@ class Cart extends BaseValidator
         $limit_sku = $this->cart->getLimits('sku');
         $limit_item = $this->cart->getLimits('item');
 
-        if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku]) && (count($existing_quantity['sku']) >= $limit_item)) {
-            $error = $this->language->text('Sorry, you cannot have more than %num items in your cart', array(
-                        '%num' => $limit_item));
+        if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku])//
+                && (count($existing_quantity['sku']) >= $limit_item)) {
+
+            $vars = array('%num' => $limit_item);
+            $error = $this->language->text('Sorry, you cannot have more than %num items in your cart', $vars);
             $this->setError('quantity', $error, $options);
             return false;
         }
 
-        if (!empty($limit_sku) && ($expected_quantity_sku > $limit_sku)) {
-            $error = $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', array(
-                        '%num' => $limit_sku));
+        if (!empty($limit_sku) && $expected_quantity_sku > $limit_sku) {
+            $vars = array('%num' => $limit_sku);
+            $error = $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', $vars);
             $this->setError('quantity', $error, $options);
             return false;
         }
@@ -359,44 +319,38 @@ class Cart extends BaseValidator
     }
 
     /**
-     * Checks product options
-     * @param string $options
-     * @param array $params
-     * @return boolean|string
+     * Validates products cart options
+     * @param array $submitted
+     * @param array $options
+     * @return boolean|null
      */
-    public function options($options, array $params = array())
+    protected function validateOptionsCart(array &$submitted, array $options)
     {
-        $product = $params['data'];
-
-        if (empty($product['product_id']) || empty($product['sku'])) {
-            return $this->language->text('Invalid product');
+        if (empty($submitted['product']) || $this->isError()) {
+            return null;
         }
 
-        if (empty($options)) {
+        $product = $submitted['product'];
+        $ops = $this->getSubmitted('options', $submitted, $options);
 
-            return array(
-                'result' => array(
-                    'cart' => array(
-                        'sku' => $product['sku'],
-                        'stock' => $product['stock']
-                    ))
-            );
+        if (empty($ops)) {
+            $this->setSubmitted('sku', $product['sku'], $submitted, $options);
+            $this->setSubmitted('stock', $product['stock'], $submitted, $options);
+            return true;
         }
 
-        $combination_id = $this->sku->getCombinationId($options, $product['product_id']);
+        $combination_id = $this->sku->getCombinationId($ops, $product['product_id']);
 
         if (empty($product['combination'][$combination_id]['sku'])) {
-            return $this->language->text('Invalid option combination');
+            $error = $this->language->text('Invalid option combination');
+            $this->setError('options', $error, $options);
+            return false;
         }
 
-        return array(
-            'result' => array(
-                'cart' => array(
-                    'combination_id' => $combination_id,
-                    'sku' => $product['combination'][$combination_id]['sku'],
-                    'stock' => $product['combination'][$combination_id]['stock']
-                ))
-        );
+        $this->setSubmitted('combination_id', $combination_id, $submitted, $options);
+        $this->setSubmitted('sku', $product['combination'][$combination_id]['sku'], $submitted, $options);
+        $this->setSubmitted('stock', $product['combination'][$combination_id]['stock'], $submitted, $options);
+        return true;
     }
 
 }

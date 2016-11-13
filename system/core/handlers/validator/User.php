@@ -71,6 +71,22 @@ class User extends BaseValidator
     }
 
     /**
+     * Performs password reset validation
+     * @param array $submitted
+     */
+    public function resetPassword(array &$submitted)
+    {
+        if (isset($submitted['password'])) {
+            $this->validatePasswordLengthUser($submitted);
+        } else if (isset($submitted['email'])) {
+            $this->validateEmailUser($submitted);
+            $this->validateEmailExistsUser($submitted);
+        }
+
+        return empty($this->errors) ? true : $this->errors;
+    }
+
+    /**
      * Validates a user to be updated
      * @param array $submitted
      * @return boolean
@@ -157,7 +173,7 @@ class User extends BaseValidator
      * @param array $submitted
      * @return boolean
      */
-    protected function validateEmailUniqueUser(array $submitted)
+    protected function validateEmailUniqueUser(array &$submitted)
     {
         if ($this->isError('email') || !isset($submitted['email'])) {
             return null;
@@ -176,6 +192,30 @@ class User extends BaseValidator
 
         $this->errors['email'] = $this->language->text('@object already exists', array(
             '@object' => $this->language->text('E-mail')));
+        return false;
+    }
+
+    /**
+     * Validates an email and checks the responding user enabled
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function validateEmailExistsUser(array &$submitted)
+    {
+        if ($this->isError('email') || !isset($submitted['email'])) {
+            return null;
+        }
+
+        $user = $this->user->getByEmail($submitted['email']);
+
+        if (!empty($user['status'])) {
+            $submitted['user'] = $user;
+            return true;
+        }
+
+        $vars = array('@name' => $this->language->text('E-mail'));
+        $error = $this->language->text('Object @name does not exist', $vars);
+        $this->setError('email', $error);
         return false;
     }
 

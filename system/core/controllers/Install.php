@@ -42,7 +42,7 @@ class Install extends FrontendController
         $this->install = $install;
         $this->install_language = $this->request->get('lang', '');
     }
-    
+
     /**
      * Dispays the installation page
      * @param null|string $installer_id
@@ -77,7 +77,7 @@ class Install extends FrontendController
         $this->setTitleInstall($installer);
         $this->outputInstall();
     }
-    
+
     /**
      * Returns a list of available installers
      * @return array
@@ -85,35 +85,36 @@ class Install extends FrontendController
     protected function getListInstall()
     {
         $list = $this->install->getList();
-        
+
         array_walk($list, function(&$value, $key) {
             $value['url'] = $this->url($value['path'], $this->query);
         });
-        
+
         return $list;
     }
-    
+
     /**
      * Returns an installer
      * @param string $installer_id
      * @return array
      */
-    protected function getInstall($installer_id){
-        
-        if(empty($installer_id)){
+    protected function getInstall($installer_id)
+    {
+
+        if (empty($installer_id)) {
             $installer_id = 'default';
         }
-        
+
         $installer = $this->install->get($installer_id);
-        
-        if(empty($installer['path'])){
+
+        if (empty($installer['path'])) {
             $this->redirect('install');
         }
-        
-        if($installer['path'] !== $this->path){
+
+        if ($installer['path'] !== $this->path) {
             $this->redirect($installer['path']);
         }
-        
+
         return $installer;
     }
 
@@ -175,7 +176,7 @@ class Install extends FrontendController
 
         return '';
     }
-    
+
     /**
      * Starts installing the system
      * @param array $installer
@@ -193,7 +194,7 @@ class Install extends FrontendController
         if (!$this->hasErrors('settings')) {
             return $this->processInstall();
         }
-        
+
         return null;
     }
 
@@ -204,17 +205,17 @@ class Install extends FrontendController
     {
         $submitted = $this->getSubmitted();
         $this->processStartInstall($submitted);
-        
+
         $result = $this->install->full($submitted);
-        
-        if($result !== true){
+
+        if ($result !== true) {
             $url = $this->url('', $this->query);
             $this->redirect($url, $result, 'danger');
         }
-        
+
         $this->processFinishInstall();
     }
-    
+
     /**
      * Prepares installation
      * @param array $submitted
@@ -238,7 +239,7 @@ class Install extends FrontendController
         $message = $this->text('Congratulations! You have successfully installed your store');
         $this->redirect('admin', $message, 'success');
     }
-    
+
     /**
      * Sets titles on the installation page
      * @param array $installer
@@ -269,7 +270,7 @@ class Install extends FrontendController
     {
         $this->setCss('system/modules/frontend/css/install.css', 99);
     }
-    
+
     /**
      * Validates an array of submitted form values
      * @param array $installer
@@ -282,52 +283,10 @@ class Install extends FrontendController
         );
 
         $this->setSubmitted('store.language', $language);
-
-        $this->addValidator('database.host', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('database.name', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('database.user', array(
-            'required' => array()
-        ));
-
-        $this->addValidator('database.port', array(
-            'numeric' => array('required' => true)
-        ));
-
-        $this->addValidator('user.password', array(
-            'length' => $this->user->getPasswordLength()
-        ));
-
-        $this->addValidator('user.email', array(
-            'required' => array(),
-            'email' => array()
-        ));
-
-        $this->addValidator('store.title', array(
-            'length' => array('min' => 1, 'max' => 255)
-        ));
-
-        $errors = $this->setValidators();
-
-        if (!empty($errors)) {
-            return null;
-        }
-
-        $db = $this->getSubmitted('database');
-        $connect = $this->install->connect($db);
-
-        if ($connect !== true) {
-            $this->setError('database.connect', $connect);
-            return null;
-        }
-        
         $this->setSubmitted('store.host', $this->request->host());
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
+
+        $this->validate('install');
     }
 
 }

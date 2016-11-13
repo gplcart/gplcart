@@ -121,12 +121,11 @@ class Settings extends BackendController
      */
     protected function validateSettings()
     {
-        $this->addValidator('catalog_limit', array(
-            'numeric' => array(),
-            'length' => array('min' => 1, 'max' => 2)
-        ));
+        $limit = $this->getSubmitted('catalog_limit');
 
-        $this->setValidators();
+        if (!is_numeric($limit) || strlen($limit) > 2) {
+            $this->setError('catalog_limit', $this->text('Catalog limit must be numeric and no longer than 2 digits'));
+        }
     }
 
     /**

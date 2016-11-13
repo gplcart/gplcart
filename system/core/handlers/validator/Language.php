@@ -31,17 +31,12 @@ class Language extends BaseValidator
      */
     public function language(array &$submitted, array $options = array())
     {
-        // Goes first
         $this->validateLanguage($submitted);
-
         $this->validateWeight($submitted);
         $this->validateStatus($submitted);
         $this->validateDefault($submitted);
-
         $this->validateNameLanguage($submitted);
         $this->validateNativeNameLanguage($submitted);
-
-        // Goes last
         $this->validateCodeLanguage($submitted);
 
         return empty($this->errors) ? true : $this->errors;

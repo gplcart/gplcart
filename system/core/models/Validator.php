@@ -156,6 +156,12 @@ class Validator extends Model
             ),
         );
 
+        $handlers['compare'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Compare', 'compare')
+            ),
+        );
+
         $handlers['address'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Address', 'address')
@@ -303,6 +309,12 @@ class Validator extends Model
         $handlers['zone'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Zone', 'zone')
+            ),
+        );
+
+        $handlers['wishlist'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Wishlist', 'wishlist')
             ),
         );
 

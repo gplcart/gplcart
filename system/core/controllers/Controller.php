@@ -424,7 +424,7 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
-        if(empty($options['imagestyle'])){
+        if (empty($options['imagestyle'])) {
             return $data;
         }
 
@@ -634,7 +634,7 @@ class Controller extends BaseController
 
         $cart = $this->getSubmitted('cart');
         $product = $this->getSubmitted('product');
-        
+
         $result = $this->cart->addProduct($product, $cart);
         $this->completeSubmit($result);
     }
@@ -735,7 +735,7 @@ class Controller extends BaseController
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
         );
-        
+
         $cart = $this->cart->getContent($data);
 
         $options = array(
@@ -751,43 +751,13 @@ class Controller extends BaseController
      */
     protected function validateAddToCart()
     {
-        // Check if the product exists
-        // and set its loaded array to the data array
-        // see the argument for $this->setValidators()
-        $this->addValidator('product_id', array(
-            'product_exists' => array(
-                'set_data' => true,
-                'status' => true,
-                'required' => true
-            )
-        ));
-        
-       $quantity = $this->getSubmitted('cart.quantity', 1);
-       $this->setSubmitted('cart.quantity', $quantity);
+        $this->setSubmitted('cart.user_id', $this->cart_uid);
+        $this->setSubmitted('cart.store_id', $this->store_id);
 
-       $this->setSubmitted('cart.user_id', $this->cart_uid);
-       $this->setSubmitted('cart.store_id', $this->store_id);
+        $quantity = $this->getSubmitted('cart.quantity', 1);
+        $this->setSubmitted('cart.quantity', $quantity);
 
-        $this->addValidator('cart.quantity', array(
-            'required' => array(),
-            'numeric' => array(),
-            'length' => array('max' => 2)
-        ));
-
-        // set_submitted => true - set validation results
-        // to the submitted values for further usage
-        $this->addValidator('options', array(
-            'cart_options' => array('set_submitted' => true)
-        ));
-
-        $this->addValidator('cart', array(
-            'cart_limits' => array('control_errors' => true)
-        ));
-
-        $this->setValidators();
-
-        $product = $this->getValidatorResult('product_id');
-        $this->setSubmitted('product', $product);
+        $this->validate('cart');
     }
 
     /**
@@ -797,15 +767,7 @@ class Controller extends BaseController
     {
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
-
-        $this->addValidator('product_id', array(
-            'product_exists' => array(
-                'status' => true,
-                'required' => true
-            )
-        ));
-
-        $this->setValidators();
+        $this->validate('wishlist');
     }
 
     /**
@@ -813,17 +775,7 @@ class Controller extends BaseController
      */
     protected function validateAddToCompare()
     {
-        $this->addValidator('product_id', array(
-            'product_exists' => array(
-                'status' => true,
-                'required' => true
-            )
-        ));
-
-        $this->setValidators();
-
-        $product = $this->getValidatorResult('product_id');
-        $this->setSubmitted('product', $product);
+        $this->validate('compare');
     }
 
     protected function getCollectionItems(array $options)
@@ -922,7 +874,7 @@ class Controller extends BaseController
 
         return $this->render('collection/list/file', array('files' => $files));
     }
-    
+
     /**
      * Sets meta tags on the entity page
      * @param array $data
@@ -932,11 +884,11 @@ class Controller extends BaseController
         if ($data['meta_title'] !== '') {
             $this->setTitle($data['meta_title'], false);
         }
-        
+
         if ($data['meta_description'] !== '') {
             $this->setMeta(array('name' => 'description', 'content' => $data['meta_description']));
         }
-        
+
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
     }
 

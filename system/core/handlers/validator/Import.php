@@ -71,8 +71,6 @@ class Import extends BaseValidator
     {
         $this->validateOperationImport($submitted);
         $this->validateFileImport($submitted);
-
-        // Goes at the end as we need all stuff set up
         $this->validateCsvHeaderImport($submitted);
 
         return empty($this->errors) ? true : $this->errors;
@@ -105,10 +103,7 @@ class Import extends BaseValidator
      */
     protected function validateFileImport(array &$submitted)
     {
-        // First check a relative file path
         $this->validateFilePathImport($submitted);
-
-        // then try to upload
         $this->validateFileUploadImport($submitted);
     }
 

@@ -7,10 +7,8 @@ gplcart_bootstrap_constants();
 mb_language('uni');
 mb_internal_encoding('UTF-8');
 
-if (!GC_CLI) {
-    gplcart_bootstrap_server();
-    gplcart_bootstrap_ini();
-}
+gplcart_bootstrap_ini();
+gplcart_bootstrap_server();
 
 spl_autoload_register('gplcart_bootstrap_autoload');
 
@@ -82,6 +80,10 @@ function gplcart_bootstrap_constants()
  */
 function gplcart_bootstrap_server()
 {
+    if (GC_CLI) {
+        return null;
+    }
+
     if (!isset($_SERVER['HTTP_REFERER'])) {
         $_SERVER ['HTTP_REFERER'] = '';
     }
@@ -97,6 +99,8 @@ function gplcart_bootstrap_server()
     } else {
         $_SERVER['HTTP_HOST'] = '';
     }
+
+    return null;
 }
 
 /**
@@ -120,11 +124,37 @@ function gplcart_bootstrap_host()
  */
 function gplcart_bootstrap_ini()
 {
-    ini_set('session.use_cookies', '1');
-    ini_set('session.use_only_cookies', '1');
-    ini_set('session.use_trans_sid', '0');
-    ini_set('session.cache_limiter', '');
-    ini_set('session.cookie_httponly', '1');
+    if (!GC_CLI) {
+        ini_set('session.use_cookies', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cache_limiter', '');
+        ini_set('session.cookie_httponly', '1');
+        return null;
+    }
+
+    $bytes = function ($value) {
+        $unit = strtolower(substr($value, -1, 1));
+        $value = (int) $value;
+        switch ($unit) {
+            case 'g':
+                $value *= 1024;
+            case 'm':
+                $value *= 1024;
+            case 'k':
+                $value *= 1024;
+        }
+
+        return $value;
+    };
+
+    $limit = trim(ini_get('memory_limit'));
+
+    if ($limit != -1 && $bytes($limit) < 1024 * 1024 * 1024) {
+        ini_set('memory_limit', '1G');
+    }
+
+    return null;
 }
 
 /**

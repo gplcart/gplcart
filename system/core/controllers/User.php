@@ -311,8 +311,7 @@ class User extends FrontendController
 
         $this->controlSpam('reset_password');
         $this->setSubmitted('user', null, 'raw');
-
-        $this->validateResetPasswordUser($user);
+        $this->validateResetPasswordUser();
 
         if (!$this->hasErrors('user')) {
             $this->resetPasswordUser();
@@ -336,37 +335,8 @@ class User extends FrontendController
      * @param array $user
      * @return boolean
      */
-    protected function validateResetPasswordUser(array $user)
+    protected function validateResetPasswordUser()
     {
-        if ($this->isSubmitted('password')) {
-
-            $options = $this->user->getPasswordLength();
-            $options['required'] = true;
-
-            $this->addValidator('password', array(
-                'length' => $options
-            ));
-        }
-
-        if ($this->isSubmitted('email')) {
-            $this->addValidator('email', array(
-                'required' => array(),
-                'user_email_exists' => array('status' => true)
-            ));
-        }
-
-        $errors = $this->setValidators($user);
-
-        if (empty($errors)) {
-            $email_user = $this->getValidatorResult('email');
-
-            if (isset($email_user)) {
-                $user = $email_user;
-            }
-
-            $this->setSubmitted('user', $user);
-        }
-
         $this->validate('user_reset_password');
     }
 

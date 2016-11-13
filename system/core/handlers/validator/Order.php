@@ -94,7 +94,7 @@ class Order extends BaseValidator
         $this->validateShippingOrder($submitted);
         $this->validateStatusOrder($submitted);
         $this->validateAddressOrder($submitted);
-        $this->validateUserOrder($submitted);
+        $this->validateUserCartId($submitted);
         $this->validateCreatorOrder($submitted);
         $this->validateTotalOrder($submitted);
         $this->validateCurrencyOrder($submitted);
@@ -235,47 +235,6 @@ class Order extends BaseValidator
         }
 
         return !$error;
-    }
-
-    /**
-     * Validates a user owner ID
-     * @param array $submitted
-     * @return boolean
-     */
-    protected function validateUserOrder(array &$submitted)
-    {
-        if (!empty($submitted['update']) && !isset($submitted['user_id'])) {
-            return null;
-        }
-
-        if (empty($submitted['user_id'])) {
-            $this->errors['user_id'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('User')
-            ));
-            return false;
-        }
-
-        if (strlen($submitted['user_id']) > 255) {
-            $this->errors['user_id'] = $this->language->text('@field must not be longer than @max characters', array(
-                '@max' => 255,
-                '@field' => $this->language->text('User')
-            ));
-            return false;
-        }
-
-        if (!is_numeric($submitted['user_id'])) {
-            return true; // Anonymous user
-        }
-
-        $user = $this->user->get($submitted['user_id']);
-
-        if (empty($user)) {
-            $this->errors['user_id'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('User')));
-            return false;
-        }
-
-        return true;
     }
 
     /**
