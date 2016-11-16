@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\Logger;
 use core\classes\Cache;
 use core\models\File as ModelsFile;
 use core\models\Language as ModelsLanguage;
@@ -22,7 +21,7 @@ class Import extends Model
 {
 
     /**
-     * Language model instance
+     * Validator model instance
      * @var \core\models\Language $language
      */
     protected $language;
@@ -34,24 +33,15 @@ class Import extends Model
     protected $file;
 
     /**
-     * Logger class instance
-     * @var \core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
      * @param ModelsFile $file
-     * @param Logger $logger
      */
-    public function __construct(ModelsLanguage $language, ModelsFile $file,
-            Logger $logger)
+    public function __construct(ModelsLanguage $language, ModelsFile $file)
     {
         parent::__construct();
 
         $this->file = $file;
-        $this->logger = $logger;
         $this->language = $language;
     }
 
@@ -63,6 +53,7 @@ class Import extends Model
     public function getOperation($id)
     {
         $operations = $this->getOperations();
+
         $operation = array();
         if (isset($operations[$id])) {
             $operation = $operations[$id];
@@ -85,141 +76,43 @@ class Import extends Model
 
         $operations = array();
 
-        $operations['state'] = array(
-            'name' => $this->language->text('Country states'),
-            'description' => '',
-            'job_id' => 'import_state',
-            'csv' => array(
-                'header' => array(
-                    'state_id' => 'State ID',
-                    'name' => 'State name',
-                    'code' => 'State code',
-                    'country' => 'Country code',
-                    'status' => 'Enabled'
-                ),
-                'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_state.csv',
-            ),
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_state_errors.csv'),
-        );
-
-        $operations['city'] = array(
-            'name' => $this->language->text('Cities'),
-            'job_id' => 'import_city',
-            'csv' => array(
-                'header' => array(
-                    'city_id' => 'City ID',
-                    'name' => 'City name',
-                    'state_code' => 'State code',
-                    'country' => 'Country code',
-                    'status' => 'Enabled'
-                ),
-                'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_city.csv'
-            ),
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_city_errors.csv'),
-        );
-
         $operations['category'] = array(
             'name' => $this->language->text('Categories'),
             'job_id' => 'import_category',
+            'validator' => 'category',
+            'entity_id' => 'category_id',
+            'access' => array('add' => 'category_add', 'update' => 'category_edit'),
             'csv' => array(
                 'header' => array(
-                    'category_id' => 'Category ID',
-                    'title' => 'Title',
-                    'parent_id' => 'Parent category',
-                    'category_group_id' => 'Category group',
-                    'description_1' => 'Description 1',
-                    'description_2' => 'Description 1',
-                    'meta_title' => 'Meta title',
-                    'meta_description' => 'Meta description',
-                    'status' => 'Enabled',
-                    'alias' => 'Alias',
-                    'image' => 'Image',
+                    'category_id' => 'Category ID', 'title' => 'Title',
+                    'parent_id' => 'Parent category ID', 'category_group_id' => 'Category group ID',
+                    'description_1' => 'Description 1', 'description_2' => 'Description 1',
+                    'meta_title' => 'Meta title', 'meta_description' => 'Meta description',
+                    'status' => 'Enabled', 'alias' => 'Alias', 'image' => 'Image',
                 ),
                 'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_category.csv'
             ),
             'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_category_errors.csv'),
         );
 
-        $operations['field'] = array(
-            'name' => $this->language->text('Fields'),
-            'job_id' => 'import_field',
-            'csv' => array(
-                'header' => array(
-                    'field_id' => 'Field ID',
-                    'title' => 'Title',
-                    'type' => 'Type',
-                    'widget' => 'Widget',
-                    'weight' => 'Weight',
-                ),
-                'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_field.csv'
-            ),
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_field_errors.csv'),
-        );
-
-        $operations['field_value'] = array(
-            'name' => $this->language->text('Field values'),
-            'job_id' => 'import_field_value',
-            'csv' => array(
-                'header' => array(
-                    'field_value_id' => 'Field value ID',
-                    'title' => 'Title',
-                    'field_id' => 'Field',
-                    'color' => 'Color code',
-                    'image' => 'Image',
-                    'weight' => 'Weight',
-                ),
-                'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_field_value.csv'
-            ),
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_field_value_errors.csv'),
-        );
-
-        $operations['user'] = array(
-            'name' => $this->language->text('Users'),
-            'job_id' => 'import_user',
-            'csv' => array(
-                'header' => array(
-                    'user_id' => 'User ID',
-                    'name' => 'Name',
-                    'email' => 'Email',
-                    'password' => 'Password',
-                    'role_id' => 'Role',
-                    'store_id' => 'Store',
-                    'status' => 'Enabled',
-                    'created' => 'Created',
-                ),
-                'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_user.csv'
-            ),
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/import_user_errors.csv'),
-        );
-
         $operations['product'] = array(
             'name' => $this->language->text('Products'),
             'job_id' => 'import_product',
+            'validator' => 'product',
+            'entity_id' => 'product_id',
+            'access' => array('add' => 'product_add', 'update' => 'product_edit'),
             'csv' => array(
                 'header' => array(
-                    'product_id' => 'Product ID',
-                    'title' => 'Title',
-                    'sku' => 'SKU',
-                    'price' => 'Price',
-                    'currency' => 'Currency',
-                    'stock' => 'Stock',
-                    'product_class_id' => 'Class',
-                    'store_id' => 'Store',
-                    'category_id' => 'Category',
-                    'brand_category_id' => 'Brand',
-                    'alias' => 'Alias',
-                    'images' => 'Images',
-                    'status' => 'Enabled',
-                    'description' => 'Description',
-                    'meta_title' => 'Meta title',
-                    'meta_description' => 'Meta description',
-                    'related' => 'Related',
-                    'width' => 'Width',
-                    'height' => 'Height',
-                    'length' => 'Length',
-                    'volume_unit' => 'Dimension unit',
-                    'weight' => 'Weight',
-                    'weight_unit' => 'Weight unit',
+                    'product_id' => 'Product ID', 'title' => 'Title', 'sku' => 'SKU',
+                    'price' => 'Price', 'currency' => 'Currency', 'stock' => 'Stock',
+                    'product_class_id' => 'Class ID', 'store_id' => 'Store ID',
+                    'category_id' => 'Category ID', 'brand_category_id' => 'Brand category ID',
+                    'alias' => 'Alias', 'images' => 'Images',
+                    'status' => 'Enabled', 'description' => 'Description',
+                    'meta_title' => 'Meta title', 'meta_description' => 'Meta description',
+                    'related' => 'Related product ID', 'width' => 'Width', 'height' => 'Height',
+                    'length' => 'Length', 'volume_unit' => 'Dimension unit',
+                    'weight' => 'Weight', 'weight_unit' => 'Weight unit',
                 ),
                 'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_product.csv'
             ),
@@ -227,7 +120,6 @@ class Import extends Model
         );
 
         $this->hook->fire('import.operations', $operations);
-
         return $operations;
     }
 
@@ -241,97 +133,12 @@ class Import extends Model
     }
 
     /**
-     * Returns a character used to indicate an autogenerated field
-     * @return string
-     */
-    public function getCsvAutoTag()
-    {
-        return $this->config->get('csv_auto', '*');
-    }
-
-    /**
      * Returns processing limit value
      * @return type
      */
     public function getLimit()
     {
         return (int) $this->config->get('import_limit', 10);
-    }
-
-    /**
-     * Logs an returns prepared errors
-     * @param array $data
-     * @param string $operation
-     * @return array
-     */
-    public function getErrors(array $data, $operation)
-    {
-        $errors = array_filter((array) $data);
-
-        if (!empty($operation['log']['errors'])) {
-            foreach ($errors as $error) {
-                $this->logger->csv($operation['log']['errors'], '', $error, 'warning');
-            }
-        }
-
-        return array('count' => count($errors), 'message' => end($errors));
-    }
-
-    /**
-     * Downloads remoted images
-     * @param string $data
-     * @param array $operation
-     * @return array
-     */
-    public function getImages($data, array $operation)
-    {
-        $return = array('errors' => array(), 'images' => array());
-
-        $delimiter = $this->getCsvDelimiterMultiple();
-        $images = array_filter(array_map('trim', explode($delimiter, $data)));
-
-        if (empty($images)) {
-            return $return;
-        }
-
-        $destination = 'image/upload/'
-                . $this->config->get("{$operation['id']}_image_dirname", $operation['id']);
-
-        $this->file->setUploadPath($destination)->setHandler('image');
-
-        foreach ($images as $image) {
-            if (0 === strpos($image, 'http')) {
-
-                $result = $this->file->wget($image);
-
-                if ($result === true) {
-                    $uploaded = $this->file->getUploadedFile();
-                    $return['images'][] = array('path' => $this->file->path($uploaded));
-                    continue;
-                }
-
-                $download_errors = (array) $result;
-                $return['errors'] = array_merge($return['errors'], $download_errors);
-                continue;
-            }
-
-            $path = GC_FILE_DIR . '/' . trim($image, '/');
-
-            if (file_exists($path) && $this->file->validate($path) === true) {
-                $return['images'][] = array('path' => $image);
-            }
-        }
-
-        return $return;
-    }
-
-    /**
-     * Returns a character used to separate multiple values
-     * @return string
-     */
-    public function getCsvDelimiterMultiple()
-    {
-        return $this->config->get('csv_delimiter_multiple', "|");
     }
 
     /**

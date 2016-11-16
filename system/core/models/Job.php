@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\Handler;
+use core\Container;
 use core\classes\Url;
 use core\classes\Tool;
 use core\classes\Cache;
@@ -127,10 +127,17 @@ class Job extends Model
             'url' => '',
             'total' => 0,
             'errors' => 0,
+            'done' => 0,
             'inserted' => 0,
             'updated' => 0,
-            'context' => array(),
-            'data' => array(),
+            'context' => array(
+                'offset' => 0,
+                'line' => 1,
+            ),
+            'data' => array(
+                'limit' => $this->config->get('import_limit', 10),
+                'delimiter' => $this->config->get('csv_delimiter', ",")
+            ),
             'message' => array(
                 'start' => $this->language->text('Starting'),
                 'finish' => $this->language->text('Finished'),
@@ -166,110 +173,85 @@ class Job extends Model
     }
 
     /**
-     * Processes one job iteration (AJAX request)
-     * @staticvar int $done
-     * @staticvar int $errors
-     * @staticvar array $context
+     * Processes one job iteration
      * @param array $job
      * @return array
      */
     public function process(array $job)
     {
+        // Try to set endless process
         ini_set('max_execution_time', 0);
+
+        //Register shutdown function to handle fatal errors in processor
         register_shutdown_function(array($this, 'shutdownHandler'), $job);
 
+        // Chance to change the job from a module
         $this->hook->fire('process.job.before', $job);
 
         if (empty($job['status'])) {
+            // Probably has been disabled on the previous iteration
             return $this->result($job, array('finish' => true));
         }
 
-        static $done = 0;
-        static $errors = 0;
-        static $updated = 0;
-        static $inserted = 0;
-        static $context = array();
-
         $progress = 0;
-        $total = (int) $job['total'];
-        $message = $job['message']['process'];
-
-        if (isset($job['done'])) {
-            $done = (int) $job['done'];
-        }
-
-        if (isset($job['context'])) {
-            $context = $job['context'];
-        }
-
-        $handlers = $this->getHandlers();
-
         $start_time = microtime(true);
 
+        // Loop until the max time limit reached
         while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
 
-            $arguments = array($job, $done, $context);
+            // Call a processor
+            $this->call($job);
 
-            $result = Handler::call($handlers, $job['id'], 'process', $arguments);
-
-            if (empty($result)) {
-                $job['status'] = false;
+            // Check if the job has been disabled by processor
+            if (empty($job['status'])) {
                 break;
             }
 
-            if (isset($result['done'])) {
-                if (isset($result['increment']) && empty($result['increment'])) {
-                    $done = (int) $result['done'];
-                } else {
-                    $done += (int) $result['done'];
-                }
-            }
+            // Calculate percent progress
+            $progress = round($job['done'] * 100 / $job['total']);
 
-            if (isset($result['errors'])) {
-                $errors += (int) $result['errors'];
-            }
-
-            if (isset($result['context']) && is_array($result['context'])) {
-                $context = Tool::merge($context, $result['context']);
-            }
-
-            if (isset($result['message'])) {
-                $message = $result['message'];
-            }
-
-            if (isset($result['inserted'])) {
-                $inserted += (int) $result['inserted'];
-            }
-
-            if (isset($result['updated'])) {
-                $updated += (int) $result['updated'];
-            }
-
-            $progress = round($done * 100 / $total);
-
-            if ($done < $total) {
+            if ($job['done'] < $job['total']) {
                 continue;
             }
 
+            // All done
             $job['status'] = false;
             break;
         }
 
-        $job['done'] = $done;
-        $job['errors'] += $errors;
-        $job['context'] = $context;
-        $job['updated'] += $updated;
-        $job['inserted'] += $inserted;
-
-        $return = $this->result($job, array(
-            'done' => $done,
-            'errors' => $errors,
-            'message' => $message,
+        $result = array(
             'progress' => $progress,
-            'finish' => empty($job['status'])
-        ));
+            'done' => $job['done'],
+            'errors' => $job['errors'],
+            'finish' => empty($job['status']),
+            'message' => $job['message']['process']
+        );
 
-        return $return;
+        return $this->result($job, $result);
+    }
+
+    /**
+     * Calls a job processor
+     * @param array $job
+     * @return boolean
+     */
+    protected function call(array &$job)
+    {
+        $handlers = $this->getHandlers();
+
+        if (empty($handlers[$job['id']]['handlers']['process'])) {
+            return false;
+        }
+
+        $class = $handlers[$job['id']]['handlers']['process'];
+        $instance = Container::instance($class);
+
+        if (!is_object($instance)) {
+            return false;
+        }
+
+        call_user_func_array(array($instance, $class[1]), array(&$job));
+        return true;
     }
 
     /**
@@ -281,9 +263,7 @@ class Job extends Model
         $error = error_get_last();
 
         if (isset($error['type']) && $error['type'] === E_ERROR) {
-            $text = $this->language->text('An unexpected error has occurred.'
-                    . ' The job has not been properly completed');
-
+            $text = $this->language->text('The job has not been properly completed');
             $this->session->setMessage($text, 'danger');
         }
     }

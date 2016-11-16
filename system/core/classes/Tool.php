@@ -55,7 +55,6 @@ class Tool
     $name = null, $default = null, $filter = true
     )
     {
-
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
 
         Tool::trimArray($cookie, $filter);

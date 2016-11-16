@@ -77,7 +77,7 @@ class Store extends BaseValidator
         $this->validateFaviconStore($submitted);
         $this->validateLogoStore($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

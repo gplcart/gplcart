@@ -71,7 +71,7 @@ class PriceRule extends BaseValidator
         $this->validateCodePriceRule($submitted);
         $this->validateValuePriceRule($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

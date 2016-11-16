@@ -38,7 +38,6 @@ $config = array();
 # $config['csv_delimiter'] = ","; // Field delimiter used in CSV files
 # $config['csv_delimiter_multiple'] = "|";
 # $config['csv_delimiter_key_value'] = ":";
-# $config['csv_auto'] = '*';
 # $config['currency'] = 'USD'; // Default store currency
 # $config['currency_cookie_lifespan'] = 31536000; // Lifetime of cookie that keeps the current currency, in seconds
 # $config['date_prefix'] = 'd.m.Y'; // Default site-wide time format - hours

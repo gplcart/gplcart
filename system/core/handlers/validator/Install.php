@@ -63,7 +63,7 @@ class Install extends BaseValidator
         $this->validateDbPortInstall($submitted);
         $this->validateDbConnectInstall($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

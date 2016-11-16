@@ -162,6 +162,17 @@ class Base
     }
 
     /**
+     * Returns validation results
+     * @return array|boolean
+     */
+    protected function getResult()
+    {
+        $result = empty($this->errors) ? true : $this->errors;
+        $this->errors = array(); // Important. Reset all errors
+        return $result;
+    }
+
+    /**
      * Validates a title
      * @param array $submitted
      * @param array $options
@@ -340,9 +351,7 @@ class Base
 
         foreach ($submitted['translation'] as $lang => $translation) {
             foreach ($translation as $field => $value) {
-
                 $max = isset($lengths[$field]) ? $lengths[$field] : 255;
-
                 if (mb_strlen($value) > $max) {
                     $vars = array('@field' => ucfirst(str_replace('_', ' ', $field)), '@lang' => $lang, '@max' => $max);
                     $this->errors['translation'][$lang][$field] = $this->language->text('@field in @lang must not be longer than @max characters', $vars);
@@ -360,7 +369,7 @@ class Base
      */
     protected function validateImages(array &$submitted)
     {
-        if (empty($submitted['images'])) {
+        if (empty($submitted['images']) || !is_array($submitted['images'])) {
             return null;
         }
 
@@ -493,15 +502,15 @@ class Base
 
         return true;
     }
-    
-    
+
     /**
      * Validates a user cart ID
      * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateUserCartId(array &$submitted, array $options = array())
+    protected function validateUserCartId(array &$submitted,
+            array $options = array())
     {
         $user_id = $this->getSubmitted('user_id', $submitted, $options);
 

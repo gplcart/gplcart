@@ -58,7 +58,7 @@ class Trigger extends BaseValidator
         $this->validateWeight($submitted);
         $this->validateConditionsTrigger($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

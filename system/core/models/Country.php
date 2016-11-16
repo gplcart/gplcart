@@ -270,9 +270,9 @@ class Country extends Model
         if ($this->isDefault($code)) {
             $data['status'] = 1;
         }
-
+        
+        unset($data['code']); // Cannot update primary key
         $result = $this->db->update('country', $data, array('code' => $code));
-
         $this->hook->fire('update.country.after', $code, $data, $result);
         return (bool) $result;
     }

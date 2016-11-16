@@ -123,7 +123,7 @@ class Product extends BaseValidator
         $this->validateCombinationProduct($submitted);
         $this->validateAliasProduct($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**
@@ -430,7 +430,13 @@ class Product extends BaseValidator
             $product_id = $submitted['update']['product_id'];
         }
 
-        $store_id = $submitted['update']['store_id'];
+        $store_id = null;
+        if (isset($submitted['store_id'])) {
+            $store_id = $submitted['store_id'];
+        } else if (isset($submitted['update']['store_id'])) {
+            $store_id = $submitted['update']['store_id'];
+        }
+
         $existing = $this->sku->get($submitted['sku'], $store_id, $product_id);
 
         if (empty($existing)) {

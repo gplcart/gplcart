@@ -51,7 +51,7 @@ class Module extends BaseValidator
     public function upload(array &$submitted, array $options = array())
     {
         $this->validateUploadModule($submitted);
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

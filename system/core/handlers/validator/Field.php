@@ -49,7 +49,7 @@ class Field extends BaseValidator
         $this->validateTypeField($submitted);
         $this->validateWidgetTypeField($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

@@ -75,7 +75,7 @@ class Country extends BaseValidator
             $this->country->unsetDefault($submitted['code']);
         }
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

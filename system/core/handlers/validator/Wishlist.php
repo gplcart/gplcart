@@ -55,7 +55,7 @@ class Wishlist extends BaseValidator
         $this->validateUserCartId($submitted);
         $this->validateStoreId($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

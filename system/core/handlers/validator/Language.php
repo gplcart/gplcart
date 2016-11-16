@@ -39,7 +39,7 @@ class Language extends BaseValidator
         $this->validateNativeNameLanguage($submitted);
         $this->validateCodeLanguage($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

@@ -66,7 +66,7 @@ class Category extends BaseValidator
         $this->validateImages($submitted);
         $this->validateAliasCategory($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

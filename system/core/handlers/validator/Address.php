@@ -80,7 +80,7 @@ class Address extends BaseValidator
 
         unset($submitted['format']);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

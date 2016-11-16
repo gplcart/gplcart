@@ -186,12 +186,13 @@ class Country extends BackendController
     public function editCountry($code = null)
     {
         $country = $this->getCountry($code);
-        $zones = $this->zone->getList(array('status' => 1));
+        $zones = $this->getZonesCountry();
 
         $can_delete = (!empty($code)//
                 && $this->access('country_delete')//
                 && $this->country->canDelete($code));
 
+        $this->setData('code', $code);
         $this->setData('zones', $zones);
         $this->setData('country', $country);
         $this->setData('can_delete', $can_delete);
@@ -201,6 +202,15 @@ class Country extends BackendController
         $this->setTitleEditCountry($country);
         $this->setBreadcrumbEditCountry();
         $this->outputEditCountry();
+    }
+
+    /**
+     * Returns an array of enabled zones
+     * @return type
+     */
+    protected function getZonesCountry()
+    {
+        return $this->zone->getList(array('status' => 1));
     }
 
     /**

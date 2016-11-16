@@ -46,7 +46,7 @@ class UserRole extends BaseValidator
         $this->validateStatus($submitted);
         $this->validateName($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

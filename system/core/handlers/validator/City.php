@@ -77,7 +77,7 @@ class City extends BaseValidator
         $this->validateZoneCity($submitted);
         $this->validateCountryCity($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

@@ -51,7 +51,7 @@ class Currency extends BaseValidator
         $this->validateSymbolPlacementCurrency($submitted);
         $this->validateCodePlacementCurrency($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

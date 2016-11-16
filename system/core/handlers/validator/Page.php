@@ -63,7 +63,7 @@ class Page extends BaseValidator
         $this->validateImages($submitted);
         $this->validateAliasPage($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

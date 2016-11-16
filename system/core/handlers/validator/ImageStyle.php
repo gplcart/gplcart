@@ -47,7 +47,7 @@ class ImageStyle extends BaseValidator
         $this->validateStatus($submitted);
         $this->validateActionsImageStyle($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

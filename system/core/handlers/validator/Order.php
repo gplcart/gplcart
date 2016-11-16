@@ -102,7 +102,7 @@ class Order extends BaseValidator
         $this->validateTransactionOrder($submitted);
         $this->validateLogOrder($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

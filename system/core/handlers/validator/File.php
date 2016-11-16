@@ -57,7 +57,7 @@ class File extends BaseValidator
         $this->validateTranslation($submitted);
         $this->validatePathFile($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

@@ -90,7 +90,7 @@ class CollectionItem extends BaseValidator
         $this->validateValueCollectionItem($submitted);
         $this->validateEntityCollectionItem($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

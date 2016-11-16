@@ -73,7 +73,7 @@ class Import extends BaseValidator
         $this->validateFileImport($submitted);
         $this->validateCsvHeaderImport($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

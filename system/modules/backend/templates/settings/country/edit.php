@@ -7,7 +7,11 @@
           <?php echo $this->text('Code'); ?>
         </label>
         <div class="col-md-4">
+          <?php if(empty($code)) { ?>
           <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->escape($country['code']) : ''; ?>">
+          <?php } else { ?>
+          <span class="form-control"><?php echo $this->escape($country['code']); ?></span>
+          <?php } ?>
           <div class="help-block">
             <?php if (isset($this->errors['code'])) { ?>
               <?php echo $this->errors['code']; ?>

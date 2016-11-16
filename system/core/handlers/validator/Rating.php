@@ -56,7 +56,7 @@ class Rating extends BaseValidator
         $this->validateUserId($submitted, $options);
         $this->validateValueRating($submitted, $options);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

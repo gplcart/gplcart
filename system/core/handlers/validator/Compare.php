@@ -43,7 +43,7 @@ class Compare extends BaseValidator
     {
         $this->validateProductCompare($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

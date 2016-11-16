@@ -78,7 +78,7 @@ class FieldValue extends BaseValidator
         $this->validateColorFieldValue($submitted);
         $this->validateFileFieldValue($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

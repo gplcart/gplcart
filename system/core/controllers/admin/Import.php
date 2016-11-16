@@ -301,12 +301,7 @@ class Import extends BackendController
      */
     protected function validateImport(array $operation)
     {
-        $this->setSubmittedBool('unique');
-
-        $limit = $this->import->getLimit();
-        $this->setSubmitted('limit', $limit);
         $this->setSubmitted('operation', $operation);
-
         $this->validate('import');
     }
 

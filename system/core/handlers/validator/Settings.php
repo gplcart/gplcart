@@ -55,7 +55,7 @@ class Settings extends BaseValidator
         $this->validateEmailSettings($submitted);
         $this->validateFileSettings($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

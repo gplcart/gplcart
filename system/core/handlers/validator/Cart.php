@@ -69,7 +69,7 @@ class Cart extends BaseValidator
 
         unset($submitted['product']);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

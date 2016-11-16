@@ -54,7 +54,7 @@ class User extends BaseValidator
         $this->validateStoreId($submitted);
         $this->validateRoleUser($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

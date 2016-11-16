@@ -57,7 +57,7 @@ class Review extends BaseValidator
         $this->validateProductReview($submitted);
         $this->validateEmailReview($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

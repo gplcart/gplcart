@@ -47,7 +47,7 @@ class CategoryGroup extends BaseValidator
         $this->validateStoreId($submitted);
         $this->validateTypeCategoryGroup($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

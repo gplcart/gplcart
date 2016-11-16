@@ -45,7 +45,7 @@ class ProductClass extends BaseValidator
         $this->validateStatus($submitted);
         $this->validateTitle($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**

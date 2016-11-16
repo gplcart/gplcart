@@ -59,7 +59,7 @@ class State extends BaseValidator
      * @param array $options
      * @return array|boolean
      */
-    public function state(array &$submitted, array $options = array())
+    public function state(array $submitted, array $options = array())
     {
         $this->validateState($submitted);
         $this->validateStatus($submitted);
@@ -67,8 +67,8 @@ class State extends BaseValidator
         $this->validateName($submitted);
         $this->validateCountryState($submitted);
         $this->validateZoneState($submitted);
-
-        return empty($this->errors) ? true : $this->errors;
+        
+        return $this->getResult();
     }
 
     /**

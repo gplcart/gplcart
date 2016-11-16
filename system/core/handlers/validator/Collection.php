@@ -49,7 +49,7 @@ class Collection extends BaseValidator
         $this->validateStoreId($submitted);
         $this->validateTypeCollection($submitted);
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**
