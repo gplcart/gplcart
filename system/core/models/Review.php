@@ -167,7 +167,7 @@ class Review extends Model
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array(
-            'product_id' => 'r.product_id', 'email' => 'u.email',
+            'product_id' => 'r.product_id', 'email' => 'u.email', 'review_id' => 'r.review_id',
             'status' => 'r.status', 'created' => 'r.created', 'text' => 'r.text');
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//

@@ -13,12 +13,14 @@
     <table class="table table-responsive table-striped category-group">
       <thead>
         <tr>
+          <th><a href="<?php echo $sort_category_group_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_store_id; ?>"><?php echo $this->text('Store'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
         <tr class="filters active">
+          <th></th>
           <th>
             <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
@@ -50,7 +52,7 @@
       <tbody>
         <?php if (empty($groups) && $filtering) { ?>
         <tr>
-          <td colspan="4">
+          <td colspan="5">
             <?php echo $this->text('No results'); ?>
             <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -58,6 +60,7 @@
         <?php } else { ?>
         <?php foreach ($groups as $id => $group) { ?>
         <tr>
+          <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->escape($group['title']); ?></td>
           <td class="middle">
             <?php echo isset($stores[$group['store_id']]) ? $this->escape($stores[$group['store_id']]) : $this->text('Unknown'); ?>

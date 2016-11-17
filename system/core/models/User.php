@@ -647,7 +647,8 @@ class User extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'email', 'role_id', 'store_id', 'status', 'created');
+        $allowed_sort = array('name', 'email', 'role_id',
+            'store_id', 'status', 'created', 'user_id');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";

@@ -42,6 +42,7 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><a href="<?php echo $sort_product_class_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
           <th><?php echo $this->text('Actions'); ?></th>
@@ -53,6 +54,7 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $class['product_class_id']; ?>">
           </td>
+          <td class="middle"><?php echo $this->escape($class['product_class_id']); ?></td>
           <td class="middle"><?php echo $this->escape($class['title']); ?></td>
           <td class="middle">
             <?php if (empty($class['status'])) { ?>

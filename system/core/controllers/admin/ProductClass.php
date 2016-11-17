@@ -56,7 +56,7 @@ class ProductClass extends BackendController
         $limit = $this->setPager($total, $query);
         $classes = $this->getListProductClass($limit, $query);
 
-        $allowed = array('title', 'status');
+        $allowed = array('title', 'status', 'product_class_id');
         $this->setFilter($allowed, $query);
 
         $this->setData('classes', $classes);

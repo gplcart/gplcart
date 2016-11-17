@@ -105,7 +105,7 @@ class Import extends Model
                 'header' => array(
                     'product_id' => 'Product ID', 'title' => 'Title', 'sku' => 'SKU',
                     'price' => 'Price', 'currency' => 'Currency', 'stock' => 'Stock',
-                    'product_class_id' => 'Class ID', 'store_id' => 'Store ID',
+                    'product_class_id' => 'Product class ID', 'store_id' => 'Store ID',
                     'category_id' => 'Category ID', 'brand_category_id' => 'Brand category ID',
                     'alias' => 'Alias', 'images' => 'Images',
                     'status' => 'Enabled', 'description' => 'Description',

@@ -33,6 +33,7 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><a href="<?php echo $sort_field_value_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_image; ?>"><?php echo $this->text('Image'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_color; ?>"><?php echo $this->text('Color'); ?> <i class="fa fa-sort"></i></a></th>
@@ -48,6 +49,7 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $value['field_value_id']; ?>">
           </td>
+          <td class="middle field-value-id"><?php echo $value['field_value_id']; ?></td>
           <td class="middle title"><?php echo $this->truncate($this->escape($value['title'])); ?></td>
           <td class="middle image">
             <div class="view thumb">

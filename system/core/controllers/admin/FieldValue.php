@@ -87,7 +87,7 @@ class FieldValue extends BackendController
         $this->setData('field', $field);
         $this->setData('values', $values);
 
-        $allowed = array('title', 'color', 'weight', 'image');
+        $allowed = array('title', 'color', 'weight', 'image', 'field_value_id');
         $this->setFilter($allowed, $query);
 
         $this->setTitleListFieldValue($field);

@@ -38,7 +38,7 @@
         </label>
         <div class="col-md-4">
           <select name="city[zone_id]" class="form-control">
-            <option value=""><?php echo $this->text('None'); ?></option>
+            <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($zones as $zone) { ?>
             <?php if (isset($city['zone_id']) && $city['zone_id'] == $zone['zone_id']) { ?>
             <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->escape($zone['title']); ?></option>

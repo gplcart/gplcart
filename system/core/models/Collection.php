@@ -74,7 +74,7 @@ class Collection extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'status', 'type', 'store_id');
+        $allowed_sort = array('title', 'status', 'type', 'store_id', 'collection_id');
 
         if ((isset($data['sort']) && in_array($data['sort'],
                     $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))

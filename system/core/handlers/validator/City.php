@@ -143,7 +143,7 @@ class City extends BaseValidator
      */
     protected function validateZoneCity(array $submitted)
     {
-        if (!isset($submitted['zone_id'])) {
+        if (empty($submitted['zone_id'])) {
             return true;
         }
 

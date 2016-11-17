@@ -45,6 +45,7 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Title'); ?></th>
           <th><?php echo $this->text('Alias'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
@@ -56,6 +57,7 @@
         <?php foreach ($categories as $category) { ?>
         <tr data-category-id="<?php echo $category['category_id']; ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $category['category_id']; ?>"></td>
+          <td class="middle"><?php echo $category['category_id']; ?></td>
           <td class="middle"><?php echo $category['indentation']; ?><?php echo $this->truncate($this->escape($category['title'])); ?></td>
           <td class="middle">
             <a target="_blank" href="<?php echo $this->escape($category['url']); ?>"><?php echo $this->truncate($this->escape($category['alias'])); ?></a>

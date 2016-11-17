@@ -54,7 +54,7 @@ class Collection extends BackendController
         $this->setData('handlers', $handlers);
         $this->setData('collections', $collections);
 
-        $allowed = array('type', 'store_id', 'status', 'title');
+        $allowed = array('type', 'store_id', 'status', 'title', 'collection_id');
         $this->setFilter($allowed, $query);
 
         $this->setTitleListCollection();

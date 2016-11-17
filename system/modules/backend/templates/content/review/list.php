@@ -42,37 +42,17 @@
       <table class="table reviews">
         <thead>
           <tr>
-            <th class="middle">
-              <input type="checkbox" id="select-all" value="1">
-            </th>
-            <th class="middle">
-              <a href="<?php echo $sort_text; ?>">
-                <?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
-            <th class="middle">
-              <a href="<?php echo $sort_product_id; ?>">
-                <?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
-            <th class="middle">
-              <a href="<?php echo $sort_email; ?>">
-                <?php echo $this->text('Author'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
-            <th class="middle">
-              <a href="<?php echo $sort_status; ?>">
-                <?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
-            <th class="middle">
-              <a href="<?php echo $sort_created; ?>">
-                <?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i>
-              </a>
-            </th>
+            <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
+            <th class="middle"><a href="<?php echo $sort_review_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
+            <th class="middle"><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i></a></th>
+            <th class="middle"><a href="<?php echo $sort_product_id; ?>"><?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i></a></th>
+            <th class="middle"><a href="<?php echo $sort_email; ?>"><?php echo $this->text('Author'); ?> <i class="fa fa-sort"></i></a></th>
+            <th class="middle"><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
+            <th class="middle"><a href="<?php echo $sort_created; ?>"><?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i></a></th>
             <th></th>
           </tr>
           <tr class="filters active">
+            <th></th>
             <th></th>
             <th class="middle">
               <input class="form-control" name="text" value="<?php echo $filter_text; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -111,7 +91,7 @@
         <tbody>
           <?php if ($filtering && empty($reviews)) { ?>
           <tr>
-            <td colspan="7">
+            <td colspan="8">
               <?php echo $this->text('No results'); ?>
               <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
             </td>
@@ -119,9 +99,8 @@
           <?php } ?>
           <?php foreach ($reviews as $id => $review) { ?>
           <tr data-review-id="<?php echo $id; ?>">
-            <td class="middle">
-              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
-            </td>
+            <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"></td>
+            <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
               <a href="#review-id-<?php echo $id; ?>" data-toggle="collapse"><?php echo $this->truncate($this->escape($review['text']), 30); ?></a>
             </td>

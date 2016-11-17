@@ -58,7 +58,8 @@ class Review extends BackendController
 
         $this->setData('reviews', $reviews);
 
-        $filters = array('product_id', 'email', 'status', 'created', 'text');
+        $filters = array('product_id', 'email',
+            'status', 'created', 'text', 'review_id');
 
         $this->setFilter($filters, $query);
         $this->setDataListReview($query);

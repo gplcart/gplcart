@@ -28,12 +28,14 @@
       <thead>
         <tr>
           <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
+          <th><a href="<?php echo $sort_field_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_widget; ?>"><?php echo $this->text('Widget'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
         <tr class="filters active">
+          <th></th>
           <th></th>
           <th class="middle">
             <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -71,13 +73,14 @@
       </thead>
       <tbody>
         <?php if ($filtering && empty($fields)) { ?>
-        <tr><td class="middle" colspan="5"><?php echo $this->text('No results'); ?></td></tr>
+        <tr><td class="middle" colspan="6"><?php echo $this->text('No results'); ?></td></tr>
         <?php } ?>
         <?php foreach ($fields as $field) { ?>
         <tr>
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $field['field_id']; ?>">
           </td>
+          <td class="middle"><?php echo $field['field_id']; ?></td>
           <td class="middle"><?php echo $this->escape($field['title']); ?></td>
           <td class="middle"><?php echo ($field['type'] == 'attribute') ? $this->text('Attribute') : $this->text('Option'); ?></td>
           <td class="middle"><?php echo isset($widget_types[$field['widget']]) ? $widget_types[$field['widget']] : $this->text('Unknown'); ?></td>

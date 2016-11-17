@@ -50,7 +50,7 @@ class CategoryGroup extends BackendController
         $this->setData('groups', $groups);
         $this->setData('stores', $stores);
 
-        $filters = array('title', 'store_id', 'type');
+        $filters = array('title', 'store_id', 'type', 'category_group_id');
         $this->setFilter($filters, $query);
 
         $this->setTitleListCategoryGroup();

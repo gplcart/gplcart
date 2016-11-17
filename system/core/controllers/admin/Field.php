@@ -51,7 +51,7 @@ class Field extends BackendController
         $this->setData('fields', $fields);
         $this->setData('widget_types', $widget_types);
 
-        $allowed = array('title', 'type', 'widget');
+        $allowed = array('title', 'type', 'widget', 'field_id');
         $this->setFilter($allowed, $query);
 
         $this->setTitleListField();

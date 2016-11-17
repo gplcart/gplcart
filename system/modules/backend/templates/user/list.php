@@ -51,6 +51,9 @@
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>
             <th>
+              <a href="<?php echo $sort_user_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a>
+            </th>
+            <th>
               <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>
             </th>
             <th>
@@ -71,6 +74,7 @@
             <th></th>
           </tr>
           <tr class="filters active">
+            <th></th>
             <th></th>
             <th>
               <input class="form-control" name="name" maxlength="255" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -123,7 +127,7 @@
         <tbody>
           <?php if ($filtering && empty($users)) { ?>
           <tr>
-            <td colspan="8">
+            <td colspan="9">
               <?php echo $this->text('No results'); ?>
               <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
             </td>
@@ -134,6 +138,7 @@
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
+            <td class="middle"><?php echo $id; ?></td>
             <td class="middle"><?php echo $this->escape($user['name']); ?></td>
             <td class="middle"><?php echo $this->escape($user['email']); ?></td>
             <td class="middle">

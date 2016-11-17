@@ -53,7 +53,8 @@ class User extends BackendController
         $this->setData('roles', $roles);
         $this->setData('stores', $stores);
 
-        $filters = array('name', 'email', 'role_id', 'store_id', 'status', 'created');
+        $filters = array('name', 'email', 'role_id', 'store_id',
+            'status', 'created', 'user_id');
 
         $this->setFilter($filters, $query);
         $this->setTitleListUser();

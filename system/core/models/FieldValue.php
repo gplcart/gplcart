@@ -81,7 +81,7 @@ class FieldValue extends Model
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title' => 'fv.title', 'weight' => 'fv.weight',
-            'color' => 'fv.color', 'image' => 'f.file_id');
+            'color' => 'fv.color', 'image' => 'f.file_id', 'field_value_id' => 'fv.field_value_id');
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
