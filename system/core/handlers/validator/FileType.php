@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 
 /**
  * Provides methods to validate different types of files

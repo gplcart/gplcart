@@ -10,8 +10,8 @@
 namespace core;
 
 use core\Container;
-use core\classes\Tool;
-use core\classes\Cache;
+use core\helpers\Tool;
+use core\helpers\Cache;
 use core\exceptions\DatabaseException;
 
 /**
@@ -22,7 +22,7 @@ class Config
 
     /**
      * PDO instance
-     * @var \core\classes\Database $db
+     * @var \core\helpers\Database $db
      */
     protected $db;
 
@@ -355,7 +355,7 @@ class Config
             return true;
         }
 
-        $this->db = Container::instance('core\\classes\\Database', array($this->config['database']));
+        $this->db = Container::instance('core\\helpers\\Database', array($this->config['database']));
         $this->config = array_merge($this->config, $this->select());
         $this->key = $this->get('private_key', '');
 

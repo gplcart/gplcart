@@ -11,8 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\classes\Tool;
-use core\classes\Session;
+use core\helpers\Tool;
+use core\helpers\Session;
 use core\models\Mail as ModelsMail;
 use core\models\Address as ModelsAddress;
 use core\models\UserRole as ModelsUserRole;
@@ -51,7 +51,7 @@ class User extends Model
 
     /**
      * Session class instance
-     * @var \core\classes\Session $session
+     * @var \core\helpers\Session $session
      */
     protected $session;
 

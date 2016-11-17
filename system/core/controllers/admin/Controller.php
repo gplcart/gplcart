@@ -10,7 +10,7 @@
 namespace core\controllers\admin;
 
 use core\Container;
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\Controller as BaseController;
 
 /**

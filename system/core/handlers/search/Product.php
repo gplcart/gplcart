@@ -11,7 +11,7 @@ namespace core\handlers\search;
 
 use PDO;
 use core\Config;
-use core\classes\Request;
+use core\helpers\Request;
 use core\models\Image as ModelsImage;
 use core\models\Price as ModelsPrice;
 use core\models\Search as ModelsSearch;
@@ -46,13 +46,13 @@ class Product
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 
     /**
      * PDO class instance
-     * @var \core\classes\Database $db
+     * @var \core\helpers\Database $db
      */
     protected $db;
 

@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\UserRole as ModelsUserRole;
 use core\handlers\validator\Base as BaseValidator;
 

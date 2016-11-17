@@ -9,7 +9,7 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Curl;
+use core\helpers\Curl;
 use core\models\Module as ModelsModule;
 use core\controllers\admin\Controller as BackendController;
 
@@ -27,7 +27,7 @@ class Module extends BackendController
 
     /**
      * Curl class instance
-     * @var \core\classes\Curl $curl
+     * @var \core\helpers\Curl $curl
      */
     protected $curl;
 

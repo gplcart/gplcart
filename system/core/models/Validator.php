@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Container;
-use core\classes\Cache;
+use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 
 /**

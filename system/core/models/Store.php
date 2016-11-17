@@ -10,8 +10,8 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Cache;
-use core\classes\Request;
+use core\helpers\Cache;
+use core\helpers\Request;
 
 /**
  * Manages basic behaviors and data related to stores
@@ -20,7 +20,7 @@ class Store extends Model
 {
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

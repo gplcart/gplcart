@@ -9,7 +9,7 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Trigger as ModelsTrigger;
 use core\models\Condition as ModelsCondition;
 use core\controllers\admin\Controller as BackendController;

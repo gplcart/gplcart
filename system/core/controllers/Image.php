@@ -9,7 +9,7 @@
 
 namespace core\controllers;
 
-use core\classes\Response;
+use core\helpers\Response;
 use core\controllers\Controller as FrontendController;
 
 /**
@@ -20,7 +20,7 @@ class Image extends FrontendController
 
     /**
      * Response class instance
-     * @var \core\classes\Response $response
+     * @var \core\helpers\Response $response
      */
     protected $response;
 

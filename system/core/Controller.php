@@ -9,7 +9,7 @@
 
 namespace core;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 
 /**
  * Base controller class. Contents methods to be used in the child classes and
@@ -231,19 +231,19 @@ class Controller
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 
     /**
      * Response class instance
-     * @var \core\classes\Response $response
+     * @var \core\helpers\Response $response
      */
     protected $response;
 
@@ -255,7 +255,7 @@ class Controller
 
     /**
      * Session class instance
-     * @var \core\classes\Session $session
+     * @var \core\helpers\Session $session
      */
     protected $session;
 
@@ -267,7 +267,7 @@ class Controller
 
     /**
      * Twig class instance
-     * @var \core\classes\Twig $twig
+     * @var \core\helpers\Twig $twig
      */
     protected $twig;
 
@@ -297,7 +297,7 @@ class Controller
 
     /**
      * Pager class instance
-     * @var \core\classes\Pager $pager
+     * @var \core\helpers\Pager $pager
      */
     protected $pager;
 
@@ -537,17 +537,17 @@ class Controller
         /* @var $validator \core\models\Validator */
         $this->validator = Container::instance('core\\models\\Validator');
 
-        /* @var $url \core\classes\Url */
-        $this->url = Container::instance('core\\classes\\Url');
+        /* @var $url \core\helpers\Url */
+        $this->url = Container::instance('core\\helpers\\Url');
 
-        /* @var $request \core\classes\Request */
-        $this->request = Container::instance('core\\classes\\Request');
+        /* @var $request \core\helpers\Request */
+        $this->request = Container::instance('core\\helpers\\Request');
 
-        /* @var $response \core\classes\Response */
-        $this->response = Container::instance('core\\classes\\Response');
+        /* @var $response \core\helpers\Response */
+        $this->response = Container::instance('core\\helpers\\Response');
 
-        /* @var $session \core\classes\Session */
-        $this->session = Container::instance('core\\classes\\Session');
+        /* @var $session \core\helpers\Session */
+        $this->session = Container::instance('core\\helpers\\Session');
 
         /* @var $hook \core\Hook */
         $this->hook = Container::instance('core\\Hook');
@@ -558,20 +558,20 @@ class Controller
         /* @var $config \core\Config */
         $this->config = Container::instance('core\\Config');
 
-        /* @var $logger \core\classes\Logger */
+        /* @var $logger \core\helpers\Logger */
         $this->logger = Container::instance('core\\Logger');
 
-        /* @var $document \core\classes\Document */
-        $this->document = Container::instance('core\\classes\\Document');
+        /* @var $document \core\helpers\Document */
+        $this->document = Container::instance('core\\helpers\\Document');
 
-        /* @var $filter \core\classes\Filter */
-        $this->filter = Container::instance('core\\classes\\Filter');
+        /* @var $filter \core\helpers\Filter */
+        $this->filter = Container::instance('core\\helpers\\Filter');
 
-        /* @var $device \core\classes\Device */
-        $this->device = Container::instance('core\\classes\\Device');
+        /* @var $device \core\helpers\Device */
+        $this->device = Container::instance('core\\helpers\\Device');
 
-        /* @var $pager \core\classes\Pager */
-        $this->pager = Container::instance('core\\classes\\Pager');
+        /* @var $pager \core\helpers\Pager */
+        $this->pager = Container::instance('core\\helpers\\Pager');
     }
 
     /**
@@ -671,8 +671,8 @@ class Controller
         $this->theme_settings = $this->config->module($this->theme, null, array());
 
         if (isset($this->theme_settings['twig'])) {
-            /* @var $twig \core\classes\Twig */
-            $this->twig = Container::instance('core\\classes\\Twig');
+            /* @var $twig \core\helpers\Twig */
+            $this->twig = Container::instance('core\\helpers\\Twig');
         }
 
         if (empty($this->theme_settings['templates'])) {
@@ -1295,7 +1295,7 @@ class Controller
         $file = "files/assets/compressed/$type/{$this->theme}$id.$type";
 
         if (!file_exists(GC_ROOT_DIR . "/$file")) {
-            $compressor = Container::instance('core\\classes\\Compressor');
+            $compressor = Container::instance('core\\helpers\\Compressor');
         }
 
         $weights = array();

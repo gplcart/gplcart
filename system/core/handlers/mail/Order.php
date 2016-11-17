@@ -10,7 +10,7 @@
 namespace core\handlers\mail;
 
 use core\Config;
-use core\classes\Url;
+use core\helpers\Url;
 use core\models\Mail as ModelsMail;
 use core\models\Store as ModelsStore;
 use core\models\Price as ModelsPrice;
@@ -52,7 +52,7 @@ class Order
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 

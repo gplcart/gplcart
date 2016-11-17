@@ -12,10 +12,10 @@ namespace core;
 use core\Hook;
 use core\Config;
 use core\Handler;
-use core\classes\Url;
-use core\classes\Tool;
-use core\classes\Cache;
-use core\classes\Request;
+use core\helpers\Url;
+use core\helpers\Tool;
+use core\helpers\Cache;
+use core\helpers\Request;
 use core\exceptions\RouteException;
 
 /**
@@ -26,13 +26,13 @@ class Route
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 
@@ -68,7 +68,7 @@ class Route
 
     /**
      * PDO instance
-     * @var \core\classes\Database $db
+     * @var \core\helpers\Database $db
      */
     protected $db;
 

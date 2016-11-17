@@ -9,7 +9,7 @@
 
 namespace core\models;
 
-use core\classes\Cache;
+use core\helpers\Cache;
 use core\Model;
 use core\models\Alias as ModelsAlias;
 use core\models\CategoryGroup as ModelsCategoryGroup;

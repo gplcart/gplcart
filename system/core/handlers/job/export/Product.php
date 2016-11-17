@@ -9,7 +9,7 @@
 
 namespace core\handlers\job\export;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Price as ModelsPrice;
 use core\models\Export as ModelsExport;
 use core\models\Product as ModelsProduct;

@@ -11,8 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\Container;
-use core\classes\Tool;
-use core\classes\Database;
+use core\helpers\Tool;
+use core\helpers\Database;
 use core\models\Store as ModelsStore;
 use core\models\Language as ModelsLanguage;
 use core\exceptions\DatabaseException;
@@ -37,7 +37,7 @@ class Install extends Model
 
     /**
      * PDO instance
-     * @var \core\classes\Database $db
+     * @var \core\helpers\Database $db
      */
     protected $database;
 

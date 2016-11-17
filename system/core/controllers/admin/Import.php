@@ -9,7 +9,7 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Curl;
+use core\helpers\Curl;
 use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
 use core\controllers\admin\Controller as BackendController;
@@ -22,7 +22,7 @@ class Import extends BackendController
 
     /**
      * Curl class instance
-     * @var \core\classes\Curl $curl
+     * @var \core\helpers\Curl $curl
      */
     protected $curl;
 

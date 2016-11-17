@@ -10,8 +10,8 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Cache;
-use core\classes\Session;
+use core\helpers\Cache;
+use core\helpers\Session;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -28,7 +28,7 @@ class UserRole extends Model
 
     /**
      * Session class instance
-     * @var \core\classes\Session $session
+     * @var \core\helpers\Session $session
      */
     protected $session;
 

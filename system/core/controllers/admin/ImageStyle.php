@@ -9,7 +9,7 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\File as ModelsFile;
 use core\models\Image as ModelsImage;
 use core\controllers\admin\Controller as BackendController;

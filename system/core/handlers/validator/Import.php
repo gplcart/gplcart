@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Csv;
-use core\classes\Request;
+use core\helpers\Csv;
+use core\helpers\Request;
 use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
 use core\handlers\validator\Base as BaseValidator;
@@ -23,13 +23,13 @@ class Import extends BaseValidator
 
     /**
      * CSV class instance
-     * @var \core\classes\Csv $csv
+     * @var \core\helpers\Csv $csv
      */
     protected $csv;
 
     /**
      * Request class instance
-     * @var \core\classes\Request
+     * @var \core\helpers\Request
      */
     protected $request;
 

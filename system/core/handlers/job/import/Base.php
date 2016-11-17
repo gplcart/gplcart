@@ -10,7 +10,7 @@
 namespace core\handlers\job\import;
 
 use core\Container;
-use core\classes\Tool;
+use core\helpers\Tool;
 
 /**
  * Base class for import handlers
@@ -50,7 +50,7 @@ class Base
 
     /**
      * CSV class instance
-     * @var \core\classes\Csv $csv
+     * @var \core\helpers\Csv $csv
      */
     protected $csv;
 
@@ -86,8 +86,8 @@ class Base
         /* @var $config \core\Config */
         $this->config = Container::instance('core\\Config');
 
-        /* @var $csv \core\classes\Csv */
-        $this->csv = Container::instance('core\\classes\Csv');
+        /* @var $csv \core\helpers\Csv */
+        $this->csv = Container::instance('core\\helpers\\Csv');
 
         /* @var $file \core\models\File */
         $this->file = Container::instance('core\\models\\File');

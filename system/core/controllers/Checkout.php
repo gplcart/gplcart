@@ -9,7 +9,7 @@
 
 namespace core\controllers;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\State as ModelsState;
 use core\models\Order as ModelsOrder;
 use core\models\Address as ModelsAddress;

@@ -9,9 +9,9 @@
 
 namespace core\models;
 
-use core\classes\Cache;
-use core\classes\Request;
-use core\classes\Tool;
+use core\helpers\Cache;
+use core\helpers\Request;
+use core\helpers\Tool;
 use core\Logger;
 use core\Model;
 use core\models\Currency as ModelsCurrency;
@@ -65,7 +65,7 @@ class Cart extends Model
 
     /**
      * Request model instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

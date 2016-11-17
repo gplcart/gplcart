@@ -9,7 +9,7 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Export as ModelsExport;
 use core\models\Product as ModelsProduct;
 use core\controllers\admin\Controller as BackendController;

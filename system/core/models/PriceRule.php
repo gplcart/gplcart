@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Cache;
+use core\helpers\Cache;
 use core\models\Trigger as ModelsTrigger;
 use core\models\Currency as ModelsCurrency;
 use core\models\Language as ModelsLanguage;

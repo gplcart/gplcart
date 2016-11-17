@@ -10,7 +10,7 @@
 namespace core\handlers\trigger;
 
 use core\Route;
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\User as ModelsUser;
 use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;

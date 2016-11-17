@@ -9,7 +9,7 @@
 
 namespace core\models;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\Model;
 use core\models\Language as ModelsLanguage;
 use core\Route;

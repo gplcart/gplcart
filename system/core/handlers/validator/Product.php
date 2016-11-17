@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Sku as ModelsSku;
 use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;

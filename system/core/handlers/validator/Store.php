@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Tool;
-use core\classes\Request;
+use core\helpers\Tool;
+use core\helpers\Request;
 use core\models\File as ModelsFile;
 use core\models\Module as ModelsModule;
 use core\handlers\validator\Base as BaseValidator;
@@ -35,7 +35,7 @@ class Store extends BaseValidator
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

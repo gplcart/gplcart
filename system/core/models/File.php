@@ -10,10 +10,10 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Url;
-use core\classes\Curl;
-use core\classes\Tool;
-use core\classes\Cache;
+use core\helpers\Url;
+use core\helpers\Curl;
+use core\helpers\Tool;
+use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 use core\models\Validator as ModelsValidator;
 
@@ -37,7 +37,7 @@ class File extends Model
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 
@@ -49,7 +49,7 @@ class File extends Model
 
     /**
      * CURL class instance
-     * @var \core\classes\Curl $curl
+     * @var \core\helpers\Curl $curl
      */
     protected $curl;
 

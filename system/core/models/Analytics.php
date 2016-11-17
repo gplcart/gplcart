@@ -9,7 +9,7 @@
 
 namespace core\models;
 
-use core\classes\Cache;
+use core\helpers\Cache;
 use core\Handler;
 use core\Logger;
 use core\Model;

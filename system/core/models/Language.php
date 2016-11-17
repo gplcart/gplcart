@@ -9,8 +9,8 @@
 
 namespace core\models;
 
-use core\classes\Cache;
-use core\classes\Tool;
+use core\helpers\Cache;
+use core\helpers\Tool;
 use core\Model;
 use core\models\Translit as ModelsTranslit;
 use core\Route;

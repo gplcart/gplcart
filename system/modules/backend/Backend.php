@@ -9,7 +9,7 @@
 
 namespace modules\backend;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 
 /**
  * Main backend theme class

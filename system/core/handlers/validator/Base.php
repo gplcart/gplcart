@@ -10,7 +10,7 @@
 namespace core\handlers\validator;
 
 use core\Container;
-use core\classes\Tool;
+use core\helpers\Tool;
 
 /**
  * Base validator class

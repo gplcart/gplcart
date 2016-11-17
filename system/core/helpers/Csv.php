@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\classes;
+namespace core\helpers;
 
 use UnexpectedValueException;
 

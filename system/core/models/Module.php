@@ -12,8 +12,8 @@ namespace core\models;
 use ZipArchive;
 use core\Model;
 use core\Container;
-use core\classes\Tool;
-use core\classes\Cache;
+use core\helpers\Tool;
+use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 use core\exceptions\ModuleException;
 

@@ -31,7 +31,7 @@ class Model
 
     /**
      * PDO instance
-     * @var \core\classes\Database $db
+     * @var \core\helpers\Database $db
      */
     protected $db;
 
@@ -56,7 +56,7 @@ class Model
 
     /**
      * Returns PDO database instance
-     * @return \core\classes\Database
+     * @return \core\helpers\Database
      */
     public function getDb()
     {

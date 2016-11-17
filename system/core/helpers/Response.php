@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\classes;
+namespace core\helpers;
 
 /**
  * Provides methods to output a data to the user
@@ -43,7 +43,7 @@ class Response
      * Adds a header
      * @param mixed $name Header name or numeric code (for status headers)
      * @param string $value Optional second part of header name
-     * @return \core\classes\Response
+     * @return \core\helpers\Response
      */
     protected function addHeader($name, $value = null)
     {

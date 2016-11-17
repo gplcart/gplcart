@@ -11,8 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\classes\Url;
-use core\classes\Cache;
+use core\helpers\Url;
+use core\helpers\Cache;
 use core\models\User as ModelsUser;
 use core\models\Language as ModelsLanguage;
 
@@ -42,7 +42,7 @@ class Wishlist extends Model
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 

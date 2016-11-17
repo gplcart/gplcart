@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Request;
+use core\helpers\Request;
 use core\models\File as ModelsFile;
 use core\models\Field as ModelsField;
 use core\models\FieldValue as ModelsFieldValue;
@@ -23,7 +23,7 @@ class FieldValue extends BaseValidator
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

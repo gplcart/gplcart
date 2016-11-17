@@ -11,8 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\classes\Cache;
-use core\classes\Request;
+use core\helpers\Cache;
+use core\helpers\Request;
 use core\models\Mail as ModelsMail;
 use core\models\Cart as ModelsCart;
 use core\models\User as ModelsUser;
@@ -77,7 +77,7 @@ class Order extends Model
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

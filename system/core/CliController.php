@@ -9,7 +9,7 @@
 
 namespace core;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 
 /**
  * Basic CLI controller

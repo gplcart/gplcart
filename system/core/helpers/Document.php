@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\classes;
+namespace core\helpers;
 
 /**
  * Provides methods to work with HTML document
@@ -17,7 +17,7 @@ class Document
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\classes\Request;
+use core\helpers\Request;
 use core\models\File as ModelsFile;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -27,7 +27,7 @@ class Module extends BaseValidator
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

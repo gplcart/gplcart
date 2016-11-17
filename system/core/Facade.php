@@ -9,8 +9,8 @@
 
 namespace core;
 
-use core\classes\Url;
-use core\classes\Session;
+use core\helpers\Url;
+use core\helpers\Session;
 
 /**
  * Provides methods to route incoming requests and setup the system
@@ -26,13 +26,13 @@ class Facade
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Session class instance
-     * @var \core\classes\Session $session
+     * @var \core\helpers\Session $session
      */
     protected $session;
 

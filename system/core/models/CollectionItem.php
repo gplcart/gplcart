@@ -11,8 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\Handler;
-use core\classes\Tool;
-use core\classes\Cache;
+use core\helpers\Tool;
+use core\helpers\Cache;
 use core\models\Collection as ModelsCollection;
 
 /**

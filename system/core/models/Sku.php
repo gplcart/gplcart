@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Language as ModelsLanguage;
 
 /**

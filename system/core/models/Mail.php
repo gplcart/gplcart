@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Logger;
 use core\Handler;
-use core\classes\Cache;
+use core\helpers\Cache;
 
 /**
  * Manages basic behaviors and data related to sending e-mails

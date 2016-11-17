@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Cache;
+use core\helpers\Cache;
 use core\models\Alias as ModelsAlias;
 use core\models\Image as ModelsImage;
 use core\models\Language as ModelsLanguage;

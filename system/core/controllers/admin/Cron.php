@@ -9,7 +9,7 @@
 
 namespace core\controllers\admin;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Report as ModelsReport;
 use core\controllers\admin\Controller as BackendController;
 
@@ -92,7 +92,7 @@ class Cron extends BackendController
         $lifespan = (int) $this->config('history_lifespan', 2628000);
         $ago = (GC_TIME - $lifespan);
 
-        /* @var $database \core\classes\Database */
+        /* @var $database \core\helpers\Database */
         $database = $this->config->getDb();
         $database->run('DELETE FROM history WHERE time < ?', array($ago));
     }

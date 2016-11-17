@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Tool;
-use core\classes\Cache;
-use core\classes\Request;
+use core\helpers\Tool;
+use core\helpers\Cache;
+use core\helpers\Request;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -23,7 +23,7 @@ class Compare extends Model
 
     /**
      * Request class instance
-     * @var \core\classes\Request $request
+     * @var \core\helpers\Request $request
      */
     protected $request;
 

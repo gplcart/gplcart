@@ -9,7 +9,7 @@
 
 namespace core\controllers;
 
-use core\classes\Tool;
+use core\helpers\Tool;
 use core\models\Install as ModelsInstall;
 use core\controllers\Controller as FrontendController;
 

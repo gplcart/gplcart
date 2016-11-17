@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
-use core\classes\Url;
-use core\classes\Tool;
-use core\classes\Image as Imagestyle;
+use core\helpers\Url;
+use core\helpers\Tool;
+use core\helpers\Image as Imagestyle;
 use core\models\File as ModelsFile;
 
 /**
@@ -29,13 +29,13 @@ class Image extends Model
 
     /**
      * Imagestyle class instance
-     * @var \core\classes\Image $imagestyle
+     * @var \core\helpers\Image $imagestyle
      */
     protected $imagestyle;
 
     /**
      * Url class instance
-     * @var \core\classes\Url $url
+     * @var \core\helpers\Url $url
      */
     protected $url;
 
