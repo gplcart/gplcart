@@ -35,7 +35,7 @@ class Backend
 
     /**
      * Implements hook.backend
-     * @param \core\controllers\admin\Controller $controller
+     * @param \core\controllers\backend\Controller $controller
      */
     public function hookInitBackend($controller)
     {
@@ -46,7 +46,7 @@ class Backend
 
     /**
      * Adds styles
-     * @param \core\controllers\admin\Controller $controller
+     * @param \core\controllers\backend\Controller $controller
      */
     protected function addCss($controller)
     {
@@ -63,7 +63,7 @@ class Backend
 
     /**
      * Adds meta tags
-     * @param \core\controllers\admin\Controller $controller
+     * @param \core\controllers\backend\Controller $controller
      */
     protected function addMeta($controller)
     {
@@ -75,7 +75,7 @@ class Backend
 
     /**
      * Adds scripts
-     * @param \core\controllers\admin\Controller $controller
+     * @param \core\controllers\backend\Controller $controller
      */
     protected function addJs($controller)
     {

@@ -11,7 +11,7 @@ namespace modules\twocheckout\controllers;
 
 use core\models\Module as ModelsModule;
 use modules\twocheckout\TwoCheckout as ModulesTwoCheckout;
-use core\controllers\admin\Controller as BackendController;
+use core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
 {

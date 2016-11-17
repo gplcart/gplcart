@@ -109,182 +109,182 @@ class Route
 
         $routes['install'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Install', 'install')
+                'controller' => array('core\\controllers\\frontend\\Install', 'install')
             )
         );
 
         $routes['ajax'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Ajax', 'getResponseAjax')
+                'controller' => array('core\\controllers\\frontend\\Ajax', 'getResponseAjax')
             )
         );
 
         $routes[''] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Front', 'indexFront')
+                'controller' => array('core\\controllers\\frontend\\Front', 'indexFront')
             )
         );
 
         $routes['transaction/success/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Transaction', 'successTransaction')
+                'controller' => array('core\\controllers\\frontend\\Transaction', 'successTransaction')
             )
         );
 
         $routes['cron'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Cron', 'executeCron')
+                'controller' => array('core\\controllers\\backend\\Cron', 'executeCron')
             )
         );
 
         $routes['product/(\d+)'] = array(
             'alias' => array(0, 1),
             'handlers' => array(
-                'controller' => array('core\\controllers\\Product', 'indexProduct')
+                'controller' => array('core\\controllers\\frontend\\Product', 'indexProduct')
             )
         );
 
         $routes['review/add/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Review', 'editReview')
+                'controller' => array('core\\controllers\\frontend\\Review', 'editReview')
             )
         );
 
         $routes['review/edit/(\d+)/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Review', 'editReview')
+                'controller' => array('core\\controllers\\frontend\\Review', 'editReview')
             )
         );
 
         $routes['files/image/cache/.*'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Image', 'cache')
+                'controller' => array('core\\controllers\\frontend\\Image', 'cache')
             )
         );
 
         $routes['page/(\d+)'] = array(
             'alias' => array(0, 1),
             'handlers' => array(
-                'controller' => array('core\\controllers\\Page', 'indexPage')
+                'controller' => array('core\\controllers\\frontend\\Page', 'indexPage')
             )
         );
 
         $routes['login'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\User', 'editLoginUser')
+                'controller' => array('core\\controllers\\frontend\\User', 'editLoginUser')
             )
         );
 
         $routes['logout'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\User', 'logoutUser')
+                'controller' => array('core\\controllers\\frontend\\User', 'logoutUser')
             )
         );
 
         $routes['register'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\User', 'editRegisterUser')
+                'controller' => array('core\\controllers\\frontend\\User', 'editRegisterUser')
             )
         );
 
         $routes['forgot'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\User', 'editResetPasswordUser')
+                'controller' => array('core\\controllers\\frontend\\User', 'editResetPasswordUser')
             )
         );
 
         $routes['category/(\d+)'] = array(
             'alias' => array(0, 1),
             'handlers' => array(
-                'controller' => array('core\\controllers\\Category', 'indexCategory')
+                'controller' => array('core\\controllers\\frontend\\Category', 'indexCategory')
             )
         );
 
         $routes['checkout'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'editCheckout')
+                'controller' => array('core\\controllers\\frontend\\Checkout', 'editCheckout')
             )
         );
 
         $routes['checkout/complete/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'completeCheckout')
+                'controller' => array('core\\controllers\\frontend\\Checkout', 'completeCheckout')
             )
         );
 
         $routes['checkout/edit/(\d+)'] = array(
             'access' => 'order_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'editOrderCheckout')
+                'controller' => array('core\\controllers\\frontend\\Checkout', 'editOrderCheckout')
             )
         );
 
         $routes['checkout/add/(\d+)'] = array(
             'access' => 'order_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\Checkout', 'addUserOrderCheckout')
+                'controller' => array('core\\controllers\\frontend\\Checkout', 'addUserOrderCheckout')
             )
         );
 
         $routes['account/(\d+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'indexAccount')
+                'controller' => array('core\\controllers\\frontend\\Account', 'indexAccount')
             )
         );
 
         $routes['account/(\d+)/edit'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'editAccount')
+                'controller' => array('core\\controllers\\frontend\\Account', 'editAccount')
             )
         );
 
         $routes['account/(\d+)/address'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'listAddressAccount')
+                'controller' => array('core\\controllers\\frontend\\Account', 'listAddressAccount')
             )
         );
 
         $routes['account/(\d+)/address/add'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Account', 'editAddressAccount')
+                'controller' => array('core\\controllers\\frontend\\Account', 'editAddressAccount')
             )
         );
 
         $routes['wishlist'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Wishlist', 'indexWishlist')
+                'controller' => array('core\\controllers\\frontend\\Wishlist', 'indexWishlist')
             )
         );
 
         $routes['compare'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Compare', 'selectCompare')
+                'controller' => array('core\\controllers\\frontend\\Compare', 'selectCompare')
             )
         );
 
         $routes['compare/([^/]+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Compare', 'compare')
+                'controller' => array('core\\controllers\\frontend\\Compare', 'compare')
             )
         );
 
         $routes['search'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\Search', 'indexSearch')
+                'controller' => array('core\\controllers\\frontend\\Search', 'indexSearch')
             )
         );
 
         $routes['admin'] = array(
             'access' => 'dashboard',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Dashboard', 'dashboard')
+                'controller' => array('core\\controllers\\backend\\Dashboard', 'dashboard')
             )
         );
 
         $routes['admin/content'] = array(
             'menu' => array('admin' => 'Content'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -292,21 +292,21 @@ class Route
             'access' => 'product',
             'menu' => array('admin' => 'Products'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Product', 'listProduct')
+                'controller' => array('core\\controllers\\backend\\Product', 'listProduct')
             )
         );
 
         $routes['admin/content/product/add'] = array(
             'access' => 'product_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Product', 'editProduct')
+                'controller' => array('core\\controllers\\backend\\Product', 'editProduct')
             )
         );
 
         $routes['admin/content/product/edit/(\d+)'] = array(
             'access' => 'product_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Product', 'editProduct')
+                'controller' => array('core\\controllers\\backend\\Product', 'editProduct')
             )
         );
 
@@ -314,35 +314,35 @@ class Route
             'access' => 'product_class',
             'menu' => array('admin' => 'Product classes'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'listProductClass')
+                'controller' => array('core\\controllers\\backend\\ProductClass', 'listProductClass')
             )
         );
 
         $routes['admin/content/product-class/edit/(\d+)'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'editProductClass')
+                'controller' => array('core\\controllers\\backend\\ProductClass', 'editProductClass')
             )
         );
 
         $routes['admin/content/product-class/add'] = array(
             'access' => 'product_class_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'editProductClass')
+                'controller' => array('core\\controllers\\backend\\ProductClass', 'editProductClass')
             )
         );
 
         $routes['admin/content/product-class/field/(\d+)'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'fieldsProductClass')
+                'controller' => array('core\\controllers\\backend\\ProductClass', 'fieldsProductClass')
             )
         );
 
         $routes['admin/content/product-class/field/(\d+)/add'] = array(
             'access' => 'product_class_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ProductClass', 'editFieldProductClass')
+                'controller' => array('core\\controllers\\backend\\ProductClass', 'editFieldProductClass')
             )
         );
 
@@ -350,42 +350,42 @@ class Route
             'access' => 'collection',
             'menu' => array('admin' => 'Collections'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Collection', 'listCollection')
+                'controller' => array('core\\controllers\\backend\\Collection', 'listCollection')
             )
         );
 
         $routes['admin/content/collection/add'] = array(
             'access' => 'collection_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Collection', 'editCollection')
+                'controller' => array('core\\controllers\\backend\\Collection', 'editCollection')
             )
         );
 
         $routes['admin/content/collection/edit/(\d+)'] = array(
             'access' => 'collection_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Collection', 'editCollection')
+                'controller' => array('core\\controllers\\backend\\Collection', 'editCollection')
             )
         );
 
         $routes['admin/content/collection-item/(\d+)'] = array(
             'access' => 'collection_item',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CollectionItem', 'listCollectionItem')
+                'controller' => array('core\\controllers\\backend\\CollectionItem', 'listCollectionItem')
             )
         );
 
         $routes['admin/content/collection-item/(\d+)/add'] = array(
             'access' => 'collection_item_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CollectionItem', 'editCollectionItem')
+                'controller' => array('core\\controllers\\backend\\CollectionItem', 'editCollectionItem')
             )
         );
 
         $routes['admin/tool'] = array(
             'menu' => array('admin' => 'Tools'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -393,14 +393,14 @@ class Route
             'access' => 'import',
             'menu' => array('admin' => 'Import'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Import', 'listImport')
+                'controller' => array('core\\controllers\\backend\\Import', 'listImport')
             )
         );
 
         $routes['admin/tool/import/(\w+)'] = array(
             'access' => 'import',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Import', 'editImport')
+                'controller' => array('core\\controllers\\backend\\Import', 'editImport')
             )
         );
 
@@ -408,21 +408,21 @@ class Route
             'access' => 'export',
             'menu' => array('admin' => 'Export'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Export', 'listExport')
+                'controller' => array('core\\controllers\\backend\\Export', 'listExport')
             )
         );
 
         $routes['admin/tool/export/(\w+)'] = array(
             'access' => 'export',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Export', 'editExport')
+                'controller' => array('core\\controllers\\backend\\Export', 'editExport')
             )
         );
 
         $routes['admin/sale'] = array(
             'menu' => array('admin' => 'Sales'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -430,21 +430,21 @@ class Route
             'access' => 'order',
             'menu' => array('admin' => 'Orders'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Order', 'listOrder')
+                'controller' => array('core\\controllers\\backend\\Order', 'listOrder')
             )
         );
 
         $routes['admin/sale/order/(\d+)'] = array(
             'access' => 'order',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Order', 'viewOrder')
+                'controller' => array('core\\controllers\\backend\\Order', 'viewOrder')
             )
         );
 
         $routes['admin/sale/order-snapshot/(\d+)'] = array(
             'access' => 'order',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Order', 'snapshotOrder')
+                'controller' => array('core\\controllers\\backend\\Order', 'snapshotOrder')
             )
         );
 
@@ -452,21 +452,21 @@ class Route
             'access' => 'price_rule',
             'menu' => array('admin' => 'Prices'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\PriceRule', 'listPriceRule')
+                'controller' => array('core\\controllers\\backend\\PriceRule', 'listPriceRule')
             )
         );
 
         $routes['admin/sale/price/add'] = array(
             'access' => 'price_rule_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\PriceRule', 'editPriceRule')
+                'controller' => array('core\\controllers\\backend\\PriceRule', 'editPriceRule')
             )
         );
 
         $routes['admin/sale/price/edit/(\d+)'] = array(
             'access' => 'price_rule_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\PriceRule', 'editPriceRule')
+                'controller' => array('core\\controllers\\backend\\PriceRule', 'editPriceRule')
             )
         );
 
@@ -474,7 +474,7 @@ class Route
             'access' => 'transaction',
             'menu' => array('admin' => 'Transactions'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Transaction', 'listTransaction')
+                'controller' => array('core\\controllers\\backend\\Transaction', 'listTransaction')
             )
         );
 
@@ -482,21 +482,21 @@ class Route
             'access' => 'page',
             'menu' => array('admin' => 'Pages'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Page', 'listPage')
+                'controller' => array('core\\controllers\\backend\\Page', 'listPage')
             )
         );
 
         $routes['admin/content/page/add'] = array(
             'access' => 'page_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Page', 'editPage')
+                'controller' => array('core\\controllers\\backend\\Page', 'editPage')
             )
         );
 
         $routes['admin/content/page/edit/(\d+)'] = array(
             'access' => 'page_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Page', 'editPage')
+                'controller' => array('core\\controllers\\backend\\Page', 'editPage')
             )
         );
 
@@ -504,21 +504,21 @@ class Route
             'access' => 'review',
             'menu' => array('admin' => 'Reviews'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Review', 'listReview')
+                'controller' => array('core\\controllers\\backend\\Review', 'listReview')
             )
         );
 
         $routes['admin/content/review/add'] = array(
             'access' => 'review_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Review', 'editReview')
+                'controller' => array('core\\controllers\\backend\\Review', 'editReview')
             )
         );
 
         $routes['admin/content/review/edit/(\d+)'] = array(
             'access' => 'review_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Review', 'editReview')
+                'controller' => array('core\\controllers\\backend\\Review', 'editReview')
             )
         );
 
@@ -526,21 +526,21 @@ class Route
             'access' => 'file',
             'menu' => array('admin' => 'Files'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\File', 'listFile')
+                'controller' => array('core\\controllers\\backend\\File', 'listFile')
             )
         );
 
         $routes['admin/content/file/add'] = array(
             'access' => 'file_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\File', 'editFile')
+                'controller' => array('core\\controllers\\backend\\File', 'editFile')
             )
         );
 
         $routes['admin/content/file/edit/(\d+)'] = array(
             'access' => 'file_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\File', 'editFile')
+                'controller' => array('core\\controllers\\backend\\File', 'editFile')
             )
         );
 
@@ -548,49 +548,49 @@ class Route
             'access' => 'category_group',
             'menu' => array('admin' => 'Categories'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'listCategoryGroup')
+                'controller' => array('core\\controllers\\backend\\CategoryGroup', 'listCategoryGroup')
             )
         );
 
         $routes['admin/content/category-group/edit/(\d+)'] = array(
             'access' => 'category_group_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'editCategoryGroup')
+                'controller' => array('core\\controllers\\backend\\CategoryGroup', 'editCategoryGroup')
             )
         );
 
         $routes['admin/content/category-group/add'] = array(
             'access' => 'category_group_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\CategoryGroup', 'editCategoryGroup')
+                'controller' => array('core\\controllers\\backend\\CategoryGroup', 'editCategoryGroup')
             )
         );
 
         $routes['admin/content/category/(\d+)'] = array(
             'access' => 'category',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Category', 'listCategory')
+                'controller' => array('core\\controllers\\backend\\Category', 'listCategory')
             )
         );
 
         $routes['admin/content/category/add/(\d+)'] = array(
             'access' => 'category_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Category', 'editCategory')
+                'controller' => array('core\\controllers\\backend\\Category', 'editCategory')
             )
         );
 
         $routes['admin/content/category/edit/(\d+)/(\d+)'] = array(
             'access' => 'category_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Category', 'editCategory')
+                'controller' => array('core\\controllers\\backend\\Category', 'editCategory')
             )
         );
 
         $routes['admin/user'] = array(
             'menu' => array('admin' => 'Users'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -598,21 +598,21 @@ class Route
             'access' => 'user',
             'menu' => array('admin' => 'Users'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\User', 'listUser')
+                'controller' => array('core\\controllers\\backend\\User', 'listUser')
             )
         );
 
         $routes['admin/user/edit/(\d+)'] = array(
             'access' => 'user_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\User', 'editUser')
+                'controller' => array('core\\controllers\\backend\User', 'editUser')
             )
         );
 
         $routes['admin/user/add'] = array(
             'access' => 'user_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\User', 'editUser')
+                'controller' => array('core\\controllers\\backend\User', 'editUser')
             )
         );
 
@@ -620,21 +620,21 @@ class Route
             'access' => 'user_role',
             'menu' => array('admin' => 'Roles'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\UserRole', 'listUserRole')
+                'controller' => array('core\\controllers\\backend\\UserRole', 'listUserRole')
             )
         );
 
         $routes['admin/user/role/add'] = array(
             'access' => 'user_role_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\UserRole', 'editUserRole')
+                'controller' => array('core\\controllers\\backend\\UserRole', 'editUserRole')
             )
         );
 
         $routes['admin/user/role/edit/(\d+)'] = array(
             'access' => 'user_role_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\UserRole', 'editUserRole')
+                'controller' => array('core\\controllers\\backend\\UserRole', 'editUserRole')
             )
         );
 
@@ -642,35 +642,35 @@ class Route
             'access' => 'field',
             'menu' => array('admin' => 'Fields'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Field', 'listField')
+                'controller' => array('core\\controllers\\backend\\Field', 'listField')
             )
         );
 
         $routes['admin/content/field/value/(\d+)'] = array(
             'access' => 'field_value',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\FieldValue', 'listFieldValue')
+                'controller' => array('core\\controllers\\backend\\FieldValue', 'listFieldValue')
             )
         );
 
         $routes['admin/content/field/value/(\d+)/(\w+)'] = array(
             'access' => 'field_value',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\FieldValue', 'editFieldValue')
+                'controller' => array('core\\controllers\\backend\\FieldValue', 'editFieldValue')
             )
         );
 
         $routes['admin/content/field/edit/(\d+)'] = array(
             'access' => 'field_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Field', 'editField')
+                'controller' => array('core\\controllers\\backend\\Field', 'editField')
             )
         );
 
         $routes['admin/content/field/add'] = array(
             'access' => 'field_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Field', 'editField')
+                'controller' => array('core\\controllers\\backend\\Field', 'editField')
             )
         );
 
@@ -678,14 +678,14 @@ class Route
             'access' => 'alias',
             'menu' => array('admin' => 'Aliases'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Alias', 'listAlias')
+                'controller' => array('core\\controllers\\backend\\Alias', 'listAlias')
             )
         );
 
         $routes['admin/module'] = array(
             'menu' => array('admin' => 'Modules'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -693,14 +693,14 @@ class Route
             'access' => 'module',
             'menu' => array('admin' => 'Local'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'listModule')
+                'controller' => array('core\\controllers\\backend\\Module', 'listModule')
             )
         );
 
         $routes['admin/module/upload'] = array(
             'access' => 'module_upload',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'uploadModule')
+                'controller' => array('core\\controllers\\backend\\Module', 'uploadModule')
             )
         );
 
@@ -708,14 +708,14 @@ class Route
             'access' => 'marketplace',
             'menu' => array('admin' => 'Marketplace'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Module', 'marketplaceModule')
+                'controller' => array('core\\controllers\\backend\\Module', 'marketplaceModule')
             )
         );
 
         $routes['admin/settings'] = array(
             'menu' => array('admin' => 'Settings'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -723,7 +723,7 @@ class Route
             'access' => 'settings',
             'menu' => array('admin' => 'Common'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Settings', 'editSettings')
+                'controller' => array('core\\controllers\\backend\\Settings', 'editSettings')
             )
         );
 
@@ -731,21 +731,21 @@ class Route
             'access' => 'language',
             'menu' => array('admin' => 'Languages'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Language', 'listLanguage')
+                'controller' => array('core\\controllers\\backend\\Language', 'listLanguage')
             )
         );
 
         $routes['admin/settings/language/edit/(\w+)'] = array(
             'access' => 'language_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Language', 'editLanguage')
+                'controller' => array('core\\controllers\\backend\\Language', 'editLanguage')
             )
         );
 
         $routes['admin/settings/language/add'] = array(
             'access' => 'language_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Language', 'editLanguage')
+                'controller' => array('core\\controllers\\backend\\Language', 'editLanguage')
             )
         );
 
@@ -753,21 +753,21 @@ class Route
             'access' => 'image_style',
             'menu' => array('admin' => 'Images'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ImageStyle', 'listImageStyle')
+                'controller' => array('core\\controllers\\backend\\ImageStyle', 'listImageStyle')
             )
         );
 
         $routes['admin/settings/imagestyle/edit/(\d+)'] = array(
             'access' => 'image_style_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ImageStyle', 'editImageStyle')
+                'controller' => array('core\\controllers\\backend\\ImageStyle', 'editImageStyle')
             )
         );
 
         $routes['admin/settings/imagestyle/add'] = array(
             'access' => 'image_style_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\ImageStyle', 'editImageStyle')
+                'controller' => array('core\\controllers\\backend\\ImageStyle', 'editImageStyle')
             )
         );
 
@@ -775,21 +775,21 @@ class Route
             'access' => 'currency',
             'menu' => array('admin' => 'Currencies'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Currency', 'listCurrency')
+                'controller' => array('core\\controllers\\backend\\Currency', 'listCurrency')
             )
         );
 
         $routes['admin/settings/currency/edit/(\w+)'] = array(
             'access' => 'currency_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Currency', 'editCurrency')
+                'controller' => array('core\\controllers\\backend\\Currency', 'editCurrency')
             )
         );
 
         $routes['admin/settings/currency/add'] = array(
             'access' => 'currency_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Currency', 'editCurrency')
+                'controller' => array('core\\controllers\\backend\\Currency', 'editCurrency')
             )
         );
 
@@ -797,49 +797,49 @@ class Route
             'access' => 'country',
             'menu' => array('admin' => 'Countries'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'listCountry')
+                'controller' => array('core\\controllers\\backend\\Country', 'listCountry')
             )
         );
 
         $routes['admin/settings/country/edit/(\w+)'] = array(
             'access' => 'country_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'editCountry')
+                'controller' => array('core\\controllers\\backend\\Country', 'editCountry')
             )
         );
 
         $routes['admin/settings/country/add'] = array(
             'access' => 'country_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'editCountry')
+                'controller' => array('core\\controllers\\backend\\Country', 'editCountry')
             )
         );
 
         $routes['admin/settings/country/format/(\w+)'] = array(
             'access' => 'country_format',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Country', 'formatCountry')
+                'controller' => array('core\\controllers\\backend\\Country', 'formatCountry')
             )
         );
 
         $routes['admin/settings/states/(\w+)'] = array(
             'access' => 'state',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\State', 'listState')
+                'controller' => array('core\\controllers\\backend\\State', 'listState')
             )
         );
 
         $routes['admin/settings/state/add/(\w+)'] = array(
             'access' => 'state_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\State', 'editState')
+                'controller' => array('core\\controllers\\backend\\State', 'editState')
             )
         );
 
         $routes['admin/settings/state/edit/(\w+)/(\d+)'] = array(
             'access' => 'state_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\State', 'editState')
+                'controller' => array('core\\controllers\\backend\\State', 'editState')
             )
         );
 
@@ -847,42 +847,42 @@ class Route
             'access' => 'trigger',
             'menu' => array('admin' => 'Triggers'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Trigger', 'listTrigger')
+                'controller' => array('core\\controllers\\backend\\Trigger', 'listTrigger')
             )
         );
 
         $routes['admin/settings/trigger/add'] = array(
             'access' => 'trigger_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Trigger', 'editTrigger')
+                'controller' => array('core\\controllers\\backend\\Trigger', 'editTrigger')
             )
         );
 
         $routes['admin/settings/trigger/edit/(\d+)'] = array(
             'access' => 'trigger_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Trigger', 'editTrigger')
+                'controller' => array('core\\controllers\\backend\\Trigger', 'editTrigger')
             )
         );
 
         $routes['admin/settings/cities/(\w+)/(\d+)'] = array(
             'access' => 'city',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\City', 'listCity')
+                'controller' => array('core\\controllers\\backend\\City', 'listCity')
             )
         );
 
         $routes['admin/settings/city/add/(\w+)/(\d+)'] = array(
             'access' => 'city_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\City', 'editCity')
+                'controller' => array('core\\controllers\\backend\\City', 'editCity')
             )
         );
 
         $routes['admin/settings/city/edit/(\w+)/(\d+)/(\d+)'] = array(
             'access' => 'city_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\City', 'editCity')
+                'controller' => array('core\\controllers\\backend\\City', 'editCity')
             )
         );
 
@@ -890,14 +890,14 @@ class Route
             'access' => 'store',
             'menu' => array('admin' => 'Store'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Store', 'listStore')
+                'controller' => array('core\\controllers\\backend\\Store', 'listStore')
             )
         );
 
         $routes['admin/settings/store/(\w+)'] = array(
             'access' => 'store_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Store', 'editStore')
+                'controller' => array('core\\controllers\\backend\\Store', 'editStore')
             )
         );
 
@@ -905,28 +905,28 @@ class Route
             'access' => 'zone',
             'menu' => array('admin' => 'Zones'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Zone', 'listZone')
+                'controller' => array('core\\controllers\\backend\\Zone', 'listZone')
             )
         );
 
         $routes['admin/settings/zone/add'] = array(
             'access' => 'zone_add',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Zone', 'editZone')
+                'controller' => array('core\\controllers\\backend\\Zone', 'editZone')
             )
         );
 
         $routes['admin/settings/zone/edit/(\d+)'] = array(
             'access' => 'zone_edit',
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Zone', 'editZone')
+                'controller' => array('core\\controllers\\backend\\Zone', 'editZone')
             )
         );
 
         $routes['admin/report'] = array(
             'menu' => array('admin' => 'Reports'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Controller', 'adminSections')
+                'controller' => array('core\\controllers\\backend\\Controller', 'adminSections')
             )
         );
 
@@ -934,7 +934,7 @@ class Route
             'access' => 'report_events',
             'menu' => array('admin' => 'Events'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'listEventReport')
+                'controller' => array('core\\controllers\\backend\\Report', 'listEventReport')
             )
         );
 
@@ -942,7 +942,7 @@ class Route
             'access' => 'report_status',
             'menu' => array('admin' => 'Status'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'listStatusReport')
+                'controller' => array('core\\controllers\\backend\\Report', 'listStatusReport')
             )
         );
 
@@ -950,19 +950,19 @@ class Route
             'access' => 'report_ga',
             'menu' => array('admin' => 'Analytics'),
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Report', 'listGaReport')
+                'controller' => array('core\\controllers\\backend\\Report', 'listGaReport')
             )
         );
 
         $routes['admin/help'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Help', 'listHelp')
+                'controller' => array('core\\controllers\\backend\\Help', 'listHelp')
             )
         );
 
         $routes['admin/help/([a-z0-9_-]+)'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\admin\\Help', 'pageHelp')
+                'controller' => array('core\\controllers\\backend\\Help', 'pageHelp')
             )
         );
 
@@ -1181,11 +1181,11 @@ class Route
      */
     protected function callControllerNotFound()
     {
-        $class = 'core\\controllers\\Controller';
+        $class = 'core\\controllers\\frontend\\Controller';
 
         // Use correct templates
         if ($this->url->isBackend()) {
-            $class = 'core\\controllers\\admin\\Controller';
+            $class = 'core\\controllers\\backend\\Controller';
         }
 
         $route = array(

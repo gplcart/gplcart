@@ -48,7 +48,7 @@ class Frontend
 
     /**
      * Implements hook init.frontend
-     * @param \core\controllers\Controller $controller
+     * @param \core\controllers\frontend\Controller $controller
      */
     public function hookInitFrontend($controller)
     {

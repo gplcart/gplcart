@@ -12,7 +12,7 @@ namespace modules\frontend\controllers;
 use core\models\Image as ModelsImage;
 use core\models\Module as ModelsModule;
 use modules\frontend\Frontend as ModulesFrontend;
-use core\controllers\admin\Controller as BackendController;
+use core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
 {
