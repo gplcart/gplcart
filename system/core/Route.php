@@ -396,13 +396,6 @@ class Route
             )
         );
 
-        $routes['admin/tool/import/(\w+)'] = array(
-            'access' => 'import',
-            'handlers' => array(
-                'controller' => array('core\\controllers\\backend\\Import', 'editImport')
-            )
-        );
-
         $routes['admin/tool/export'] = array(
             'access' => 'export',
             'menu' => array('admin' => 'Export'),

@@ -40,30 +40,21 @@ class Import extends BackendController
     public function listImport()
     {
         $job = $this->getJob();
-        $operations = $this->getOperationsImport();
-
         $this->setData('job', $job);
+
+        $this->controlAccess('file_upload');
+
+        $this->downloadErrorsImport();
+        $this->downloadTemplateImport();
+
+        $operations = $this->getOperationsImport();
         $this->setData('operations', $operations);
+
+        $this->submitImport();
 
         $this->setTitleListImport();
         $this->setBreadcrumbListImport();
         $this->outputListImport();
-    }
-
-    /**
-     * Loads an operation
-     * @param string $operation_id
-     * @return array
-     */
-    protected function getOperationImport($operation_id)
-    {
-        $operation = $this->import->getOperation($operation_id);
-
-        if (empty($operation)) {
-            $this->outputError(404);
-        }
-
-        return $operation;
     }
 
     /**
@@ -105,38 +96,27 @@ class Import extends BackendController
     }
 
     /**
-     * Displays the import form page
-     * @param string $operation_id
+     * Downloads a CSV template file
      */
-    public function editImport($operation_id)
+    protected function downloadTemplateImport()
     {
-        $this->controlAccess('file_upload');
-        $operation = $this->getOperationImport($operation_id);
+        $operation_id = $this->request->get('download_template');
+        $operation = $this->import->getOperation($operation_id);
 
-        $this->downloadImport($operation);
-        $this->submitImport($operation);
-
-        $job = $this->getJob();
-
-        $this->setData('job', $job);
-        $this->setData('operation', $operation);
-
-        $this->setTitleEditImport($operation);
-        $this->setBreadcrumbEditImport();
-        $this->outputEditImport();
+        if (!empty($operation['csv']['template'])) {
+            $this->response->download($operation['csv']['template']);
+        }
     }
 
     /**
-     * Listening to the current URL and outputs files to download if needed
-     * @param array $operation
+     * Downloads an error log file
      */
-    protected function downloadImport(array $operation)
+    protected function downloadErrorsImport()
     {
-        if ($this->isQuery('download_template') && isset($operation['csv']['template'])) {
-            $this->response->download($operation['csv']['template']);
-        }
+        $operation_id = $this->request->get('download_errors');
+        $operation = $this->import->getOperation($operation_id);
 
-        if ($this->isQuery('download_errors') && isset($operation['log']['errors'])) {
+        if (!empty($operation['log']['errors'])) {
             $this->response->download($operation['log']['errors']);
         }
     }
@@ -146,19 +126,28 @@ class Import extends BackendController
      * @param array $operation
      * @return null
      */
-    protected function submitImport(array $operation)
+    protected function submitImport()
     {
-        if (!$this->isPosted('save')) {
+        $operation_id = $this->request->post('import');
+
+        if (empty($operation_id)) {
             return null;
         }
 
-        $this->setSubmitted('import');
-        $this->validateImport($operation);
+        $operation = $this->import->getOperation($operation_id);
 
-        if (!$this->hasErrors('import')) {
-            $this->setJobImport($operation);
+        if (empty($operation)) {
+            return null;
         }
 
+        $this->validateImport($operation);
+        $errors = $this->getError();
+
+        if (empty($errors)) {
+            return $this->setJobImport($operation);
+        }
+
+        $this->setError($operation_id, $errors);
         return null;
     }
 
@@ -191,54 +180,13 @@ class Import extends BackendController
         );
 
         if (!empty($operation['log']['errors'])) {
-            $options = array('!url' => $this->url(false, array('download_errors' => 1)));
+            $options = array('!url' => $this->url(false, array('download_errors' => $operation['id'])));
             $error = $this->text('Inserted: %inserted, updated: %updated, errors: %errors. <a href="!url">See error log</a>', $options);
 
             $job['redirect_message']['errors'] = $error;
         }
 
         $this->setJob($job);
-    }
-
-    /**
-     * Sets titles on the import form page
-     * @param array $operation
-     */
-    protected function setTitleEditImport(array $operation)
-    {
-        $text = $this->text('Import @operation', array(
-            '@operation' => $operation['name']
-        ));
-
-        $this->setTitle($text);
-    }
-
-    /**
-     * Sets breadcrumbs on the import form page
-     */
-    protected function setBreadcrumbEditImport()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Import'),
-            'url' => $this->url('admin/tool/import')
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the import page templates
-     */
-    protected function outputEditImport()
-    {
-        $this->output('tool/import/edit');
     }
 
 }

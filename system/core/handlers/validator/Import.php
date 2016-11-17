@@ -67,7 +67,7 @@ class Import extends BaseValidator
      * Performs full import data validation
      * @param array $submitted
      */
-    public function import(array &$submitted, array $options = array())
+    public function import(array &$submitted)
     {
         $this->validateOperationImport($submitted);
         $this->validateFileImport($submitted);
