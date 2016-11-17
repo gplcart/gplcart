@@ -82,7 +82,6 @@ class Route
     public function __construct(Url $url, Request $request, Config $config,
             Hook $hook)
     {
-
         $this->url = $url;
         $this->hook = $hook;
         $this->config = $config;

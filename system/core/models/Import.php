@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\models\File as ModelsFile;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -19,7 +18,6 @@ use core\models\Language as ModelsLanguage;
  */
 class Import extends Model
 {
-
     /**
      * Validator model instance
      * @var \core\models\Language $language
@@ -27,21 +25,12 @@ class Import extends Model
     protected $language;
 
     /**
-     * File model instance
-     * @var \core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Constructor
      * @param ModelsLanguage $language
-     * @param ModelsFile $file
      */
-    public function __construct(ModelsLanguage $language, ModelsFile $file)
+    public function __construct(ModelsLanguage $language)
     {
         parent::__construct();
-
-        $this->file = $file;
         $this->language = $language;
     }
 

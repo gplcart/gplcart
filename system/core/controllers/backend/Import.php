@@ -9,8 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Curl;
-use core\models\File as ModelsFile;
 use core\models\Import as ModelsImport;
 use core\controllers\backend\Controller as BackendController;
 
@@ -21,36 +19,18 @@ class Import extends BackendController
 {
 
     /**
-     * Curl class instance
-     * @var \core\helpers\Curl $curl
-     */
-    protected $curl;
-
-    /**
      * Import model instance
      * @var \core\models\Import $import
      */
     protected $import;
 
     /**
-     * File model instance
-     * @var \core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Constructor
      * @param ModelsImport $import
-     * @param ModelsFile $file
-     * @param Curl $curl
      */
-    public function __construct(ModelsImport $import, ModelsFile $file,
-            Curl $curl)
+    public function __construct(ModelsImport $import)
     {
         parent::__construct();
-
-        $this->curl = $curl;
-        $this->file = $file;
         $this->import = $import;
     }
 
@@ -59,8 +39,6 @@ class Import extends BackendController
      */
     public function listImport()
     {
-        $this->setDemoImport();
-
         $job = $this->getJob();
         $operations = $this->getOperationsImport();
 
@@ -70,115 +48,6 @@ class Import extends BackendController
         $this->setTitleListImport();
         $this->setBreadcrumbListImport();
         $this->outputListImport();
-    }
-
-    /**
-     * Sets a batch job to import demo content including categories and images
-     * The process will start when "demo" parameter is set in the URL
-     */
-    protected function setDemoImport()
-    {
-        if ($this->isQuery('demo') && $this->isConnectedSiteImport()) {
-            $this->controlAccess('category_add');
-            $this->setJobDemoImport('category');
-        }
-
-        if ($this->request->get('demo-next') === 'product') {
-            $this->controlAccess('product_add');
-            $this->setJobDemoImport('product');
-        }
-    }
-
-    /**
-     * Checks if demo site is connected
-     * The site contains images to be attached to the demo products
-     * @return boolean
-     */
-    protected function isConnectedSiteImport()
-    {
-        $header = $this->curl->header(GC_DEMO_URL);
-
-        if (!empty($header['header_size'])) {
-            return true;
-        }
-
-        $message = $this->text('Unable to connect to external server that provides demo images.'
-                . ' Check your internet connection');
-
-        $this->setMessage($message, 'warning');
-        return false;
-    }
-
-    /**
-     * Imports a demo content from CSV files
-     * @param string $operation_id
-     * @return null
-     */
-    protected function setJobDemoImport($operation_id)
-    {
-        $operation = $this->getOperationImport($operation_id);
-
-        $data = array(
-            'limit' => 1,
-            'operation' => $operation,
-            'filepath' => $operation['csv']['template'],
-            'filesize' => filesize($operation['csv']['template'])
-        );
-
-        $job = array(
-            'data' => $data,
-            'id' => $operation['job_id'],
-            'total' => $data['filesize'],
-        );
-
-        // First import categories, then - products
-        $this->setJobDemoCategoryImport($operation_id, $job);
-        $this->setJobDemoProductImport($operation_id, $job);
-        $this->setJob($job);
-    }
-
-    /**
-     * Sets job data for demo product import step
-     * @param string $operation_id
-     * @param array $job
-     */
-    protected function setJobDemoProductImport($operation_id, array &$job)
-    {
-        if ($operation_id == 'product') {
-
-            $job['message'] = array(
-                'start' => $this->text('Starting to create demo products...'),
-                'process' => $this->text('Creating demo products.'
-                        . ' It may take some time to download images from an external site.'),
-            );
-
-            $job['redirect_message'] = array(
-                'finish' => $this->text('Finished. <a href="!href">See demo products</a>', array(
-                    '!href' => $this->url('admin/content/product')
-                )),
-                'errors' => $this->text('An error occurred while creating demo products.'
-                        . ' A possible reason might be you have duplicated category names.'),
-            );
-        }
-    }
-
-    /**
-     * Sets job data for demo categories import step
-     * @param string $operation_id
-     * @param array $job
-     */
-    protected function setJobDemoCategoryImport($operation_id, array &$job)
-    {
-        if ($operation_id == 'category') {
-
-            $job['message'] = array(
-                'start' => $this->text('Starting to create product categories'),
-                'process' => $this->text('Creating categories...')
-            );
-
-            // Next step - create products
-            $job['redirect']['finish'] = $this->url('', array('demo-next' => 'product'));
-        }
     }
 
     /**
@@ -242,7 +111,6 @@ class Import extends BackendController
     public function editImport($operation_id)
     {
         $this->controlAccess('file_upload');
-
         $operation = $this->getOperationImport($operation_id);
 
         $this->downloadImport($operation);
@@ -324,8 +192,7 @@ class Import extends BackendController
 
         if (!empty($operation['log']['errors'])) {
             $options = array('!url' => $this->url(false, array('download_errors' => 1)));
-            $error = $this->text('Inserted: %inserted, updated: %updated,'
-                    . ' errors: %errors. <a href="!url">See error log</a>', $options);
+            $error = $this->text('Inserted: %inserted, updated: %updated, errors: %errors. <a href="!url">See error log</a>', $options);
 
             $job['redirect_message']['errors'] = $error;
         }
