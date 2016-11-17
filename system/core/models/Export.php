@@ -75,47 +75,11 @@ class Export extends Model
 
         $operations = array();
 
-        $operations['state'] = array(
-            'name' => $this->language->text('Country states'),
-            'description' => '',
-            'job_id' => 'export_state',
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_state_errors.csv'),
-            'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_state.csv'
-        );
-
-        $operations['city'] = array(
-            'name' => $this->language->text('Cities'),
-            'job_id' => 'export_city',
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_city_errors.csv'),
-            'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_city.csv'
-        );
-
         $operations['category'] = array(
             'name' => $this->language->text('Categories'),
             'job_id' => 'export_category',
             'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_category_errors.csv'),
             'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_category.csv'
-        );
-
-        $operations['field'] = array(
-            'name' => $this->language->text('Fields'),
-            'job_id' => 'export_field',
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_field_errors.csv'),
-            'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_field.csv'
-        );
-
-        $operations['field_value'] = array(
-            'name' => $this->language->text('Field values'),
-            'job_id' => 'export_field_value',
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_field_value_errors.csv'),
-            'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_field_value.csv'
-        );
-
-        $operations['user'] = array(
-            'name' => $this->language->text('Users'),
-            'job_id' => 'export_user',
-            'log' => array('errors' => GC_PRIVATE_LOGS_DIR . '/export_user_errors.csv'),
-            'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_user.csv'
         );
 
         $operations['product'] = array(
@@ -125,49 +89,23 @@ class Export extends Model
             'file' => GC_PRIVATE_DOWNLOAD_DIR . '/export_product.csv'
         );
 
-        // Add the same CSV header from import operations
-        foreach ($this->import->getOperations() as $id => $data) {
-            if (isset($operations[$id]) && isset($data['csv']['header'])) {
-                $operations[$id]['csv']['header'] = $data['csv']['header'];
-            }
-        }
+        $this->attachCsvHeader($operations);
 
         $this->hook->fire('export.operations', $operations);
         return $operations;
     }
 
     /**
-     * Logs errors
-     * @param array $data
-     * @param array $operation
-     * @return array
+     * Adds CSV header from import operations for backward compatibility
+     * @param array $operations
      */
-    public function getErrors(array $data, array $operation)
+    protected function attachCsvHeader(&$operations)
     {
-        $errors = array_filter((array) $data);
-
-        if (!empty($operation['log']['errors'])) {
-            foreach ($errors as $error) {
-                Logger::csv($operation['log']['errors'], '', $error, 'warning');
+        foreach ($this->import->getOperations() as $id => $data) {
+            if (isset($operations[$id]) && isset($data['csv']['header'])) {
+                $operations[$id]['csv']['header'] = $data['csv']['header'];
             }
         }
-
-        return array('count' => count($errors), 'message' => end($errors));
-    }
-
-    /**
-     * Returns an array of CSV fields based on the header info
-     * @param array $header
-     * @param array $data
-     * @return array
-     */
-    public function getFields(array $header, array $data)
-    {
-        $fields = array();
-        foreach ($header as $key => $value) {
-            $fields[$key] = isset($data[$key]) ? $data[$key] : '';
-        }
-        return $fields;
     }
 
     /**

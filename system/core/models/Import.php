@@ -77,7 +77,7 @@ class Import extends Model
                     'parent_id' => 'Parent category ID', 'category_group_id' => 'Category group ID',
                     'description_1' => 'Description 1', 'description_2' => 'Description 1',
                     'meta_title' => 'Meta title', 'meta_description' => 'Meta description',
-                    'status' => 'Enabled', 'alias' => 'Alias', 'image' => 'Image',
+                    'status' => 'Enabled', 'alias' => 'Alias', 'images' => 'Images',
                 ),
                 'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_category.csv'
             ),

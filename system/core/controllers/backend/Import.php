@@ -158,6 +158,8 @@ class Import extends BackendController
      */
     protected function validateImport(array $operation)
     {
+        $this->setSubmitted('limit', $this->import->getLimit());
+        $this->setSubmitted('delimiter', $this->import->getCsvDelimiter());
         $this->setSubmitted('operation', $operation);
         $this->validate('import');
     }

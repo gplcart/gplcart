@@ -1,13 +1,11 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <ul>
+    <div class="btn-toolbar">
       <?php foreach ($operations as $id => $operation) { ?>
-      <li>
-        <a href="<?php echo $this->url("admin/tool/export/$id"); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url("admin/tool/export/$id"); ?>">
         <?php echo $this->escape($operation['name']); ?>
-        </a>
-      </li>
+      </a>
       <?php } ?>
-    </ul>
+    </div>
   </div>
 </div>

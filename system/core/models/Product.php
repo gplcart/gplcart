@@ -20,7 +20,6 @@ use core\models\Alias as ModelsAlias;
 use core\models\Search as ModelsSearch;
 use core\models\Language as ModelsLanguage;
 use core\models\PriceRule as ModelsPriceRule;
-use core\models\Combination as ModelsCombination;
 use core\models\ProductField as ModelsProductField;
 
 /**
@@ -28,6 +27,7 @@ use core\models\ProductField as ModelsProductField;
  */
 class Product extends Model
 {
+
     /**
      * Image model instance
      * @var \core\models\Image $image
@@ -125,7 +125,7 @@ class Product extends Model
         if (empty($data)) {
             return false;
         }
-        
+
         $data['created'] = GC_TIME;
         $data += array('currency' => $this->config->get('currency', 'USD'));
         $data['product_id'] = $this->db->insert('product', $data);
@@ -327,16 +327,16 @@ class Product extends Model
     /**
      * Adds translations to the product
      * @param array $product
-     * @param null|string $language
+     * @param string|null $language
+     * @return null
      */
     protected function attachTranslation(array &$product, $language)
     {
         if (empty($product)) {
-            return;
+            return null;
         }
 
         $product['language'] = 'und';
-
         $translations = $this->getTranslation($product['product_id']);
 
         foreach ($translations as $translation) {
@@ -346,6 +346,8 @@ class Product extends Model
         if (isset($language) && isset($product['translation'][$language])) {
             $product = $product['translation'][$language] + $product;
         }
+
+        return null;
     }
 
     /**
@@ -363,11 +365,12 @@ class Product extends Model
      * Adds images to the product
      * @param array $product
      * @param null|string $language
+     * @return null
      */
     protected function attachImage(array &$product, $language = null)
     {
         if (empty($product)) {
-            return;
+            return null;
         }
 
         $images = $this->image->getList('product_id', $product['product_id']);
@@ -386,38 +389,43 @@ class Product extends Model
         }
 
         $product['images'] = $images;
+        return null;
     }
 
     /**
      * Adds fields to the product
      * @param array $product
+     * @return null
      */
     protected function attachFields(array &$product)
     {
         if (empty($product)) {
-            return;
+            return null;
         }
 
         $product['field'] = $this->product_field->getList($product['product_id']);
 
         if (empty($product['field']['option'])) {
-            return;
+            return null;
         }
 
         // Remove repeating field values
         foreach ($product['field']['option'] as &$field_values) {
             $field_values = array_unique($field_values);
         }
+
+        return null;
     }
 
     /**
      * Adds option combinations to the product
      * @param array $product
+     * @return null
      */
     protected function attachSku(array &$product)
     {
         if (empty($product)) {
-            return;
+            return null;
         }
 
         $skus = $this->sku->getList(array('product_id' => $product['product_id']));
@@ -433,6 +441,8 @@ class Product extends Model
             $product['price'] = $sku['price'];
             $product['stock'] = $sku['stock'];
         }
+
+        return null;
     }
 
     /**
@@ -452,7 +462,8 @@ class Product extends Model
                 . ' ps.sku, ps.price, ps.stock, ps.file_id'
                 . ' FROM product p'
                 . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
-                . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id AND pt.language=:language)'
+                . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id'
+                . ' AND pt.language=:language)'
                 . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
 
         $conditions = array(
@@ -523,7 +534,8 @@ class Product extends Model
     public function canDelete($product_id)
     {
         $sql = 'SELECT cart_id'
-                . ' FROM cart WHERE product_id=? AND order_id > 0';
+                . ' FROM cart'
+                . ' WHERE product_id=? AND order_id > 0';
 
         $result = $this->db->fetchColumn($sql, array($product_id));
         return empty($result);
@@ -547,7 +559,13 @@ class Product extends Model
             $this->pricerule->calculateComponents($price, $components, $currency_code, $rule);
         }
 
-        return array('total' => $price, 'currency' => $currency_code, 'components' => $components);
+        $result = array(
+            'total' => $price,
+            'currency' => $currency_code,
+            'components' => $components
+        );
+
+        return $result;
     }
 
     /**
@@ -689,7 +707,8 @@ class Product extends Model
             'product_id' => 'p.product_id'
         );
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY p.created DESC";
@@ -756,7 +775,6 @@ class Product extends Model
      */
     protected function controlViewedLimit(array &$items, $limit)
     {
-
         if (empty($limit)) {
             return $items;
         }
@@ -896,6 +914,16 @@ class Product extends Model
             $this->product_field->delete('option', $data['product_id']);
         }
 
+        $this->addOptions($data);
+        return true;
+    }
+
+    /**
+     * Adds multiple options
+     * @param array $data
+     */
+    protected function addOptions(array $data)
+    {
         foreach ($data['combination'] as $combination) {
 
             if (empty($combination['fields'])) {
@@ -928,27 +956,32 @@ class Product extends Model
             return false;
         }
 
-        $product_id = $data['product_id'];
-
         if ($update) {
-            $this->product_field->delete('attribute', $product_id);
+            $this->product_field->delete('attribute', $data['product_id']);
         }
 
+        $this->addAttributes($data);
+        return true;
+    }
+
+    /**
+     * Adds multiple attributes
+     * @param array $data
+     */
+    protected function addAttributes(array $data)
+    {
         foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
             foreach ((array) $field_value_ids as $field_value_id) {
-
                 $options = array(
                     'type' => 'attribute',
                     'field_id' => $field_id,
-                    'product_id' => $product_id,
+                    'product_id' => $data['product_id'],
                     'field_value_id' => $field_value_id
                 );
 
                 $this->product_field->add($options);
             }
         }
-
-        return true;
     }
 
     /**

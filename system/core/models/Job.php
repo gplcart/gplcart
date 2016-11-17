@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Handler;
 use core\Container;
 use core\helpers\Url;
 use core\helpers\Tool;
@@ -134,10 +135,7 @@ class Job extends Model
                 'offset' => 0,
                 'line' => 1,
             ),
-            'data' => array(
-                'limit' => $this->config->get('import_limit', 10),
-                'delimiter' => $this->config->get('csv_delimiter', ",")
-            ),
+            'data' => array(),
             'message' => array(
                 'start' => $this->language->text('Starting'),
                 'finish' => $this->language->text('Finished'),
@@ -252,6 +250,18 @@ class Job extends Model
 
         call_user_func_array(array($instance, $class[1]), array(&$job));
         return true;
+    }
+
+    /**
+     * Returns total number of items to be processed
+     * @param string $handler_id
+     * @param array $arguments
+     * @return integer
+     */
+    public function getTotal($handler_id, array $arguments = array())
+    {
+        $handlers = $this->getHandlers();
+        return (int) Handler::call($handlers, $handler_id, 'total', array($arguments));
     }
 
     /**
@@ -372,57 +382,23 @@ class Job extends Model
 
         $handlers = array();
 
-        $handlers['index_product_id'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\search\\Product', 'process')
-            ),
-        );
-
-        $handlers['index_order_id'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\search\\Order', 'process')
-            ),
-        );
-
         $handlers['export_product'] = array(
             'handlers' => array(
+                'total' => array('core\\handlers\\job\\export\\Product', 'total'),
                 'process' => array('core\\handlers\\job\\export\\Product', 'process')
             ),
         );
 
-        $handlers['import_state'] = array(
+        $handlers['export_category'] = array(
             'handlers' => array(
-                'process' => array('core\\handlers\\job\\import\\State', 'process')
-            ),
-        );
-
-        $handlers['import_city'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\import\\City', 'process')
+                'total' => array('core\\handlers\\job\\export\\Category', 'total'),
+                'process' => array('core\\handlers\\job\\export\\Category', 'process')
             ),
         );
 
         $handlers['import_category'] = array(
             'handlers' => array(
                 'process' => array('core\\handlers\\job\\import\\Category', 'process')
-            ),
-        );
-
-        $handlers['import_field'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\import\\Field', 'process')
-            ),
-        );
-
-        $handlers['import_field_value'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\import\\FieldValue', 'process')
-            ),
-        );
-
-        $handlers['import_user'] = array(
-            'handlers' => array(
-                'process' => array('core\\handlers\\job\\import\\User', 'process')
             ),
         );
 

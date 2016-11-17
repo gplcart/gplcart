@@ -140,11 +140,11 @@ class Export extends BackendController
      */
     protected function downloadExport(array $operation)
     {
-        $start = $this->isQuery('download')//
+        $download = $this->isQuery('download')//
                 && !empty($operation['file'])//
                 && file_exists($operation['file']);
 
-        if ($start) {
+        if ($download) {
             $this->response->download($operation['file']);
         }
     }
@@ -160,13 +160,14 @@ class Export extends BackendController
             return null;
         }
 
-        $this->setSubmitted('export');
+        $this->setSubmitted('settings');
         $this->validateExport($operation);
 
-        if (!$this->hasErrors('export')) {
-            $this->setJobExport($operation);
+        if ($this->hasErrors('settings')) {
+            return null;
         }
 
+        $this->setJobExport($operation);
         return null;
     }
 
@@ -177,35 +178,46 @@ class Export extends BackendController
      */
     protected function validateExport(array $operation)
     {
-        $options = $this->getSubmitted();
-        $options['count'] = true;
+        $options = $this->getSubmitted('options');
 
         $limit = $this->export->getLimit();
-        $total = $this->product->getList($options); // TODO: fix
+        $delimiter = $this->export->getCsvDelimiter();
+        $multiple_delimiter = $this->export->getCsvDelimiterMultiple();
 
-        $this->setSubmitted('total', $total);
-        $this->setSubmitted('export_limit', $limit);
+        $total = $this->job->getTotal($operation['job_id'], $options);
 
         if (empty($total)) {
             $this->setError('error', $this->text('Nothing to export'));
             return null;
         }
 
+        $this->setSubmitted('total', $total);
+        $this->setSubmitted('limit', $limit);
+        $this->setSubmitted('delimiter', $delimiter);
+        $this->setSubmitted('multiple_delimiter', $multiple_delimiter);
+
+        $this->validateFileExport($operation);
+        return null;
+    }
+
+    /**
+     * Creates an export file and writes there header
+     * @param array $operation
+     * @return boolean
+     */
+    protected function validateFileExport(array $operation)
+    {
         if (file_put_contents($operation['file'], '') === false) {
-
-            $message = $this->text('Failed to create file %path', array(
-                '%path' => $operation['file']
-            ));
-
+            $vars = array('%path' => $operation['file']);
+            $message = $this->text('Failed to create file %path', $vars);
             $this->setError('error', $message);
-            return null;
+            return false;
         }
 
-        $delimiter = $this->export->getCsvDelimiter();
+        $delimiter = $this->getSubmitted('delimiter');
         Tool::writeCsv($operation['file'], $operation['csv']['header'], $delimiter);
         $this->setSubmitted('operation', $operation);
-
-        return null;
+        return true;
     }
 
     /**
@@ -216,24 +228,21 @@ class Export extends BackendController
     {
         $submitted = $this->getSubmitted();
 
-        $finish_message = $this->text('Successfully exported %count items. <a href="@href">Download</a>', array(
-            '@href' => $this->url(false, array('download' => 1)),
-            '%count' => $submitted['total']
-        ));
+        $vars = array('@href' => $this->url(false, array('download' => 1)), '%count' => $submitted['total']);
+        $finish = $this->text('Exported %count items. <a href="@href">Download</a>', $vars);
 
-        $redirect_error_message = $this->text('Errors: %errors. <a href="!url">See error log</a>', array(
-            '!url' => $this->url(false, array('download_errors' => 1))
-        ));
+        $vars = array('!url' => $this->url(false, array('download_errors' => 1)));
+        $redirect = $this->text('Errors: %errors. <a href="!url">See error log</a>', $vars);
 
         $job = array(
-            'id' => $operation['job_id'],
             'data' => $submitted,
+            'id' => $operation['job_id'],
             'total' => $submitted['total'],
-            'redirect_message' => array('finish' => $finish_message)
+            'redirect_message' => array('finish' => $finish)
         );
 
         if (!empty($operation['log']['errors'])) {
-            $job['redirect_message']['errors'] = $redirect_error_message;
+            $job['redirect_message']['errors'] = $redirect;
         }
 
         $this->setJob($job);
@@ -245,10 +254,8 @@ class Export extends BackendController
      */
     protected function setTitleEditExport(array $operation)
     {
-        $text = $this->text('Export %operation', array(
-            '%operation' => $operation['name']
-        ));
-
+        $vars = array('%operation' => $operation['name']);
+        $text = $this->text('Export %operation', $vars);
         $this->setTitle($text);
     }
 

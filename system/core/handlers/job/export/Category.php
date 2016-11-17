@@ -9,39 +9,30 @@
 
 namespace core\handlers\job\export;
 
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
+use core\models\Category as ModelsCategory;
 use core\handlers\job\export\Base as BaseHandler;
 
 /**
- * Product export handler
+ * Category export handler
  */
-class Product extends BaseHandler
+class Category extends BaseHandler
 {
 
     /**
-     * Product model instance
-     * @var \core\models\Product $product
+     * Category model instance
+     * @var \core\models\Category $category
      */
-    protected $product;
-
-    /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
+    protected $category;
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsPrice $price
+     * @param ModelsCategory $category
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price)
+    public function __construct(ModelsCategory $category)
     {
         parent::__construct();
 
-        $this->price = $price;
-        $this->product = $product;
+        $this->category = $category;
     }
 
     /**
@@ -54,13 +45,14 @@ class Product extends BaseHandler
     }
 
     /**
-     * Exports products to the CSV file
+     * Exports categories to the CSV file
      */
     protected function export()
     {
         $options = $this->job['data']['options'];
         $options += array('limit' => array($this->offset, $this->limit));
-        $this->items = $this->product->getList($options);
+
+        $this->items = $this->category->getList($options);
 
         foreach ($this->items as $item) {
             $data = $this->getData($item);
@@ -72,50 +64,37 @@ class Product extends BaseHandler
     }
 
     /**
-     * Returns a total number of products to be imported
+     * Returns a total number of categories to be imported
      * @param array $options
      * @return integer
      */
     public function total(array $options)
     {
         $options['count'] = true;
-        return $this->product->getList($options);
+        return $this->category->getList($options);
     }
 
     /**
-     * Prepares export data
+     * Prepares data before exporting
      * @param array $data
      * @param array $item
      */
     protected function prepare(array &$data, array $item)
     {
         $this->attachImages($data, $item);
-        $this->preparePrice($data, $item);
         $this->prepareImages($data, $item);
     }
 
     /**
-     * Attaches product images
+     * Attaches category images
      * @param array $data
      * @param array $item
      */
     protected function attachImages(array &$data, array $item)
     {
-        $images = $this->image->getList('product_id', $item['product_id']);
+        $images = $this->image->getList('category_id', $item['category_id']);
         if (!empty($images)) {
             $data['images'] = $images;
-        }
-    }
-
-    /**
-     * Prepares prices
-     * @param array $data
-     * @param array $item
-     */
-    protected function preparePrice(array &$data, array $item)
-    {
-        if (isset($data['price'])) {
-            $data['price'] = $this->price->decimal($data['price'], $item['currency']);
         }
     }
 
