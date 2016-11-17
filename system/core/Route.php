@@ -954,18 +954,6 @@ class Route
             )
         );
 
-        $routes['admin/help'] = array(
-            'handlers' => array(
-                'controller' => array('core\\controllers\\backend\\Help', 'listHelp')
-            )
-        );
-
-        $routes['admin/help/([a-z0-9_-]+)'] = array(
-            'handlers' => array(
-                'controller' => array('core\\controllers\\backend\\Help', 'pageHelp')
-            )
-        );
-
         $this->hook->fire('route', $routes);
         return $routes;
     }

@@ -33,13 +33,6 @@
               <?php } ?>
             </ul>
           </li>
-          <li>
-            <?php if(empty($help_summary)) { ?>
-            <a href="<?php echo $this->url('admin/help'); ?>"><i class="fa fa-question-circle"></i></a>
-            <?php } else { ?>
-            <a href="#" data-toggle="modal" data-target="#help-summary"><i class="fa fa-question-circle"></i></a>
-            <?php } ?>
-          </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-user"></i>
@@ -96,9 +89,6 @@
         <?php } ?>
       </div>
     </div>
-    <?php } ?>
-    <?php if(!empty($help_summary)) { ?>
-    <?php echo $help_summary; ?>
     <?php } ?>
     <div class="row">
       <div class="col-md-12">

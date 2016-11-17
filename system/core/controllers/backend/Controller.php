@@ -10,7 +10,6 @@
 namespace core\controllers\backend;
 
 use core\Container;
-use core\helpers\Tool;
 use core\Controller as BaseController;
 
 /**
@@ -51,7 +50,6 @@ class Controller extends BaseController
     protected function setDataFrontend()
     {
         $this->data['admin_menu'] = $this->getAdminMenu();
-        $this->data['help_summary'] = $this->getHelpSummary();
         $this->data['store_list'] = $this->store->getList();
     }
 
@@ -159,32 +157,6 @@ class Controller extends BaseController
 
         ksort($array);
         return $array;
-    }
-
-    /**
-     * Returns a rendered help link depending on the current URL
-     * @return string
-     */
-    public function getHelpSummary()
-    {
-        $folder = $this->langcode ? $this->langcode : 'en';
-        $directory = GC_HELP_DIR . "/$folder";
-
-        $file = Tool::contexUrltFile($directory, 'php', $this->path);
-
-        if (empty($file)) {
-            return '';
-        }
-
-        $content = $this->render($file['path'], array(), true);
-        $parts = $this->explodeText($content);
-
-        if (empty($parts)) {
-            return '';
-        }
-
-        $data = array('content' => array_map('trim', $parts), 'file' => $file);
-        return $this->render('help/summary', $data);
     }
 
     /**
