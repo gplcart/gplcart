@@ -99,6 +99,15 @@ class CliRoute
             ),
         );
 
+        $routes['version'] = array(
+            'handlers' => array(
+                'process' => array('core\controllers\cli\Common', 'version')
+            ),
+            'help' => array(
+                'description' => 'Displays core version'
+            ),
+        );
+
         $routes['install'] = array(
             'handlers' => array(
                 'process' => array('core\controllers\cli\Install', 'storeInstall')

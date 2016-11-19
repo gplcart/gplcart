@@ -9,7 +9,7 @@
  */
 
 if (PHP_SAPI !== 'cli') {
-    echo("\033[31mOnly CLI access allowed!\033[0m\n");
+    echo("Only CLI access allowed!");
     exit(1);
 }
 

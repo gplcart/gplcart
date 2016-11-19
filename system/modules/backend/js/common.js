@@ -352,7 +352,6 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                 });
             }
         },
-        
         container = Backend.settings.imageContainer;
         $(container).sortable(params);
     };
@@ -367,7 +366,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                 container = $(Backend.settings.imageContainer);
 
         if (!$.fn.fileupload) {
-            return;
+            return null;
         }
 
         fileinput.fileupload({
@@ -413,29 +412,29 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         var key;
 
         if (!GplCart.settings.map) {
-            return;
+            return null;
         }
 
         if (!GplCart.settings.map.key) {
             console.warn('Please specify a browser API key for Google Maps at admin/settings/common');
-            return;
+            return null;
         }
 
         key = GplCart.settings.map.key;
 
         if (GplCart.settings.map.address) {
             GplCart.gmap(GplCart.settings.map.address, false, key);
-            return;
+            return null;
         }
 
         if (GplCart.settings.map[0] && GplCart.settings.map[1]) {
             GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1], key);
-            return;
+            return null;
         }
 
         console.warn('Invalid arguments for Google Maps');
     };
-    
+
     /**
      * Handles CLI terminal
      * @returns {undefined}
@@ -445,14 +444,14 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         if (!$.fn.puiterminal) {
             return;
         }
-        
+
         var handler,
                 link = $('*[data-terminal]'),
                 wrapper = '<div id="terminal"></div>',
                 id = 'terminal-wrapper';
 
         link.click(function () {
-            
+
             Backend.ui.modal(wrapper, id);
 
             $('#terminal').puiterminal({

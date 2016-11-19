@@ -83,7 +83,7 @@ class Backend
         $controller->setJs('system/modules/backend/js/common.js', 'top');
         $controller->setJs('files/assets/jquery/ui/jquery-ui.min.js', 'top');
         $controller->setJs('files/assets/bootstrap/bootstrap/js/bootstrap.min.js', 'top');
-        
+
         $controller->setJs('files/assets/jquery/primeui/components/core/core.js', 'bottom');
         $controller->setJs('files/assets/jquery/primeui/components/growl/growl.js', 'bottom');
         $controller->setJs('files/assets/jquery/primeui/components/terminal/terminal.js', 'bottom');
