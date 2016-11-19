@@ -107,7 +107,7 @@ class Ajax extends FrontendController
     public function getResponseAjax()
     {
         if (!$this->request->isAjax()) {
-            exit; // Reject non-ajax requests
+            exit(1); // Reject non-ajax requests
         }
 
         $action = (string) $this->request->post('action');

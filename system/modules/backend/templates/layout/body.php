@@ -19,6 +19,9 @@
       <div id="navbar" class="navbar-collapse collapse">
         <?php echo $admin_menu; ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
+          <li>
+            <a href="#" data-terminal="true"><i class="fa fa-terminal"></i></a>
+          </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-globe"></i>

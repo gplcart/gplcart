@@ -24,6 +24,12 @@ class CliController
     protected $validator;
 
     /**
+     * Language model instance
+     * @var \core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
@@ -40,6 +46,12 @@ class CliController
      * @var \core\CliRoute $route
      */
     protected $route;
+
+    /**
+     * Request class instance
+     * @var \core\helpers\Request $request
+     */
+    protected $request;
 
     /**
      * An array of the current CLI route data
@@ -82,8 +94,39 @@ class CliController
      */
     public function __construct()
     {
+        if (GC_CLI_EMULATE) {
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', 0);
+        }
+
+        $this->setInstanceProperties();
+        $this->setRouteProperties();
+        $this->controlAccess();
+        $this->outputHelp();
+    }
+
+    /**
+     * Sets route properties
+     */
+    protected function setRouteProperties()
+    {
+        $this->current_route = $this->route->get();
+        $this->command = $this->current_route['command'];
+    }
+
+    /**
+     * Sets class instance properties
+     */
+    protected function setInstanceProperties()
+    {
         /* @var $validator \core\models\Validator */
         $this->validator = Container::instance('core\\models\\Validator');
+
+        /* @var $language \core\models\Language */
+        $this->language = Container::instance('core\\models\\Language');
+
+        /* @var $request \core\helpers\Request */
+        $this->request = Container::instance('core\\helpers\Request');
 
         /* @var $config \core\Config */
         $this->config = Container::instance('core\\Config');
@@ -93,13 +136,30 @@ class CliController
 
         /* @var $route \core\CliRoute */
         $this->route = Container::instance('core\\CliRoute');
-
-        $this->current_route = $this->route->get();
-        $this->command = $this->current_route['command'];
-
-        $this->outputHelp();
     }
-    
+
+    /**
+     * Returns a translated string
+     * @param string $text
+     * @param array $arguments
+     * @return string
+     */
+    protected function text($text, array $arguments = array())
+    {
+        return $this->language->text($text, $arguments);
+    }
+
+    /**
+     * Controls global access
+     */
+    protected function controlAccess()
+    {
+        if (GC_CLI_EMULATE && !$this->config->tokenValid($this->request->post('cli_token'))) {
+            $error = $this->text('Invalid CLI token');
+            $this->setError($error)->output();
+        }
+    }
+
     /**
      * Sets an array of submitted mapped data
      * @param array $map
@@ -107,22 +167,24 @@ class CliController
      * @param boolean $filter
      * @return array
      */
-    protected function setSubmittedMapped(array $map, $default = array(),
+    protected function setSubmittedMapped($map, $default = array(),
             $filter = true)
     {
         $arguments = $this->getArguments($filter);
         $mapped = $this->mapArguments($arguments, $map);
-        $this->submitted = Tool::merge($default, $mapped);
-        return $this->submitted;
+        $data = Tool::merge($default, $mapped);
+
+        return $this->setSubmitted($data);
     }
-    
+
     /**
-     * Sets submitted data
+     * Sets an array of submitted data
      * @param array $data
      */
     protected function setSubmitted(array $data)
     {
         $this->submitted = $data;
+        return $this->submitted;
     }
 
     /**
@@ -134,8 +196,7 @@ class CliController
     protected function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            $result = Tool::getArrayValue($this->submitted, $key);
-            return isset($result) ? $result : $default;
+            return array_key_exists($key, $this->submitted) ? $this->submitted[$key] : $default;
         }
 
         return $this->submitted;
@@ -154,10 +215,12 @@ class CliController
     /**
      * Sets a single message
      * @param string $message
+     * @return \core\CliController
      */
-    protected function setMessage($message, $severity = '')
+    protected function setMessage($message)
     {
-        $this->messages[$message] = array($message, $severity);
+        $this->messages[$message] = $message;
+        return $this;
     }
 
     /**
@@ -166,9 +229,10 @@ class CliController
     protected function setPhpErrors()
     {
         $errors = $this->logger->getErrors();
-        foreach ($errors as $severity => $messages) {
+
+        foreach ($errors as $messages) {
             foreach ($messages as $message) {
-                $this->setMessage($message, $severity);
+                $this->setMessage($message);
             }
         }
     }
@@ -176,7 +240,7 @@ class CliController
     /**
      * Whether a error is set
      * @param null|string $key
-     * @return type
+     * @return boolean
      */
     protected function isError($key = null)
     {
@@ -188,41 +252,10 @@ class CliController
     }
 
     /**
-     * Returns a colored string
-     * @param string $text
-     * @param string $sevetity
-     * @return string
-     */
-    protected function getColored($text, $sevetity)
-    {
-        $default = array(
-            'info' => "\e[34m%s\e[0m\n",
-            'warning' => "\e[33m%s\e[0m\n",
-            'danger' => "\e[31m%s\e[0m\n",
-            'success' => "\e[32m%s\e[0m\n",
-        );
-
-        $map = $this->config->get('cli_colors', $default);
-        return isset($map[$sevetity]) ? sprintf($map[$sevetity], $text) : $text;
-    }
-    
-    /**
-     * Displays the progress bar
-     * @param type $done
-     * @param type $total
-     */
-    protected function progressBar($done, $total)
-    {
-        $perc = floor(($done / $total) * 100);
-        $left = 100 - $perc;
-        $write = sprintf("\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total", "", "");
-        fwrite(STDERR, $write);
-    }
-
-    /**
      * Sets an error
      * @param string $error
      * @param string $key
+     * @return \core\CliController
      */
     protected function setError($error, $key = null)
     {
@@ -232,16 +265,7 @@ class CliController
         }
 
         $this->errors[] = $error;
-        return $this->errors;
-    }
-
-    /**
-     * Returns a user input
-     * @return string
-     */
-    protected function getInput()
-    {
-        return fgets(STDIN);
+        return $this;
     }
 
     /**
@@ -251,13 +275,7 @@ class CliController
     protected function outputMessages($exit = true)
     {
         foreach ($this->messages as $key => $message) {
-
-            if (is_array($message)) {
-                list($text, $sevetity) = $message;
-                $message = $this->getColored($text, $sevetity);
-            }
-
-            fwrite(STDOUT, (string) $message);
+            $this->printMessage((string) $message);
             unset($this->messages[$key]);
         }
 
@@ -275,7 +293,7 @@ class CliController
     protected function outputError($key, $exit = true)
     {
         if (isset($this->errors[$key])) {
-            fwrite(STDERR, $this->getColored($this->errors[$key], 'danger'));
+            $this->printError($this->errors[$key]);
             unset($this->errors[$key]);
         }
 
@@ -293,7 +311,7 @@ class CliController
         $errors = Tool::flattenArray($this->errors);
 
         foreach ($errors as $error) {
-            fwrite(STDERR, $this->getColored($error, 'danger'));
+            $this->printError($error);
         }
 
         $this->errors = array();
@@ -304,36 +322,82 @@ class CliController
     }
 
     /**
-     * Displays --help message for the curren command
-     * @return null
+     * Prints an error message
+     * @param string $error
+     */
+    protected function printError($error)
+    {
+        if (GC_CLI_EMULATE) {
+            echo $this->prepare($error);
+        } else {
+            fwrite(STDERR, $error);
+        }
+    }
+
+    /**
+     * Prints a simple message
+     * @param string $message
+     */
+    protected function printMessage($message)
+    {
+        if (GC_CLI_EMULATE) {
+            echo $this->prepare($message);
+        } else {
+            fwrite(STDOUT, $message);
+        }
+    }
+
+    /**
+     * Prepares and filters a string before output
+     * @param string $string
+     * @return string
+     */
+    protected function prepare($string)
+    {
+        $filtered = filter_var($string, FILTER_SANITIZE_STRING);
+        return nl2br(str_replace(' ', '&nbsp;', $filtered));
+    }
+
+    /**
+     * Displays --help message for the current command
      */
     protected function outputHelp()
     {
         $arguments = $this->getArguments();
 
-        if (empty($arguments['help'])) {
-            return null;
+        if (!empty($arguments['help'])) {
+            $message = $this->getHelpMessage();
+            $this->setMessage($message)->outputMessages(true);
         }
+    }
 
+    /**
+     * Returns a formatted help message
+     * @return string
+     */
+    protected function getHelpMessage()
+    {
         $message = '';
+
         if (!empty($this->current_route['help']['description'])) {
-            $message .= 'Description: ' . $this->current_route['help']['description'] . "\n";
+            $text = $this->current_route['help']['description'];
+            $message .= $this->text('Description: @text', array('@text' => $text)) . PHP_EOL;
         }
 
         if (!empty($this->current_route['help']['options'])) {
-            $message .= "Options:\n";
+            $list = array();
             foreach ($this->current_route['help']['options'] as $option => $description) {
-                $message .= "    $option - $description\n";
+                $list[] = "    $option - $description";
             }
+
+            $message .= $this->text("Options:\n@list", array('@list' => implode(PHP_EOL, $list)));
         }
 
         if (empty($message)) {
-            $message = "Sorry. Developers were to lazy to describe this command\n";
+            $message = $this->text('No description available') . PHP_EOL;
         }
 
-        $this->setMessage($message);
-        $this->outputMessages(true);
-        return null;
+        return $message;
     }
 
     /**
@@ -379,18 +443,17 @@ class CliController
     {
         $list = $this->route->getList();
 
-        $message = "List of available commands. To see command options use '--help' option:\n";
+        $message = $this->text('List of available commands. To see command options use \'--help\' option:') . PHP_EOL;
         foreach ($list as $command => $info) {
-            $description = 'No description available';
+            $description = $this->text('No description available');
             if (!empty($info['help']['description'])) {
                 $description = $info['help']['description'];
             }
 
-            $message .= "    $command - $description\n";
+            $message .= "    $command - $description" . PHP_EOL;
         }
 
-        $this->setMessage($message);
-        $this->output();
+        $this->setMessage($message)->output();
     }
 
     /**

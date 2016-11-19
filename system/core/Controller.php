@@ -321,11 +321,9 @@ class Controller
         $this->setStoreProperties();
         $this->setThemeProperties();
         $this->setLanguageProperties();
-
         $this->setCronProperties();
         $this->setDefaultData();
         $this->setDefaultJs();
-
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
@@ -1168,7 +1166,6 @@ class Controller
         }
 
         $this->data[$region] = $items;
-
         return $this->render($template, $this->data);
     }
 

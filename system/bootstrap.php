@@ -41,6 +41,7 @@ function gplcart_bootstrap_constants()
 {
     define('GC_VERSION', '1.0.0');
     define('GC_CLI', (PHP_SAPI === 'cli'));
+    define('GC_CLI_EMULATE', (isset($_POST['cli_token']) && isset($_POST['command'])));
     define('GC_ROOT_DIR', getcwd());
     define('GC_SYSTEM_DIR', GC_ROOT_DIR . '/system');
     define('GC_CORE_DIR', GC_SYSTEM_DIR . '/core');

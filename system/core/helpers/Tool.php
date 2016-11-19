@@ -14,7 +14,6 @@ namespace core\helpers;
  */
 class Tool
 {
-
     /**
      * Sorts an array by the weight element
      * @param array $array
@@ -22,6 +21,7 @@ class Tool
     public static function sortWeight(array &$array)
     {
         uasort($array, function ($a, $b) {
+            
             $a_weight = (is_array($a) && isset($a['weight'])) ? $a['weight'] : 0;
             $b_weight = (is_array($b) && isset($b['weight'])) ? $b['weight'] : 0;
 
@@ -56,7 +56,6 @@ class Tool
     )
     {
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
-
         Tool::trimArray($cookie, $filter);
 
         if (isset($name)) {
@@ -74,16 +73,11 @@ class Tool
      */
     public static function trimArray(array &$array, $filter = false)
     {
-        if ($filter) {
-            array_walk_recursive($array, function (&$v) {
-                $v = filter_var(trim($v), FILTER_SANITIZE_STRING);
-            });
-
-            return $array;
-        }
-
-        array_walk_recursive($array, function (&$v) {
-            $v = trim($v);
+        array_walk_recursive($array, function (&$value) use ($filter) {
+            $value = trim($value);
+            if ($filter) {
+                $value = filter_var($value, FILTER_SANITIZE_STRING);
+            }
         });
 
         return $array;
@@ -350,7 +344,6 @@ class Tool
     {
         $zones = array();
         $timestamp = GC_TIME;
-
         $default_timezone = date_default_timezone_get();
 
         foreach (timezone_identifiers_list() as $zone) {
@@ -370,12 +363,7 @@ class Tool
      */
     public static function stringToArray($string, $limit = null)
     {
-        if (isset($limit)) {
-            $array = explode("\n", str_replace("\r", "", $string), $limit);
-        } else {
-            $array = explode("\n", str_replace("\r", "", $string));
-        }
-
+        $array = explode("\n", str_replace("\r", "", $string), $limit);
         return array_filter(array_map('trim', $array));
     }
 
@@ -578,7 +566,6 @@ class Tool
     public static function flattenArray(array $array)
     {
         $return = array();
-
         array_walk_recursive($array, function ($a) use (&$return) {
             $return[] = $a;
         });

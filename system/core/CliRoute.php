@@ -11,6 +11,7 @@ namespace core;
 
 use core\Hook;
 use core\Handler;
+use core\helpers\Cli;
 
 /**
  * Routes CLI commands
@@ -25,6 +26,12 @@ class CliRoute
     protected $hook;
 
     /**
+     * Cli class instance
+     * @var \core\helpers\Cli $cli
+     */
+    protected $cli;
+
+    /**
      * The current CLI route data
      * @var array
      */
@@ -34,92 +41,28 @@ class CliRoute
      * An array of parsed CLI arguments
      * @var array
      */
-    protected static $arguments = array();
+    protected $arguments = array();
 
     /**
      * Constructor
+     * @param Cli $cli
      * @param Hook $hook
      */
-    public function __construct(Hook $hook)
+    public function __construct(Cli $cli, Hook $hook)
     {
+        $this->cli = $cli;
         $this->hook = $hook;
 
-        $this->parseArguments();
+        $this->init();
     }
 
     /**
-     * Returns an array of parsed CLI arguments
-     * Based on work by Patrick Fisher <patrick@pwfisher.com>
-     * 
-     * @param null|array $argv
-     * @return array
+     * Sets parsed arguments
      */
-    public function parseArguments($argv = null)
+    protected function init()
     {
-        if (!isset($argv)) {
-            $argv = $_SERVER['argv'];
-        }
-
-        array_shift($argv);
-
-        $out = array();
-        for ($i = 0, $j = count($argv); $i < $j; $i++) {
-
-            $arg = $argv[$i];
-            if (substr($arg, 0, 2) === '--') {
-
-                $pos = strpos($arg, '=');
-
-                if ($pos === false) {
-                    $key = substr($arg, 2);
-                    if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
-                        $value = $argv[$i + 1];
-                        $i++;
-                    } else {
-                        $value = isset($out[$key]) ? $out[$key] : true;
-                    }
-
-                    $out[$key] = $value;
-                    continue;
-                }
-
-                $key = substr($arg, 2, $pos - 2);
-                $value = substr($arg, $pos + 1);
-                $out[$key] = $value;
-                continue;
-            }
-
-            if (substr($arg, 0, 1) === '-') {
-
-                if (substr($arg, 2, 1) === '=') {
-                    $key = substr($arg, 1, 1);
-                    $value = substr($arg, 3);
-                    $out[$key] = $value;
-                    continue;
-                }
-
-                $chars = str_split(substr($arg, 1));
-
-                foreach ($chars as $char) {
-                    $key = $char;
-                    $value = isset($out[$key]) ? $out[$key] : true;
-                    $out[$key] = $value;
-                }
-
-                if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
-                    $out[$key] = $argv[$i + 1];
-                    $i++;
-                }
-
-                continue;
-            }
-
-            $value = $arg;
-            $out[] = $value;
-        }
-
-        self::$arguments = $out;
-        return $out;
+        $source = GC_CLI_EMULATE ? $_POST['command'] : $_SERVER['argv'];
+        $this->arguments = $this->cli->parse($source);
     }
 
     /**
@@ -137,7 +80,7 @@ class CliRoute
      */
     public function getArguments()
     {
-        return self::$arguments;
+        return $this->arguments;
     }
 
     /**
@@ -146,7 +89,7 @@ class CliRoute
     public function getList()
     {
         $routes = array();
-        
+
         $routes['help'] = array(
             'handlers' => array(
                 'process' => array('core\CliController', 'help')
@@ -189,32 +132,29 @@ class CliRoute
      */
     public function process()
     {
-        $arguments = $this->getArguments();
-        $this->callController($arguments);
+        $this->callController();
     }
 
     /**
      * Finds and calls an appropriate controller for the current command
-     * @param array $arguments
      * @return mixed
      */
-    protected function callController(array $arguments)
+    protected function callController()
     {
         $routes = $this->getList();
-        $command = array_shift($arguments);
+        $command = array_shift($this->arguments);
 
         if (empty($routes[$command])) {
-            echo("\033[31mWrong or unsupported command. Use 'help' command to see what you have\033[0m\n");
+            echo("Unknown command. Use 'help' command to see what you have");
             exit(1);
         }
 
         $routes[$command]['command'] = $command;
-        $routes[$command]['arguments'] = $arguments;
-
+        $routes[$command]['arguments'] = $this->arguments;
         $this->route = $routes[$command];
 
-        Handler::call($this->route, null, 'process', array($arguments));
-        echo("\033[31mThe command was not completed correctly\033[0m\n");
+        Handler::call($this->route, null, 'process', array($this->arguments));
+        echo("The command was not completed correctly");
         exit(1);
     }
 

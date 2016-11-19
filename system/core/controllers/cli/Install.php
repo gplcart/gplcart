@@ -86,17 +86,13 @@ class Install extends CliController
     {
         $url = trim("{$submitted['store']['host']}/{$submitted['store']['basepath']}", '/');
 
-        $message = "\nSuccess. Your store is installed.\n";
+        $message = "\nYour store has been installed.\n";
         $message .= "Front page: $url\n";
         $message .= "Admin area: $url/admin\n";
-
-        if ($submitted['generated_password']) {
-            $message .= "Your admin password: {$submitted['user']['password']}\n";
-        }
-
+        $message .= "Password: {$submitted['user']['password']}\n";
         $message .= "Good luck!\n";
 
-        $this->setMessage($message, 'success');
+        $this->setMessage($this->text($message));
     }
 
     /**
@@ -126,9 +122,8 @@ class Install extends CliController
     protected function validateStoreInstall()
     {
         $submitted = $this->getSubmitted();
-        $submitted['generated_password'] = empty($submitted['user']['password']);
 
-        if ($submitted['generated_password']) {
+        if (empty($submitted['user']['password'])) {
             $submitted['user']['password'] = $this->user->generatePassword();
         }
 

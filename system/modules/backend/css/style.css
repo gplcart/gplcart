@@ -205,6 +205,40 @@ td .list-inline {
 }
 /* End center modal */
 
+
+/* Terminal */
+#terminal-wrapper .modal-dialog {
+    width: 80%;
+}
+
+/* Hide nasty scrollbar */ 
+#terminal-wrapper .modal-content {
+    overflow: hidden;
+}
+
+#terminal-wrapper #terminal {
+    margin-right: -100px;
+    padding-right: 100px;
+}
+
+#terminal-wrapper .ui-terminal {
+    height: 500px;
+}
+
+/* End scrollbar style */
+
+#terminal-wrapper .modal-content,
+#terminal-wrapper .ui-widget-content {
+    background: #000;
+    color: #ccc;
+    border: none;
+    font-size: 90%;
+}
+
+#terminal-wrapper .modal-header {
+    display:none;
+}
+
 .swatch {
     background: red;
     background: -moz-linear-gradient( top ,

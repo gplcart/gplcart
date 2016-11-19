@@ -58,6 +58,7 @@ class Backend
         $controller->setCss('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css');
         $controller->setCss('files/assets/jquery/primeui/components/core/core.css');
         $controller->setCss('files/assets/jquery/primeui/components/growl/growl.css');
+        $controller->setCss('files/assets/jquery/primeui/components/terminal/terminal.css');
         $controller->setCss('system/modules/backend/css/style.css');
     }
 
@@ -85,6 +86,7 @@ class Backend
         
         $controller->setJs('files/assets/jquery/primeui/components/core/core.js', 'bottom');
         $controller->setJs('files/assets/jquery/primeui/components/growl/growl.js', 'bottom');
+        $controller->setJs('files/assets/jquery/primeui/components/terminal/terminal.js', 'bottom');
 
         $path = $controller->getData('path');
         $file = Tool::contexUrltFile(GC_MODULE_DIR . '/backend/js', 'js', $path);

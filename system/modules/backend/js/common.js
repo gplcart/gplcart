@@ -352,8 +352,8 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                 });
             }
         },
+        
         container = Backend.settings.imageContainer;
-
         $(container).sortable(params);
     };
 
@@ -434,6 +434,49 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         }
 
         console.warn('Invalid arguments for Google Maps');
+    };
+    
+    /**
+     * Handles CLI terminal
+     * @returns {undefined}
+     */
+    Backend.attach.terminal = function () {
+
+        if (!$.fn.puiterminal) {
+            return;
+        }
+        
+        var handler,
+                link = $('*[data-terminal]'),
+                wrapper = '<div id="terminal"></div>',
+                id = 'terminal-wrapper';
+
+        link.click(function () {
+            
+            Backend.ui.modal(wrapper, id);
+
+            $('#terminal').puiterminal({
+                prompt: '> ',
+                handler: function (request, response) {
+
+                    handler = this;
+
+                    $.ajax({
+                        method: 'POST',
+                        url: GplCart.settings.urn,
+                        data: {
+                            command: 'gplcart ' + $.trim(request),
+                            cli_token: GplCart.settings.token
+                        },
+                        success: function (data) {
+                            response.call(handler, data);
+                        }
+                    });
+                }
+            });
+
+            return false;
+        });
     };
 
     /**

@@ -89,8 +89,15 @@ class Facade
      */
     public function route()
     {
-        $this->routeCli();
-        $this->routeHttp();
+        if (!GC_CLI) {
+            $this->session->init();
+        }
+
+        if (GC_CLI || GC_CLI_EMULATE) {
+            $this->routeCli();
+        } else {
+            $this->routeHttp();
+        }
     }
 
     /**
@@ -98,15 +105,12 @@ class Facade
      */
     protected function routeCli()
     {
-        if (GC_CLI) {
-
-            if ($this->config->get('cli_disabled', 0)) {
-                echo "CLI access has been disabled";
-                exit(1);
-            }
-
-            Container::instance('core\\CliRoute')->process();
+        if ($this->config->get('cli_disabled', 0)) {
+            echo "CLI access has been disabled";
+            exit(1);
         }
+
+        Container::instance('core\\CliRoute')->process();
     }
 
     /**
@@ -114,8 +118,6 @@ class Facade
      */
     protected function routeHttp()
     {
-        $this->session->init();
-
         if ($this->isInstalling()) {
             $this->url->redirect('install');
         }
