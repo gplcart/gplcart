@@ -14,6 +14,7 @@ namespace core\helpers;
  */
 class Cli
 {
+
     /**
      * Parses command line arguments
      * Based on work by Patrick Fisher <patrick@pwfisher.com>
@@ -23,10 +24,10 @@ class Cli
      */
     public function parse($argv)
     {
-        if(is_string($argv)){
+        if (is_string($argv)) {
             $argv = array_map('trim', explode(' ', trim($argv)));
         }
-        
+
         array_shift($argv);
 
         $out = array();
@@ -87,7 +88,7 @@ class Cli
 
         return $out;
     }
-    
+
     /**
      * Displays the progress bar
      * @param type $done

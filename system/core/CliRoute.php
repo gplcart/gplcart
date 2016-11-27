@@ -99,12 +99,27 @@ class CliRoute
             ),
         );
 
-        $routes['version'] = array(
+        $routes['report-event'] = array(
             'handlers' => array(
-                'process' => array('core\controllers\cli\Common', 'version')
+                'process' => array('core\controllers\cli\Report', 'eventReport')
             ),
             'help' => array(
-                'description' => 'Displays core version'
+                'description' => 'Reports system events like PHP errors etc',
+                'options' => array(
+                    '--clear' => 'Clear all recorded events',
+                    '--type' => 'Type of events to be reported, e.g "php". Defaults to all',
+                    '--severity' => 'Severity of events to be reported, e.g "info", "warning", "danger". Defaults to all',
+                    '--limit' => 'How many records to display. Defaults to last 20 records'
+                )
+            ),
+        );
+
+        $routes['report-status'] = array(
+            'handlers' => array(
+                'process' => array('core\controllers\cli\Report', 'statusReport')
+            ),
+            'help' => array(
+                'description' => 'Reports system status'
             ),
         );
 

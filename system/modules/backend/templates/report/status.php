@@ -11,26 +11,24 @@
           <?php } ?>
         </td>
         <td class="col-md-9">
-          <?php if (empty($status['status'])) { ?>
-          <?php echo $this->text('No'); ?>
-          <?php } else if ($status['status'] === true) { ?>
-          <?php echo $this->text('Yes'); ?>
-          <?php } else if (is_array($status['status'])) { ?>
+          <?php if (empty($status['details'])) { ?>
+          <?php echo $this->truncate($status['status']); ?>
+          <?php } else { ?>
           <a data-toggle="collapse" href="#status-details-<?php echo $status_id; ?>">
-            <?php echo $this->text('No'); ?>
+            <?php echo $this->truncate($status['status']); ?>
           </a>
+          <?php } ?>
+          <?php if($status_id == 'php_version') { ?>
+          <a href="<?php echo $this->url('', array('phpinfo' => 1)); ?>"><?php echo $this->text('Show info'); ?></a>
+          <?php } ?>
+          <?php if (!empty($status['details'])) { ?>
           <div class="collapse" id="status-details-<?php echo $status_id; ?>">
             <ul class="list-unstyled">
-              <?php foreach ($status['status'] as $status_message) { ?>
+              <?php foreach ($status['details'] as $status_message) { ?>
               <li><?php echo $this->xss($status_message); ?></li>
               <?php } ?>
             </ul>
           </div>
-          <?php } else { ?>
-          <?php echo $this->truncate($status['status']); ?>
-          <?php if($status_id == 'php_version') { ?>
-          <a href="<?php echo $this->url('', array('phpinfo' => 1)); ?>"><?php echo $this->text('Show info'); ?></a>
-          <?php } ?>
           <?php } ?>
         </td>
       </tr>

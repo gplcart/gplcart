@@ -223,6 +223,7 @@ td .list-inline {
 
 #terminal-wrapper .ui-terminal {
     height: 500px;
+    word-wrap: break-word;
 }
 
 /* End scrollbar style */

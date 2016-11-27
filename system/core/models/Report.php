@@ -291,7 +291,7 @@ class Report extends Model
             'title' => $this->language->text('PHP APC cache enabled'),
             'description' => '',
             'severity' => 'info',
-            'status' => ini_get('apc.enabled'),
+            'status' => ini_get('apc.enabled') ? $this->language->text('Yes') : $this->language->text('No'),
             'weight' => 5,
         );
 
@@ -313,12 +313,15 @@ class Report extends Model
             'status' => date($date_format, $this->config->get('cron_last_run')),
             'weight' => 7,
         );
+        
+        $filesystem = $this->checkFilesystem();
 
         $statuses['filesystem'] = array(
             'title' => $this->language->text('Filesystem is protected'),
             'description' => '',
             'severity' => 'danger',
-            'status' => $this->checkFilesystem(),
+            'status' => ($filesystem === true) ? $this->language->text('Yes') : $this->language->text('No'),
+            'details' => ($filesystem === true) ? array() : $filesystem,
             'weight' => 8,
         );
 

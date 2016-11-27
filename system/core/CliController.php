@@ -172,6 +172,10 @@ class CliController
     {
         $arguments = $this->getArguments($filter);
         $mapped = $this->mapArguments($arguments, $map);
+
+        //print_r($mapped);
+
+
         $data = Tool::merge($default, $mapped);
 
         return $this->setSubmitted($data);
@@ -249,6 +253,16 @@ class CliController
         }
 
         return !empty($this->errors);
+    }
+
+    /**
+     * Whether a submitted kay is not empty
+     * @param string $key
+     * @return boolean
+     */
+    protected function isSubmitted($key)
+    {
+        return (bool) $this->getSubmitted($key);
     }
 
     /**
@@ -428,7 +442,7 @@ class CliController
 
         $mapped = array();
         foreach ($arguments as $key => $value) {
-            if (isset($map[$key])) {
+            if (isset($map[$key]) && is_string($map[$key])) {
                 Tool::setArrayValue($mapped, $map[$key], $value);
             }
         }

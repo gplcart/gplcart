@@ -446,17 +446,27 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
         }
 
         var handler,
+                terminal,
+                id = 'terminal-wrapper',
                 link = $('*[data-terminal]'),
-                wrapper = '<div id="terminal"></div>',
-                id = 'terminal-wrapper';
+                wrapper = '<div id="terminal"></div>';
 
         link.click(function () {
 
             Backend.ui.modal(wrapper, id);
 
-            $('#terminal').puiterminal({
+            terminal = $('#terminal');
+
+            terminal.puiterminal({
                 prompt: '> ',
                 handler: function (request, response) {
+
+                    request = $.trim(request);
+
+                    if (request === 'clear') {
+                        terminal.puiterminal('clear');
+                        return false;
+                    }
 
                     handler = this;
 
@@ -464,7 +474,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
                         method: 'POST',
                         url: GplCart.settings.urn,
                         data: {
-                            command: 'gplcart ' + $.trim(request),
+                            command: 'gplcart ' + request,
                             cli_token: GplCart.settings.token
                         },
                         success: function (data) {
