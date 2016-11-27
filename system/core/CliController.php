@@ -172,10 +172,6 @@ class CliController
     {
         $arguments = $this->getArguments($filter);
         $mapped = $this->mapArguments($arguments, $map);
-
-        //print_r($mapped);
-
-
         $data = Tool::merge($default, $mapped);
 
         return $this->setSubmitted($data);
