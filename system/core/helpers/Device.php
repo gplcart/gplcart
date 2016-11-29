@@ -12,17 +12,16 @@ namespace core\helpers;
 use BadMethodCallException;
 
 /**
- * Wrapper methods for device detector class
- * TODO: Extend namespaces version of detector instead of using __call()
+ * Wrapper methods for device detector library
  */
 class Device
 {
 
     /**
-     * Mobile detector class instance
-     * @var \Mobile_Detect $detector
+     * Library class instance
+     * @var \Mobile_Detect $lib
      */
-    protected $detector;
+    protected $lib;
 
     /**
      * Constructor
@@ -30,11 +29,11 @@ class Device
     public function __construct()
     {
         require_once GC_LIBRARY_DIR . '/mobile-detect/Mobile_Detect.php';
-        $this->detector = new \Mobile_Detect;
+        $this->lib = new \Mobile_Detect;
     }
 
     /**
-     * Access to detector's methods
+     * Access to library methods
      * @param string $method
      * @param array $arguments
      * @return mixed
@@ -42,8 +41,8 @@ class Device
      */
     public function __call($method, array $arguments)
     {
-        if (is_callable(array($this->detector, $method))) {
-            return call_user_func_array(array($this->detector, $method), $arguments);
+        if (is_callable(array($this->lib, $method))) {
+            return call_user_func_array(array($this->lib, $method), $arguments);
         }
 
         throw new BadMethodCallException("No such method exists: $method");

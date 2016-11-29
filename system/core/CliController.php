@@ -390,8 +390,7 @@ class CliController
         $message = '';
 
         if (!empty($this->current_route['help']['description'])) {
-            $text = $this->current_route['help']['description'];
-            $message .= $this->text('Description: @text', array('@text' => $text)) . PHP_EOL;
+            $message .= $this->current_route['help']['description'] . PHP_EOL;
         }
 
         if (!empty($this->current_route['help']['options'])) {
