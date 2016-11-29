@@ -133,7 +133,7 @@ class Container
      * @param string $class
      * @return object|boolean
      */
-    protected static function registered($class)
+    public static function registered($class)
     {
         $key = strtolower(trim($class, '\\'));
         return isset(static::$registry[$key]) ? static::$registry[$key] : false;
