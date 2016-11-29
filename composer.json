@@ -1,0 +1,34 @@
+{
+    "name": "gplcart/gplcart",
+    "type": "project",
+    "description": "GplCart",
+    "keywords": ["gplcart", "ecommerce", "shopping cart", "opensource shopping cart"],
+    "homepage": "http://www.gplcart.com",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Iurii Makukh",
+            "email": "gplcart.software@gmail.com",
+            "role": "lead"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/gplcart/gplcart/issues"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "ext-gd": "*",
+        "ext-mbstring": "*",
+        "ext-PDO": "*",
+        "ext-curl": "*",
+        "ext-fileinfo": "*",
+        "ext-zip": "*",
+        "ext-openssl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "core\\": "system/core/",
+            "tests\\unit\\": "tests/unit/"
+        }
+    }
+}
