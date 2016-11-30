@@ -9,7 +9,6 @@
 
 namespace tests\unit\system\core;
 
-use core\Hook;
 use tests\resources\UnitTest;
 
 /**
@@ -47,48 +46,52 @@ class HookTest extends UnitTest
     }
 
     /**
-     * @covers core\Hook::modules
-     * @todo   Implement testModules().
-     */
-    public function testModules()
-    {
-        
-    }
-
-    /**
      * @covers core\Hook::register
-     * @todo   Implement testRegister().
      */
     public function testRegister()
     {
-        
+        $method = 'hookTest';
+        $class = 'test\\Test';
+        $key_method = strtolower($method);
+
+        $result = $this->object->register($method, $class);
+
+        $this->assertTrue(isset($result[$key_method][$class]));
+        $this->assertTrue(is_array($result[$key_method][$class]));
+        $this->assertEquals(2, count($result[$key_method][$class]));
+
+        list($registered_class, $registered_method) = $result[$key_method][$class];
+
+        $this->assertEquals($class, $registered_class);
+        $this->assertEquals($method, $registered_method);
     }
 
     /**
      * @covers core\Hook::unregister
-     * @todo   Implement testUnregister().
+     * @depends testRegister
      */
     public function testUnregister()
     {
-        
+        $method = 'hookTest';
+        $class = 'test\\Test';
+
+        $this->object->register($method, $class);
+        $result = $this->object->unregister($method, $class);
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(!isset($result[strtolower($method)][$class]));
     }
 
     /**
-     * @covers core\Hook::fire
-     * @todo   Implement testFire().
+     * @covers core\Hook::getMethod
      */
-    public function testFire()
+    public function testGetMethod()
     {
-        
-    }
+        $hook = 'Test.Hook.name';
+        $result = $this->object->getMethod($hook);
 
-    /**
-     * @covers core\Hook::fireModule
-     * @todo   Implement testFireModule().
-     */
-    public function testFireModule()
-    {
-        
+        $this->assertEquals(0, strpos($result, 'hook'));
+        $this->assertEquals(1, preg_match('/^[a-z0-9]+$/', $result));
     }
 
 }

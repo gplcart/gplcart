@@ -159,7 +159,7 @@ class Hook
      * @param string $hook
      * @return string
      */
-    protected function getMethod($hook)
+    public function getMethod($hook)
     {
         return 'hook' . strtolower(str_replace(".", "", $hook));
     }
