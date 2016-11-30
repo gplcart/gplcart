@@ -126,6 +126,12 @@ class Install extends Model
             'severity' => 'danger',
             'message' => $this->language->text('PDO database driver installed')
         );
+        
+        $requirements['extensions']['spl'] = array(
+            'status' => extension_loaded('spl'),
+            'severity' => 'danger',
+            'message' => $this->language->text('SPL extension installed')
+        );
 
         $requirements['extensions']['curl'] = array(
             'status' => extension_loaded('curl'),

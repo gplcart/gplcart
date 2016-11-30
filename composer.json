@@ -19,11 +19,12 @@
         "php": ">=5.4.0",
         "ext-gd": "*",
         "ext-mbstring": "*",
-        "ext-PDO": "*",
+        "ext-pdo": "*",
         "ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-zip": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "ext-spl": "*"
     },
     "autoload": {
         "psr-4": {

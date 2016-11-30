@@ -20,7 +20,13 @@ Also you'll need the following extension enabled:
 
 ## Installation ##
 
-Download and unpack to your hosting directory. Go to `yourdomain.com/install` and follow the instructions. That's all!
+Step 1. Download and unpack to your installation directory. It can be done manually or using Composer: `composer create-project gplcart/gplcart path/to/installation/folder`. You may want to use some optional parameters like: `--no-install --` and/or `stability="dev"`. See [composer docs](https://getcomposer.org/doc).
+
+Step 2. Perform full system installation using one of the following options:
+
+1. **Web installer:** Go to `yourdomain.com/install` and follow the instructions
+2. **Console:** Go to your installation directory `cd /your/installation/directory`, then `php gplcart install --db-name="example" --user-email="example@example.com"`. To see all available install options: `php gplcart install --help`
+
 
 ## Some key features ##
 
@@ -70,7 +76,13 @@ GPLCart - это движок интернет-магазина с открыт�
 - ZipArchive
 
 ## Установка ##
-Скачайте архив и установите в рабочую директорию вашего хостинга. Наберите `yourdomain.com` и следуйте инструкциям. Это всё!
+
+Шаг 1. Скачайте и распакуйте архив директорию сайта. Это можно сделать вручную или с помощью Composer: `composer create-project gplcart/gplcart path/to/installation/folder`. Вы можете использовать некоторые дополнительные опции вроде: `--no-install --` и/или `stability="dev"`. Смотрите [справочную информацию](https://getcomposer.org/doc).
+
+Шаг 2. Выполните полную установку системы одним из способов:
+
+1. **Веб-инсталлятор:** Откройте `yourdomain.com/install` и следуйте инструкциям
+2. **Консоль:** Перейдите в директорию установки `cd /your/installation/directory`, затем `php gplcart install --db-name="example" --user-email="example@example.com"`. Чтобы видеть все доступные опции установки: `php gplcart install --help`
 
 ## Некоторые возможности системы ##
 
