@@ -33,6 +33,9 @@
           <?php } ?>
           <div class="text-muted">
           <?php echo $this->text('Required. Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
+          <?php if($this->access('file_add') && $this->access('file_upload')) { ?>
+          <a href="<?php echo $this->url('admin/content/file/add'); ?>"><?php echo $this->text('Upload new file'); ?></a>
+          <?php } ?>
           </div>
           </div>
         </div>

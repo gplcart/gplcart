@@ -1,31 +1,19 @@
 <body class="install">
   <div class="container">
     <form method="post" class="form-horizontal" autocomplete="off">
-      <div class="header clearfix">
-        <div class="pull-left">
-          <a target="_blank" class="btn btn-default" href="<?php echo $url_wiki; ?>"><?php echo $this->text('Documentation'); ?></a>
-          <a target="_blank" class="btn btn-default" href="<?php echo $url_licence; ?>"><?php echo $this->text('Licence'); ?></a>
-        </div>
-        <?php if (!empty($languages)) { ?>
-        <div class="pull-right">
-          <div class="form-group form-inline">
-            <div class="col-md-12">
-              <label><?php echo $this->text('Language'); ?></label>
-              <select class="form-control" onchange="location.href = '?lang=' + this.value;">
-                <option value=""><?php echo $this->text('English'); ?></option>
-                <?php foreach ($languages as $code => $name) { ?>
-                <?php if (isset($settings['store']['language']) && $settings['store']['language'] == $code) { ?>
-                <option value="<?php echo $code; ?>" selected><?php echo isset($name[1]) ? $this->escape($name[1]) : $this->escape($name[0]); ?></option>
-                <?php } else { ?>
-                <option value="<?php echo $code; ?>"><?php echo isset($name[1]) ? $this->escape($name[1]) : $this->escape($name[0]); ?></option>
-                <?php } ?>
-                <?php } ?>
-              </select>
-            </div>
-          </div>
-        </div>
-        <?php } ?>
+      <?php if (!empty($languages)) { ?>
+      <div class="header clearfix text-right">
+        <ul class="list-inline">
+          <?php foreach ($languages as $code => $name) { ?>
+          <li>
+            <a href="<?php echo $this->url('', array('lang' => $code)); ?>">
+              <?php echo isset($name[1]) ? $this->escape($name[1]) : $this->escape($name[0]); ?>
+            </a>
+          </li>
+          <?php } ?>
+        </ul>
       </div>
+      <?php } ?>
       <?php if (!empty($messages)) { ?>
       <div class="row" id="message">
         <div class="col-md-12">
@@ -206,8 +194,13 @@
         </div>
       </div>
     </form>
-    <footer class="footer">
-      <p>&copy; <?php echo (2015 == date('Y')) ? date('Y') : '2015 - ' . date('Y'); ?>  GPL Cart.</p>
+    <footer class="footer row">
+      <div class="col-md-6">
+      &copy; <?php echo (2015 == date('Y')) ? date('Y') : '2015 - ' . date('Y'); ?>  GPL Cart.
+      </div>
+      <div class="col-md-6 text-right">
+        <a target="_blank" href="<?php echo $url_licence; ?>"><?php echo $this->text('Licenced under GPL'); ?></a>
+      </div>
     </footer>
   </div>
 </body>

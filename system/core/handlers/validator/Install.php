@@ -310,14 +310,10 @@ class Install extends BaseValidator
      */
     protected function validateDbPasswordInstall(array &$submitted)
     {
-        if (empty($submitted['database']['password'])) {
-            $vars = array('@field' => $this->language->text('Database password'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.password', $error);
-            return false;
+        if (!isset($submitted['database']['password'])) {
+            $submitted['database']['password'] = '';
+            return null;
         }
-
-        return true;
     }
 
     protected function validateDbHostInstall(array $submitted)
