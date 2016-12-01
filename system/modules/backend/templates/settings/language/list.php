@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table table-striped languages">
+    <table class="table languages">
       <thead>
         <tr>
           <th><?php echo $this->text('Name'); ?></th>

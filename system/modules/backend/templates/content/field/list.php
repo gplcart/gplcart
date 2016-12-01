@@ -24,7 +24,7 @@
     <?php } ?>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table table-striped fields">
+    <table class="table fields">
       <thead>
         <tr>
           <th class="middle"><input type="checkbox" id="select-all" value="1"></th>

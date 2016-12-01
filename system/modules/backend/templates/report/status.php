@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-body table-responsive">
     <?php if(empty($phpinfo)) { ?>
-    <table class="table table-striped">
+    <table class="table report-status">
       <?php foreach ($statuses as $status_id => $status) { ?>
       <tr class="<?php echo ((empty($status['status']) || is_array($status['status'])) && $status['severity'] !== 'info') ? $this->escape($status['severity']) : ''; ?>">
         <td class="col-md-3">

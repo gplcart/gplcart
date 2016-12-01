@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table table-striped image-styles">
+    <table class="table image-styles">
       <thead>
         <tr>
           <th><?php echo $this->text('ID'); ?></th>

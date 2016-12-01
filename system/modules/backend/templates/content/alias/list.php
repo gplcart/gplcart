@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="panel-body">
-      <table class="table table-striped aliases">
+      <table class="table aliases">
         <thead>
           <tr>
             <th>

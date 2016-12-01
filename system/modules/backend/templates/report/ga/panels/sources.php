@@ -2,7 +2,7 @@
   <div class="panel-heading"><?php echo $this->text('Top sources'); ?></div>
   <div class="panel-body table-responsive">
     <?php if (!empty($items)) { ?>
-    <table class="table table-striped">
+    <table class="table ga-sources">
       <thead>
         <tr>
           <th><?php echo $this->text('Source'); ?></th>

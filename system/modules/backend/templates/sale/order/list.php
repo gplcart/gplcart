@@ -35,8 +35,8 @@
       </a>
       <?php } ?>
     </div>
-    <div class="panel-body">
-      <table class="table table-striped margin-top-20 order-list">
+    <div class="panel-body table-condensed">
+      <table class="table order-list">
         <thead>
           <tr>
             <th>

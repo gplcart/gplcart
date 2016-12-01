@@ -2,7 +2,7 @@
   <div class="panel-heading"><?php echo $this->text('Top pages'); ?></div>
   <div class="panel-body table-responsive">
     <?php if (!empty($items)) { ?>
-    <table class="table table-striped">
+    <table class="table ga-top-pages">
       <thead>
         <tr>
           <th><?php echo $this->text('Url'); ?></th>

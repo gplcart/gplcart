@@ -9,7 +9,7 @@
     <?php } ?>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table table-striped currencies">
+    <table class="table currencies">
       <thead>
         <tr>
           <th><?php echo $this->text('Name'); ?></th>

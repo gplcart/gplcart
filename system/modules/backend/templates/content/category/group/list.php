@@ -9,8 +9,8 @@
     </div>
     <?php } ?>
   </div>
-  <div class="panel-body">
-    <table class="table table-responsive table-striped category-group">
+  <div class="panel-body table-responsive">
+    <table class="table category-group">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_category_group_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
@@ -92,9 +92,7 @@
     </table>  
   </div>
   <?php if (!empty($pager)) { ?>
-  <div class="panel-footer text-right">
-    <?php echo $pager; ?>
-  </div>
+  <div class="panel-footer text-right"><?php echo $pager; ?></div>
   <?php } ?>
 </div>
 <?php } else { ?>

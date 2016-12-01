@@ -35,7 +35,7 @@
     <?php } ?>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table table-striped stores">
+    <table class="table stores">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>

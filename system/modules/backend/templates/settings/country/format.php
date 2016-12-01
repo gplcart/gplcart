@@ -10,8 +10,8 @@
         <?php } ?>
       </div>
     </div>
-    <div class="panel-body">
-      <table class="table margin-top-20 country-format">
+    <div class="panel-body table-responsive">
+      <table class="table country-format">
         <thead>
           <tr>
             <th><?php echo $this->text('Name'); ?></th>

@@ -2,7 +2,7 @@
   <div class="panel-heading"><?php echo $this->text('Top software'); ?></div>
   <div class="panel-body table-responsive">
     <?php if (!empty($items)) { ?>
-    <table class="table table-striped">
+    <table class="table ga-software">
       <thead>
         <tr>
           <th><?php echo $this->text('OS'); ?></th>

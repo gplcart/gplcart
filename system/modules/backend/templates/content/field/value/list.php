@@ -28,8 +28,8 @@
       <?php } ?>
     </div> 
   </div>
-  <div class="panel-body">
-    <table class="table table-responsive field-values table-striped">
+  <div class="panel-body table-responsive">
+    <table class="table field-values">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>

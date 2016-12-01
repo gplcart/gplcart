@@ -38,7 +38,7 @@
       <?php } ?>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table table-striped price-rules">
+      <table class="table price-rules">
         <thead>
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>

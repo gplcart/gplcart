@@ -8,7 +8,7 @@
         </h4>
       </div>
       <div class="panel-body table-responsive">
-        <table class="table table-striped attribute">
+        <table class="table table-condensed attribute">
           <tbody>
             <?php foreach ($fields['attribute'] as $field_id => $attribute) { ?>
             <tr>

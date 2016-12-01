@@ -36,7 +36,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table table-striped countries">
+    <table class="table countries">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"></th>

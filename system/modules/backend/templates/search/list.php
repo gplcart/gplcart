@@ -1,4 +1,4 @@
-<div class="row margin-top-20">
+<div class="row">
   <div class="col-md-12">
     <?php if($results) { ?>
     <?php foreach($results as $result) { ?>

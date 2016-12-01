@@ -46,7 +46,7 @@
       <?php } ?>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table table-striped users">
+      <table class="table users">
         <thead>
           <tr>
             <th><input type="checkbox" id="select-all" value="1"></th>

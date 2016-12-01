@@ -59,12 +59,12 @@
                 <?php if(empty($imagestyle['default'])){ ?>
                 <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
                 <?php } else { ?>
-                <i class="fa fa-refresh"></i> <?php echo $this->text('Reset to default'); ?>
+                <i class="fa fa-refresh"></i> <?php echo $this->text('Reset'); ?>
                 <?php } ?>
               </button>
               <?php } ?>
             </div>
-            <div class="col-md-10">
+            <div class="col-md-10 text-right">
               <div class="btn-toolbar">
                 <a href="<?php echo $this->url('admin/settings/imagestyle'); ?>" class="btn btn-default cancel">
                   <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
