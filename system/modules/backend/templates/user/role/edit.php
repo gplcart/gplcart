@@ -1,5 +1,5 @@
-<form method="post" id="edit-role" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-role" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">
@@ -20,15 +20,15 @@
           <div class="help-block"><?php echo $this->text('Disabled roles will not be available for users'); ?></div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->escape($role['name']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['name'])) { ?>
-            <?php echo $this->errors['name']; ?>
-            <?php } ?>
-            <div class="text-muted"><?php echo $this->text('Required. A descriptive name of the role, e.g Boss, Manager etc'); ?></div>
+            <?php echo $this->error('name'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A descriptive name of the role, e.g Boss, Manager etc'); ?>
+            </div>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($role['role_id']) && $this->access('user_role_delete')) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>
@@ -81,7 +81,7 @@
           <button class="btn btn-default save" name="save" value="1">
             <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
           </button>
-          <?php } ?> 
+          <?php } ?>
         </div>
       </div>
     </div>

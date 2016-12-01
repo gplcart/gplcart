@@ -2,15 +2,13 @@
   <div class="panel-body">
     <?php foreach ($operations as $id => $operation) { ?>
     <form method="post" enctype="multipart/form-data" id="import-csv-<?php echo $id; ?>" class="form-horizontal" onsubmit="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
-      <input type="hidden" name="token" value="<?php echo $token; ?>">
-      <div class="form-group<?php echo isset($this->errors[$id]['file']) ? ' has-error' : ''; ?>">
+      <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
+      <div class="form-group<?php echo $this->error("$id.file", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->escape($operation['name']); ?></label>
         <div class="col-md-4">
           <input type="file" class="form-control" name="file" accept=".csv">
           <div class="help-block">
-            <?php if (isset($this->errors[$id]['file'])) { ?>
-            <?php echo $this->errors[$id]['file']; ?>
-            <?php } ?>
+            <?php echo $this->error("$id.file"); ?>
             <?php if (!empty($operation['description'])) { ?>
             <div class="text-muted">
               <?php echo $this->xss($operation['description']); ?>

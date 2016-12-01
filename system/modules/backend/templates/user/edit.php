@@ -1,28 +1,22 @@
-<form method="post" id="edit-account" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-account" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->escape($user['name']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['name'])) { ?>
-            <?php echo $this->errors['name']; ?>
-            <?php } ?>
+            <?php echo $this->error('name'); ?>
             <div class="text-muted"><?php echo $this->text('Required. A unique user name, e.g John Smith'); ?></div>
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
           <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->escape($user['email']) : ''; ?>">
-          <div class="help-block">
-            <?php if (isset($this->errors['email'])) { ?>
-            <?php echo $this->errors['email']; ?>
-            <?php } ?>
-          </div>
+          <div class="help-block"><?php echo $this->error('email'); ?></div>
         </div>
       </div>
     </div>
@@ -84,7 +78,7 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
         <div class="col-md-4">
           <div class="input-group">
@@ -95,9 +89,7 @@
               </button>
             </span>
           </div>
-          <?php if (isset($this->errors['password'])) { ?>
-          <div class="help-block"><?php echo $this->errors['password']; ?></div>
-          <?php } ?>
+          <div class="help-block"><?php echo $this->error('password'); ?></div>
         </div>
       </div>
     </div>
@@ -107,7 +99,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if ($can_delete) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-floppy-o"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

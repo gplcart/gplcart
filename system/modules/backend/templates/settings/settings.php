@@ -1,44 +1,38 @@
-<form method="post" enctype="multipart/form-data" id="common-settings" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" enctype="multipart/form-data" id="common-settings" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Google API'); ?></div>
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['gapi_browser_key']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('gapi_browser_key', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Google API browser key'); ?></label>
         <div class="col-md-4">
           <input name="settings[gapi_browser_key]" class="form-control" value="<?php echo $this->escape($settings['gapi_browser_key']); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['gapi_browser_key'])) { ?>
-            <?php echo $this->errors['gapi_browser_key']; ?>
-            <?php } ?>
+            <?php echo $this->error('gapi_browser_key'); ?>
             <div class="text-muted">
               <?php echo $this->text('A browser key from Google Developers Console. Used for standard API like Google Maps etc'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['gapi_email']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('gapi_email', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Google API service e-mail'); ?></label>
         <div class="col-md-4">
           <input name="settings[gapi_email]" class="form-control" value="<?php echo $this->escape($settings['gapi_email']); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['gapi_email'])) { ?>
-            <?php echo $this->errors['gapi_email']; ?>
-            <?php } ?>
+            <?php echo $this->error('gapi_email'); ?>
             <div class="text-muted">
               <?php echo $this->text('A service account e-mail from Google Developers Console'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['gapi_certificate']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('gapi_certificate', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Google API certificate'); ?></label>
         <div class="col-md-4">
           <input type="file" accept=".p12" name="gapi_certificate" class="form-control">
           <div class="help-block">
-            <?php if (isset($this->errors['gapi_certificate'])) { ?>
-            <?php echo $this->errors['gapi_certificate']; ?>
-            <?php } ?>
+            <?php echo $this->error('gapi_certificate'); ?>
             <div class="text-muted">
               <?php echo $this->text('Upload your .p12 certificate file you got from Google Developers Console'); ?>
             </div>
