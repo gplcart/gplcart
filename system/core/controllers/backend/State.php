@@ -225,17 +225,40 @@ class State extends BackendController
     {
         $state = $this->getState($state_id);
         $country = $this->getCountry($country_code);
-        $zones = $this->zone->getList(array('status' => 1));
+
+        $zones = $this->getZonesState();
+        $can_delete = $this->canDeleteState($state);
 
         $this->setData('state', $state);
         $this->setData('zones', $zones);
         $this->setData('country', $country);
+        $this->setData('can_delete', $can_delete);
 
         $this->submitState($country, $state);
 
         $this->setTitleEditState($country, $state);
         $this->setBreadcrumbEditState($country);
         $this->outputEditState();
+    }
+
+    /**
+     * Returns an array of active zones
+     * @return type
+     */
+    protected function getZonesState()
+    {
+        return $this->zone->getList(array('status' => 1));
+    }
+
+    /**
+     * Whether the state can be deleted
+     * @return boolean
+     */
+    protected function canDeleteState(array $state)
+    {
+        return (isset($state['state_id'])//
+                && $this->canDelete($state['state_id'])//
+                && $this->access('state_delete'));
     }
 
     /**

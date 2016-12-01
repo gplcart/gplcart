@@ -86,8 +86,8 @@ class CategoryGroup extends Model
     public function getTranslation($category_group_id)
     {
         $sql = 'SELECT *'
-            . ' FROM category_group_translation'
-            . ' WHERE category_group_id=?';
+                . ' FROM category_group_translation'
+                . ' WHERE category_group_id=?';
 
         return $this->db->fetchAll($sql, array($category_group_id));
     }
@@ -106,9 +106,9 @@ class CategoryGroup extends Model
         }
 
         $sql .= ' FROM category_group cg'
-            . ' LEFT JOIN category_group_translation cgt'
-            . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)'
-            . ' WHERE cg.category_group_id > 0';
+                . ' LEFT JOIN category_group_translation cgt'
+                . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)'
+                . ' WHERE cg.category_group_id > 0';
 
         $language = $this->language->current();
         $where = array($language);
@@ -127,14 +127,13 @@ class CategoryGroup extends Model
 
         if (isset($data['store_id'])) {
             $sql .= ' AND cg.store_id = ?';
-            $where[] = (int)$data['store_id'];
+            $where[] = (int) $data['store_id'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'store_id', 'title', 'category_group_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'],
-                    $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))
         ) {
             $sql .= " ORDER BY cg.{$data['sort']} {$data['order']}";
         } else {
@@ -146,7 +145,7 @@ class CategoryGroup extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int)$this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'category_group_id');
@@ -214,7 +213,7 @@ class CategoryGroup extends Model
             $conditions['language'] = $language;
         }
 
-        return (bool)$this->db->delete('category_group_translation', $conditions);
+        return (bool) $this->db->delete('category_group_translation', $conditions);
     }
 
     /**
@@ -252,7 +251,7 @@ class CategoryGroup extends Model
         }
 
         $conditions = array(
-            'category_group_id' => (int)$category_group_id
+            'category_group_id' => (int) $category_group_id
         );
 
         $this->db->delete('category_group', $conditions);
@@ -291,13 +290,36 @@ class CategoryGroup extends Model
 
         $conditions = array('category_group_id' => $category_group_id);
 
-        $updated = (int)$this->db->update('category_group', $data, $conditions);
-        $updated += (int)$this->setTranslation($data);
+        $updated = (int) $this->db->update('category_group', $data, $conditions);
+        $updated += (int) $this->setTranslation($data);
 
         $result = ($updated > 0);
 
         $this->hook->fire('update.category.group.after', $category_group_id, $data, $result);
         return $result;
+    }
+
+    /**
+     * Returns an array of category group types
+     * @return array
+     */
+    public function getTypes()
+    {
+        $types = $this->getDefaultTypes();
+        $this->hook->fire('category.group.types', $types);
+        return $types;
+    }
+
+    /**
+     * Returns an array of default category group types
+     * @return array
+     */
+    protected function getDefaultTypes()
+    {
+        return array(
+            'brand' => $this->language->text('Brand'),
+            'catalog' => $this->language->text('Catalog')
+        );
     }
 
 }

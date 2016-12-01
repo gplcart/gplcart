@@ -1,30 +1,24 @@
-<form method="post" id="edit-page" onsubmit="return confirm();" class="form-horizontal<?php echo empty($this->errors) ? '' : ' form-errors'; ?>">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-page" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <?php echo $this->text('Title'); ?>
-        </label>
+      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-8">
           <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->escape($page['title']) : ''; ?>" autofocus>
           <div class="help-block">
-            <?php if (isset($this->errors['title'])) { ?>
-            <?php echo $this->errors['title']; ?>
-            <?php } ?>
+            <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. The title will be used on the page and menu'); ?></div>
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['description']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
         <div class="col-md-8">
           <textarea class="form-control summernote" name="page[description]"><?php echo (isset($page['description'])) ? $this->xss($page['description']) : ''; ?></textarea>
           <div class="help-block">
-            <?php if (isset($this->errors['description'])) { ?>
-            <?php echo $this->errors['description']; ?>
-            <?php } ?>
+            <?php echo $this->error('description'); ?>
             <div class="text-muted">
             <?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?>
             </div>
@@ -39,24 +33,24 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo!empty($this->errors) ? ' in' : ''; ?>">
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $info) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-6">
             <input maxlength="255" name="page[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['title'])) ? $this->escape($page['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+               <?php echo $this->error("translation.$code.title", ' has-error'); ?>
+            </div>
           </div>
         </div>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['description']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Text %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-6">
             <textarea class="form-control summernote" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->xss($page['translation'][$code]['description']) : ''; ?></textarea>
-            <?php if (isset($this->errors['translation'][$code]['description'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['description']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+               <?php echo $this->error("translation.$code.description"); ?>
+            </div>
           </div>
         </div>
         <?php } ?>
@@ -71,7 +65,7 @@
         <label class="col-md-2 control-label">
           <?php echo $this->text('Status'); ?>
         </label>
-        <div class="col-md-8">   
+        <div class="col-md-8">
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-default<?php echo (!isset($page['status']) || $page['status']) ? ' active' : ''; ?>">
               <input name="page[status]" type="radio" autocomplete="off" value="1"<?php echo (!isset($page['status']) || $page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
@@ -85,7 +79,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['store_id']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('store_id', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Store'); ?></label>
         <div class="col-md-4">
           <select class="form-control" name="page[store_id]">
@@ -95,9 +89,7 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php if(isset($this->errors['store_id'])) { ?>
-            <?php echo $this->escape($this->errors['store_id']); ?>
-            <?php } ?>
+            <?php echo $this->error('store_id'); ?>
             <div class="text-muted"><?php echo $this->text('Select a store where to display this page'); ?></div>
           </div>
         </div>
@@ -118,16 +110,14 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['alias']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('alias', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Alias'); ?>
         </label>
         <div class="col-md-8">
           <input name="page[alias]" maxlength="255" class="form-control" value="<?php echo isset($page['alias']) ? $this->escape($page['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['alias'])) { ?>
-            <?php echo $this->errors['alias']; ?>
-            <?php } ?>
+            <?php echo $this->error('alias'); ?>
             <div class="text-muted">
             <?php echo $this->text('An alternative path by which this page can be accessed. Leave empty to generate it automatically'); ?>
             </div>
@@ -164,14 +154,12 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Meta'); ?></div>
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['meta_title']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
         <div class="col-md-8">
           <input maxlength="60" name="page[meta_title]" class="form-control" value="<?php echo (isset($page['meta_title'])) ? $this->escape($page['meta_title']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['meta_title'])) { ?>
-            <?php echo $this->errors['meta_title']; ?>
-            <?php } ?>
+            <?php echo $this->error('meta_title'); ?>
             <div class="help-block">
             <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
             </div>
@@ -195,15 +183,15 @@
           </a>
         </div>
       </div>
-      <div id="meta-translations" class="collapse translations<?php echo!empty($this->errors) ? ' in' : ''; ?>">
+      <div id="meta-translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $info) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-8">
             <input maxlength="60" name="page[translation][<?php echo $code; ?>][meta_title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['meta_title'])) ? $this->escape($page['translation'][$code]['meta_title']) : ''; ?>">
-            <?php if (isset($this->errors['translation'][$code]['meta_title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['meta_title']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+               <?php echo $this->error("translation.$code.meta_title"); ?>
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -240,7 +228,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($page['page_id']) && $this->access('page_delete')) { ?>
-          <button name="delete" value="1" class="btn btn-danger">
+          <button name="delete" value="1" class="btn btn-danger" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>
@@ -255,7 +243,7 @@
               <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
             </button>
             <?php } ?>
-          </div>  
+          </div>
         </div>
       </div>
     </div>

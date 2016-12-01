@@ -1,5 +1,5 @@
-<form method="post" enctype="multipart/form-data" id="edit-store" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" enctype="multipart/form-data" id="edit-store" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Data'); ?></div>
     <div class="panel-body">
@@ -20,44 +20,38 @@
         </div>
       </div>
       <?php if (!isset($store['store_id']) || $store['store_id']) { ?>
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Name'); ?>
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="store[name]" class="form-control" value="<?php echo isset($store['name']) ? $this->escape($store['name']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['name'])) { ?>
-            <?php echo $this->errors['name']; ?>
-            <?php } ?>
+            <?php echo $this->error('name'); ?>
             <div class="text-muted"><?php echo $this->text('Required. A short name for administrators'); ?></div>
           </div>
         </div>
       </div>
       <?php } ?>
       <?php if (!$is_default) { ?>
-      <div class="form-group required<?php echo isset($this->errors['domain']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('domain', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Domain'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="store[domain]" class="form-control" value="<?php echo isset($store['domain']) ? $this->escape($store['domain']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['domain'])) { ?>
-            <?php echo $this->errors['domain']; ?>
-            <?php } ?>
+            <?php echo $this->error('domain'); ?>
             <div class="text-muted">
               <?php echo $this->text('Required. A domain name by which this store can be accessed, e.g domain.com or subdomain.domain.com'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['basepath']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('basepath', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Base path'); ?></label>
         <div class="col-md-4">
           <input maxlength="50" name="store[basepath]" class="form-control" value="<?php echo isset($store['basepath']) ? $this->escape($store['basepath']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['basepath'])) { ?>
-            <?php echo $this->errors['basepath']; ?>
-            <?php } ?>
+            <?php echo $this->error('basepath'); ?>
             <div class="text-muted">
               <?php echo $this->text('An optional path if the store is not installed in the domain root. Used to constract absolute store URL'); ?>
             </div>
@@ -65,14 +59,12 @@
         </div>
       </div>
       <?php } ?>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('data.owner', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Owner'); ?></label>
         <div class="col-md-4">
           <input maxlength="32" name="store[data][owner]" class="form-control" value="<?php echo isset($store['data']['owner']) ? $this->escape($store['data']['owner']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['data']['owner'])) { ?>
-            <?php echo $this->errors['data']['owner']; ?>
-            <?php } ?>
+            <?php echo $this->error('data.owner'); ?>
             <div class="text-muted">
               <?php echo $this->text('A name of the company that owns this store'); ?>
             </div>
@@ -84,40 +76,34 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>
     <div class="panel-body">
-      <div class="required form-group<?php echo isset($this->errors['data']['title']) ? ' has-error' : ''; ?>">
+      <div class="required form-group<?php echo $this->error('data.title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
           <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo (isset($store['data']['title'])) ? $this->escape($store['data']['title']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['data']['title'])) { ?>
-            <?php echo $this->errors['data']['title']; ?>
-            <?php } ?>
+            <?php echo $this->error('data.title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. This name is displayed to frontend users as default site name'); ?></div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['data']['meta_title']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('data.meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
         <div class="col-md-4">
           <input type="text" maxlength="60" name="store[data][meta_title]" class="form-control" value="<?php echo (isset($store['data']['meta_title'])) ? $this->escape($store['data']['meta_title']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['data']['meta_title'])) { ?>
-            <?php echo $this->errors['data']['meta_title']; ?>
-            <?php } ?>
+            <?php echo $this->error('data.meta_title'); ?>
             <div class="text-muted">
               <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('data.meta_description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
         <div class="col-md-4">
           <textarea maxlength="160" class="form-control" name="store[data][meta_description]"><?php echo (isset($store['data']['meta_description'])) ? $this->escape($store['data']['meta_description']) : ''; ?></textarea>
           <div class="help-block">
-            <?php if (isset($this->errors['data']['meta_description'])) { ?>
-            <?php echo $this->errors['data']['meta_description']; ?>
-            <?php } ?>
+            <?php echo $this->error('data.meta_description'); ?>
             <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
           </div>
         </div>
@@ -130,28 +116,28 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo!empty($this->errors) ? ' in' : ''; ?>">
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $info) { ?>
-        <div class="form-group<?php echo isset($this->errors['data']['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("data.translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label">
             <?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?>
           </label>
           <div class="col-md-4">
             <input type="text" maxlength="70" name="store[data][translation][<?php echo $code; ?>][title]" class="form-control" id="title-<?php echo $code; ?>" value="<?php echo (isset($store['data']['translation'][$code]['title'])) ? $this->escape($store['data']['translation'][$code]['title']) : ''; ?>">
-            <?php if (isset($this->errors['data']['translation'][$code]['title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['data']['translation'][$code]['title']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+              <?php echo $this->error("data.translation.$code.title"); ?>
+            </div>
           </div>
         </div>
-        <div class="form-group<?php echo isset($this->errors['data']['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("data.translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label">
             <?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?>
           </label>
           <div class="col-md-4">
             <input type="text" maxlength="60" name="store[data][translation][<?php echo $code; ?>][meta_title]" class="form-control" value="<?php echo (isset($store['data']['translation'][$code]['meta_title'])) ? $this->escape($store['data']['translation'][$code]['meta_title']) : ''; ?>">
-            <?php if (isset($this->errors['data']['translation'][$code]['meta_title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['data']['translation'][$code]['meta_title']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+               <?php echo $this->error("data.translation.$code.meta_title"); ?>
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -172,70 +158,60 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-6">
-          <div class="form-group">
+          <div class="form-group<?php echo $this->error('data.address', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Address'); ?></label>
             <div class="col-md-8">
               <textarea name="store[data][address]" class="form-control"><?php echo isset($store['data']['address']) ? $this->escape($store['data']['address']) : ''; ?></textarea>
               <div class="help-block">
-                <?php if (isset($this->errors['data']['address'])) { ?>
-                <?php echo $this->errors['data']['address']; ?>
-                <?php } ?>
+                <?php echo $this->error('data.address'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('A physical address of the store'); ?>
                 </div>
               </div>
             </div>
           </div>
-          <div class="form-group<?php echo isset($this->errors['data']['map']) ? ' has-error' : ''; ?>">
+          <div class="form-group<?php echo $this->error('data.map', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Map'); ?></label>
             <div class="col-md-8">
               <textarea name="store[data][map]" class="form-control"><?php echo empty($store['data']['map']) ? '' : $this->escape($store['data']['map']); ?></textarea>
               <div class="help-block">
-                <?php if (isset($this->errors['data']['map'])) { ?>
-                <?php echo $this->errors['data']['map']; ?>
-                <?php } ?>
+                <?php echo $this->error('data.map'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('Latitude and longitude of the store, one value per line'); ?>
                 </div>
               </div>
             </div>
           </div>
-          <div class="form-group<?php echo isset($this->errors['data']['email']) ? ' has-error' : ''; ?>">
+          <div class="form-group<?php echo $this->error('data.email', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('E-mail'); ?></label>
             <div class="col-md-8">
               <textarea name="store[data][email]" class="form-control"><?php echo!empty($store['data']['email']) ? $this->escape($store['data']['email']) : ''; ?></textarea>
               <div class="help-block">
-                <?php if (isset($this->errors['data']['email'])) { ?>
-                <?php echo $this->errors['data']['email']; ?>
-                <?php } ?>
+                <?php echo $this->error('data.map'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('A list of e-mails, one per line. The very first address will be main and used for notifications'); ?>
                 </div>
               </div>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group<?php echo $this->error('data.phone', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Phone'); ?></label>
             <div class="col-md-8">
               <textarea name="store[data][phone]" class="form-control"><?php echo!empty($store['data']['phone']) ? $this->escape($store['data']['phone']) : ''; ?></textarea>
               <div class="help-block">
-                <?php if (isset($this->errors['data']['phone'])) { ?>
-                <?php echo $this->errors['data']['phone']; ?>
-                <?php } ?>
+                <?php echo $this->error('data.phone'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('A list of phone numbers, one per line'); ?>
                 </div>
               </div>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group<?php echo $this->error('data.fax', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Fax'); ?></label>
             <div class="col-md-8">
               <textarea name="store[data][fax]" class="form-control"><?php echo !empty($store['data']['fax']) ? $this->escape($store['data']['fax']) : ''; ?></textarea>
               <div class="help-block">
-                <?php if (isset($this->errors['data']['fax'])) { ?>
-                <?php echo $this->errors['data']['fax']; ?>
-                <?php } ?>
+                <?php echo $this->error('data.fax'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('A list of fax numbers, one per line'); ?>
                 </div>
@@ -395,7 +371,7 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Images'); ?></div>
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['logo']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('logo', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Logo'); ?></label>
         <div class="col-md-4">
           <?php if ($this->access('file_upload')) { ?>
@@ -403,9 +379,7 @@
           <?php } ?>
           <input type="hidden" name="store[data][logo]" value="<?php echo isset($store['data']['logo']) ? $this->escape($store['data']['logo']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['logo'])) { ?>
-            <?php echo $this->errors['logo']; ?>
-            <?php } ?>
+            <?php echo $this->error('logo'); ?>
             <div class="text-muted"><?php echo $this->text('Upload an image. Appearance of the image is controlled by the current theme'); ?></div>
           </div>
         </div>
@@ -422,7 +396,7 @@
         </div>
       </div>
       <?php } ?>
-      <div class="form-group<?php echo isset($this->errors['favicon']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('favicon', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Favicon'); ?></label>
         <div class="col-md-4">
           <?php if ($this->access('file_upload')) { ?>
@@ -430,9 +404,7 @@
           <?php } ?>
           <input type="hidden" name="store[data][favicon]" value="<?php echo isset($store['data']['favicon']) ? $this->escape($store['data']['favicon']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['favicon'])) { ?>
-            <?php echo $this->errors['favicon']; ?>
-            <?php } ?>
+            <?php echo $this->error('favicon'); ?>
             <div class="text-muted">
               <?php echo $this->text('Favicon is a small image that represents your site. Appearance of the image is controlled by the current theme'); ?>
             </div>
@@ -485,8 +457,8 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
-          <?php if (!$is_default && $this->access('store_delete') && $can_delete) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <?php if ($can_delete) { ?>
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

@@ -171,13 +171,15 @@ class Trigger extends BackendController
     {
         $trigger = $this->getTrigger($trigger_id);
         $stores = $this->store->getNames();
-        $conditions = $this->condition->getHandlers();
-        $operators = $this->condition->getOperators();
+        $conditions = $this->getConditionsTrigger();
+        $operators = $this->getConditionOperatorsTrigger();
+        $can_delete = $this->canDeleteTrigger($trigger);
 
         $this->setData('stores', $stores);
         $this->setData('trigger', $trigger);
         $this->setData('operators', $operators);
         $this->setData('conditions', $conditions);
+        $this->setData('can_delete', $can_delete);
 
         $this->submitTrigger($trigger);
 
@@ -185,6 +187,34 @@ class Trigger extends BackendController
         $this->setTitleEditTrigger($trigger);
         $this->setBreadcrumbEditTrigger();
         $this->outputEditTrigger();
+    }
+
+    /**
+     * Returns an array of trigger conditions
+     * @return array
+     */
+    protected function getConditionsTrigger()
+    {
+        return $this->condition->getHandlers();
+    }
+
+    /**
+     * Returns an array of condition operators
+     * @return array
+     */
+    protected function getConditionOperatorsTrigger()
+    {
+        return $this->condition->getOperators();
+    }
+
+    /**
+     * Whether the trigger can be deleted
+     * @param array $trigger
+     * @return boolean
+     */
+    protected function canDeleteTrigger(array $trigger)
+    {
+        return (isset($trigger['trigger_id']) && $this->access('trigger_delete'));
     }
 
     /**
@@ -335,7 +365,7 @@ class Trigger extends BackendController
     protected function setTitleEditTrigger(array $trigger)
     {
         $title = $this->text('Add trigger');
-        
+
         if (isset($trigger['name'])) {
             $title = $this->text('Edit trigger %name', array(
                 '%name' => $trigger['name']

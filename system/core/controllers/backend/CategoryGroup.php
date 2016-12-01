@@ -116,13 +116,13 @@ class CategoryGroup extends BackendController
      */
     public function editCategoryGroup($category_group_id = null)
     {
-        $stores = $this->store->getNames();
         $category_group = $this->getCategoryGroup($category_group_id);
+        $can_delete = $this->canDeleteCategoryGroup($category_group);
 
-        $can_delete = (isset($category_group['category_group_id'])//
-                && $this->category_group->canDelete($category_group_id)//
-                && $this->access('category_group_delete'));
+        $stores = $this->store->getNames();
+        $types = $this->category_group->getTypes();
 
+        $this->setData('types', $types);
         $this->setData('stores', $stores);
         $this->setData('can_delete', $can_delete);
         $this->setData('category_group', $category_group);
@@ -132,6 +132,18 @@ class CategoryGroup extends BackendController
         $this->setTitleEditCategoryGroup($category_group);
         $this->setBreadcrumbEditCategoryGroup();
         $this->outputEditCategoryGroup();
+    }
+
+    /**
+     * Whether the category group can be deleted
+     * @param integer $category_group
+     * @return boolean
+     */
+    protected function canDeleteCategoryGroup(array $category_group)
+    {
+        return (isset($category_group['category_group_id'])//
+                && $this->category_group->canDelete($category_group['category_group_id'])//
+                && $this->access('category_group_delete'));
     }
 
     /**

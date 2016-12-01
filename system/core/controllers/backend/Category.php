@@ -72,7 +72,6 @@ class Category extends BackendController
         $category_group = $this->getCategoryGroup($category_group_id);
 
         $this->actionCategory();
-
         $categories = $this->getListCategory($category_group);
 
         $this->setData('categories', $categories);
@@ -250,12 +249,10 @@ class Category extends BackendController
     {
         $category = $this->getCategory($category_id);
         $category_group = $this->getCategoryGroup($category_group_id);
-        $categories = $this->category->getOptionList($category_group_id, 0);
+        $categories = $this->getOptionsCategory($category_group_id);
 
         $parent_category = (int) $this->request->get('parent_id');
-
-        $can_delete = (isset($category['category_id'])//
-                && $this->category->canDelete($category_id));
+        $can_delete = $this->canDeleteCategory($category);
 
         $this->setData('category', $category);
         $this->setData('can_delete', $can_delete);
@@ -270,6 +267,28 @@ class Category extends BackendController
         $this->setTitleEditCategory($category_group, $category);
         $this->setBreadcrumbEditCategory($category_group);
         $this->outputEditCategory();
+    }
+
+    /**
+     * Returns an array of category options
+     * @param integer $category_group_id
+     * @return array
+     */
+    protected function getOptionsCategory($category_group_id)
+    {
+        return $this->category->getOptionList($category_group_id, 0);
+    }
+
+    /**
+     * Whether the category can be deleted
+     * @param array $category
+     * @return boolean
+     */
+    protected function canDeleteCategory(array $category)
+    {
+        return (isset($category['category_id'])//
+                && $this->category->canDelete($category['category_id'])//
+                && $this->access('category_delete'));
     }
 
     /**

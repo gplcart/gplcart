@@ -1,5 +1,5 @@
-<form method="post" id="edit-state" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-state" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">
@@ -18,35 +18,31 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->escape($state['name']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['name'])) { ?>
-            <?php echo $this->errors['name']; ?>
-            <?php } ?>
+            <?php echo $this->error('name'); ?>
             <div class="text-muted">
               <?php echo $this->text('Required. An official name of the state'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-4">
           <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->escape($state['code']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['code'])) { ?>
-            <?php echo $this->errors['code']; ?>
-            <?php } ?>
+            <?php echo $this->error('code'); ?>
             <div class="text-muted">
               <?php echo $this->text('Required. A code / abbreviation used to represent the state in the country, e.g NY for New York'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('zone_id', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Zone'); ?>
         </label>
@@ -62,7 +58,10 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
+            <?php echo $this->error('zone_id'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
+            </div>
           </div>
         </div>
       </div>
@@ -72,8 +71,8 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
-          <?php if (isset($state['state_id']) && $this->access('state_delete')) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <?php if ($can_delete) { ?>
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

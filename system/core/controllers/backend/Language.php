@@ -16,6 +16,7 @@ use core\controllers\backend\Controller as BackendController;
  */
 class Language extends BackendController
 {
+
     /**
      * Constructor
      */
@@ -32,8 +33,10 @@ class Language extends BackendController
     {
         $language = $this->getLanguage($code);
         $default = $this->language->getDefault();
+        $can_delete = $this->canDeleteLanguage($language);
 
         $this->setData('language', $language);
+        $this->setData('can_delete', $can_delete);
         $this->setData('default_language', $default);
 
         $this->submitLanguage($language);
@@ -41,6 +44,15 @@ class Language extends BackendController
         $this->setTitleEditLanguage($language);
         $this->setBreadcrumbEditLanguage();
         $this->outputEditLanguage();
+    }
+
+    /**
+     * Whether the language can be deleted
+     * @return type
+     */
+    protected function canDeleteLanguage(array $language)
+    {
+        return (isset($language['code']) && $this->access('language_delete'));
     }
 
     /**
@@ -108,9 +120,7 @@ class Language extends BackendController
             $this->redirect('admin/settings/language', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this language.'
-                . ' The most probable reason - it is default language or blocked by a module');
-
+        $message = $this->text('Unable to delete this language');
         $this->redirect('', $message, 'danger');
     }
 
@@ -161,12 +171,11 @@ class Language extends BackendController
      */
     protected function setTitleEditLanguage(array $language)
     {
+        $title = $this->text('Add language');
+        
         if (isset($language['code'])) {
-            $title = $this->text('Edit language %name', array(
-                '%name' => $language['native_name']
-            ));
-        } else {
-            $title = $this->text('Add language');
+            $vars = array('%name' => $language['native_name']);
+            $title = $this->text('Edit language %name', $vars);
         }
 
         $this->setTitle($title);

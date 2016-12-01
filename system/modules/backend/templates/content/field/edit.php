@@ -1,17 +1,15 @@
-<form method="post" id="edit-field" onsubmit="return confirm();" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-field" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-4">
           <input maxlength="255" name="field[title]" class="form-control" value="<?php echo (isset($field['title'])) ? $this->escape($field['title']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['title'])) { ?>
-            <?php echo $this->errors['title']; ?>
-            <?php } ?>
+            <?php echo $this->error('title'); ?>
             <div class="text-muted">
               <?php echo $this->text('Required. The title will be displayed to customers on product pages'); ?>
             </div>
@@ -20,14 +18,12 @@
       </div>
       <?php if (!empty($languages)) { ?>
       <?php foreach ($languages as $code => $language) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['name'])); ?></label>
           <div class="col-md-4">
             <input maxlength="255" name="field[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field['translation'][$code]['title'])) ? $this->escape($field['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
-              <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-              <?php echo $this->errors['translation'][$code]['title']; ?>
-              <?php } ?>
+              <?php echo $this->error("translation.$code.title"); ?>
               <div class="text-muted">
               <?php echo $this->text('An optional translation for language %name', array('%name' => $language['name'])); ?>
               </div>
@@ -42,9 +38,7 @@
     <div class="panel-body">
       <?php if (empty($field['field_id'])) { ?>
       <div class="form-group">
-        <label class="col-md-2 control-label">
-          <?php echo $this->text('Type'); ?>
-        </label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Type'); ?></label>
         <div class="col-md-4">
           <select name="field[type]" class="form-control">
             <?php foreach($types as $type => $type_name) { ?>
@@ -80,16 +74,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <?php echo $this->text('Weight'); ?>
-        </label>
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
           <input name="field[weight]" class="form-control" value="<?php echo isset($field['weight']) ? $this->escape($field['weight']) : 0; ?>">
         <div class="help-block">
-          <?php if (isset($this->errors['weight'])) { ?>
-          <?php echo $this->errors['weight']; ?>
-          <?php } ?>
+          <?php echo $this->error('weight'); ?>
           <div class="text-muted">
             <?php echo $this->text('Fields are sorted in lists by the weight value. Lower value means higher position'); ?>
           </div>
@@ -103,7 +93,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($field['field_id']) && $this->access('field_delete')) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

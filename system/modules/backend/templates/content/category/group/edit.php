@@ -1,30 +1,26 @@
-<form method="post" id="edit-group" onsubmit="return confirm();" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-group" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
-        <label class="col-md-2 control-label">
-          <?php echo $this->text('Title'); ?>
-        </label>
+      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
           <input name="category_group[title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['title']) ? $this->escape($category_group['title']) : ''; ?>" autofocus>
           <div class="help-block">
-            <?php if (isset($this->errors['title'])) { ?>
-            <?php echo $this->errors['title']; ?>
-            <?php } ?>
+            <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Category group name to be shown to administrators and customers'); ?></div>
           </div>
         </div>
       </div>
       <?php if (!empty($languages)) { ?>
       <?php foreach ($languages as $code => $info) { ?>
-      <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
         <div class="col-md-4">
           <input name="category_group[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['translation'][$code]['title']) ? $this->escape($category_group['translation'][$code]['title']) : ''; ?>">
-          <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-          <div class="help-block"><?php echo $this->errors['translation'][$code]['title']; ?></div>
-          <?php } ?>
+          <div class="help-block">
+            <?php echo $this->error("translation.$code.title"); ?>
+          </div>
         </div>
       </div>
       <?php } ?>
@@ -33,21 +29,19 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['type']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('type', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Type'); ?>
         </label>
         <div class="col-md-4">
           <select name="category_group[type]" class="form-control">
             <option value=""><?php echo $this->text('None'); ?></option>
-            <?php foreach (array('catalog', 'brand') as $type) { ?>
-            <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->text($type); ?></option>
+            <?php foreach ($types as $type => $name) { ?>
+            <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php if (isset($this->errors['type'])) { ?>
-            <?php echo $this->errors['type']; ?>
-            <?php } ?>
+            <?php echo $this->error('type'); ?>
             <div class="text-muted"><?php echo $this->text('Brand category groups will contain trademarks (Sony, Apple), catalog - normal categories like Computers, Monitors etc.'); ?></div>
           </div>
         </div>
@@ -78,7 +72,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if ($can_delete) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

@@ -1,30 +1,26 @@
-<form method="post" id="edit-product" onsubmit="return confirm();" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-product" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-10">
           <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->escape($product['title']) : ''; ?>" autofocus>
           <div class="help-block">
-            <?php if (isset($this->errors['title'])) { ?>
-            <?php echo $this->errors['title']; ?>
-            <?php } ?>
+            <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. The title will be used on the product page and menu'); ?></div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Description'); ?></label>
         <div class="col-md-10">
           <textarea class="form-control summernote" name="product[description]"><?php echo isset($product['description']) ? $this->xss($product['description']) : ''; ?></textarea>
           <div class="help-block">
-            <?php if (isset($this->errors['description'])) { ?>
-            <?php echo $this->errors['description']; ?>
-            <?php } ?>
+            <?php echo $this->error('description'); ?>
             <div class="text-muted"><?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?></div>
           </div>
         </div>
@@ -37,30 +33,26 @@
           </a>
         </div>
       </div>
-      <div id="translations" class="collapse translations<?php echo!empty($this->errors) ? ' in' : ''; ?>">
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $info) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
             <input name="product[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->escape($product['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
-              <?php if (isset($this->errors['translation'][$code]['title'])) { ?>
-              <?php echo $this->errors['translation'][$code]['title']; ?>
-              <?php } ?>
+              <?php echo $this->error("translation.$code.title"); ?>
               <div class="text-muted">
               <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
               </div>
             </div>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
             <textarea class="form-control summernote" name="product[translation][<?php echo $code; ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->xss($product['translation'][$code]['description']) : ''; ?></textarea>
             <div class="help-block">
-              <?php if (isset($this->errors['translation'][$code]['description'])) { ?>
-              <?php echo $this->errors['translation'][$code]['description']; ?>
-              <?php } ?>
+              <?php echo $this->error("translation.$code.description"); ?>
               <div class="text-muted">
               <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
               </div>
@@ -98,32 +90,28 @@
       </div>
       <?php } ?>
       <div class="form-group">
-        <div class="col-md-offset-2 col-md-4<?php echo isset($this->errors['sku']) ? ' has-error' : ''; ?>">
+        <div class="col-md-offset-2 col-md-4<?php echo $this->error('sku', ' has-error'); ?>">
           <label><?php echo $this->text('SKU'); ?></label>
           <input name="product[sku]" class="form-control" maxlength="255" value="<?php echo isset($product['sku']) ? $this->escape($product['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['sku'])) { ?>
-            <?php echo $this->errors['sku']; ?>
-            <?php } ?>
+            <?php echo $this->error('sku'); ?>
             <div class="text-muted">
             <?php echo $this->text('SKU is an identificator that allows it to be tracked for inventory purposes. Leave empty to generate it automatically'); ?>
             </div>
           </div>
         </div>
-        <div class="col-md-2<?php echo isset($this->errors['price']) ? ' has-error' : ''; ?>">
+        <div class="col-md-2<?php echo $this->error('price', ' has-error'); ?>">
           <label><?php echo $this->text('Price'); ?></label>
           <div class="input-group">
             <input name="product[price]" class="form-control" value="<?php echo isset($product['price']) ? $product['price'] : 0; ?>">
             <span class="input-group-addon"><?php echo isset($product['currency']) ? $this->escape($product['currency']) : $this->escape($default_currency); ?></span>
           </div>
           <div class="help-block">
-            <?php if (isset($this->errors['price'])) { ?>
-            <?php echo $this->errors['price']; ?>
-            <?php } ?>
+            <?php echo $this->error('price'); ?>
             <div class="text-muted"><?php echo $this->text('Integer or decimal value'); ?></div>
           </div>
         </div>
-        <div class="col-md-3<?php echo isset($this->errors['stock']) ? ' has-error' : ''; ?>">
+        <div class="col-md-3<?php echo $this->error('stock', ' has-error'); ?>">
           <label><?php echo $this->text('Stock'); ?></label>
           <div class="input-group">
             <input name="product[stock]" class="form-control" type="number" min="0" step="1" pattern="\d*" maxlength="6" value="<?php echo isset($product['stock']) ? $product['stock'] : 0; ?>">
@@ -137,9 +125,7 @@
             </div>
           </div>
           <div class="help-block">
-            <?php if (isset($this->errors['stock'])) { ?>
-            <?php echo $this->errors['stock']; ?>
-            <?php } ?>
+            <?php echo $this->error('stock'); ?>
             <div class="text-muted">
               <?php echo $this->text('Quantity of the product kept on the premises of the store. If selected "Subtract", ordered products will be subtracted from the stock level'); ?>
             </div>
@@ -222,14 +208,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['alias']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('alias', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Alias'); ?></label>
         <div class="col-md-4">
           <input name="product[alias]" class="form-control" value="<?php echo isset($product['alias']) ? $this->escape($product['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['alias'])) { ?>
-            <?php echo $this->errors['alias']; ?>
-            <?php } ?>
+            <?php echo $this->error('alias'); ?>
             <div class="text-muted">
             <?php echo $this->text('An alternative path by which this product can be accessed. Leave empty to generate it automatically'); ?>
             </div>
@@ -301,28 +285,24 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Meta'); ?></div>
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['meta_title']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
         <div class="col-md-10">
           <input name="product[meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['meta_title']) ? $this->escape($product['meta_title']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['meta_title'])) { ?>
-            <?php echo $this->errors['meta_title']; ?>
-            <?php } ?>
+            <?php echo $this->error('meta_title'); ?>
             <div class="text-muted">
             <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['meta_description']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('meta_description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
         <div class="col-md-10">
           <textarea class="form-control" rows="3" maxlength="160" name="product[meta_description]"><?php echo isset($product['meta_description']) ? $this->escape($product['meta_description']) : ''; ?></textarea>
           <div class="help-block">
-            <?php if (isset($this->errors['meta_description'])) { ?>
-            <?php echo $this->errors['meta_description']; ?>
-            <?php } ?>
+            <?php echo $this->error('meta_description'); ?>
             <div class="text-muted">
             <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
             </div>
@@ -337,24 +317,24 @@
           </a>
         </div>
       </div>
-      <div id="meta-translations" class="collapse translations<?php echo!empty($this->errors) ? ' in' : ''; ?>">
+      <div id="meta-translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($languages as $code => $info) { ?>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['meta_title']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
             <input name="product[translation][<?php echo $code; ?>][meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['translation'][$code]['meta_title']) ? $this->escape($product['translation'][$code]['meta_title']) : ''; ?>">
-            <?php if (isset($this->errors['translation'][$code]['meta_title'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['meta_title']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+               <?php echo $this->error("translation.$code.meta_title"); ?>
+            </div>
           </div>
         </div>
-        <div class="form-group<?php echo isset($this->errors['translation'][$code]['meta_description']) ? ' has-error' : ''; ?>">
+        <div class="form-group<?php echo $this->error("translation.$code.meta_description", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
             <textarea class="form-control" rows="3" maxlength="160" name="product[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($product['translation'][$code]['meta_description']) ? $this->escape($product['translation'][$code]['meta_description']) : ''; ?></textarea>
-            <?php if (isset($this->errors['translation'][$code]['meta_description'])) { ?>
-            <div class="help-block"><?php echo $this->errors['translation'][$code]['meta_description']; ?></div>
-            <?php } ?>
+            <div class="help-block">
+              <?php echo $this->error("translation.$code.meta_description"); ?>
+            </div>
           </div>
         </div>
         <?php } ?>
@@ -365,49 +345,43 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Dimensions'); ?></div>
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['width']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('width', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Width'); ?></label>
         <div class="col-md-4">
           <input name="product[width]" class="form-control" value="<?php echo isset($product['width']) ? $this->escape($product['width']) : $this->config->get('product_width', 0); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['width'])) { ?>
-            <?php echo $this->errors['width']; ?>
-            <?php } ?>
+            <?php echo $this->error('width'); ?>
             <div class="text-muted">
             <?php echo $this->text('A physical width of the product. Used to calculate shipping cost'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['height']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('height', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Height'); ?></label>
         <div class="col-md-4">
           <input name="product[height]" class="form-control" value="<?php echo isset($product['height']) ? $this->escape($product['height']) : $this->config->get('product_height', 0); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['height'])) { ?>
-            <?php echo $this->errors['height']; ?>
-            <?php } ?>
+            <?php echo $this->error('height'); ?>
             <div class="text-muted">
             <?php echo $this->text('A physical height of the product. Used to calculate shipping cost'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['length']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('length', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Length'); ?></label>
         <div class="col-md-4">
           <input name="product[length]" class="form-control" value="<?php echo isset($product['length']) ? $this->escape($product['length']) : $this->config->get('product_length', 0); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['length'])) { ?>
-            <?php echo $this->errors['length']; ?>
-            <?php } ?>
+            <?php echo $this->error('length'); ?>
             <div class="text-muted">
             <?php echo $this->text('A physical length of the product. Used to calculate shipping cost'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('volume_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label">
         <?php echo $this->text('Volume unit'); ?>
         </label>
@@ -425,30 +399,26 @@
             </option>
           </select>
           <div class="help-block">
-            <?php if (isset($this->errors['volume_unit'])) { ?>
-            <?php echo $this->errors['volume_unit']; ?>
-            <?php } ?>
+            <?php echo $this->error('volume_unit'); ?>
             <div class="text-muted">
             <?php echo $this->text('Select a unit of measurement to use with the specified width, height and length'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
           <input name="product[weight]" class="form-control" value="<?php echo isset($product['weight']) ? $this->escape($product['weight']) : $this->config->get('product_weight', 0); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['weight'])) { ?>
-            <?php echo $this->errors['weight']; ?>
-            <?php } ?>
+            <?php echo $this->error('weight'); ?>
             <div class="text-muted">
             <?php echo $this->text('A physical weight of the product. Used to calculate shipping cost'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('weight_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight unit'); ?></label>
         <div class="col-md-4">
           <?php $weight_unit = isset($product['weight_unit']) ? $product['weight_unit'] : $this->config->get('product_weight_unit', 'g'); ?>
@@ -467,9 +437,7 @@
             </option>
           </select>
           <div class="help-block">
-            <?php if (isset($this->errors['weight_unit'])) { ?>
-            <?php echo $this->errors['weight_unit']; ?>
-            <?php } ?>
+            <?php echo $this->error('weight_unit'); ?>
             <div class="text-muted">
             <?php echo $this->text('Select a unit of measurement to use with the specified weight'); ?>
             </div>
@@ -501,7 +469,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($product['product_id']) && $this->access('product_delete')) { ?>
-          <button class="btn btn-danger" name="delete" value="1">
+          <button class="btn btn-danger" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

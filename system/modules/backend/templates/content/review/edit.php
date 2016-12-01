@@ -1,5 +1,5 @@
-<form method="post" id="edit-review" onsubmit="return confirm();" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-review" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">
@@ -18,14 +18,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['created']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('created', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Created'); ?></label>
         <div class="col-md-4">
           <input name="review[created]" class="form-control" value="<?php echo empty($review['created']) ? $this->date(null, false) : $this->date($review['created'], false); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['created'])) { ?>
-            <?php echo $this->errors['created']; ?>
-            <?php } ?>
+            <?php echo $this->error('created'); ?>
             <div class="text-muted"><?php echo $this->text('A date when the review was created'); ?></div>
           </div>
         </div>
@@ -34,27 +32,23 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['product_id']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('product_id', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
         <div class="col-md-6">
           <input name="review[product]" class="form-control" value="<?php echo isset($review['product']) ? $this->escape($review['product']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['product_id'])) { ?>
-            <?php echo $this->errors['product_id']; ?>
-            <?php } ?>
+            <?php echo $this->error('product_id'); ?>
             <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Select a product that is related to this review'); ?></div>
           </div>
         </div>
       </div>
       <input type="hidden" name="review[product_id]" value="<?php echo isset($review['product_id']) ? $review['product_id'] : ''; ?>">
-      <div class="form-group required<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Email'); ?></label>
         <div class="col-md-6">
           <input name="review[email]" class="form-control" value="<?php echo isset($review['email']) ? $this->escape($review['email']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['email'])) { ?>
-            <?php echo $this->errors['email']; ?>
-            <?php } ?>
+            <?php echo $this->error('email'); ?>
             <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Reviewer\'s E-mail'); ?></div>
           </div>
         </div>
@@ -63,15 +57,13 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['text']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
         <div class="col-md-6">
           <textarea name="review[text]" rows="4" class="form-control"><?php echo isset($review['text']) ? $this->escape($review['text']) : ''; ?></textarea>
           <div class="help-block">
-          <?php if (isset($this->errors['text'])) { ?>
-          <?php echo $this->errors['text']; ?>
-          <?php } ?>
-          <div class="text-muted"><?php echo $this->text('Required. A text of the review. HTML not allowed'); ?></div>
+            <?php echo $this->error('text'); ?>
+            <div class="text-muted"><?php echo $this->text('Required. A text of the review. HTML not allowed'); ?></div>
           </div>
         </div>
       </div>
@@ -82,7 +74,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($review['review_id']) && $this->access('review_delete')) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

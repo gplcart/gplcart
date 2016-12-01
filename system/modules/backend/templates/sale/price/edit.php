@@ -1,5 +1,5 @@
-<form method="post" id="edit-price-rule" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-price-rule" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">
@@ -20,7 +20,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['trigger_id']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('trigger_id', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Trigger'); ?></label>
         <div class="col-md-4">
           <select name="price_rule[trigger_id]" class="form-control">
@@ -32,35 +32,29 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php if (isset($this->errors['trigger_id'])) { ?>
-            <?php echo $this->errors['trigger_id']; ?>
-            <?php } ?>
+            <?php echo $this->error('trigger_id'); ?>
             <div class="text-muted"><?php echo $this->text('Select an enabled <a href="!href">trigger</a> that applies this rule. Keep in mind that triggers are per store', array('!href' => $this->url('admin/settings/trigger'))); ?></div>
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="price_rule[name]" class="form-control" value="<?php echo isset($price_rule['name']) ? $this->escape($price_rule['name']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['name'])) { ?>
-            <?php echo $this->errors['name']; ?>
-            <?php } ?>
+            <?php echo $this->error('name'); ?>
             <div class="text-muted">
               <?php echo $this->text('The name will be shown to administrators and customers during checkout'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->escape($price_rule['code']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['code'])) { ?>
-            <?php echo $this->errors['code']; ?>
-            <?php } ?>
+            <?php echo $this->error('code'); ?>
             <div class="text-muted">
               <?php echo $this->text('A unique code you want to associate with this price rule. The code (i.e coupon) must be specified by a customer during checkout'); ?>
             </div>
@@ -71,16 +65,14 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['value']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('value', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Value'); ?>
         </label>
         <div class="col-md-4">
           <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->escape($price_rule['value']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['value'])) { ?>
-            <?php echo $this->errors['value']; ?>
-            <?php } ?>
+            <?php echo $this->error('value'); ?>
             <div class="text-muted">
               <?php echo $this->text('A numeric value to be added to the original price when the rule is applied. To substract use negative numbers'); ?>
             </div>
@@ -114,14 +106,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
           <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->escape($price_rule['weight']) : '0'; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['weight'])) { ?>
-            <?php echo $this->errors['weight']; ?>
-            <?php } ?>
+            <?php echo $this->error('weight'); ?>
             <div class="text-muted">
               <?php echo $this->text('A position of the rule among other enabled rules. Rules with lower weight are applied earlier'); ?>
             </div>
@@ -135,7 +125,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($price_rule['price_rule_id']) && $this->access('price_rule_delete')) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

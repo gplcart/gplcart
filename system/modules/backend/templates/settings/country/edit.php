@@ -1,8 +1,8 @@
-<form method="post" id="edit-country" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-country" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo isset($this->errors['code']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Code'); ?>
         </label>
@@ -13,47 +13,39 @@
           <span class="form-control"><?php echo $this->escape($country['code']); ?></span>
           <?php } ?>
           <div class="help-block">
-            <?php if (isset($this->errors['code'])) { ?>
-              <?php echo $this->errors['code']; ?>
-            <?php } ?>
+            <?php echo $this->error('code'); ?>
             <div class="text-muted">
               <?php echo $this->text('Required. A code according to ISO 3166-2 standard, e.g US'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="country[name]" class="form-control" value="<?php echo isset($country['name']) ? $this->escape($country['name']) : ''; ?>">
           <div class="help-block">
-           <?php if (isset($this->errors['name'])) { ?>
-           <?php echo $this->errors['name']; ?>
-           <?php } ?>
-           <div class="text-muted">
+            <?php echo $this->error('name'); ?>
+            <div class="text-muted">
             <?php echo $this->text('Required. An international english name of the country according to ISO 3166-2 standard'); ?>
-           </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['native_name']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('native_name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Native name'); ?></label>
         <div class="col-md-4">
           <input maxlength="255" name="country[native_name]" class="form-control" value="<?php echo isset($country['native_name']) ? $this->escape($country['native_name']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['native_name'])) { ?>
-            <?php echo $this->errors['native_name']; ?>
-            <?php } ?>
-           <div class="text-muted">
-            <?php echo $this->text('Required. A local name of the country, e.g 中国'); ?>
-           </div>
+            <?php echo $this->error('native_name'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A local name of the country, e.g 中国'); ?>
+            </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">
-          <?php echo $this->text('Zone'); ?>
-        </label>
+      <div class="form-group<?php echo $this->error('zone_id', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Zone'); ?></label>
         <div class="col-md-4">
           <select name="country[zone_id]" class="form-control">
             <option value="0"><?php echo $this->text('None'); ?></option>
@@ -66,7 +58,10 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
+            <?php echo $this->error('zone_id'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
+            </div>
           </div>
         </div>
       </div>
@@ -108,14 +103,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['weight']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
           <input maxlength="2" name="country[weight]" class="form-control" value="<?php echo isset($country['weight']) ? $this->escape($country['weight']) : 0; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['weight'])) { ?>
-            <?php echo $this->errors['weight']; ?>
-            <?php } ?>
+            <?php echo $this->error('weight'); ?>
             <div class="text-muted">
               <?php echo $this->text('Countries are sorted in lists by the weight value. Lower value means higher position'); ?>
             </div>
@@ -129,7 +122,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if ($can_delete) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

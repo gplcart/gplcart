@@ -178,11 +178,8 @@ class Store extends BackendController
         $themes = $this->getListThemeStore();
         $collections = $this->getListCollectionStore($store_id);
 
-        $is_default = (isset($store['store_id'])//
-                && $this->store->isDefault($store['store_id']));
-
-        $can_delete = (isset($store['store_id'])//
-                && $this->store->canDelete($store['store_id']));
+        $is_default = $this->isDefaultStore($store);
+        $can_delete = $this->canDeleteStore($store);
 
         $this->setData('store', $store);
         $this->setData('themes', $themes);
@@ -197,6 +194,30 @@ class Store extends BackendController
         $this->seTitleEditStore($store);
         $this->setBreadcrumbEditStore();
         $this->outputEditStore();
+    }
+
+    /**
+     * Whether the store can be deleted
+     * @param array $store
+     * @return boolean
+     */
+    protected function canDeleteStore(array $store)
+    {
+        return (isset($store['store_id'])//
+                && $this->store->canDelete($store['store_id'])//
+                && $this->access('store_delete')//
+                && !$this->isDefaultStore($store));
+    }
+
+    /**
+     * Whether the store is default
+     * @param array $store
+     * @return boolean
+     */
+    protected function isDefaultStore(array $store)
+    {
+        return (isset($store['store_id'])//
+                && $this->store->isDefault($store['store_id']));
     }
 
     /**

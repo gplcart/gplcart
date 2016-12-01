@@ -1,4 +1,4 @@
-<form method="post" id="country-format" class="form-horizontal" onsubmit="return confirm();">
+<form method="post" id="country-format" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">

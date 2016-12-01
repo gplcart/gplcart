@@ -1,5 +1,5 @@
-<form method="post" id="edit-zone" onsubmit="return confirm();" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-zone" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">
@@ -20,14 +20,12 @@
           </div>
         </div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['title']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
           <input name="zone[title]" maxlength="255" class="form-control" value="<?php echo isset($zone['title']) ? $this->escape($zone['title']) : ''; ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['title'])) { ?>
-            <?php echo $this->errors['title']; ?>
-            <?php } ?>
+            <?php echo $this->error('title'); ?>
           </div>
         </div>
       </div>
@@ -38,7 +36,7 @@
       <div class="row">
         <div class="col-md-2">
         <?php if ($can_delete) { ?>
-        <button class="btn btn-danger delete" name="delete" value="1">
+        <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
           <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
         </button>
         <?php } ?>

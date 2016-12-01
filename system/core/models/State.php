@@ -65,7 +65,6 @@ class State extends Model
     {
         $conditions = array('code' => $code, 'country' => $country);
         $state = $this->getList($conditions);
-
         return $state ? reset($state) : array();
     }
 

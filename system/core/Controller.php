@@ -430,6 +430,37 @@ class Controller
     }
 
     /**
+     * Returns a value on a error
+     * @param string|array $key
+     * @param mixed $has_error A value to be returned when error(s) found
+     * @param mixed $no_error A value to be returned when no error(s) found
+     * @return mixed
+     */
+    public function error($key = null, $has_error = null, $no_error = '')
+    {
+        if (isset($key)) {
+            $result = Tool::getArrayValue($this->errors, $key);
+        } else {
+            $result = empty($this->errors) ? null : true;
+        }
+
+        if (isset($result)) {
+            return isset($has_error) ? $has_error : $result;
+        }
+
+        return $no_error;
+    }
+
+    /**
+     * Returns a token
+     * @return string
+     */
+    public function token()
+    {
+        return $this->token;
+    }
+
+    /**
      * Whether a key is presented in the POST query
      * If no key is set it returns TRUE if the request is POST type
      * @param string|null $key

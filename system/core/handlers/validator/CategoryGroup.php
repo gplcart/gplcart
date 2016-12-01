@@ -90,7 +90,14 @@ class CategoryGroup extends BaseValidator
             $this->errors['type'] = $this->language->text('@field is required', array(
                 '@field' => $this->language->text('Type')
             ));
+            return false;
+        }
 
+        $types = $this->category_group->getTypes();
+
+        if (!isset($types[$submitted['type']])) {
+            $this->errors['type'] = $this->language->text('Object @name does not exist', array(
+                '@name' => $this->language->text('Type')));
             return false;
         }
 
