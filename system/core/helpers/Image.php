@@ -129,18 +129,18 @@ class Image
                 throw new \InvalidArgumentException('Invalid image: ' . $this->filename);
         }
 
-        // strpos($info['APP1'], 'Exif') - prevent errors "exif_read_data - Incorrect APP1 Exif Identifier Code"
-        if (function_exists('exif_read_data') && strpos($info['APP1'], 'Exif') === 0 && $info['mime'] === 'image/jpeg') {
+        if (function_exists('exif_read_data') && $info['mime'] === 'image/jpeg') {
             $this->exif = @exif_read_data($this->filename);
         }
 
         $this->original_info = array(
             'width' => $info[0],
             'height' => $info[1],
-            'orientation' => $this->get_orientation(),
             'exif' => $this->exif,
+            'mime' => $info['mime'],
+            'orientation' => $this->get_orientation(),
             'format' => preg_replace('/^image\//', '', $info['mime']),
-            'mime' => $info['mime']
+            
         );
 
         $this->width = $info[0];
