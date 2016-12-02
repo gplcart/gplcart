@@ -9,12 +9,11 @@
 
 namespace core\controllers\frontend;
 
+use BadMethodCallException;
 use core\models\Sku as ModelsSku;
 use core\models\File as ModelsFile;
-use core\models\State as ModelsState;
 use core\models\Search as ModelsSearch;
 use core\models\Rating as ModelsRating;
-use core\models\Country as ModelsCountry;
 use core\models\Collection as ModelsCollection;
 use core\models\CollectionItem as ModelsCollectionItem;
 use core\controllers\frontend\Controller as FrontendController;
@@ -24,18 +23,6 @@ use core\controllers\frontend\Controller as FrontendController;
  */
 class Ajax extends FrontendController
 {
-
-    /**
-     * Country model instance
-     * @var \core\models\Country $country
-     */
-    protected $country;
-
-    /**
-     * State model instance
-     * @var \core\models\State $state
-     */
-    protected $state;
 
     /**
      * Search model instance
@@ -74,9 +61,7 @@ class Ajax extends FrontendController
     protected $collection_item;
 
     /**
-     * Constructor
-     * @param ModelsCountry $country
-     * @param ModelsState $state
+     * 
      * @param ModelsSearch $search
      * @param ModelsFile $file
      * @param ModelsRating $rating
@@ -84,19 +69,16 @@ class Ajax extends FrontendController
      * @param ModelsCollection $collection
      * @param ModelsCollectionItem $collection_item
      */
-    public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsSearch $search, ModelsFile $file, ModelsRating $rating,
-            ModelsSku $sku, ModelsCollection $collection,
+    public function __construct(ModelsSearch $search, ModelsFile $file,
+            ModelsRating $rating, ModelsSku $sku, ModelsCollection $collection,
             ModelsCollectionItem $collection_item)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->file = $file;
-        $this->state = $state;
         $this->rating = $rating;
         $this->search = $search;
-        $this->country = $country;
         $this->collection = $collection;
         $this->collection_item = $collection_item;
     }
@@ -104,7 +86,7 @@ class Ajax extends FrontendController
     /**
      * Main ajax callback
      */
-    public function getResponseAjax()
+    public function responseAjax()
     {
         if (!$this->request->isAjax()) {
             exit(1); // Reject non-ajax requests
@@ -123,7 +105,7 @@ class Ajax extends FrontendController
 
         try {
             $response = $this->{$action}();
-        } catch (\BadMethodCallException $exc) {
+        } catch (BadMethodCallException $exc) {
             $response = array('error' => $exc->getMessage());
         }
 
@@ -137,31 +119,36 @@ class Ajax extends FrontendController
     public function getProductsAjax()
     {
         if (!$this->access('product')) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
+            return array('error' => $this->text('No access'));
         }
 
-        $status = $this->request->post('status', null);
-        $term = (string) $this->request->post('term', '');
-        $store_id = $this->request->post('store_id', null);
-        $max = $this->config('admin_autocomplete_limit', 10);
-
         $options = array(
-            'title' => $term,
-            'status' => $status,
-            'store_id' => $store_id,
-            'limit' => array(0, $max)
+            'status' => $this->request->post('status', null),
+            'store_id' => $this->request->post('store_id', null),
+            'title' => (string) $this->request->post('term', ''),
+            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))
         );
 
         $products = $this->product->getList($options);
+        return $this->prepareProductsAjax($products);
+    }
 
+    /**
+     * Prepares an array of products
+     * @param array $products
+     * @return array
+     */
+    protected function prepareProductsAjax(array $products)
+    {
         if (empty($products)) {
             return array();
         }
 
         $stores = $this->store->getList();
 
-        $list = array();
+        $prepared = array();
         foreach ($products as $product) {
+
             $product['url'] = '';
             if (isset($stores[$product['store_id']])) {
                 $store = $stores[$product['store_id']];
@@ -170,10 +157,10 @@ class Ajax extends FrontendController
             }
 
             $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-            $list[$product['product_id']] = $product;
+            $prepared[$product['product_id']] = $product;
         }
 
-        return $list;
+        return $prepared;
     }
 
     /**
@@ -183,18 +170,13 @@ class Ajax extends FrontendController
     public function getUsersAjax()
     {
         if (!$this->access('user')) {
-            return array(
-                'error' => $this->text('You are not permitted to perform this operation'));
+            return array('error' => $this->text('No access'));
         }
 
-        $term = (string) $this->request->post('term', '');
-        $store_id = $this->request->post('store_id', null);
-        $max = $this->config('admin_autocomplete_limit', 10);
-
         $options = array(
-            'email' => $term,
-            'store_id' => $store_id,
-            'limit' => array(0, $max));
+            'email' => (string) $this->request->post('term', ''),
+            'store_id' => $this->request->post('store_id', null),
+            'limit' => array(0, $this->config('admin_autocomplete_limit', 10)));
 
         return $this->user->getList($options);
     }
@@ -238,8 +220,8 @@ class Ajax extends FrontendController
             return array();
         }
 
-        $limit = $this->config('cart_preview_limit', 5);
         $content = $this->prepareCart($cart);
+        $limit = $this->config('cart_preview_limit', 5);
 
         $data = array('cart' => $content, 'limit' => $limit);
         return array('preview' => $this->render('cart/preview', $data));
@@ -257,13 +239,11 @@ class Ajax extends FrontendController
             return array();
         }
 
-        $max = $this->config('autocomplete_limit', 10);
-
         $conditions = array(
             'status' => 1,
-            'limit' => array(0, $max),
             'language' => $this->langcode,
-            'store_id' => $this->store_id
+            'store_id' => $this->store_id,
+            'limit' => array(0, $this->config('autocomplete_limit', 10)),
         );
 
         $products = $this->search->search('product', $term, $conditions);
@@ -300,7 +280,7 @@ class Ajax extends FrontendController
         }
 
         if (!$this->access($collection['type'])) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
+            return array('error' => $this->text('No access'));
         }
 
         $max = $this->config('admin_autocomplete_limit', 10);
@@ -338,6 +318,7 @@ class Ajax extends FrontendController
 
         $key = uniqid(); // Random array key to prevent merging items in the array
         $timestamp = filemtime(GC_FILE_DIR . "/$uploaded");
+
         $image = array(
             'weight' => 0,
             'thumb' => $thumb,
@@ -366,7 +347,7 @@ class Ajax extends FrontendController
 
         if (empty($product_id) || empty($this->uid)) {
             return array(
-                'error' => $this->text('You are not permitted to perform this operation'));
+                'error' => $this->text('No access'));
         }
 
         $options = array(

@@ -1028,7 +1028,7 @@ class Controller
     public function controlAccess($permission, $redirect = '')
     {
         if (!$this->access($permission)) {
-            $this->redirect($redirect, $this->text('You are not permitted to perform this operation'), 'danger');
+            $this->redirect($redirect, $this->text('No access'), 'danger');
         }
     }
 

@@ -114,7 +114,7 @@ class Route
 
         $routes['ajax'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\frontend\\Ajax', 'getResponseAjax')
+                'controller' => array('core\\controllers\\frontend\\Ajax', 'responseAjax')
             )
         );
 
