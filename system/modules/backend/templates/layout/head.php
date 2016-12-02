@@ -1,3 +1,11 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+?>
 <head>
   <?php foreach ($meta as $tag) { ?>
   <meta<?php echo $this->attributes($tag); ?>>

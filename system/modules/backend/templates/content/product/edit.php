@@ -1,3 +1,11 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+?>
 <form method="post" id="edit-product" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">

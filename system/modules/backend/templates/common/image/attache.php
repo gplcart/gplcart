@@ -1,3 +1,11 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+?>
 <?php if (!empty($images)) { ?>
 <?php foreach ($images as $index => $image) { ?>
 <?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>

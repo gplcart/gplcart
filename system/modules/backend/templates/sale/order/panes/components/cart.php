@@ -1,3 +1,11 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+?>
 <?php if (empty($order['cart'])) { ?>
 <tr><td colspan="2"><?php echo $this->text('No products in the cart'); ?></td></tr>
 <?php } else { ?>

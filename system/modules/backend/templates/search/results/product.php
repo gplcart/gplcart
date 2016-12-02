@@ -1,3 +1,11 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+?>
 <div class="media product-search-results">
   <div class="media-left"><img class="media-object" src="<?php echo $this->escape($product['thumb']); ?>"></div>
   <div class="media-body">

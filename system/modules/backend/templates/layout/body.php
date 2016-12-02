@@ -1,3 +1,11 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+?>
 <body class="<?php echo $this->escape(implode(' ', $body_classes)); ?>">
   <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
     <div class="container-fluid">
