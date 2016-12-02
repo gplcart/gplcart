@@ -12,23 +12,22 @@
 <div class="row">
   <div class="col-md-12">
     <form method="post" class="form-horizontal" id="edit-review">
-      <input type="hidden" name="token" value="<?php echo $this->token; ?>">
+      <?php echo $honeypot; ?>
+      <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
       <div class="form-group">
         <label class="col-md-1"><?php echo $this->text('Rating'); ?></label>
         <div class="col-md-6"><?php echo $rating; ?></div>
       </div>
-      <div class="form-group required<?php echo isset($this->errors['text']) ? ' has-error' : ''; ?>">
+      <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <label class="col-md-1"><?php echo $this->text('Review'); ?></label>
         <div class="col-md-6">
           <textarea class="form-control" rows="2" name="review[text]"><?php echo isset($review['text']) ? $review['text'] : ''; ?></textarea>
-          <?php if (isset($this->errors['text'])) { ?>
-          <div class="help-block"><?php echo $this->errors['text']; ?></div>
-          <?php } ?>
+          <div class="help-block"><?php echo $this->error('text'); ?></div>
         </div>
       </div>
       <div class="form-group">
         <div class="col-md-10 col-md-offset-1">
-          <?php if(isset($review['review_id']) && $deletable) { ?>
+          <?php if($can_delete) { ?>
           <button class="btn btn-danger" name="delete" value="1"><?php echo $this->text('Delete'); ?></button>
           <?php } ?>
           <a class="btn btn-default" href="<?php echo $this->url("product/{$product['product_id']}"); ?>">
@@ -37,7 +36,6 @@
           <button class="btn btn-default" name="save" value="1"><?php echo $this->text('Save'); ?></button>
         </div>
       </div>
-      <?php echo $honeypot; ?>
     </form>
   </div>
 </div>

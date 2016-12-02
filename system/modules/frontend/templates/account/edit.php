@@ -21,42 +21,34 @@
         </a>
       </div>
       <div class="col-md-9">
-        <form method="post" id="edit-account" class="margin-top-20 form-horizontal<?php echo!empty($this->errors) ? ' form-errors' : ''; ?>">
-          <input type="hidden" name="token" value="<?php echo $this->token; ?>">
-          <div class="form-group required<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
+        <form method="post" id="edit-account" class="margin-top-20 form-horizontal<?php echo $this->error(null, ' form-errors'); ?>">
+          <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
+          <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
             <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
             <div class="col-md-6">
               <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->escape($user['email']) : ''; ?>">
-              <?php if (isset($this->errors['email'])) { ?>
-              <div class="help-block"><?php echo $this->errors['email']; ?></div>
-              <?php } ?>
+              <div class="help-block"><?php echo $this->error('email'); ?></div>
             </div>
           </div>
-          <div class="form-group required<?php echo isset($this->errors['name']) ? ' has-error' : ''; ?>">
+          <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
             <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
             <div class="col-md-6">
               <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->escape($user['name']) : ''; ?>">
-              <?php if (isset($this->errors['name'])) { ?>
-              <div class="help-block"><?php echo $this->errors['name']; ?></div>
-              <?php } ?>
+              <div class="help-block"><?php echo $this->error('name'); ?></div>
             </div>
           </div>
-          <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
+          <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
             <label class="col-md-2 control-label"><?php echo $this->text('New password'); ?></label>
             <div class="col-md-6">
               <input type="password" name="user[password]" autocomplete="new-password" class="form-control">
-              <?php if (isset($this->errors['password'])) { ?>
-              <div class="help-block"><?php echo $this->errors['password']; ?></div>
-              <?php } ?>
+              <div class="help-block"><?php echo $this->error('password'); ?></div>
             </div>
           </div>
-          <div class="form-group<?php echo isset($this->errors['password_old']) ? ' has-error' : ''; ?>">
+          <div class="form-group<?php echo $this->error('password_old', ' has-error'); ?>">
             <label class="col-md-2 control-label"><?php echo $this->text('Old password'); ?></label>
             <div class="col-md-6">
               <input type="password" name="user[password_old]" autocomplete="new-password" class="form-control">
-              <?php if (isset($this->errors['password_old'])) { ?>
-              <div class="help-block"><?php echo $this->errors['password_old']; ?></div>
-              <?php } ?>
+              <div class="help-block"><?php echo $this->error('password_old'); ?></div>
             </div>
           </div>
           <div class="form-group">

@@ -14,12 +14,12 @@
           </label>
         </div>
         <?php } ?>
-        <?php if (isset($this->errors['payment']) && !is_array($this->errors['payment'])) { ?>
+        <?php if ($this->error('payment', true) && !is_array($this->error('payment'))) { ?>
         <div class="alert alert-danger alert-dismissible">
           <button type="button" class="close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
           </button>
-          <?php echo $this->errors['payment']; ?>
+          <?php echo $this->error('payment'); ?>
         </div>
         <?php } ?>
       </div>

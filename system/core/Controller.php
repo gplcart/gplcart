@@ -505,8 +505,7 @@ class Controller
      */
     public function isError($key = null)
     {
-        $result = $this->getError($key);
-        return !empty($result);
+        return $this->error($key, true, false);
     }
 
     /**
@@ -815,22 +814,6 @@ class Controller
     }
 
     /**
-     * Returns an error
-     * @param string|null $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getError($key = null, $default = null)
-    {
-        if (isset($key)) {
-            $result = Tool::getArrayValue($this->errors, $key);
-            return isset($result) ? $result : $default;
-        }
-
-        return $this->errors;
-    }
-
-    /**
      * Returns a submitted value
      * @param string|array $key
      * @param mixed $default
@@ -1038,32 +1021,6 @@ class Controller
         if (!$this->access($permission)) {
             $this->redirect($redirect, $this->text('You are not permitted to perform this operation'), 'danger');
         }
-    }
-
-    /**
-     * "Honey pot" submission protection
-     * @param string $type
-     * @return null
-     */
-    public function controlSpam($type)
-    {
-        $honeypot = $this->request->request('url', '');
-
-        if ($honeypot === '') {
-            return null;
-        }
-
-        $ip = $this->request->ip();
-
-        $message = array(
-            'ip' => $ip,
-            'message' => 'Spam submit from IP %address',
-            'variables' => array('%address' => $ip)
-        );
-
-        $this->logger->log($type, $message, 'warning');
-        $this->response->error403(false);
-        return null;
     }
 
     /**

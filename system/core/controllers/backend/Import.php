@@ -141,7 +141,7 @@ class Import extends BackendController
         }
 
         $this->validateImport($operation);
-        $errors = $this->getError();
+        $errors = $this->error();
 
         if (empty($errors)) {
             return $this->setJobImport($operation);

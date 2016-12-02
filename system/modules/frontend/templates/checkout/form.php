@@ -9,7 +9,7 @@
 </div>
 <?php } else { ?>
 <form method="post" class="form-horizontal" id="checkout" data-settings='<?php echo $settings; ?>'>
-  <input type="hidden" name="token" value="<?php echo $this->token; ?>">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="row">
     <div class="col-md-12">
       <?php echo $pane_admin; ?>

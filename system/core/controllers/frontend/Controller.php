@@ -204,7 +204,7 @@ class Controller extends BaseController
      * Returns rendered honeypot input
      * @return string
      */
-    public function getHoneypot()
+    public function getHoneyPotField()
     {
         return $this->render('common/honeypot');
     }
@@ -691,11 +691,12 @@ class Controller extends BaseController
      */
     protected function completeSubmit(array $data = array())
     {
-        $errors = $this->getError();
-        $message = $this->text('An error occurred');
+        $errors = $this->error();
 
         if (!empty($errors)) {
             $message = end($errors);
+        } else {
+            $message = $this->text('An error occurred');
         }
 
         $data += array(
@@ -890,6 +891,32 @@ class Controller extends BaseController
         }
 
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
+    }
+    
+    /**
+     * "Honey pot" submission protection
+     * @param string $type
+     * @return null
+     */
+    public function controlSpam($type)
+    {
+        $honeypot = $this->request->request('url', '');
+
+        if ($honeypot === '') {
+            return null;
+        }
+
+        $ip = $this->request->ip();
+
+        $message = array(
+            'ip' => $ip,
+            'message' => 'Spam submit from IP %address',
+            'variables' => array('%address' => $ip)
+        );
+
+        $this->logger->log($type, $message, 'warning');
+        $this->response->error403(false);
+        return null;
     }
 
 }

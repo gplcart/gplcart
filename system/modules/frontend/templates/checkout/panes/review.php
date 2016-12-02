@@ -2,7 +2,7 @@
   <div class="panel-heading"><?php echo $this->text('Review'); ?></div>
   <div class="panel-body">
     <?php foreach ($cart['items'] as $sku => $item) { ?>
-    <div class="form-group<?php echo isset($this->errors['cart']['items'][$sku]) ? ' has-error' : ''; ?>">
+    <div class="form-group<?php echo $this->error("cart.items.$sku", ' has-error'); ?>">
       <div class="col-md-2">
         <a target="_blank" href="<?php echo $this->url("product/{$item['product']['product_id']}"); ?>">
           <img class="img-responsive thumbnail" src="<?php echo $this->escape($item['thumb']); ?>">
@@ -68,7 +68,7 @@
             </td>
             <td>
               <?php if (isset($price_component['rule']['code']) && $price_component['rule']['code'] !== '') { ?>
-              <div class="form-group col-md-8<?php echo isset($this->errors['pricerule_code']) ? ' has-error' : ''; ?>">
+              <div class="form-group col-md-8<?php echo $this->error('check_pricerule', ' has-error'); ?>">
                 <div class="input-group">
                   <input class="form-control col-md-2" name="order[data][pricerule_code]" placeholder="<?php echo $this->text('Enter your discount code'); ?>" value="<?php echo isset($order['data']['pricerule_code']) ? $order['data']['pricerule_code'] : ''; ?>">
                   <span class="input-group-btn">

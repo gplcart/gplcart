@@ -2,23 +2,19 @@
   <div class="panel-body">
     <form method="post" id="login" class="login form-horizontal">
       <?php echo $honeypot; ?>
-      <input type="hidden" name="token" value="<?php echo $token; ?>">
-      <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
+      <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
+      <div class="form-group<?php echo $this->error('email', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
           <input class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus>
-          <?php if (isset($this->errors['email'])) { ?>
-          <div class="help-block"><?php echo $this->errors['email']; ?></div>
-          <?php } ?>
+          <div class="help-block"><?php echo $this->error('email'); ?></div>
         </div>
       </div>
-      <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('Password'); ?></label>
         <div class="col-md-4">
           <input class="form-control" type="password" name="user[password]">
-          <?php if (isset($this->errors['password'])) { ?>
-          <div class="help-block"><?php echo $this->errors['password']; ?></div>
-          <?php } ?>
+          <div class="help-block"><?php echo $this->error('password'); ?></div>
         </div>
       </div>
       <div class="form-group">

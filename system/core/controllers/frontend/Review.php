@@ -58,13 +58,13 @@ class Review extends FrontendController
 
         $this->submitReview($review, $product);
 
-        $honeypot = $this->getHoneypot();
-        $deletable = $this->config('review_deletable', 1);
+        $honeypot = $this->getHoneyPotField();
+        $can_delete = $this->canDeleteReview($review);
 
         $this->setData('review', $review);
         $this->setData('product', $product);
         $this->setData('honeypot', $honeypot);
-        $this->setData('deletable', $deletable);
+        $this->setData('can_delete', $can_delete);
 
         $this->setDataImageReview($product);
         $this->setDataRatingReview($review, $product);
@@ -252,29 +252,34 @@ class Review extends FrontendController
     }
 
     /**
+     * Whether the review can be deleted
+     * @param array $review
+     * @return boolean
+     */
+    protected function canDeleteReview(array $review)
+    {
+        return isset($review['review_id']) && $this->config('review_deletable', 1);
+    }
+
+    /**
      * Deletes a review
      * @param array $review
      * @param array $product
-     * @return null
      */
     protected function deleteReview(array $review, array $product)
     {
-        $deletable = $this->config('review_deletable', 1);
+        if ($this->canDeleteReview($review)) {
 
-        if (empty($deletable) || empty($review['review_id'])) {
-            return null;
-        }
+            $deleted = $this->review->delete($review['review_id']);
 
-        $deleted = $this->review->delete($review['review_id']);
-
-        if ($deleted) {
-            $message = $this->text('Your review has been deleted');
-            $this->redirect("product/{$product['product_id']}", $message, 'success');
+            if ($deleted) {
+                $message = $this->text('Your review has been deleted');
+                $this->redirect("product/{$product['product_id']}", $message, 'success');
+            }
         }
 
         $message = $this->text('Your review has not been deleted');
         $this->redirect("product/{$product['product_id']}", $message, 'warning');
-        return null;
     }
 
     /**

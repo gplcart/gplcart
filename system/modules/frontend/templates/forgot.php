@@ -4,26 +4,22 @@
       <?php echo $honeypot; ?>
       <input type="hidden" name="token" value="<?php echo $token; ?>">
       <?php if (empty($forgetful_user)) { ?>
-      <div class="form-group<?php echo isset($this->errors['email']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('email', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
           <input class="form-control" name="user[email]" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" autofocus>
-          <?php if (isset($this->errors['email'])) { ?>
-          <div class="help-block"><?php echo $this->errors['email']; ?></div>
-          <?php } ?>
+          <div class="help-block"><?php echo $this->error('email'); ?></div>
         </div>
       </div>
       <?php } else { ?>
       <div class="form-group">
         <?php echo $this->text('Hello %name. Please type your new password', array('%name' => $forgetful_user['name'])); ?>
       </div>
-      <div class="form-group<?php echo isset($this->errors['password']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('Password'); ?></label>
         <div class="col-md-4">
           <input class="form-control" type="password" name="user[password]" autocomplete="new-password" autofocus>
-          <?php if (isset($this->errors['password'])) { ?>
-          <div class="help-block"><?php echo $this->errors['password']; ?></div>
-          <?php } ?>
+          <div class="help-block"><?php echo $this->error('password'); ?></div>
         </div>
       </div>
       <?php } ?>

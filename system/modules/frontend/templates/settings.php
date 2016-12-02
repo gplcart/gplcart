@@ -1,18 +1,16 @@
-<form method="post" id="edit-module-settings" class="form-horizontal" onsubmit="return confirm();">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" id="edit-module-settings" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Options'); ?></div>
     <div class="panel-body">
-      <div class="form-group<?php echo isset($this->errors['catalog_limit']) ? ' has-error' : ''; ?>">
+      <div class="form-group<?php echo $this->error('catalog_limit', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Catalog product limit'); ?>
         </label>
         <div class="col-md-3">
           <input name="settings[catalog_limit]" class="form-control" value="<?php echo $this->escape($settings['catalog_limit']); ?>">
           <div class="help-block">
-            <?php if (isset($this->errors['catalog_limit'])) { ?>
-            <?php echo $this->errors['catalog_limit']; ?>
-            <?php } ?>
+            <?php echo $this->error('catalog_limit'); ?>
             <div class="text-muted">
             <?php echo $this->text('Number of products per page in the product catalog'); ?>
             </div>
@@ -167,8 +165,8 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
-          <button class="btn btn-danger reset" name="reset" value="1">
-            <i class="fa fa-refresh"></i> <?php echo $this->text('Reset to default'); ?>
+          <button class="btn btn-danger reset" name="reset" value="1" onclick="return confirm('Are you sure?');">
+            <i class="fa fa-refresh"></i> <?php echo $this->text('Reset'); ?>
           </button>
         </div>
         <div class="col-md-10">

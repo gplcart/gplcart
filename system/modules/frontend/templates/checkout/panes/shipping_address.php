@@ -32,7 +32,7 @@
             <td class="middle"><?php echo $this->text('Country'); ?></td>
             <td>
               <div class="btn-toolbar">
-                <div class="btn-group country<?php echo isset($this->errors['address']['country']) ? ' has-error' : ''; ?>">
+                <div class="btn-group country<?php echo $this->error('address.country', ' has-error'); ?>">
                   <select class="form-control" name="order[address][country]">
                     <?php foreach ($countries as $code => $name) { ?>
                     <option value="<?php echo $this->escape($code); ?>"<?php echo ($country_code == $code) ? ' selected' : ''; ?>>
@@ -40,9 +40,7 @@
                     </option>
                     <?php } ?>
                   </select>
-                  <?php if (isset($this->errors['address']['country'])) { ?>
-                  <div class="help-block"><?php echo $this->errors['address']['country']; ?></div>
-                  <?php } ?>
+                  <div class="help-block"><?php echo $this->error('address.country'); ?></div>
                 </div>
                 <div class="btn-group hidden-js">
                   <button class="btn btn-default" name="get_states" value="1">
@@ -60,7 +58,7 @@
               <?php echo $this->escape($data['name']); ?>
             </td>
             <td>
-              <div class="<?php echo $key; ?><?php echo isset($this->errors['address'][$key]) ? ' has-error' : ''; ?>">
+              <div class="<?php echo $key; ?><?php echo $this->error("address.$key", ' has-error'); ?>">
                 <?php if ($key === 'state_id') { ?>
                 <select class="form-control" name="order[address][state_id]">
                   <option value="" disabled selected><?php echo $this->text('Select'); ?></option>
@@ -73,9 +71,7 @@
                 <?php } else { ?>
                 <input name="order[address][<?php echo $key; ?>]" maxlength="255" class="form-control" value="<?php echo isset($address[$key]) ? $this->escape($address[$key]) : ''; ?>">
                 <?php } ?>
-                <?php if (isset($this->errors['address'][$key])) { ?>
-                <div class="help-block"><?php echo $this->errors['address'][$key]; ?></div>
-                <?php } ?>
+                <div class="help-block"><?php echo $this->error("address.$key"); ?></div>
               </div>
             </td>
           </tr>
@@ -94,13 +90,12 @@
     </div>
     <?php } ?>
     <?php } ?>
-    
-    <?php if (isset($this->errors['shipping_address'])) { ?>
+    <?php if ($this->error('shipping_address', true)) { ?>
     <div class="alert alert-danger alert-dismissible">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <?php echo $this->errors['shipping_address']; ?>
+      <?php echo $this->error('shipping_address'); ?>
     </div>
     <?php } ?>
   </div>

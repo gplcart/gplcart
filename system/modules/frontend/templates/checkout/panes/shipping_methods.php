@@ -14,12 +14,12 @@
           </label>
         </div>
         <?php } ?>
-        <?php if (isset($this->errors['shipping']) && !is_array($this->errors['shipping'])) { ?>
+        <?php if ($this->error('shipping', true) && !is_array($this->error('shipping'))) { ?>
         <div class="alert alert-danger alert-dismissible">
           <button type="button" class="close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
           </button>
-          <?php echo $this->errors['shipping']; ?>
+          <?php echo $this->error('shipping'); ?>
         </div>
         <?php } ?>
       </div>

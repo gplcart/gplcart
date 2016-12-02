@@ -35,7 +35,7 @@ class User extends FrontendController
 
         $this->submitLoginUser();
 
-        $honeypot = $this->getHoneypot();
+        $honeypot = $this->getHoneyPotField();
         $this->setData('honeypot', $honeypot);
 
         $this->setTitleEditLoginUser();
@@ -137,7 +137,7 @@ class User extends FrontendController
 
         $this->submitRegisterUser();
 
-        $honeypot = $this->getHoneypot();
+        $honeypot = $this->getHoneyPotField();
         $limit = $this->user->getPasswordLength();
 
         $this->setData('honeypot', $honeypot);
@@ -233,7 +233,7 @@ class User extends FrontendController
     {
         $this->controlAccessResetPasswordUser();
 
-        $honeypot = $this->getHoneypot();
+        $honeypot = $this->getHoneyPotField();
         $user = $this->getForgetfulUser();
         $limit = $this->user->getPasswordLength();
 
