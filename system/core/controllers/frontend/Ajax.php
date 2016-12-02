@@ -266,7 +266,7 @@ class Ajax extends FrontendController
             'store_id' => $this->store_id
         );
 
-        $products = $this->search->search('product_id', $term, $conditions);
+        $products = $this->search->search('product', $term, $conditions);
 
         if (empty($products)) {
             return array();
@@ -307,45 +307,6 @@ class Ajax extends FrontendController
         $options = array('title' => $term, 'limit' => array(0, $max));
 
         return $this->collection_item->getSuggestions($collection, $options);
-    }
-
-    /**
-     * Returns an array of products for admin
-     * @return array
-     */
-    public function adminSearchAjax()
-    {
-        $id = (string) $this->request->post('id');
-        $term = (string) $this->request->post('term');
-
-        if (empty($term) || empty($id)) {
-            return array('error' => $this->text('An error occurred'));
-        }
-
-        $entityname = preg_replace('/_id$/', '', $id);
-
-        if (!$this->access($entityname)) {
-            return array('error' => $this->text('You are not permitted to perform this operation'));
-        }
-
-        $preset = $this->config('admin_image_style', 2);
-        $max = $this->config('admin_autocomplete_limit', 10);
-
-        $options = array(
-            'imagestyle' => $preset,
-            'limit' => array(0, $max),
-            'language' => $this->langcode
-        );
-
-        $results = $this->search->search($id, $term, $options);
-
-        $response = array();
-        foreach ($results as $result) {
-            $template = "backend|search/suggestion/$entityname";
-            $response[] = $this->render($template, array($entityname => $result), true);
-        }
-
-        return $response;
     }
 
     /**

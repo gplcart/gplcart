@@ -112,7 +112,7 @@ class Search extends FrontendController
             'language' => $this->langcode
         );
 
-        $total = $this->search->search('product_id', $term, $options);
+        $total = $this->search->search('product', $term, $options);
         return (int) $total;
     }
 
@@ -132,7 +132,7 @@ class Search extends FrontendController
             'store_id' => $this->store_id,
             'limit' => $limit) + $query;
 
-        $results = $this->search->search('product_id', $term, $options);
+        $results = $this->search->search('product', $term, $options);
 
         if (empty($results)) {
             return array();

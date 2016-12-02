@@ -180,7 +180,7 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Brand'); ?></label>
         <div class="col-md-4">
           <select name="product[brand_category_id]" class="form-control">
-            <option value=""><?php echo $this->text('- select -'); ?></option>
+            <option value="0"><?php echo $this->text('- select -'); ?></option>
             <?php if (!empty($categories['brand'])) { ?>
             <?php foreach ($categories['brand'] as $id => $name) { ?>
             <?php if (isset($product['brand_category_id']) && $product['brand_category_id'] == $id) { ?>
@@ -200,7 +200,7 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Category'); ?></label>
         <div class="col-md-4">
           <select data-live-search="true" name="product[category_id]" class="form-control selectpicker">
-            <option value=""><?php echo $this->text('- select -'); ?></option>
+            <option value="0"><?php echo $this->text('- select -'); ?></option>
             <?php if (!empty($categories['catalog'])) { ?>
             <?php foreach ($categories['catalog'] as $id => $name) { ?>
             <?php if (isset($product['category_id']) && $product['category_id'] == $id) { ?>

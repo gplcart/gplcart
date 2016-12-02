@@ -96,37 +96,24 @@ class Search extends Model
 
     /**
      * Indexes an item
-     * @param string $id_key
-     * @param integer $id_value
-     * @param array $options
+     * @param string $handler_id
+     * @param array|numeric $data
      * @return mixed
      */
-    public function index($id_key, $id_value, array $options = array())
+    public function index($handler_id, $data)
     {
         $handlers = $this->getHandlers();
-        return Handler::call($handlers, $id_key, 'index', array($id_value, $options));
-    }
-
-    /**
-     * Returns number of items available for indexing
-     * @param string $id_key
-     * @param array $options
-     * @return mixed
-     */
-    public function total($id_key, array $options = array())
-    {
-        $handlers = $this->getHandlers();
-        return Handler::call($handlers, $id_key, 'total', array($options));
+        return Handler::call($handlers, $handler_id, 'index', array($data));
     }
 
     /**
      * Returns an array of items found for the search query
-     * @param string $id_key
+     * @param string $handler_id
      * @param string $query
      * @param array $options
      * @return mixed
      */
-    public function search($id_key, $query, array $options = array())
+    public function search($handler_id, $query, array $options = array())
     {
         if (!isset($options['language'])) {
             $options['language'] = 'und';
@@ -136,7 +123,7 @@ class Search extends Model
 
         if (!empty($filtered)) {
             $handlers = $this->getHandlers();
-            return Handler::call($handlers, $id_key, 'search', array($filtered, $options));
+            return Handler::call($handlers, $handler_id, 'search', array($filtered, $options));
         }
 
         return array();
@@ -156,12 +143,11 @@ class Search extends Model
 
         $handlers = array();
 
-        $handlers['product_id'] = array(
+        $handlers['product'] = array(
             'name' => $this->language->text('Products'),
             'handlers' => array(
                 'search' => array('core\\handlers\\search\\Product', 'search'),
-                'index' => array('core\\handlers\\search\\Product', 'index'),
-                'total' => array('core\\handlers\\search\\Product', 'total')
+                'index' => array('core\\handlers\\search\\Product', 'index')
         ));
 
         $this->hook->fire('search.handlers', $handlers);

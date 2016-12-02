@@ -61,7 +61,10 @@ class Twig
         $this->addFunctionSummary($object);
         $this->addFunctionAttributes($object);
         $this->addFunctionIsSuperadmin($object);
+        $this->addFunctionUid($object);
     }
+    
+    
 
     /**
      * Renders a .twig template
@@ -204,6 +207,19 @@ class Twig
     {
         $function = new Twig_SimpleFunction('summary', function ($text, $xss = false, $tags = null, $protocols = null) use ($object) {
             return $object->summary($text, $xss, $tags, $protocols);
+        });
+
+        $this->twig->addFunction($function);
+    }
+    
+    /**
+     * Adds function \core\Controller::uid()
+     * @param object $object
+     */
+    protected function addFunctionUid($object)
+    {
+        $function = new Twig_SimpleFunction('uid', function () use ($object) {
+            return $object->uid();
         });
 
         $this->twig->addFunction($function);

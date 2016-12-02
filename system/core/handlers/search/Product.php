@@ -34,30 +34,25 @@ class Product extends BaseHandler
 
     /**
      * Indexes a product
-     * @param integer $product_id
-     * @param array $options
+     * @param integer|array $product
      * @return boolean
      */
-    public function index($product_id, array $options = array())
+    public function index($product)
     {
-        $product = $this->product->get($product_id);
+        if (is_numeric($product)) {
+            // Product can be numeric ID when updating
+            $product = $this->product->get($product);
+        }
+
+        if (empty($product)) {
+            return false;
+        }
 
         $indexed = 0;
         $indexed += (int) $this->indexProduct($product);
         $indexed += (int) $this->indexProductTranslations($product);
 
         return ($indexed > 0);
-    }
-
-    /**
-     * Returns a product total to be indexed
-     * @param array $options
-     * @return integer
-     */
-    public function total(array $options)
-    {
-        $options['count'] = true;
-        return $this->product->getList($options);
     }
 
     /**
@@ -113,7 +108,7 @@ class Product extends BaseHandler
      * @param array $product
      * @return boolean
      */
-    protected function indexProduct($product)
+    protected function indexProduct(array $product)
     {
         $snippet = $this->getSnippet($product, 'und');
         return $this->search->setIndex($snippet, 'product_id', $product['product_id'], 'und');

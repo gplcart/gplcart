@@ -10,12 +10,13 @@
 namespace core\controllers\backend;
 
 use core\models\Alias as ModelsAlias;
-use core\models\Category as ModelsCategory;
-use core\models\Currency as ModelsCurrency;
 use core\models\Image as ModelsImage;
 use core\models\Price as ModelsPrice;
 use core\models\Product as ModelsProduct;
+use core\models\Category as ModelsCategory;
+use core\models\Currency as ModelsCurrency;
 use core\models\ProductClass as ModelsProductClass;
+use core\models\CategoryGroup as ModelsCategoryGroup;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -41,6 +42,12 @@ class Product extends BackendController
      * @var \core\models\Category $category
      */
     protected $category;
+
+    /**
+     * Category group model instance
+     * @var \core\models\CategoryGroup $category_group
+     */
+    protected $category_group;
 
     /**
      * Price model instance
@@ -71,6 +78,7 @@ class Product extends BackendController
      * @param ModelsProduct $product
      * @param ModelsProductClass $product_class
      * @param ModelsCategory $category
+     * @param ModelsCategoryGroup $category_group
      * @param ModelsPrice $price
      * @param ModelsCurrency $currency
      * @param ModelsImage $image
@@ -78,8 +86,8 @@ class Product extends BackendController
      */
     public function __construct(ModelsProduct $product,
             ModelsProductClass $product_class, ModelsCategory $category,
-            ModelsPrice $price, ModelsCurrency $currency, ModelsImage $image,
-            ModelsAlias $alias)
+            ModelsCategoryGroup $category_group, ModelsPrice $price,
+            ModelsCurrency $currency, ModelsImage $image, ModelsAlias $alias)
     {
         parent::__construct();
 
@@ -90,6 +98,7 @@ class Product extends BackendController
         $this->category = $category;
         $this->currency = $currency;
         $this->product_class = $product_class;
+        $this->category_group = $category_group;
     }
 
     /**
@@ -111,13 +120,22 @@ class Product extends BackendController
         $this->setData('products', $products);
         $this->setData('currencies', $currencies);
 
-        $filters = array('title', 'sku', 'price', 'stock', 'status',
-            'store_id', 'product_id', 'currency');
+        $filters = $this->getAllowedFiltersProduct();
 
         $this->setFilter($filters, $query);
         $this->setTitleListProduct();
         $this->setBreadcrumbListProduct();
         $this->outputListProduct();
+    }
+
+    /**
+     * Returns an array of allowed filters for product list
+     * @return array
+     */
+    protected function getAllowedFiltersProduct()
+    {
+        return array('title', 'sku', 'price', 'stock', 'status',
+            'store_id', 'product_id', 'currency');
     }
 
     /**
@@ -241,8 +259,9 @@ class Product extends BackendController
 
         $stores = $this->store->getNames();
         $currency = $this->currency->getDefault();
+        
         $related = $this->getRelatedProduct($product);
-        $classes = $this->product_class->getList(array('status' => 1));
+        $classes = $this->getClassesProduct();
 
         $this->setData('stores', $stores);
         $this->setData('product', $product);
@@ -257,6 +276,15 @@ class Product extends BackendController
         $this->setTitleEditProduct($product);
         $this->setBreadcrumbEditProduct();
         $this->outputEditProduct();
+    }
+    
+    /**
+     * Returns an array of enabled product classes
+     * @return array
+     */
+    protected function getClassesProduct()
+    {
+        return $this->product_class->getList(array('status' => 1));
     }
 
     /**
@@ -279,8 +307,11 @@ class Product extends BackendController
      */
     protected function getListCategoryProduct($store_id)
     {
+        $types = $this->category_group->getTypes();
+
         $categories = array();
-        foreach (array('brand', 'catalog') as $type) {
+
+        foreach ($types as $type) {
             $data = $this->category->getOptionListByStore($store_id, $type);
             $categories[$type] = reset($data);
         }
@@ -432,6 +463,9 @@ class Product extends BackendController
             $this->setSubmitted('modified', $product['modified']);
             $this->setSubmitted('product_id', $product['product_id']);
             $this->setSubmitted('currency', $product['currency']);
+        } else {
+            $this->setSubmitted('user_id', $this->uid);
+            $this->setSubmitted('currency', $this->currency->getDefault());
         }
 
         $this->validate('product');

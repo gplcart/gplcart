@@ -441,7 +441,7 @@ class Controller
         if (isset($key)) {
             $result = Tool::getArrayValue($this->errors, $key);
         } else {
-            $result = empty($this->errors) ? null : true;
+            $result = empty($this->errors) ? null : $this->errors;
         }
 
         if (isset($result)) {
@@ -458,6 +458,15 @@ class Controller
     public function token()
     {
         return $this->token;
+    }
+    
+    /**
+     * Returns the current user ID
+     * @return integer
+     */
+    public function uid()
+    {
+        return $this->uid;
     }
 
     /**

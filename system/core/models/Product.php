@@ -153,7 +153,7 @@ class Product extends Model
         $this->setAlias($data, false);
         $this->setRelated($data, false);
 
-        $this->search->index('product_id', $data['product_id']);
+        $this->search->index('product', $data);
 
         $this->hook->fire('add.product.after', $data);
         return $data['product_id'];
@@ -196,7 +196,7 @@ class Product extends Model
 
         if ($updated > 0) {
             $result = true;
-            $this->search->index('product_id', $product_id);
+            $this->search->index('product', $product_id);
             Cache::clear("product.$product_id.", "*");
         }
 
