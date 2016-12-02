@@ -9,22 +9,11 @@
 
 namespace core\handlers\search;
 
-use PDO;
-use core\Config;
-use core\helpers\Request;
-use core\models\Image as ModelsImage;
-use core\models\Price as ModelsPrice;
-use core\models\Search as ModelsSearch;
 use core\models\Product as ModelsProduct;
+use core\handlers\search\Base as BaseHandler;
 
-class Product
+class Product extends BaseHandler
 {
-
-    /**
-     * Search model instance
-     * @var \core\models\Search $search
-     */
-    protected $search;
 
     /**
      * Product model instance
@@ -33,48 +22,14 @@ class Product
     protected $product;
 
     /**
-     * Price model instance
-     * @var \core\models\Price $price
-     */
-    protected $price;
-
-    /**
-     * Image model instance
-     * @var \core\models\Image $image
-     */
-    protected $image;
-
-    /**
-     * Request class instance
-     * @var \core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
-     * PDO class instance
-     * @var \core\helpers\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
-     * @param ModelsSearch $search
      * @param ModelsProduct $product
-     * @param \core\handlers\search\ModelsPrice $price
-     * @param ModelsImage $image
-     * @param Request $request
-     * @param Config $config
      */
-    public function __construct(ModelsSearch $search, ModelsProduct $product,
-            ModelsPrice $price, ModelsImage $image, Request $request,
-            Config $config)
+    public function __construct(ModelsProduct $product)
     {
-        $this->price = $price;
-        $this->image = $image;
-        $this->search = $search;
+        parent::__construct();
+
         $this->product = $product;
-        $this->request = $request;
-        $this->db = $config->getDb();
     }
 
     /**
@@ -83,21 +38,23 @@ class Product
      * @param array $options
      * @return boolean
      */
-    public function index($product_id, $options)
+    public function index($product_id, array $options = array())
     {
         $product = $this->product->get($product_id);
 
-        $result = $this->indexProduct($product);
-        $this->indexProductTranslations($product);
-        return $result;
+        $indexed = 0;
+        $indexed += (int) $this->indexProduct($product);
+        $indexed += (int) $this->indexProductTranslations($product);
+
+        return ($indexed > 0);
     }
 
     /**
-     * Returns product total to be indexed
+     * Returns a product total to be indexed
      * @param array $options
      * @return integer
      */
-    public function total($options)
+    public function total(array $options)
     {
         $options['count'] = true;
         return $this->product->getList($options);
@@ -106,75 +63,49 @@ class Product
     /**
      * Returns an array of suggested products for a given query
      * @param string $query
-     * @param array $options
+     * @param array $data
      * @return array
      */
-    public function search($query, $options)
+    public function search($query, array $data)
     {
-        $sql = 'SELECT p.*, a.alias, s.domain, s.basepath, s.name AS store_name, COALESCE(NULLIF(pt.title, ""), p.title) AS title ';
+        $sql = 'SELECT si.id_value';
 
-        if (!empty($options['count'])) {
-            $sql = 'SELECT COUNT(p.product_id) ';
+        if (!empty($data['count'])) {
+            $sql = 'SELECT COUNT(si.id_value)';
         }
 
-        $where = array(
-            ':query' => $query,
-            ':id_key' => 'product_id',
-            ':language' => $options['language'],
-            ':default_language' => 'und');
+        $where = array($query, $data['language'], 'und', 'product_id');
 
-        $sql .= '
-            FROM product p
-            LEFT JOIN search_index si ON(p.product_id = si.id_value AND si.id_key=:id_key)
-            LEFT JOIN product_translation pt ON(p.product_id=pt.product_id AND pt.language=si.language)
-            LEFT JOIN store s ON(p.store_id=s.store_id)
-            LEFT JOIN alias a ON(a.id_key=:id_key AND a.id_value=p.product_id)
-            WHERE MATCH(si.text) AGAINST (:query IN BOOLEAN MODE) AND (si.language=:language OR si.language=:default_language)
-            ';
+        $sql .= ' FROM search_index si'
+                . ' LEFT JOIN product p ON(p.product_id = si.id_value)'
+                . ' WHERE MATCH(si.text) AGAINST (? IN BOOLEAN MODE)'
+                . ' AND (si.language=? OR si.language=?)'
+                . ' AND si.id_key=? AND p.product_id > 0';
 
-        if (isset($options['status'])) {
-            $sql .= ' AND p.status=:status';
-            $where[':status'] = (int) $options['status'];
+        if (isset($data['status'])) {
+            $sql .= ' AND p.status=?';
+            $where[] = (int) $data['status'];
         }
 
-        if (isset($options['store_id'])) {
-            $sql .= ' AND p.store_id=:store_id';
-            $where[':store_id'] = (int) $options['store_id'];
+        if (isset($data['store_id'])) {
+            $sql .= ' AND p.store_id=?';
+            $where[] = (int) $data['store_id'];
         }
 
-        if (empty($options['count'])) {
-            $sql .= ' GROUP BY p.product_id';
+        if (empty($data['count'])) {
+            $sql .= ' GROUP BY si.id_value';
         }
 
-        if (isset($options['sort']) && (isset($options['order']) && in_array($options['order'], array('asc', 'desc')))) {
-            $allowed_sort = array('title', 'price', 'created');
-
-            if (in_array($options['sort'], $allowed_sort, true)) {
-                $sql .= " ORDER BY p.{$options['sort']} {$options['order']}";
-            }
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($options['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        if (!empty($data['count'])) {
+            return $this->db->fetchColumn($sql, $where);
         }
 
-        $sth = $this->db->prepare($sql);
-        $sth->execute($where);
-
-        if (!empty($options['count'])) {
-            return $sth->fetchColumn();
-        }
-
-        $products = array();
-        foreach ($sth->fetchAll(PDO::FETCH_ASSOC) as $result) {
-            $products[$result['product_id']] = $result;
-        }
-
-        if (!empty($options['prepare'])) {
-            $this->prepareResults($products, $options);
-        }
-
-        return $products;
+        $options['product_id'] = $this->db->fetchColumnAll($sql, $where);
+        return $this->product->getList($options);
     }
 
     /**
@@ -184,14 +115,20 @@ class Product
      */
     protected function indexProduct($product)
     {
-        $text = "{$product['title']} {$product['title']} {$product['sku']} {$product['description']}";
-        $filtered_text = $this->search->filterStopwords(strip_tags($text), 'und');
+        $snippet = $this->getSnippet($product, 'und');
+        return $this->search->setIndex($snippet, 'product_id', $product['product_id'], 'und');
+    }
 
-        if ($filtered_text) {
-            return $this->search->setIndex($filtered_text, 'product_id', $product['product_id'], 'und');
-        }
-
-        return false;
+    /**
+     * Returns a text string to be saved in the index table
+     * @param array $product
+     * @param string $language
+     * @return string
+     */
+    protected function getSnippet(array $product, $language)
+    {
+        $snippet = "{$product['title']} {$product['title']} {$product['sku']} {$product['description']}";
+        return $this->search->filterStopwords($snippet, $language);
     }
 
     /**
@@ -199,49 +136,20 @@ class Product
      * @param array $product
      * @return boolean
      */
-    protected function indexProductTranslations($product)
+    protected function indexProductTranslations(array $product)
     {
         if (empty($product['translation'])) {
             return false;
         }
 
+        $indexed = 0;
         foreach ($product['translation'] as $language => $translation) {
-            $text = "{$translation['title']}{$translation['title']}{$translation['description']}";
-            $filtered_text = $this->search->filterStopwords(strip_tags($text), $language);
-
-            if ($filtered_text) {
-                $this->search->setIndex($filtered_text, 'product_id', $product['product_id'], $language);
-            }
+            $translation += $product;
+            $snippet = $this->getSnippet($translation, $language);
+            $indexed += (int) $this->search->setIndex($snippet, 'product_id', $product['product_id'], $language);
         }
 
-        return true;
-    }
-
-    /**
-     * Modifies an array of search results (images, price etc)
-     * @param array $results
-     * @param array $options
-     * @return array
-     */
-    protected function prepareResults(&$results, $options)
-    {
-        $product_ids = array_keys($results);
-
-        $scheme = $this->request->scheme();
-
-        foreach ($results as $product_id => &$result) {
-            $result['price_formatted'] = $this->price->format($result['price'], $result['currency']);
-            $result['url'] = "$scheme{$result['domain']}";
-
-            if ($result['basepath']) {
-                $result['url'] .= "/{$result['basepath']}";
-            }
-
-            $result['url'] .= "/product/{$result['product_id']}";
-            $result['thumb'] = $this->image->getThumb($product_id, $options['imagestyle'], 'product_id', $product_ids);
-        }
-
-        return $results;
+        return ($indexed > 0);
     }
 
 }

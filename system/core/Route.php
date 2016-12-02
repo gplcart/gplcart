@@ -269,7 +269,7 @@ class Route
 
         $routes['search'] = array(
             'handlers' => array(
-                'controller' => array('core\\controllers\\frontend\\Search', 'indexSearch')
+                'controller' => array('core\\controllers\\frontend\\Search', 'listSearch')
             )
         );
 

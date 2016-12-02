@@ -38,7 +38,7 @@ class Search extends FrontendController
     /**
      * Displays search results page
      */
-    public function indexSearch()
+    public function listSearch()
     {
         $term = (string) $this->request->get('q', '');
         $max = $this->setting('catalog_limit', 20);
@@ -50,24 +50,24 @@ class Search extends FrontendController
         );
 
         $query = $this->getFilterQuery($filter);
-        $total = $this->getTotalResultSearch($term);
+        $total = $this->getTotalSearch($term);
         $limit = $this->setPager($total, $query, $max);
 
-        $products = $this->getListResultSearch($term, $limit, $query);
+        $products = $this->getResultsSearch($term, $limit, $query);
 
         $this->setDataResultSearch($products);
         $this->setDataNavbarSearch($products, $total, $query);
 
-        $this->setTitleIndexSearch($term);
-        $this->setBreadcrumbIndexSearch();
-        $this->outputIndexSearch();
+        $this->setTitleListSearch($term);
+        $this->setBreadcrumbListSearch();
+        $this->outputListSearch();
     }
 
     /**
      * Sets titles on the search page
      * @param string $term
      */
-    protected function setTitleIndexSearch($term)
+    protected function setTitleListSearch($term)
     {
         $title = $this->text('Search');
 
@@ -81,7 +81,7 @@ class Search extends FrontendController
     /**
      * Renders the search page templates
      */
-    protected function outputIndexSearch()
+    protected function outputListSearch()
     {
         $this->output('search/search');
     }
@@ -89,7 +89,7 @@ class Search extends FrontendController
     /**
      * Sets breadcrumbs on the search page
      */
-    protected function setBreadcrumbIndexSearch()
+    protected function setBreadcrumbListSearch()
     {
         $breadcrumb = array(
             'text' => $this->text('Home'),
@@ -103,7 +103,7 @@ class Search extends FrontendController
      * @param string $term
      * @return integer
      */
-    protected function getTotalResultSearch($term)
+    protected function getTotalSearch($term)
     {
         $options = array(
             'status' => 1,
@@ -123,7 +123,7 @@ class Search extends FrontendController
      * @param array $query
      * @return array
      */
-    protected function getListResultSearch($term, array $limit,
+    protected function getResultsSearch($term, array $limit,
             array $query = array())
     {
         $options = array(

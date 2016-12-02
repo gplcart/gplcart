@@ -38,12 +38,12 @@ class Search extends Model
     }
 
     /**
-     * Adds in item to search index
+     * Adds in item to the search index
      * @param string $text
      * @param string $id_key
      * @param integer $id_value
      * @param string $language
-     * @return integer
+     * @return boolean
      */
     public function addIndex($text, $id_key, $id_value, $language)
     {
@@ -54,7 +54,7 @@ class Search extends Model
             'language' => $language
         );
 
-        return $this->db->insert('search_index', $values);
+        return (bool) $this->db->insert('search_index', $values);
     }
 
     /**
@@ -81,11 +81,16 @@ class Search extends Model
      * @param string $id_key
      * @param integer $id_value
      * @param string $language
-     * @return integer
+     * @return boolean
      */
     public function setIndex($text, $id_key, $id_value, $language)
     {
         $this->deleteIndex($id_key, $id_value, $language);
+
+        if (empty($text)) {
+            return false;
+        }
+
         return $this->addIndex($text, $id_key, $id_value, $language);
     }
 
@@ -98,7 +103,8 @@ class Search extends Model
      */
     public function index($id_key, $id_value, array $options = array())
     {
-        return Handler::call($this->getHandlers(), $id_key, 'index', array($id_value, $options));
+        $handlers = $this->getHandlers();
+        return Handler::call($handlers, $id_key, 'index', array($id_value, $options));
     }
 
     /**
@@ -109,7 +115,8 @@ class Search extends Model
      */
     public function total($id_key, array $options = array())
     {
-        return Handler::call($this->getHandlers(), $id_key, 'total', array($options));
+        $handlers = $this->getHandlers();
+        return Handler::call($handlers, $id_key, 'total', array($options));
     }
 
     /**
@@ -125,11 +132,11 @@ class Search extends Model
             $options['language'] = 'und';
         }
 
-        $filtered_query = $this->filterStopwords($query, $options['language']);
+        $filtered = $this->filterStopwords($query, $options['language']);
 
-        if (!empty($filtered_query)) {
+        if (!empty($filtered)) {
             $handlers = $this->getHandlers();
-            return Handler::call($handlers, $id_key, 'search', array($filtered_query, $options));
+            return Handler::call($handlers, $id_key, 'search', array($filtered, $options));
         }
 
         return array();
@@ -169,7 +176,7 @@ class Search extends Model
      */
     public function filterStopwords($string, $language)
     {
-        $string = trim($string);
+        $string = trim(strip_tags($string));
 
         if ($string === '') {
             return '';
@@ -185,4 +192,5 @@ class Search extends Model
 
         return implode(' ', array_diff(explode(' ', $string), $stopwords));
     }
+
 }

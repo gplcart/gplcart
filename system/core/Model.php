@@ -30,7 +30,7 @@ class Model
     protected $config;
 
     /**
-     * PDO instance
+     * Database helper instance
      * @var \core\helpers\Database $db
      */
     protected $db;
