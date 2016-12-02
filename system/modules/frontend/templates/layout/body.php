@@ -1,3 +1,15 @@
+<?php
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ *
+ * To see available variables: <?php print_r(get_defined_vars()); ?>
+ * To see the current controller object: <?php print_r($this); ?>
+ * To call a controller method: <?php $this->exampleMethod(); ?>
+ */
+?>
 <body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
   <nav class="navbar navbar-static-top navbar-default first">
     <div class="container-fluid">
@@ -76,7 +88,7 @@
                   <i class="fa fa-sign-out"></i> <?php echo $this->text('Log out'); ?>
                 </a>
               </li>
-            </ul> 
+            </ul>
           </li>
           <?php } else { ?>
           <li>
@@ -95,14 +107,14 @@
             </span>
           </div>
         </form>
-      </div> 
+      </div>
     </div>
   </nav>
   <nav class="navbar navbar-inverse navbar-static-top second">
     <div class="container-fluid">
       <div class="navbar-collapse collapse">
       <?php if (!empty($megamenu)) { ?>
-      <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>        
+      <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>
       <?php } ?>
       </div>
     </div>
@@ -208,12 +220,12 @@
             <li>
               <a rel="nofollow" href="<?php echo $this->url('faq.html'); ?>"><?php echo $this->text('Questions and answers'); ?></a>
             </li>
-          </ul>          
+          </ul>
         </div>
         <div class="col-md-2">
           <?php if (!empty($current_store['data']['social'])) { ?>
           <?php foreach ($current_store['data']['social'] as $network => $network_url) { ?>
-          <a rel="nofollow" target="_blank" href="<?php echo $this->escape($network_url); ?>">       
+          <a rel="nofollow" target="_blank" href="<?php echo $this->escape($network_url); ?>">
             <span class="fa-stack fa-lg">
               <i class="fa fa-square-o fa-stack-2x"></i>
               <i class="fa fa-<?php echo $this->escape($network); ?> fa-stack-1x"></i>
