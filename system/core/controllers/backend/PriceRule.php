@@ -79,13 +79,22 @@ class PriceRule extends BackendController
         $this->setData('price_rules', $rules);
         $this->setData('stores', $stores);
 
-        $filters = array('name', 'code', 'value', 'value_type',
-            'weight', 'status');
+        $filters = $this->getAllowedFiltersPriceRule();
 
         $this->setFilter($filters, $query);
         $this->setTitleListPriceRule();
         $this->setBreadcrumbListPriceRule();
         $this->outputListPriceRule();
+    }
+
+    /**
+     * Returns an array of allowed filters for price rule listing
+     * @return array
+     */
+    protected function getAllowedFiltersPriceRule()
+    {
+        return array('name', 'code', 'value',
+            'value_type', 'weight', 'status');
     }
 
     /**
@@ -195,9 +204,10 @@ class PriceRule extends BackendController
     public function editPriceRule($rule_id = null)
     {
         $rule = $this->getPriceRule($rule_id);
+
         $stores = $this->store->getList();
-        $currencies = $this->currency->getList(true);
-        $triggers = $this->trigger->getList(array('status' => 1));
+        $triggers = $this->getTriggersPriceRule();
+        $currencies = $this->getCurrenciesPriceRule();
 
         $this->setData('stores', $stores);
         $this->setData('price_rule', $rule);
@@ -209,6 +219,24 @@ class PriceRule extends BackendController
         $this->setTitleEditPriceRule($rule);
         $this->setBreadcrumbEditPriceRule();
         $this->outputEditPriceRule();
+    }
+
+    /**
+     * Returns an array of enabled triggers
+     * @return array
+     */
+    protected function getTriggersPriceRule()
+    {
+        return $this->trigger->getList(array('status' => 1));
+    }
+
+    /**
+     * Returns an array of enabled currencies
+     * @return array
+     */
+    protected function getCurrenciesPriceRule()
+    {
+        return $this->currency->getList(true);
     }
 
     /**
