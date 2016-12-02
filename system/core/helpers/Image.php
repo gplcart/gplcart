@@ -140,7 +140,6 @@ class Image
             'mime' => $info['mime'],
             'orientation' => $this->get_orientation(),
             'format' => preg_replace('/^image\//', '', $info['mime']),
-            
         );
 
         $this->width = $info[0];
