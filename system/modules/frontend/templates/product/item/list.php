@@ -15,9 +15,11 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
+          <?php if(!empty($product['thumb'])){ ?>
           <a href="<?php echo $this->escape($product['url']); ?>">
             <img class="img-responsive thumbnail" src="<?php echo $this->escape($product['thumb']); ?>" alt="<?php echo $this->escape($product['title']); ?>">
           </a>
+          <?php } ?>
         </div>
         <div class="col-md-7">
           <a href="<?php echo $this->escape($product['url']); ?>"><?php echo $this->escape($product['title']); ?></a>

@@ -137,7 +137,8 @@ class Search extends FrontendController
         if (empty($results)) {
             return array();
         }
-
+        
+        $query['placeholder'] = true;
         return $this->prepareProducts($results, $query);
     }
 
