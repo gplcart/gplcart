@@ -11,7 +11,7 @@ namespace core\handlers\job\import;
 
 use core\Container;
 use core\helpers\Arr;
-use core\helpers\Tool;
+use core\helpers\File;
 
 /**
  * Base class for import handlers
@@ -185,7 +185,7 @@ class Base
         $line_message = $this->language->text('Line @num', array('@num' => $line));
         $data = array($line_message, $messages);
 
-        return Tool::writeCsv($this->job['data']['operation']['log']['errors'], $data);
+        return File::csv($this->job['data']['operation']['log']['errors'], $data);
     }
 
     /**

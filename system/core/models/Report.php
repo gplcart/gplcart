@@ -12,7 +12,6 @@ namespace core\models;
 use DateTime;
 use core\Model;
 use core\helpers\Arr;
-use core\helpers\Tool;
 use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 
@@ -393,12 +392,37 @@ class Report extends Model
         }
 
         // Try to create the missing file
-        if (Tool::htaccess($directory, $private)) {
+        if ($this->createHtaccess($directory, $private)) {
             return true;
         }
 
         return $this->language->text('Missing .htaccess file %s', array(
                     '%s' => $htaccess));
+    }
+    
+    /**
+     * Creates a .htaccess file
+     * @param string $directory
+     * @param boolean $private
+     * @return boolean
+     */
+    protected function createHtaccess($directory, $private = true)
+    {
+        $content = array('Options None', 'Options +FollowSymLinks',
+            'SetHandler Gplcart_Dont_Touch', 'php_flag engine off');
+
+        if ($private) {
+            array_unshift($content, 'Deny from all');
+        }
+
+        $file = $directory . '/.htaccess';
+
+        if (file_put_contents($file, implode(PHP_EOL, $content)) === false) {
+            return false;
+        }
+
+        chmod($file, 0444);
+        return true;
     }
 
 }

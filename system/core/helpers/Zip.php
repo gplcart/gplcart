@@ -52,7 +52,7 @@ class Zip extends ZipArchive
      */
     public function folder($source, $destination, $wrapper = '')
     {
-        $files = Tool::scanFilesRecursive($source);
+        $files = File::scanRecursive($source);
 
         if (empty($files)) {
             return false;

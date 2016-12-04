@@ -9,7 +9,7 @@
 
 namespace modules\backend;
 
-use core\helpers\Tool;
+use core\helpers\File;
 
 /**
  * Main backend theme class
@@ -89,7 +89,7 @@ class Backend
         $controller->setJs('files/assets/jquery/primeui/components/terminal/terminal.js', 'bottom');
 
         $path = $controller->getData('path');
-        $file = Tool::contexUrltFile(GC_MODULE_DIR . '/backend/js', 'js', $path);
+        $file = File::contex(GC_MODULE_DIR . '/backend/js', 'js', $path);
 
         if (isset($file['filename'])) {
             $controller->setJs("system/modules/backend/js/{$file['filename']}.js", 'bottom');

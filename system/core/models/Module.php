@@ -12,7 +12,7 @@ namespace core\models;
 use ZipArchive;
 use core\Model;
 use core\Container;
-use core\helpers\Tool;
+use core\helpers\File;
 use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 use core\exceptions\ModuleException;
@@ -520,7 +520,7 @@ class Module extends Model
             return false;
         }
 
-        return Tool::deleteDirecoryRecursive(GC_MODULE_DIR . "/$module_id");
+        return File::deleteRecursive(GC_MODULE_DIR . "/$module_id");
     }
 
     /**

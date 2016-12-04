@@ -13,6 +13,7 @@ use core\Route;
 use core\Model;
 use core\helpers\Arr;
 use core\helpers\Tool;
+use core\helpers\File;
 use core\helpers\Cache;
 use core\models\Translit as ModelsTranslit;
 
@@ -475,8 +476,8 @@ class Language extends Model
      */
     public function refresh($langcode)
     {
-        Tool::deleteFiles(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
-        Tool::deleteFiles(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
+        File::delete(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
+        File::delete(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
     }
 
     /**

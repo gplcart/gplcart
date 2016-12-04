@@ -14,6 +14,7 @@ use core\helpers\Url;
 use core\helpers\Curl;
 use core\helpers\Tool;
 use core\helpers\Cache;
+use core\helpers\File as F;
 use core\models\Language as ModelsLanguage;
 use core\models\Validator as ModelsValidator;
 
@@ -97,7 +98,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = Tool::mime(GC_FILE_DIR . '/' . $data['path']);
+            $data['mime_type'] = F::mime(GC_FILE_DIR . "/{$data['path']}");
         }
 
         if (empty($data['file_type'])) {

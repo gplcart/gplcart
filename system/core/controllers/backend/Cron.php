@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Tool;
+use core\helpers\File;
 use core\models\Report as ModelsReport;
 use core\controllers\backend\Controller as BackendController;
 
@@ -112,7 +112,7 @@ class Cron extends BackendController
         foreach ($directories as $key => $path) {
             $extensions = array('csv');
             $lifespan = $this->config("{$key}_lifespan", 86400);
-            $deleted += Tool::deleteFiles($path, $extensions, $lifespan);
+            $deleted += File::delete($path, $extensions, $lifespan);
         }
 
         if (empty($deleted)) {

@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Tool;
+use core\helpers\File;
 use core\models\Export as ModelsExport;
 use core\models\Product as ModelsProduct;
 use core\controllers\backend\Controller as BackendController;
@@ -215,7 +215,7 @@ class Export extends BackendController
         }
 
         $delimiter = $this->getSubmitted('delimiter');
-        Tool::writeCsv($operation['file'], $operation['csv']['header'], $delimiter);
+        File::csv($operation['file'], $operation['csv']['header'], $delimiter);
         $this->setSubmitted('operation', $operation);
         return true;
     }
