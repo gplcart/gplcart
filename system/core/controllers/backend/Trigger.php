@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\models\Trigger as ModelsTrigger;
 use core\models\Condition as ModelsCondition;
 use core\controllers\backend\Controller as BackendController;
@@ -347,7 +347,7 @@ class Trigger extends BackendController
             return null;
         }
 
-        Tool::sortWeight($conditions);
+        Arr::sortWeight($conditions);
 
         $modified = array();
         foreach ($conditions as $condition) {

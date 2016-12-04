@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\models\State as ModelsState;
 use core\models\Order as ModelsOrder;
 use core\models\Address as ModelsAddress;
@@ -333,7 +333,7 @@ class Checkout extends FrontendController
         );
 
         // Override with existing order values if we're editing the order
-        $order = Tool::merge($default_order, $this->order_data);
+        $order = Arr::merge($default_order, $this->order_data);
 
         $this->form_data['order'] = $order;
         $this->form_data['messages'] = array();
@@ -540,9 +540,9 @@ class Checkout extends FrontendController
     {
         $messages = (array) $message;
 
-        $flatten = Tool::flattenArray($messages);
+        $flatten = Arr::flatten($messages);
         $string = implode('<br>', array_unique($flatten));
-        Tool::setArrayValue($this->form_data['messages'], $key, $string);
+        Arr::setValue($this->form_data['messages'], $key, $string);
     }
 
     /**
@@ -748,7 +748,7 @@ class Checkout extends FrontendController
     protected function calculateCheckout()
     {
         $submitted = array('order' => $this->getSubmitted());
-        $this->form_data = Tool::merge($this->form_data, $submitted);
+        $this->form_data = Arr::merge($this->form_data, $submitted);
 
         $result = $this->order->calculate($this->cart_content, $this->form_data);
         $this->form_data['total_formatted'] = $this->price->format($result['total'], $result['currency']);

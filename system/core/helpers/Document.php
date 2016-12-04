@@ -76,7 +76,7 @@ class Document
         $position = empty($data['position']) ? array() : array($data['position']);
 
         if (!isset($data['weight'])) {
-            $elements = Tool::getArrayValue($assets, $position);
+            $elements = Arr::getValue($assets, $position);
             $data['weight'] = empty($elements) ? 0 : count($elements) + 1;
         }
 
@@ -90,7 +90,7 @@ class Document
         );
 
         $position[] = $key;
-        Tool::setArrayValue($assets, $position, $asset);
+        Arr::setValue($assets, $position, $asset);
         return $assets;
     }
 

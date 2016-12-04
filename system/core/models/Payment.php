@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 
@@ -60,7 +60,7 @@ class Payment extends Model
             });
         }
 
-        Tool::sortWeight($methods);
+        Arr::sortWeight($methods);
         return $methods;
     }
 

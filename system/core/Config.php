@@ -10,6 +10,7 @@
 namespace core;
 
 use core\Container;
+use core\helpers\Arr;
 use core\helpers\Tool;
 use core\helpers\Cache;
 use core\exceptions\DatabaseException;
@@ -259,7 +260,7 @@ class Config
 
             if (isset($saved_modules[$module_info['id']])) {
                 $module_info['installed'] = true;
-                $module_info = Tool::merge($module_info, $saved_modules[$module_info['id']]);
+                $module_info = Arr::merge($module_info, $saved_modules[$module_info['id']]);
             }
 
             if (in_array($module_info['id'], array('backend', 'frontend'))) {

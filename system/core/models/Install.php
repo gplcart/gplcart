@@ -11,6 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Container;
+use core\helpers\Arr;
 use core\helpers\Tool;
 use core\helpers\Database;
 use core\models\Store as ModelsStore;
@@ -92,7 +93,7 @@ class Install extends Model
             $value['id'] = $key;
         });
 
-        Tool::sortWeight($installers);
+        Arr::sortWeight($installers);
         return $installers;
     }
 

@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
 
@@ -49,7 +49,7 @@ class Country extends Model
 
         if (empty($data['format'])) {
             $format = $this->defaultFormat();
-            Tool::sortWeight($format);
+            Arr::sortWeight($format);
         } else {
             $format = $data['format'];
         }
@@ -78,9 +78,9 @@ class Country extends Model
 
         if (!empty($country)) {
             $default_format = $this->defaultFormat();
-            $country['format'] = Tool::merge($default_format, $country['format']);
+            $country['format'] = Arr::merge($default_format, $country['format']);
             $country['default'] = $this->isDefault($code);
-            Tool::sortWeight($country['format']);
+            Arr::sortWeight($country['format']);
         }
 
         $this->hook->fire('get.country.after', $code, $country);

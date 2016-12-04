@@ -10,6 +10,7 @@
 namespace core\handlers\job\import;
 
 use core\Container;
+use core\helpers\Arr;
 use core\helpers\Tool;
 
 /**
@@ -236,7 +237,7 @@ class Base
         }
 
         // Errors can be nested, so we flatten them into a simple array
-        $errors = Tool::flattenArray((array) $result);
+        $errors = Arr::flatten((array) $result);
 
         $this->setError($errors);
         return false;
@@ -251,7 +252,7 @@ class Base
         $errors = (array) $error;
         $line = $this->job['context']['line'];
         $existing = empty($this->errors[$line]) ? array() : $this->errors[$line];
-        $this->errors[$line] = Tool::merge($existing, $errors);
+        $this->errors[$line] = Arr::merge($existing, $errors);
     }
 
     /**

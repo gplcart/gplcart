@@ -13,7 +13,7 @@ use core\Model;
 use core\Handler;
 use core\Container;
 use core\helpers\Url;
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\helpers\Cache;
 use core\helpers\Session;
 use core\models\Language as ModelsLanguage;
@@ -101,7 +101,7 @@ class Job extends Model
         }
 
         $default = $this->getDefault();
-        $job = Tool::merge($default, $job);
+        $job = Arr::merge($default, $job);
 
         $existing = $this->getSession($job['id']);
 

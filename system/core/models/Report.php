@@ -11,6 +11,7 @@ namespace core\models;
 
 use DateTime;
 use core\Model;
+use core\helpers\Arr;
 use core\helpers\Tool;
 use core\helpers\Cache;
 use core\models\Language as ModelsLanguage;
@@ -327,7 +328,7 @@ class Report extends Model
 
         $this->hook->fire('report.statuses', $statuses);
 
-        Tool::sortWeight($statuses);
+        Arr::sortWeight($statuses);
 
         return $statuses;
     }
@@ -373,9 +374,8 @@ class Report extends Model
             return true;
         }
 
-        return $this->language->text('File %s is not secure. The file permissions must be %perm', array(
-                    '%s' => $file,
-                    '%perm' => $permissions));
+        $vars = array('%s' => $file, '%perm' => $permissions);
+        return $this->language->text('File %s is not secure. The file permissions must be %perm', $vars);
     }
 
     /**

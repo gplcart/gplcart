@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\helpers\Arr;
 use core\helpers\Tool;
 use core\helpers\Cache;
 use core\helpers\Request;
@@ -103,7 +104,7 @@ class Currency extends Model
 
         $default = $this->getDefaultList();
         $saved = $this->config->get('currencies', array());
-        $currencies = Tool::merge($default, $saved);
+        $currencies = Arr::merge($default, $saved);
 
         $this->hook->fire('currencies', $currencies);
 

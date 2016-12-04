@@ -212,7 +212,7 @@ class Request
      */
     protected function sanitize(array &$array, $filter = true)
     {
-        Tool::trimArray($array, $filter);
+        Arr::trim($array, $filter);
     }
 
     /**

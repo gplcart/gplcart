@@ -10,6 +10,7 @@
 namespace core\handlers\validator;
 
 use core\Container;
+use core\helpers\Arr;
 use core\helpers\Tool;
 
 /**
@@ -76,7 +77,7 @@ class Base
     protected function getSubmitted($key, $submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        return Tool::getArrayValue($submitted, $parents);
+        return Arr::getValue($submitted, $parents);
     }
 
     /**
@@ -88,7 +89,7 @@ class Base
     public function setSubmitted($key, $value, &$submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        Tool::setArrayValue($submitted, $parents, $value);
+        Arr::setValue($submitted, $parents, $value);
     }
 
     /**
@@ -98,7 +99,7 @@ class Base
     public function unsetSubmitted($key, &$submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        Tool::unsetArrayValue($submitted, $parents);
+        Arr::unsetValue($submitted, $parents);
     }
 
     /**
@@ -130,7 +131,7 @@ class Base
     protected function setError($key, $value, array $options = array())
     {
         $parents = $this->getParents($key, $options);
-        Tool::setArrayValue($this->errors, $parents, $value);
+        Arr::setValue($this->errors, $parents, $value);
     }
 
     /**
@@ -158,7 +159,7 @@ class Base
     protected function getError($key, array $options = array())
     {
         $parents = $this->getParents($key, $options);
-        return Tool::getArrayValue($this->errors, $parents);
+        return Arr::getValue($this->errors, $parents);
     }
 
     /**

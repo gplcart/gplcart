@@ -9,6 +9,7 @@
 
 namespace core;
 
+use core\helpers\Arr;
 use core\helpers\Tool;
 
 /**
@@ -439,7 +440,7 @@ class Controller
     public function error($key = null, $has_error = null, $no_error = '')
     {
         if (isset($key)) {
-            $result = Tool::getArrayValue($this->errors, $key);
+            $result = Arr::getValue($this->errors, $key);
         } else {
             $result = empty($this->errors) ? null : $this->errors;
         }
@@ -735,7 +736,7 @@ class Controller
      */
     public function setData($key, $value)
     {
-        Tool::setArrayValue($this->data, $key, $value);
+        Arr::setValue($this->data, $key, $value);
     }
 
     /**
@@ -744,7 +745,7 @@ class Controller
      */
     public function unsetData($key)
     {
-        Tool::unsetArrayValue($this->data, $key);
+        Arr::unsetValue($this->data, $key);
     }
 
     /**
@@ -754,7 +755,7 @@ class Controller
      */
     public function setError($key, $value)
     {
-        Tool::setArrayValue($this->errors, $key, $value);
+        Arr::setValue($this->errors, $key, $value);
     }
 
     /**
@@ -763,7 +764,7 @@ class Controller
      */
     public function unsetError($key)
     {
-        Tool::unsetArrayValue($this->errors, $key);
+        Arr::unsetValue($this->errors, $key);
     }
 
     /**
@@ -785,7 +786,7 @@ class Controller
             return $this->submitted;
         }
 
-        Tool::setArrayValue($this->submitted, $key, $value);
+        Arr::setValue($this->submitted, $key, $value);
         return $this->submitted;
     }
 
@@ -795,7 +796,7 @@ class Controller
      */
     public function unsetSubmitted($key)
     {
-        Tool::unsetArrayValue($this->submitted, $key);
+        Arr::unsetValue($this->submitted, $key);
     }
 
     /**
@@ -831,7 +832,7 @@ class Controller
     public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            $result = Tool::getArrayValue($this->submitted, $key);
+            $result = Arr::getValue($this->submitted, $key);
             return isset($result) ? $result : $default;
         }
 
@@ -846,7 +847,7 @@ class Controller
      */
     public function getData($key, $default = null)
     {
-        $result = Tool::getArrayValue($this->data, $key);
+        $result = Arr::getValue($this->data, $key);
         return isset($result) ? $result : $default;
     }
 
@@ -1155,7 +1156,7 @@ class Controller
         }
 
         $this->data[$region] = (array) $this->data[$region];
-        Tool::sortWeight($this->data[$region]);
+        Arr::sortWeight($this->data[$region]);
 
         $items = array();
         foreach ($this->data[$region] as $item) {
@@ -1252,7 +1253,7 @@ class Controller
             return $this->getCompressedAssets($css, 'css');
         }
 
-        Tool::sortWeight($css);
+        Arr::sortWeight($css);
         return $css;
     }
 
@@ -1269,7 +1270,7 @@ class Controller
             return $this->getCompressedAssets($scripts, 'js', "-$region");
         }
 
-        Tool::sortWeight($scripts);
+        Arr::sortWeight($scripts);
         return $scripts;
     }
 
@@ -1323,7 +1324,7 @@ class Controller
         );
 
         $results = $this->document->setAsset($data, $assets);
-        Tool::sortWeight($results);
+        Arr::sortWeight($results);
         return $results;
     }
 

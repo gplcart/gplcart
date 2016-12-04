@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\models\File as ModelsFile;
 use core\models\Image as ModelsImage;
 use core\controllers\backend\Controller as BackendController;
@@ -242,7 +242,7 @@ class ImageStyle extends BackendController
             return null;
         }
 
-        Tool::sortWeight($actions);
+        Arr::sortWeight($actions);
 
         $modified = array();
         foreach ($actions as $action_id => $info) {

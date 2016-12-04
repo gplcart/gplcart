@@ -9,11 +9,12 @@
 
 namespace core\models;
 
-use core\helpers\Cache;
-use core\helpers\Tool;
-use core\Model;
-use core\models\Translit as ModelsTranslit;
 use core\Route;
+use core\Model;
+use core\helpers\Arr;
+use core\helpers\Tool;
+use core\helpers\Cache;
+use core\models\Translit as ModelsTranslit;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -114,7 +115,7 @@ class Language extends Model
         $available = $this->getAvailable();
         $saved = $this->config->get('languages', array());
 
-        $languages = Tool::merge($available, $saved);
+        $languages = Arr::merge($available, $saved);
 
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
@@ -204,7 +205,7 @@ class Language extends Model
             });
         }
 
-        Tool::sortWeight($languages);
+        Arr::sortWeight($languages);
         return $languages;
     }
 

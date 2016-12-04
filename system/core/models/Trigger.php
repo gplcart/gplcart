@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\helpers\Cache;
 use core\models\Condition as ModelsCondition;
 
@@ -107,7 +107,7 @@ class Trigger extends Model
             $trigger['data'] = unserialize($trigger['data']);
 
             if (!empty($trigger['data']['conditions'])) {
-                Tool::sortWeight($trigger['data']['conditions']);
+                Arr::sortWeight($trigger['data']['conditions']);
             }
 
             $triggers[$trigger['trigger_id']] = $trigger;

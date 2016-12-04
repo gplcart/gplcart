@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Tool;
+use core\helpers\Arr;
 use core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
@@ -72,7 +72,7 @@ class Settings extends BackendController
         $default = $this->getDefaultSettings();
         $saved = $this->config();
 
-        return Tool::merge($default, $saved);
+        return Arr::merge($default, $saved);
     }
 
     /**
