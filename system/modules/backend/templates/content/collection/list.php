@@ -148,14 +148,14 @@
               <?php if ($this->access('collection_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/collection/edit/$id"); ?>">
-                  <?php echo strtolower($this->text('Edit')); ?>
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('collection_item')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/collection-item/$id"); ?>">
-                  <?php echo strtolower($this->text('Items')); ?>
+                  <?php echo mb_strtolower($this->text('Items')); ?>
                 </a>
               </li>
               <?php } ?>

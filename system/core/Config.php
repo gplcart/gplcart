@@ -251,7 +251,7 @@ class Config
                 'image' => '',
                 'settings' => array(),
                 'configure' => false,
-                'type' => '',
+                'type' => 'module',
                 'key' => '',
                 'id' => $module_name,
                 'dependencies' => array()
@@ -412,11 +412,11 @@ class Config
     protected function validModuleId($id)
     {
         if (is_string($id)) {
-            return Tool::validModuleId($id);
+            return (bool) preg_match('/^[a-z_]+$/', $id);
         }
 
         return array_filter((array) $id, function ($string) {
-            return Tool::validModuleId($string);
+            return $this->validModuleId($string);
         });
     }
 

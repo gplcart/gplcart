@@ -93,7 +93,8 @@ class UserRole extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'status', 'role_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY name ASC";
@@ -222,6 +223,13 @@ class UserRole extends Model
     {
         $permissions = array(
             'admin' => $this->language->text('Admin: access'),
+            'editor' => $this->language->text('Theme editor: access'),
+            'backup' => $this->language->text('Backup: access'),
+            'backup_module' => $this->language->text('Backup: module'),
+            'backup_delete' => $this->language->text('Backup: delete'),
+            'backup_add' => $this->language->text('Backup: add'),
+            'backup_restore' => $this->language->text('Backup: access restore'),
+            'backup_restore_module' => $this->language->text('Backup: restore module'),
             'product' => $this->language->text('Product: access'),
             'product_add' => $this->language->text('Product: add'),
             'product_edit' => $this->language->text('Product: edit'),

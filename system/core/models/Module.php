@@ -194,7 +194,42 @@ class Module extends Model
             return $result_required;
         }
 
+        $result_module_id = $this->checkModuleId($module_id);
+
+        if ($result_module_id !== true) {
+            return $result_module_id;
+        }
+
         return true;
+    }
+
+    /**
+     * Checks a module ID
+     * @param string $module_id
+     * @return boolean|string
+     */
+    protected function checkModuleId($module_id)
+    {
+        if (!$this->config->validModuleId($module_id)) {
+            return $this->language->text('Invalid module ID');
+        }
+
+        $reserved = $this->getReservedModuleId();
+
+        if (in_array($module_id, $reserved)) {
+            return $this->language->text('Module ID %id is reserved and cannot be used');
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns an array of reserved module IDs
+     * @return array
+     */
+    public function getReservedModuleId()
+    {
+        return array('core', 'gplcart', 'backend', 'frontend', 'mobile');
     }
 
     /**
@@ -230,6 +265,7 @@ class Module extends Model
 
         $errors = array();
         foreach ((array) $modules[$module_id]['dependencies'] as $required) {
+
             if (empty($modules[$required])) {
                 $errors[] = $this->language->text('Required module %name is missing', array('%name' => $required));
                 continue;
@@ -360,11 +396,11 @@ class Module extends Model
         $modules = $this->getList();
         $dependent = $this->checkDependentModules($module_id, $modules);
 
-        if ($dependent !== true) {
-            return $dependent;
+        if ($dependent === true) {
+            return true;
         }
 
-        return true;
+        return $dependent;
     }
 
     /**
@@ -424,7 +460,7 @@ class Module extends Model
             }
 
             foreach ((array) $info['dependencies'] as $dependent) {
-                if ($dependent == $module_id && !empty($info['status'])) {
+                if ($dependent === $module_id && !empty($info['status'])) {
                     $required_by['required_by'][] = $dependent;
                 }
             }
@@ -779,11 +815,11 @@ class Module extends Model
 
         $id = rtrim($folder, '/');
 
-        if (!Tool::validModuleId($id)) {
-            return false;
+        if ($this->checkModuleId($id) === true) {
+            return $id;
         }
 
-        return $id;
+        return false;
     }
 
 }

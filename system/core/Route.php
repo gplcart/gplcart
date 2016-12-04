@@ -411,6 +411,28 @@ class Route
             )
         );
 
+        $routes['admin/tool/backup'] = array(
+            'access' => 'backup',
+            'menu' => array('admin' => 'Backup'),
+            'handlers' => array(
+                'controller' => array('core\\controllers\\backend\\Backup', 'listBackup')
+            )
+        );
+
+        $routes['admin/tool/backup/add'] = array(
+            'access' => 'backup_add',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\backend\\Backup', 'editBackup')
+            )
+        );
+
+        $routes['admin/tool/backup/restore/(\d+)'] = array(
+            'access' => 'backup_restore',
+            'handlers' => array(
+                'controller' => array('core\\controllers\\backend\\Backup', 'editRestoreBackup')
+            )
+        );
+
         $routes['admin/sale'] = array(
             'menu' => array('admin' => 'Sales'),
             'handlers' => array(

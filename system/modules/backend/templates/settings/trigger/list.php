@@ -133,7 +133,7 @@
                   <?php if ($this->access('trigger_edit')) { ?>
                   <li>
                     <a href="<?php echo $this->url("admin/settings/trigger/edit/$id"); ?>">
-                      <?php echo strtolower($this->text('Edit')); ?>
+                      <?php echo mb_strtolower($this->text('Edit')); ?>
                     </a>
                   </li>
                   <?php } ?>

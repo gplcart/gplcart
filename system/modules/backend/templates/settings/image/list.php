@@ -51,7 +51,7 @@
               <?php if ($this->access('image_style_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/imagestyle/edit/$id"); ?>" class="edit">
-                  <?php echo strtolower($this->text('Edit')); ?>
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>

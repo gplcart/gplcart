@@ -26,3 +26,4 @@ files/private/*
 !files/private/download
 !files/private/examples
 !files/private/logs
+!files/private/backup

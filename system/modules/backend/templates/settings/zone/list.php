@@ -76,7 +76,7 @@
                 <?php if ($this->access('zone_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/settings/zone/edit/{$zone['zone_id']}"); ?>">
-                    <?php echo strtolower($this->text('Edit')); ?>
+                    <?php echo mb_strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>

@@ -168,6 +168,18 @@ class Validator extends Model
             ),
         );
 
+        $handlers['backup'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Backup', 'backup')
+            ),
+        );
+
+        $handlers['backup_restore'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Backup', 'restore')
+            ),
+        );
+
         $handlers['currency'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Currency', 'currency')

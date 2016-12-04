@@ -102,7 +102,7 @@
             <input type="hidden" name="country[<?php echo $code; ?>][weight]" value="<?php echo $country['weight']; ?>">
             <?php echo $this->escape($country['name']); ?>
             <?php if ($default_country == $code) { ?>
-            (<?php echo mb_strtolower($this->text('Default')); ?>)
+            (<?php echo mb_mb_strtolower($this->text('Default')); ?>)
             <?php } ?>
           </td>
           <td class="middle"><?php echo $this->escape($country['native_name']); ?></td>
@@ -119,21 +119,21 @@
               <?php if ($this->access('country_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/country/edit/$code"); ?>">
-                  <?php echo strtolower($this->text('Edit')); ?>
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('state')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/states/$code"); ?>">
-                  <?php echo strtolower($this->text('States')); ?>
+                  <?php echo mb_strtolower($this->text('States')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('country_format')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/country/format/$code"); ?>">
-                  <?php echo strtolower($this->text('Format')); ?>
+                  <?php echo mb_strtolower($this->text('Format')); ?>
                 </a>
               </li>
               <?php } ?>

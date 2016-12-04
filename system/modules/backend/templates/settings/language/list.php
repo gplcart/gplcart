@@ -33,7 +33,7 @@
           <td class="middle">
             <?php echo $this->escape($language['name']); ?>
             <?php if (!empty($language['default'])) { ?>
-            (<?php echo strtolower($this->text('Default')); ?>)
+            (<?php echo mb_strtolower($this->text('Default')); ?>)
             <?php } ?>
           </td>
           </td>
@@ -51,7 +51,7 @@
               <?php if ($this->access('language_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>" class="edit">
-                  <?php echo strtolower($this->text('Edit')); ?>
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
                 </a>
               </li>
               <li>

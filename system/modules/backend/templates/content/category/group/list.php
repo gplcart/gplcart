@@ -80,14 +80,14 @@
               <?php if ($this->access('category_group_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/category-group/edit/$id"); ?>">
-                  <?php echo strtolower($this->text('Edit')); ?>
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('category')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/category/$id"); ?>">
-                  <?php echo strtolower($this->text('Categories')); ?>
+                  <?php echo mb_strtolower($this->text('Categories')); ?>
                 </a>
               </li>
               <?php } ?>

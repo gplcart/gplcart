@@ -175,13 +175,13 @@
                 <ul class="list-inline">
                   <li>
                     <a href="<?php echo $this->escape($user['url']); ?>">
-                      <?php echo strtolower($this->text('View')); ?>
+                      <?php echo mb_strtolower($this->text('View')); ?>
                     </a>
                   </li>
                   <?php if ($this->access('user_edit')) { ?>
                   <li>
                     <a href="<?php echo $this->url("admin/user/edit/$id"); ?>">
-                      <?php echo strtolower($this->text('Edit')); ?>
+                      <?php echo mb_strtolower($this->text('Edit')); ?>
                     </a>
                   </li>
                   <?php } ?>

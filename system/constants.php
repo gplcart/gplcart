@@ -19,7 +19,6 @@ define('GC_MODULE_DIR', GC_SYSTEM_DIR . '/modules');
 define('GC_LIBRARY_DIR', GC_SYSTEM_DIR . '/libraries');
 define('GC_CACHE_DIR', GC_ROOT_DIR . '/cache');
 define('GC_FILE_DIR', GC_ROOT_DIR . '/files');
-define('GC_HELP_DIR', GC_SYSTEM_DIR . '/help');
 define('GC_CONFIG_OVERRIDE', GC_SYSTEM_DIR . '/config/override.php');
 define('GC_CONFIG_COMMON', GC_SYSTEM_DIR . '/config/common.php');
 define('GC_CONFIG_DATABASE', GC_SYSTEM_DIR . '/config/database.php');
@@ -29,6 +28,7 @@ define('GC_CONFIG_COMMON_DEFAULT', GC_SYSTEM_DIR . '/config/common.default.php')
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');
+define('GC_PRIVATE_BACKUP_DIR', GC_PRIVATE_DIR . '/backup');
 define('GC_PRIVATE_DOWNLOAD_DIR', GC_PRIVATE_DIR . '/download');
 define('GC_PRIVATE_EXPORT_DIR', GC_PRIVATE_DIR . '/export');
 define('GC_PRIVATE_IMPORT_DIR', GC_PRIVATE_DIR . '/import');

@@ -14,6 +14,7 @@ namespace core\helpers;
  */
 class Tool
 {
+
     /**
      * Sorts an array by the weight element
      * @param array $array
@@ -21,7 +22,7 @@ class Tool
     public static function sortWeight(array &$array)
     {
         uasort($array, function ($a, $b) {
-            
+
             $a_weight = (is_array($a) && isset($a['weight'])) ? $a['weight'] : 0;
             $b_weight = (is_array($b) && isset($b['weight'])) ? $b['weight'] : 0;
 
@@ -208,6 +209,30 @@ class Tool
     }
 
     /**
+     * Returns a unique file path using a base path
+     * @param string $file
+     * @return string
+     */
+    public static function uniqueFilePath($file)
+    {
+        if (!file_exists($file)) {
+            return $file;
+        }
+
+        $info = pathinfo($file);
+        $extension = isset($info['extension']) ? '.' . $info['extension'] : '';
+
+        $counter = 1;
+
+        do {
+            $filename = $info['filename'] . '-' . $counter++ . $extension;
+            $file = "{$info['dirname']}/$filename";
+        } while (file_exists($file));
+
+        return $file;
+    }
+
+    /**
      * Recursively merges two arrays
      * @param array $array1
      * @param array $array2
@@ -265,7 +290,6 @@ class Tool
      */
     public static function hashEquals($str1, $str2)
     {
-
         if (function_exists('hash_equals')) {
             return hash_equals($str1, $str2);
         }
@@ -420,16 +444,6 @@ class Tool
         fclose($handle);
 
         return true;
-    }
-
-    /**
-     * Validates a module id
-     * @param string $module_id
-     * @return boolean
-     */
-    public static function validModuleId($module_id)
-    {
-        return (bool) preg_match('/^[a-z_]+$/', $module_id);
     }
 
     /**

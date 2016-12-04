@@ -108,14 +108,14 @@
                 <?php if (!empty($file['url'])) { ?>
                 <li>
                   <a href="<?php echo $this->url('', array('download' => $id)); ?>">
-                    <?php echo strtolower($this->text('Download')); ?>
+                    <?php echo mb_strtolower($this->text('Download')); ?>
                   </a>
                 </li>
                 <?php } ?>
                 <?php if ($this->access('file_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/content/file/edit/$id"); ?>">
-                    <?php echo strtolower($this->text('Edit')); ?>
+                    <?php echo mb_strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>

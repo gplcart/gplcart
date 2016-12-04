@@ -41,7 +41,7 @@
           <td class="middle">
             <?php if ($this->access('currency_edit')) { ?>
             <a href="<?php echo $this->url("admin/settings/currency/edit/$code"); ?>" title="" class="edit">
-              <?php echo strtolower($this->text('Edit')); ?>
+              <?php echo mb_strtolower($this->text('Edit')); ?>
             </a>
             <?php } ?>
           </td>

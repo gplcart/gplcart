@@ -77,7 +77,7 @@
           <?php if ($this->access('field_value_edit')) { ?>
           <td class="middle">
             <a href="<?php echo $this->url->get("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}"); ?>" class="edit">
-              <?php echo strtolower($this->text('Edit')); ?>
+              <?php echo mb_strtolower($this->text('Edit')); ?>
             </a>
           </td>
           <?php } ?>

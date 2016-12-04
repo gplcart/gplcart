@@ -109,7 +109,7 @@
           <td class="middle">
             <?php if ($this->access('city_edit')) { ?>
             <a href="<?php echo $this->url("admin/settings/city/edit/{$country['code']}/{$state['state_id']}/{$city['city_id']}"); ?>">
-              <?php echo strtolower($this->text('Edit')); ?>
+              <?php echo mb_strtolower($this->text('Edit')); ?>
             </a>
             <?php } ?>
           </td>

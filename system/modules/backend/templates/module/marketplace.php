@@ -135,8 +135,8 @@
           </td>
           <td>
             <ul class="list-inline">
-              <li><a href="#details-<?php echo $marketplace_id; ?>" data-toggle="collapse" ><?php echo strtolower($this->text('Details')); ?></a></li>
-              <li><a target="_blank" href="<?php echo $this->escape($item['url']); ?>"><?php echo strtolower($this->text('View')); ?></a></li>
+              <li><a href="#details-<?php echo $marketplace_id; ?>" data-toggle="collapse" ><?php echo mb_strtolower($this->text('Details')); ?></a></li>
+              <li><a target="_blank" href="<?php echo $this->escape($item['url']); ?>"><?php echo mb_strtolower($this->text('View')); ?></a></li>
             </ul>
           </td>
         </tr>

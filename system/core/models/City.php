@@ -32,10 +32,10 @@ class City extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT c.*, s.code AS state_code ';
+        $sql = 'SELECT c.*, s.code AS state_code';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(city_id) ';
+            $sql = 'SELECT COUNT(city_id)';
         }
 
         $sql .= ' FROM city c'

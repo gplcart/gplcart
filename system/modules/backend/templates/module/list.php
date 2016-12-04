@@ -51,7 +51,7 @@
             <?php echo $this->escape($info['core']); ?>
           </td>
           <td class="middle">
-            <?php echo empty($info['type']) ? $this->text('Module') : $this->escape($info['type_name']); ?>
+            <?php echo $this->escape($info['type_name']); ?>
           </td>
           <td class="middle">
             <?php if (isset($info['status'])) { ?>
@@ -66,12 +66,17 @@
           </td>
           <td class="middle">
             <ul class="list-inline">
+              <?php if ($info['type'] === 'theme' && $this->access('editor')) { ?>
+              <a href="<?php echo $this->url("admin/tool/editor/$module_id"); ?>">
+                <?php echo mb_strtolower($this->text('Edit')); ?>
+              </a>
+              <?php } ?>
               <?php if (isset($info['status'])) { ?>
               <?php if ($info['status']) { ?>
               <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo strtolower($this->text('Disable')); ?>
+                  <?php echo mb_strtolower($this->text('Disable')); ?>
                 </a>
               </li>
               <?php } ?>
@@ -79,14 +84,14 @@
               <?php if ($this->access('module_enable')) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo strtolower($this->text('Enable')); ?>
+                  <?php echo mb_strtolower($this->text('Enable')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('module_uninstall') && empty($info['always_enabled'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo strtolower($this->text('Uninstall')); ?>
+                  <?php echo mb_strtolower($this->text('Uninstall')); ?>
                 </a>
               </li>
               <?php } ?>
@@ -95,20 +100,20 @@
               <?php if ($this->access('module_install')) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $token)); ?>">
-                  <?php echo strtolower($this->text('Install and enable')); ?>
+                  <?php echo mb_strtolower($this->text('Install and enable')); ?>
                 </a>
               </li>
               <?php } ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id, 'token' => $token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure you want to remove this module from disk? It cannot be undone!'); ?>');">
-                  <?php echo strtolower($this->text('Delete')); ?>
+                  <?php echo mb_strtolower($this->text('Delete')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if (isset($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url($info['configure']); ?>">
-                  <?php echo strtolower($this->text('Configure')); ?>
+                  <?php echo mb_strtolower($this->text('Configure')); ?>
                 </a>
               </li>
               <?php } ?>

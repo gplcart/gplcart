@@ -123,7 +123,7 @@
           <td class="middle">
             <?php if ($this->access('store_edit')) { ?>
             <a href="<?php echo $this->url("admin/settings/store/$store_id"); ?>">
-              <?php echo strtolower($this->text('Edit')); ?>
+              <?php echo mb_strtolower($this->text('Edit')); ?>
             </a>
             <?php } ?>
           </td>

@@ -42,13 +42,16 @@ $tables['alias'] = array(
     )
 );
 
-$tables['wishlist'] = array(
+$tables['backup'] = array(
     'fields' => array(
-        'wishlist_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-        'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'backup_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+        'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
-        'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+        'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'path' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'version' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+        'module_id' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => '')
     )
 );
 
@@ -539,6 +542,16 @@ $tables['zone'] = array(
         'zone_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
         'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true)
+    )
+);
+
+$tables['wishlist'] = array(
+    'fields' => array(
+        'wishlist_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+        'product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+        'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
     )
 );
 

@@ -84,20 +84,20 @@
               <ul class="list-inline">
                 <li>
                   <a href="<?php echo $this->escape($category['url']); ?>">
-                    <?php echo strtolower($this->text('View')); ?>
+                    <?php echo mb_strtolower($this->text('View')); ?>
                   </a>
                 </li>
                 <?php if ($this->access('category_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/content/category/edit/$category_group_id/{$category['category_id']}"); ?>">
-                    <?php echo strtolower($this->text('Edit')); ?>
+                    <?php echo mb_strtolower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>
                 <?php if ($this->access('category_add')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/content/category/add/$category_group_id", array('parent_id' => $category['category_id'])); ?>">
-                    <?php echo strtolower($this->text('Add subcategory')); ?>
+                    <?php echo mb_strtolower($this->text('Add subcategory')); ?>
                   </a>
                 </li>
                 <?php } ?>
