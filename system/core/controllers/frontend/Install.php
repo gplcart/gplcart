@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\helpers\Tool;
+use core\helpers\Date;
 use core\models\Install as ModelsInstall;
 use core\controllers\frontend\Controller as FrontendController;
 
@@ -53,7 +53,7 @@ class Install extends FrontendController
         $installer = $this->getInstall($installer_id);
         $this->submitInstall($installer);
 
-        $timezones = Tool::timezones();
+        $timezones = Date::timezones();
         $languages = $this->getLanguagesInstall();
         $requirements = $this->getRequirementsInstall();
         $installers = $this->getListInstall();
@@ -234,7 +234,7 @@ class Install extends FrontendController
     protected function processFinishInstall()
     {
         $this->session->delete();
-        Tool::deleteCookie();
+        $this->request->deleteCookie();
 
         $message = $this->text('Congratulations! You have successfully installed your store');
         $this->redirect('admin', $message, 'success');

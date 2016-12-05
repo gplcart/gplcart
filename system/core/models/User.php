@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\helpers\Tool;
+use core\helpers\String;
 use core\helpers\Session;
 use core\models\Mail as ModelsMail;
 use core\models\Address as ModelsAddress;
@@ -96,9 +96,9 @@ class User extends Model
         if (empty($data)) {
             return false;
         }
-        
+
         $data['created'] = GC_TIME;
-        $data += array('hash' => Tool::hash($data['password']));
+        $data += array('hash' => String::hash($data['password']));
         $data['user_id'] = $this->db->insert('user', $data);
 
         $this->setAddress($data);
@@ -145,15 +145,15 @@ class User extends Model
         if (empty($user_id)) {
             return false;
         }
-        
+
         $data['modified'] = GC_TIME;
         $data += array('user_id' => $user_id);
 
         if (!empty($data['password'])) {
-            $data['hash'] = Tool::hash($data['password']);
+            $data['hash'] = String::hash($data['password']);
         }
-        
-        if($this->isSuperadmin($user_id)){
+
+        if ($this->isSuperadmin($user_id)) {
             $data['status'] = 1;
         }
 
@@ -358,7 +358,9 @@ class User extends Model
             return $result;
         }
 
-        if (!Tool::hashEquals($user['hash'], Tool::hash($data['password'], $user['hash'], false))) {
+        $expected = String::hash($data['password'], $user['hash'], false);
+
+        if (!String::equals($user['hash'], $expected)) {
             return $result;
         }
 
@@ -399,7 +401,7 @@ class User extends Model
 
         $login = $this->config->get('user_registration_login', true);
         $status = $this->config->get('user_registration_status', true);
-        
+
         $data += array('status' => $status, 'login' => $login);
         $data['user_id'] = $this->add($data);
 
@@ -514,7 +516,7 @@ class User extends Model
      */
     public function generatePassword()
     {
-        $hash = crypt(Tool::randomString(), Tool::randomString());
+        $hash = crypt(String::random(), String::random());
         return str_replace(array('+', '/', '='), '', base64_encode($hash));
     }
 
@@ -553,7 +555,7 @@ class User extends Model
         $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
 
         $user['data']['reset_password'] = array(
-            'token' => Tool::randomString(),
+            'token' => String::random(),
             'expires' => GC_TIME + $lifetime,
         );
 
@@ -650,7 +652,10 @@ class User extends Model
         $allowed_sort = array('name', 'email', 'role_id',
             'store_id', 'status', 'created', 'user_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort'])//
+                && in_array($data['sort'], $allowed_sort)//
+                && isset($data['order'])//
+                && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY created DESC";

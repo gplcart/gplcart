@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Arr;
-use core\helpers\Tool;
 use core\helpers\Cache;
 use core\helpers\Request;
 
@@ -246,7 +245,7 @@ class Currency extends Model
         if (isset($code) && isset($list[$code])) {
             if (isset($query)) {
                 $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
-                Tool::setCookie('currency', $code, $lifespan);
+                $this->request->setCookie('currency', $code, $lifespan);
             }
 
             $currency = $code;

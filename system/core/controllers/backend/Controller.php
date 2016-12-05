@@ -153,8 +153,6 @@ class Controller extends BaseController
             $array[$path] = $data;
         }
 
-        //Tool::sortWeight($array);
-
         ksort($array);
         return $array;
     }

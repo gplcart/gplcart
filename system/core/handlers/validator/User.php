@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Tool;
+use core\helpers\String;
 use core\models\UserRole as ModelsUserRole;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -284,9 +284,9 @@ class User extends BaseValidator
             return false;
         }
 
-        $hash = Tool::hash($submitted['password_old'], $submitted['update']['hash'], false);
+        $hash = String::hash($submitted['password_old'], $submitted['update']['hash'], false);
 
-        if (Tool::hashEquals($submitted['update']['hash'], $hash)) {
+        if (String::equals($submitted['update']['hash'], $hash)) {
             return true;
         }
 

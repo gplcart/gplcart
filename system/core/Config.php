@@ -11,8 +11,8 @@ namespace core;
 
 use core\Container;
 use core\helpers\Arr;
-use core\helpers\Tool;
 use core\helpers\Cache;
+use core\helpers\String;
 use core\exceptions\DatabaseException;
 
 /**
@@ -179,7 +179,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return Tool::hashEquals($this->token(), (string) $token);
+        return String::equals($this->token(), (string) $token);
     }
 
     /**
@@ -361,7 +361,7 @@ class Config
         $this->key = $this->get('private_key', '');
 
         if (empty($this->key)) {
-            $this->key = Tool::randomString();
+            $this->key = String::random();
             $this->set('private_key', $this->key);
         }
 

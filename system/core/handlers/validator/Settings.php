@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Tool;
+use core\helpers\String;
 use core\helpers\Request;
 use core\models\File as ModelsFile;
 use core\handlers\validator\Base as BaseValidator;
@@ -66,15 +66,15 @@ class Settings extends BaseValidator
     protected function validateSettings(array &$submitted)
     {
         if (!empty($submitted['smtp_host'])) {
-            $submitted['smtp_host'] = Tool::stringToArray($submitted['smtp_host']);
+            $submitted['smtp_host'] = String::toArray($submitted['smtp_host']);
         }
 
         if (empty($submitted['cron_key'])) {
-            $submitted['cron_key'] = Tool::randomString();
+            $submitted['cron_key'] = String::random();
         }
 
         if (isset($submitted['smtp_auth'])) {
-            $submitted['smtp_auth'] = Tool::toBool($submitted['smtp_auth']);
+            $submitted['smtp_auth'] = String::toBool($submitted['smtp_auth']);
         }
 
         return true;

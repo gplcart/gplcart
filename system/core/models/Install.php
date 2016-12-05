@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Container;
 use core\helpers\Arr;
-use core\helpers\Tool;
+use core\helpers\String;
 use core\helpers\Database;
 use core\models\Store as ModelsStore;
 use core\models\Language as ModelsLanguage;
@@ -375,7 +375,7 @@ class Install extends Model
             'name' => 'Superadmin',
             'store_id' => $store_id,
             'email' => $settings['user']['email'],
-            'hash' => Tool::hash($settings['user']['password'])
+            'hash' => String::hash($settings['user']['password'])
         );
 
         $user_id = $this->database->insert('user', $user);

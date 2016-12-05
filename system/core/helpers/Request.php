@@ -246,7 +246,52 @@ class Request
      */
     public function cookie($name = null, $default = null, $filter = true)
     {
-        return Tool::getCookie($name, $default, $filter);
+        $cookie = empty($_COOKIE) ? array() : $_COOKIE;
+
+        Arr::trim($cookie, $filter);
+
+        if (isset($name)) {
+            return isset($cookie[GC_COOKIE_PREFIX . $name]) ? $cookie[GC_COOKIE_PREFIX . $name] : $default;
+        }
+
+        return $cookie;
+    }
+
+    /**
+     * Sets a cookie
+     * @param string $name
+     * @param string $value
+     * @param integer $lifespan
+     * @return boolean
+     */
+    public function setCookie($name, $value, $lifespan = 31536000)
+    {
+        return setcookie(GC_COOKIE_PREFIX . $name, $value, GC_TIME + $lifespan, '/');
+    }
+
+    /**
+     * Deletes a cookie
+     * @param string $name
+     * @return boolean
+     */
+    public function deleteCookie($name = null)
+    {
+        if (!isset($name)) {
+            foreach ((array) $_COOKIE as $key => $value) {
+                if (0 === strpos($key, GC_COOKIE_PREFIX)) {
+                    $this->deleteCookie($key);
+                }
+            }
+
+            return true;
+        }
+
+        if (isset($_COOKIE[GC_COOKIE_PREFIX . $name])) {
+            unset($_COOKIE[GC_COOKIE_PREFIX . $name]);
+            return setcookie(GC_COOKIE_PREFIX . $name, '', GC_TIME - 3600, '/');
+        }
+
+        return false;
     }
 
     /**

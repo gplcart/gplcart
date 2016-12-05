@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Tool;
 use core\helpers\Cache;
 use core\helpers\Request;
 use core\models\Language as ModelsLanguage;
@@ -211,7 +210,7 @@ class Compare extends Model
     public function set(array $product_ids)
     {
         $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
-        $result = Tool::setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
+        $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
 
         Cache::clearMemory('comparison');
         return $result;

@@ -10,7 +10,7 @@
 namespace core\handlers\trigger;
 
 use core\Route;
-use core\helpers\Tool;
+use core\helpers\Regexp;
 use core\models\User as ModelsUser;
 use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;
@@ -103,7 +103,7 @@ class Condition
 
         $found = false;
         foreach ($patterns as $pattern) {
-            if (Tool::patternMatch($path, $pattern)) {
+            if (Regexp::matchPattern($path, $pattern)) {
                 $found = true;
             }
         }

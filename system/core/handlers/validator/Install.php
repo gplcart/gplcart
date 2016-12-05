@@ -9,7 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Tool;
+use core\helpers\Date;
+use core\helpers\Regexp;
 use core\models\Install as ModelsInstall;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -173,7 +174,7 @@ class Install extends BaseValidator
             return true;
         }
 
-        if (Tool::validDomain($submitted['store']['host'])) {
+        if (Regexp::matchDomain($submitted['store']['host'])) {
             return true;
         }
 
@@ -234,7 +235,7 @@ class Install extends BaseValidator
             return false;
         }
 
-        $timezones = Tool::timezones();
+        $timezones = Date::timezones();
 
         if (empty($timezones[$submitted['store']['timezone']])) {
             $error = $this->language->text('Invalid timezone');

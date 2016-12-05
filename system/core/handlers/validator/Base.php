@@ -11,7 +11,7 @@ namespace core\handlers\validator;
 
 use core\Container;
 use core\helpers\Arr;
-use core\helpers\Tool;
+use core\helpers\String;
 
 /**
  * Base validator class
@@ -312,7 +312,7 @@ class Base
         $status = $this->getSubmitted('status', $submitted, $options);
 
         if (isset($status)) {
-            $value = (int) Tool::toBool($status);
+            $value = (int) String::toBool($status);
             $this->setSubmitted('status', $value, $submitted, $options);
         }
 
@@ -330,7 +330,7 @@ class Base
         $default = $this->getSubmitted('default', $submitted, $options);
 
         if (isset($default)) {
-            $value = (int) Tool::toBool($default);
+            $value = (int) String::toBool($default);
             $this->setSubmitted('default', $value, $submitted, $options);
         }
 

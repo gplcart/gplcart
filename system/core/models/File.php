@@ -12,8 +12,8 @@ namespace core\models;
 use core\Model;
 use core\helpers\Url;
 use core\helpers\Curl;
-use core\helpers\Tool;
 use core\helpers\Cache;
+use core\helpers\String;
 use core\helpers\File as F;
 use core\models\Language as ModelsLanguage;
 use core\models\Validator as ModelsValidator;
@@ -550,7 +550,6 @@ class File extends Model
     /**
      * Returns an array containing SQL query and parameters for getList() method
      * @param array $data
-     * @see \core\models\File::getList()
      * @return array
      */
     protected function getListSql(array $data)
@@ -623,7 +622,7 @@ class File extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        
+
         $allowed_sort = array('title' => 'title', 'path' => 'f.path',
             'file_id' => 'f.file_id', 'created' => 'f.created',
             'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
@@ -781,7 +780,7 @@ class File extends Model
             return $this->language->text('Unable to create upload directory !name', array('!name' => $destination));
         }
 
-        $rand = Tool::randomString(6);
+        $rand = String::random(6);
         $destination = "$destination/$filename-$rand.$extension";
 
         $copied = copy($tempname, $destination);

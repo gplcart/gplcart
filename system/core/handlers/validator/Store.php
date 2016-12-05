@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Tool;
+use core\helpers\Regexp;
 use core\helpers\Request;
 use core\models\File as ModelsFile;
 use core\models\Module as ModelsModule;
@@ -127,7 +127,7 @@ class Store extends BaseValidator
             return true;
         }
 
-        if (!Tool::validDomain($submitted['domain'])) {
+        if (!Regexp::matchDomain($submitted['domain'])) {
             $this->errors['domain'] = $this->language->text('Invalid domain');
             return false;
         }

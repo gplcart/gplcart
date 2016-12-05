@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Tool;
+use core\helpers\String;
 use core\models\Sku as ModelsSku;
 use core\models\Product as ModelsProduct;
 use core\models\Currency as ModelsCurrency;
@@ -155,7 +155,7 @@ class Product extends BaseValidator
     protected function validateSubtractProduct(array &$submitted)
     {
         if (isset($submitted['subtract'])) {
-            $submitted['subtract'] = Tool::toBool($submitted['subtract']);
+            $submitted['subtract'] = String::toBool($submitted['subtract']);
         }
 
         return true;

@@ -13,8 +13,8 @@ use core\Hook;
 use core\Config;
 use core\Handler;
 use core\helpers\Url;
-use core\helpers\Tool;
 use core\helpers\Cache;
+use core\helpers\Regexp;
 use core\helpers\Request;
 use core\exceptions\RouteException;
 
@@ -1164,7 +1164,7 @@ class Route
                 $route['arguments'] = array();
             }
 
-            $arguments = Tool::patternMatch($this->path, $pattern);
+            $arguments = Regexp::matchPattern($this->path, $pattern);
 
             if ($arguments === false) {
                 continue;

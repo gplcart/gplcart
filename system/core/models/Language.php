@@ -12,9 +12,9 @@ namespace core\models;
 use core\Route;
 use core\Model;
 use core\helpers\Arr;
-use core\helpers\Tool;
 use core\helpers\File;
 use core\helpers\Cache;
+use core\helpers\String;
 use core\models\Translit as ModelsTranslit;
 
 /**
@@ -375,10 +375,10 @@ class Language extends Model
     {
 
         if (!isset($data[0]) || $data[0] === '') {
-            return Tool::formatString($source, $arguments);
+            return String::format($source, $arguments);
         }
 
-        return Tool::formatString($data[0], $arguments);
+        return String::format($data[0], $arguments);
     }
 
     /**

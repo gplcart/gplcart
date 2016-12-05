@@ -10,7 +10,7 @@
 namespace core;
 
 use core\helpers\Arr;
-use core\helpers\Tool;
+use core\helpers\String;
 
 /**
  * Base controller class. Contents methods to be used in the child classes and
@@ -819,7 +819,7 @@ class Controller
         $value = $this->getSubmitted($key);
 
         if (isset($value) && is_string($value)) {
-            $this->setSubmitted($key, Tool::stringToArray($value));
+            $this->setSubmitted($key, String::toArray($value));
         }
     }
 
@@ -922,7 +922,7 @@ class Controller
             return null;
         }
 
-        if (Tool::hashEquals($this->request->post('token'), $this->token)) {
+        if (String::equals($this->request->post('token'), $this->token)) {
             return null;
         }
 
@@ -1412,7 +1412,7 @@ class Controller
         $this->cron_key = $this->config('cron_key', '');
 
         if (empty($this->cron_key)) {
-            $this->cron_key = Tool::randomString();
+            $this->cron_key = String::random();
             $this->config->set('cron_key', $this->cron_key);
         }
 

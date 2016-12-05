@@ -9,16 +9,15 @@
 
 namespace core\models;
 
+use core\Model;
+use core\Logger;
 use core\helpers\Cache;
 use core\helpers\Request;
-use core\helpers\Tool;
-use core\Logger;
-use core\Model;
-use core\models\Currency as ModelsCurrency;
-use core\models\Language as ModelsLanguage;
-use core\models\Product as ModelsProduct;
 use core\models\Sku as ModelsSku;
 use core\models\User as ModelsUser;
+use core\models\Product as ModelsProduct;
+use core\models\Currency as ModelsCurrency;
+use core\models\Language as ModelsLanguage;
 use core\models\Wishlist as ModelsWishlist;
 
 /**
@@ -293,8 +292,8 @@ class Cart extends Model
             return (string) $user_id;
         }
 
-        $user_id = '_' . Tool::randomString(6); // Add prefix to prevent from being "numeric"
-        Tool::setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
+        $user_id = '_' . String::random(6); // Add prefix to prevent from being "numeric"
+        $this->request->setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
         return (string) $user_id;
     }
 
@@ -558,7 +557,7 @@ class Cart extends Model
     public function deleteCookie()
     {
         $cookie = $this->config->get('user_cookie_name', 'user_id');
-        return Tool::deleteCookie($cookie);
+        return $this->request->deleteCookie($cookie);
     }
 
     /**

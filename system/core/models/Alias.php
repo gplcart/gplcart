@@ -9,10 +9,10 @@
 
 namespace core\models;
 
-use core\helpers\Tool;
-use core\Model;
-use core\models\Language as ModelsLanguage;
 use core\Route;
+use core\Model;
+use core\helpers\String;
+use core\models\Language as ModelsLanguage;
 
 /**
  * Manages basic behaviors and data related to URL aliasing
@@ -203,7 +203,7 @@ class Alias extends Model
         $alias = $pattern;
 
         if ($placeholders) {
-            $alias = Tool::replacePlaceholders($pattern, $placeholders, $data);
+            $alias = String::replace($pattern, $placeholders, $data);
         }
 
         if ($translit) {

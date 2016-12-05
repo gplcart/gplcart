@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\helpers\Tool;
+use core\helpers\String;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -286,7 +286,7 @@ class User extends FrontendController
         }
 
         // Invalid token
-        if (!Tool::hashEquals($data['reset_password']['token'], $token)) {
+        if (!String::equals($data['reset_password']['token'], $token)) {
             $this->outputError(403);
         }
 

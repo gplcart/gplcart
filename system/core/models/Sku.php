@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Tool;
+use core\helpers\String;
 use core\models\Language as ModelsLanguage;
 
 /**
@@ -168,7 +168,7 @@ class Sku extends Model
         $sku = $pattern;
 
         if (!empty($placeholders)) {
-            $sku = Tool::replacePlaceholders($pattern, $placeholders, $data);
+            $sku = String::replace($pattern, $placeholders, $data);
         }
 
         $sku = mb_strimwidth($sku, 0, 200, 'UTF-8');

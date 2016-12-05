@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Tool;
 use core\helpers\Cache;
 use core\helpers\Request;
 use core\models\Sku as ModelsSku;
@@ -748,7 +747,7 @@ class Product extends Model
 
         $this->controlViewedLimit($saved, $limit);
 
-        Tool::setCookie('viewed_products', implode('|', $saved), $lifespan);
+        $this->request->setCookie('viewed_products', implode('|', $saved), $lifespan);
         return $saved;
     }
 
@@ -759,7 +758,7 @@ class Product extends Model
      */
     public function getViewed($limit = null)
     {
-        $cookie = Tool::getCookie('viewed_products', '');
+        $cookie = $this->request->cookie('viewed_products', '');
         $products = array_filter(explode('|', $cookie), 'is_numeric');
         $this->controlViewedLimit($products, $limit);
         return $products;
