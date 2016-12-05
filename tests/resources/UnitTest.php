@@ -88,7 +88,7 @@ class UnitTest extends PHPUnit_Framework_TestCase
     protected function dump($data)
     {
         $this->expectOutputString('');
-        var_dump($data);
+        print_r($data);
     }
 
     /**
