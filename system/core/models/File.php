@@ -536,6 +536,25 @@ class File extends Model
             return $files;
         }
 
+        list($sql, $params) = $this->getListSql($data);
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $params);
+        }
+
+        $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
+        $this->hook->fire('files', $files);
+        return $files;
+    }
+
+    /**
+     * Returns an array containing SQL query and parameters for getList() method
+     * @param array $data
+     * @see \core\models\File::getList()
+     * @return array
+     */
+    protected function getListSql(array $data)
+    {
         $sql = 'SELECT f.*,';
 
         if (!empty($data['count'])) {
@@ -544,7 +563,7 @@ class File extends Model
 
         $language = 'und';
         //$this->language->current();
-        $where = array($language);
+        $params = array($language);
 
         $sql .= 'COALESCE(NULLIF(ft.title, ""), f.title) AS title'
                 . ' FROM file f'
@@ -554,61 +573,63 @@ class File extends Model
             $ids = (array) $data['file_id'];
             $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
             $sql .= ' WHERE f.file_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $ids);
+            $params = array_merge($params, $ids);
         } else {
             $sql .= ' WHERE f.file_id > 0';
         }
 
         if (isset($data['title'])) {
             $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
+            $params[] = "%{$data['title']}%";
+            $params[] = "%{$data['title']}%";
+            $params[] = $language;
         }
 
         if (isset($data['created'])) {
             $sql .= ' AND f.created = ?';
-            $where[] = (int) $data['created'];
+            $params[] = (int) $data['created'];
         }
 
         if (isset($data['id_key'])) {
             $sql .= ' AND f.id_key = ?';
-            $where[] = $data['id_key'];
+            $params[] = $data['id_key'];
         }
 
         if (!empty($data['id_value'])) {
             $id_values = (array) $data['id_value'];
-            $placeholders = rtrim(str_repeat('?, ', count($id_values)), ', ');
+            $placeholders = rtrim(str_repeat('?,', count($id_values)), ',');
             $sql .= " AND f.id_value IN($placeholders)";
-            $where = array_merge($where, $id_values);
+            $params = array_merge($params, $id_values);
         }
 
         if (isset($data['language'])) {
             $sql .= ' AND ft.language = ?';
-            $where[] = $data['language'];
+            $params[] = $data['language'];
         }
 
         if (isset($data['path'])) {
             $sql .= ' AND f.path LIKE ?';
-            $where[] = "%{$data['path']}%";
+            $params[] = "%{$data['path']}%";
         }
 
         if (isset($data['mime_type'])) {
             $sql .= ' AND f.mime_type LIKE ?';
-            $where[] = "%{$data['mime_type']}%";
+            $params[] = "%{$data['mime_type']}%";
         }
 
         if (isset($data['file_type'])) {
             $sql .= ' AND f.file_type = ?';
-            $where[] = $data['file_type'];
+            $params[] = $data['file_type'];
         }
 
         $allowed_order = array('asc', 'desc');
+        
         $allowed_sort = array('title' => 'title', 'path' => 'f.path',
             'file_id' => 'f.file_id', 'created' => 'f.created',
             'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']]) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY f.created DESC";
@@ -618,13 +639,7 @@ class File extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
-        }
-
-        $files = $this->db->fetchAll($sql, $where, array('index' => 'file_id'));
-        $this->hook->fire('files', $files);
-        return $files;
+        return array($sql, $params);
     }
 
     /**
