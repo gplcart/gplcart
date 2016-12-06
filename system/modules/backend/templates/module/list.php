@@ -67,9 +67,11 @@
           <td class="middle">
             <ul class="list-inline">
               <?php if ($info['type'] === 'theme' && $this->access('editor')) { ?>
-              <a href="<?php echo $this->url("admin/tool/editor/$module_id"); ?>">
-                <?php echo mb_strtolower($this->text('Edit')); ?>
-              </a>
+              <li>
+                <a href="<?php echo $this->url("admin/tool/editor/$module_id"); ?>">
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                </a>
+              </li>
               <?php } ?>
               <?php if (isset($info['status'])) { ?>
               <?php if ($info['status']) { ?>
