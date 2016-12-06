@@ -45,11 +45,11 @@ $tables['alias'] = array(
 $tables['backup'] = array(
     'fields' => array(
         'backup_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-        'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
         'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         'path' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'version' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
         'module_id' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => '')
     )

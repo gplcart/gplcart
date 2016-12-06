@@ -9,11 +9,12 @@
 
 namespace core\models;
 
-use ZipArchive;
 use core\Model;
 use core\Container;
 use core\helpers\Cache;
+use core\helpers\Zip as ZipHelper;
 use core\helpers\File as FileHelper;
+use core\models\Backup as BackupModel;
 use core\models\Language as LanguageModel;
 use core\exceptions\ModuleException;
 
@@ -24,8 +25,8 @@ class Module extends Model
 {
 
     /**
-     * ZipArchive instance
-     * @var \ZipArchive $zip
+     * Zip helper instance
+     * @var \core\helpers\Zip $zip
      */
     protected $zip;
 
@@ -36,15 +37,24 @@ class Module extends Model
     protected $language;
 
     /**
+     * Backup model instance
+     * @var \core\models\Backup $backup
+     */
+    protected $backup;
+
+    /**
      * Constructor
      * @param LanguageModel $language
-     * @param ZipArchive $zip
+     * @param BackupModel $backup
+     * @param ZipHelper $zip
      */
-    public function __construct(LanguageModel $language, ZipArchive $zip)
+    public function __construct(LanguageModel $language, BackupModel $backup,
+            ZipHelper $zip)
     {
         parent::__construct();
 
         $this->zip = $zip;
+        $this->backup = $backup;
         $this->language = $language;
     }
 
@@ -693,67 +703,78 @@ class Module extends Model
      */
     public function installFromZip($file)
     {
-        if (!file_exists($file)) {
-            return $this->language->text('File %file not found', array('%file' => $file));
-        }
-
         $module_id = $this->getIdFromZip($file);
 
         if (empty($module_id)) {
             return $this->language->text('Invalid zip content');
         }
 
-        // Only disabled existing modules can by updated
-        if ($this->isEnabled($module_id)) {
-            return $this->language->text('Module %id already installed and enabled.'
-                            . ' Disable it before updating.', array('%id' => $module_id));
+        $module = $this->get($module_id);
+
+        if (empty($module)) {
+            return $this->installFromZipNew($module_id);
         }
 
-        $backup = $this->backup($module_id);
-
-        if (empty($backup)) {
-            return $this->language->text('Failed to backup module %id', array(
-                        '%id' => $module_id));
-        }
-
-        $extracted = $this->zip->extractTo(GC_MODULE_DIR);
-
-        if (!$extracted) {
-            return $this->language->text('Failed to extract module files');
-        }
-
-        if ($this->isInstalled($module_id)) {
-            return true;
-        }
-
-        return $this->install($module_id, false); // Install but not enable
+        return $this->installFromZipUpdate($module);
     }
 
     /**
-     * Backups existing module by renaming its folder name
+     * Installs a new module from a ZIP file
      * @param string $module_id
      * @return boolean|string
      */
-    protected function backup($module_id)
+    protected function installFromZipNew($module_id)
     {
-        $suffix = $this->getBackupKey();
-        $source = GC_MODULE_DIR . "/$module_id";
-        $target = $source . $suffix . date("Y-m-d-H-i-s");
-
-        if (!file_exists($source)) {
-            return true;
+        if (!$this->zip->extract(GC_MODULE_DIR . "/$module_id")) {
+            return $this->language->text('Failed to extract the module files');
         }
 
-        return rename($source, $target) ? $target : false;
+        return $this->install($module_id, false);
     }
 
     /**
-     * Returns a string containing key to be appended to module folder name
-     * @return string
+     * Updates an existing module from a ZIP file
+     * @param array $module
+     * @return boolean|string
      */
-    public function getBackupKey()
+    protected function installFromZipUpdate(array $module)
     {
-        return '~backup';
+        // Only disabled existing modules can by updated
+        if ($this->isEnabled($module['id'])) {
+            return $this->language->text('Disable the module before updating.');
+        }
+
+        // Backup the current version
+        if (!$this->backup($module)) {
+            return $this->language->text('Failed to backup the module');
+        }
+
+        // Extract and override
+        if (!$this->zip->extract(GC_MODULE_DIR)) {
+            return $this->language->text('Failed to extract the module files');
+        }
+
+        if ($this->isInstalled($module['id'])) {
+            return true;
+        }
+
+        // Install but not enable
+        return $this->install($module['id'], false);
+    }
+
+    /**
+     * Backups an existing module
+     * @param array $module
+     * @return boolean
+     */
+    protected function backup(array $module)
+    {
+        $vars = array('@name' => $module['name'], '@date' => date("D M j G:i:s"));
+        $name = $this->language->text('Module @name. Automatically backed up on @date', $vars);
+        $data = array('name' => $name, 'module' => $module);
+
+        $result = $this->backup->backup('module', $data);
+        return is_numeric($result);
     }
 
     /**
@@ -763,24 +784,17 @@ class Module extends Model
      */
     public function getFilesFromZip($file)
     {
-        $zip = $this->zip->open($file);
-
-        if (empty($zip)) {
+        try {
+            $files = $this->zip->set($file)->getList();
+        } catch (ModuleException $exc) {
             return false;
         }
 
-        // At leas 2 files needed - folder and main module class
-        if ($this->zip->numFiles < 2) {
+        if (count($files) < 2) {
             return false;
         }
 
-        // Get simple array of zip files
-        $list = array();
-        for ($i = 0; $i < $this->zip->numFiles; $i++) {
-            $list[] = $this->zip->getNameIndex($i);
-        }
-
-        return $list;
+        return $files;
     }
 
     /**

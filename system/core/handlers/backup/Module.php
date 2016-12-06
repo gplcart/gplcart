@@ -32,27 +32,17 @@ class Module extends BaseHandler
      */
     public function backup(array $data)
     {
+        $data['type'] = 'module';
+        $data['module_id'] = $data['module']['id'];
+        $data['version'] = isset($data['module']['version']) ? $data['module']['version'] : '';
+        
         $data['path'] = $this->zip($data);
 
         if (empty($data['path'])) {
             return false;
         }
-
-        return $this->add($data);
-    }
-
-    /**
-     * Adds a backup record to the database
-     * @param array $data
-     * @return integer
-     */
-    protected function add(array $data)
-    {
-        $data['type'] = 'module';
-        $data['module_id'] = $data['module']['id'];
-        $data['version'] = $data['module']['version'];
+        
         $data['path'] = $this->getRelativePath($data['path']);
-
         return $this->backup->add($data);
     }
 

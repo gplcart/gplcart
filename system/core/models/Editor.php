@@ -127,7 +127,7 @@ class Editor extends Model
     protected function backup(array $data)
     {
         $vars = array('@name' => $data['module']['name'], '@date' => date("D M j G:i:s"));
-        $name = $this->language->text('Theme @name. Automatically backed up on @date', $vars);
+        $name = $this->language->text('Module @name. Automatically backed up on @date', $vars);
 
         $backup = array(
             'name' => $name,
@@ -138,7 +138,7 @@ class Editor extends Model
         $result = $this->backup->backup('module', $backup);
 
         // On success the result must contain a numeric ID of inserted database record
-        return (is_numeric($result) && $result > 0);
+        return is_numeric($result);
     }
 
 }
