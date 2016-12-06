@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\helpers\Url;
 use core\helpers\Arr;
-use core\helpers\File;
+use core\helpers\File as FileHelper;
 use core\helpers\Image as Imagestyle;
 use core\models\File as ModelsFile;
 
@@ -327,7 +327,7 @@ class Image extends Model
             $directory = "$directory/$imagestyle_id";
         }
 
-        $result = File::deleteRecursive($directory);
+        $result = FileHelper::deleteRecursive($directory);
         $this->hook->fire('clear.imagestyle.cache.after', $imagestyle_id, $result);
         return $result;
     }
