@@ -1,7 +1,7 @@
 /* global GplCart, Backend  */
 (function (document, GplCart, $) {
 
-    Backend.include.product = Backend.include.product || {attach: {}, helper: {}, html: {}};
+    Backend.include.product = {attach: {}, helper: {}, html: {}};
 
     /**
      * Updates brand and catalog options depending on the selected store

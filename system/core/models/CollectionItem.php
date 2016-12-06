@@ -52,6 +52,26 @@ class CollectionItem extends Model
             return $items;
         }
 
+        list($sql, $params) = $this->getListSql($data);
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $params);
+        }
+
+        $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
+        $items = $this->db->fetchAll($sql, $params, $options);
+
+        $this->hook->fire('collection.item.list', $items);
+        return $items;
+    }
+
+    /**
+     * Returns an array containing SQL query and its parameters for getList() method
+     * @param array $data
+     * @return array
+     */
+    protected function getListSql(array $data = array())
+    {
         $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
                 . 'c.type, c.title AS collection_title';
 
@@ -81,7 +101,7 @@ class CollectionItem extends Model
             $sql .= ' AND c.store_id = ?';
             $where[] = (int) $data['store_id'];
         }
-        
+
         if (isset($data['collection_id'])) {
             $sql .= ' AND ci.collection_id = ?';
             $where[] = (int) $data['collection_id'];
@@ -90,7 +110,8 @@ class CollectionItem extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('weight', 'status', 'collection_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY ci.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY ci.weight DESC";
@@ -100,15 +121,7 @@ class CollectionItem extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
-        }
-
-        $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
-        $items = $this->db->fetchAll($sql, $where, $options);
-
-        $this->hook->fire('collection.item.list', $items);
-        return $items;
+        return array($sql, $where);
     }
 
     /**
@@ -202,7 +215,7 @@ class CollectionItem extends Model
         if (empty($list)) {
             return array();
         }
-        
+
         $handler_id = null;
 
         $items = array();
@@ -210,7 +223,7 @@ class CollectionItem extends Model
             $handler_id = $item['type'];
             $items[$item['value']] = $item;
         }
-        
+
         $handlers = $this->collection->getHandlers();
         $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
 

@@ -59,6 +59,7 @@ class Backend
         $controller->setCss('files/assets/jquery/primeui/components/core/core.css');
         $controller->setCss('files/assets/jquery/primeui/components/growl/growl.css');
         $controller->setCss('files/assets/jquery/primeui/components/terminal/terminal.css');
+        $controller->setCss('files/assets/codemirror/lib/codemirror.css');
         $controller->setCss('system/modules/backend/css/style.css');
     }
 
@@ -106,6 +107,12 @@ class Backend
         }
 
         $controller->setJs('files/assets/bootstrap/colorpicker/dist/js/bootstrap-colorpicker.min.js', 'bottom');
+        $controller->setJs('files/assets/codemirror/lib/codemirror.js', 'bottom');
+        $controller->setJs('files/assets/codemirror/mode/css/css.js', 'bottom');
+        $controller->setJs('files/assets/codemirror/mode/javascript/javascript.js', 'bottom');
+        $controller->setJs('files/assets/codemirror/mode/twig/twig.js', 'bottom');
+        $controller->setJs('files/assets/codemirror/mode/xml/xml.js', 'bottom');
+        $controller->setJs('files/assets/codemirror/mode/htmlmixed/htmlmixed.js', 'bottom');
     }
 
 }

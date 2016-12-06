@@ -410,7 +410,7 @@ class Config
      * @param string|array $id
      * @return boolean|array
      */
-    protected function validModuleId($id)
+    public function validModuleId($id)
     {
         if (is_string($id)) {
             return (bool) preg_match('/^[a-z_]+$/', $id);

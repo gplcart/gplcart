@@ -1,7 +1,7 @@
 /* global GplCart, Backend  */
 (function (GplCart, $) {
 
-    Backend.include.field = Backend.include.field || {attach: {}};
+    Backend.include.field = {attach: {}};
 
     /**
      * Makes field values sortable

@@ -1,7 +1,7 @@
 /* global GplCart, Backend */
 (function (GplCart, $) {
 
-    Backend.include.category = Backend.include.category || {attach: {}};
+    Backend.include.category = {attach: {}};
 
     /**
      * Makes categories sortable

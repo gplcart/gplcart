@@ -40,8 +40,13 @@ class Model
      */
     public function __construct()
     {
+        /* @var $hook \core\Hook */
         $this->hook = Container::instance('core\\Hook');
+
+        /* @var $config \core\Config */
         $this->config = Container::instance('core\\Config');
+
+        /* @var $db \core\helpers\Database */
         $this->db = $this->config->getDb();
     }
 

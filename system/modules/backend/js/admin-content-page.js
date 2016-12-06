@@ -1,7 +1,7 @@
 /* global GplCart, Backend */
 (function (GplCart, $) {
 
-    Backend.include.page = Backend.include.page || {attach: {}, helper: {}};
+    Backend.include.page = {attach: {}, helper: {}};
 
     /**
      * Refreshes selectpicker state

@@ -24,6 +24,10 @@ body {
     color: #fff;
 }
 
+.indentation {
+    margin-left: 10px;
+}
+
 .list-unstyled .list-group-item {
     border-radius: 0;
     border-left: none;

@@ -1,7 +1,7 @@
 /* global GplCart, Backend  */
 (function (GplCart, $) {
 
-    Backend.include.collection = Backend.include.collection || {attach: {}};
+    Backend.include.collection = {attach: {}};
 
     Backend.include.collection.attach.autocomplete = function () {
 

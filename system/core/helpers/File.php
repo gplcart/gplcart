@@ -14,7 +14,6 @@ namespace core\helpers;
  */
 class File
 {
-
     /**
      * Scans a directory and deletes its files that match a specific condition
      * @param string $directory

@@ -61,6 +61,11 @@ class Backup extends Model
             $where[] = $data['user_id'];
         }
 
+        if (isset($data['module_id'])) {
+            $sql .= ' AND b.module_id = ?';
+            $where[] = $data['module_id'];
+        }
+
         if (isset($data['name'])) {
             $sql .= ' AND b.name LIKE ?';
             $where[] = "%{$data['name']}%";

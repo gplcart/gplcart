@@ -1,7 +1,7 @@
 /* global GplCart, Backend */
 (function (GplCart, $) {
 
-    Backend.include.country = Backend.include.country || {attach: {}};
+    Backend.include.country = {attach: {}};
 
     /**
      * Checks status checkbox when the corresponding "required" checkbox is checked

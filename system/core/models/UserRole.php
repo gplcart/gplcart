@@ -224,6 +224,7 @@ class UserRole extends Model
         $permissions = array(
             'admin' => $this->language->text('Admin: access'),
             'editor' => $this->language->text('Theme editor: access'),
+            'editor_edit' => $this->language->text('Theme editor: edit files'),
             'backup' => $this->language->text('Backup: access'),
             'backup_module' => $this->language->text('Backup: module'),
             'backup_delete' => $this->language->text('Backup: delete'),

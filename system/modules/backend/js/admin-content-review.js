@@ -1,7 +1,7 @@
 /* global GplCart, Backend */
 (function (GplCart, $) {
 
-    Backend.include.review = Backend.include.review || {attach: {}};
+    Backend.include.review = {attach: {}};
 
     /**
      * Adds a datepicker popup to the field

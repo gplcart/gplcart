@@ -12,9 +12,9 @@ namespace core\models;
 use ZipArchive;
 use core\Model;
 use core\Container;
-use core\helpers\File;
 use core\helpers\Cache;
-use core\models\Language as ModelsLanguage;
+use core\helpers\File as FileHelper;
+use core\models\Language as LanguageModel;
 use core\exceptions\ModuleException;
 
 /**
@@ -37,10 +37,10 @@ class Module extends Model
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
+     * @param LanguageModel $language
      * @param ZipArchive $zip
      */
-    public function __construct(ModelsLanguage $language, ZipArchive $zip)
+    public function __construct(LanguageModel $language, ZipArchive $zip)
     {
         parent::__construct();
 
@@ -520,7 +520,7 @@ class Module extends Model
             return false;
         }
 
-        return File::deleteRecursive(GC_MODULE_DIR . "/$module_id");
+        return FileHelper::deleteRecursive(GC_MODULE_DIR . "/$module_id");
     }
 
     /**
