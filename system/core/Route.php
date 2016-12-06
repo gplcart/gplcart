@@ -432,14 +432,14 @@ class Route
                 'controller' => array('core\\controllers\\backend\\Backup', 'editRestoreBackup')
             )
         );
-        
+
         $routes['admin/tool/editor/(\w+)'] = array(
             'access' => 'editor',
             'handlers' => array(
                 'controller' => array('core\\controllers\\backend\\Editor', 'listEditor')
             )
         );
-        
+
         $routes['admin/tool/editor/(\w+)/([^/]+)'] = array(
             'access' => 'editor_edit',
             'handlers' => array(

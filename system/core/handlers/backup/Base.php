@@ -76,8 +76,7 @@ class Base
      */
     protected function renameTemp($original)
     {
-        $temp = "$original~" . uniqid();
-        $temp = File::unique($temp);
+        $temp = File::unique("$original--" . uniqid());
 
         if (rename($original, $temp) === true) {
             return $temp;

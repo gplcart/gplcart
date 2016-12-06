@@ -73,7 +73,7 @@ class Backup extends Model
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'user_id', 'version',
-            'module_id', 'backup_id', 'type');
+            'module_id', 'backup_id', 'type', 'created');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)

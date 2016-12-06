@@ -48,6 +48,8 @@ class Module extends BaseHandler
      */
     protected function add(array $data)
     {
+        $data['type'] = 'module';
+        $data['module_id'] = $data['module']['id'];
         $data['version'] = $data['module']['version'];
         $data['path'] = $this->getRelativePath($data['path']);
 
@@ -62,8 +64,8 @@ class Module extends BaseHandler
     protected function zip(array $data)
     {
         $source = "{$data['module']['directory']}/*";
-        $destination = $this->getZipPath($data['module_id']);
-        $result = $this->zip->folder($source, $destination, $data['module_id']);
+        $destination = $this->getZipPath($data['module']['id']);
+        $result = $this->zip->folder($source, $destination, $data['module']['id']);
 
         if ($result === true) {
             return $destination;

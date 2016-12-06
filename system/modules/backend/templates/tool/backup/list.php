@@ -91,6 +91,9 @@
             <?php } ?>
           </td>
           <td class="middle">
+            <?php echo $this->date($backup['created']); ?>
+          </td>
+          <td class="middle">
             <ul class="list-inline">
               <a href="<?php echo $this->url('', array('download' => $id)); ?>">
                 <?php echo mb_strtolower($this->text('Download')); ?>

@@ -13,7 +13,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-1 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input class="form-control" name="backup[name]" value="<?php echo isset($backup['name']) ? $backup['name'] : $this->text('Backup from @date', array('@date' => $this->date(null, false))); ?>">
+          <input class="form-control" name="backup[name]" value="<?php echo isset($backup['name']) ? $backup['name'] : $this->text('Backup from @date', array('@date' => $this->date())); ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group required">
         <label class="col-md-1 control-label"><?php echo $this->text('Type'); ?></label>
         <div class="col-md-4">
           <select class="form-control" name="backup[type]">

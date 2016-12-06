@@ -82,9 +82,9 @@ class Editor extends BackendController
     }
 
     /**
-     * 
-     * @param type $module
-     * @return type
+     * Returns an array of files to edit
+     * @param array $module
+     * @return array
      */
     protected function getFilesEditor(array $module)
     {
@@ -93,10 +93,10 @@ class Editor extends BackendController
     }
 
     /**
-     * 
+     * Prepares an array of files to be edited
      * @param array $data
      * @param array $module
-     * @return type
+     * @return array
      */
     protected function prepareFilesEditor(array $data, array $module)
     {
@@ -189,12 +189,12 @@ class Editor extends BackendController
 
         $this->submitEditor($module, $file);
 
-        $this->setTitleEditEditor($module, $file);
+        $this->setTitleEditEditor($file);
         $this->setBreadcrumbEditEditor($module);
         $this->setJsSettingsEditor($file);
         $this->outputEditEditor();
     }
-    
+
     /**
      * Sets JavaScript settings on the file edit page
      * @param string $file
@@ -237,8 +237,9 @@ class Editor extends BackendController
      */
     protected function validateEditor(array $module, $file)
     {
-        $this->setSubmitted('file', $file);
+        $this->setSubmitted('path', $file);
         $this->setSubmitted('module', $module);
+        $this->setSubmitted('user_id', $this->uid);
     }
 
     /**
@@ -246,17 +247,15 @@ class Editor extends BackendController
      */
     protected function saveEditor()
     {
-        $file = $this->getSubmitted('file');
-        $module = $this->getSubmitted('module');
-        $content = $this->getSubmitted('content');
+        $submitted = $this->getSubmitted();
 
-        $this->controlAccessSaveEditor($module);
+        $this->controlAccessSaveEditor($submitted['module']);
 
-        $result = $this->editor->save($content, $file, $module);
+        $result = $this->editor->save($submitted);
 
         if ($result === true) {
             $message = $this->text('Theme file has been saved');
-            $this->redirect("admin/tool/editor/{$module['id']}", $message, 'success');
+            $this->redirect("admin/tool/editor/{$submitted['module']['id']}", $message, 'success');
         }
 
         $message = $this->text('An error occurred');
@@ -285,10 +284,9 @@ class Editor extends BackendController
 
     /**
      * Sets titles on the file edit page
-     * @param array $module
      * @param string $filepath
      */
-    protected function setTitleEditEditor(array $module, $filepath)
+    protected function setTitleEditEditor($filepath)
     {
         $vars = array('%path' => $filepath);
         $text = $this->text('Edit file %path', $vars);

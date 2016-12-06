@@ -99,7 +99,6 @@ class Backup extends BaseValidator
         // Set handler and module ID to check later
         $submitted['type'] = $submitted['backup']['type'];
         $submitted['module_id'] = $submitted['backup']['module_id'];
-
         return true;
     }
 

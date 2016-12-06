@@ -65,31 +65,29 @@ class Editor extends Model
 
     /**
      * Saves an edited file
-     * @param string $content
-     * @param string $file
-     * @param array $module
+     * @param array $data
      * @return boolean
      */
-    public function save($content, $file, array $module)
+    public function save($data)
     {
-        $this->hook->fire('save.editor.before', $content, $file, $module);
+        $this->hook->fire('save.editor.before', $data);
 
-        if (empty($module)) {
+        if (empty($data)) {
             return false;
         }
 
         $has_backup = true;
-        if (!$this->hasBackup($module)) {
-            $has_backup = $this->backup($module);
+        if (!$this->hasBackup($data['module'])) {
+            $has_backup = $this->backup($data);
         }
 
         if ($has_backup !== true) {
             return false;
         }
 
-        $result = $this->write($content, $file);
+        $result = $this->write($data['content'], $data['path']);
 
-        $this->hook->fire('save.editor.after', $content, $file, $module, $result);
+        $this->hook->fire('save.editor.after', $data, $result);
         return $result;
     }
 
@@ -116,27 +114,28 @@ class Editor extends Model
      */
     public function hasBackup(array $module)
     {
-        $existing = $this->backup->getList(array('module_id' => $module['id']));
+        $conditions = array('module_id' => $module['id']);
+        $existing = $this->backup->getList($conditions);
         return !empty($existing);
     }
 
     /**
      * Creates a module backup
-     * @param array $module
+     * @param array $data
      * @return boolean|string
      */
-    protected function backup(array $module)
+    protected function backup(array $data)
     {
-        $vars = array('@name' => $module['name'], '@date' => date("D M j G:i:s"));
+        $vars = array('@name' => $data['module']['name'], '@date' => date("D M j G:i:s"));
         $name = $this->language->text('Theme @name. Automatically backed up on @date', $vars);
 
-        $data = array(
+        $backup = array(
             'name' => $name,
-            'module' => $module,
-            'module_id' => $module['id']
+            'module' => $data['module'],
+            'user_id' => $data['user_id']
         );
 
-        $result = $this->backup->backup('module', $data);
+        $result = $this->backup->backup('module', $backup);
 
         // On success the result must contain a numeric ID of inserted database record
         return (is_numeric($result) && $result > 0);
