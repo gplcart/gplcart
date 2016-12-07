@@ -11,11 +11,11 @@ namespace core\handlers\mail;
 
 use core\Config;
 use core\helpers\Url;
-use core\models\Mail as ModelsMail;
-use core\models\Store as ModelsStore;
-use core\models\Price as ModelsPrice;
-use core\models\Order as ModelsOrder;
-use core\models\Language as ModelsLanguage;
+use core\models\Mail as MailModel;
+use core\models\Store as StoreModel;
+use core\models\Price as PriceModel;
+use core\models\Order as OrderModel;
+use core\models\Language as LanguageModel;
 
 class Order
 {
@@ -64,16 +64,16 @@ class Order
 
     /**
      * Constructor
-     * @param ModelsStore $store
-     * @param ModelsMail $mail
-     * @param ModelsLanguage $language
-     * @param ModelsOrder $order
-     * @param ModelsPrice $price
+     * @param StoreModel $store
+     * @param MailModel $mail
+     * @param LanguageModel $language
+     * @param OrderModel $order
+     * @param PriceModel $price
      * @param Url $url
      * @param Config $config
      */
-    public function __construct(ModelsStore $store, ModelsMail $mail,
-            ModelsLanguage $language, ModelsOrder $order, ModelsPrice $price,
+    public function __construct(StoreModel $store, MailModel $mail,
+            LanguageModel $language, OrderModel $order, PriceModel $price,
             Url $url, Config $config)
     {
         $this->url = $url;

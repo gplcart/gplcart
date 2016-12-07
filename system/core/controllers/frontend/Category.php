@@ -9,8 +9,8 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Search as ModelsSearch;
-use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\models\Search as SearchModel;
+use core\models\CategoryGroup as CategoryGroupModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -33,11 +33,11 @@ class Category extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsSearch $search
-     * @param ModelsCategoryGroup $category_group
+     * @param SearchModel $search
+     * @param CategoryGroupModel $category_group
      */
-    public function __construct(ModelsSearch $search,
-            ModelsCategoryGroup $category_group)
+    public function __construct(SearchModel $search,
+            CategoryGroupModel $category_group)
     {
         parent::__construct();
 

@@ -15,8 +15,8 @@ use core\helpers\Curl;
 use core\helpers\Cache;
 use core\helpers\String;
 use core\helpers\File as F;
-use core\models\Language as ModelsLanguage;
-use core\models\Validator as ModelsValidator;
+use core\models\Language as LanguageModel;
+use core\models\Validator as ValidatorModel;
 
 /**
  * Manages basic behaviors and data related to files
@@ -68,13 +68,13 @@ class File extends Model
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
-     * @param ModelsValidator $validator
+     * @param LanguageModel $language
+     * @param ValidatorModel $validator
      * @param Url $url
      * @param Curl $curl
      */
-    public function __construct(ModelsLanguage $language,
-            ModelsValidator $validator, Url $url, Curl $curl)
+    public function __construct(LanguageModel $language,
+            ValidatorModel $validator, Url $url, Curl $curl)
     {
         parent::__construct();
 

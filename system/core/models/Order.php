@@ -13,13 +13,13 @@ use core\Model;
 use core\Logger;
 use core\helpers\Cache;
 use core\helpers\Request;
-use core\models\Mail as ModelsMail;
-use core\models\Cart as ModelsCart;
-use core\models\User as ModelsUser;
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
-use core\models\Language as ModelsLanguage;
-use core\models\PriceRule as ModelsPriceRule;
+use core\models\Mail as MailModel;
+use core\models\Cart as CartModel;
+use core\models\User as UserModel;
+use core\models\Price as PriceModel;
+use core\models\Product as ProductModel;
+use core\models\Language as LanguageModel;
+use core\models\PriceRule as PriceRuleModel;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -83,19 +83,19 @@ class Order extends Model
 
     /**
      * Constructor
-     * @param ModelsUser $user
-     * @param ModelsPrice $price
-     * @param ModelsPriceRule $pricerule
-     * @param ModelsProduct $product
-     * @param ModelsCart $cart
-     * @param ModelsLanguage $language
-     * @param ModelsMail $mail
+     * @param UserModel $user
+     * @param PriceModel $price
+     * @param PriceRuleModel $pricerule
+     * @param ProductModel $product
+     * @param CartModel $cart
+     * @param LanguageModel $language
+     * @param MailModel $mail
      * @param Request $request
      * @param Logger $logger
      */
-    public function __construct(ModelsUser $user, ModelsPrice $price,
-            ModelsPriceRule $pricerule, ModelsProduct $product,
-            ModelsCart $cart, ModelsLanguage $language, ModelsMail $mail,
+    public function __construct(UserModel $user, PriceModel $price,
+            PriceRuleModel $pricerule, ProductModel $product,
+            CartModel $cart, LanguageModel $language, MailModel $mail,
             Request $request, Logger $logger)
     {
         parent::__construct();

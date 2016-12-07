@@ -11,7 +11,7 @@ namespace core\handlers\validator;
 
 use core\helpers\Date;
 use core\helpers\Regexp;
-use core\models\Install as ModelsInstall;
+use core\models\Install as InstallModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -28,9 +28,9 @@ class Install extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsInstall $install
+     * @param InstallModel $install
      */
-    public function __construct(ModelsInstall $install)
+    public function __construct(InstallModel $install)
     {
         parent::__construct();
 

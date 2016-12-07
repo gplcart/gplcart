@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\helpers\Arr;
 use core\helpers\Cache;
-use core\models\Condition as ModelsCondition;
+use core\models\Condition as ConditionModel;
 
 /**
  * Manages basic behaviors and data related to triggers
@@ -29,7 +29,7 @@ class Trigger extends Model
     /**
      * Constructor
      */
-    public function __construct(ModelsCondition $condition)
+    public function __construct(ConditionModel $condition)
     {
         parent::__construct();
 

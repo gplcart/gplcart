@@ -11,8 +11,8 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\models\Import as ModelsImport;
-use core\models\Language as ModelsLanguage;
+use core\models\Import as ImportModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to export functionality
@@ -34,10 +34,10 @@ class Export extends Model
 
     /**
      * Constructor
-     * @param ModelsImport $import
-     * @param ModelsLanguage $language
+     * @param ImportModel $import
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsImport $import, ModelsLanguage $language)
+    public function __construct(ImportModel $import, LanguageModel $language)
     {
         parent::__construct();
 

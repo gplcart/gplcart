@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\models\Currency as ModelsCurrency;
+use core\models\Currency as CurrencyModel;
 
 /**
  * Manages basic behaviors and data related to currencies
@@ -26,9 +26,9 @@ class Price extends Model
 
     /**
      * Constructor
-     * @param ModelsCurrency $currency
+     * @param CurrencyModel $currency
      */
-    public function __construct(ModelsCurrency $currency)
+    public function __construct(CurrencyModel $currency)
     {
         parent::__construct();
 

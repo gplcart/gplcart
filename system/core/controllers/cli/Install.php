@@ -10,8 +10,8 @@
 namespace core\controllers\cli;
 
 use core\CliController;
-use core\models\User as ModelsUser;
-use core\models\Install as ModelsInstall;
+use core\models\User as UserModel;
+use core\models\Install as InstallModel;
 
 /**
  * Handles CLI commands related to system installation
@@ -33,10 +33,10 @@ class Install extends CliController
 
     /**
      * Constructor
-     * @param ModelsInstall $install
-     * @param ModelsUser $user
+     * @param InstallModel $install
+     * @param UserModel $user
      */
-    public function __construct(ModelsInstall $install, ModelsUser $user)
+    public function __construct(InstallModel $install, UserModel $user)
     {
         parent::__construct();
 

@@ -10,8 +10,8 @@
 namespace core\controllers\backend;
 
 use core\helpers\File;
-use core\models\Export as ModelsExport;
-use core\models\Product as ModelsProduct;
+use core\models\Export as ExportModel;
+use core\models\Product as ProductModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -34,10 +34,10 @@ class Export extends BackendController
 
     /**
      * Constructor
-     * @param ModelsExport $export
-     * @param ModelsProduct $product
+     * @param ExportModel $export
+     * @param ProductModel $product
      */
-    public function __construct(ModelsExport $export, ModelsProduct $product)
+    public function __construct(ExportModel $export, ProductModel $product)
     {
         parent::__construct();
 

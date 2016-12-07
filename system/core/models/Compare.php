@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\helpers\Cache;
 use core\helpers\Request;
-use core\models\Language as ModelsLanguage;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to product comparison
@@ -34,10 +34,10 @@ class Compare extends Model
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
+     * @param LanguageModel $language
      * @param Request $request
      */
-    public function __construct(ModelsLanguage $language, Request $request)
+    public function __construct(LanguageModel $language, Request $request)
     {
         parent::__construct();
 

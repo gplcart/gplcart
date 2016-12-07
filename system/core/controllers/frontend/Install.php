@@ -10,7 +10,7 @@
 namespace core\controllers\frontend;
 
 use core\helpers\Date;
-use core\models\Install as ModelsInstall;
+use core\models\Install as InstallModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -33,9 +33,9 @@ class Install extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsInstall $install
+     * @param InstallModel $install
      */
-    public function __construct(ModelsInstall $install)
+    public function __construct(InstallModel $install)
     {
         parent::__construct();
 

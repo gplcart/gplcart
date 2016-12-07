@@ -9,8 +9,8 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Review as ModelsReview;
-use core\models\Rating as ModelsRating;
+use core\models\Review as ReviewModel;
+use core\models\Rating as RatingModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -33,10 +33,10 @@ class Review extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsReview $review
-     * @param ModelsRating $rating
+     * @param ReviewModel $review
+     * @param RatingModel $rating
      */
-    public function __construct(ModelsReview $review, ModelsRating $rating)
+    public function __construct(ReviewModel $review, RatingModel $rating)
     {
         parent::__construct();
 

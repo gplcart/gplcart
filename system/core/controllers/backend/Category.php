@@ -9,10 +9,10 @@
 
 namespace core\controllers\backend;
 
-use core\models\Image as ModelsImage;
-use core\models\Alias as ModelsAlias;
-use core\models\Category as ModelsCategory;
-use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\models\Image as ImageModel;
+use core\models\Alias as AliasModel;
+use core\models\Category as CategoryModel;
+use core\models\CategoryGroup as CategoryGroupModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -47,13 +47,13 @@ class Category extends BackendController
 
     /**
      * Constructor
-     * @param ModelsCategory $category
-     * @param ModelsAlias $alias
-     * @param ModelsImage $image
-     * @param ModelsCategoryGroup $category_group
+     * @param CategoryModel $category
+     * @param AliasModel $alias
+     * @param ImageModel $image
+     * @param CategoryGroupModel $category_group
      */
-    public function __construct(ModelsCategory $category, ModelsAlias $alias,
-            ModelsImage $image, ModelsCategoryGroup $category_group)
+    public function __construct(CategoryModel $category, AliasModel $alias,
+            ImageModel $image, CategoryGroupModel $category_group)
     {
         parent::__construct();
 

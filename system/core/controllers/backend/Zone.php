@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Zone as ModelsZone;
+use core\models\Zone as ZoneModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class Zone extends BackendController
 
     /**
      * Constructor
-     * @param ModelsZone $zone
+     * @param ZoneModel $zone
      */
-    public function __construct(ModelsZone $zone)
+    public function __construct(ZoneModel $zone)
     {
         parent::__construct();
 

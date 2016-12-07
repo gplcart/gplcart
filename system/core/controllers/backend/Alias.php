@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Alias as ModelsAlias;
+use core\models\Alias as AliasModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class Alias extends BackendController
 
     /**
      * Constructor
-     * @param ModelsAlias $alias
+     * @param AliasModel $alias
      */
-    public function __construct(ModelsAlias $alias)
+    public function __construct(AliasModel $alias)
     {
         parent::__construct();
 

@@ -11,10 +11,10 @@ namespace core\handlers\trigger;
 
 use core\Route;
 use core\helpers\Regexp;
-use core\models\User as ModelsUser;
-use core\models\Product as ModelsProduct;
-use core\models\Currency as ModelsCurrency;
-use core\models\Condition as ModelsCondition;
+use core\models\User as UserModel;
+use core\models\Product as ProductModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Condition as ConditionModel;
 
 class Condition
 {
@@ -51,14 +51,14 @@ class Condition
 
     /**
      * Constructor
-     * @param ModelsCondition $condition
-     * @param ModelsUser $user
-     * @param ModelsCurrency $currency
-     * @param ModelsProduct $product
+     * @param ConditionModel $condition
+     * @param UserModel $user
+     * @param CurrencyModel $currency
+     * @param ProductModel $product
      * @param Route $route
      */
-    public function __construct(ModelsCondition $condition, ModelsUser $user,
-            ModelsCurrency $currency, ModelsProduct $product, Route $route)
+    public function __construct(ConditionModel $condition, UserModel $user,
+            CurrencyModel $currency, ProductModel $product, Route $route)
     {
         $this->route = $route;
         $this->user = $user;

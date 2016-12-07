@@ -9,10 +9,10 @@
 
 namespace core\handlers\validator;
 
-use core\models\City as ModelsCity;
-use core\models\State as ModelsState;
-use core\models\Country as ModelsCountry;
-use core\models\Address as ModelsAddress;
+use core\models\City as CityModel;
+use core\models\State as StateModel;
+use core\models\Country as CountryModel;
+use core\models\Address as AddressModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -46,13 +46,13 @@ class Address extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsCountry $country
-     * @param ModelsState $state
-     * @param ModelsAddress $address
-     * @param ModelsCity $city
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param AddressModel $address
+     * @param CityModel $city
      */
-    public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsAddress $address, ModelsCity $city)
+    public function __construct(CountryModel $country, StateModel $state,
+            AddressModel $address, CityModel $city)
     {
         parent::__construct();
 

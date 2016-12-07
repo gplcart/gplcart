@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Arr;
-use core\models\Country as ModelsCountry;
+use core\models\Country as CountryModel;
 
 /**
  * Manages basic behaviors and data related to user addresses
@@ -27,9 +27,9 @@ class Address extends Model
 
     /**
      * Constructor
-     * @param ModelsCountry $country
+     * @param CountryModel $country
      */
-    public function __construct(ModelsCountry $country)
+    public function __construct(CountryModel $country)
     {
         parent::__construct();
 

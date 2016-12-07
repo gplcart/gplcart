@@ -15,7 +15,7 @@ use core\helpers\Arr;
 use core\helpers\File;
 use core\helpers\Cache;
 use core\helpers\String;
-use core\models\Translit as ModelsTranslit;
+use core\models\Translit as TranslitModel;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -69,10 +69,10 @@ class Language extends Model
 
     /**
      * Constructor
-     * @param ModelsTranslit $translit
+     * @param TranslitModel $translit
      * @param Route $route
      */
-    public function __construct(ModelsTranslit $translit, Route $route)
+    public function __construct(TranslitModel $translit, Route $route)
     {
         parent::__construct();
 

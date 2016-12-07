@@ -11,8 +11,8 @@ namespace core\handlers\validator;
 
 use core\helpers\Regexp;
 use core\helpers\Request;
-use core\models\File as ModelsFile;
-use core\models\Module as ModelsModule;
+use core\models\File as FileModel;
+use core\models\Module as ModuleModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -41,11 +41,11 @@ class Store extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsFile $file
-     * @param ModelsModule $module
+     * @param FileModel $file
+     * @param ModuleModel $module
      * @param Request $request
      */
-    public function __construct(ModelsFile $file, ModelsModule $module,
+    public function __construct(FileModel $file, ModuleModel $module,
             Request $request)
     {
         parent::__construct();

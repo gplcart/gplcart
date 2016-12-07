@@ -13,10 +13,10 @@ use core\Model;
 use core\Logger;
 use core\helpers\String;
 use core\helpers\Session;
-use core\models\Mail as ModelsMail;
-use core\models\Address as ModelsAddress;
-use core\models\UserRole as ModelsUserRole;
-use core\models\Language as ModelsLanguage;
+use core\models\Mail as MailModel;
+use core\models\Address as AddressModel;
+use core\models\UserRole as UserRoleModel;
+use core\models\Language as LanguageModel;
 use core\exceptions\UserAccessException;
 
 /**
@@ -63,15 +63,15 @@ class User extends Model
 
     /**
      * Constructor
-     * @param ModelsAddress $address
-     * @param ModelsUserRole $role
-     * @param ModelsMail $mail
-     * @param ModelsLanguage $language
+     * @param AddressModel $address
+     * @param UserRoleModel $role
+     * @param MailModel $mail
+     * @param LanguageModel $language
      * @param Session $session
      * @param Logger $logger
      */
-    public function __construct(ModelsAddress $address, ModelsUserRole $role,
-            ModelsMail $mail, ModelsLanguage $language, Session $session,
+    public function __construct(AddressModel $address, UserRoleModel $role,
+            MailModel $mail, LanguageModel $language, Session $session,
             Logger $logger)
     {
         parent::__construct();

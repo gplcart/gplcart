@@ -9,12 +9,12 @@
 
 namespace core\controllers\backend;
 
-use core\models\Analytics as ModelsAnalytics;
-use core\models\Order as ModelsOrder;
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
-use core\models\Report as ModelsReport;
-use core\models\Review as ModelsReview;
+use core\models\Analytics as AnalyticsModel;
+use core\models\Order as OrderModel;
+use core\models\Price as PriceModel;
+use core\models\Product as ProductModel;
+use core\models\Report as ReportModel;
+use core\models\Review as ReviewModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -67,16 +67,16 @@ class Dashboard extends BackendController
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsPrice $price
-     * @param ModelsOrder $order
-     * @param ModelsReport $report
-     * @param ModelsAnalytics $analytics
-     * @param ModelsReview $review
+     * @param ProductModel $product
+     * @param PriceModel $price
+     * @param OrderModel $order
+     * @param ReportModel $report
+     * @param AnalyticsModel $analytics
+     * @param ReviewModel $review
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price,
-            ModelsOrder $order, ModelsReport $report,
-            ModelsAnalytics $analytics, ModelsReview $review
+    public function __construct(ProductModel $product, PriceModel $price,
+            OrderModel $order, ReportModel $report,
+            AnalyticsModel $analytics, ReviewModel $review
     )
     {
         parent::__construct();

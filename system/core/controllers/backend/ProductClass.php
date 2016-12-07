@@ -9,8 +9,8 @@
 
 namespace core\controllers\backend;
 
-use core\models\Field as ModelsField;
-use core\models\ProductClass as ModelsProductClass;
+use core\models\Field as FieldModel;
+use core\models\ProductClass as ProductClassModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -32,11 +32,11 @@ class ProductClass extends BackendController
 
     /**
      * Constructor
-     * @param ModelsProductClass $product_class
-     * @param ModelsField $field
+     * @param ProductClassModel $product_class
+     * @param FieldModel $field
      */
-    public function __construct(ModelsProductClass $product_class,
-            ModelsField $field)
+    public function __construct(ProductClassModel $product_class,
+            FieldModel $field)
     {
         parent::__construct();
 

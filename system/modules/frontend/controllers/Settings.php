@@ -9,8 +9,8 @@
 
 namespace modules\frontend\controllers;
 
-use core\models\Image as ModelsImage;
-use core\models\Module as ModelsModule;
+use core\models\Image as ImageModel;
+use core\models\Module as ModuleModel;
 use modules\frontend\Frontend as ModulesFrontend;
 use core\controllers\backend\Controller as BackendController;
 
@@ -37,11 +37,11 @@ class Settings extends BackendController
 
     /**
      * Constructor
-     * @param ModelsImage $image
-     * @param ModelsModule $module
+     * @param ImageModel $image
+     * @param ModuleModel $module
      * @param ModulesFrontend $frontend
      */
-    public function __construct(ModelsImage $image, ModelsModule $module,
+    public function __construct(ImageModel $image, ModuleModel $module,
             ModulesFrontend $frontend)
     {
         parent::__construct();

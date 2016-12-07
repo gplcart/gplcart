@@ -10,9 +10,9 @@
 namespace core\handlers\mail;
 
 use core\Config;
-use core\models\Mail as ModelsMail;
-use core\models\Store as ModelsStore;
-use core\models\Language as ModelsLanguage;
+use core\models\Mail as MailModel;
+use core\models\Store as StoreModel;
+use core\models\Language as LanguageModel;
 
 class Account
 {
@@ -43,13 +43,13 @@ class Account
 
     /**
      * Constructor
-     * @param ModelsStore $store
-     * @param ModelsMail $mail
-     * @param ModelsLanguage $language
+     * @param StoreModel $store
+     * @param MailModel $mail
+     * @param LanguageModel $language
      * @param Config $config
      */
-    public function __construct(ModelsStore $store, ModelsMail $mail,
-            ModelsLanguage $language, Config $config)
+    public function __construct(StoreModel $store, MailModel $mail,
+            LanguageModel $language, Config $config)
     {
 
         $this->mail = $mail;

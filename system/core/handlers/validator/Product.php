@@ -10,11 +10,11 @@
 namespace core\handlers\validator;
 
 use core\helpers\String;
-use core\models\Sku as ModelsSku;
-use core\models\Product as ModelsProduct;
-use core\models\Currency as ModelsCurrency;
-use core\models\Category as ModelsCategory;
-use core\models\ProductClass as ModelsProductClass;
+use core\models\Sku as SkuModel;
+use core\models\Product as ProductModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Category as CategoryModel;
+use core\models\ProductClass as ProductClassModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -73,15 +73,15 @@ class Product extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsProductClass $product_class
-     * @param ModelsSku $sku
-     * @param ModelsCurrency $currency
-     * @param ModelsCategory $category
+     * @param ProductModel $product
+     * @param ProductClassModel $product_class
+     * @param SkuModel $sku
+     * @param CurrencyModel $currency
+     * @param CategoryModel $category
      */
-    public function __construct(ModelsProduct $product,
-            ModelsProductClass $product_class, ModelsSku $sku,
-            ModelsCurrency $currency, ModelsCategory $category)
+    public function __construct(ProductModel $product,
+            ProductClassModel $product_class, SkuModel $sku,
+            CurrencyModel $currency, CategoryModel $category)
     {
         parent::__construct();
 

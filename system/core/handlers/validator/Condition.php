@@ -9,17 +9,17 @@
 
 namespace core\handlers\validator;
 
-use core\models\Price as ModelsPrice;
-use core\models\State as ModelsState;
-use core\models\Payment as ModelsPayment;
-use core\models\Product as ModelsProduct;
-use core\models\Address as ModelsAddress;
-use core\models\Country as ModelsCountry;
-use core\models\Category as ModelsCategory;
-use core\models\Currency as ModelsCurrency;
-use core\models\Shipping as ModelsShipping;
-use core\models\UserRole as ModelsUserRole;
-use core\models\Language as ModelsLanguage;
+use core\models\Price as PriceModel;
+use core\models\State as StateModel;
+use core\models\Payment as PaymentModel;
+use core\models\Product as ProductModel;
+use core\models\Address as AddressModel;
+use core\models\Country as CountryModel;
+use core\models\Category as CategoryModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Shipping as ShippingModel;
+use core\models\UserRole as UserRoleModel;
+use core\models\Language as LanguageModel;
 
 class Condition
 {
@@ -92,23 +92,23 @@ class Condition
 
     /**
      * Constructor
-     * @param ModelsCurrency $currency
-     * @param ModelsPrice $price
-     * @param ModelsPayment $payment
-     * @param ModelsShipping $shipping
-     * @param ModelsProduct $product
-     * @param ModelsCategory $category
-     * @param ModelsUserRole $role
-     * @param ModelsAddress $address
-     * @param ModelsCountry $country
-     * @param ModelsState $state
-     * @param ModelsLanguage $language
+     * @param CurrencyModel $currency
+     * @param PriceModel $price
+     * @param PaymentModel $payment
+     * @param ShippingModel $shipping
+     * @param ProductModel $product
+     * @param CategoryModel $category
+     * @param UserRoleModel $role
+     * @param AddressModel $address
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsCurrency $currency, ModelsPrice $price,
-            ModelsPayment $payment, ModelsShipping $shipping,
-            ModelsProduct $product, ModelsCategory $category,
-            ModelsUserRole $role, ModelsAddress $address,
-            ModelsCountry $country, ModelsState $state, ModelsLanguage $language)
+    public function __construct(CurrencyModel $currency, PriceModel $price,
+            PaymentModel $payment, ShippingModel $shipping,
+            ProductModel $product, CategoryModel $category,
+            UserRoleModel $role, AddressModel $address,
+            CountryModel $country, StateModel $state, LanguageModel $language)
     {
         $this->role = $role;
         $this->price = $price;

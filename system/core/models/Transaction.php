@@ -10,8 +10,8 @@
 namespace core\models;
 
 use core\Model;
-use core\models\Order as ModelsOrder;
-use core\models\Language as ModelsLanguage;
+use core\models\Order as OrderModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to payment transactions
@@ -33,10 +33,10 @@ class Transaction extends Model
 
     /**
      * Constructor
-     * @param ModelsOrder $order
-     * @param ModelsLanguage $language
+     * @param OrderModel $order
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsOrder $order, ModelsLanguage $language)
+    public function __construct(OrderModel $order, LanguageModel $language)
     {
         parent::__construct();
 

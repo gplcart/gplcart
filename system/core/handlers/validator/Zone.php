@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\Zone as ModelsZone;
+use core\models\Zone as ZoneModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class Zone extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsZone $zone
+     * @param ZoneModel $zone
      */
-    public function __construct(ModelsZone $zone)
+    public function __construct(ZoneModel $zone)
     {
         parent::__construct();
 

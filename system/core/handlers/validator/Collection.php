@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\Collection as ModelsCollection;
+use core\models\Collection as CollectionModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class Collection extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsCollection $collection
+     * @param CollectionModel $collection
      */
-    public function __construct(ModelsCollection $collection)
+    public function __construct(CollectionModel $collection)
     {
         parent::__construct();
         $this->collection = $collection;

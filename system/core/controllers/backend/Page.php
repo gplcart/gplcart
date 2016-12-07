@@ -9,10 +9,10 @@
 
 namespace core\controllers\backend;
 
-use core\models\Alias as ModelsAlias;
-use core\models\Category as ModelsCategory;
-use core\models\Image as ModelsImage;
-use core\models\Page as ModelsPage;
+use core\models\Alias as AliasModel;
+use core\models\Category as CategoryModel;
+use core\models\Image as ImageModel;
+use core\models\Page as PageModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -47,13 +47,13 @@ class Page extends BackendController
 
     /**
      * Constructor
-     * @param ModelsPage $page
-     * @param ModelsCategory $category
-     * @param ModelsAlias $alias
-     * @param ModelsImage $image
+     * @param PageModel $page
+     * @param CategoryModel $category
+     * @param AliasModel $alias
+     * @param ImageModel $image
      */
-    public function __construct(ModelsPage $page, ModelsCategory $category,
-            ModelsAlias $alias, ModelsImage $image)
+    public function __construct(PageModel $page, CategoryModel $category,
+            AliasModel $alias, ImageModel $image)
     {
         parent::__construct();
 

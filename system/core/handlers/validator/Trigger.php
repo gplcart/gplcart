@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\models\Trigger as ModelsTrigger;
-use core\models\Condition as ModelsCondition;
+use core\models\Trigger as TriggerModel;
+use core\models\Condition as ConditionModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,11 +33,11 @@ class Trigger extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsCondition $condition
-     * @param ModelsTrigger $trigger
+     * @param ConditionModel $condition
+     * @param TriggerModel $trigger
      */
-    public function __construct(ModelsCondition $condition,
-            ModelsTrigger $trigger)
+    public function __construct(ConditionModel $condition,
+            TriggerModel $trigger)
     {
         parent::__construct();
 

@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Backup as ModelsBackup;
+use core\models\Backup as BackupModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class Backup extends BackendController
 
     /**
      * Constructor
-     * @param ModelsBackup $backup
+     * @param BackupModel $backup
      */
-    public function __construct(ModelsBackup $backup)
+    public function __construct(BackupModel $backup)
     {
         parent::__construct();
 

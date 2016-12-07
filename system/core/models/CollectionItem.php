@@ -13,7 +13,7 @@ use core\Model;
 use core\Handler;
 use core\helpers\Arr;
 use core\helpers\Cache;
-use core\models\Collection as ModelsCollection;
+use core\models\Collection as CollectionModel;
 
 /**
  * Manages basic behaviors and data related to collection items
@@ -30,7 +30,7 @@ class CollectionItem extends Model
     /**
      * Constructor
      */
-    public function __construct(ModelsCollection $collection)
+    public function __construct(CollectionModel $collection)
     {
         parent::__construct();
 

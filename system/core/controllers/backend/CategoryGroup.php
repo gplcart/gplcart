@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\models\CategoryGroup as CategoryGroupModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class CategoryGroup extends BackendController
 
     /**
      * Constructor
-     * @param ModelsCategoryGroup $category_group
+     * @param CategoryGroupModel $category_group
      */
-    public function __construct(ModelsCategoryGroup $category_group)
+    public function __construct(CategoryGroupModel $category_group)
     {
         parent::__construct();
 

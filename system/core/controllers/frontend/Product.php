@@ -9,10 +9,10 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Order as ModelsOrder;
-use core\models\Review as ModelsReview;
-use core\models\Rating as ModelsRating;
-use core\models\ProductClass as ModelsProductClass;
+use core\models\Order as OrderModel;
+use core\models\Review as ReviewModel;
+use core\models\Rating as RatingModel;
+use core\models\ProductClass as ProductClassModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -47,13 +47,13 @@ class Product extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsProductClass $product_class
-     * @param ModelsOrder $order
-     * @param ModelsReview $review
-     * @param ModelsRating $rating
+     * @param ProductClassModel $product_class
+     * @param OrderModel $order
+     * @param ReviewModel $review
+     * @param RatingModel $rating
      */
-    public function __construct(ModelsProductClass $product_class,
-            ModelsOrder $order, ModelsReview $review, ModelsRating $rating)
+    public function __construct(ProductClassModel $product_class,
+            OrderModel $order, ReviewModel $review, RatingModel $rating)
     {
         parent::__construct();
 

@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Handler;
 use core\helpers\Cache;
-use core\models\Language as ModelsLanguage;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to trigger conditions
@@ -29,7 +29,7 @@ class Condition extends Model
     /**
      * Constructor
      */
-    public function __construct(ModelsLanguage $language)
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
 

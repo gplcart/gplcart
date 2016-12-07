@@ -10,7 +10,7 @@
 namespace core\controllers\backend;
 
 use core\helpers\File;
-use core\models\Report as ModelsReport;
+use core\models\Report as ReportModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -27,9 +27,9 @@ class Cron extends BackendController
 
     /**
      * Controller
-     * @param ModelsReport $report
+     * @param ReportModel $report
      */
-    public function __construct(ModelsReport $report)
+    public function __construct(ReportModel $report)
     {
         parent::__construct();
         $this->report = $report;

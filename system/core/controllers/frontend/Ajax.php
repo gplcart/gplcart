@@ -10,12 +10,12 @@
 namespace core\controllers\frontend;
 
 use BadMethodCallException;
-use core\models\Sku as ModelsSku;
-use core\models\File as ModelsFile;
-use core\models\Search as ModelsSearch;
-use core\models\Rating as ModelsRating;
-use core\models\Collection as ModelsCollection;
-use core\models\CollectionItem as ModelsCollectionItem;
+use core\models\Sku as SkuModel;
+use core\models\File as FileModel;
+use core\models\Search as SearchModel;
+use core\models\Rating as RatingModel;
+use core\models\Collection as CollectionModel;
+use core\models\CollectionItem as CollectionItemModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -62,16 +62,16 @@ class Ajax extends FrontendController
 
     /**
      * 
-     * @param ModelsSearch $search
-     * @param ModelsFile $file
-     * @param ModelsRating $rating
-     * @param ModelsSku $sku
-     * @param ModelsCollection $collection
-     * @param ModelsCollectionItem $collection_item
+     * @param SearchModel $search
+     * @param FileModel $file
+     * @param RatingModel $rating
+     * @param SkuModel $sku
+     * @param CollectionModel $collection
+     * @param CollectionItemModel $collection_item
      */
-    public function __construct(ModelsSearch $search, ModelsFile $file,
-            ModelsRating $rating, ModelsSku $sku, ModelsCollection $collection,
-            ModelsCollectionItem $collection_item)
+    public function __construct(SearchModel $search, FileModel $file,
+            RatingModel $rating, SkuModel $sku, CollectionModel $collection,
+            CollectionItemModel $collection_item)
     {
         parent::__construct();
 

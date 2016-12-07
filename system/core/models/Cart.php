@@ -13,12 +13,12 @@ use core\Model;
 use core\Logger;
 use core\helpers\Cache;
 use core\helpers\Request;
-use core\models\Sku as ModelsSku;
-use core\models\User as ModelsUser;
-use core\models\Product as ModelsProduct;
-use core\models\Currency as ModelsCurrency;
-use core\models\Language as ModelsLanguage;
-use core\models\Wishlist as ModelsWishlist;
+use core\models\Sku as SkuModel;
+use core\models\User as UserModel;
+use core\models\Product as ProductModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Language as LanguageModel;
+use core\models\Wishlist as WishlistModel;
 
 /**
  * Manages basic behaviors and data related to user carts
@@ -76,19 +76,19 @@ class Cart extends Model
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsSku $sku
-     * @param ModelsCurrency $currency
-     * @param ModelsUser $user
-     * @param ModelsWishlist $wishlist
-     * @param ModelsLanguage $language
+     * @param ProductModel $product
+     * @param SkuModel $sku
+     * @param CurrencyModel $currency
+     * @param UserModel $user
+     * @param WishlistModel $wishlist
+     * @param LanguageModel $language
      * @param Request $request
      * @param Logger $logger
      */
     public function __construct(
-    ModelsProduct $product, ModelsSku $sku, ModelsCurrency $currency,
-            ModelsUser $user, ModelsWishlist $wishlist,
-            ModelsLanguage $language, Request $request, Logger $logger
+    ProductModel $product, SkuModel $sku, CurrencyModel $currency,
+            UserModel $user, WishlistModel $wishlist,
+            LanguageModel $language, Request $request, Logger $logger
     )
     {
         parent::__construct();

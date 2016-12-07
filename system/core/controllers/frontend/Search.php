@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Search as ModelsSearch;
+use core\models\Search as SearchModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -26,9 +26,9 @@ class Search extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsSearch $search
+     * @param SearchModel $search
      */
-    public function __construct(ModelsSearch $search)
+    public function __construct(SearchModel $search)
     {
         parent::__construct();
 

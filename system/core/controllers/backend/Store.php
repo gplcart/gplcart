@@ -9,9 +9,9 @@
 
 namespace core\controllers\backend;
 
-use core\models\Image as ModelsImage;
-use core\models\Module as ModelsModule;
-use core\models\Collection as ModelsCollection;
+use core\models\Image as ImageModel;
+use core\models\Module as ModuleModel;
+use core\models\Collection as CollectionModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -40,12 +40,12 @@ class Store extends BackendController
 
     /**
      * Constructor
-     * @param ModelsImage $image
-     * @param ModelsModule $module
-     * @param ModelsCollection $collection
+     * @param ImageModel $image
+     * @param ModuleModel $module
+     * @param CollectionModel $collection
      */
-    public function __construct(ModelsImage $image, ModelsModule $module,
-            ModelsCollection $collection)
+    public function __construct(ImageModel $image, ModuleModel $module,
+            CollectionModel $collection)
     {
         parent::__construct();
 

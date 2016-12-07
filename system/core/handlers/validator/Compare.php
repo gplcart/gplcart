@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\Product as ModelsProduct;
+use core\models\Product as ProductModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class Compare extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsProduct $product
+     * @param ProductModel $product
      */
-    public function __construct(ModelsProduct $product)
+    public function __construct(ProductModel $product)
     {
         parent::__construct();
 

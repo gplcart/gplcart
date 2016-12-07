@@ -10,8 +10,8 @@
 namespace core\controllers\backend;
 
 use core\helpers\Arr;
-use core\models\File as ModelsFile;
-use core\models\Image as ModelsImage;
+use core\models\File as FileModel;
+use core\models\Image as ImageModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -34,10 +34,10 @@ class ImageStyle extends BackendController
 
     /**
      * Constructor
-     * @param ModelsImage $image
-     * @param ModelsFile $file
+     * @param ImageModel $image
+     * @param FileModel $file
      */
-    public function __construct(ModelsImage $image, ModelsFile $file)
+    public function __construct(ImageModel $image, FileModel $file)
     {
         parent::__construct();
 

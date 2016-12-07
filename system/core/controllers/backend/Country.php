@@ -9,8 +9,8 @@
 
 namespace core\controllers\backend;
 
-use core\models\Zone as ModelsZone;
-use core\models\Country as ModelsCountry;
+use core\models\Zone as ZoneModel;
+use core\models\Country as CountryModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -33,10 +33,10 @@ class Country extends BackendController
 
     /**
      * Constructor
-     * @param ModelsCountry $country
-     * @param ModelsZone $zone
+     * @param CountryModel $country
+     * @param ZoneModel $zone
      */
-    public function __construct(ModelsCountry $country, ModelsZone $zone)
+    public function __construct(CountryModel $country, ZoneModel $zone)
     {
         parent::__construct();
 

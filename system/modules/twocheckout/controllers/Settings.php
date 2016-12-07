@@ -9,7 +9,7 @@
 
 namespace modules\twocheckout\controllers;
 
-use core\models\Module as ModelsModule;
+use core\models\Module as ModuleModel;
 use modules\twocheckout\TwoCheckout as ModulesTwoCheckout;
 use core\controllers\backend\Controller as BackendController;
 
@@ -30,10 +30,10 @@ class Settings extends BackendController
     
     /**
      * Constructor
-     * @param ModelsModule $module
+     * @param ModuleModel $module
      * @param ModulesTwoCheckout $twocheckout
      */
-    public function __construct(ModelsModule $module, ModulesTwoCheckout $twocheckout)
+    public function __construct(ModuleModel $module, ModulesTwoCheckout $twocheckout)
     {
         parent::__construct();
 

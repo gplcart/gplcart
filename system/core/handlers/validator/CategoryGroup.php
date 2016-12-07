@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\models\CategoryGroup as CategoryGroupModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class CategoryGroup extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsCategoryGroup $category_group
+     * @param CategoryGroupModel $category_group
      */
-    public function __construct(ModelsCategoryGroup $category_group)
+    public function __construct(CategoryGroupModel $category_group)
     {
         parent::__construct();
         $this->category_group = $category_group;

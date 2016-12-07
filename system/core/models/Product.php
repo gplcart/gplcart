@@ -12,14 +12,14 @@ namespace core\models;
 use core\Model;
 use core\helpers\Cache;
 use core\helpers\Request;
-use core\models\Sku as ModelsSku;
-use core\models\Price as ModelsPrice;
-use core\models\Image as ModelsImage;
-use core\models\Alias as ModelsAlias;
-use core\models\Search as ModelsSearch;
-use core\models\Language as ModelsLanguage;
-use core\models\PriceRule as ModelsPriceRule;
-use core\models\ProductField as ModelsProductField;
+use core\models\Sku as SkuModel;
+use core\models\Price as PriceModel;
+use core\models\Image as ImageModel;
+use core\models\Alias as AliasModel;
+use core\models\Search as SearchModel;
+use core\models\Language as LanguageModel;
+use core\models\PriceRule as PriceRuleModel;
+use core\models\ProductField as ProductFieldModel;
 
 /**
  * Manages basic behaviors and data related to products
@@ -83,20 +83,20 @@ class Product extends Model
 
     /**
      * Constructor
-     * @param ModelsPrice $price
-     * @param ModelsPriceRule $pricerule
-     * @param ModelsImage $image
-     * @param ModelsAlias $alias
-     * @param ModelsLanguage $language
-     * @param ModelsSku $sku
-     * @param ModelsSearch $search
-     * @param ModelsProductField $product_field
+     * @param PriceModel $price
+     * @param PriceRuleModel $pricerule
+     * @param ImageModel $image
+     * @param AliasModel $alias
+     * @param LanguageModel $language
+     * @param SkuModel $sku
+     * @param SearchModel $search
+     * @param ProductFieldModel $product_field
      * @param Request $request
      */
-    public function __construct(ModelsPrice $price, ModelsPriceRule $pricerule,
-            ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-            ModelsSku $sku, ModelsSearch $search,
-            ModelsProductField $product_field, Request $request)
+    public function __construct(PriceModel $price, PriceRuleModel $pricerule,
+            ImageModel $image, AliasModel $alias, LanguageModel $language,
+            SkuModel $sku, SearchModel $search,
+            ProductFieldModel $product_field, Request $request)
     {
         parent::__construct();
 

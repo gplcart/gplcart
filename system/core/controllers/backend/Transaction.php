@@ -9,8 +9,8 @@
 
 namespace core\controllers\backend;
 
-use core\models\Payment as ModelsPayment;
-use core\models\Transaction as ModelsTransaction;
+use core\models\Payment as PaymentModel;
+use core\models\Transaction as TransactionModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -33,11 +33,11 @@ class Transaction extends BackendController
 
     /**
      * Constructor
-     * @param ModelsTransaction $transaction
-     * @param ModelsPayment $payment
+     * @param TransactionModel $transaction
+     * @param PaymentModel $payment
      */
-    public function __construct(ModelsTransaction $transaction,
-            ModelsPayment $payment)
+    public function __construct(TransactionModel $transaction,
+            PaymentModel $payment)
     {
         parent::__construct();
 

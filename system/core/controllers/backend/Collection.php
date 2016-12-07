@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Collection as ModelsCollection;
+use core\models\Collection as CollectionModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class Collection extends BackendController
 
     /**
      * Constructor
-     * @param ModelsCollection $collection
+     * @param CollectionModel $collection
      */
-    public function __construct(ModelsCollection $collection)
+    public function __construct(CollectionModel $collection)
     {
         parent::__construct();
 

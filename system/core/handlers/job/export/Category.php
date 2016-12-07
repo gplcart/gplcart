@@ -9,7 +9,7 @@
 
 namespace core\handlers\job\export;
 
-use core\models\Category as ModelsCategory;
+use core\models\Category as CategoryModel;
 use core\handlers\job\export\Base as BaseHandler;
 
 /**
@@ -26,9 +26,9 @@ class Category extends BaseHandler
 
     /**
      * Constructor
-     * @param ModelsCategory $category
+     * @param CategoryModel $category
      */
-    public function __construct(ModelsCategory $category)
+    public function __construct(CategoryModel $category)
     {
         parent::__construct();
 

@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Transaction as ModelsTransaction;
+use core\models\Transaction as TransactionModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -26,9 +26,9 @@ class Transaction extends FrontendController
 
     /**
      * Controller
-     * @param ModelsTransaction $transaction
+     * @param TransactionModel $transaction
      */
-    public function __construct(ModelsTransaction $transaction)
+    public function __construct(TransactionModel $transaction)
     {
         parent::__construct();
 

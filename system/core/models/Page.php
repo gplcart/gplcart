@@ -11,9 +11,9 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\models\Alias as ModelsAlias;
-use core\models\Image as ModelsImage;
-use core\models\Language as ModelsLanguage;
+use core\models\Alias as AliasModel;
+use core\models\Image as ImageModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to pages
@@ -41,12 +41,12 @@ class Page extends Model
 
     /**
      * Constructor
-     * @param ModelsImage $image
-     * @param ModelsAlias $alias
-     * @param ModelsLanguage $language
+     * @param ImageModel $image
+     * @param AliasModel $alias
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsImage $image, ModelsAlias $alias,
-            ModelsLanguage $language)
+    public function __construct(ImageModel $image, AliasModel $alias,
+            LanguageModel $language)
     {
         parent::__construct();
 

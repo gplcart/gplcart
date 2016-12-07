@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\File as ModelsFile;
+use core\models\File as FileModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class File extends BackendController
 
     /**
      * Constructor
-     * @param ModelsFile $file
+     * @param FileModel $file
      */
-    public function __construct(ModelsFile $file)
+    public function __construct(FileModel $file)
     {
         parent::__construct();
 

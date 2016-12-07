@@ -9,14 +9,14 @@
 
 namespace core\controllers\backend;
 
-use core\models\Alias as ModelsAlias;
-use core\models\Image as ModelsImage;
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
-use core\models\Category as ModelsCategory;
-use core\models\Currency as ModelsCurrency;
-use core\models\ProductClass as ModelsProductClass;
-use core\models\CategoryGroup as ModelsCategoryGroup;
+use core\models\Alias as AliasModel;
+use core\models\Image as ImageModel;
+use core\models\Price as PriceModel;
+use core\models\Product as ProductModel;
+use core\models\Category as CategoryModel;
+use core\models\Currency as CurrencyModel;
+use core\models\ProductClass as ProductClassModel;
+use core\models\CategoryGroup as CategoryGroupModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -75,19 +75,19 @@ class Product extends BackendController
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsProductClass $product_class
-     * @param ModelsCategory $category
-     * @param ModelsCategoryGroup $category_group
-     * @param ModelsPrice $price
-     * @param ModelsCurrency $currency
-     * @param ModelsImage $image
-     * @param ModelsAlias $alias
+     * @param ProductModel $product
+     * @param ProductClassModel $product_class
+     * @param CategoryModel $category
+     * @param CategoryGroupModel $category_group
+     * @param PriceModel $price
+     * @param CurrencyModel $currency
+     * @param ImageModel $image
+     * @param AliasModel $alias
      */
-    public function __construct(ModelsProduct $product,
-            ModelsProductClass $product_class, ModelsCategory $category,
-            ModelsCategoryGroup $category_group, ModelsPrice $price,
-            ModelsCurrency $currency, ModelsImage $image, ModelsAlias $alias)
+    public function __construct(ProductModel $product,
+            ProductClassModel $product_class, CategoryModel $category,
+            CategoryGroupModel $category_group, PriceModel $price,
+            CurrencyModel $currency, ImageModel $image, AliasModel $alias)
     {
         parent::__construct();
 

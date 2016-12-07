@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\models\Product as ModelsProduct;
-use core\models\Wishlist as ModelsWishlist;
+use core\models\Product as ProductModel;
+use core\models\Wishlist as WishlistModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,10 +33,10 @@ class Wishlist extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsWishlist $wishlist
-     * @param ModelsProduct $product
+     * @param WishlistModel $wishlist
+     * @param ProductModel $product
      */
-    public function __construct(ModelsWishlist $wishlist, ModelsProduct $product)
+    public function __construct(WishlistModel $wishlist, ProductModel $product)
     {
         parent::__construct();
 

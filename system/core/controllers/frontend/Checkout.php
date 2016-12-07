@@ -10,12 +10,12 @@
 namespace core\controllers\frontend;
 
 use core\helpers\Arr;
-use core\models\State as ModelsState;
-use core\models\Order as ModelsOrder;
-use core\models\Address as ModelsAddress;
-use core\models\Country as ModelsCountry;
-use core\models\Payment as ModelsPayment;
-use core\models\Shipping as ModelsShipping;
+use core\models\State as StateModel;
+use core\models\Order as OrderModel;
+use core\models\Address as AddressModel;
+use core\models\Country as CountryModel;
+use core\models\Payment as PaymentModel;
+use core\models\Shipping as ShippingModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -140,16 +140,16 @@ class Checkout extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsCountry $country
-     * @param ModelsState $state
-     * @param ModelsAddress $address
-     * @param ModelsOrder $order
-     * @param ModelsShipping $shipping
-     * @param ModelsPayment $payment
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param AddressModel $address
+     * @param OrderModel $order
+     * @param ShippingModel $shipping
+     * @param PaymentModel $payment
      */
-    public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsAddress $address, ModelsOrder $order,
-            ModelsShipping $shipping, ModelsPayment $payment)
+    public function __construct(CountryModel $country, StateModel $state,
+            AddressModel $address, OrderModel $order,
+            ShippingModel $shipping, PaymentModel $payment)
     {
         parent::__construct();
 

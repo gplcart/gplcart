@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\models\Rating as ModelsRating;
-use core\models\Product as ModelsProduct;
+use core\models\Rating as RatingModel;
+use core\models\Product as ProductModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,10 +33,10 @@ class Rating extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsRating $rating
-     * @param ModelsProduct $product
+     * @param RatingModel $rating
+     * @param ProductModel $product
      */
-    public function __construct(ModelsRating $rating, ModelsProduct $product)
+    public function __construct(RatingModel $rating, ProductModel $product)
     {
         parent::__construct();
 

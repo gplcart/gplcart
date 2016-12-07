@@ -10,7 +10,7 @@
 namespace modules\twocheckout;
 
 use core\Config;
-use core\models\Language as ModelsLanguage;
+use core\models\Language as LanguageModel;
 
 /**
  * Main module class
@@ -32,10 +32,10 @@ class TwoCheckout
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
+     * @param LanguageModel $language
      * @param Config $config
      */
-    public function __construct(ModelsLanguage $language, Config $config)
+    public function __construct(LanguageModel $language, Config $config)
     {
         $this->config = $config;
         $this->language = $language;

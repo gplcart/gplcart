@@ -11,10 +11,10 @@ namespace core\models;
 
 use core\helpers\Cache;
 use core\Model;
-use core\models\Alias as ModelsAlias;
-use core\models\CategoryGroup as ModelsCategoryGroup;
-use core\models\Image as ModelsImage;
-use core\models\Language as ModelsLanguage;
+use core\models\Alias as AliasModel;
+use core\models\CategoryGroup as CategoryGroupModel;
+use core\models\Image as ImageModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -48,14 +48,14 @@ class Category extends Model
 
     /**
      * Constructor
-     * @param ModelsImage $image
-     * @param ModelsAlias $alias
-     * @param ModelsLanguage $language
-     * @param ModelsCategoryGroup $category_group
+     * @param ImageModel $image
+     * @param AliasModel $alias
+     * @param LanguageModel $language
+     * @param CategoryGroupModel $category_group
      */
     public function __construct(
-    ModelsImage $image, ModelsAlias $alias, ModelsLanguage $language,
-            ModelsCategoryGroup $category_group
+    ImageModel $image, AliasModel $alias, LanguageModel $language,
+            CategoryGroupModel $category_group
     )
     {
         parent::__construct();

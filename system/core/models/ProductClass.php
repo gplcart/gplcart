@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
-use core\models\Field as ModelsField;
-use core\models\Language as ModelsLanguage;
-use core\models\FieldValue as ModelsFieldValue;
+use core\models\Field as FieldModel;
+use core\models\Language as LanguageModel;
+use core\models\FieldValue as FieldValueModel;
 
 /**
  * Manages basic behaviors and data related to product classes
@@ -40,12 +40,12 @@ class ProductClass extends Model
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
-     * @param ModelsField $field
-     * @param ModelsFieldValue $field_value
+     * @param LanguageModel $language
+     * @param FieldModel $field
+     * @param FieldValueModel $field_value
      */
-    public function __construct(ModelsLanguage $language, ModelsField $field,
-            ModelsFieldValue $field_value)
+    public function __construct(LanguageModel $language, FieldModel $field,
+            FieldValueModel $field_value)
     {
         parent::__construct();
 

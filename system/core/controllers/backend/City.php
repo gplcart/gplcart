@@ -9,10 +9,10 @@
 
 namespace core\controllers\backend;
 
-use core\models\City as ModelsCity;
-use core\models\Country as ModelsCountry;
-use core\models\State as ModelsState;
-use core\models\Zone as ModelsZone;
+use core\models\City as CityModel;
+use core\models\Country as CountryModel;
+use core\models\State as StateModel;
+use core\models\Zone as ZoneModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -47,13 +47,13 @@ class City extends BackendController
 
     /**
      * Constructor
-     * @param ModelsCountry $country
-     * @param ModelsState $state
-     * @param ModelsCity $city
-     * @param ModelsZone $zone
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param CityModel $city
+     * @param ZoneModel $zone
      */
-    public function __construct(ModelsCountry $country, ModelsState $state,
-            ModelsCity $city, ModelsZone $zone)
+    public function __construct(CountryModel $country, StateModel $state,
+            CityModel $city, ZoneModel $zone)
     {
         parent::__construct();
 

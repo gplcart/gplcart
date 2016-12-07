@@ -12,7 +12,7 @@ namespace core\models;
 use core\Route;
 use core\Model;
 use core\helpers\String;
-use core\models\Language as ModelsLanguage;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to URL aliasing
@@ -34,10 +34,10 @@ class Alias extends Model
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
+     * @param LanguageModel $language
      * @param Route $route
      */
-    public function __construct(ModelsLanguage $language, Route $route)
+    public function __construct(LanguageModel $language, Route $route)
     {
         parent::__construct();
 

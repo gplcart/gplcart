@@ -10,11 +10,11 @@
 namespace core\handlers\validator;
 
 use core\Handler;
-use core\models\File as ModelsFile;
-use core\models\Page as ModelsPage;
-use core\models\Product as ModelsProduct;
-use core\models\Collection as ModelsCollection;
-use core\models\CollectionItem as ModelsCollectionItem;
+use core\models\File as FileModel;
+use core\models\Page as PageModel;
+use core\models\Product as ProductModel;
+use core\models\Collection as CollectionModel;
+use core\models\CollectionItem as CollectionItemModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -55,15 +55,15 @@ class CollectionItem extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsFile $file
-     * @param ModelsPage $page
-     * @param ModelsProduct $product
-     * @param ModelsCollection $collection
-     * @param ModelsCollectionItem $collection_item
+     * @param FileModel $file
+     * @param PageModel $page
+     * @param ProductModel $product
+     * @param CollectionModel $collection
+     * @param CollectionItemModel $collection_item
      */
-    public function __construct(ModelsFile $file, ModelsPage $page,
-            ModelsProduct $product, ModelsCollection $collection,
-            ModelsCollectionItem $collection_item)
+    public function __construct(FileModel $file, PageModel $page,
+            ProductModel $product, CollectionModel $collection,
+            CollectionItemModel $collection_item)
     {
 
         parent::__construct();

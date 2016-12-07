@@ -9,12 +9,12 @@
 
 namespace core\handlers\validator;
 
-use core\models\Order as ModelsOrder;
-use core\models\Payment as ModelsPayment;
-use core\models\Address as ModelsAddress;
-use core\models\Currency as ModelsCurrency;
-use core\models\Shipping as ModelsShipping;
-use core\models\Transaction as ModelsTransaction;
+use core\models\Order as OrderModel;
+use core\models\Payment as PaymentModel;
+use core\models\Address as AddressModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Shipping as ShippingModel;
+use core\models\Transaction as TransactionModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -61,16 +61,16 @@ class Order extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsOrder $order
-     * @param ModelsPayment $payment
-     * @param ModelsShipping $shipping
-     * @param ModelsAddress $address
-     * @param ModelsCurrency $currency
-     * @param ModelsTransaction $transaction
+     * @param OrderModel $order
+     * @param PaymentModel $payment
+     * @param ShippingModel $shipping
+     * @param AddressModel $address
+     * @param CurrencyModel $currency
+     * @param TransactionModel $transaction
      */
-    public function __construct(ModelsOrder $order, ModelsPayment $payment,
-            ModelsShipping $shipping, ModelsAddress $address,
-            ModelsCurrency $currency, ModelsTransaction $transaction)
+    public function __construct(OrderModel $order, PaymentModel $payment,
+            ShippingModel $shipping, AddressModel $address,
+            CurrencyModel $currency, TransactionModel $transaction)
     {
         parent::__construct();
 

@@ -13,7 +13,7 @@ use DateTime;
 use core\Model;
 use core\helpers\Arr;
 use core\helpers\Cache;
-use core\models\Language as ModelsLanguage;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to system reports
@@ -29,9 +29,9 @@ class Report extends Model
 
     /**
      * Constructor
-     * @param ModelsLanguage $language
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsLanguage $language)
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
 

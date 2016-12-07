@@ -9,10 +9,10 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Field as ModelsField;
-use core\models\FieldValue as ModelsFieldValue;
-use core\models\ProductClass as ModelsProductClass;
-use core\models\ProductField as ModelsProductField;
+use core\models\Field as FieldModel;
+use core\models\FieldValue as FieldValueModel;
+use core\models\ProductClass as ProductClassModel;
+use core\models\ProductField as ProductFieldModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -47,14 +47,14 @@ class Compare extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsProductClass $product_class
-     * @param ModelsField $field
-     * @param ModelsFieldValue $field_value
-     * @param ModelsProductField $product_field
+     * @param ProductClassModel $product_class
+     * @param FieldModel $field
+     * @param FieldValueModel $field_value
+     * @param ProductFieldModel $product_field
      */
-    public function __construct(ModelsProductClass $product_class,
-            ModelsField $field, ModelsFieldValue $field_value,
-            ModelsProductField $product_field)
+    public function __construct(ProductClassModel $product_class,
+            FieldModel $field, FieldValueModel $field_value,
+            ProductFieldModel $product_field)
     {
         parent::__construct();
 

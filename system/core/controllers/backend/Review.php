@@ -9,8 +9,8 @@
 
 namespace core\controllers\backend;
 
-use core\models\Review as ModelsReview;
-use core\models\Product as ModelsProduct;
+use core\models\Review as ReviewModel;
+use core\models\Product as ProductModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -33,10 +33,10 @@ class Review extends BackendController
 
     /**
      * Constructor
-     * @param ModelsReview $review
-     * @param ModelsProduct $product
+     * @param ReviewModel $review
+     * @param ProductModel $product
      */
-    public function __construct(ModelsReview $review, ModelsProduct $product)
+    public function __construct(ReviewModel $review, ProductModel $product)
     {
         parent::__construct();
 

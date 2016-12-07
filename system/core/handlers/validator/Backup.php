@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\models\Backup as ModelsBackup;
-use core\models\Module as ModelsModule;
+use core\models\Backup as BackupModel;
+use core\models\Module as ModuleModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,10 +33,10 @@ class Backup extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsBackup $backup
-     * @param ModelsModule $module
+     * @param BackupModel $backup
+     * @param ModuleModel $module
      */
-    public function __construct(ModelsBackup $backup, ModelsModule $module)
+    public function __construct(BackupModel $backup, ModuleModel $module)
     {
         parent::__construct();
 

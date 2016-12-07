@@ -14,8 +14,8 @@ use core\Container;
 use core\helpers\Arr;
 use core\helpers\String;
 use core\helpers\Database;
-use core\models\Store as ModelsStore;
-use core\models\Language as ModelsLanguage;
+use core\models\Store as StoreModel;
+use core\models\Language as LanguageModel;
 use core\exceptions\DatabaseException;
 
 /**
@@ -50,10 +50,10 @@ class Install extends Model
 
     /**
      * Constructor
-     * @param ModelsStore $store
-     * @param ModelsLanguage $language
+     * @param StoreModel $store
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsStore $store, ModelsLanguage $language)
+    public function __construct(StoreModel $store, LanguageModel $language)
     {
         parent::__construct();
 

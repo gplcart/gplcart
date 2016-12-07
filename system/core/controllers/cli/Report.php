@@ -10,7 +10,7 @@
 namespace core\controllers\cli;
 
 use core\CliController;
-use core\models\Report as ModelsReport;
+use core\models\Report as ReportModel;
 
 /**
  * Handles CLI commands related to reporting system events, statistic etc
@@ -27,7 +27,7 @@ class Report extends CliController
     /**
      * Constructor
      */
-    public function __construct(ModelsReport $report)
+    public function __construct(ReportModel $report)
     {
         parent::__construct();
 

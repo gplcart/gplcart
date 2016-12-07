@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\models\Page as ModelsPage;
-use core\models\Category as ModelsCategory;
+use core\models\Page as PageModel;
+use core\models\Category as CategoryModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,10 +33,10 @@ class Page extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsPage $page
-     * @param ModelsCategory $category
+     * @param PageModel $page
+     * @param CategoryModel $category
      */
-    public function __construct(ModelsPage $page, ModelsCategory $category)
+    public function __construct(PageModel $page, CategoryModel $category)
     {
         parent::__construct();
 

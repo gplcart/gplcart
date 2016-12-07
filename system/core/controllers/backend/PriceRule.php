@@ -9,10 +9,10 @@
 
 namespace core\controllers\backend;
 
-use core\models\Price as ModelsPrice;
-use core\models\Trigger as ModelsTrigger;
-use core\models\Currency as ModelsCurrency;
-use core\models\PriceRule as ModelsPriceRule;
+use core\models\Price as PriceModel;
+use core\models\Trigger as TriggerModel;
+use core\models\Currency as CurrencyModel;
+use core\models\PriceRule as PriceRuleModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -47,13 +47,13 @@ class PriceRule extends BackendController
 
     /**
      * Constructor
-     * @param ModelsPriceRule $rule
-     * @param ModelsCurrency $currency
-     * @param ModelsPrice $price
-     * @param ModelsTrigger $trigger
+     * @param PriceRuleModel $rule
+     * @param CurrencyModel $currency
+     * @param PriceModel $price
+     * @param TriggerModel $trigger
      */
-    public function __construct(ModelsPriceRule $rule, ModelsCurrency $currency,
-            ModelsPrice $price, ModelsTrigger $trigger)
+    public function __construct(PriceRuleModel $rule, CurrencyModel $currency,
+            PriceModel $price, TriggerModel $trigger)
     {
         parent::__construct();
 

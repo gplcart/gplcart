@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\models\Review as ModelsReview;
-use core\models\Product as ModelsProduct;
+use core\models\Review as ReviewModel;
+use core\models\Product as ProductModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,10 +33,10 @@ class Review extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsReview $review
-     * @param ModelsProduct $product
+     * @param ReviewModel $review
+     * @param ProductModel $product
      */
-    public function __construct(ModelsReview $review, ModelsProduct $product)
+    public function __construct(ReviewModel $review, ProductModel $product)
     {
         parent::__construct();
 

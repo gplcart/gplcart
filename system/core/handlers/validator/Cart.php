@@ -9,9 +9,9 @@
 
 namespace core\handlers\validator;
 
-use core\models\Sku as ModelsSku;
-use core\models\Cart as ModelsCart;
-use core\models\Product as ModelsProduct;
+use core\models\Sku as SkuModel;
+use core\models\Cart as CartModel;
+use core\models\Product as ProductModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -40,12 +40,12 @@ class Cart extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsCart $cart
-     * @param ModelsProduct $product
-     * @param ModelsSku $sku
+     * @param CartModel $cart
+     * @param ProductModel $product
+     * @param SkuModel $sku
      */
-    public function __construct(ModelsCart $cart, ModelsProduct $product,
-            ModelsSku $sku)
+    public function __construct(CartModel $cart, ProductModel $product,
+            SkuModel $sku)
     {
         parent::__construct();
 

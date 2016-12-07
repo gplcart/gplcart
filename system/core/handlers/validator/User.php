@@ -10,7 +10,7 @@
 namespace core\handlers\validator;
 
 use core\helpers\String;
-use core\models\UserRole as ModelsUserRole;
+use core\models\UserRole as UserRoleModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -27,9 +27,9 @@ class User extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsUserRole $role
+     * @param UserRoleModel $role
      */
-    public function __construct(ModelsUserRole $role)
+    public function __construct(UserRoleModel $role)
     {
         parent::__construct();
 

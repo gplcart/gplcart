@@ -10,7 +10,7 @@
 namespace core\handlers\validator;
 
 use core\helpers\Request;
-use core\models\File as ModelsFile;
+use core\models\File as FileModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -33,10 +33,10 @@ class Module extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsFile $file
+     * @param FileModel $file
      * @param Request $request
      */
-    public function __construct(ModelsFile $file, Request $request)
+    public function __construct(FileModel $file, Request $request)
     {
         parent::__construct();
 

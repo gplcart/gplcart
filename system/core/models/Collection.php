@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\helpers\Cache;
 use core\Model;
-use core\models\Language as ModelsLanguage;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to collections
@@ -29,7 +29,7 @@ class Collection extends Model
      * Collection constructor.
      * @param Language $language
      */
-    public function __construct(ModelsLanguage $language)
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
 

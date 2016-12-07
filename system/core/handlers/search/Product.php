@@ -9,7 +9,7 @@
 
 namespace core\handlers\search;
 
-use core\models\Product as ModelsProduct;
+use core\models\Product as ProductModel;
 use core\handlers\search\Base as BaseHandler;
 
 class Product extends BaseHandler
@@ -23,9 +23,9 @@ class Product extends BaseHandler
 
     /**
      * Constructor
-     * @param ModelsProduct $product
+     * @param ProductModel $product
      */
-    public function __construct(ModelsProduct $product)
+    public function __construct(ProductModel $product)
     {
         parent::__construct();
 

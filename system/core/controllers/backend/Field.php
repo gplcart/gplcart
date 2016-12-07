@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Field as ModelsField;
+use core\models\Field as FieldModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class Field extends BackendController
 
     /**
      * Constructor
-     * @param ModelsField $field
+     * @param FieldModel $field
      */
-    public function __construct(ModelsField $field)
+    public function __construct(FieldModel $field)
     {
         parent::__construct();
 

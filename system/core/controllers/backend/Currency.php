@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Currency as ModelsCurrency;
+use core\models\Currency as CurrencyModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -27,9 +27,9 @@ class Currency extends BackendController
     /**
      * Constructor
      * Currency constructor.
-     * @param ModelsCurrency $currency
+     * @param CurrencyModel $currency
      */
-    public function __construct(ModelsCurrency $currency)
+    public function __construct(CurrencyModel $currency)
     {
         parent::__construct();
 

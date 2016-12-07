@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\Field as ModelsField;
+use core\models\Field as FieldModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class Field extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsField $field
+     * @param FieldModel $field
      */
-    public function __construct(ModelsField $field)
+    public function __construct(FieldModel $field)
     {
         parent::__construct();
 

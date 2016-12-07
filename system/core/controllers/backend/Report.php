@@ -9,8 +9,8 @@
 
 namespace core\controllers\backend;
 
-use core\models\Report as ModelsReport;
-use core\models\Analytics as ModelsAnalytics;
+use core\models\Report as ReportModel;
+use core\models\Analytics as AnalyticsModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -33,10 +33,10 @@ class Report extends BackendController
 
     /**
      * Constructor
-     * @param ModelsReport $report
-     * @param ModelsAnalytics $analytics
+     * @param ReportModel $report
+     * @param AnalyticsModel $analytics
      */
-    public function __construct(ModelsReport $report, ModelsAnalytics $analytics)
+    public function __construct(ReportModel $report, AnalyticsModel $analytics)
     {
         parent::__construct();
 

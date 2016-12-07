@@ -10,14 +10,14 @@
 namespace core\controllers\frontend;
 
 use core\controllers\frontend\Controller as FrontendController;
-use core\models\Address as ModelsAddress;
-use core\models\Country as ModelsCountry;
-use core\models\Order as ModelsOrder;
-use core\models\State as ModelsState;
-use core\models\UserRole as ModelsUserRole;
-use core\models\PriceRule as ModelsPriceRule;
-use core\models\Payment as ModelsPayment;
-use core\models\Shipping as ModelsShipping;
+use core\models\Address as AddressModel;
+use core\models\Country as CountryModel;
+use core\models\Order as OrderModel;
+use core\models\State as StateModel;
+use core\models\UserRole as UserRoleModel;
+use core\models\PriceRule as PriceRuleModel;
+use core\models\Payment as PaymentModel;
+use core\models\Shipping as ShippingModel;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
@@ -75,19 +75,19 @@ class Account extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsAddress $address
-     * @param ModelsCountry $country
-     * @param ModelsState $state
-     * @param ModelsOrder $order
-     * @param ModelsUserRole $role
-     * @param ModelsPriceRule $pricerule
-     * @param ModelsPayment $payment
-     * @param ModelsShipping $shipping
+     * @param AddressModel $address
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param OrderModel $order
+     * @param UserRoleModel $role
+     * @param PriceRuleModel $pricerule
+     * @param PaymentModel $payment
+     * @param ShippingModel $shipping
      */
-    public function __construct(ModelsAddress $address, ModelsCountry $country,
-            ModelsState $state, ModelsOrder $order, ModelsUserRole $role,
-            ModelsPriceRule $pricerule, ModelsPayment $payment,
-            ModelsShipping $shipping)
+    public function __construct(AddressModel $address, CountryModel $country,
+            StateModel $state, OrderModel $order, UserRoleModel $role,
+            PriceRuleModel $pricerule, PaymentModel $payment,
+            ShippingModel $shipping)
     {
         parent::__construct();
 

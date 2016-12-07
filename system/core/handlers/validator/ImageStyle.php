@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\Image as ModelsImage;
+use core\models\Image as ImageModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class ImageStyle extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsImage $image
+     * @param ImageModel $image
      */
-    public function __construct(ModelsImage $image)
+    public function __construct(ImageModel $image)
     {
         parent::__construct();
 

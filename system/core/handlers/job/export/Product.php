@@ -9,8 +9,8 @@
 
 namespace core\handlers\job\export;
 
-use core\models\Price as ModelsPrice;
-use core\models\Product as ModelsProduct;
+use core\models\Price as PriceModel;
+use core\models\Product as ProductModel;
 use core\handlers\job\export\Base as BaseHandler;
 
 /**
@@ -33,10 +33,10 @@ class Product extends BaseHandler
 
     /**
      * Constructor
-     * @param ModelsProduct $product
-     * @param ModelsPrice $price
+     * @param ProductModel $product
+     * @param PriceModel $price
      */
-    public function __construct(ModelsProduct $product, ModelsPrice $price)
+    public function __construct(ProductModel $product, PriceModel $price)
     {
         parent::__construct();
 

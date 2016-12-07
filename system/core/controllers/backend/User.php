@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\UserRole as ModelsUserRole;
+use core\models\UserRole as UserRoleModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class User extends BackendController
 
     /**
      * Constructor
-     * @param ModelsUserRole $role
+     * @param UserRoleModel $role
      */
-    public function __construct(ModelsUserRole $role)
+    public function __construct(UserRoleModel $role)
     {
         parent::__construct();
         $this->role = $role;

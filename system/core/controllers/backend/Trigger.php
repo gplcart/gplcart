@@ -10,8 +10,8 @@
 namespace core\controllers\backend;
 
 use core\helpers\Arr;
-use core\models\Trigger as ModelsTrigger;
-use core\models\Condition as ModelsCondition;
+use core\models\Trigger as TriggerModel;
+use core\models\Condition as ConditionModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -34,11 +34,11 @@ class Trigger extends BackendController
 
     /**
      * Constructor
-     * @param ModelsTrigger $trigger
-     * @param ModelsCondition $condition
+     * @param TriggerModel $trigger
+     * @param ConditionModel $condition
      */
-    public function __construct(ModelsTrigger $trigger,
-            ModelsCondition $condition)
+    public function __construct(TriggerModel $trigger,
+            ConditionModel $condition)
     {
         parent::__construct();
 

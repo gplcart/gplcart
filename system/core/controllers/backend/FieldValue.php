@@ -9,10 +9,10 @@
 
 namespace core\controllers\backend;
 
-use core\models\File as ModelsFile;
-use core\models\Image as ModelsImage;
-use core\models\Field as ModelsField;
-use core\models\FieldValue as ModelsFieldValue;
+use core\models\File as FileModel;
+use core\models\Image as ImageModel;
+use core\models\Field as FieldModel;
+use core\models\FieldValue as FieldValueModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -52,13 +52,13 @@ class FieldValue extends BackendController
 
     /**
      * Constructor
-     * @param ModelsField $field
-     * @param ModelsFieldValue $field_value
-     * @param ModelsImage $image
-     * @param ModelsFile $file
+     * @param FieldModel $field
+     * @param FieldValueModel $field_value
+     * @param ImageModel $image
+     * @param FileModel $file
      */
-    public function __construct(ModelsField $field,
-            ModelsFieldValue $field_value, ModelsImage $image, ModelsFile $file
+    public function __construct(FieldModel $field,
+            FieldValueModel $field_value, ImageModel $image, FileModel $file
     )
     {
         parent::__construct();

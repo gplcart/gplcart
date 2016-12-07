@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\models\CollectionItem as ModelsCollectionItem;
+use core\models\CollectionItem as CollectionItemModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -26,9 +26,9 @@ class Front extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsCollectionItem $collection_item
+     * @param CollectionItemModel $collection_item
      */
-    public function __construct(ModelsCollectionItem $collection_item)
+    public function __construct(CollectionItemModel $collection_item)
     {
         parent::__construct();
 

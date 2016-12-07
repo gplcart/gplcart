@@ -11,9 +11,9 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\models\Trigger as ModelsTrigger;
-use core\models\Currency as ModelsCurrency;
-use core\models\Language as ModelsLanguage;
+use core\models\Trigger as TriggerModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to price rules
@@ -41,12 +41,12 @@ class PriceRule extends Model
 
     /**
      * Constructor
-     * @param ModelsCurrency $currency
-     * @param ModelsTrigger $trigger
-     * @param ModelsLanguage $language
+     * @param CurrencyModel $currency
+     * @param TriggerModel $trigger
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsCurrency $currency,
-            ModelsTrigger $trigger, ModelsLanguage $language)
+    public function __construct(CurrencyModel $currency,
+            TriggerModel $trigger, LanguageModel $language)
     {
         parent::__construct();
 

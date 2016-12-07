@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\models\Currency as ModelsCurrency;
+use core\models\Currency as CurrencyModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -26,9 +26,9 @@ class Currency extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsCurrency $currency
+     * @param CurrencyModel $currency
      */
-    public function __construct(ModelsCurrency $currency)
+    public function __construct(CurrencyModel $currency)
     {
         parent::__construct();
         $this->currency = $currency;

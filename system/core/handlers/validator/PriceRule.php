@@ -9,9 +9,9 @@
 
 namespace core\handlers\validator;
 
-use core\models\Trigger as ModelsTrigger;
-use core\models\Currency as ModelsCurrency;
-use core\models\PriceRule as ModelsPriceRule;
+use core\models\Trigger as TriggerModel;
+use core\models\Currency as CurrencyModel;
+use core\models\PriceRule as PriceRuleModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -40,11 +40,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsPriceRule $rule
-     * @param ModelsTrigger $trigger
+     * @param PriceRuleModel $rule
+     * @param TriggerModel $trigger
      */
-    public function __construct(ModelsPriceRule $rule, ModelsTrigger $trigger,
-            ModelsCurrency $currency)
+    public function __construct(PriceRuleModel $rule, TriggerModel $trigger,
+            CurrencyModel $currency)
     {
         parent::__construct();
 

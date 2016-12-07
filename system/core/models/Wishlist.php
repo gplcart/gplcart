@@ -13,8 +13,8 @@ use core\Model;
 use core\Logger;
 use core\helpers\Url;
 use core\helpers\Cache;
-use core\models\User as ModelsUser;
-use core\models\Language as ModelsLanguage;
+use core\models\User as UserModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to user wishlists
@@ -48,12 +48,12 @@ class Wishlist extends Model
 
     /**
      * Constructor
-     * @param ModelsUser $user
-     * @param ModelsLanguage $language
+     * @param UserModel $user
+     * @param LanguageModel $language
      * @param Logger $logger
      * @param Url $url
      */
-    public function __construct(ModelsUser $user, ModelsLanguage $language,
+    public function __construct(UserModel $user, LanguageModel $language,
             Logger $logger, Url $url)
     {
         parent::__construct();

@@ -14,7 +14,7 @@ use core\helpers\Url;
 use core\helpers\Arr;
 use core\helpers\File as FileHelper;
 use core\helpers\Image as Imagestyle;
-use core\models\File as ModelsFile;
+use core\models\File as FileModel;
 
 /**
  * Manages basic behaviors and data related to images
@@ -42,11 +42,11 @@ class Image extends Model
 
     /**
      * Constructor
-     * @param ModelsFile $file
+     * @param FileModel $file
      * @param Image $imagestyle
      * @param Url $url
      */
-    public function __construct(ModelsFile $file, Imagestyle $imagestyle,
+    public function __construct(FileModel $file, Imagestyle $imagestyle,
             Url $url)
     {
         parent::__construct();

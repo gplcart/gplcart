@@ -10,9 +10,9 @@
 namespace core\handlers\validator;
 
 use core\helpers\Request;
-use core\models\File as ModelsFile;
-use core\models\Field as ModelsField;
-use core\models\FieldValue as ModelsFieldValue;
+use core\models\File as FileModel;
+use core\models\Field as FieldModel;
+use core\models\FieldValue as FieldValueModel;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -47,13 +47,13 @@ class FieldValue extends BaseValidator
 
     /**
      * Constructor
-     * @param ModelsField $field
-     * @param ModelsFieldValue $field_value
-     * @param ModelsFile $file
+     * @param FieldModel $field
+     * @param FieldValueModel $field_value
+     * @param FileModel $file
      * @param Request $request
      */
-    public function __construct(ModelsField $field,
-            ModelsFieldValue $field_value, ModelsFile $file, Request $request)
+    public function __construct(FieldModel $field,
+            FieldValueModel $field_value, FileModel $file, Request $request)
     {
         parent::__construct();
 

@@ -10,17 +10,17 @@
 namespace core\controllers\backend;
 
 use core\controllers\backend\Controller as BackendController;
-use core\models\Address as ModelsAddress;
-use core\models\Cart as ModelsCart;
-use core\models\Country as ModelsCountry;
-use core\models\Currency as ModelsCurrency;
-use core\models\Order as ModelsOrder;
-use core\models\Price as ModelsPrice;
-use core\models\PriceRule as ModelsPriceRule;
-use core\models\Product as ModelsProduct;
-use core\models\State as ModelsState;
-use core\models\Payment as ModelsPayment;
-use core\models\Shipping as ModelsShipping;
+use core\models\Address as AddressModel;
+use core\models\Cart as CartModel;
+use core\models\Country as CountryModel;
+use core\models\Currency as CurrencyModel;
+use core\models\Order as OrderModel;
+use core\models\Price as PriceModel;
+use core\models\PriceRule as PriceRuleModel;
+use core\models\Product as ProductModel;
+use core\models\State as StateModel;
+use core\models\Payment as PaymentModel;
+use core\models\Shipping as ShippingModel;
 
 /**
  * Provides data to the view and interprets user actions related to orders
@@ -96,21 +96,21 @@ class Order extends BackendController
 
     /**
      * Constructor
-     * @param ModelsOrder $order
-     * @param ModelsCountry $country
-     * @param ModelsState $state
-     * @param ModelsAddress $address
-     * @param ModelsPrice $price
-     * @param ModelsCurrency $currency
-     * @param ModelsCart $cart
-     * @param ModelsProduct $product
-     * @param ModelsPriceRule $pricerule
+     * @param OrderModel $order
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param AddressModel $address
+     * @param PriceModel $price
+     * @param CurrencyModel $currency
+     * @param CartModel $cart
+     * @param ProductModel $product
+     * @param PriceRuleModel $pricerule
      */
-    public function __construct(ModelsOrder $order, ModelsCountry $country,
-            ModelsState $state, ModelsAddress $address, ModelsPrice $price,
-            ModelsCurrency $currency, ModelsCart $cart, ModelsProduct $product,
-            ModelsPriceRule $pricerule, ModelsPayment $payment,
-            ModelsShipping $shipping
+    public function __construct(OrderModel $order, CountryModel $country,
+            StateModel $state, AddressModel $address, PriceModel $price,
+            CurrencyModel $currency, CartModel $cart, ProductModel $product,
+            PriceRuleModel $pricerule, PaymentModel $payment,
+            ShippingModel $shipping
     )
     {
         parent::__construct();

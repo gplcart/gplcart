@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\models\Import as ModelsImport;
+use core\models\Import as ImportModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,9 +26,9 @@ class Import extends BackendController
 
     /**
      * Constructor
-     * @param ModelsImport $import
+     * @param ImportModel $import
      */
-    public function __construct(ModelsImport $import)
+    public function __construct(ImportModel $import)
     {
         parent::__construct();
         $this->import = $import;

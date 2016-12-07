@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\models\Page as ModelsPage;
+use core\models\Page as PageModel;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -26,9 +26,9 @@ class Page extends FrontendController
 
     /**
      * Constructor
-     * @param ModelsPage $page
+     * @param PageModel $page
      */
-    public function __construct(ModelsPage $page)
+    public function __construct(PageModel $page)
     {
         parent::__construct();
 

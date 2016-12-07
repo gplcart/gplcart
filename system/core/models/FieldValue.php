@@ -10,8 +10,8 @@
 namespace core\models;
 
 use core\Model;
-use core\models\Image as ModelsImage;
-use core\models\Language as ModelsLanguage;
+use core\models\Image as ImageModel;
+use core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to field values
@@ -33,10 +33,10 @@ class FieldValue extends Model
 
     /**
      * Constructor
-     * @param ModelsImage $image
-     * @param ModelsLanguage $language
+     * @param ImageModel $image
+     * @param LanguageModel $language
      */
-    public function __construct(ModelsImage $image, ModelsLanguage $language)
+    public function __construct(ImageModel $image, LanguageModel $language)
     {
         parent::__construct();
 
