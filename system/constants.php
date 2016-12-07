@@ -24,6 +24,7 @@ define('GC_CONFIG_COMMON', GC_SYSTEM_DIR . '/config/common.php');
 define('GC_CONFIG_DATABASE', GC_SYSTEM_DIR . '/config/database.php');
 define('GC_CONFIG_LANGUAGE', GC_SYSTEM_DIR . '/config/language.php');
 define('GC_CONFIG_COUNTRY', GC_SYSTEM_DIR . '/config/country.php');
+define('GC_CONFIG_ROUTE', GC_SYSTEM_DIR . '/config/route.php');
 define('GC_CONFIG_COMMON_DEFAULT', GC_SYSTEM_DIR . '/config/common.default.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
