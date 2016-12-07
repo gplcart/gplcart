@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use core\helpers\Cache;
 use core\Model;
 use core\models\Language as LanguageModel;
 
@@ -308,7 +307,7 @@ class Collection extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory('collection.handlers');
+        $handlers = &gplcart_cache('collection.handlers');
 
         if (isset($handlers)) {
             return $handlers;

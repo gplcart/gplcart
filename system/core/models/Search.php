@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Handler;
-use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -135,7 +134,7 @@ class Search extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory('search.handles');
+        $handlers = &gplcart_cache('search.handles');
 
         if (isset($handlers)) {
             return $handlers;

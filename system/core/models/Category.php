@@ -9,7 +9,6 @@
 
 namespace core\models;
 
-use core\helpers\Cache;
 use core\Model;
 use core\models\Alias as AliasModel;
 use core\models\CategoryGroup as CategoryGroupModel;
@@ -225,7 +224,7 @@ class Category extends Model
     {
         ksort($data);
 
-        $tree = &Cache::memory('category.tree.' . md5(json_encode($data)));
+        $tree = &gplcart_cache('category.tree.' . md5(json_encode($data)));
 
         if (isset($tree)) {
             return $tree;

@@ -9,9 +9,6 @@
 
 namespace core;
 
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\String as StringHelper;
-
 /**
  * Base controller class. Contents methods to be used in the child classes and
  * some basic system functions such as access control etc.
@@ -440,7 +437,7 @@ class Controller
     public function error($key = null, $has_error = null, $no_error = '')
     {
         if (isset($key)) {
-            $result = ArrayHelper::getValue($this->errors, $key);
+            $result = gplcart_array_get_value($this->errors, $key);
         } else {
             $result = empty($this->errors) ? null : $this->errors;
         }
@@ -736,7 +733,7 @@ class Controller
      */
     public function setData($key, $value)
     {
-        ArrayHelper::setValue($this->data, $key, $value);
+        gplcart_array_set_value($this->data, $key, $value);
     }
 
     /**
@@ -745,7 +742,7 @@ class Controller
      */
     public function unsetData($key)
     {
-        ArrayHelper::unsetValue($this->data, $key);
+        gplcart_array_unset_value($this->data, $key);
     }
 
     /**
@@ -755,7 +752,7 @@ class Controller
      */
     public function setError($key, $value)
     {
-        ArrayHelper::setValue($this->errors, $key, $value);
+        gplcart_array_set_value($this->errors, $key, $value);
     }
 
     /**
@@ -764,7 +761,7 @@ class Controller
      */
     public function unsetError($key)
     {
-        ArrayHelper::unsetValue($this->errors, $key);
+        gplcart_array_unset_value($this->errors, $key);
     }
 
     /**
@@ -786,7 +783,7 @@ class Controller
             return $this->submitted;
         }
 
-        ArrayHelper::setValue($this->submitted, $key, $value);
+        gplcart_array_set_value($this->submitted, $key, $value);
         return $this->submitted;
     }
 
@@ -796,7 +793,7 @@ class Controller
      */
     public function unsetSubmitted($key)
     {
-        ArrayHelper::unsetValue($this->submitted, $key);
+        gplcart_array_unset_value($this->submitted, $key);
     }
 
     /**
@@ -819,7 +816,7 @@ class Controller
         $value = $this->getSubmitted($key);
 
         if (isset($value) && is_string($value)) {
-            $this->setSubmitted($key, StringHelper::toArray($value));
+            $this->setSubmitted($key, gplcart_string_array($value));
         }
     }
 
@@ -832,7 +829,7 @@ class Controller
     public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            $result = ArrayHelper::getValue($this->submitted, $key);
+            $result = gplcart_array_get_value($this->submitted, $key);
             return isset($result) ? $result : $default;
         }
 
@@ -847,7 +844,7 @@ class Controller
      */
     public function getData($key, $default = null)
     {
-        $result = ArrayHelper::getValue($this->data, $key);
+        $result = gplcart_array_get_value($this->data, $key);
         return isset($result) ? $result : $default;
     }
 
@@ -922,7 +919,7 @@ class Controller
             return null;
         }
 
-        if (StringHelper::equals($this->request->post('token'), $this->token)) {
+        if (gplcart_string_equals($this->request->post('token'), $this->token)) {
             return null;
         }
 
@@ -1156,7 +1153,7 @@ class Controller
         }
 
         $this->data[$region] = (array) $this->data[$region];
-        ArrayHelper::sortWeight($this->data[$region]);
+        gplcart_array_sort($this->data[$region]);
 
         $items = array();
         foreach ($this->data[$region] as $item) {
@@ -1253,7 +1250,7 @@ class Controller
             return $this->getCompressedAssets($css, 'css');
         }
 
-        ArrayHelper::sortWeight($css);
+        gplcart_array_sort($css);
         return $css;
     }
 
@@ -1270,7 +1267,7 @@ class Controller
             return $this->getCompressedAssets($scripts, 'js', "-$region");
         }
 
-        ArrayHelper::sortWeight($scripts);
+        gplcart_array_sort($scripts);
         return $scripts;
     }
 
@@ -1324,7 +1321,7 @@ class Controller
         );
 
         $results = $this->document->setAsset($data, $assets);
-        ArrayHelper::sortWeight($results);
+        gplcart_array_sort($results);
         return $results;
     }
 
@@ -1412,7 +1409,7 @@ class Controller
         $this->cron_key = $this->config('cron_key', '');
 
         if (empty($this->cron_key)) {
-            $this->cron_key = StringHelper::random();
+            $this->cron_key = gplcart_string_random();
             $this->config->set('cron_key', $this->cron_key);
         }
 

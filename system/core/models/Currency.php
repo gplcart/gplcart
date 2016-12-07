@@ -10,8 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Cache;
-use core\helpers\Arr as ArrayHelper;
 use core\helpers\Request as RequestHelper;
 
 /**
@@ -95,7 +93,7 @@ class Currency extends Model
     {
         $cache_key = $enabled ? 'currencies.enabled' : 'currencies';
 
-        $currencies = &Cache::memory($cache_key);
+        $currencies = &gplcart_cache($cache_key);
 
         if (isset($currencies)) {
             return $currencies;
@@ -103,7 +101,7 @@ class Currency extends Model
 
         $default = $this->getDefaultList();
         $saved = $this->config->get('currencies', array());
-        $currencies = ArrayHelper::merge($default, $saved);
+        $currencies = gplcart_array_merge($default, $saved);
 
         $this->hook->fire('currencies', $currencies);
 
@@ -217,7 +215,7 @@ class Currency extends Model
      */
     public function get($code = null)
     {
-        $currency = &Cache::memory("currency.$code");
+        $currency = &gplcart_cache("currency.$code");
 
         if (isset($currency)) {
             return $currency;

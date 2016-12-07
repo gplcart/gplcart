@@ -9,7 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\File as FileHelper;
 use core\models\Report as ReportModel;
 use core\controllers\backend\Controller as BackendController;
 
@@ -112,7 +111,7 @@ class Cron extends BackendController
         foreach ($directories as $key => $path) {
             $extensions = array('csv');
             $lifespan = $this->config("{$key}_lifespan", 86400);
-            $deleted += FileHelper::delete($path, $extensions, $lifespan);
+            $deleted += gplcart_file_delete($path, $extensions, $lifespan);
         }
 
         if (empty($deleted)) {

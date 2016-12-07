@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Cache;
 use core\helpers\Request as RequestHelper;
 
 /**
@@ -63,7 +62,7 @@ class Store extends Model
             $cache_key .= md5(json_encode($data));
         }
 
-        $stores = &Cache::memory($cache_key);
+        $stores = &gplcart_cache($cache_key);
 
         if (isset($stores)) {
             return $stores;
@@ -169,7 +168,7 @@ class Store extends Model
 
         $this->hook->fire('get.store.before', $store_id);
 
-        $store = &Cache::memory("store.$store_id");
+        $store = &gplcart_cache("store.$store_id");
 
         if (isset($store)) {
             return $store;

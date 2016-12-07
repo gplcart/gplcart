@@ -9,7 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Arr as ArrayHelper;
 use core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
@@ -72,7 +71,7 @@ class Settings extends BackendController
         $default = $this->getDefaultSettings();
         $saved = $this->config();
 
-        return ArrayHelper::merge($default, $saved);
+        return gplcart_array_merge($default, $saved);
     }
 
     /**

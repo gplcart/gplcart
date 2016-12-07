@@ -9,8 +9,6 @@
 
 namespace core\helpers;
 
-use core\helpers\Arr as ArrayHelper;
-
 /**
  * Provides methods to work with HTML document
  */
@@ -78,7 +76,7 @@ class Document
         $position = empty($data['position']) ? array() : array($data['position']);
 
         if (!isset($data['weight'])) {
-            $elements = ArrayHelper::getValue($assets, $position);
+            $elements = gplcart_array_get_value($assets, $position);
             $data['weight'] = empty($elements) ? 0 : count($elements) + 1;
         }
 
@@ -92,7 +90,7 @@ class Document
         );
 
         $position[] = $key;
-        ArrayHelper::setValue($assets, $position, $asset);
+        gplcart_array_set_value($assets, $position, $asset);
         return $assets;
     }
 

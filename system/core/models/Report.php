@@ -11,7 +11,6 @@ namespace core\models;
 
 use DateTime;
 use core\Model;
-use core\helpers\Arr as ArrayHelper;
 use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
@@ -327,7 +326,7 @@ class Report extends Model
 
         $this->hook->fire('report.statuses', $statuses);
 
-        ArrayHelper::sortWeight($statuses);
+        gplcart_array_sort($statuses);
 
         return $statuses;
     }

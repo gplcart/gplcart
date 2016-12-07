@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model as Model;
-use core\helpers\Cache;
 use core\helpers\Session as SessionHelper;
 use core\models\Language as LanguageModel;
 
@@ -51,7 +50,7 @@ class UserRole extends Model
      */
     public function getPermissions()
     {
-        $permissions = &Cache::memory('permissions');
+        $permissions = &gplcart_cache('permissions');
 
         if (isset($permissions)) {
             return $permissions;
@@ -198,7 +197,7 @@ class UserRole extends Model
      */
     public function get($role_id)
     {
-        $role = &Cache::memory("role.$role_id");
+        $role = &gplcart_cache("role.$role_id");
 
         if (isset($role)) {
             return $role;

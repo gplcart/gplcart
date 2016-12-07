@@ -9,7 +9,6 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\String as StringHelper;
 use core\models\Sku as SkuModel;
 use core\models\Product as ProductModel;
 use core\models\Currency as CurrencyModel;
@@ -155,7 +154,7 @@ class Product extends BaseValidator
     protected function validateSubtractProduct(array &$submitted)
     {
         if (isset($submitted['subtract'])) {
-            $submitted['subtract'] = StringHelper::toBool($submitted['subtract']);
+            $submitted['subtract'] = gplcart_string_bool($submitted['subtract']);
         }
 
         return true;

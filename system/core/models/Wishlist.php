@@ -12,7 +12,6 @@ namespace core\models;
 use core\Model as Model;
 use core\Logger as Logger;
 use core\helpers\Url as UrlHelper;
-use core\helpers\Cache;
 use core\models\User as UserModel;
 use core\models\Language as LanguageModel;
 
@@ -96,7 +95,7 @@ class Wishlist extends Model
         $data['created'] = GC_TIME;
         $data['wishlist_id'] = $this->db->insert('wishlist', $data);
 
-        Cache::clearMemory();
+        gplcart_cache_clear();
 
         $this->hook->fire('add.wishlist.after', $data);
         return $data['wishlist_id'];
@@ -285,7 +284,7 @@ class Wishlist extends Model
 
         $result = (bool) $this->db->delete('wishlist', $data);
 
-        Cache::clearMemory();
+        gplcart_cache_clear();
 
         $this->hook->fire('delete.wishlist.after', $data, $result);
         return (bool) $result;
@@ -302,7 +301,7 @@ class Wishlist extends Model
 
         $cache_key = 'wishlist.' . md5(json_encode($data));
 
-        $items = &Cache::memory($cache_key);
+        $items = &gplcart_cache($cache_key);
 
         if (isset($items)) {
             return $items;

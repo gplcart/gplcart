@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\helpers\Cache;
 use core\helpers\Request as RequestHelper;
 use core\models\Mail as MailModel;
 use core\models\Cart as CartModel;
@@ -117,7 +116,7 @@ class Order extends Model
      */
     public function getStatuses()
     {
-        $statuses = &Cache::memory('statuses');
+        $statuses = &gplcart_cache('statuses');
 
         if (isset($statuses)) {
             return $statuses;

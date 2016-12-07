@@ -12,9 +12,7 @@ namespace core;
 use core\Hook;
 use core\Config;
 use core\Handler;
-use core\helpers\Cache;
 use core\helpers\Url as UrlHelper;
-use core\helpers\Regexp as RegexpHelper;
 use core\helpers\Request as RequestHelper;
 use core\exceptions\RouteException;
 
@@ -98,7 +96,7 @@ class Route
      */
     public function getList()
     {
-        $routes = &Cache::memory('routes');
+        $routes = &gplcart_cache('routes');
 
         if (isset($routes)) {
             return $routes;
@@ -1178,7 +1176,7 @@ class Route
                 $route['arguments'] = array();
             }
 
-            $arguments = RegexpHelper::matchPattern($this->path, $pattern);
+            $arguments = gplcart_regexp_match_pattern($this->path, $pattern);
 
             if ($arguments === false) {
                 continue;

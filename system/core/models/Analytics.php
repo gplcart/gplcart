@@ -150,7 +150,7 @@ class Analytics extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('ga.handlers');
+        $handlers = &gplcart_cache('ga.handlers');
 
         if (isset($handlers)) {
             return $handlers;

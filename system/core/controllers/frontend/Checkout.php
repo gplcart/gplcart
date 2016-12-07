@@ -9,7 +9,6 @@
 
 namespace core\controllers\frontend;
 
-use core\helpers\Arr as ArrayHelper;
 use core\models\State as StateModel;
 use core\models\Order as OrderModel;
 use core\models\Address as AddressModel;
@@ -333,7 +332,7 @@ class Checkout extends FrontendController
         );
 
         // Override with existing order values if we're editing the order
-        $order = ArrayHelper::merge($default_order, $this->order_data);
+        $order = gplcart_array_merge($default_order, $this->order_data);
 
         $this->form_data['order'] = $order;
         $this->form_data['messages'] = array();
@@ -540,9 +539,9 @@ class Checkout extends FrontendController
     {
         $messages = (array) $message;
 
-        $flatten = ArrayHelper::flatten($messages);
+        $flatten = gplcart_array_flatten($messages);
         $string = implode('<br>', array_unique($flatten));
-        ArrayHelper::setValue($this->form_data['messages'], $key, $string);
+        gplcart_array_set_value($this->form_data['messages'], $key, $string);
     }
 
     /**
@@ -748,7 +747,7 @@ class Checkout extends FrontendController
     protected function calculateCheckout()
     {
         $submitted = array('order' => $this->getSubmitted());
-        $this->form_data = ArrayHelper::merge($this->form_data, $submitted);
+        $this->form_data = gplcart_array_merge($this->form_data, $submitted);
 
         $result = $this->order->calculate($this->cart_content, $this->form_data);
         $this->form_data['total_formatted'] = $this->price->format($result['total'], $result['currency']);

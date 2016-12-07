@@ -10,7 +10,6 @@
 namespace core\handlers\validator;
 
 use core\models\File as FileModel;
-use core\helpers\String as StringHelper;
 use core\helpers\Request as RequestHelper;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -66,15 +65,15 @@ class Settings extends BaseValidator
     protected function validateSettings(array &$submitted)
     {
         if (!empty($submitted['smtp_host'])) {
-            $submitted['smtp_host'] = StringHelper::toArray($submitted['smtp_host']);
+            $submitted['smtp_host'] = gplcart_string_array($submitted['smtp_host']);
         }
 
         if (empty($submitted['cron_key'])) {
-            $submitted['cron_key'] = StringHelper::random();
+            $submitted['cron_key'] = gplcart_string_random();
         }
 
         if (isset($submitted['smtp_auth'])) {
-            $submitted['smtp_auth'] = StringHelper::toBool($submitted['smtp_auth']);
+            $submitted['smtp_auth'] = gplcart_string_bool($submitted['smtp_auth']);
         }
 
         return true;

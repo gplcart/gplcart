@@ -10,8 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -44,7 +42,7 @@ class Shipping extends Model
      */
     public function getList($enabled = false)
     {
-        $methods = &Cache::memory('shipping.methods');
+        $methods = &gplcart_cache('shipping.methods');
 
         if (isset($methods)) {
             return $methods;
@@ -60,7 +58,7 @@ class Shipping extends Model
 
         $this->hook->fire('shipping.method', $methods);
 
-        ArrayHelper::sortWeight($methods);
+        gplcart_array_sort($methods);
         return $methods;
     }
 

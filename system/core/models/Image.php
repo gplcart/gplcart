@@ -11,8 +11,6 @@ namespace core\models;
 
 use core\Model as Model;
 use core\helpers\Url as UrlHelper;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\File as FileHelper;
 use core\helpers\Image as ImageHelper;
 use core\models\File as FileModel;
 
@@ -204,7 +202,7 @@ class Image extends Model
         $default_imagestyles = $this->defaultStyles();
         $saved_imagestyles = $this->config->get('imagestyles', array());
 
-        $imagestyles = ArrayHelper::merge($default_imagestyles, $saved_imagestyles);
+        $imagestyles = gplcart_array_merge($default_imagestyles, $saved_imagestyles);
 
         foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
             $imagestyle['imagestyle_id'] = $imagestyle_id;
@@ -231,7 +229,7 @@ class Image extends Model
 
         $actions = $styles[$imagestyle_id]['actions'];
 
-        ArrayHelper::sortWeight($actions);
+        gplcart_array_sort($actions);
 
         return $actions;
     }
@@ -327,7 +325,7 @@ class Image extends Model
             $directory = "$directory/$imagestyle_id";
         }
 
-        $result = FileHelper::deleteRecursive($directory);
+        $result = gplcart_file_delete_recursive($directory);
         $this->hook->fire('clear.imagestyle.cache.after', $imagestyle_id, $result);
         return $result;
     }

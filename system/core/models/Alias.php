@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Route as Route;
 use core\Model as Model;
-use core\helpers\String as StringHelper;
 use core\models\Language as LanguageModel;
 
 /**
@@ -202,7 +201,7 @@ class Alias extends Model
         $alias = $pattern;
 
         if ($placeholders) {
-            $alias = StringHelper::replace($pattern, $placeholders, $data);
+            $alias = gplcart_string_replace($pattern, $placeholders, $data);
         }
 
         if ($translit) {

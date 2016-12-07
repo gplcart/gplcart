@@ -10,8 +10,6 @@
 namespace core\handlers\job\import;
 
 use core\Container;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\File as FileHelper;
 
 /**
  * Base class for import handlers
@@ -185,7 +183,7 @@ class Base
         $line_message = $this->language->text('Line @num', array('@num' => $line));
         $data = array($line_message, $messages);
 
-        return FileHelper::csv($this->job['data']['operation']['log']['errors'], $data);
+        return gplcart_file_csv($this->job['data']['operation']['log']['errors'], $data);
     }
 
     /**
@@ -237,7 +235,7 @@ class Base
         }
 
         // Errors can be nested, so we flatten them into a simple array
-        $errors = ArrayHelper::flatten((array) $result);
+        $errors = gplcart_array_flatten((array) $result);
 
         $this->setError($errors);
         return false;
@@ -252,7 +250,7 @@ class Base
         $errors = (array) $error;
         $line = $this->job['context']['line'];
         $existing = empty($this->errors[$line]) ? array() : $this->errors[$line];
-        $this->errors[$line] = ArrayHelper::merge($existing, $errors);
+        $this->errors[$line] = gplcart_array_merge($existing, $errors);
     }
 
     /**

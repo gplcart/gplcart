@@ -9,8 +9,6 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Date as DateHelper;
-use core\helpers\Regexp as RegexpHelper;
 use core\models\Install as InstallModel;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -174,7 +172,7 @@ class Install extends BaseValidator
             return true;
         }
 
-        if (RegexpHelper::matchDomain($submitted['store']['host'])) {
+        if (gplcart_regexp_match_domain($submitted['store']['host'])) {
             return true;
         }
 
@@ -235,7 +233,7 @@ class Install extends BaseValidator
             return false;
         }
 
-        $timezones = DateHelper::timezones();
+        $timezones = gplcart_date_timezones();
 
         if (empty($timezones[$submitted['store']['timezone']])) {
             $error = $this->language->text('Invalid timezone');

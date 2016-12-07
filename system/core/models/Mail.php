@@ -12,7 +12,6 @@ namespace core\models;
 use core\Model;
 use core\Logger;
 use core\Handler;
-use core\helpers\Cache;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -63,7 +62,7 @@ class Mail extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('mail.handlers');
+        $handlers = &gplcart_cache('mail.handlers');
 
         if (isset($handlers)) {
             return $handlers;

@@ -9,7 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Arr as ArrayHelper;
 use core\models\Trigger as TriggerModel;
 use core\models\Condition as ConditionModel;
 use core\controllers\backend\Controller as BackendController;
@@ -347,7 +346,7 @@ class Trigger extends BackendController
             return null;
         }
 
-        ArrayHelper::sortWeight($conditions);
+        gplcart_array_sort($conditions);
 
         $modified = array();
         foreach ($conditions as $condition) {

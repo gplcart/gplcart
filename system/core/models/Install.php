@@ -11,8 +11,6 @@ namespace core\models;
 
 use core\Model as Model;
 use core\Container as Container;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\String as StringHelper;
 use core\helpers\Database as DatabaseHelper;
 use core\models\Store as StoreModel;
 use core\models\Language as LanguageModel;
@@ -93,7 +91,7 @@ class Install extends Model
             $value['id'] = $key;
         });
 
-        ArrayHelper::sortWeight($installers);
+        gplcart_array_sort($installers);
         return $installers;
     }
 
@@ -375,7 +373,7 @@ class Install extends Model
             'name' => 'Superadmin',
             'store_id' => $store_id,
             'email' => $settings['user']['email'],
-            'hash' => StringHelper::hash($settings['user']['password'])
+            'hash' => gplcart_string_hash($settings['user']['password'])
         );
 
         $user_id = $this->database->insert('user', $user);

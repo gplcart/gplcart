@@ -9,8 +9,6 @@
 
 namespace core\helpers;
 
-use core\helpers\Arr as ArrayHelper;
-
 /**
  * Provides methods to work with various server data
  */
@@ -214,7 +212,7 @@ class Request
      */
     protected function sanitize(array &$array, $filter = true)
     {
-        ArrayHelper::trim($array, $filter);
+        gplcart_array_trim($array, $filter);
     }
 
     /**
@@ -250,7 +248,7 @@ class Request
     {
         $cookie = empty($_COOKIE) ? array() : $_COOKIE;
 
-        ArrayHelper::trim($cookie, $filter);
+        gplcart_array_trim($cookie, $filter);
 
         if (isset($name)) {
             return isset($cookie[GC_COOKIE_PREFIX . $name]) ? $cookie[GC_COOKIE_PREFIX . $name] : $default;

@@ -11,8 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Handler;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\Cache;
 use core\models\Collection as CollectionModel;
 
 /**
@@ -46,7 +44,7 @@ class CollectionItem extends Model
     {
         ksort($data);
 
-        $items = &Cache::memory('collection.item.list.' . md5(json_encode($data)));
+        $items = &gplcart_cache('collection.item.list.' . md5(json_encode($data)));
 
         if (isset($items)) {
             return $items;
@@ -240,7 +238,7 @@ class CollectionItem extends Model
             }
         }
 
-        ArrayHelper::sortWeight($results);
+        gplcart_array_sort($results);
         return $results;
     }
 

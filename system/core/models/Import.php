@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -57,7 +56,7 @@ class Import extends Model
      */
     public function getOperations()
     {
-        $operations = &Cache::memory('import.operations');
+        $operations = &gplcart_cache('import.operations');
 
         if (isset($operations)) {
             return $operations;

@@ -10,7 +10,6 @@
 namespace core\handlers\job\export;
 
 use core\Container;
-use core\helpers\File as FileHelper;
 
 /**
  * Base export handler class
@@ -159,7 +158,7 @@ class Base
      */
     protected function write(array $data)
     {
-        FileHelper::csv($this->file, $data, $this->job['data']['delimiter']);
+        gplcart_file_csv($this->file, $data, $this->job['data']['delimiter']);
     }
 
     /**

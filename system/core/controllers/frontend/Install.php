@@ -9,7 +9,6 @@
 
 namespace core\controllers\frontend;
 
-use core\helpers\Date as DateHelper;
 use core\models\Install as InstallModel;
 use core\controllers\frontend\Controller as FrontendController;
 
@@ -53,7 +52,7 @@ class Install extends FrontendController
         $installer = $this->getInstall($installer_id);
         $this->submitInstall($installer);
 
-        $timezones = DateHelper::timezones();
+        $timezones = gplcart_date_timezones();
         $languages = $this->getLanguagesInstall();
         $requirements = $this->getRequirementsInstall();
         $installers = $this->getListInstall();

@@ -10,8 +10,6 @@
 namespace core\handlers\validator;
 
 use core\Container as Container;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\String as StringHelper;
 
 /**
  * Base validator class
@@ -77,7 +75,7 @@ class Base
     protected function getSubmitted($key, $submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        return ArrayHelper::getValue($submitted, $parents);
+        return gplcart_array_get_value($submitted, $parents);
     }
 
     /**
@@ -89,7 +87,7 @@ class Base
     public function setSubmitted($key, $value, &$submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        ArrayHelper::setValue($submitted, $parents, $value);
+        gplcart_array_set_value($submitted, $parents, $value);
     }
 
     /**
@@ -99,7 +97,7 @@ class Base
     public function unsetSubmitted($key, &$submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        ArrayHelper::unsetValue($submitted, $parents);
+        gplcart_array_unset_value($submitted, $parents);
     }
 
     /**
@@ -131,7 +129,7 @@ class Base
     protected function setError($key, $value, array $options = array())
     {
         $parents = $this->getParents($key, $options);
-        ArrayHelper::setValue($this->errors, $parents, $value);
+        gplcart_array_set_value($this->errors, $parents, $value);
     }
 
     /**
@@ -159,7 +157,7 @@ class Base
     protected function getError($key, array $options = array())
     {
         $parents = $this->getParents($key, $options);
-        return ArrayHelper::getValue($this->errors, $parents);
+        return gplcart_array_get_value($this->errors, $parents);
     }
 
     /**
@@ -312,7 +310,7 @@ class Base
         $status = $this->getSubmitted('status', $submitted, $options);
 
         if (isset($status)) {
-            $value = (int) StringHelper::toBool($status);
+            $value = (int) gplcart_string_bool($status);
             $this->setSubmitted('status', $value, $submitted, $options);
         }
 
@@ -330,7 +328,7 @@ class Base
         $default = $this->getSubmitted('default', $submitted, $options);
 
         if (isset($default)) {
-            $value = (int) StringHelper::toBool($default);
+            $value = (int) gplcart_string_bool($default);
             $this->setSubmitted('default', $value, $submitted, $options);
         }
 

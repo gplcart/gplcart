@@ -10,11 +10,8 @@
 namespace core\models;
 
 use core\Model as Model;
-use core\helpers\Cache;
 use core\helpers\Url as UrlHelper;
 use core\helpers\Curl as CurlHelper;
-use core\helpers\File as FileHelper;
-use core\helpers\String as StringHelper;
 use core\models\Language as LanguageModel;
 use core\models\Validator as ValidatorModel;
 
@@ -98,7 +95,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = FileHelper::mime(GC_FILE_DIR . "/{$data['path']}");
+            $data['mime_type'] = gplcart_file_mime(GC_FILE_DIR . "/{$data['path']}");
         }
 
         if (empty($data['file_type'])) {
@@ -530,7 +527,7 @@ class File extends Model
     {
         ksort($data);
 
-        $files = &Cache::memory('files.' . md5(json_encode($data)));
+        $files = &gplcart_cache('files.' . md5(json_encode($data)));
 
         if (isset($files)) {
             return $files;
@@ -712,7 +709,7 @@ class File extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('file.handlers');
+        $handlers = &gplcart_cache('file.handlers');
 
         if (isset($handlers)) {
             return $handlers;
@@ -780,7 +777,7 @@ class File extends Model
             return $this->language->text('Unable to create upload directory !name', array('!name' => $destination));
         }
 
-        $rand = StringHelper::random(6);
+        $rand = gplcart_string_random(6);
         $destination = "$destination/$filename-$rand.$extension";
 
         $copied = copy($tempname, $destination);

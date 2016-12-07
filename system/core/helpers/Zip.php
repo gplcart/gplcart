@@ -11,7 +11,6 @@ namespace core\helpers;
 
 use ZipArchive;
 use InvalidArgumentException;
-use core\helpers\File as FileHelper;
 
 /**
  * Extends ZipArchive class
@@ -53,7 +52,7 @@ class Zip extends ZipArchive
      */
     public function folder($source, $destination, $wrapper = '')
     {
-        $files = FileHelper::scanRecursive($source);
+        $files = gplcart_file_scan_recursive($source);
 
         if (empty($files)) {
             return false;

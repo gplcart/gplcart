@@ -10,8 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -49,7 +47,7 @@ class Country extends Model
 
         if (empty($data['format'])) {
             $format = $this->defaultFormat();
-            ArrayHelper::sortWeight($format);
+            gplcart_array_sort($format);
         } else {
             $format = $data['format'];
         }
@@ -78,9 +76,9 @@ class Country extends Model
 
         if (!empty($country)) {
             $default_format = $this->defaultFormat();
-            $country['format'] = ArrayHelper::merge($default_format, $country['format']);
+            $country['format'] = gplcart_array_merge($default_format, $country['format']);
             $country['default'] = $this->isDefault($code);
-            ArrayHelper::sortWeight($country['format']);
+            gplcart_array_sort($country['format']);
         }
 
         $this->hook->fire('get.country.after', $code, $country);
@@ -349,7 +347,7 @@ class Country extends Model
     {
         ksort($data);
         
-        $list = &Cache::memory('countries.' . md5(json_encode($data)));
+        $list = &gplcart_cache('countries.' . md5(json_encode($data)));
 
         if (isset($list)) {
             return $list;

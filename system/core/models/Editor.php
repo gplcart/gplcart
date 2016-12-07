@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\File as FileHelper;
 use core\models\Backup as BackupModel;
 use core\models\Language as LanguageModel;
 
@@ -55,7 +54,7 @@ class Editor extends Model
         $list = array();
         foreach (array('templates', 'css', 'js') as $folder) {
             $pattern = "{$module['directory']}/$folder/*";
-            $files = FileHelper::scanRecursive($pattern);
+            $files = gplcart_file_scan_recursive($pattern);
             sort($files);
             $list[$folder] = $files;
         }

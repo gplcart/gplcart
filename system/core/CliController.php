@@ -9,8 +9,6 @@
 
 namespace core;
 
-use core\helpers\Arr as ArrayHelper;
-
 /**
  * Basic CLI controller
  */
@@ -172,7 +170,7 @@ class CliController
     {
         $arguments = $this->getArguments($filter);
         $mapped = $this->mapArguments($arguments, $map);
-        $data = ArrayHelper::merge($default, $mapped);
+        $data = gplcart_array_merge($default, $mapped);
 
         return $this->setSubmitted($data);
     }
@@ -209,7 +207,7 @@ class CliController
      */
     protected function getArguments($filter = true)
     {
-        return ArrayHelper::trim($this->current_route['arguments'], $filter);
+        return gplcart_array_trim($this->current_route['arguments'], $filter);
     }
 
     /**
@@ -318,7 +316,7 @@ class CliController
      */
     protected function outputErrors($exit = true)
     {
-        $errors = ArrayHelper::flatten($this->errors);
+        $errors = gplcart_array_flatten($this->errors);
 
         foreach ($errors as $error) {
             $this->printError($error);
@@ -438,7 +436,7 @@ class CliController
         $mapped = array();
         foreach ($arguments as $key => $value) {
             if (isset($map[$key]) && is_string($map[$key])) {
-                ArrayHelper::setValue($mapped, $map[$key], $value);
+                gplcart_array_set_value($mapped, $map[$key], $value);
             }
         }
 

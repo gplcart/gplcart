@@ -9,7 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\File as FileHelper;
 use core\models\Export as ExportModel;
 use core\models\Product as ProductModel;
 use core\controllers\backend\Controller as BackendController;
@@ -215,7 +214,7 @@ class Export extends BackendController
         }
 
         $delimiter = $this->getSubmitted('delimiter');
-        FileHelper::csv($operation['file'], $operation['csv']['header'], $delimiter);
+        gplcart_file_csv($operation['file'], $operation['csv']['header'], $delimiter);
         $this->setSubmitted('operation', $operation);
         return true;
     }

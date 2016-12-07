@@ -11,10 +11,6 @@ namespace core\models;
 
 use core\Route as Route;
 use core\Model as Model;
-use core\helpers\Cache;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\File as FileHelper;
-use core\helpers\String as StringHelper;
 use core\models\Translit as TranslitModel;
 
 /**
@@ -106,7 +102,7 @@ class Language extends Model
      */
     public function getAll()
     {
-        $languages = &Cache::memory('languages');
+        $languages = &gplcart_cache('languages');
 
         if (isset($languages)) {
             return $languages;
@@ -116,7 +112,7 @@ class Language extends Model
         $available = $this->getAvailable();
         $saved = $this->config->get('languages', array());
 
-        $languages = ArrayHelper::merge($available, $saved);
+        $languages = gplcart_array_merge($available, $saved);
 
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
@@ -206,7 +202,7 @@ class Language extends Model
             });
         }
 
-        ArrayHelper::sortWeight($languages);
+        gplcart_array_sort($languages);
         return $languages;
     }
 
@@ -375,10 +371,10 @@ class Language extends Model
     {
 
         if (!isset($data[0]) || $data[0] === '') {
-            return StringHelper::format($source, $arguments);
+            return gplcart_string_format($source, $arguments);
         }
 
-        return StringHelper::format($data[0], $arguments);
+        return gplcart_string_format($data[0], $arguments);
     }
 
     /**
@@ -394,7 +390,7 @@ class Language extends Model
             $cache_key .= ".$filename";
         }
 
-        $translations = &Cache::memory($cache_key);
+        $translations = &gplcart_cache($cache_key);
 
         if (isset($translations)) {
             return (array) $translations;
@@ -476,8 +472,8 @@ class Language extends Model
      */
     public function refresh($langcode)
     {
-        FileHelper::delete(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
-        FileHelper::delete(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
+        gplcart_file_delete(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
+        gplcart_file_delete(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
     }
 
     /**

@@ -10,8 +10,6 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\Cache;
 use core\models\Condition as ConditionModel;
 
 /**
@@ -44,7 +42,7 @@ class Trigger extends Model
     public function getList(array $data = array())
     {
         $cache_key = 'trigger.list.' . md5(json_encode($data));
-        $triggers = &Cache::memory($cache_key);
+        $triggers = &gplcart_cache($cache_key);
 
         if (isset($triggers)) {
             return $triggers;
@@ -107,7 +105,7 @@ class Trigger extends Model
             $trigger['data'] = unserialize($trigger['data']);
 
             if (!empty($trigger['data']['conditions'])) {
-                ArrayHelper::sortWeight($trigger['data']['conditions']);
+                gplcart_array_sort($trigger['data']['conditions']);
             }
 
             $triggers[$trigger['trigger_id']] = $trigger;

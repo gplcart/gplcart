@@ -10,7 +10,6 @@
 namespace core\models;
 
 use core\Model as Model;
-use core\helpers\String as StringHelper;
 use core\models\Language as LanguageModel;
 
 /**
@@ -168,7 +167,7 @@ class Sku extends Model
         $sku = $pattern;
 
         if (!empty($placeholders)) {
-            $sku = StringHelper::replace($pattern, $placeholders, $data);
+            $sku = gplcart_string_replace($pattern, $placeholders, $data);
         }
 
         $sku = mb_strimwidth($sku, 0, 200, 'UTF-8');

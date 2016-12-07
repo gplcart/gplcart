@@ -13,7 +13,6 @@ use core\Model;
 use core\Container;
 use core\helpers\Cache;
 use core\helpers\Zip as ZipHelper;
-use core\helpers\File as FileHelper;
 use core\models\Backup as BackupModel;
 use core\models\Language as LanguageModel;
 use InvalidArgumentException;
@@ -439,7 +438,7 @@ class Module extends Model
      */
     public function getActiveThemes()
     {
-        $themes = &Cache::memory('active.themes');
+        $themes = &gplcart_cache('active.themes');
 
         if (isset($themes)) {
             return $themes;
@@ -503,7 +502,7 @@ class Module extends Model
     {
         // Clear static cache to see available modules.
         // Important when uploading a module!
-        Cache::clearMemory('modules');
+        gplcart_cache_clear('modules');
 
         $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
@@ -533,7 +532,7 @@ class Module extends Model
             return false;
         }
 
-        return FileHelper::deleteRecursive(GC_MODULE_DIR . "/$module_id");
+        return gplcart_file_delete_recursive(GC_MODULE_DIR . "/$module_id");
     }
 
     /**
@@ -679,7 +678,7 @@ class Module extends Model
         $directory = GC_MODULE_DIR . "/$module_id/locale";
 
         if (file_exists($directory)) {
-            return FileHelper::scan($directory, array('csv'));
+            return gplcart_file_scan($directory, array('csv'));
         }
 
         return array();

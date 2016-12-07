@@ -9,7 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Arr as ArrayHelper;
 use core\models\File as FileModel;
 use core\models\Image as ImageModel;
 use core\controllers\backend\Controller as BackendController;
@@ -242,7 +241,7 @@ class ImageStyle extends BackendController
             return null;
         }
 
-        ArrayHelper::sortWeight($actions);
+        gplcart_array_sort($actions);
 
         $modified = array();
         foreach ($actions as $action_id => $info) {

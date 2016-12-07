@@ -9,8 +9,6 @@
 
 namespace modules\backend;
 
-use core\helpers\File as FileHelper;
-
 /**
  * Main backend theme class
  */
@@ -90,7 +88,7 @@ class Backend
         $controller->setJs('files/assets/jquery/primeui/components/terminal/terminal.js', 'bottom');
 
         $path = $controller->getData('path');
-        $file = FileHelper::contex(GC_MODULE_DIR . '/backend/js', 'js', $path);
+        $file = gplcart_file_contex(GC_MODULE_DIR . '/backend/js', 'js', $path);
 
         if (isset($file['filename'])) {
             $controller->setJs("system/modules/backend/js/{$file['filename']}.js", 'bottom');

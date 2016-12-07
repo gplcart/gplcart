@@ -15,7 +15,6 @@ use core\models\Mail as MailModel;
 use core\models\Address as AddressModel;
 use core\models\UserRole as UserRoleModel;
 use core\models\Language as LanguageModel;
-use core\helpers\String as StringHelper;
 use core\helpers\Session as SessionHelper;
 use core\exceptions\UserAccessException;
 
@@ -98,7 +97,7 @@ class User extends Model
         }
 
         $data['created'] = GC_TIME;
-        $data += array('hash' => StringHelper::hash($data['password']));
+        $data += array('hash' => gplcart_string_hash($data['password']));
         $data['user_id'] = $this->db->insert('user', $data);
 
         $this->setAddress($data);
@@ -150,7 +149,7 @@ class User extends Model
         $data += array('user_id' => $user_id);
 
         if (!empty($data['password'])) {
-            $data['hash'] = StringHelper::hash($data['password']);
+            $data['hash'] = gplcart_string_hash($data['password']);
         }
 
         if ($this->isSuperadmin($user_id)) {
@@ -358,9 +357,9 @@ class User extends Model
             return $result;
         }
 
-        $expected = StringHelper::hash($data['password'], $user['hash'], false);
+        $expected = gplcart_string_hash($data['password'], $user['hash'], false);
 
-        if (!StringHelper::equals($user['hash'], $expected)) {
+        if (!gplcart_string_equals($user['hash'], $expected)) {
             return $result;
         }
 
@@ -516,7 +515,7 @@ class User extends Model
      */
     public function generatePassword()
     {
-        $hash = crypt(StringHelper::random(), StringHelper::random());
+        $hash = crypt(gplcart_string_random(), gplcart_string_random());
         return str_replace(array('+', '/', '='), '', base64_encode($hash));
     }
 
@@ -555,7 +554,7 @@ class User extends Model
         $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
 
         $user['data']['reset_password'] = array(
-            'token' => StringHelper::random(),
+            'token' => gplcart_string_random(),
             'expires' => GC_TIME + $lifetime,
         );
 

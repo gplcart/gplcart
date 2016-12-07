@@ -9,8 +9,6 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\File as FileHelper;
-
 /**
  * Provides methods to validate different types of files
  */
@@ -55,7 +53,7 @@ class FileType
     public function csv($file, array $options)
     {
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
-        $mimetype = FileHelper::mime($file);
+        $mimetype = gplcart_file_mime($file);
         return in_array($mimetype, $allowed);
     }
 

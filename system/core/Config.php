@@ -10,9 +10,6 @@
 namespace core;
 
 use core\Container;
-use core\helpers\Cache;
-use core\helpers\Arr as ArrayHelper;
-use core\helpers\String as StringHelper;
 use core\exceptions\DatabaseException;
 
 /**
@@ -179,7 +176,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return StringHelper::equals($this->token(), (string) $token);
+        return gplcart_string_equals($this->token(), (string) $token);
     }
 
     /**
@@ -206,7 +203,7 @@ class Config
      */
     public function getModules()
     {
-        $modules = &Cache::memory('modules');
+        $modules = &gplcart_cache('modules');
 
         if (isset($modules)) {
             return $modules;
@@ -260,7 +257,7 @@ class Config
 
             if (isset($saved_modules[$module_info['id']])) {
                 $module_info['installed'] = true;
-                $module_info = ArrayHelper::merge($module_info, $saved_modules[$module_info['id']]);
+                $module_info = gplcart_array_merge($module_info, $saved_modules[$module_info['id']]);
             }
 
             if (in_array($module_info['id'], array('backend', 'frontend'))) {
@@ -361,7 +358,7 @@ class Config
         $this->key = $this->get('private_key', '');
 
         if (empty($this->key)) {
-            $this->key = StringHelper::random();
+            $this->key = gplcart_string_random();
             $this->set('private_key', $this->key);
         }
 

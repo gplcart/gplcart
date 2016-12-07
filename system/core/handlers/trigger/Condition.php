@@ -14,7 +14,6 @@ use core\models\User as UserModel;
 use core\models\Product as ProductModel;
 use core\models\Currency as CurrencyModel;
 use core\models\Condition as ConditionModel;
-use core\helpers\Regexp as RegexpHelper;
 
 class Condition
 {
@@ -103,7 +102,7 @@ class Condition
 
         $found = false;
         foreach ($patterns as $pattern) {
-            if (RegexpHelper::matchPattern($path, $pattern)) {
+            if (gplcart_regexp_match_pattern($path, $pattern)) {
                 $found = true;
             }
         }

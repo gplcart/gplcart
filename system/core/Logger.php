@@ -9,8 +9,6 @@
 
 namespace core;
 
-use core\helpers\File as FileHelper;
-
 /**
  * Provides methods to log various errors and events
  */
@@ -41,7 +39,7 @@ class Logger
             strip_tags($message)
         );
 
-        return FileHelper::csv($file, $fields, ',', '"', $limit);
+        return gplcart_file_csv($file, $fields, ',', '"', $limit);
     }
 
     /**

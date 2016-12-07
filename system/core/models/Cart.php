@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\helpers\Cache;
 use core\helpers\Request as RequestHelper;
 use core\models\Sku as SkuModel;
 use core\models\User as UserModel;
@@ -110,7 +109,7 @@ class Cart extends Model
     {
         $cache_key = 'cart.' . md5(json_encode($data));
 
-        $cart = &Cache::memory($cache_key);
+        $cart = &gplcart_cache($cache_key);
 
         if (isset($cart)) {
             return $cart;
@@ -340,7 +339,7 @@ class Cart extends Model
         $data['created'] = GC_TIME;
         $data['cart_id'] = $this->db->insert('cart', $data);
 
-        Cache::clearMemory();
+        gplcart_cache_clear();
 
         $this->hook->fire('add.cart.after', $data);
         return $data['cart_id'];
@@ -363,7 +362,7 @@ class Cart extends Model
         $data['modified'] = GC_TIME;
         $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
 
-        Cache::clearMemory();
+        gplcart_cache_clear();
 
         $this->hook->fire('update.cart.after', $cart_id, $data, $result);
         return (bool) $result;
@@ -456,7 +455,7 @@ class Cart extends Model
 
         $data['wishlist_id'] = $this->wishlist->addProduct($data);
 
-        Cache::clearMemory();
+        gplcart_cache_clear();
 
         $url = $this->request->base() . 'wishlist';
         $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $url));
@@ -542,7 +541,7 @@ class Cart extends Model
 
         $result = (bool) $this->db->delete('cart', $conditions);
 
-        Cache::clearMemory();
+        gplcart_cache_clear();
 
         $this->hook->fire('delete.cart.after', $arguments, $result);
         return (bool) $result;

@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Container;
-use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -80,7 +79,7 @@ class Validator extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('validator.handlers');
+        $handlers = &gplcart_cache('validator.handlers');
 
         if (isset($handlers)) {
             return $handlers;

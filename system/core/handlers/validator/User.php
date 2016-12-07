@@ -9,7 +9,6 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\String as StringHelper;
 use core\models\UserRole as UserRoleModel;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -284,9 +283,9 @@ class User extends BaseValidator
             return false;
         }
 
-        $hash = StringHelper::hash($submitted['password_old'], $submitted['update']['hash'], false);
+        $hash = gplcart_string_hash($submitted['password_old'], $submitted['update']['hash'], false);
 
-        if (StringHelper::equals($submitted['update']['hash'], $hash)) {
+        if (gplcart_string_equals($submitted['update']['hash'], $hash)) {
             return true;
         }
 
