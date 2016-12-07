@@ -16,6 +16,7 @@ use core\helpers\Zip as ZipHelper;
 use core\helpers\File as FileHelper;
 use core\models\Backup as BackupModel;
 use core\models\Language as LanguageModel;
+use InvalidArgumentException;
 use core\exceptions\ModuleException;
 
 /**
@@ -136,20 +137,36 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canEnable($module_id);
 
-        if (is_callable(array($module['class'], 'beforeEnable'))) {
-            try {
-                $module_class = Container::instance($module['class']);
-                $result = $module_class->beforeEnable();
-            } catch (ModuleException $e) {
-                echo $e->getMessage();
-            }
+        $this->call('beforeEnable', $module, $result);
+
+        if ($result !== true) {
+            return $result;
         }
 
-        if ($result === true) {
-            $this->update($module_id, array('status' => 1));
-            $this->setOverrideConfig();
-            $this->setTranslations($module_id);
-            return true;
+        $this->update($module_id, array('status' => 1));
+        $this->setOverrideConfig();
+        $this->setTranslations($module_id);
+        return true;
+    }
+
+    /**
+     * Calls a module method
+     * @param string $method
+     * @param array $module
+     * @param mixed $result
+     * @return mixed
+     */
+    protected function call($method, array $module, &$result)
+    {
+        if (!is_callable(array($module['class'], $method))) {
+            return null;
+        }
+
+        try {
+            $module_class = Container::instance($module['class']);
+            $result = $module_class->{$method}();
+        } catch (ModuleException $e) {
+            trigger_error($e->getMessage());
         }
 
         return $result;
@@ -364,22 +381,15 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canDisable($module_id);
 
-        if (is_callable(array($module['class'], 'beforeDisable'))) {
+        $this->call('beforeDisable', $module, $result);
 
-            try {
-                $module_class = Container::instance($module['class']);
-                $result = $module_class->beforeDisable();
-            } catch (ModuleException $e) {
-                echo $e->getMessage();
-            }
+        if ($result !== true) {
+            return $result;
         }
 
-        if ($result === true) {
-            $this->update($module_id, array('status' => false));
-            $this->setOverrideConfig();
-            return true;
-        }
-        return $result;
+        $this->update($module_id, array('status' => false));
+        $this->setOverrideConfig();
+        return true;
     }
 
     /**
@@ -498,25 +508,18 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
 
-        if (is_callable(array($module['class'], 'beforeInstall'))) {
-            try {
-                $module_class = Container::instance($module['class']);
-                $result = $module_class->beforeInstall();
-            } catch (ModuleException $e) {
-                // uninstall trouble module
-                $this->db->delete('module', array('module_id' => $module_id));
-                echo $e->getMessage();
-            }
+        $this->call('beforeInstall', $module, $result);
+
+        if ($result !== true) {
+            // Make sure the troubled module is uninstalled
+            $this->db->delete('module', array('module_id' => $module_id));
+            return $result;
         }
 
-        if ($result === true) {
-            $this->add(array('module_id' => $module_id, 'status' => $status));
-            $this->setOverrideConfig();
-            $this->setTranslations($module_id);
-            return true;
-        }
-
-        return $result;
+        $this->add(array('module_id' => $module_id, 'status' => $status));
+        $this->setOverrideConfig();
+        $this->setTranslations($module_id);
+        return true;
     }
 
     /**
@@ -552,22 +555,15 @@ class Module extends Model
         $result = $this->canUninstall($module_id);
         $module = $this->get($module_id);
 
-        if (is_callable(array($module['class'], 'beforeUninstall'))) {
-            try {
-                $module_class = Container::instance($module['class']);
-                $result = $module_class->beforeUninstall();
-            } catch (ModuleException $e) {
-                echo $e->getMessage();
-            }
+        $this->call('beforeUninstall', $module, $result);
+
+        if ($result !== true) {
+            return $result;
         }
 
-        if ($result === true) {
-            $this->db->delete('module', array('module_id' => $module_id));
-            $this->setOverrideConfig();
-            return true;
-        }
-
-        return $result;
+        $this->db->delete('module', array('module_id' => $module_id));
+        $this->setOverrideConfig();
+        return true;
     }
 
     /**
@@ -598,9 +594,9 @@ class Module extends Model
         Cache::clear('modules');
 
         $map = array();
-        foreach ($this->getEnabled() as $module_id => $module) {
+        foreach ($this->getEnabled() as $module) {
 
-            $directory = GC_MODULE_DIR . "/$module_id/override";
+            $directory = GC_MODULE_DIR . "/{$module['id']}/override";
 
             if (!is_readable($directory)) {
                 continue;
@@ -609,7 +605,7 @@ class Module extends Model
             foreach ($this->scanOverrideFiles($directory) as $file) {
                 $original = str_replace('/', '\\', str_replace($directory . '/', '', preg_replace('/Override$/', '', $file)));
                 $override = str_replace('/', '\\', str_replace(GC_SYSTEM_DIR . '/', '', $file));
-                $map[$original][$module_id] = $override;
+                $map[$original][$module['id']] = $override;
             }
         }
 
@@ -630,7 +626,7 @@ class Module extends Model
                 if ((substr($path, -4) === '.php')) {
                     $results[] = rtrim($path, '.php');
                 }
-            } elseif ($value != '.' && $value != '..') {
+            } elseif ($value !== '.' && $value !== '..') {
                 $this->scanOverrideFiles($path, $results);
             }
         }
@@ -651,24 +647,26 @@ class Module extends Model
             return false;
         }
 
+        $copied = 0;
         foreach ($files as $file) {
 
-            $filename = basename($file);
-            $langcode = strtok($filename, '.');
-            $langcode_folder = GC_LOCALE_DIR . "/{$langcode}/LC_MESSAGES";
+            $info = pathinfo($file);
 
-            if (!file_exists($langcode_folder) && !mkdir($langcode_folder, 0644, true)) {
+            // Define the language code by the filename
+            // and get expected directory for the language
+            $destination = GC_LOCALE_DIR . "/{$info['filename']}";
+
+            // If it does't exist, try to create it
+            if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
                 continue;
             }
 
-            $destination = "$langcode_folder/{$module_id}_{$filename}";
-
-            if (!file_exists($destination)) {
-                copy($file, $destination);
-            }
+            // Try to copy
+            $destination .= "/{$module_id}_{$info['basename']}";
+            $copied += (int) copy($file, $destination);
         }
 
-        return true;
+        return count($files) == $copied;
     }
 
     /**
@@ -681,7 +679,7 @@ class Module extends Model
         $directory = GC_MODULE_DIR . "/$module_id/locale";
 
         if (file_exists($directory)) {
-            return glob("$directory/*.{po}", GLOB_BRACE);
+            return FileHelper::scan($directory, array('csv'));
         }
 
         return array();
@@ -712,20 +710,21 @@ class Module extends Model
         $module = $this->get($module_id);
 
         if (empty($module)) {
-            return $this->installFromZipNew($module_id);
+            return $this->installFromZipNew($file, $module_id);
         }
 
-        return $this->installFromZipUpdate($module);
+        return $this->installFromZipUpdate($file, $module);
     }
 
     /**
      * Installs a new module from a ZIP file
+     * @param string $file
      * @param string $module_id
      * @return boolean|string
      */
-    protected function installFromZipNew($module_id)
+    protected function installFromZipNew($file, $module_id)
     {
-        if (!$this->zip->extract(GC_MODULE_DIR . "/$module_id")) {
+        if (!$this->extractFromZip($file)) {
             return $this->language->text('Failed to extract the module files');
         }
 
@@ -734,14 +733,15 @@ class Module extends Model
 
     /**
      * Updates an existing module from a ZIP file
+     * @param array $file
      * @param array $module
      * @return boolean|string
      */
-    protected function installFromZipUpdate(array $module)
+    protected function installFromZipUpdate($file, array $module)
     {
-        // Only disabled existing modules can by updated
+        // Only disabled modules can by updated
         if ($this->isEnabled($module['id'])) {
-            return $this->language->text('Disable the module before updating.');
+            return $this->language->text('Disable the module before updating');
         }
 
         // Backup the current version
@@ -750,7 +750,7 @@ class Module extends Model
         }
 
         // Extract and override
-        if (!$this->zip->extract(GC_MODULE_DIR)) {
+        if (!$this->extractFromZip($file)) {
             return $this->language->text('Failed to extract the module files');
         }
 
@@ -771,6 +771,7 @@ class Module extends Model
     {
         $vars = array('@name' => $module['name'], '@date' => date("D M j G:i:s"));
         $name = $this->language->text('Module @name. Automatically backed up on @date', $vars);
+
         $data = array('name' => $name, 'module' => $module);
 
         $result = $this->backup->backup('module', $data);
@@ -778,20 +779,31 @@ class Module extends Model
     }
 
     /**
-     * Returns an array of files in the zip
+     * Extracts module files from a ZIP file
      * @param string $file
-     * @return boolean|array
+     * @return boolean
+     */
+    protected function extractFromZip($file)
+    {
+        return $this->zip->set($file)->extract(GC_MODULE_DIR);
+    }
+
+    /**
+     * Returns an array of files in a ZIP file
+     * @param string $file
+     * @return array
      */
     public function getFilesFromZip($file)
     {
         try {
             $files = $this->zip->set($file)->getList();
-        } catch (ModuleException $exc) {
-            return false;
+        } catch (InvalidArgumentException $e) {
+            trigger_error($e->getMessage());
+            return array();
         }
 
         if (count($files) < 2) {
-            return false;
+            return array();
         }
 
         return $files;
@@ -812,7 +824,7 @@ class Module extends Model
 
         $folder = reset($list);
 
-        if ('/' !== strrchr($folder, '/')) {
+        if (strrchr($folder, '/') !== '/') {
             return false;
         }
 

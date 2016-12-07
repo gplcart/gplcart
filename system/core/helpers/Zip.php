@@ -28,7 +28,7 @@ class Zip extends ZipArchive
         $flag = $create ? parent::CREATE : null;
 
         if ($this->open($path, $flag) !== true) {
-            throw new InvalidArgumentException("Cannot open $path");
+            throw new InvalidArgumentException("Cannot open ZIP file $path");
         }
 
         return $this;
