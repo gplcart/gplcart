@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr;
+use core\helpers\Arr as ArrayHelper;
 use core\helpers\Cache;
 use core\models\Condition as ConditionModel;
 
@@ -107,7 +107,7 @@ class Trigger extends Model
             $trigger['data'] = unserialize($trigger['data']);
 
             if (!empty($trigger['data']['conditions'])) {
-                Arr::sortWeight($trigger['data']['conditions']);
+                ArrayHelper::sortWeight($trigger['data']['conditions']);
             }
 
             $triggers[$trigger['trigger_id']] = $trigger;

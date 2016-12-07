@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\String;
+use core\helpers\String as StringHelper;
 use core\models\UserRole as UserRoleModel;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -284,9 +284,9 @@ class User extends BaseValidator
             return false;
         }
 
-        $hash = String::hash($submitted['password_old'], $submitted['update']['hash'], false);
+        $hash = StringHelper::hash($submitted['password_old'], $submitted['update']['hash'], false);
 
-        if (String::equals($submitted['update']['hash'], $hash)) {
+        if (StringHelper::equals($submitted['update']['hash'], $hash)) {
             return true;
         }
 

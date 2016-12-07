@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Logger;
 use core\helpers\Cache;
-use core\helpers\Request;
+use core\helpers\Request as RequestHelper;
 use core\models\Sku as SkuModel;
 use core\models\User as UserModel;
 use core\models\Product as ProductModel;
@@ -82,14 +82,12 @@ class Cart extends Model
      * @param UserModel $user
      * @param WishlistModel $wishlist
      * @param LanguageModel $language
-     * @param Request $request
+     * @param RequestHelper $request
      * @param Logger $logger
      */
-    public function __construct(
-    ProductModel $product, SkuModel $sku, CurrencyModel $currency,
-            UserModel $user, WishlistModel $wishlist,
-            LanguageModel $language, Request $request, Logger $logger
-    )
+    public function __construct(ProductModel $product, SkuModel $sku,
+            CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
+            LanguageModel $language, RequestHelper $request, Logger $logger)
     {
         parent::__construct();
 

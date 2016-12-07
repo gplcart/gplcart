@@ -9,7 +9,7 @@
 
 namespace core;
 
-use core\helpers\File;
+use core\helpers\File as FileHelper;
 
 /**
  * Provides methods to log various errors and events
@@ -41,7 +41,7 @@ class Logger
             strip_tags($message)
         );
 
-        return File::csv($file, $fields, ',', '"', $limit);
+        return FileHelper::csv($file, $fields, ',', '"', $limit);
     }
 
     /**

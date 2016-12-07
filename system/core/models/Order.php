@@ -12,7 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Logger;
 use core\helpers\Cache;
-use core\helpers\Request;
+use core\helpers\Request as RequestHelper;
 use core\models\Mail as MailModel;
 use core\models\Cart as CartModel;
 use core\models\User as UserModel;
@@ -90,13 +90,13 @@ class Order extends Model
      * @param CartModel $cart
      * @param LanguageModel $language
      * @param MailModel $mail
-     * @param Request $request
+     * @param RequestHelper $request
      * @param Logger $logger
      */
     public function __construct(UserModel $user, PriceModel $price,
-            PriceRuleModel $pricerule, ProductModel $product,
-            CartModel $cart, LanguageModel $language, MailModel $mail,
-            Request $request, Logger $logger)
+            PriceRuleModel $pricerule, ProductModel $product, CartModel $cart,
+            LanguageModel $language, MailModel $mail, RequestHelper $request,
+            Logger $logger)
     {
         parent::__construct();
 
@@ -569,7 +569,7 @@ class Order extends Model
         if (empty($order)) {
             return false;
         }
-        
+
         $order['created'] = GC_TIME;
         $order += array('status' => $this->getDefaultStatus());
 
@@ -614,19 +614,19 @@ class Order extends Model
     public function getLogList(array $data)
     {
         $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status';
-        
-        if(!empty($data['count'])){
+
+        if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(ol.order_log_id)';
         }
-        
+
         $sql .= ' FROM order_log ol'
                 . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
                 . ' WHERE ol.order_id=?';
-        
-        if(!empty($data['count'])){
+
+        if (!empty($data['count'])) {
             return (int) $this->db->fetchColumn($sql, array($data['order_id']));
         }
-        
+
         $sql .= ' ORDER BY ol.created DESC';
 
         if (!empty($data['limit'])) {
@@ -798,4 +798,5 @@ class Order extends Model
             $order['data']['components']['cart'][$sku] = $item['total'];
         }
     }
+
 }

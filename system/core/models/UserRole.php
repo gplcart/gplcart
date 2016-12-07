@@ -9,9 +9,9 @@
 
 namespace core\models;
 
-use core\Model;
+use core\Model as Model;
 use core\helpers\Cache;
-use core\helpers\Session;
+use core\helpers\Session as SessionHelper;
 use core\models\Language as LanguageModel;
 
 /**
@@ -35,9 +35,9 @@ class UserRole extends Model
     /**
      * Constructor
      * @param LanguageModel $language
-     * @param Session $session
+     * @param SessionHelper $session
      */
-    public function __construct(LanguageModel $language, Session $session)
+    public function __construct(LanguageModel $language, SessionHelper $session)
     {
         parent::__construct();
 

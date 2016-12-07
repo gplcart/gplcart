@@ -9,8 +9,8 @@
 
 namespace core;
 
-use core\helpers\Arr;
-use core\helpers\String;
+use core\helpers\Arr as ArrayHelper;
+use core\helpers\String as StringHelper;
 
 /**
  * Base controller class. Contents methods to be used in the child classes and
@@ -440,7 +440,7 @@ class Controller
     public function error($key = null, $has_error = null, $no_error = '')
     {
         if (isset($key)) {
-            $result = Arr::getValue($this->errors, $key);
+            $result = ArrayHelper::getValue($this->errors, $key);
         } else {
             $result = empty($this->errors) ? null : $this->errors;
         }
@@ -460,7 +460,7 @@ class Controller
     {
         return $this->token;
     }
-    
+
     /**
      * Returns the current user ID
      * @return integer
@@ -736,7 +736,7 @@ class Controller
      */
     public function setData($key, $value)
     {
-        Arr::setValue($this->data, $key, $value);
+        ArrayHelper::setValue($this->data, $key, $value);
     }
 
     /**
@@ -745,7 +745,7 @@ class Controller
      */
     public function unsetData($key)
     {
-        Arr::unsetValue($this->data, $key);
+        ArrayHelper::unsetValue($this->data, $key);
     }
 
     /**
@@ -755,7 +755,7 @@ class Controller
      */
     public function setError($key, $value)
     {
-        Arr::setValue($this->errors, $key, $value);
+        ArrayHelper::setValue($this->errors, $key, $value);
     }
 
     /**
@@ -764,7 +764,7 @@ class Controller
      */
     public function unsetError($key)
     {
-        Arr::unsetValue($this->errors, $key);
+        ArrayHelper::unsetValue($this->errors, $key);
     }
 
     /**
@@ -786,7 +786,7 @@ class Controller
             return $this->submitted;
         }
 
-        Arr::setValue($this->submitted, $key, $value);
+        ArrayHelper::setValue($this->submitted, $key, $value);
         return $this->submitted;
     }
 
@@ -796,7 +796,7 @@ class Controller
      */
     public function unsetSubmitted($key)
     {
-        Arr::unsetValue($this->submitted, $key);
+        ArrayHelper::unsetValue($this->submitted, $key);
     }
 
     /**
@@ -819,7 +819,7 @@ class Controller
         $value = $this->getSubmitted($key);
 
         if (isset($value) && is_string($value)) {
-            $this->setSubmitted($key, String::toArray($value));
+            $this->setSubmitted($key, StringHelper::toArray($value));
         }
     }
 
@@ -832,7 +832,7 @@ class Controller
     public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            $result = Arr::getValue($this->submitted, $key);
+            $result = ArrayHelper::getValue($this->submitted, $key);
             return isset($result) ? $result : $default;
         }
 
@@ -847,7 +847,7 @@ class Controller
      */
     public function getData($key, $default = null)
     {
-        $result = Arr::getValue($this->data, $key);
+        $result = ArrayHelper::getValue($this->data, $key);
         return isset($result) ? $result : $default;
     }
 
@@ -922,7 +922,7 @@ class Controller
             return null;
         }
 
-        if (String::equals($this->request->post('token'), $this->token)) {
+        if (StringHelper::equals($this->request->post('token'), $this->token)) {
             return null;
         }
 
@@ -1156,7 +1156,7 @@ class Controller
         }
 
         $this->data[$region] = (array) $this->data[$region];
-        Arr::sortWeight($this->data[$region]);
+        ArrayHelper::sortWeight($this->data[$region]);
 
         $items = array();
         foreach ($this->data[$region] as $item) {
@@ -1253,7 +1253,7 @@ class Controller
             return $this->getCompressedAssets($css, 'css');
         }
 
-        Arr::sortWeight($css);
+        ArrayHelper::sortWeight($css);
         return $css;
     }
 
@@ -1270,7 +1270,7 @@ class Controller
             return $this->getCompressedAssets($scripts, 'js', "-$region");
         }
 
-        Arr::sortWeight($scripts);
+        ArrayHelper::sortWeight($scripts);
         return $scripts;
     }
 
@@ -1324,7 +1324,7 @@ class Controller
         );
 
         $results = $this->document->setAsset($data, $assets);
-        Arr::sortWeight($results);
+        ArrayHelper::sortWeight($results);
         return $results;
     }
 
@@ -1412,7 +1412,7 @@ class Controller
         $this->cron_key = $this->config('cron_key', '');
 
         if (empty($this->cron_key)) {
-            $this->cron_key = String::random();
+            $this->cron_key = StringHelper::random();
             $this->config->set('cron_key', $this->cron_key);
         }
 

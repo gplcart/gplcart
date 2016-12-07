@@ -9,8 +9,8 @@
 
 namespace core\models;
 
-use core\Model;
-use core\helpers\String;
+use core\Model as Model;
+use core\helpers\String as StringHelper;
 use core\models\Language as LanguageModel;
 
 /**
@@ -168,7 +168,7 @@ class Sku extends Model
         $sku = $pattern;
 
         if (!empty($placeholders)) {
-            $sku = String::replace($pattern, $placeholders, $data);
+            $sku = StringHelper::replace($pattern, $placeholders, $data);
         }
 
         $sku = mb_strimwidth($sku, 0, 200, 'UTF-8');

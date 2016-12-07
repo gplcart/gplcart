@@ -9,8 +9,12 @@
 
 namespace core;
 
-use core\helpers\Url;
-use core\helpers\Session;
+use core\Hook as Hook;
+use core\Route as Route;
+use core\Config as Config;
+use core\Logger as Logger;
+use core\helpers\Url as UrlHelper;
+use core\helpers\Session as SessionHelper;
 
 /**
  * Provides methods to route incoming requests and setup the system
@@ -57,14 +61,14 @@ class Facade
     /**
      * Constructor
      * @param Route $route
-     * @param Url $url
-     * @param Session $session
      * @param Config $config
      * @param Hook $hook
      * @param Logger $logger
+     * @param UrlHelper $url
+     * @param SessionHelper $session
      */
-    public function __construct(Route $route, Url $url, Session $session,
-            Config $config, Hook $hook, Logger $logger)
+    public function __construct(Route $route, Config $config, Hook $hook,
+            Logger $logger, UrlHelper $url, SessionHelper $session)
     {
         $this->url = $url;
         $this->hook = $hook;

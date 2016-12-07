@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\File;
+use core\helpers\File as FileHelper;
 
 /**
  * Provides methods to validate different types of files
@@ -55,7 +55,7 @@ class FileType
     public function csv($file, array $options)
     {
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
-        $mimetype = File::mime($file);
+        $mimetype = FileHelper::mime($file);
         return in_array($mimetype, $allowed);
     }
 

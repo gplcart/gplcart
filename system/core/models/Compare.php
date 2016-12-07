@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\helpers\Request;
+use core\helpers\Request as RequestHelper;
 use core\models\Language as LanguageModel;
 
 /**
@@ -35,9 +35,9 @@ class Compare extends Model
     /**
      * Constructor
      * @param LanguageModel $language
-     * @param Request $request
+     * @param RequestHelper $request
      */
-    public function __construct(LanguageModel $language, Request $request)
+    public function __construct(LanguageModel $language, RequestHelper $request)
     {
         parent::__construct();
 

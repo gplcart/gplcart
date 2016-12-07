@@ -12,10 +12,10 @@ namespace core;
 use core\Hook;
 use core\Config;
 use core\Handler;
-use core\helpers\Url;
 use core\helpers\Cache;
-use core\helpers\Regexp;
-use core\helpers\Request;
+use core\helpers\Url as UrlHelper;
+use core\helpers\Regexp as RegexpHelper;
+use core\helpers\Request as RequestHelper;
 use core\exceptions\RouteException;
 
 /**
@@ -74,12 +74,12 @@ class Route
 
     /**
      * Constructor
-     * @param Url $url
-     * @param Request $request
+     * @param UrlHelper $url
+     * @param RequestHelper $request
      * @param Config $config
      * @param Hook $hook
      */
-    public function __construct(Url $url, Request $request, Config $config,
+    public function __construct(UrlHelper $url, RequestHelper $request, Config $config,
             Hook $hook)
     {
         $this->url = $url;
@@ -1178,7 +1178,7 @@ class Route
                 $route['arguments'] = array();
             }
 
-            $arguments = Regexp::matchPattern($this->path, $pattern);
+            $arguments = RegexpHelper::matchPattern($this->path, $pattern);
 
             if ($arguments === false) {
                 continue;

@@ -9,7 +9,7 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Request;
+use core\helpers\Request as RequestHelper;
 use core\models\File as FileModel;
 use core\models\Field as FieldModel;
 use core\models\FieldValue as FieldValueModel;
@@ -50,10 +50,10 @@ class FieldValue extends BaseValidator
      * @param FieldModel $field
      * @param FieldValueModel $field_value
      * @param FileModel $file
-     * @param Request $request
+     * @param RequestHelper $request
      */
-    public function __construct(FieldModel $field,
-            FieldValueModel $field_value, FileModel $file, Request $request)
+    public function __construct(FieldModel $field, FieldValueModel $field_value,
+            FileModel $file, RequestHelper $request)
     {
         parent::__construct();
 
@@ -119,7 +119,7 @@ class FieldValue extends BaseValidator
             ));
             return false;
         }
-        
+
         if (!is_numeric($submitted['field_id'])) {
             $options = array('@field' => $this->language->text('Field'));
             $this->errors['field_id'] = $this->language->text('@field must be numeric', $options);

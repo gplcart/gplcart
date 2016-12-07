@@ -11,6 +11,7 @@ namespace core\helpers;
 
 use ZipArchive;
 use InvalidArgumentException;
+use core\helpers\File as FileHelper;
 
 /**
  * Extends ZipArchive class
@@ -52,7 +53,7 @@ class Zip extends ZipArchive
      */
     public function folder($source, $destination, $wrapper = '')
     {
-        $files = File::scanRecursive($source);
+        $files = FileHelper::scanRecursive($source);
 
         if (empty($files)) {
             return false;

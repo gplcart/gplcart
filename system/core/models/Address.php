@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr;
+use core\helpers\Arr as ArrayHelper;
 use core\models\Country as CountryModel;
 
 /**
@@ -190,7 +190,7 @@ class Address extends Model
     public function getTranslated($address, $both = false)
     {
         $default = $this->country->defaultFormat();
-        $format = Arr::merge($default, $address['country_format']);
+        $format = ArrayHelper::merge($default, $address['country_format']);
 
         $results = array();
         foreach ($address as $key => $value) {

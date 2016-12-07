@@ -9,12 +9,12 @@
 
 namespace core\models;
 
-use core\Model;
-use core\helpers\Url;
-use core\helpers\Curl;
+use core\Model as Model;
 use core\helpers\Cache;
-use core\helpers\String;
-use core\helpers\File as F;
+use core\helpers\Url as UrlHelper;
+use core\helpers\Curl as CurlHelper;
+use core\helpers\File as FileHelper;
+use core\helpers\String as StringHelper;
 use core\models\Language as LanguageModel;
 use core\models\Validator as ValidatorModel;
 
@@ -70,11 +70,11 @@ class File extends Model
      * Constructor
      * @param LanguageModel $language
      * @param ValidatorModel $validator
-     * @param Url $url
-     * @param Curl $curl
+     * @param UrlHelper $url
+     * @param CurlHelper $curl
      */
     public function __construct(LanguageModel $language,
-            ValidatorModel $validator, Url $url, Curl $curl)
+            ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
     {
         parent::__construct();
 
@@ -98,7 +98,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = F::mime(GC_FILE_DIR . "/{$data['path']}");
+            $data['mime_type'] = FileHelper::mime(GC_FILE_DIR . "/{$data['path']}");
         }
 
         if (empty($data['file_type'])) {
@@ -780,7 +780,7 @@ class File extends Model
             return $this->language->text('Unable to create upload directory !name', array('!name' => $destination));
         }
 
-        $rand = String::random(6);
+        $rand = StringHelper::random(6);
         $destination = "$destination/$filename-$rand.$extension";
 
         $copied = copy($tempname, $destination);

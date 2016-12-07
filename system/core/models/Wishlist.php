@@ -9,9 +9,9 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Logger;
-use core\helpers\Url;
+use core\Model as Model;
+use core\Logger as Logger;
+use core\helpers\Url as UrlHelper;
 use core\helpers\Cache;
 use core\models\User as UserModel;
 use core\models\Language as LanguageModel;
@@ -51,10 +51,10 @@ class Wishlist extends Model
      * @param UserModel $user
      * @param LanguageModel $language
      * @param Logger $logger
-     * @param Url $url
+     * @param UrlHelper $url
      */
     public function __construct(UserModel $user, LanguageModel $language,
-            Logger $logger, Url $url)
+            Logger $logger, UrlHelper $url)
     {
         parent::__construct();
 
@@ -63,7 +63,7 @@ class Wishlist extends Model
         $this->logger = $logger;
         $this->language = $language;
     }
-    
+
     /**
      * Returns a wishlist
      * @param integer $wishlist_id

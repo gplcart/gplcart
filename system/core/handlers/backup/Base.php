@@ -10,7 +10,7 @@
 namespace core\handlers\backup;
 
 use core\Container;
-use core\helpers\File;
+use core\helpers\File as FileHelper;
 
 /**
  * Base backup handler class
@@ -66,7 +66,7 @@ class Base
         $path = GC_PRIVATE_BACKUP_DIR;
         $path .= "/module_{$id}_{$time}.zip";
 
-        return File::unique($path);
+        return FileHelper::unique($path);
     }
 
     /**
@@ -76,7 +76,7 @@ class Base
      */
     protected function renameTemp($original)
     {
-        $temp = File::unique("$original--" . uniqid());
+        $temp = FileHelper::unique("$original--" . uniqid());
 
         if (rename($original, $temp) === true) {
             return $temp;
@@ -91,7 +91,7 @@ class Base
      */
     protected function delete($path)
     {
-        return File::deleteRecursive($path);
+        return FileHelper::deleteRecursive($path);
     }
 
 }

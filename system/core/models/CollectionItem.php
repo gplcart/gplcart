@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\Handler;
-use core\helpers\Arr;
+use core\helpers\Arr as ArrayHelper;
 use core\helpers\Cache;
 use core\models\Collection as CollectionModel;
 
@@ -240,7 +240,7 @@ class CollectionItem extends Model
             }
         }
 
-        Arr::sortWeight($results);
+        ArrayHelper::sortWeight($results);
         return $results;
     }
 

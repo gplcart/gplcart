@@ -9,10 +9,10 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Regexp;
-use core\helpers\Request;
 use core\models\File as FileModel;
 use core\models\Module as ModuleModel;
+use core\helpers\Regexp as RegexpHelper;
+use core\helpers\Request as RequestHelper;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -43,10 +43,10 @@ class Store extends BaseValidator
      * Constructor
      * @param FileModel $file
      * @param ModuleModel $module
-     * @param Request $request
+     * @param RequestHelper $request
      */
     public function __construct(FileModel $file, ModuleModel $module,
-            Request $request)
+            RequestHelper $request)
     {
         parent::__construct();
 
@@ -127,7 +127,7 @@ class Store extends BaseValidator
             return true;
         }
 
-        if (!Regexp::matchDomain($submitted['domain'])) {
+        if (!RegexpHelper::matchDomain($submitted['domain'])) {
             $this->errors['domain'] = $this->language->text('Invalid domain');
             return false;
         }

@@ -10,11 +10,11 @@
 namespace core\handlers\trigger;
 
 use core\Route;
-use core\helpers\Regexp;
 use core\models\User as UserModel;
 use core\models\Product as ProductModel;
 use core\models\Currency as CurrencyModel;
 use core\models\Condition as ConditionModel;
+use core\helpers\Regexp as RegexpHelper;
 
 class Condition
 {
@@ -103,7 +103,7 @@ class Condition
 
         $found = false;
         foreach ($patterns as $pattern) {
-            if (Regexp::matchPattern($path, $pattern)) {
+            if (RegexpHelper::matchPattern($path, $pattern)) {
                 $found = true;
             }
         }

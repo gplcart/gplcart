@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Csv;
-use core\helpers\Request;
+use core\helpers\Csv as CsvHelper;
+use core\helpers\Request as RequestHelper;
 use core\models\File as FileModel;
 use core\models\Import as ImportModel;
 use core\handlers\validator\Base as BaseValidator;
@@ -47,12 +47,12 @@ class Import extends BaseValidator
 
     /**
      * Constructor
-     * @param Csv $csv
-     * @param Request $request
+     * @param CsvHelper $csv
+     * @param RequestHelper $request
      * @param ImportModel $import
      * @param FileModel $file
      */
-    public function __construct(Csv $csv, Request $request,
+    public function __construct(CsvHelper $csv, RequestHelper $request,
             ImportModel $import, FileModel $file)
     {
         parent::__construct();

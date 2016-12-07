@@ -9,8 +9,8 @@
 
 namespace core\handlers\validator;
 
-use core\helpers\Request;
 use core\models\File as FileModel;
+use core\helpers\Request as RequestHelper;
 use core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -34,9 +34,9 @@ class File extends BaseValidator
     /**
      * Constructor
      * @param FileModel $file
-     * @param Request $request
+     * @param RequestHelper $request
      */
-    public function __construct(FileModel $file, Request $request)
+    public function __construct(FileModel $file, RequestHelper $request)
     {
         parent::__construct();
 

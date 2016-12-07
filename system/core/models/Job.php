@@ -9,13 +9,13 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Handler;
-use core\Container;
-use core\helpers\Url;
-use core\helpers\Arr;
+use core\Model as Model;
+use core\Handler as Handler;
+use core\Container as Container;
+use core\helpers\Url as UrlHelper;
+use core\helpers\Arr as ArrayHelper;
 use core\helpers\Cache;
-use core\helpers\Session;
+use core\helpers\Session as SessionHelper;
 use core\models\Language as LanguageModel;
 
 /**
@@ -55,11 +55,11 @@ class Job extends Model
     /**
      * Constructor
      * @param LanguageModel $language
-     * @param Session $session
-     * @param Url $url
+     * @param SessionHelper $session
+     * @param UrlHelper $url
      */
-    public function __construct(LanguageModel $language, Session $session,
-            Url $url)
+    public function __construct(LanguageModel $language, SessionHelper $session,
+            UrlHelper $url)
     {
         parent::__construct();
 
@@ -101,7 +101,7 @@ class Job extends Model
         }
 
         $default = $this->getDefault();
-        $job = Arr::merge($default, $job);
+        $job = ArrayHelper::merge($default, $job);
 
         $existing = $this->getSession($job['id']);
 

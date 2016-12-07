@@ -11,13 +11,14 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\helpers\Request;
+use core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to stores
  */
 class Store extends Model
 {
+
     /**
      * Request class instance
      * @var \core\helpers\Request $request
@@ -26,9 +27,9 @@ class Store extends Model
 
     /**
      * Constructor
-     * @param Request $request
+     * @param RequestHelper $request
      */
-    public function __construct(Request $request)
+    public function __construct(RequestHelper $request)
     {
         parent::__construct();
 

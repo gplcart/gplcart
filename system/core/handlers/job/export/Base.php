@@ -10,7 +10,7 @@
 namespace core\handlers\job\export;
 
 use core\Container;
-use core\helpers\File;
+use core\helpers\File as FileHelper;
 
 /**
  * Base export handler class
@@ -159,7 +159,7 @@ class Base
      */
     protected function write(array $data)
     {
-        File::csv($this->file, $data, $this->job['data']['delimiter']);
+        FileHelper::csv($this->file, $data, $this->job['data']['delimiter']);
     }
 
     /**

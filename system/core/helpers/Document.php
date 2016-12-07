@@ -9,6 +9,8 @@
 
 namespace core\helpers;
 
+use core\helpers\Arr as ArrayHelper;
+
 /**
  * Provides methods to work with HTML document
  */
@@ -76,7 +78,7 @@ class Document
         $position = empty($data['position']) ? array() : array($data['position']);
 
         if (!isset($data['weight'])) {
-            $elements = Arr::getValue($assets, $position);
+            $elements = ArrayHelper::getValue($assets, $position);
             $data['weight'] = empty($elements) ? 0 : count($elements) + 1;
         }
 
@@ -90,7 +92,7 @@ class Document
         );
 
         $position[] = $key;
-        Arr::setValue($assets, $position, $asset);
+        ArrayHelper::setValue($assets, $position, $asset);
         return $assets;
     }
 

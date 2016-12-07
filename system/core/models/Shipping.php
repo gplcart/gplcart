@@ -10,7 +10,7 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr;
+use core\helpers\Arr as ArrayHelper;
 use core\helpers\Cache;
 use core\models\Language as LanguageModel;
 
@@ -60,7 +60,7 @@ class Shipping extends Model
 
         $this->hook->fire('shipping.method', $methods);
 
-        Arr::sortWeight($methods);
+        ArrayHelper::sortWeight($methods);
         return $methods;
     }
 

@@ -9,14 +9,14 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Logger;
-use core\helpers\String;
-use core\helpers\Session;
+use core\Model as Model;
+use core\Logger as Logger;
 use core\models\Mail as MailModel;
 use core\models\Address as AddressModel;
 use core\models\UserRole as UserRoleModel;
 use core\models\Language as LanguageModel;
+use core\helpers\String as StringHelper;
+use core\helpers\Session as SessionHelper;
 use core\exceptions\UserAccessException;
 
 /**
@@ -67,11 +67,11 @@ class User extends Model
      * @param UserRoleModel $role
      * @param MailModel $mail
      * @param LanguageModel $language
-     * @param Session $session
+     * @param SessionHelper $session
      * @param Logger $logger
      */
     public function __construct(AddressModel $address, UserRoleModel $role,
-            MailModel $mail, LanguageModel $language, Session $session,
+            MailModel $mail, LanguageModel $language, SessionHelper $session,
             Logger $logger)
     {
         parent::__construct();
@@ -98,7 +98,7 @@ class User extends Model
         }
 
         $data['created'] = GC_TIME;
-        $data += array('hash' => String::hash($data['password']));
+        $data += array('hash' => StringHelper::hash($data['password']));
         $data['user_id'] = $this->db->insert('user', $data);
 
         $this->setAddress($data);
@@ -150,7 +150,7 @@ class User extends Model
         $data += array('user_id' => $user_id);
 
         if (!empty($data['password'])) {
-            $data['hash'] = String::hash($data['password']);
+            $data['hash'] = StringHelper::hash($data['password']);
         }
 
         if ($this->isSuperadmin($user_id)) {
@@ -358,9 +358,9 @@ class User extends Model
             return $result;
         }
 
-        $expected = String::hash($data['password'], $user['hash'], false);
+        $expected = StringHelper::hash($data['password'], $user['hash'], false);
 
-        if (!String::equals($user['hash'], $expected)) {
+        if (!StringHelper::equals($user['hash'], $expected)) {
             return $result;
         }
 
@@ -516,7 +516,7 @@ class User extends Model
      */
     public function generatePassword()
     {
-        $hash = crypt(String::random(), String::random());
+        $hash = crypt(StringHelper::random(), StringHelper::random());
         return str_replace(array('+', '/', '='), '', base64_encode($hash));
     }
 
@@ -555,7 +555,7 @@ class User extends Model
         $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
 
         $user['data']['reset_password'] = array(
-            'token' => String::random(),
+            'token' => StringHelper::random(),
             'expires' => GC_TIME + $lifetime,
         );
 

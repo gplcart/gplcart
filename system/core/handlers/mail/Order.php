@@ -9,8 +9,8 @@
 
 namespace core\handlers\mail;
 
-use core\Config;
-use core\helpers\Url;
+use core\Config as Config;
+use core\helpers\Url as UrlHelper;
 use core\models\Mail as MailModel;
 use core\models\Store as StoreModel;
 use core\models\Price as PriceModel;
@@ -69,12 +69,12 @@ class Order
      * @param LanguageModel $language
      * @param OrderModel $order
      * @param PriceModel $price
-     * @param Url $url
+     * @param UrlHelper $url
      * @param Config $config
      */
     public function __construct(StoreModel $store, MailModel $mail,
             LanguageModel $language, OrderModel $order, PriceModel $price,
-            Url $url, Config $config)
+            UrlHelper $url, Config $config)
     {
         $this->url = $url;
         $this->mail = $mail;

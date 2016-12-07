@@ -9,9 +9,9 @@
 
 namespace core\handlers\validator;
 
-use core\Container;
-use core\helpers\Arr;
-use core\helpers\String;
+use core\Container as Container;
+use core\helpers\Arr as ArrayHelper;
+use core\helpers\String as StringHelper;
 
 /**
  * Base validator class
@@ -77,7 +77,7 @@ class Base
     protected function getSubmitted($key, $submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        return Arr::getValue($submitted, $parents);
+        return ArrayHelper::getValue($submitted, $parents);
     }
 
     /**
@@ -89,7 +89,7 @@ class Base
     public function setSubmitted($key, $value, &$submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        Arr::setValue($submitted, $parents, $value);
+        ArrayHelper::setValue($submitted, $parents, $value);
     }
 
     /**
@@ -99,7 +99,7 @@ class Base
     public function unsetSubmitted($key, &$submitted, $options = array())
     {
         $parents = $this->getParents($key, $options);
-        Arr::unsetValue($submitted, $parents);
+        ArrayHelper::unsetValue($submitted, $parents);
     }
 
     /**
@@ -131,7 +131,7 @@ class Base
     protected function setError($key, $value, array $options = array())
     {
         $parents = $this->getParents($key, $options);
-        Arr::setValue($this->errors, $parents, $value);
+        ArrayHelper::setValue($this->errors, $parents, $value);
     }
 
     /**
@@ -159,7 +159,7 @@ class Base
     protected function getError($key, array $options = array())
     {
         $parents = $this->getParents($key, $options);
-        return Arr::getValue($this->errors, $parents);
+        return ArrayHelper::getValue($this->errors, $parents);
     }
 
     /**
@@ -312,7 +312,7 @@ class Base
         $status = $this->getSubmitted('status', $submitted, $options);
 
         if (isset($status)) {
-            $value = (int) String::toBool($status);
+            $value = (int) StringHelper::toBool($status);
             $this->setSubmitted('status', $value, $submitted, $options);
         }
 
@@ -330,7 +330,7 @@ class Base
         $default = $this->getSubmitted('default', $submitted, $options);
 
         if (isset($default)) {
-            $value = (int) String::toBool($default);
+            $value = (int) StringHelper::toBool($default);
             $this->setSubmitted('default', $value, $submitted, $options);
         }
 

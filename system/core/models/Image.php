@@ -9,11 +9,11 @@
 
 namespace core\models;
 
-use core\Model;
-use core\helpers\Url;
-use core\helpers\Arr;
+use core\Model as Model;
+use core\helpers\Url as UrlHelper;
+use core\helpers\Arr as ArrayHelper;
 use core\helpers\File as FileHelper;
-use core\helpers\Image as Imagestyle;
+use core\helpers\Image as ImageHelper;
 use core\models\File as FileModel;
 
 /**
@@ -43,11 +43,11 @@ class Image extends Model
     /**
      * Constructor
      * @param FileModel $file
-     * @param Image $imagestyle
-     * @param Url $url
+     * @param ImageHelper $imagestyle
+     * @param UrlHelper $url
      */
-    public function __construct(FileModel $file, Imagestyle $imagestyle,
-            Url $url)
+    public function __construct(FileModel $file, ImageHelper $imagestyle,
+            UrlHelper $url)
     {
         parent::__construct();
 
@@ -204,7 +204,7 @@ class Image extends Model
         $default_imagestyles = $this->defaultStyles();
         $saved_imagestyles = $this->config->get('imagestyles', array());
 
-        $imagestyles = Arr::merge($default_imagestyles, $saved_imagestyles);
+        $imagestyles = ArrayHelper::merge($default_imagestyles, $saved_imagestyles);
 
         foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
             $imagestyle['imagestyle_id'] = $imagestyle_id;
@@ -231,7 +231,7 @@ class Image extends Model
 
         $actions = $styles[$imagestyle_id]['actions'];
 
-        Arr::sortWeight($actions);
+        ArrayHelper::sortWeight($actions);
 
         return $actions;
     }

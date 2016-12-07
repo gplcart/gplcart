@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model;
 use core\helpers\Cache;
-use core\helpers\Request;
+use core\helpers\Request as RequestHelper;
 use core\models\Sku as SkuModel;
 use core\models\Price as PriceModel;
 use core\models\Image as ImageModel;
@@ -91,12 +91,12 @@ class Product extends Model
      * @param SkuModel $sku
      * @param SearchModel $search
      * @param ProductFieldModel $product_field
-     * @param Request $request
+     * @param RequestHelper $request
      */
     public function __construct(PriceModel $price, PriceRuleModel $pricerule,
             ImageModel $image, AliasModel $alias, LanguageModel $language,
             SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, Request $request)
+            ProductFieldModel $product_field, RequestHelper $request)
     {
         parent::__construct();
 

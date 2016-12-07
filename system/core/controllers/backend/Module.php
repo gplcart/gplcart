@@ -9,7 +9,7 @@
 
 namespace core\controllers\backend;
 
-use core\helpers\Curl;
+use core\helpers\Curl as CurlHelper;
 use core\models\Module as ModuleModel;
 use core\controllers\backend\Controller as BackendController;
 
@@ -34,9 +34,9 @@ class Module extends BackendController
     /**
      * Constructor
      * @param ModuleModel $module
-     * @param Curl $curl
+     * @param CurlHelper $curl
      */
-    public function __construct(ModuleModel $module, Curl $curl)
+    public function __construct(ModuleModel $module, CurlHelper $curl)
     {
         parent::__construct();
 

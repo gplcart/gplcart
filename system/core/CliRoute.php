@@ -11,7 +11,7 @@ namespace core;
 
 use core\Hook;
 use core\Handler;
-use core\helpers\Cli;
+use core\helpers\Cli as CliHelper;
 
 /**
  * Routes CLI commands
@@ -48,7 +48,7 @@ class CliRoute
      * @param Cli $cli
      * @param Hook $hook
      */
-    public function __construct(Cli $cli, Hook $hook)
+    public function __construct(CliHelper $cli, Hook $hook)
     {
         $this->cli = $cli;
         $this->hook = $hook;

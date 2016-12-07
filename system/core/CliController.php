@@ -9,7 +9,7 @@
 
 namespace core;
 
-use core\helpers\Arr;
+use core\helpers\Arr as ArrayHelper;
 
 /**
  * Basic CLI controller
@@ -172,7 +172,7 @@ class CliController
     {
         $arguments = $this->getArguments($filter);
         $mapped = $this->mapArguments($arguments, $map);
-        $data = Arr::merge($default, $mapped);
+        $data = ArrayHelper::merge($default, $mapped);
 
         return $this->setSubmitted($data);
     }
@@ -209,7 +209,7 @@ class CliController
      */
     protected function getArguments($filter = true)
     {
-        return Arr::trim($this->current_route['arguments'], $filter);
+        return ArrayHelper::trim($this->current_route['arguments'], $filter);
     }
 
     /**
@@ -318,7 +318,7 @@ class CliController
      */
     protected function outputErrors($exit = true)
     {
-        $errors = Arr::flatten($this->errors);
+        $errors = ArrayHelper::flatten($this->errors);
 
         foreach ($errors as $error) {
             $this->printError($error);
@@ -438,7 +438,7 @@ class CliController
         $mapped = array();
         foreach ($arguments as $key => $value) {
             if (isset($map[$key]) && is_string($map[$key])) {
-                Arr::setValue($mapped, $map[$key], $value);
+                ArrayHelper::setValue($mapped, $map[$key], $value);
             }
         }
 

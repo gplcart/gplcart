@@ -9,12 +9,12 @@
 
 namespace core\models;
 
-use core\Route;
-use core\Model;
-use core\helpers\Arr;
-use core\helpers\File;
+use core\Route as Route;
+use core\Model as Model;
 use core\helpers\Cache;
-use core\helpers\String;
+use core\helpers\Arr as ArrayHelper;
+use core\helpers\File as FileHelper;
+use core\helpers\String as StringHelper;
 use core\models\Translit as TranslitModel;
 
 /**
@@ -116,7 +116,7 @@ class Language extends Model
         $available = $this->getAvailable();
         $saved = $this->config->get('languages', array());
 
-        $languages = Arr::merge($available, $saved);
+        $languages = ArrayHelper::merge($available, $saved);
 
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
@@ -206,7 +206,7 @@ class Language extends Model
             });
         }
 
-        Arr::sortWeight($languages);
+        ArrayHelper::sortWeight($languages);
         return $languages;
     }
 
@@ -375,10 +375,10 @@ class Language extends Model
     {
 
         if (!isset($data[0]) || $data[0] === '') {
-            return String::format($source, $arguments);
+            return StringHelper::format($source, $arguments);
         }
 
-        return String::format($data[0], $arguments);
+        return StringHelper::format($data[0], $arguments);
     }
 
     /**
@@ -476,8 +476,8 @@ class Language extends Model
      */
     public function refresh($langcode)
     {
-        File::delete(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
-        File::delete(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
+        FileHelper::delete(GC_LOCALE_DIR . "/$langcode/compiled", array('csv'));
+        FileHelper::delete(GC_LOCALE_JS_DIR . "/$langcode", array('js'));
     }
 
     /**

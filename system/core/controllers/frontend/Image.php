@@ -9,7 +9,7 @@
 
 namespace core\controllers\frontend;
 
-use core\helpers\Response;
+use core\helpers\Response as ResponseHelper;
 use core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -26,9 +26,9 @@ class Image extends FrontendController
 
     /**
      * Constructor
-     * @param Response $response
+     * @param ResponseHelper $response
      */
-    public function __construct(Response $response)
+    public function __construct(ResponseHelper $response)
     {
         parent::__construct();
 

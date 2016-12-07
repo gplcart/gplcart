@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Arr;
 use core\helpers\Cache;
-use core\helpers\Request;
+use core\helpers\Arr as ArrayHelper;
+use core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to currencies
@@ -28,9 +28,9 @@ class Currency extends Model
 
     /**
      * Constructor
-     * @param Request $request
+     * @param RequestHelper $request
      */
-    public function __construct(Request $request)
+    public function __construct(RequestHelper $request)
     {
         parent::__construct();
 
@@ -103,7 +103,7 @@ class Currency extends Model
 
         $default = $this->getDefaultList();
         $saved = $this->config->get('currencies', array());
-        $currencies = Arr::merge($default, $saved);
+        $currencies = ArrayHelper::merge($default, $saved);
 
         $this->hook->fire('currencies', $currencies);
 

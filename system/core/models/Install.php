@@ -9,11 +9,11 @@
 
 namespace core\models;
 
-use core\Model;
-use core\Container;
-use core\helpers\Arr;
-use core\helpers\String;
-use core\helpers\Database;
+use core\Model as Model;
+use core\Container as Container;
+use core\helpers\Arr as ArrayHelper;
+use core\helpers\String as StringHelper;
+use core\helpers\Database as DatabaseHelper;
 use core\models\Store as StoreModel;
 use core\models\Language as LanguageModel;
 use core\exceptions\DatabaseException;
@@ -93,7 +93,7 @@ class Install extends Model
             $value['id'] = $key;
         });
 
-        Arr::sortWeight($installers);
+        ArrayHelper::sortWeight($installers);
         return $installers;
     }
 
@@ -127,7 +127,7 @@ class Install extends Model
             'severity' => 'danger',
             'message' => $this->language->text('PDO database driver installed')
         );
-        
+
         $requirements['extensions']['spl'] = array(
             'status' => extension_loaded('spl'),
             'severity' => 'danger',
@@ -206,7 +206,7 @@ class Install extends Model
     public function connect(array $settings)
     {
         try {
-            $this->database = new Database($settings);
+            $this->database = new DatabaseHelper($settings);
         } catch (DatabaseException $e) {
             $this->database = null;
             return $e->getMessage();
@@ -375,7 +375,7 @@ class Install extends Model
             'name' => 'Superadmin',
             'store_id' => $store_id,
             'email' => $settings['user']['email'],
-            'hash' => String::hash($settings['user']['password'])
+            'hash' => StringHelper::hash($settings['user']['password'])
         );
 
         $user_id = $this->database->insert('user', $user);
