@@ -352,10 +352,14 @@ class Controller
         }
 
         $template = $this->getModuleTemplatePath($file, $fullpath);
-        $extension = isset($this->theme_settings['twig']) ? '.twig' : '.php';
+        $extension = pathinfo($template, PATHINFO_EXTENSION);
+
+        if (!in_array($extension, array('php', 'twig'))) {
+            $extension = 'php';
+        }
 
         if ((substr($template, -strlen($extension)) !== $extension)) {
-            $template .= $extension;
+            $template .= '.' . $extension;
         }
 
         $this->hook->fire('render', $template, $data, $this);
@@ -366,7 +370,7 @@ class Controller
             return $this->text('Could not load template %path', array('%path' => $template));
         }
 
-        if ($extension === '.twig') {
+        if ($extension === 'twig') {
             return $this->renderTwig($template, $data, (array) $this->theme_settings['twig']);
         }
 
