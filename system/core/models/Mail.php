@@ -18,7 +18,6 @@ use core\Handler;
  */
 class Mail extends Model
 {
-
     /**
      * Debug info
      * @var string
@@ -218,63 +217,6 @@ class Mail extends Model
         }
 
         return Handler::call($handlers, $handler_id, 'process', $arguments);
-    }
-
-    /**
-     * Returns a string containing default e-mail signature
-     * @param array $options Store settings
-     * @return string
-     */
-    public function signatureText(array $options)
-    {
-        $signature = array();
-
-        if (!empty($options['owner'])) {
-            $signature[] = "!owner";
-        }
-
-        if (!empty($options['address'])) {
-            $signature[] = "!address";
-        }
-
-        if (!empty($options['phone'])) {
-            $signature[] = "tel: !phone";
-        }
-
-        if (!empty($options['fax'])) {
-            $signature[] = "fax: !fax";
-        }
-
-        if (!empty($options['email'])) {
-            $signature[] = "e-mail: !store_email";
-        }
-
-        if (!empty($options['map'])) {
-            $signature[] = "Find us on Google Maps: !map";
-        }
-
-        if (empty($signature)) {
-            return '';
-        }
-
-        return "-------------------------------------\n" . implode("\n", $signature);
-    }
-
-    /**
-     * Returns an array of placeholders for the signature
-     * @param array $options
-     * @return array
-     */
-    public function signatureVariables(array $options)
-    {
-        return array(
-            '!owner' => $options['owner'],
-            '!phone' => implode(',', $options['phone']),
-            '!store_email' => implode(',', $options['email']),
-            '!fax' => implode(',', $options['fax']),
-            '!address' => $options['address'],
-            '!map' => empty($options['map']) ? '' : 'http://maps.google.com/?q=' . implode(',', $options['map']),
-        );
     }
 
     /**

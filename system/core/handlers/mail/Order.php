@@ -9,34 +9,13 @@
 
 namespace core\handlers\mail;
 
-use core\Config as Config;
 use core\helpers\Url as UrlHelper;
-use core\models\Mail as MailModel;
-use core\models\Store as StoreModel;
 use core\models\Price as PriceModel;
 use core\models\Order as OrderModel;
-use core\models\Language as LanguageModel;
+use core\handlers\mail\Base as BaseHandler;
 
-class Order
+class Order extends BaseHandler
 {
-
-    /**
-     * Store model instance
-     * @var \core\models\Store $store
-     */
-    protected $store;
-
-    /**
-     * Mail model instance
-     * @var \core\models\Mail $mail
-     */
-    protected $mail;
-
-    /**
-     * Language model instance
-     * @var \core\models\Language $language
-     */
-    protected $language;
 
     /**
      * Order model instance
@@ -57,32 +36,19 @@ class Order
     protected $url;
 
     /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
-     * @param StoreModel $store
-     * @param MailModel $mail
-     * @param LanguageModel $language
      * @param OrderModel $order
      * @param PriceModel $price
      * @param UrlHelper $url
-     * @param Config $config
      */
-    public function __construct(StoreModel $store, MailModel $mail,
-            LanguageModel $language, OrderModel $order, PriceModel $price,
-            UrlHelper $url, Config $config)
+    public function __construct(OrderModel $order, PriceModel $price,
+            UrlHelper $url)
     {
+        parent::__construct();
+
         $this->url = $url;
-        $this->mail = $mail;
-        $this->store = $store;
         $this->price = $price;
         $this->order = $order;
-        $this->config = $config;
-        $this->language = $language;
     }
 
     /**
@@ -150,7 +116,7 @@ class Order
         $message_default = "Thank you for ordering at !store\n\n"
                 . "Order status: !status\n"
                 . "View orders: !order\n"
-                . $this->mail->signatureText($options);
+                . $this->signatureText($options);
 
         $message_text = $this->config->get('email_message_order_created_customer', $message_default);
         $url = $this->store->url($store);
@@ -161,7 +127,7 @@ class Order
             '!status' => $this->order->getStatusName($order['status']),
         );
 
-        $message_arguments = array_merge($message_arguments, $this->mail->signatureVariables($options));
+        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
 
         return $this->mail->send(array($order['user_email']), array($subject => $message), $options);

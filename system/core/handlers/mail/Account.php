@@ -9,53 +9,17 @@
 
 namespace core\handlers\mail;
 
-use core\Config;
-use core\models\Mail as MailModel;
-use core\models\Store as StoreModel;
-use core\models\Language as LanguageModel;
+use core\handlers\mail\Base as BaseHandler;
 
-class Account
+class Account extends BaseHandler
 {
 
     /**
-     * Store model instance
-     * @var \core\models\Store $store
-     */
-    protected $store;
-
-    /**
-     * Mail model instance
-     * @var \core\models\Mail $mail
-     */
-    protected $mail;
-
-    /**
-     * Language model instance
-     * @var \core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Config class instance
-     * @var \core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
-     * @param StoreModel $store
-     * @param MailModel $mail
-     * @param LanguageModel $language
-     * @param Config $config
      */
-    public function __construct(StoreModel $store, MailModel $mail,
-            LanguageModel $language, Config $config)
+    public function __construct()
     {
-
-        $this->mail = $mail;
-        $this->store = $store;
-        $this->config = $config;
-        $this->language = $language;
+        parent::__construct();
     }
 
     /**
@@ -114,11 +78,11 @@ class Account
                 . "Account status: !status\n\n"
                 . "Edit account: !edit\n"
                 . "View orders: !order\n"
-                . $this->mail->signatureText($options);
+                . $this->signatureText($options);
 
         $message_text = $this->config->get('email_message_user_registered_customer', $message_default);
 
-        $base = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", '/');
+        $base = $this->store->url($store);
 
         $message_arguments = array(
             '!store' => $store_name,
@@ -127,7 +91,7 @@ class Account
             '!status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
         );
 
-        $message_arguments = array_merge($message_arguments, $this->mail->signatureVariables($options));
+        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
@@ -154,12 +118,12 @@ class Account
                 . "To get the password please click on the following link:\n"
                 . "!link\n\n"
                 . "This link expires on !expires and nothing will happen if it's not used\n\n"
-                . $this->mail->signatureText($options);
+                . $this->signatureText($options);
 
         $message_text = $this->config->get('email_message_reset_password', $message_default);
 
-        $base = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", '/');
-        
+        $base = $this->store->url($store);
+
         $date_format = $this->config->get('date_prefix', 'd.m.Y');
         $date_format .= $this->config->get('date_suffix', ' H:i');
 
@@ -172,7 +136,7 @@ class Account
             )),
         );
 
-        $message_arguments = array_merge($message_arguments, $this->mail->signatureVariables($options));
+        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
@@ -196,12 +160,12 @@ class Account
         $subject = $this->language->text($subject_text, $subject_arguments);
 
         $message_default = "Your password at !store has been changed\n\n"
-                . $this->mail->signatureText($options);
+                . $this->signatureText($options);
 
         $message_text = $this->config->get('email_message_changed_password', $message_default);
         $message_arguments = array('!store' => $store_name);
 
-        $message_arguments = array_merge($message_arguments, $this->mail->signatureVariables($options));
+        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
