@@ -149,13 +149,17 @@ class Facade
 
         switch ($level) {
             case 0:
-                error_reporting(0); // disable at all
+                // Disable errors at all
+                error_reporting(0);
                 break;
             case 1:
+                // Show only important errors
                 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
                 break;
             case 2:
-                error_reporting(E_ALL);
+                // Show all but E_USER_DEPRECATED
+                // Hides annoying Twig notifications
+                error_reporting(E_ALL ^ E_USER_DEPRECATED);
         }
     }
 

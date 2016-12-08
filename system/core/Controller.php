@@ -351,26 +351,17 @@ class Controller
             return $this->text('No template file provided');
         }
 
-        $template = $this->getModuleTemplatePath($file, $fullpath);
-        $extension = pathinfo($template, PATHINFO_EXTENSION);
-
-        if (!in_array($extension, array('php', 'twig'))) {
-            $extension = 'php';
-        }
-
-        if ((substr($template, -strlen($extension)) !== $extension)) {
-            $template .= '.' . $extension;
-        }
+        $template = $this->getTemplateFile($file, $fullpath);
 
         $this->hook->fire('render', $template, $data, $this);
 
         $this->setPhpErrors($data);
 
-        if (!file_exists($template)) {
+        if (empty($template)) {
             return $this->text('Could not load template %path', array('%path' => $template));
         }
 
-        if ($extension === 'twig') {
+        if (pathinfo($template, PATHINFO_EXTENSION) === 'twig') {
             return $this->renderTwig($template, $data, (array) $this->theme_settings['twig']);
         }
 
@@ -383,7 +374,7 @@ class Controller
      * @param boolean $fullpath
      * @return string
      */
-    protected function getModuleTemplatePath($file, $fullpath)
+    protected function getTemplateFile($file, $fullpath)
     {
         $module = $this->theme;
 
@@ -394,7 +385,21 @@ class Controller
             $file = $parts[1];
         }
 
-        return $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
+        $path = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
+
+        $extensions = array('php');
+        if (isset($this->theme_settings['twig'])) {
+            array_unshift($extensions, 'twig');
+        }
+
+        foreach ($extensions as $extension) {
+            $template = "$path.$extension";
+            if (is_readable($template)) {
+                return $template;
+            }
+        }
+
+        return '';
     }
 
     /**

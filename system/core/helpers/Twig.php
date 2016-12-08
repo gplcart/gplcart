@@ -47,10 +47,6 @@ class Twig
         $this->loader = new \Twig_Loader_Filesystem($path);
         $this->twig = new \Twig_Environment($this->loader, $options);
 
-        // Add global controller object
-        $this->twig->addGlobal('gplcart', $object);
-
-        // Add custom functions
         $this->addFunctionUrl($object);
         $this->addFunctionDate($object);
         $this->addFunctionText($object);
@@ -63,8 +59,6 @@ class Twig
         $this->addFunctionIsSuperadmin($object);
         $this->addFunctionUid($object);
     }
-    
-    
 
     /**
      * Renders a .twig template
@@ -88,7 +82,7 @@ class Twig
      */
     protected function addFunctionError($object)
     {
-        $function = new Twig_SimpleFunction('error', function ($key = null, $has_error = null, $no_error = '') use ($object) {
+        $function = new \Twig_SimpleFunction('error', function ($key = null, $has_error = null, $no_error = '') use ($object) {
             return $object->error($key, $has_error, $no_error);
         });
 
@@ -101,7 +95,7 @@ class Twig
      */
     protected function addFunctionToken($object)
     {
-        $function = new Twig_SimpleFunction('token', function () use ($object) {
+        $function = new \Twig_SimpleFunction('token', function () use ($object) {
             return $object->token();
         });
 
@@ -114,7 +108,7 @@ class Twig
      */
     protected function addFunctionText($object)
     {
-        $function = new Twig_SimpleFunction('text', function ($text, $arguments = array()) use ($object) {
+        $function = new \Twig_SimpleFunction('text', function ($text, $arguments = array()) use ($object) {
             return $object->text($text, $arguments);
         });
 
@@ -127,7 +121,7 @@ class Twig
      */
     protected function addFunctionAccess($object)
     {
-        $function = new Twig_SimpleFunction('access', function ($permission) use ($object) {
+        $function = new \Twig_SimpleFunction('access', function ($permission) use ($object) {
             return $object->access($permission);
         });
 
@@ -140,7 +134,7 @@ class Twig
      */
     protected function addFunctionUrl($object)
     {
-        $function = new Twig_SimpleFunction('url', function ($path = '', array $query = array(), $absolute = false) use ($object) {
+        $function = new \Twig_SimpleFunction('url', function ($path = '', array $query = array(), $absolute = false) use ($object) {
             return $object->url($path, $query, $absolute);
         });
 
@@ -153,7 +147,7 @@ class Twig
      */
     protected function addFunctionIsSuperadmin($object)
     {
-        $function = new Twig_SimpleFunction('isSuperadmin', function ($user_id = null) use ($object) {
+        $function = new \Twig_SimpleFunction('isSuperadmin', function ($user_id = null) use ($object) {
             return $object->isSuperadmin($user_id);
         });
 
@@ -166,7 +160,7 @@ class Twig
      */
     protected function addFunctionDate($object)
     {
-        $function = new Twig_SimpleFunction('date', function ($timestamp = null, $full = true) use ($object) {
+        $function = new \Twig_SimpleFunction('date', function ($timestamp = null, $full = true) use ($object) {
             return $object->date($timestamp, $full);
         });
 
@@ -179,7 +173,7 @@ class Twig
      */
     protected function addFunctionAttributes($object)
     {
-        $function = new Twig_SimpleFunction('attributes', function ($attributes) use ($object) {
+        $function = new \Twig_SimpleFunction('attributes', function ($attributes) use ($object) {
             return $object->attributes($attributes);
         });
 
@@ -192,7 +186,7 @@ class Twig
      */
     protected function addFunctionConfig($object)
     {
-        $function = new Twig_SimpleFunction('config', function ($key = null, $default = null) use ($object) {
+        $function = new \Twig_SimpleFunction('config', function ($key = null, $default = null) use ($object) {
             return $object->config($key, $default);
         });
 
@@ -205,20 +199,20 @@ class Twig
      */
     protected function addFunctionSummary($object)
     {
-        $function = new Twig_SimpleFunction('summary', function ($text, $xss = false, $tags = null, $protocols = null) use ($object) {
+        $function = new \Twig_SimpleFunction('summary', function ($text, $xss = false, $tags = null, $protocols = null) use ($object) {
             return $object->summary($text, $xss, $tags, $protocols);
         });
 
         $this->twig->addFunction($function);
     }
-    
+
     /**
      * Adds function \core\Controller::uid()
      * @param object $object
      */
     protected function addFunctionUid($object)
     {
-        $function = new Twig_SimpleFunction('uid', function () use ($object) {
+        $function = new \Twig_SimpleFunction('uid', function () use ($object) {
             return $object->uid();
         });
 
