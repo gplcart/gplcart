@@ -102,7 +102,7 @@ class Condition
 
         $found = false;
         foreach ($patterns as $pattern) {
-            if (gplcart_regexp_match_pattern($path, $pattern)) {
+            if (gplcart_parse_pattern($path, $pattern)) {
                 $found = true;
             }
         }

@@ -39,35 +39,24 @@ function gplcart_setup_server()
         $_SERVER ['HTTP_REFERER'] = '';
     }
 
-    if (!isset($_SERVER['SERVER_PROTOCOL']) || ($_SERVER['SERVER_PROTOCOL'] != 'HTTP/1.0'//
-            && $_SERVER['SERVER_PROTOCOL'] != 'HTTP/1.1')) {
+    if (!isset($_SERVER['SERVER_PROTOCOL']) || ($_SERVER['SERVER_PROTOCOL'] !== 'HTTP/1.0'//
+            && $_SERVER['SERVER_PROTOCOL'] !== 'HTTP/1.1')) {
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
     }
 
-    if (isset($_SERVER['HTTP_HOST'])) {
-        $_SERVER['HTTP_HOST'] = strtolower($_SERVER['HTTP_HOST']);
-        gplcart_setup_host();
-    } else {
+    if (!isset($_SERVER['HTTP_HOST'])) {
         $_SERVER['HTTP_HOST'] = '';
+        return null;
     }
 
-    return null;
-}
+    $_SERVER['HTTP_HOST'] = strtolower($_SERVER['HTTP_HOST']);
 
-/**
- * Validates server host variable
- */
-function gplcart_setup_host()
-{
-    $valid = (strlen($_SERVER['HTTP_HOST']) <= 1000 //
-            && substr_count($_SERVER['HTTP_HOST'], '.') <= 100 //
-            && substr_count($_SERVER['HTTP_HOST'], ':') <= 100 //
-            && preg_match('/^\[?(?:[a-zA-Z0-9-:\]_]+\.?)+$/', $_SERVER['HTTP_HOST']));
-
-    if (!$valid) {
+    if (!gplcart_valid_host($_SERVER['HTTP_HOST'])) {
         header("{$_SERVER['SERVER_PROTOCOL']} 400 Bad Request");
         exit;
     }
+
+    return null;
 }
 
 /**
@@ -75,11 +64,8 @@ function gplcart_setup_host()
  */
 function gplcart_setup_ini()
 {
-    if (GC_CLI) {
-        gplcart_setup_ini_memory('1G');
-    } else {
-        gplcart_setup_ini_session();
-    }
+    gplcart_setup_ini_session();
+    gplcart_setup_ini_memory('1G');
 }
 
 /**
@@ -87,28 +73,37 @@ function gplcart_setup_ini()
  */
 function gplcart_setup_ini_session()
 {
+    if (GC_CLI) {
+        return null;
+    }
+
     ini_set('session.use_cookies', '1');
     ini_set('session.use_only_cookies', '1');
     ini_set('session.use_trans_sid', '0');
     ini_set('session.cache_limiter', '');
     ini_set('session.cookie_httponly', '1');
+    return null;
 }
 
 /**
  * Checks and tries to increase memory_limit if needed
  * @param string $value
- * @return boolean|string
+ * @return null
  */
 function gplcart_setup_ini_memory($value)
 {
+    if (!GC_CLI) {
+        return null;
+    }
+
     $bytes = gplcart_to_bytes($value);
     $limit = trim(ini_get('memory_limit'));
 
     if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
-        return ini_set('memory_limit', $value);
+        ini_set('memory_limit', $value);
     }
 
-    return false;
+    return null;
 }
 
 /**
@@ -118,7 +113,7 @@ function gplcart_setup_ini_memory($value)
  */
 function gplcart_setup_autoload()
 {
-    $function = function($namespace) {
+    return spl_autoload_register(function($namespace) {
 
         $path = str_replace('\\', '/', $namespace);
         $file = (strpos($path, 'tests') === 0) ? GC_ROOT_DIR : GC_SYSTEM_DIR;
@@ -142,7 +137,5 @@ function gplcart_setup_autoload()
         }
 
         return false;
-    };
-
-    return spl_autoload_register($function);
+    });
 }

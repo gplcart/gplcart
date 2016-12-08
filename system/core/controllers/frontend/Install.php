@@ -52,7 +52,7 @@ class Install extends FrontendController
         $installer = $this->getInstall($installer_id);
         $this->submitInstall($installer);
 
-        $timezones = gplcart_date_timezones();
+        $timezones = gplcart_timezones();
         $languages = $this->getLanguagesInstall();
         $requirements = $this->getRequirementsInstall();
         $installers = $this->getListInstall();

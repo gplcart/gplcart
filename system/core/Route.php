@@ -300,7 +300,7 @@ class Route
                 $route['arguments'] = array();
             }
 
-            $arguments = gplcart_regexp_match_pattern($this->path, $pattern);
+            $arguments = gplcart_parse_pattern($this->path, $pattern);
 
             if ($arguments === false) {
                 continue;

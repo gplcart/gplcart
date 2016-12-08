@@ -126,7 +126,7 @@ class Store extends BaseValidator
             return true;
         }
 
-        if (!gplcart_regexp_match_domain($submitted['domain'])) {
+        if (!gplcart_valid_domain($submitted['domain'])) {
             $this->errors['domain'] = $this->language->text('Invalid domain');
             return false;
         }

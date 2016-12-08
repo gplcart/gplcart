@@ -73,3 +73,66 @@ function gplcart_to_bytes($value)
 
     return $value;
 }
+
+/**
+ * Validates a domain name, e.g domain.com
+ * @param string $domain
+ * @return boolean
+ */
+function gplcart_valid_domain($domain)
+{
+    $pattern = '/^(?!\-)'
+            . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
+            . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
+
+    return (bool) preg_match($pattern, $domain);
+}
+
+/**
+ * Parses and extracts arguments from a string
+ * @param string $string
+ * @param string $pattern
+ * @return boolean|array
+ */
+function gplcart_parse_pattern($string, $pattern)
+{
+    $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
+
+    if (preg_match($pattern, $string, $params)) {
+        array_shift($params);
+        return array_values($params);
+    }
+
+    return false;
+}
+
+/**
+ * Validates $_SERVER['HTTP_HOST'] variable
+ * @return boolean
+ */
+function gplcart_valid_host($host)
+{
+    return (strlen($host) <= 1000 //
+            && substr_count($host, '.') <= 100 //
+            && substr_count($host, ':') <= 100 //
+            && preg_match('/^\[?(?:[a-zA-Z0-9-:\]_]+\.?)+$/', $host));
+}
+
+/**
+ * Generates an array of time zones and their local data
+ * @return array
+ */
+function gplcart_timezones()
+{
+    $zones = array();
+    $timestamp = GC_TIME;
+    $default_timezone = date_default_timezone_get();
+
+    foreach (timezone_identifiers_list() as $zone) {
+        date_default_timezone_set($zone);
+        $zones[$zone] = '(UTC/GMT ' . date('P', $timestamp) . ') ' . $zone;
+    }
+
+    date_default_timezone_set($default_timezone);
+    return $zones;
+}

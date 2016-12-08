@@ -13,9 +13,7 @@ require 'functions/common.php';
 require 'functions/setup.php';
 require 'functions/string.php';
 require 'functions/array.php';
-require 'functions/regexp.php';
 require 'functions/file.php';
-require 'functions/date.php';
 
 gplcart_setup_requirements();
 

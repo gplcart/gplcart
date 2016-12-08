@@ -172,7 +172,7 @@ class Install extends BaseValidator
             return true;
         }
 
-        if (gplcart_regexp_match_domain($submitted['store']['host'])) {
+        if (gplcart_valid_domain($submitted['store']['host'])) {
             return true;
         }
 
@@ -233,7 +233,7 @@ class Install extends BaseValidator
             return false;
         }
 
-        $timezones = gplcart_date_timezones();
+        $timezones = gplcart_timezones();
 
         if (empty($timezones[$submitted['store']['timezone']])) {
             $error = $this->language->text('Invalid timezone');
