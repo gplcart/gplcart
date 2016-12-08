@@ -13,6 +13,7 @@ use core\Model as Model;
 use core\helpers\Url as UrlHelper;
 use core\helpers\Image as ImageHelper;
 use core\models\File as FileModel;
+use BadMethodCallException;
 
 /**
  * Manages basic behaviors and data related to images
@@ -174,8 +175,8 @@ class Image extends Model
     {
         try {
             $this->applyActions($file, $actions);
-        } catch (\RuntimeException $exception) {
-            echo $exception->getMessage();
+        } catch (BadMethodCallException $exception) {
+            trigger_error($exception->getMessage());
         }
     }
 
@@ -230,7 +231,6 @@ class Image extends Model
         $actions = $styles[$imagestyle_id]['actions'];
 
         gplcart_array_sort($actions);
-
         return $actions;
     }
 
@@ -388,12 +388,11 @@ class Image extends Model
      */
     protected function applyActions($file, array $actions)
     {
-        $this->imagestyle->setFile($file);
+        $library = $this->imagestyle->set($file);
 
         foreach ($actions as $action_id => $action) {
-            $is_valid = $this->validateAction($file, $action_id, $action);
-            if (method_exists($this->imagestyle, $action_id) && $is_valid) {
-                call_user_func_array(array($this->imagestyle, $action_id), (array) $action['value']);
+            if ($this->validateAction($file, $action_id, $action)) {
+                call_user_func_array(array($library, $action_id), (array) $action['value']);
             }
         }
     }

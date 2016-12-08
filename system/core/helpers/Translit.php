@@ -16,7 +16,6 @@ use BadMethodCallException;
  */
 class Translit
 {
-
     /**
      * Library class instance
      * @var \Translit $lib
