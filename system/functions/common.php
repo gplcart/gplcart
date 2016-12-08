@@ -9,12 +9,11 @@
 
 /**
  * Deletes a variable from the static storage
- * Taken from Drupal
- * @param string|null $name
+ * @param string|null $key
  */
-function gplcart_cache_clear($name = null)
+function gplcart_cache_clear($key = null)
 {
-    gplcart_cache($name, null, true);
+    gplcart_cache($key, null, true);
 }
 
 /**

@@ -11,7 +11,7 @@ namespace core\models;
 
 use DateTime;
 use core\Model;
-use core\helpers\Cache;
+use core\models\Cache as CacheModel;
 use core\models\Language as LanguageModel;
 
 /**
@@ -21,6 +21,12 @@ class Report extends Model
 {
 
     /**
+     * Cache model instance
+     * @var \core\models\Cache $cache
+     */
+    protected $cache;
+
+    /**
      * Language model instance
      * @var \core\models\Language $language
      */
@@ -28,12 +34,14 @@ class Report extends Model
 
     /**
      * Constructor
+     * @param CacheModel $cache
      * @param LanguageModel $language
      */
-    public function __construct(LanguageModel $language)
+    public function __construct(CacheModel $cache, LanguageModel $language)
     {
         parent::__construct();
 
+        $this->cache = $cache;
         $this->language = $language;
     }
 
@@ -74,8 +82,7 @@ class Report extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'severity', 'time', 'text');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY time DESC';
@@ -170,7 +177,7 @@ class Report extends Model
      */
     public function clearGaCache($profile_id)
     {
-        Cache::clear("ga.$profile_id.", '*.cache');
+        $this->cache->clear("ga.$profile_id.", array('pattern' => '*'));
     }
 
     /**
@@ -312,7 +319,7 @@ class Report extends Model
             'status' => date($date_format, $this->config->get('cron_last_run')),
             'weight' => 7,
         );
-        
+
         $filesystem = $this->checkFilesystem();
 
         $statuses['filesystem'] = array(
@@ -398,7 +405,7 @@ class Report extends Model
         return $this->language->text('Missing .htaccess file %s', array(
                     '%s' => $htaccess));
     }
-    
+
     /**
      * Creates a .htaccess file
      * @param string $directory

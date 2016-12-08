@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Cache;
 use core\helpers\Request as RequestHelper;
 use core\models\Sku as SkuModel;
+use core\models\Cache as CacheModel;
 use core\models\Price as PriceModel;
 use core\models\Image as ImageModel;
 use core\models\Alias as AliasModel;
@@ -26,6 +26,12 @@ use core\models\ProductField as ProductFieldModel;
  */
 class Product extends Model
 {
+
+    /**
+     * Cache model instance
+     * @var \core\models\Cache $cache
+     */
+    protected $cache;
 
     /**
      * Image model instance
@@ -91,16 +97,19 @@ class Product extends Model
      * @param SkuModel $sku
      * @param SearchModel $search
      * @param ProductFieldModel $product_field
+     * @param CacheModel $cache
      * @param RequestHelper $request
      */
     public function __construct(PriceModel $price, PriceRuleModel $pricerule,
             ImageModel $image, AliasModel $alias, LanguageModel $language,
             SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, RequestHelper $request)
+            ProductFieldModel $product_field, CacheModel $cache,
+            RequestHelper $request)
     {
         parent::__construct();
 
         $this->sku = $sku;
+        $this->cache = $cache;
         $this->price = $price;
         $this->image = $image;
         $this->alias = $alias;
@@ -196,7 +205,7 @@ class Product extends Model
         if ($updated > 0) {
             $result = true;
             $this->search->index('product', $product_id);
-            Cache::clear("product.$product_id.", "*");
+            $this->cache->clear("product.$product_id.", array('pattern' => '*'));
         }
 
         $this->hook->fire('update.product.after', $product_id, $data, $result);

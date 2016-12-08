@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Cache;
 use core\models\Alias as AliasModel;
 use core\models\Image as ImageModel;
+use core\models\Cache as CacheModel;
 use core\models\Language as LanguageModel;
 
 /**
@@ -20,6 +20,12 @@ use core\models\Language as LanguageModel;
  */
 class Page extends Model
 {
+    
+    /**
+     * Cache model instance
+     * @var \core\models\Cache $cache
+     */
+    protected $cache;
 
     /**
      * Image model instance
@@ -38,18 +44,20 @@ class Page extends Model
      * @var \core\models\Language $language
      */
     protected $language;
-
+    
     /**
      * Constructor
      * @param ImageModel $image
      * @param AliasModel $alias
      * @param LanguageModel $language
+     * @param CacheModel $cache
      */
     public function __construct(ImageModel $image, AliasModel $alias,
-            LanguageModel $language)
+            LanguageModel $language, CacheModel $cache)
     {
         parent::__construct();
 
+        $this->cache = $cache;
         $this->alias = $alias;
         $this->image = $image;
         $this->language = $language;
@@ -221,7 +229,7 @@ class Page extends Model
         $updated += (int) $this->setImages($data);
         $updated += (int) $this->setTranslation($data);
 
-        Cache::clear("page.$page_id");
+        $this->cache->clear("page.$page_id");
 
         $result = ($updated > 0);
 

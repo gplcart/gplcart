@@ -9,16 +9,22 @@
 
 namespace core\models;
 
-use core\helpers\Cache;
-use core\Handler;
-use core\Logger;
 use core\Model;
+use core\Logger;
+use core\Handler;
+use core\models\Cache as CacheModel;
 
 /**
  * Manages basic behaviors and data related to Google Analytics
  */
 class Analytics extends Model
 {
+
+    /**
+     * Cache model instance
+     * @var \core\models\Cache $cache
+     */
+    protected $cache;
 
     /**
      * GA service class instance
@@ -52,13 +58,16 @@ class Analytics extends Model
 
     /**
      * Constructor
+     * @param CacheModel $cache
      * @param Logger $logger
      */
-    public function __construct(Logger $logger)
+    public function __construct(CacheModel $cache, Logger $logger)
     {
         parent::__construct();
 
+        $this->cache = $cache;
         $this->logger = $logger;
+
         require GC_LIBRARY_DIR . '/gapi/src/Google/autoload.php';
     }
 
@@ -82,7 +91,7 @@ class Analytics extends Model
         try {
 
             $this->credentials = new \Google_Auth_AssertionCredentials(
-                $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
+                    $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
             );
 
             $this->client->setAssertionCredentials($this->credentials);
@@ -211,7 +220,7 @@ class Analytics extends Model
         $return = array();
         $lifespan = $this->config->get('ga_cache_lifespan', 86400);
         $cid = "ga.{$this->profile_id}." . md5(serialize($arguments));
-        $cache = Cache::get($cid, null, $lifespan);
+        $cache = $this->cache->get($cid, array('lifespan' => $lifespan));
 
         if (isset($cache)) {
             $return = $cache;
@@ -229,7 +238,7 @@ class Analytics extends Model
                 $return = $rows;
             }
 
-            Cache::set($cid, $return);
+            $this->cache->set($cid, $return);
 
             $log = array(
                 'message' => 'Google Analytics for profile %s has updated',

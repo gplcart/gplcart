@@ -11,7 +11,6 @@ namespace core\models;
 
 use core\Model;
 use core\Container;
-use core\helpers\Cache;
 use core\helpers\Zip as ZipHelper;
 use core\models\Backup as BackupModel;
 use core\models\Language as LanguageModel;
@@ -590,7 +589,7 @@ class Module extends Model
     protected function getOverrideMap()
     {
         // Clear all caches before getting enabled modules
-        Cache::clear('modules');
+        gplcart_cache_clear('modules');
 
         $map = array();
         foreach ($this->getEnabled() as $module) {

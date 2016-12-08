@@ -107,7 +107,7 @@ function gplcart_setup_ini_memory($value)
 }
 
 /**
- * Autoload function being registered with spl_autoload_register()
+ * Provides class autoloading functionality
  * @param string $namespace
  * @return boolean
  */
