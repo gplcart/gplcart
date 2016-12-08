@@ -175,7 +175,7 @@ class City extends BackendController
     {
         $options = array('count' => true, 'state_id' => $state_id);
         $options += $query;
-        return $this->city->getList($options);
+        return (int) $this->city->getList($options);
     }
 
     /**

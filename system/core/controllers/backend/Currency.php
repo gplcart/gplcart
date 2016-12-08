@@ -125,7 +125,7 @@ class Currency extends BackendController
             $this->outputError(404);
         }
 
-        return $currency;
+        return (array) $currency;
     }
 
     /**

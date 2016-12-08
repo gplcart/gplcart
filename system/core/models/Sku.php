@@ -216,10 +216,10 @@ class Sku extends Model
     }
 
     /**
-     * 
+     * Returns an array of data when selecting sku combinations using field value IDs
      * @param array $product
      * @param array $field_value_ids
-     * @return boolean|string
+     * @return array
      */
     public function selectCombination(array $product, array $field_value_ids)
     {

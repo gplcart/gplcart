@@ -14,7 +14,6 @@ use core\handlers\search\Base as BaseHandler;
 
 class Product extends BaseHandler
 {
-
     /**
      * Product model instance
      * @var \core\models\Product $product
@@ -99,8 +98,8 @@ class Product extends BaseHandler
             return $this->db->fetchColumn($sql, $where);
         }
 
-        $options['product_id'] = $this->db->fetchColumnAll($sql, $where);
-        return $this->product->getList($options);
+        $data['product_id'] = $this->db->fetchColumnAll($sql, $where);
+        return $this->product->getList($data);
     }
 
     /**

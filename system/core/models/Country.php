@@ -341,7 +341,7 @@ class Country extends Model
     /**
      * Returns an array of countries
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {

@@ -174,7 +174,7 @@ class Backup extends BackendController
     protected function getTotalBackup(array $query)
     {
         $query['count'] = true;
-        return $this->backup->getList($query);
+        return (int) $this->backup->getList($query);
     }
 
     /**
@@ -424,7 +424,11 @@ class Backup extends BackendController
             $this->redirect('', $message, 'warning');
         }
 
-        $this->redirect('', $result, 'warning');
+        if (is_array($result)) {
+            $result = end($result);
+        }
+
+        $this->redirect('', (string) $result, 'warning');
     }
 
 }

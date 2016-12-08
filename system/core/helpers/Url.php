@@ -52,7 +52,8 @@ class Url
 
         if (!empty($target)) {
             $url = parse_url($target, PHP_URL_PATH);
-            $options = parse_url($target, PHP_URL_QUERY);
+            $parsed = parse_url($target, PHP_URL_QUERY);
+            $options = is_array($parsed) ? $parsed : array();
         }
 
         header('Location: ' . $this->get($url, $options));

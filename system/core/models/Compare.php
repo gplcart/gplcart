@@ -218,7 +218,7 @@ class Compare extends Model
     /**
      * Removes a products from comparison
      * @param integer $product_id
-     * @return array
+     * @return array|boolean
      */
     public function delete($product_id)
     {

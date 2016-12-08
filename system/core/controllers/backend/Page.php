@@ -438,6 +438,8 @@ class Page extends BackendController
      */
     protected function setBreadcrumbEditPage()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')

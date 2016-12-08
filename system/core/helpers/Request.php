@@ -14,6 +14,11 @@ namespace core\helpers;
  */
 class Request
 {
+    
+    public function __construct()
+    {
+        // Empty
+    }
 
     /**
      * Base path

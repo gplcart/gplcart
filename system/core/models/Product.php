@@ -874,7 +874,7 @@ class Product extends Model
                 continue;
             }
 
-            if (!$update && !empty($combination['price'])) {
+            if (empty($update) && !empty($combination['price'])) {
                 $combination['price'] = $this->price->amount($combination['price'], $data['currency']);
             }
 

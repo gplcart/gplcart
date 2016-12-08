@@ -63,7 +63,7 @@ class Address extends Model
     /**
      * Adds a new address
      * @param array $data
-     * @return integer
+     * @return integer|boolean
      */
     public function add(array $data)
     {

@@ -66,7 +66,7 @@ class CategoryGroup extends BackendController
     protected function getTotalCategoryGroup(array $query)
     {
         $query['count'] = true;
-        return $this->category_group->getList($query);
+        return (int) $this->category_group->getList($query);
     }
 
     /**

@@ -200,7 +200,7 @@ class Alias extends Model
     {
         $alias = $pattern;
 
-        if ($placeholders) {
+        if (!empty($placeholders)) {
             $alias = gplcart_string_replace($pattern, $placeholders, $data);
         }
 

@@ -294,7 +294,7 @@ class Category extends BackendController
     /**
      * Returns an array of category data
      * @param integer $category_id
-     * @return array|void
+     * @return array
      */
     protected function getCategory($category_id)
     {

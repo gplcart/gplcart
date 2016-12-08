@@ -118,7 +118,7 @@ class Account extends FrontendController
         $this->setData('user', $user);
         $this->setData('orders', $orders);
 
-        $this->setBreadcrumbIndexAccount($user);
+        $this->setBreadcrumbIndexAccount();
         $this->setTitleIndexAccount();
         $this->outputIndexAccount();
     }
@@ -297,9 +297,8 @@ class Account extends FrontendController
 
     /**
      * Sets breadcrumbs on the account page
-     * @param array $user
      */
-    protected function setBreadcrumbIndexAccount(array $user)
+    protected function setBreadcrumbIndexAccount()
     {
         $breadcrumb = array(
             'url' => $this->url('/'),

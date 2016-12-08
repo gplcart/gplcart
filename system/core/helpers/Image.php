@@ -59,6 +59,14 @@ class Image
     protected $height;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Empty
+    }
+
+    /**
      * Destroy image resource
      */
     public function __destruct()
@@ -79,10 +87,10 @@ class Image
     public function setFile($filename = null, $width = null, $height = null,
             $color = null)
     {
-        if ($filename) {
-            $this->load($filename);
-        } elseif ($width) {
+        if (empty($filename)) {
             $this->create($width, $height, $color);
+        } elseif ($width) {
+            $this->load($filename);
         }
 
         return $this;
@@ -190,7 +198,7 @@ class Image
             'mime' => 'image/png'
         );
 
-        if ($color) {
+        if (!empty($color)) {
             $this->fill($color);
         }
 

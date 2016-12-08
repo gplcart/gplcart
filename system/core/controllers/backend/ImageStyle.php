@@ -286,6 +286,8 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbEditImageStyle()
     {
+        $breadcrumbs = array();
+        
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

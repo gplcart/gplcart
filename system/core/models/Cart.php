@@ -297,7 +297,7 @@ class Cart extends Model
     /**
      * Adds/updates products in the cart
      * @param array $data
-     * @return integer
+     * @return integer|boolean
      */
     protected function setProduct(array $data)
     {

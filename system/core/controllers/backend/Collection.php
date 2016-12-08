@@ -110,7 +110,7 @@ class Collection extends BackendController
     protected function getTotalCollection(array $query)
     {
         $query['count'] = true;
-        return $this->collection->getList($query);
+        return (int) $this->collection->getList($query);
     }
 
     /**
