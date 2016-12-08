@@ -30,8 +30,6 @@ $config = array();
 # $config['category_alias_placeholder'] = array('%t' => 'title'); // Replacement rule used to generate a category alias
 # $config['category_image_dirname'] = 'category'; // Category image upload directory
 # $config['collection_front_slideshow'] = 1;
-# $config['compress_css'] = 0;
-# $config['compress_js'] = 0;
 # $config['country'] = ''; // Default store country (code)
 # $config['cron_interval'] = 86400; // Interval between cron executions, in seconds
 # $config['cron_key'] = ''; // Cron secret key

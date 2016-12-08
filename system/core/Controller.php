@@ -1245,11 +1245,6 @@ class Controller
     public function getCss()
     {
         $css = $this->document->css();
-
-        if ($this->config('compress_css', 0)) {
-            return $this->getCompressedAssets($css, 'css');
-        }
-
         gplcart_array_sort($css);
         return $css;
     }
@@ -1262,67 +1257,8 @@ class Controller
     public function getJs($region)
     {
         $scripts = $this->document->js(null, $region);
-
-        if ($this->config('compress_js', 0)) {
-            return $this->getCompressedAssets($scripts, 'js', "-$region");
-        }
-
         gplcart_array_sort($scripts);
         return $scripts;
-    }
-
-    /**
-     * Returns an array of asset files including the compressed version
-     * @param array $assets
-     * @param string $type
-     * @param string $id
-     * @return array
-     */
-    protected function getCompressedAssets(array $assets, $type, $id = '')
-    {
-        if (empty($assets)) {
-            return array();
-        }
-
-        $file = "files/assets/compressed/$type/{$this->theme}$id.$type";
-
-        if (!file_exists(GC_ROOT_DIR . "/$file")) {
-            $compressor = Container::instance('core\\helpers\\Compressor');
-        }
-
-        $weights = array();
-        foreach ($assets as $path => $asset) {
-
-            if (empty($asset['compress'])) {
-                continue;
-            }
-
-            $weights[] = $asset['weight'];
-
-            if (!isset($compressor)) {
-                unset($assets[$path]);
-                continue;
-            }
-
-            $source = $asset['path'] ? $asset['path'] : $asset['text'];
-            $compressor->{$type}('add', $source);
-            unset($assets[$path]);
-        }
-
-        if (isset($compressor)) {
-            $compressor->{$type}('minify', GC_ROOT_DIR . "/$file");
-        }
-
-        $data = array(
-            'type' => $type,
-            'asset' => $file,
-            'compress' => false,
-            'weight' => (min($weights) - 10)
-        );
-
-        $results = $this->document->setAsset($data, $assets);
-        gplcart_array_sort($results);
-        return $results;
     }
 
     /**
