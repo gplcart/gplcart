@@ -7,14 +7,19 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
-
 /**
- * Manages basic behaviors and data related to string transliterations
- * Modified from Drupal's Transliteration module
+ * String transliterator. Based on Drupal's Transliteration module
  */
 class Translit
 {
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Empty
+    }
 
     /**
      * Transliterates a string
@@ -23,7 +28,7 @@ class Translit
      * @param null|string $source_langcode
      * @return string
      */
-    public function translit($string, $unknown = '?', $source_langcode = null)
+    public function get($string, $unknown = '?', $source_langcode = null)
     {
         // ASCII is always valid NFC! If we're only ever given plain ASCII, we can
         // avoid the overhead of initializing the decomposition tables by skipping
@@ -190,7 +195,7 @@ class Translit
         $bank = $ord >> 8;
 
         if (!isset($map[$bank][$langcode])) {
-            $file = GC_CORE_DIR . '/handlers/translit/' . sprintf('x%02x', $bank) . '.php';
+            $file = __DIR__ . '/data/' . sprintf('x%02x', $bank) . '.php';
             if (file_exists($file)) {
                 include $file;
                 if ($langcode != 'en' && isset($variant[$langcode])) {
@@ -205,7 +210,6 @@ class Translit
         }
 
         $ord = $ord & 255;
-
         return isset($map[$bank][$langcode][$ord]) ? $map[$bank][$langcode][$ord] : $unknown;
     }
 

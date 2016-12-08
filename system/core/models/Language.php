@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Route as Route;
 use core\Model as Model;
-use core\models\Translit as TranslitModel;
+use core\helpers\Translit as TranslitHelper;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -27,13 +27,13 @@ class Language extends Model
 
     /**
      * Route class instance
-     * @var \core\Route $route ;
+     * @var \core\Route $route
      */
     protected $route;
 
     /**
-     * Translit library instance
-     * @var \core\models\Translit $translit ;
+     * Translit helper instance
+     * @var \core\helpers\Translit $translit
      */
     protected $translit;
 
@@ -65,10 +65,10 @@ class Language extends Model
 
     /**
      * Constructor
-     * @param TranslitModel $translit
+     * @param TranslitHelper $translit
      * @param Route $route
      */
-    public function __construct(TranslitModel $translit, Route $route)
+    public function __construct(TranslitHelper $translit, Route $route)
     {
         parent::__construct();
 
@@ -499,7 +499,7 @@ class Language extends Model
             return '';
         }
 
-        $translit = $this->translit->translit($string, '?', $language);
+        $translit = $this->translit->get($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
     }
