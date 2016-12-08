@@ -9,7 +9,7 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <?php foreach ($operations as $id => $operation) { ?>
-    <form method="post" enctype="multipart/form-data" id="import-csv-<?php echo $id; ?>" class="form-horizontal" onsubmit="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
+    <form method="post" enctype="multipart/form-data" id="import-csv-<?php echo $id; ?>" class="form-horizontal" onsubmit="return confirm(GplCart.text('Are you sure?'));">
       <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
       <div class="form-group<?php echo $this->error("$id.file", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->escape($operation['name']); ?></label>

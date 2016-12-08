@@ -68,7 +68,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($city['city_id']) && $this->access('city_delete')) { ?>
-          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Delete? It cannot be undone!');">
+          <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Delete? It cannot be undone!'));">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

@@ -236,7 +236,7 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (isset($page['page_id']) && $this->access('page_delete')) { ?>
-          <button name="delete" value="1" class="btn btn-danger" onclick="return confirm('Delete? It cannot be undone!');">
+          <button name="delete" value="1" class="btn btn-danger" onclick="return confirm(GplCart.text('Delete? It cannot be undone!'));">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
           <?php } ?>

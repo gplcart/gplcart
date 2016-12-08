@@ -55,7 +55,7 @@
                 </a>
               </li>
               <li>
-                <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" onclick="return confirm();" class="refresh">
+                <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));" class="refresh">
                   <?php echo $this->text('clear cache'); ?>
                 </a>
               </li>

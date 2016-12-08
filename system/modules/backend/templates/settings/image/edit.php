@@ -59,7 +59,7 @@
           <div class="row">
             <div class="col-md-2">
               <?php if (isset($imagestyle['imagestyle_id']) && $this->access('image_style_delete')) { ?>
-              <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('Are you sure?');">
+              <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure?'));">
                 <?php if(empty($imagestyle['default'])){ ?>
                 <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
                 <?php } else { ?>

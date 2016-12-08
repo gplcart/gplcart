@@ -107,7 +107,7 @@
               </li>
               <?php } ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id, 'token' => $token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure you want to remove this module from disk? It cannot be undone!'); ?>');">
+                <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id, 'token' => $token)); ?>" onclick="return confirm(GplCart.text('Are you sure you want to remove this module from disk? It cannot be undone!'));">
                   <?php echo mb_strtolower($this->text('Delete')); ?>
                 </a>
               </li>
