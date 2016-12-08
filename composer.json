@@ -31,5 +31,7 @@
             "core\\": "system/core/",
             "tests\\unit\\": "tests/unit/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
