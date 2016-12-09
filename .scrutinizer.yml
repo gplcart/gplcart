@@ -5,7 +5,9 @@ filter:
         - system/libraries/*
         - system/locale/*
         - system/config/*
-        - system/help/*
+        - system/modules/backend/templates/*
+        - system/modules/frontend/templates/*
+        - system/modules/mobile/templates/*
 
 checks:
     php:
