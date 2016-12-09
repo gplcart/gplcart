@@ -9,16 +9,15 @@
 
 namespace core\helpers;
 
-use core\exceptions\DatabaseException;
 use PDO;
 use PDOException;
+use core\exceptions\DatabaseException;
 
 /**
  * Provides wrappers for PDO methods
  */
 class Database extends PDO
 {
-
     /**
      * Sets up the database connection
      * Database constructor.
@@ -281,12 +280,8 @@ class Database extends PDO
      * @param string $field
      * @param mixed $value
      */
-    protected function filterValue(
-        array $scheme,
-        array &$values,
-        $field,
-        &$value
-    ) {
+    protected function filterValue($scheme, &$values, $field, &$value)
+    {
         if (!empty($scheme['fields'][$field]['auto_increment'])) {
             unset($values[$field]); // Remove autoincremented fields
         }
@@ -335,7 +330,6 @@ class Database extends PDO
         }
 
         $where = implode(' AND ', $carray);
-
         $stmt = $this->prepare("UPDATE $table SET $fields WHERE $where");
 
         foreach ($data as $key => $value) {
