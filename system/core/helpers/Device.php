@@ -28,7 +28,7 @@ class Device
      */
     public function __construct()
     {
-        require_once GC_LIBRARY_DIR . '/mobile-detect/Mobile_Detect.php';
+        gplcart_require_library('mobile-detect/Mobile_Detect.php');
         $this->lib = new \Mobile_Detect;
     }
 

@@ -16,6 +16,7 @@ use BadMethodCallException;
  */
 class Translit
 {
+
     /**
      * Library class instance
      * @var \Translit $lib
@@ -27,7 +28,7 @@ class Translit
      */
     public function __construct()
     {
-        require_once GC_LIBRARY_DIR . '/translit/Translit.php';
+        gplcart_require_library('translit/Translit.php');
         $this->lib = new \Translit;
     }
 

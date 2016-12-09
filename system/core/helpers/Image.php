@@ -29,7 +29,7 @@ class Image
      */
     public function __construct()
     {
-        require_once GC_LIBRARY_DIR . '/simpleimage/src/abeautifulsite/SimpleImage.php';
+        gplcart_require_library('simpleimage/src/abeautifulsite/SimpleImage.php');
     }
 
     /**

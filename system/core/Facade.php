@@ -179,7 +179,7 @@ class Facade
     protected function setDebuggingTools()
     {
         //if ($this->config->get('kint', 0)) {
-        require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+        gplcart_require_library('kint/Kint.class.php');
         //}
     }
 

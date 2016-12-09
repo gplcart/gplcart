@@ -68,7 +68,7 @@ class Analytics extends Model
         $this->cache = $cache;
         $this->logger = $logger;
 
-        require GC_LIBRARY_DIR . '/gapi/src/Google/autoload.php';
+        gplcart_require_library('gapi/src/Google/autoload.php');
     }
 
     /**

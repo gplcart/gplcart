@@ -135,3 +135,12 @@ function gplcart_timezones()
     date_default_timezone_set($default_timezone);
     return $zones;
 }
+
+/**
+ * Requires a library file
+ * @param string $path
+ */
+function gplcart_require_library($path)
+{
+    require_once GC_LIBRARY_DIR . "/$path";
+}

@@ -49,10 +49,8 @@ class Mail extends Model
     public function __construct(Logger $logger)
     {
         parent::__construct();
-
         $this->logger = $logger;
-
-        require_once GC_LIBRARY_DIR . '/phpmailer/PHPMailerAutoload.php';
+        gplcart_require_library('phpmailer/PHPMailerAutoload.php');
     }
 
     /**
