@@ -18,7 +18,7 @@ class Base
 {
     /**
      * Database helper instance
-     * @var \core\helpers\Database $db
+     * @var \core\Database $db
      */
     protected $db;
 

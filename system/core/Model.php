@@ -31,7 +31,7 @@ class Model
 
     /**
      * Database helper instance
-     * @var \core\helpers\Database $db
+     * @var \core\Database $db
      */
     protected $db;
 
@@ -46,7 +46,7 @@ class Model
         /* @var $config \core\Config */
         $this->config = Container::instance('core\\Config');
 
-        /* @var $db \core\helpers\Database */
+        /* @var $db \core\Database */
         $this->db = $this->config->getDb();
     }
 
@@ -61,7 +61,7 @@ class Model
 
     /**
      * Returns PDO database instance
-     * @return \core\helpers\Database
+     * @return \core\Database
      */
     public function getDb()
     {

@@ -11,7 +11,7 @@ namespace core\models;
 
 use core\Model as Model;
 use core\Container as Container;
-use core\helpers\Database as DatabaseHelper;
+use core\Database as Database;
 use core\models\Store as StoreModel;
 use core\models\Language as LanguageModel;
 use core\exceptions\DatabaseException;
@@ -36,7 +36,7 @@ class Install extends Model
 
     /**
      * PDO instance
-     * @var \core\helpers\Database $db
+     * @var \core\Database $db
      */
     protected $database;
 
@@ -204,7 +204,7 @@ class Install extends Model
     public function connect(array $settings)
     {
         try {
-            $this->database = new DatabaseHelper($settings);
+            $this->database = new Database($settings);
         } catch (DatabaseException $e) {
             $this->database = null;
             return $e->getMessage();

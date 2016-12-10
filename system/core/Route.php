@@ -66,7 +66,7 @@ class Route
 
     /**
      * PDO instance
-     * @var \core\helpers\Database $db
+     * @var \core\Database $db
      */
     protected $db;
 

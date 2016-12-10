@@ -91,7 +91,7 @@ class Cron extends BackendController
         $lifespan = (int) $this->config('history_lifespan', 2628000);
         $ago = (GC_TIME - $lifespan);
 
-        /* @var $database \core\helpers\Database */
+        /* @var $database \core\Database */
         $database = $this->config->getDb();
         $database->run('DELETE FROM history WHERE time < ?', array($ago));
     }

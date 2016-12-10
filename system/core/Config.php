@@ -20,7 +20,7 @@ class Config
 
     /**
      * PDO instance
-     * @var \core\helpers\Database $db
+     * @var \core\Database $db
      */
     protected $db;
 
@@ -353,7 +353,7 @@ class Config
             return true;
         }
 
-        $this->db = Container::instance('core\\helpers\\Database', array($this->config['database']));
+        $this->db = Container::instance('core\\Database', array($this->config['database']));
         $this->config = array_merge($this->config, $this->select());
         $this->key = $this->get('private_key', '');
 
