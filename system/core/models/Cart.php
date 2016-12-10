@@ -11,13 +11,13 @@ namespace core\models;
 
 use core\Model;
 use core\Logger;
-use core\helpers\Request as RequestHelper;
 use core\models\Sku as SkuModel;
 use core\models\User as UserModel;
 use core\models\Product as ProductModel;
 use core\models\Currency as CurrencyModel;
 use core\models\Language as LanguageModel;
 use core\models\Wishlist as WishlistModel;
+use core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to user carts
@@ -107,9 +107,7 @@ class Cart extends Model
      */
     public function getContent(array $data)
     {
-        $cache_key = 'cart.' . md5(json_encode($data));
-
-        $cart = &gplcart_cache($cache_key);
+        $cart = &gplcart_cache('cart.' . md5(json_encode($data)));
 
         if (isset($cart)) {
             return $cart;
