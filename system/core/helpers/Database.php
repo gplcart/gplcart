@@ -18,24 +18,24 @@ use core\exceptions\DatabaseException;
  */
 class Database extends PDO
 {
+
     /**
      * Sets up the database connection
      * Database constructor.
      * @param array $config
      * @throws DatabaseException
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config)
     {
-        if (!empty($config)) {
+        $dns = "{$config['type']}:host={$config['host']};"
+                . "port={$config['port']};dbname={$config['name']}";
 
-            $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
-
-            try {
-                parent::__construct($dns, $config['user'], $config['password']);
-                $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $exc) {
-                throw new DatabaseException('Could not connect to database');
-            }
+        try {
+            parent::__construct($dns, $config['user'], $config['password']);
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $exc) {
+            // Throw custom exception to hide connection details in the message
+            throw new DatabaseException('Could not connect to database');
         }
     }
 
@@ -97,7 +97,7 @@ class Database extends PDO
         $result = $sth->fetch(PDO::FETCH_ASSOC);
 
         $this->prepareResult($result, $options);
-        return empty($result) ? array() : (array)$result;
+        return empty($result) ? array() : (array) $result;
     }
 
     /**
@@ -111,7 +111,7 @@ class Database extends PDO
             return;
         }
 
-        foreach ((array)$options['unserialize'] as $field) {
+        foreach ((array) $options['unserialize'] as $field) {
             $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
         }
     }
@@ -128,7 +128,7 @@ class Database extends PDO
         $sth = $this->run($sql, $params);
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         $this->prepareResults($result, $options);
-        return empty($result) ? array() : (array)$result;
+        return empty($result) ? array() : (array) $result;
     }
 
     /**
@@ -307,8 +307,10 @@ class Database extends PDO
      * @param bool $filter
      * @return bool|int
      */
-    public function update($table, array $data, array $conditions, $filter = true
-    ) {
+    public function update($table, array $data, array $conditions,
+            $filter = true
+    )
+    {
         if ($filter) {
             $data = $this->filterValues($table, $data);
         }
