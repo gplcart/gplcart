@@ -385,6 +385,7 @@ class Category extends BackendController
         $this->controlAccess('category_edit');
 
         $submitted = $this->getSubmitted();
+        
         $this->category->update($category['category_id'], $submitted);
 
         $message = $this->text('Category has been updated');

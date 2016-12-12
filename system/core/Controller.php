@@ -459,6 +459,20 @@ class Controller
     }
 
     /**
+     * Returns a data of the current store
+     * @param mixed $item
+     * @return mixed
+     */
+    public function store($item = null)
+    {
+        if (isset($item)) {
+            return gplcart_array_get_value($this->current_store, $item);
+        }
+
+        return $this->current_store;
+    }
+
+    /**
      * Returns a token
      * @return string
      */
@@ -1067,11 +1081,15 @@ class Controller
 
     /**
      * Outputs rendered page
-     * @param array|string $templates
+     * @param null|array|string $templates
      * @param array $options
      */
-    final public function output($templates, array $options = array())
+    final public function output($templates = null, array $options = array())
     {
+        if (empty($templates)) {
+            $templates = $this->templates;
+        }
+
         $html = $this->renderOutput($templates);
         $this->response->html($html, $options);
     }
@@ -1095,7 +1113,8 @@ class Controller
         $layout_template = $templates['layout'];
         unset($templates['layout']);
 
-        $layout_data = $body_data = $this->data;
+        $body_data = $this->data;
+        $layout_data = $this->data;
 
         foreach ($templates as $region => $template) {
             if (!in_array($region, array('region_head', 'region_body'))) {
@@ -1107,6 +1126,30 @@ class Controller
         $layout_data['region_body'] = $this->render($templates['region_body'], $body_data);
 
         return $this->render($layout_template, $layout_data);
+    }
+
+    /**
+     * Renders a region
+     * @param string $region
+     * @param string $template
+     * @return string
+     */
+    protected function renderRegion($region, $template)
+    {
+        if (!isset($this->data[$region])) {
+            return $this->render($template, $this->data);
+        }
+
+        $this->data[$region] = (array) $this->data[$region];
+        gplcart_array_sort($this->data[$region]);
+
+        $items = array();
+        foreach ($this->data[$region] as $item) {
+            $items[] = isset($item['content']) ? (string) $item['content'] : (string) $item;
+        }
+
+        $this->data[$region] = $this->render($template, array($region => $items));
+        return $this->data[$region];
     }
 
     /**
@@ -1147,30 +1190,6 @@ class Controller
     {
         $this->setTitle('Site maintenance', false);
         $this->output(array('layout' => 'common/maintenance'), array('headers' => 503));
-    }
-
-    /**
-     * Renders a region
-     * @param string $region
-     * @param string $template
-     * @return string
-     */
-    protected function renderRegion($region, $template)
-    {
-        if (!isset($this->data[$region])) {
-            return $this->render($template, $this->data);
-        }
-
-        $this->data[$region] = (array) $this->data[$region];
-        gplcart_array_sort($this->data[$region]);
-
-        $items = array();
-        foreach ($this->data[$region] as $item) {
-            $items[] = isset($item['content']) ? $item['content'] : $item;
-        }
-
-        $this->data[$region] = $items;
-        return $this->render($template, $this->data);
     }
 
     /**

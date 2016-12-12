@@ -18,19 +18,19 @@
         <ul class="dropdown-menu">
           <?php if ($this->access('price_rule_edit')) { ?>
           <li>
-            <a data-action="status" data-action-value="1" data-action-confirm="<?php echo $this->text('Do you want to enable selected price rules?'); ?>" href="#">
+            <a data-action="status" data-action-value="1" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
               <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
             </a>
           </li>
           <li>
-            <a data-action="status" data-action-value="0" data-action-confirm="<?php echo $this->text('Do you want to disable selected price rules?'); ?>" href="#">
+            <a data-action="status" data-action-value="0" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
               <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
             </a>
           </li>
           <?php } ?>
           <?php if ($this->access('price_rule_delete')) { ?>
           <li>
-            <a data-action="delete" data-action-confirm="<?php echo $this->text('Do you want to delete selected price rules? It cannot be undone!'); ?>" href="#">
+            <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
               <?php echo $this->text('Delete'); ?>
             </a>
           </li>

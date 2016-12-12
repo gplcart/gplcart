@@ -58,6 +58,7 @@ class Twig
         $this->addFunctionAttributes($object);
         $this->addFunctionIsSuperadmin($object);
         $this->addFunctionUid($object);
+        $this->addFunctionStore($object);
     }
 
     /**
@@ -214,6 +215,19 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('uid', function () use ($object) {
             return $object->uid();
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \core\Controller::store()
+     * @param object $object
+     */
+    protected function addFunctionStore($object)
+    {
+        $function = new \Twig_SimpleFunction('store', function ($item = null) use ($object) {
+            return $object->store($item);
         });
 
         $this->twig->addFunction($function);

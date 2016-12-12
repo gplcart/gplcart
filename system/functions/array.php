@@ -74,7 +74,7 @@ function gplcart_array_get_value(array &$array, $parents, $glue = '.')
 {
     $ref = &$array;
 
-    if (is_string($parents)) {
+    if (!is_array($parents)) {
         $parents = explode($glue, $parents);
     }
 

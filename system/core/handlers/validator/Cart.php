@@ -56,18 +56,15 @@ class Cart extends BaseValidator
 
     public function cart(array &$submitted, array $options = array())
     {
-
         $this->validateCart($submitted);
         $this->validateStoreId($submitted, $options);
         $this->validateSkuCart($submitted, $options);
-        $this->validateUserCartId($submitted, $options);
         $this->validateProductCart($submitted, $options);
+        $this->validateUserCartId($submitted, $options);
         $this->validateOrderCart($submitted, $options);
         $this->validateQuantityCart($submitted, $options);
         $this->validateLimitCart($submitted, $options);
         $this->validateOptionsCart($submitted, $options);
-
-        unset($submitted['product']);
 
         return $this->getResult();
     }
@@ -109,9 +106,8 @@ class Cart extends BaseValidator
         }
 
         $sku = $this->getSubmitted('sku', $submitted, $options);
-        $store_id = $this->getSubmitted('store_id', $submitted, $options);
 
-        if (!empty($submitted['update']) && !isset($sku)) {
+        if (!isset($sku)) {
             return null;
         }
 
@@ -121,7 +117,8 @@ class Cart extends BaseValidator
             $this->setError('sku', $error, $options);
             return false;
         }
-
+        
+        $store_id = $this->getSubmitted('store_id', $submitted, $options);
         $product = $this->product->getBySku($sku, $store_id);
 
         if (empty($product)) {
@@ -178,6 +175,10 @@ class Cart extends BaseValidator
             $error = $this->language->text('Invalid products');
             $this->setError('product_id', $error, $options);
             return false;
+        }
+        
+        if(empty($submitted['product'])){
+            $submitted['product'] = $product;
         }
 
         return true;

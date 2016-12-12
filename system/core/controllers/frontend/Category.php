@@ -67,16 +67,53 @@ class Category extends FrontendController
         $max = $this->setting('catalog_limit', 20);
         $limit = $this->setPager($total, $query, $max);
         $products = $this->getListProductCategory($limit, $query, $category_id);
+        $children = $this->getChildrenCategory($category_id);
 
         $this->setDataImagesCategory($category);
         $this->setDataProductsCategory($products);
-        $this->setDataChildrenCategory($category_id);
+        $this->setDataChildrenCategory($children);
         $this->setDataNavbarCategory($products, $total, $query);
 
+        $this->setRegionMenuCategory();
+        $this->setRegionContentCategory($category);
+
         $this->setTitleIndexCategory($category);
-        $this->setMetaEntity($category);
-        $this->setBreadcrumbIndexCategory($category);
+        $this->setMetaIndexCategory($category, $children, $products);
         $this->outputIndexCategory();
+    }
+
+    /**
+     * Puts main category content into content region
+     */
+    protected function setRegionContentCategory()
+    {
+        $html = $this->render('category/category', $this->data);
+        $this->setRegion('region_content', $html);
+    }
+
+    /**
+     * Sets meta tags on the category page
+     * @param array $category
+     * @param array $children
+     * @param array $products
+     */
+    protected function setMetaIndexCategory($category, $children, $products)
+    {
+        $this->setMetaEntity($category);
+
+        if (empty($children) && empty($products)) {
+            // Forbid Google to index empty pages
+            $this->setMeta(array('name' => 'robots', 'content' => 'noindex'));
+        }
+    }
+
+    /**
+     * Sets navigation menu on the category page
+     */
+    protected function setRegionMenuCategory()
+    {
+        $menu = $this->renderMenu();
+        $this->setRegion('region_left', $menu);
     }
 
     /**
@@ -85,8 +122,7 @@ class Category extends FrontendController
      * @param integer $total
      * @param array $query
      */
-    protected function setDataNavbarCategory(array $products, $total,
-            array $query)
+    protected function setDataNavbarCategory($products, $total, $query)
     {
         $options = array(
             'total' => $total,
@@ -125,13 +161,22 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets rendered category children
+     * Returns an array of children categories for the given category ID
      * @param integer $category_id
+     * @return array
      */
-    protected function setDataChildrenCategory($category_id)
+    protected function getChildrenCategory($category_id)
     {
-        $children = $this->category->getChildren($category_id, $this->category_tree);
-        $html = $this->render('category/children', array('children' => $children));
+        return $this->category->getChildren($category_id, $this->category_tree);
+    }
+
+    /**
+     * Sets rendered category children
+     * @param integer $categories
+     */
+    protected function setDataChildrenCategory($categories)
+    {
+        $html = $this->render('category/children', array('children' => $categories));
         $this->setData('children', $html);
     }
 
@@ -152,24 +197,13 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the category page
-     * @param array $category
-     */
-    protected function setBreadcrumbIndexCategory(array $category)
-    {
-        $breadcrumb = array(
-            'text' => $this->text('Home'),
-            'url' => $this->url('/'));
-
-        $this->setBreadcrumb($breadcrumb);
-    }
-
-    /**
      * Renders the category page
      */
     protected function outputIndexCategory()
     {
-        $this->output('category/category');
+        // No content template specified
+        // We set region_content above
+        $this->output();
     }
 
     /**

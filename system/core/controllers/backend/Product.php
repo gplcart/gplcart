@@ -259,6 +259,7 @@ class Product extends BackendController
 
         $stores = $this->store->getNames();
         $currency = $this->currency->getDefault();
+        $subtract_default = $this->config->get('product_subtract', 0);
         
         $related = $this->getRelatedProduct($product);
         $classes = $this->getClassesProduct();
@@ -268,6 +269,7 @@ class Product extends BackendController
         $this->setData('related', $related);
         $this->setData('classes', $classes);
         $this->setData('default_currency', $currency);
+        $this->setData('subtract_default', $subtract_default);
 
         $this->submitProduct($product);
 
@@ -310,8 +312,7 @@ class Product extends BackendController
         $types = $this->category_group->getTypes();
 
         $categories = array();
-
-        foreach ($types as $type) {
+        foreach (array_keys($types) as $type) {
             $data = $this->category->getOptionListByStore($store_id, $type);
             $categories[$type] = reset($data);
         }

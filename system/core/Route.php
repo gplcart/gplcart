@@ -135,9 +135,10 @@ class Route
     {
         return $this->route;
     }
-
+    
     /**
      * Sets the current language
+     * @return null
      */
     protected function setLangcode()
     {
@@ -145,7 +146,7 @@ class Route
 
         if (isset($lang)) {
             $this->langcode = $lang;
-            return;
+            return null;
         }
 
         $default_langcode = $this->config->get('language', '');
@@ -166,6 +167,8 @@ class Route
         if ($this->langcode && ($this->langcode !== $default_langcode)) {
             $this->request->setBaseSuffix($this->langcode);
         }
+        
+        return null;
     }
 
     /**

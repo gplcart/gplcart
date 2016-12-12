@@ -84,7 +84,7 @@ $config = array();
 # $config['product_related_limit'] = 12;
 # $config['product_sku_pattern'] = 'PRODUCT-%i';
 # $config['product_sku_placeholder'] = array('%i' => 'product_id');
-# $config['product_subtract'] = 1; // Default state of "Subtract" option when editing a product
+# $config['product_subtract'] = 0; // Default state of "Subtract" option when editing a product
 # $config['product_thumb_preset'] = 2;
 # $config['product_volume_unit'] = 'mm';
 # $config['product_weight'] = 0;

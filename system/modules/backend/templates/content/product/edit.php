@@ -75,7 +75,7 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Data'); ?></div>
     <div class="panel-body">
-      <?php if ($classes) { ?>
+      <?php if (!empty($classes)) { ?>
       <div class="form-group">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Product class'); ?>
@@ -125,7 +125,7 @@
             <input name="product[stock]" class="form-control" type="number" min="0" step="1" pattern="\d*" maxlength="6" value="<?php echo isset($product['stock']) ? $product['stock'] : 0; ?>">
             <div class="input-group-btn">
               <div class="btn-group" data-toggle="buttons">
-                <?php $subtract = isset($product['subtract']) ? $product['subtract'] : $this->config->get('product_subtract', 1); ?>
+                <?php $subtract = isset($product['subtract']) ? $product['subtract'] : $subtract_default; ?>
                 <label class="btn btn-default<?php echo $subtract ? ' active' : ''; ?>">
                   <input name="product[subtract]" type="checkbox" autocomplete="off" value="1"<?php echo $subtract ? ' checked' : ''; ?>><?php echo $this->text('Subtract'); ?>
                 </label>

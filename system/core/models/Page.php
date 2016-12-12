@@ -20,7 +20,7 @@ use core\models\Language as LanguageModel;
  */
 class Page extends Model
 {
-    
+
     /**
      * Cache model instance
      * @var \core\models\Cache $cache
@@ -44,7 +44,7 @@ class Page extends Model
      * @var \core\models\Language $language
      */
     protected $language;
-    
+
     /**
      * Constructor
      * @param ImageModel $image
@@ -398,12 +398,12 @@ class Page extends Model
      */
     protected function setTranslation(array $data, $delete = true)
     {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
         if ($delete) {
             $this->deleteTranslation($data['page_id']);
+        }
+
+        if (empty($data['translation'])) {
+            return false;
         }
 
         foreach ($data['translation'] as $language => $translation) {

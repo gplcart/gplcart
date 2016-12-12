@@ -130,6 +130,7 @@ class Controller extends BaseController
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
         $this->setFrontendSubmits();
+        $this->setFrontendMenu();
 
         $this->hook->fire('init.frontend', $this);
     }
@@ -199,12 +200,18 @@ class Controller extends BaseController
         $this->data['compare_content'] = $this->compare_content;
         return null;
     }
+    
+    protected function setFrontendMenu()
+    {
+        $menu = $this->renderMenu(0, 'nav navbar-nav menu-top');
+        $this->setRegion('region_top', $menu);
+    }
 
     /**
      * Returns rendered honeypot input
      * @return string
      */
-    public function getHoneyPotField()
+    public function renderHoneyPotField()
     {
         return $this->render('common/honeypot');
     }
@@ -214,7 +221,7 @@ class Controller extends BaseController
      * @param array $options
      * @return string
      */
-    public function getShare(array $options = array())
+    public function renderShareWidget(array $options = array())
     {
         $options += array(
             'title' => $this->getPageTitle(),
@@ -222,6 +229,133 @@ class Controller extends BaseController
         );
 
         return $this->render('common/share', $options);
+    }
+    
+    /**
+     * Returns a rendered menu
+     * @return string
+     */
+    protected function renderMenu($max_depth = null, $class = 'list-unstyled menu')
+    {
+        if (empty($this->category_tree)) {
+            return '';
+        }
+
+        $data = array(
+            'menu_class' => $class,
+            'tree' => $this->category_tree,
+            'menu_max_depth' => $max_depth
+        );
+
+        return $this->render('category/menu', $data);
+    }
+
+    /**
+     * Returns rendered cart preview
+     * @return string
+     */
+    protected function renderCartPreview()
+    {
+        $data = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+
+        $cart = $this->cart->getContent($data);
+
+        $options = array(
+            'cart' => $this->prepareCart($cart),
+            'limit' => $this->config('cart_preview_limit', 5)
+        );
+
+        return $this->render('cart/preview', $options);
+    }
+
+    /**
+     * Returns rendered product collection
+     * @param array $options
+     * @return string
+     */
+    protected function renderCollectionProduct(array $options)
+    {
+        $options += array(
+            'template_list' => 'collection/list/product'
+        );
+
+        $products = $this->getCollectionItems($options);
+
+        if (empty($products)) {
+            return '';
+        }
+
+        $item = reset($products);
+        $title = $item['collection_item']['collection_title'];
+
+        $prepared = $this->prepareProducts($products, $options);
+        $data = array('products' => $prepared, 'title' => $title);
+
+        return $this->render($options['template_list'], $data);
+    }
+
+    /**
+     * Returns rendered page collection
+     * @param array $options
+     * @return string
+     */
+    protected function renderCollectionPage(array $options)
+    {
+        $options += array(
+            'template_list' => 'collection/list/page',
+            'template_item' => 'collection/item/page'
+        );
+
+        $pages = $this->getCollectionItems($options);
+
+        if (empty($pages)) {
+            return '';
+        }
+
+        $item = reset($pages);
+        $title = $item['collection_item']['collection_title'];
+
+        $prepared = $this->preparePages($pages, $options);
+        $data = array('pages' => $prepared, 'title' => $title);
+
+        return $this->render($options['template_list'], $data);
+    }
+
+    /**
+     * Returns rendered file collection
+     * @param array $options
+     * @return string
+     */
+    protected function renderCollectionFile(array $options)
+    {
+        $options += array(
+            'imagestyle' => $this->setting('image_style_collection_banner', 7),
+            'template_item' => 'collection/item/file'
+        );
+
+        $files = $this->getCollectionItems($options);
+
+        if (empty($files)) {
+            return '';
+        }
+
+        foreach ($files as &$file) {
+
+            $options['path'] = $file['path'];
+
+            if (!empty($file['collection_item']['data']['url'])) {
+                $url = $file['collection_item']['data']['url'];
+                $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
+            }
+
+            $this->setItemThumb($file, $options);
+            $this->setItemRendered($file, array('file' => $file), $options);
+        }
+
+        return $this->render('collection/list/file', array('files' => $files));
     }
 
     /**
@@ -325,8 +459,7 @@ class Controller extends BaseController
      * @param array $options
      * @return array
      */
-    protected function getProducts(array $conditions = array(),
-            array $options = array())
+    protected function getProducts($conditions = array(), $options = array())
     {
         $conditions += array(
             'status' => 1,
@@ -391,7 +524,6 @@ class Controller extends BaseController
         }
 
         $this->setItemTotal($cart);
-
         return $cart;
     }
 
@@ -406,7 +538,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Sets item indentation using its hierarchy depth
+     * Sets item indentation using hierarchy depth
      * @param array $item
      * @param array $options
      */
@@ -466,7 +598,8 @@ class Controller extends BaseController
             $options['path'] = $imagefile['path'];
         }
 
-        if (!empty($item['product']['file_id']) && !empty($item['product']['images'][$item['product']['file_id']]['path'])) {
+        if (!empty($item['product']['file_id'])//
+                && !empty($item['product']['images'][$item['product']['file_id']]['path'])) {
             $options['path'] = $item['product']['images'][$item['product']['file_id']]['path'];
         }
 
@@ -580,6 +713,7 @@ class Controller extends BaseController
 
     /**
      * Adds/removes a product from comparison
+     * @return null
      */
     protected function submitCompare()
     {
@@ -590,7 +724,7 @@ class Controller extends BaseController
         }
 
         if (!$this->isPosted('add_to_compare')) {
-            return; // No "Add to compare" clicked
+            return null; // No "Add to compare" clicked
         }
 
         $this->validateAddToCompare();
@@ -604,6 +738,7 @@ class Controller extends BaseController
 
         $result = $this->compare->addProduct($product, $submitted);
         $this->completeSubmit($result);
+        return null;
     }
 
     /**
@@ -618,11 +753,12 @@ class Controller extends BaseController
 
     /**
      * Adds a product to the cart
+     * @return null
      */
     protected function submitCart()
     {
         if (!$this->isPosted('add_to_cart')) {
-            return; // No "Add to cart" clicked
+            return null;
         }
 
         $this->setSubmitted('product');
@@ -632,15 +768,16 @@ class Controller extends BaseController
             return $this->completeSubmit();
         }
 
-        $cart = $this->getSubmitted('cart');
-        $product = $this->getSubmitted('product');
+        $submitted = $this->getSubmitted();
 
-        $result = $this->cart->addProduct($product, $cart);
+        $result = $this->cart->addProduct($submitted['product'], $submitted);
         $this->completeSubmit($result);
+        return null;
     }
 
     /**
      * Adds a product to the wishlist
+     * @return null
      */
     protected function submitWishlist()
     {
@@ -651,9 +788,8 @@ class Controller extends BaseController
         }
 
         if (!$this->isPosted('add_to_wishlist')) {
-            return; // No "Add to wishlist" clicked
+            return null;
         }
-
 
         $this->validateAddToWishlist();
 
@@ -664,7 +800,8 @@ class Controller extends BaseController
         $submitted = $this->getSubmitted();
         $result = $this->wishlist->addProduct($submitted);
 
-        return $this->completeSubmit($result);
+        $this->completeSubmit($result);
+        return null;
     }
 
     /**
@@ -691,22 +828,33 @@ class Controller extends BaseController
      */
     protected function completeSubmit(array $data = array())
     {
+        $data += $this->getErrorSubmitResult();
+        $this->outputAjaxResponse($data);
+        $this->redirect($data['redirect'], $data['message'], $data['severity']);
+    }
+    
+    /**
+     * Returns an array of default error result
+     * @return array
+     */
+    protected function getErrorSubmitResult(){
+        
+        // Get validation errors
         $errors = $this->error();
 
         if (!empty($errors)) {
-            $message = end($errors);
+            // Errors can be nested, so flatten them into a simple array
+            // then conver to a string
+            $message = implode('<br>', gplcart_array_flatten($errors));
         } else {
             $message = $this->text('An error occurred');
         }
 
-        $data += array(
+        return array(
             'redirect' => '',
             'severity' => 'warning',
             'message' => $message
         );
-
-        $this->outputAjaxResponse($data);
-        $this->redirect($data['redirect'], $data['message'], $data['severity']);
     }
 
     /**
@@ -718,7 +866,7 @@ class Controller extends BaseController
 
             $response = $data;
             if ($this->isPosted('add_to_cart') && $data['severity'] === 'success') {
-                $cart = $this->getCartPreview($data);
+                $cart = $this->renderCartPreview($data);
                 $response += array('modal' => $cart);
             }
 
@@ -727,37 +875,15 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns rendered cart preview
-     * @return string
-     */
-    protected function getCartPreview()
-    {
-        $data = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
-        );
-
-        $cart = $this->cart->getContent($data);
-
-        $options = array(
-            'cart' => $this->prepareCart($cart),
-            'limit' => $this->config('cart_preview_limit', 5)
-        );
-
-        return $this->render('cart/preview', $options);
-    }
-
-    /**
      * Validates Add to cart action
      */
     protected function validateAddToCart()
     {
-        $this->setSubmitted('cart.user_id', $this->cart_uid);
-        $this->setSubmitted('cart.store_id', $this->store_id);
+        $this->setSubmitted('user_id', $this->cart_uid);
+        $this->setSubmitted('store_id', $this->store_id);
 
-        $quantity = $this->getSubmitted('cart.quantity', 1);
-        $this->setSubmitted('cart.quantity', $quantity);
-
+        $quantity = $this->getSubmitted('quantity', 1);
+        $this->setSubmitted('quantity', $quantity);
         $this->validate('cart');
     }
 
@@ -790,93 +916,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns rendered product collection
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollectionProduct(array $options)
-    {
-        $options += array(
-            'template_list' => 'collection/list/product'
-        );
-
-        $products = $this->getCollectionItems($options);
-
-        if (empty($products)) {
-            return '';
-        }
-
-        $item = reset($products);
-        $title = $item['collection_item']['collection_title'];
-
-        $prepared = $this->prepareProducts($products, $options);
-        $data = array('products' => $prepared, 'title' => $title);
-
-        return $this->render($options['template_list'], $data);
-    }
-
-    /**
-     * Returns rendered page collection
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollectionPage(array $options)
-    {
-        $options += array(
-            'template_list' => 'collection/list/page',
-            'template_item' => 'collection/item/page'
-        );
-
-        $pages = $this->getCollectionItems($options);
-
-        if (empty($pages)) {
-            return '';
-        }
-
-        $item = reset($pages);
-        $title = $item['collection_item']['collection_title'];
-
-        $prepared = $this->preparePages($pages, $options);
-        $data = array('pages' => $prepared, 'title' => $title);
-
-        return $this->render($options['template_list'], $data);
-    }
-
-    /**
-     * Returns rendered file collection
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollectionFile(array $options)
-    {
-        $options += array(
-            'imagestyle' => $this->setting('image_style_collection_banner', 7),
-            'template_item' => 'collection/item/file'
-        );
-
-        $files = $this->getCollectionItems($options);
-
-        if (empty($files)) {
-            return '';
-        }
-
-        foreach ($files as &$file) {
-
-            $options['path'] = $file['path'];
-
-            if (!empty($file['collection_item']['data']['url'])) {
-                $url = $file['collection_item']['data']['url'];
-                $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
-            }
-
-            $this->setItemThumb($file, $options);
-            $this->setItemRendered($file, array('file' => $file), $options);
-        }
-
-        return $this->render('collection/list/file', array('files' => $files));
-    }
-
-    /**
      * Sets meta tags on the entity page
      * @param array $data
      */
@@ -892,7 +931,7 @@ class Controller extends BaseController
 
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
     }
-    
+
     /**
      * "Honey pot" submission protection
      * @param string $type

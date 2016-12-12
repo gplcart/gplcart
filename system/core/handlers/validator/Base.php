@@ -113,12 +113,10 @@ class Base
         }
 
         if (is_string($options['parents'])) {
-            $parents = implode('.', $options['parents']);
-        } else {
-            $parents = (array) $options['parents'];
+            $options['parents'] = explode('.', $options['parents']);
         }
 
-        return array_merge((array) $key, $parents);
+        return array_merge((array) $options['parents'], (array) $key);
     }
 
     /**
@@ -346,15 +344,33 @@ class Base
             return null;
         }
 
-        $lengths = array('meta_title' => 60, 'meta_description' => 160);
+        // Max allowed length per field name
+        $lengths = array(
+            'meta_title' => 60,
+            'meta_description' => 160
+        );
 
         foreach ($submitted['translation'] as $lang => $translation) {
             foreach ($translation as $field => $value) {
+
+                // Empty fields have no sence, remove them
+                if ($value === '') {
+                    unset($submitted['translation'][$lang][$field]);
+                    continue;
+                }
+
+                // Default length is 255 chars
                 $max = isset($lengths[$field]) ? $lengths[$field] : 255;
+
                 if (mb_strlen($value) > $max) {
                     $vars = array('@field' => ucfirst(str_replace('_', ' ', $field)), '@lang' => $lang, '@max' => $max);
                     $this->errors['translation'][$lang][$field] = $this->language->text('@field in @lang must not be longer than @max characters', $vars);
                 }
+            }
+
+            // If all translation fields were removed, remove also the language key
+            if (empty($submitted['translation'][$lang])) {
+                unset($submitted['translation'][$lang]);
             }
         }
 
@@ -433,8 +449,7 @@ class Base
      * @param array $options
      * @return boolean|null
      */
-    protected function validateStoreId(array $submitted,
-            array $options = array())
+    protected function validateStoreId(&$submitted, $options = array())
     {
         $store_id = $this->getSubmitted('store_id', $submitted, $options);
 
@@ -508,8 +523,7 @@ class Base
      * @param array $options
      * @return boolean|null
      */
-    protected function validateUserCartId(array &$submitted,
-            array $options = array())
+    protected function validateUserCartId(&$submitted, $options = array())
     {
         $user_id = $this->getSubmitted('user_id', $submitted, $options);
 

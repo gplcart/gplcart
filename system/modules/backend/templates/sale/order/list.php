@@ -20,7 +20,7 @@
               <?php if ($this->access('order_edit')) { ?>
               <?php foreach($statuses as $status_id => $status_name) { ?>
               <li>
-                <a data-action="status" data-action-value="<?php echo $this->escape($status_id); ?>" href="#">
+                <a data-action="status" data-action-value="<?php echo $this->escape($status_id); ?>" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
                   <?php echo $this->text('Status'); ?>: <?php echo $this->escape($status_name); ?>
                 </a>
               </li>
@@ -29,7 +29,7 @@
               <?php if ($this->access('order_delete')) { ?>
               <li class="divider"></li>
               <li>
-                <a data-action="delete" href="#">
+                <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
                   <?php echo $this->text('Delete'); ?>
                 </a>
               </li>

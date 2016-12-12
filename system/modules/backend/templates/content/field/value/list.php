@@ -16,7 +16,7 @@
       <ul class="dropdown-menu">
         <?php if ($this->access('field_value_delete')) { ?>
         <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Do you want to delete selected values? It cannot be undone!'); ?>" href="#">
+          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
             <?php echo $this->text('Delete'); ?>
           </a>
         </li>

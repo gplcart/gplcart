@@ -264,12 +264,12 @@ class Product extends Model
      */
     protected function setTranslation(array $data, $update = true)
     {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
         if ($update) {
             $this->deleteTranslation($data['product_id']);
+        }
+
+        if (empty($data['translation'])) {
+            return false;
         }
 
         foreach ($data['translation'] as $language => $translation) {
@@ -799,19 +799,15 @@ class Product extends Model
      */
     protected function setSku(array &$data, $update = true)
     {
-        if (empty($data['sku']) || !isset($data['store_id'])) {
-            return false;
-        }
-
         if ($update) {
             $this->sku->delete($data['product_id'], array('base' => true));
+            return (bool) $this->sku->add($data);
         }
 
-        if (!$update && !empty($data['price'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
-        }
-
-        if (!$update && empty($data['sku'])) {
+        if (empty($data['sku'])) {
+            if (!empty($data['price'])) {
+                $data['price'] = $this->price->amount($data['price'], $data['currency']);
+            }
             $data['sku'] = $this->createSku($data);
         }
 

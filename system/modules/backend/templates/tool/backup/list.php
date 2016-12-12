@@ -16,7 +16,7 @@
       <ul class="dropdown-menu">
         <?php if ($this->access('backup_delete')) { ?>
         <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Delete? It cannot be undone!'); ?>" href="#">
+          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
             <?php echo $this->text('Delete'); ?>
           </a>
         </li>

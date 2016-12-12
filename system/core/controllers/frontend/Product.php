@@ -70,7 +70,7 @@ class Product extends FrontendController
     public function indexProduct($product_id)
     {
         $product = $this->getProduct($product_id);
-        $share = $this->getShare();
+        $share = $this->renderShareWidget();
 
         $this->setData('share', $share);
         $this->setData('product', $product);
@@ -84,6 +84,7 @@ class Product extends FrontendController
 
         $this->setJsIndexProduct($product);
         $this->setTitleIndexProduct($product);
+        $this->setBreadcrumbIndexProduct($product);
 
         $this->setMetaEntity($product);
         $this->outputIndexProduct();
@@ -237,6 +238,60 @@ class Product extends FrontendController
     protected function setTitleIndexProduct(array $product)
     {
         $this->setTitle($product['title'], false);
+    }
+
+    /**
+     * Sets breadcrumbs on the product page
+     * @param array $product
+     */
+    protected function setBreadcrumbIndexProduct(array $product)
+    {
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $categories = $this->geCategorytBreadcrumbsIndexProduct($product['category_id']);
+        $this->setBreadcrumbs(array_merge($breadcrumbs, $categories));
+    }
+
+    /**
+     * Builds an array of breadcrumb items containing all parent categories
+     * @param integer $category_id
+     * @param array $breadcrumbs
+     */
+    protected function buildCategoryBreadcrumbsIndexProduct($category_id,
+            array &$breadcrumbs)
+    {
+        if (!empty($this->category_tree[$category_id]['parents'])) {
+
+            $parent = reset($this->category_tree[$category_id]['parents']);
+            $category = $this->category_tree[$category_id];
+
+            $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
+
+            $breadcrumb = array(
+                'url' => $url,
+                'text' => $category['title']
+            );
+
+            array_unshift($breadcrumbs, $breadcrumb);
+            $this->buildCategoryBreadcrumbsIndexProduct($parent, $breadcrumbs);
+        }
+    }
+
+    /**
+     * Returns an array of results from self::buildCategoryBreadcrumbsIndexProduct()
+     * @param integer $category_id
+     * @return array
+     */
+    protected function geCategorytBreadcrumbsIndexProduct($category_id)
+    {
+        $breadcrumbs = array();
+        $this->buildCategoryBreadcrumbsIndexProduct($category_id, $breadcrumbs);
+        return $breadcrumbs;
     }
 
     /**

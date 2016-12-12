@@ -1,12 +1,76 @@
-html {
-    position: relative;
-    min-height: 100%;
+body {
+    background-color: #f7f7f7;
 }
 
-body {
-    margin-bottom: 160px;
-    background-color: #f4f4f4;
+html {
+  position: relative;
+  min-height: 100%;
 }
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 160px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 160px;
+ 
+}
+
+.footer .container {
+     background-color: #222;
+     height: 100%;
+}
+
+.main {
+    padding-top: 20px;
+}
+
+.container.wrapper {
+    background-color: #fff;
+    min-height: calc(100vh - 160px);
+}
+
+code,
+kbd,
+pre,
+.img-rounded,
+.img-thumbnail,
+.img-circle,
+.form-control,
+.btn,
+.btn-link,
+.dropdown-menu,
+.input-group-addon,
+.input-group-btn,
+.nav-tabs a,
+.nav-pills a,
+.navbar,
+.navbar-toggle,
+.icon-bar,
+.breadcrumb,
+.pagination,
+.pager *,
+.label,
+.jumbotron,
+.thumbnail,
+.alert,
+.progress,
+.panel,
+.well,
+.modal-content,
+.tooltip-inner,
+.popover,
+.popover-title,
+.carousel-indicators li {
+    border-radius:0 !important;
+}
+
+
+
+
 
 .panel {
     border: none;
@@ -25,11 +89,11 @@ body {
 .breadcrumb {
     background-color: #fff;
     margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
 }
 
-.navbar.second {
-    margin-bottom: 0;
-}
 
 body.checkout .navbar .cart {
     display: none;
@@ -47,30 +111,32 @@ body.checkout .navbar .cart {
     display: inline;
 }
 
-.navbar-static-top.first {
+.navbar {
     margin-bottom: 0;
-    background-color: #fff;
-    border-radius: 0;
     border: none;
 }
 
+.navbar.second {
+    background-color: #444;
+}
+
+
+.navbar.second a {
+    color: #9d9d9d;
+}
+
+a.disabled {
+  pointer-events: none;
+  text-decoration: none;
+  color: inherit;
+}
+
 .navbar.category {
-    background-color: #fff;
-    border: none;
+    margin-bottom: 20px;
 }
 
 .panel-body .pagination {
     margin-bottom: 0;
-}
-
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 160px;
-    padding-top: 20px;
-    padding-top: 20px;
-    background-color: #fff;
 }
 
 .table-borderless tr,
@@ -220,12 +286,9 @@ td.middle {
     width:1140px;
 }
 
-body:not(.front) .region.content {
-    margin-top: 20px;
-}
 
 
-.item .thumbnail {
+.item .thumbnail .thumbnail {
     border: none;
 }
 

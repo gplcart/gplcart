@@ -11,8 +11,14 @@
  */
 ?>
 <body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
-  <nav class="navbar navbar-static-top navbar-default first">
-    <div class="container-fluid">
+  <div class="container wrapper">
+    
+    <div class="row">
+    
+    <nav class="navbar navbar-inverse navbar-static-top first">
+      
+      <div class="container-fluid">
+    
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
           <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
@@ -96,6 +102,9 @@
           </li>
           <?php } ?>
         </ul>
+        
+        
+        
         <form class="navbar-form navbar-left search" action="<?php echo $this->url('search'); ?>">
           <div class="input-group">
             <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo empty($this->query['q']) ? '' : $this->escape($this->query['q']); ?>" placeholder="<?php echo $this->text('Enter search keyword...'); ?>">
@@ -106,21 +115,39 @@
               </button>
             </span>
           </div>
+          
+          
         </form>
+        
+        <?php if($phone = $this->store('data.phone.0')) { ?>
+         <p class="nav navbar-text">
+           <i class="fa fa-phone"></i> <?php echo $phone; ?></p> 
+        <?php } ?>
+        
+        
+        
+        
       </div>
-    </div>
+        
+       </div> 
+    
   </nav>
-  <nav class="navbar navbar-inverse navbar-static-top second">
-    <div class="container-fluid">
-      <div class="navbar-collapse collapse">
-      <?php if (!empty($megamenu)) { ?>
-      <?php echo $this->render('category/block/megamenu', array('tree' => $megamenu)); ?>
+     <?php if (!empty($region_top)) { ?> 
+  <nav class="navbar navbar-static-top second">
+    
+<div class="container-fluid region top">
+  <?php echo $region_top; ?>
+</div>
+      
+  </nav>
       <?php } ?>
-      </div>
-    </div>
-  </nav>
+      
+    
+  </div>
+    
+    
   <?php if (!empty($breadcrumb)) { ?>
-  <div class="container-fluid breadcrumb">
+  <div class="breadcrumb">
     <ol class="breadcrumb">
       <?php foreach ($breadcrumb as $item) { ?>
       <?php if (!empty($item['url'])) { ?>
@@ -135,27 +162,35 @@
     </ol>
   </div>
   <?php } ?>
-  <?php if (!empty($region_top)) { ?>
-  <div class="region top"><?php echo $region_top; ?></div>
-  <?php } ?>
-  <div class="container-fluid main">
-    <div class="row">
+
+  <div class="row main">
+    
+
+    
+    
+  
       <?php if (!empty($region_left)) { ?>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class="region left"><?php echo $region_left; ?></div>
       </div>
       <?php } ?>
+      
       <?php $region_content_class = 'col-md-12'; ?>
       <?php if (!empty($region_left) && empty($region_right)) { ?>
-      <?php $region_content_class = 'col-md-9'; ?>
+      <?php $region_content_class = 'col-md-10'; ?>
       <?php } ?>
       <?php if (empty($region_left) && !empty($region_right)) { ?>
-      <?php $region_content_class = 'col-md-9'; ?>
+      <?php $region_content_class = 'col-md-10'; ?>
       <?php } ?>
       <?php if (!empty($region_left) && !empty($region_right)) { ?>
-      <?php $region_content_class = 'col-md-6'; ?>
+      <?php $region_content_class = 'col-md-8'; ?>
       <?php } ?>
+      
       <div class="<?php echo ($region_content_class); ?>">
+        
+
+        
+        
         <?php if (!empty($messages)) { ?>
         <div class="row" id="message">
           <div class="col-md-12">
@@ -176,17 +211,28 @@
         <div class="region bottom"><?php echo $region_bottom; ?></div>
         <?php } ?>
         <?php } ?>
+        
+
+      
       </div>
+      
       <?php if (!empty($region_right)) { ?>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class="region right"><?php echo $region_right; ?></div>
       </div>
       <?php } ?>
     </div>
+  
+  
   </div>
-  <footer class="footer">
+  <div class="footer">
+  
+
     <div class="container">
-      <div class="row">
+    
+    
+    <div class="row">
+
         <div class="col-md-6">
           <p>
             <?php if (!empty($current_store['data']['owner'])) { ?>
@@ -234,7 +280,13 @@
           <?php } ?>
           <?php } ?>
         </div>
-      </div>
+
     </div>
-  </footer>
+      
+    </div>
+
+
+  </div>
+  
+  
 </body>

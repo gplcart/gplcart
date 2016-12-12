@@ -106,7 +106,7 @@ class Category extends Model
     protected function attachTranslation(array &$category, $language)
     {
         if (empty($category)) {
-            return;
+            return null;
         }
 
         $category['language'] = 'und';
@@ -118,6 +118,8 @@ class Category extends Model
         if (isset($language) && isset($category['translation'][$language])) {
             $category = $category['translation'][$language] + $category;
         }
+
+        return null;
     }
 
     /**
@@ -464,12 +466,12 @@ class Category extends Model
      */
     protected function setTranslation(array $data, $delete = true)
     {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
         if ($delete) {
             $this->deleteTranslation($data['category_id']);
+        }
+
+        if (empty($data['translation'])) {
+            return false;
         }
 
         foreach ($data['translation'] as $language => $translation) {

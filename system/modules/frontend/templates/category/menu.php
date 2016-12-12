@@ -11,16 +11,18 @@
  */
 ?>
 <?php if(!empty($tree)) { ?>
-<ul class="list-group" id="sidebar-menu">
+<ul class="<?php echo $menu_class; ?>">
 <?php foreach ($tree as $item) { ?>
-  <li class="list-group-item depth-<?php echo $item['depth']; ?><?php echo empty($item['active']) ? '' : ' active'; ?>">
+  <?php if(!isset($menu_max_depth) || $item['depth'] <= $menu_max_depth) { ?>
+  <li class="depth-<?php echo $item['depth']; ?><?php echo empty($item['active']) ? '' : ' active'; ?>">
   <?php echo $item['indentation']; ?>
   <?php if (empty($item['active'])) { ?>
   <a title="<?php echo $item['title']; ?>" href="<?php echo $item['url']; ?>"><?php echo $item['title']; ?></a>
   <?php } else { ?>
-  <?php echo $item['title']; ?>
+  <a class="disabled"><?php echo $item['title']; ?></a>
   <?php } ?>
   </li>
+  <?php } ?>
 <?php } ?>
 </ul>
 <?php } ?>

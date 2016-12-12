@@ -125,12 +125,12 @@ class Collection extends Model
      */
     protected function setTranslation(array $data, $delete = true)
     {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
         if ($delete) {
             $this->deleteTranslation($data['collection_id']);
+        }
+        
+        if (empty($data['translation'])) {
+            return false;
         }
 
         foreach ($data['translation'] as $language => $translation) {
@@ -196,16 +196,17 @@ class Collection extends Model
         $this->hook->fire('get.collection.after', $collection_id, $collection);
         return $collection;
     }
-
+    
     /**
      * Adds translations to the collection
      * @param array $collection
-     * @param null|string $language
+     * @param string|null $language
+     * @return null
      */
     protected function attachTranslation(array &$collection, $language)
     {
         if (empty($collection)) {
-            return;
+            return null;
         }
 
         $collection['language'] = 'und';
@@ -218,6 +219,8 @@ class Collection extends Model
         if (isset($language) && isset($collection['translation'][$language])) {
             $collection = $collection['translation'][$language] + $collection;
         }
+        
+        return null;
     }
 
     /**

@@ -193,12 +193,12 @@ class FieldValue extends Model
      */
     protected function setTranslation(array $data, $delete = true)
     {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
         if ($delete) {
             $this->deleteTranslation($data['field_value_id']);
+        } 
+        
+        if (empty($data['translation'])) {
+            return false;
         }
 
         foreach ($data['translation'] as $language => $translation) {

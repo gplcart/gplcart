@@ -425,10 +425,14 @@ class Store extends BaseValidator
      */
     protected function validateThemeStore(array $submitted)
     {
-        $fields = array('theme', 'theme_mobile', 'theme_tablet');
+        $mapping = array(
+            'theme' => $this->language->text('Theme'),
+            'theme_mobile' => $this->language->text('Mobile theme'),
+            'theme_tablet' => $this->language->text('Tablet theme')
+        );
 
         $error = false;
-        foreach ($fields as $field) {
+        foreach ($mapping as $field => $name) {
 
             if (!empty($submitted['update']) && !isset($submitted['data'][$field])) {
                 continue;
@@ -436,13 +440,13 @@ class Store extends BaseValidator
 
             if (empty($submitted['data'][$field])) {
                 $error = true;
-                $this->errors['data'][$field] = $this->language->text('@field is required', array('@field' => $field));
+                $this->errors['data'][$field] = $this->language->text('@field is required', array('@field' => $name));
                 continue;
             }
 
-            if (!$this->module->isInstalled($submitted['data'][$field])) {
+            if (!$this->module->isEnabled($submitted['data'][$field])) {
                 $error = true;
-                $this->errors['data'][$field] = $this->language->text('Object @name does not exist', array('@name' => $field));
+                $this->errors['data'][$field] = $this->language->text('Object @name does not exist', array('@name' => $name));
                 continue;
             }
         }

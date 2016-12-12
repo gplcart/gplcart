@@ -11,10 +11,13 @@
  */
 ?>
 <nav class="navbar category navbar-default">
+  
+  <div class="container-fluid">
+  
   <span class="navbar-text navbar-left"><?php echo $this->text('Showing %num from %total', array('%num' => $quantity, '%total' => $total)); ?></span>
   <form class="navbar-form navbar-right" onchange="$(this).submit();">
     <span class="form-control-static"><?php echo $this->text('Sort'); ?> </span>
-    <select name="sort" class="form-control">
+    <select name="sort" class="form-control input-sm">
       <option value="price-asc"<?php echo ($sort == 'price-asc') ? ' selected' : ''; ?>>
         <?php echo $this->text('Low prices first'); ?>
       </option>
@@ -28,7 +31,7 @@
         <?php echo $this->text('Title Z-A'); ?>
       </option>
     </select>
-    <div class="btn-group" data-toggle="buttons">
+    <div class="btn-group btn-group-sm" data-toggle="buttons">
       <label class="btn btn-default<?php echo ($view == 'list') ? ' active' : ''; ?>">
         <input type="radio" name="view" value="list"<?php echo ($view == 'list') ? ' checked' : ''; ?>><i class="fa fa-th-list"></i>
       </label>
@@ -43,4 +46,6 @@
     <?php } ?>
     <button class="btn btn-default hidden-js"><?php echo $this->text('Go'); ?></button>
   </form>
+  
+  </div>
 </nav>

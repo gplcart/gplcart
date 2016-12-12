@@ -16,7 +16,7 @@
     </button>
     <ul class="dropdown-menu">
       <li>
-        <a data-action="delete" data-action-value="1" href="#">
+        <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
           <?php echo $this->text('Delete'); ?>
         </a>
       </li>
