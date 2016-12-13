@@ -58,7 +58,7 @@ class ProductClass extends BaseValidator
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
             $data = $this->product_class->get($submitted['update']);
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Product class')));
                 return false;
             }

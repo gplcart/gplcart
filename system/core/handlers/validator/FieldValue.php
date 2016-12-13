@@ -91,7 +91,7 @@ class FieldValue extends BaseValidator
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
             $data = $this->field_value->get($submitted['update']);
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Field value')));
                 return false;
             }
@@ -129,7 +129,7 @@ class FieldValue extends BaseValidator
         $field = $this->field->get($submitted['field_id']);
 
         if (empty($field)) {
-            $this->errors['field_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['field_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Field')));
             return false;
         }
@@ -195,7 +195,7 @@ class FieldValue extends BaseValidator
                 return true;
             }
 
-            $this->errors['file'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['file'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Image')));
             return false;
         }

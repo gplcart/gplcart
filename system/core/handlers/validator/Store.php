@@ -91,7 +91,7 @@ class Store extends BaseValidator
             $data = $this->store->get($submitted['update']);
 
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Store')));
                 return false;
             }
@@ -446,7 +446,7 @@ class Store extends BaseValidator
 
             if (!$this->module->isEnabled($submitted['data'][$field])) {
                 $error = true;
-                $this->errors['data'][$field] = $this->language->text('Object @name does not exist', array('@name' => $name));
+                $this->errors['data'][$field] = $this->language->text('@name is unavailable', array('@name' => $name));
                 continue;
             }
         }

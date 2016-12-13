@@ -73,7 +73,7 @@ class Wishlist extends BaseValidator
 
         if (empty($data)) {
             $vars = array('@name' => $this->language->text('Wishlist'));
-            $error = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('update', $error);
             return false;
         }
@@ -111,7 +111,7 @@ class Wishlist extends BaseValidator
 
         if (empty($product['status'])) {
             $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('product_id', $error);
             return false;
         }

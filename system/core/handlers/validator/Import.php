@@ -88,7 +88,7 @@ class Import extends BaseValidator
         }
 
         if (empty($submitted['operation'])) {
-            $this->errors['operation'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['operation'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Operation')));
             return false;
         }
@@ -126,7 +126,7 @@ class Import extends BaseValidator
             return true;
         }
 
-        $this->errors['file'] = $this->language->text('Object @name does not exist', array(
+        $this->errors['file'] = $this->language->text('@name is unavailable', array(
             '@name' => $this->language->text('File')));
         return false;
     }

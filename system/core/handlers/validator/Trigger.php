@@ -73,7 +73,7 @@ class Trigger extends BaseValidator
             $data = $this->trigger->get($submitted['update']);
 
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Trigger')));
                 return false;
             }

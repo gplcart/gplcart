@@ -100,7 +100,7 @@ class User extends BaseValidator
 
         if (empty($data)) {
             $options = array('@name' => $this->language->text('User'));
-            $this->errors['update'] = $this->language->text('Object @name does not exist', $options);
+            $this->errors['update'] = $this->language->text('@name is unavailable', $options);
             return false;
         }
 
@@ -213,7 +213,7 @@ class User extends BaseValidator
         }
 
         $vars = array('@name' => $this->language->text('E-mail'));
-        $error = $this->language->text('Object @name does not exist', $vars);
+        $error = $this->language->text('@name is unavailable', $vars);
         $this->setError('email', $error);
         return false;
     }
@@ -318,7 +318,7 @@ class User extends BaseValidator
 
         if (empty($role)) {
             $options = array('@name' => $this->language->text('Role'));
-            $this->errors['role_id'] = $this->language->text('Object @name does not exist', $options);
+            $this->errors['role_id'] = $this->language->text('@name is unavailable', $options);
             return false;
         }
 

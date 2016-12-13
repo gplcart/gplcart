@@ -56,93 +56,57 @@ class Cart extends BaseValidator
 
     public function cart(array &$submitted, array $options = array())
     {
-        $this->validateCart($submitted);
-        $this->validateStoreId($submitted, $options);
-        $this->validateSkuCart($submitted, $options);
-        $this->validateProductCart($submitted, $options);
-        $this->validateUserCartId($submitted, $options);
-        $this->validateOrderCart($submitted, $options);
-        $this->validateQuantityCart($submitted, $options);
-        $this->validateLimitCart($submitted, $options);
-        $this->validateOptionsCart($submitted, $options);
+        $this->submitted = &$submitted;
+
+        $this->validateCart($options);
+        $this->validateStoreId($options);
+        $this->validateProductCart($options);
+        $this->validateSkuCart($options);
+        $this->validateUserCartId($options);
+        $this->validateOrderCart($options);
+        $this->validateQuantityCart($options);
+        $this->validateLimitCart($options);
+        $this->validateOptionsCart($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a cart item to by updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCart(array &$submitted)
+    protected function validateCart(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
 
-            $data = $this->cart->get($submitted['update']);
-
-            if (empty($data)) {
-                $vars = array('@name' => $this->language->text('Cart'));
-                $error = $this->language->text('Object @name does not exist', $vars);
-                $this->setError('update', $error);
-                return false;
-            }
-
-            $submitted['update'] = $data;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates a cart item SKU
-     * @param array $submitted
-     * @param array $options
-     * @return boolean|null
-     */
-    protected function validateSkuCart(array &$submitted, array $options)
-    {
-        if ($this->isError('store_id', $options)) {
+        if ($id === false) {
             return null;
         }
 
-        $sku = $this->getSubmitted('sku', $submitted, $options);
+        $data = $this->cart->get($id);
 
-        if (!isset($sku)) {
-            return null;
-        }
-
-        if (empty($sku)) {
-            $vars = array('@field' => $this->language->text('SKU'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('sku', $error, $options);
-            return false;
-        }
-        
-        $store_id = $this->getSubmitted('store_id', $submitted, $options);
-        $product = $this->product->getBySku($sku, $store_id);
-
-        if (empty($product)) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('Object @name does not exist', $vars);
-            $this->setError('sku', $error, $options);
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Cart'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
             return false;
         }
 
-        $submitted['product'] = $product;
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates a product ID
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateProductCart(array &$submitted, array $options)
+    protected function validateProductCart(array $options)
     {
-        $product_id = $this->getSubmitted('product_id', $submitted, $options);
+        $product_id = $this->getSubmitted('product_id', $options);
 
-        if (!empty($submitted['update']) && !isset($product_id)) {
+        if ($this->isUpdating() && !isset($product_id)) {
             return null;
         }
 
@@ -164,35 +128,61 @@ class Cart extends BaseValidator
 
         if (empty($product['status'])) {
             $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('product_id', $error, $options);
             return false;
         }
 
-        if (isset($submitted['product']['product_id'])//
-                && $submitted['product']['product_id'] != $product_id) {
+        $this->setSubmitted('product', $product);
+        return true;
+    }
 
-            $error = $this->language->text('Invalid products');
-            $this->setError('product_id', $error, $options);
+    /**
+     * Validates a cart item SKU
+     * @param array $options
+     * @return boolean|null
+     */
+    protected function validateSkuCart(array $options)
+    {
+        if ($this->isError('store_id', $options)) {
+            return null;
+        }
+
+        $sku = $this->getSubmitted('sku', $options);
+
+        if (!isset($sku)) {
+            return null;
+        }
+
+        if (empty($sku)) {
+            $vars = array('@field' => $this->language->text('SKU'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('sku', $error, $options);
             return false;
         }
-        
-        if(empty($submitted['product'])){
-            $submitted['product'] = $product;
+
+        $store_id = $this->getSubmitted('store_id', $options);
+        $product = $this->product->getBySku($sku, $store_id);
+
+        if (empty($product['product_id'])) {
+            $vars = array('@name' => $this->language->text('Product'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('sku', $error, $options);
+            return false;
         }
 
+        $this->setSubmitted('product', $product);
         return true;
     }
 
     /**
      * Validates an order ID
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateOrderCart(array &$submitted, array $options)
+    protected function validateOrderCart(array $options)
     {
-        $order_id = $this->getSubmitted('order_id', $submitted, $options);
+        $order_id = $this->getSubmitted('order_id', $options);
 
         if (empty($order_id)) {
             return null;
@@ -207,9 +197,9 @@ class Cart extends BaseValidator
 
         $order = $this->order->get($order_id);
 
-        if (empty($order)) {
+        if (empty($order['order_id'])) {
             $vars = array('@name' => $this->language->text('Order'));
-            $error = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('order_id', $error, $options);
             return false;
         }
@@ -219,15 +209,14 @@ class Cart extends BaseValidator
 
     /**
      * Validates cart item quantity
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateQuantityCart(array &$submitted, array $options)
+    protected function validateQuantityCart(array $options)
     {
-        $quantity = $this->getSubmitted('quantity', $submitted, $options);
+        $quantity = $this->getSubmitted('quantity', $options);
 
-        if (!empty($submitted['update']) && !isset($quantity)) {
+        if ($this->isUpdating() && !isset($quantity)) {
             return null;
         }
 
@@ -257,41 +246,43 @@ class Cart extends BaseValidator
 
     /**
      * Validates cart limits
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateLimitCart(array &$submitted, array $options)
+    protected function validateLimitCart(array $options)
     {
-        if (!empty($submitted['admin'])) {
+        $admin = $this->getSubmitted('admin');
+        $product = $this->getSubmitted('product');
+
+        if (!empty($admin) || empty($product) || $this->isError()) {
             return null;
         }
 
-        if (empty($submitted['product']) || $this->isError()) {
-            return null;
+        $increment = $this->getSubmitted('increment');
+
+        if (!isset($increment)) {
+            $increment = true;
         }
 
-        $submitted += array('increment' => true);
-
-        $sku = $this->getSubmitted('sku', $submitted, $options);
-        $stock = $this->getSubmitted('stock', $submitted, $options);
-        $user_id = $this->getSubmitted('user_id', $submitted, $options);
-        $store_id = $this->getSubmitted('store_id', $submitted, $options);
-        $quantity = $this->getSubmitted('quantity', $submitted, $options);
+        $sku = $this->getSubmitted('sku', $options);
+        $stock = $this->getSubmitted('stock', $options);
+        $user_id = $this->getSubmitted('user_id', $options);
+        $store_id = $this->getSubmitted('store_id', $options);
+        $quantity = $this->getSubmitted('quantity', $options);
 
         if (!isset($stock)) {
-            $stock = $submitted['product']['stock'];
+            $stock = $product['stock'];
         }
 
         $conditions = array('user_id' => $user_id, 'store_id' => $store_id);
         $existing_quantity = $this->cart->getQuantity($conditions);
 
         $expected_quantity_sku = $quantity;
-        if (!empty($submitted['increment']) && isset($existing_quantity['sku'][$sku])) {
+        if (!empty($increment) && isset($existing_quantity['sku'][$sku])) {
             $expected_quantity_sku += $existing_quantity['sku'][$sku];
         }
 
-        if ($submitted['product']['subtract'] && $expected_quantity_sku > $stock) {
+        if ($product['subtract'] && $expected_quantity_sku > $stock) {
             $error = $this->language->text('Too low stock level');
             $this->setError('quantity', $error, $options);
             return false;
@@ -321,22 +312,22 @@ class Cart extends BaseValidator
 
     /**
      * Validates products cart options
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateOptionsCart(array &$submitted, array $options)
+    protected function validateOptionsCart(array $options)
     {
-        if (empty($submitted['product']) || $this->isError()) {
+        $product = $this->getSubmitted('product');
+
+        if (empty($product) || $this->isError()) {
             return null;
         }
 
-        $product = $submitted['product'];
-        $ops = $this->getSubmitted('options', $submitted, $options);
+        $ops = $this->getSubmitted('options', $options);
 
         if (empty($ops)) {
-            $this->setSubmitted('sku', $product['sku'], $submitted, $options);
-            $this->setSubmitted('stock', $product['stock'], $submitted, $options);
+            $this->setSubmitted('sku', $product['sku'], $options);
+            $this->setSubmitted('stock', $product['stock'], $options);
             return true;
         }
 
@@ -348,9 +339,9 @@ class Cart extends BaseValidator
             return false;
         }
 
-        $this->setSubmitted('combination_id', $combination_id, $submitted, $options);
-        $this->setSubmitted('sku', $product['combination'][$combination_id]['sku'], $submitted, $options);
-        $this->setSubmitted('stock', $product['combination'][$combination_id]['stock'], $submitted, $options);
+        $this->setSubmitted('combination_id', $combination_id, $options);
+        $this->setSubmitted('sku', $product['combination'][$combination_id]['sku'], $options);
+        $this->setSubmitted('stock', $product['combination'][$combination_id]['stock'], $options);
         return true;
     }
 

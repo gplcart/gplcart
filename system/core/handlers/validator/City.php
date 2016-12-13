@@ -20,7 +20,6 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class City extends BaseValidator
 {
-
     /**
      * Country model instance
      * @var \core\models\Country $country
@@ -70,66 +69,77 @@ class City extends BaseValidator
      */
     public function city(array &$submitted, array $options = array())
     {
-        $this->validateCity($submitted);
-        $this->validateStatus($submitted);
-        $this->validateName($submitted);
-        $this->validateStateCity($submitted);
-        $this->validateZoneCity($submitted);
-        $this->validateCountryCity($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateCity($options);
+        $this->validateStatus($options);
+        $this->validateName($options);
+        $this->validateStateCity($options);
+        $this->validateZoneCity($options);
+        $this->validateCountryCity($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a city to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCity(array &$submitted)
+    protected function validateCity(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
-            $data = $this->city->get($submitted['update']);
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
-                    '@name' => $this->language->text('City')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->city->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('City'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates a state ID
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateStateCity(array $submitted)
+    protected function validateStateCity(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['state_id'])) {
+        $state_id = $this->getSubmitted('state_id', $options);
+
+        if ($this->isUpdating() && !isset($state_id)) {
             return null;
         }
 
-        if (empty($submitted['state_id'])) {
-            $this->errors['state_id'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('State')
-            ));
+        if (empty($state_id)) {
+            $vars = array('@field' => $this->language->text('State'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('state_id', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['state_id'])) {
-            $options = array('@field' => $this->language->text('State'));
-            $this->errors['state_id'] = $this->language->text('@field must be numeric', $options);
+        if (!is_numeric($state_id)) {
+            $vars = array('@field' => $this->language->text('State'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('state_id', $error, $options);
             return false;
         }
 
-        $state = $this->state->get($submitted['state_id']);
+        $state = $this->state->get($state_id);
 
-        if (empty($state)) {
-            $this->errors['state_id'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('State')));
+        if (empty($state['state_id'])) {
+            $vars = array('@name' => $this->language->text('State'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('state_id', $error, $options);
             return false;
         }
 
@@ -138,26 +148,30 @@ class City extends BaseValidator
 
     /**
      * Validates a zone ID
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateZoneCity(array $submitted)
+    protected function validateZoneCity(array $options)
     {
-        if (empty($submitted['zone_id'])) {
+        $zone_id = $this->getSubmitted('zone_id', $options);
+
+        if (empty($zone_id)) {
             return true;
         }
 
-        if (!is_numeric($submitted['zone_id'])) {
-            $options = array('@field' => $this->language->text('Zone'));
-            $this->errors['zone_id'] = $this->language->text('@field must be numeric', $options);
+        if (!is_numeric($zone_id)) {
+            $vars = array('@field' => $this->language->text('Zone'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('zone_id', $error, $options);
             return false;
         }
 
-        $zone = $this->zone->get($submitted['zone_id']);
+        $zone = $this->zone->get($zone_id);
 
-        if (empty($zone)) {
-            $this->errors['zone_id'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Zone')));
+        if (empty($zone['zone_id'])) {
+            $vars = array('@name' => $this->language->text('Zone'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('zone_id', $error, $options);
             return false;
         }
 
@@ -166,27 +180,30 @@ class City extends BaseValidator
 
     /**
      * Validates a country code
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateCountryCity(array $submitted)
+    protected function validateCountryCity(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['country'])) {
+        $code = $this->getSubmitted('country', $options);
+
+        if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
-        if (empty($submitted['country'])) {
-            $this->errors['country'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Country')
-            ));
+        if (empty($code)) {
+            $vars = array('@field' => $this->language->text('Country'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('country', $error, $options);
             return false;
         }
 
-        $country = $this->country->get($submitted['country']);
+        $country = $this->country->get($code);
 
-        if (empty($country)) {
-            $this->errors['country'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Country')));
+        if (empty($country['code'])) {
+            $vars = array('@name' => $this->language->text('Country'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('country', $error, $options);
             return false;
         }
 

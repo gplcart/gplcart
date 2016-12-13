@@ -135,7 +135,7 @@ class Product extends BaseValidator
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
             $data = $this->product->get($submitted['update']);
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Product')));
                 return false;
             }
@@ -181,7 +181,7 @@ class Product extends BaseValidator
         $currency = $this->currency->get($submitted['currency']);
 
         if (empty($currency)) {
-            $this->errors['currency'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['currency'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Currency')));
             return false;
         }
@@ -222,7 +222,7 @@ class Product extends BaseValidator
 
             if (empty($category)) {
                 $error = true;
-                $this->errors[$field] = $this->language->text('Object @name does not exist', array(
+                $this->errors[$field] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text($name)));
             }
         }
@@ -253,7 +253,7 @@ class Product extends BaseValidator
 
             if (!in_array($submitted[$field], $units)) {
                 $error = true;
-                $this->errors[$field] = $this->language->text('Object @name does not exist', array(
+                $this->errors[$field] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text($name)));
             }
         }
@@ -467,7 +467,7 @@ class Product extends BaseValidator
         $product_class = $this->product_class->get($submitted['product_class_id']);
 
         if (empty($product_class)) {
-            $this->errors['product_class_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['product_class_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Product class')));
             return false;
         }

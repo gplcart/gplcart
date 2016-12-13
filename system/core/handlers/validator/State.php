@@ -83,7 +83,7 @@ class State extends BaseValidator
             $data = $this->state->get($submitted['update']);
 
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('State')));
                 return false;
             }
@@ -115,7 +115,7 @@ class State extends BaseValidator
         $country = $this->country->get($submitted['country']);
 
         if (empty($country)) {
-            $this->errors['country'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['country'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Country')));
             return false;
         }
@@ -173,7 +173,7 @@ class State extends BaseValidator
         $zone = $this->zone->get($submitted['zone_id']);
 
         if (empty($zone)) {
-            $this->errors['zone_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['zone_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Zone')));
             return false;
         }

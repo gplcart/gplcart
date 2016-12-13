@@ -95,106 +95,127 @@ class CollectionItem extends BaseValidator
 
     /**
      * Validates collection item URL
-     * @param array $submitted
+     * @param array $options
      */
-    protected function validateUrlCollectionItem(array $submitted)
+    protected function validateUrlCollectionItem(array $options)
     {
-        if (isset($submitted['data']['url']) && mb_strlen($submitted['data']['url']) > 255) {
-            $options = array('@max' => 255, '@field' => $this->language->text('Url'));
-            $this->errors['data']['url'] = $this->language->text('@field must not be longer than @max characters', $options);
+        $url = $this->getSubmitted('data.url', $options);
+
+        if (isset($url) && mb_strlen($url) > 255) {
+            $vars = array('@max' => 255, '@field' => $this->language->text('Url'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
+            $this->setError('data.url', $error, $options);
+            return false;
         }
+
+        return true;
     }
 
     /**
      * Validates that collection data is provided
-     * @param array $submitted
+     * @param array $options
      */
-    protected function validateCollectionCollectionItem(array &$submitted)
+    protected function validateCollectionCollectionItem(array $options)
     {
-        if (empty($submitted['collection_id'])) {
-            $this->errors['collection_id'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Collection ID')
-            ));
+        $collection_id = $this->getSubmitted('collection_id', $options);
+
+        if (empty($collection_id)) {
+            $vars = array('@field' => $this->language->text('Collection ID'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('collection_id', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['collection_id'])) {
-            $options = array('@field' => $this->language->text('Collection ID'));
-            $this->errors['collection_id'] = $this->language->text('@field must be numeric', $options);
+        if (!is_numeric($collection_id)) {
+            $vars = array('@field' => $this->language->text('Collection ID'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('collection_id', $error, $options);
             return false;
         }
 
-        $collection = $this->collection->get($submitted['collection_id']);
+        $collection = $this->collection->get($collection_id);
 
-        if (empty($collection)) {
-            $this->errors['collection_id'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Collection ID')));
+        if (empty($collection['collection_id'])) {
+            $vars = array('@name' => $this->language->text('Collection ID'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('collection_id', $error, $options);
             return false;
         }
 
-        $submitted['collection'] = $collection;
+        $this->setSubmitted('collection', $collection);
         return true;
     }
 
     /**
      * Validates submitted value
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateValueCollectionItem(array &$submitted)
+    protected function validateValueCollectionItem(array $options)
     {
-        if (empty($submitted['collection'])) {
+        $collection = $this->getSubmitted('collection');
+
+        if (empty($collection)) {
             return null;
         }
 
-        if (isset($submitted['input']) && is_numeric($submitted['input'])) {
-            $submitted['value'] = $submitted['input'];
+        $input = $this->getSubmitted('input', $options);
+        $value = $this->getSubmitted('value', $options);
+
+        if (isset($input) && is_numeric($input)) {
+            $value = $input;
         }
 
-        if (empty($submitted['value'])) {
-            $this->errors['value'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Value')
-            ));
+        if (empty($value)) {
+            $vars = array('@field' => $this->language->text('Value'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('value', $error, $options);
             return false;
         }
 
         $conditions = array(
-            'value' => $submitted['value'],
-            'collection_id' => $submitted['collection']['collection_id']
+            'value' => $value,
+            'collection_id' => $collection['collection_id']
         );
 
-        $item = $this->collection_item->getList($conditions);
+        $collection_item = $this->collection_item->getList($conditions);
 
-        if (!empty($item)) {
-            $this->errors['value'] = $this->language->text('@object already exists', array(
-                '@object' => $this->language->text('Value')));
+        if (!empty($collection_item)) {
+            $vars = array('@object' => $this->language->text('Value'));
+            $error = $this->language->text('@object already exists', $vars);
+            $this->setError('value', $error, $options);
             return false;
         }
 
+        $this->setSubmitted('value', $value, $options);
         return true;
     }
 
     /**
      * Validates collection item entities
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateEntityCollectionItem(array &$submitted)
+    protected function validateEntityCollectionItem(array $options)
     {
-        if (empty($submitted['collection'])) {
+        $collection = $this->getSubmitted('collection');
+
+        if (empty($collection)) {
             return null;
         }
 
-        $handler_id = $submitted['collection']['type'];
+        $value = $this->getSubmitted('value', $options);
         $handlers = $this->collection->getHandlers();
-        $result = Handler::call($handlers, $handler_id, 'validate', array($submitted['value']));
+        $result = Handler::call($handlers, $collection['type'], 'validate', array($value));
 
         if ($result === true) {
             return true;
         }
 
-        $errors = (array) $result;
-        $this->errors = array_merge($this->errors, $errors);
+        foreach ((array) $result as $key => $error) {
+            $this->setError($key, $error, $options);
+        }
+
         return false;
     }
 
@@ -207,14 +228,9 @@ class CollectionItem extends BaseValidator
     {
         $page = $this->page->get($page_id);
 
-        if (empty($page)) {
-            return $this->language->text('Object @name does not exist', array(
-                        '@name' => $this->language->text('Page')));
-        }
-
         if (empty($page['status'])) {
-            return $this->language->text('Object @name exists but disabled', array(
-                        '@name' => $this->language->text('Page')));
+            $vars = array('@name' => $this->language->text('Page'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -229,14 +245,9 @@ class CollectionItem extends BaseValidator
     {
         $product = $this->product->get($product_id);
 
-        if (empty($product)) {
-            return $this->language->text('Object @name does not exist', array(
-                        '@name' => $this->language->text('Product')));
-        }
-
         if (empty($product['status'])) {
-            return $this->language->text('Object @name exists but disabled', array(
-                        '@name' => $this->language->text('Product')));
+            $vars = array('@name' => $this->language->text('Product'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -252,8 +263,8 @@ class CollectionItem extends BaseValidator
         $file = $this->file->get($file_id);
 
         if (empty($file)) {
-            return $this->language->text('Object @name does not exist', array(
-                        '@name' => $this->language->text('File')));
+            $vars = array('@name' => $this->language->text('File'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;

@@ -63,7 +63,7 @@ class Zone extends BaseValidator
 
         if (empty($data)) {
             $options = array('@name' => $this->language->text('Zone'));
-            $this->errors['zone_id'] = $this->language->text('Object @name does not exist', $options);
+            $this->errors['zone_id'] = $this->language->text('@name is unavailable', $options);
             return false;
         }
 

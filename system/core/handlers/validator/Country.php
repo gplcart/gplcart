@@ -88,7 +88,7 @@ class Country extends BaseValidator
         if (!empty($submitted['update']) && is_string($submitted['update'])) {
             $data = $this->country->get($submitted['update']);
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Country')));
                 return false;
             }
@@ -119,7 +119,7 @@ class Country extends BaseValidator
         $zone = $this->zone->get($submitted['zone_id']);
 
         if (empty($zone)) {
-            $this->errors['zone_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['zone_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Zone')));
             return false;
         }

@@ -41,82 +41,92 @@ class CategoryGroup extends BaseValidator
      */
     public function categoryGroup(array &$submitted, array $options = array())
     {
-        $this->validateCategoryGroup($submitted);
-        $this->validateTitle($submitted);
-        $this->validateTranslation($submitted);
-        $this->validateStoreId($submitted);
-        $this->validateTypeCategoryGroup($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateCategoryGroup($options);
+        $this->validateTitle($options);
+        $this->validateTranslation($options);
+        $this->validateStoreId($options);
+        $this->validateTypeCategoryGroup($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a category group to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCategoryGroup(array &$submitted)
+    protected function validateCategoryGroup(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
-            $data = $this->category_group->get($submitted['update']);
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
-                    '@name' => $this->language->text('Category group')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->category_group->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Category group'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates category group type
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateTypeCategoryGroup(array &$submitted)
+    protected function validateTypeCategoryGroup(array $options)
     {
-        if (isset($this->errors['store_id'])) {
+        if ($this->isError('store_id', $options)) {
             return null;
         }
 
-        if (!empty($submitted['update']) && !isset($submitted['type'])) {
+        $type = $this->getSubmitted('type', $options);
+        $store_id = $this->getSubmitted('store_id', $options);
+
+        if ($this->isUpdating() && !isset($type)) {
             return null;
         }
 
-        if (empty($submitted['type'])) {
-            $this->errors['type'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Type')
-            ));
+        if (empty($type)) {
+            $vars = array('@field' => $this->language->text('Type'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
         $types = $this->category_group->getTypes();
 
-        if (!isset($types[$submitted['type']])) {
-            $this->errors['type'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Type')));
+        if (!isset($types[$type])) {
+            $vars = array('@name' => $this->language->text('Type'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
-        $arguments = array(
-            'type' => $submitted['type'],
-            'store_id' => $submitted['store_id']);
-
+        $updating = $this->getUpdating();
+        $arguments = array('type' => $type, 'store_id' => $store_id);
         $list = $this->category_group->getList($arguments);
 
         // Remove own ID when updating the group
-        if (isset($submitted['update']['category_group_id'])) {
-            unset($list[$submitted['update']['category_group_id']]);
+        if (isset($updating['category_group_id'])) {
+            unset($list[$updating['category_group_id']]);
         }
 
         if (empty($list)) {
             return true;
         }
 
-        $this->errors['type'] = $this->language->text('Category group of this type already exists for this store');
+        $error = $this->language->text('Category group of this type already exists for this store');
+        $this->setError('type', $error, $options);
         return false;
     }
 

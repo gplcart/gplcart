@@ -84,7 +84,7 @@ class PriceRule extends BaseValidator
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
             $data = $this->rule->get($submitted['update']);
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Price rule')));
                 return false;
             }
@@ -122,7 +122,7 @@ class PriceRule extends BaseValidator
         $trigger = $this->trigger->get($submitted['trigger_id']);
 
         if (empty($trigger)) {
-            $this->errors['trigger_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['trigger_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Trigger')));
             return false;
         }
@@ -177,7 +177,7 @@ class PriceRule extends BaseValidator
         $currency = $this->currency->get($submitted['currency']);
 
         if (empty($currency)) {
-            $this->errors['currency'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['currency'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Currency')));
             return false;
         }

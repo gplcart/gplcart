@@ -38,45 +38,49 @@ class Compare extends BaseValidator
     /**
      * Performs full product comparison data validation
      * @param array $submitted
+     * @param array $options
      */
-    public function compare(array &$submitted)
+    public function compare(array &$submitted, array $options = array())
     {
-        $this->validateProductCompare($submitted);
+        $this->submitted = &$submitted;
 
+        $this->validateProductCompare($options);
         return $this->getResult();
     }
 
     /**
      * Validates a compared product ID
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateProductCompare(array &$submitted)
+    protected function validateProductCompare(array $options)
     {
-        if (empty($submitted['product_id'])) {
+        $product_id = $this->getSubmitted('product_id', $options);
+
+        if (empty($product_id)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setError('product_id', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['product_id'])) {
+        if (!is_numeric($product_id)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setError('product_id', $error, $options);
             return false;
         }
 
-        $product = $this->product->get($submitted['product_id']);
+        $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
             $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('Object @name does not exist', $vars);
-            $this->setError('product_id', $error);
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('product_id', $error, $options);
             return false;
         }
 
-        $submitted['product'] = $product;
+        $this->setSubmitted('product', $product);
         return true;
     }
 

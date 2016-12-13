@@ -64,7 +64,7 @@ class UserRole extends BaseValidator
 
         if (empty($data)) {
             $options = array('@name' => $this->language->text('Role'));
-            $this->errors['role_id'] = $this->language->text('Object @name does not exist', $options);
+            $this->errors['role_id'] = $this->language->text('@name is unavailable', $options);
             return false;
         }
 
@@ -92,7 +92,7 @@ class UserRole extends BaseValidator
 
         if (!empty($difference)) {
             $options = array('@name' => implode(',', $difference));
-            $this->errors['permissions'] = $this->language->text('Object @name does not exist', $options);
+            $this->errors['permissions'] = $this->language->text('@name is unavailable', $options);
             return false;
         }
 

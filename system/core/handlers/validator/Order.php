@@ -117,7 +117,7 @@ class Order extends BaseValidator
             $data = $this->order->get($submitted['update']);
 
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Order')));
                 return false;
             }
@@ -142,7 +142,7 @@ class Order extends BaseValidator
         $method = $this->payment->get($submitted['payment']);
 
         if (empty($method)) {
-            $this->errors['payment'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['payment'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Payment')));
             return false;
         }
@@ -164,7 +164,7 @@ class Order extends BaseValidator
         $method = $this->shipping->get($submitted['shipping']);
 
         if (empty($method)) {
-            $this->errors['shipping'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['shipping'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Shipping')));
             return false;
         }
@@ -189,7 +189,7 @@ class Order extends BaseValidator
             return true;
         }
 
-        $this->errors['status'] = $this->language->text('Object @name does not exist', array(
+        $this->errors['status'] = $this->language->text('@name is unavailable', array(
             '@name' => $this->language->text('Status')));
         return false;
     }
@@ -229,7 +229,7 @@ class Order extends BaseValidator
 
             if (empty($address)) {
                 $error = true;
-                $this->errors[$field] = $this->language->text('Object @name does not exist', array(
+                $this->errors[$field] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text($name)));
             }
         }
@@ -264,7 +264,7 @@ class Order extends BaseValidator
         $user = $this->user->get($submitted['creator']);
 
         if (empty($user)) {
-            $this->errors['creator'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['creator'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Creator')));
             return false;
         }
@@ -312,7 +312,7 @@ class Order extends BaseValidator
         $currency = $this->currency->get($submitted['currency']);
 
         if (empty($currency)) {
-            $this->errors['currency'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['currency'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Currency')));
             return false;
         }
@@ -356,7 +356,7 @@ class Order extends BaseValidator
         $transaction = $this->transaction->get($submitted['transaction_id']);
 
         if (empty($transaction)) {
-            $this->errors['transaction_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['transaction_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Transaction')));
             return false;
         }

@@ -60,7 +60,7 @@ class ImageStyle extends BaseValidator
         if (!empty($submitted['update']) && is_string($submitted['update'])) {
             $imagestyle = $this->image->getStyle($submitted['update']);
             if (empty($imagestyle)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Image style')));
                 return false;
             }

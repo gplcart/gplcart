@@ -85,7 +85,7 @@ class Rating extends BaseValidator
 
         if (empty($product)) {
             $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('product_id', $error, $options);
             return false;
         }

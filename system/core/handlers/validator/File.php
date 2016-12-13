@@ -72,7 +72,7 @@ class File extends BaseValidator
             $file = $this->file->get($submitted['update']);
 
             if (empty($file)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('File')));
                 return false;
             }
@@ -122,7 +122,7 @@ class File extends BaseValidator
                 return true;
             }
 
-            $this->errors['file'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['file'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('File')));
             return false;
         }

@@ -52,7 +52,7 @@ class Language extends BaseValidator
         if (!empty($submitted['update']) && is_string($submitted['update'])) {
             $language = $this->language->get($submitted['update']);
             if (empty($language)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Language')));
                 return false;
             }

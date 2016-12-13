@@ -20,6 +20,7 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Address extends BaseValidator
 {
+
     /**
      * City model instance
      * @var \core\models\City $city
@@ -70,110 +71,106 @@ class Address extends BaseValidator
      */
     public function address(array &$submitted, array $options = array())
     {
-        $this->validateAddress($submitted, $options);
-        $this->validateCountryAddress($submitted, $options);
-        $this->validateStateAddress($submitted, $options);
-        $this->validateCityAddress($submitted, $options);
-        $this->validateTypeAddress($submitted, $options);
-        $this->validateTextFieldsAddress($submitted, $options);
-        $this->validateUserId($submitted, $options);
+        $this->submitted = &$submitted;
 
-        unset($submitted['format']);
+        $this->validateAddress($options);
+        $this->validateCountryAddress($options);
+        $this->validateStateAddress($options);
+        $this->validateCityAddress($options);
+        $this->validateTypeAddress($options);
+        $this->validateTextFieldsAddress($options);
+        $this->validateUserId($options);
+
+        // No more needed, remove
+        $this->unsetSubmitted('format');
 
         return $this->getResult();
     }
 
     /**
      * Validates an address to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateAddress(array &$submitted, array $options)
+    protected function validateAddress(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
 
-            $data = $this->address->get($submitted['update']);
-
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
-                    '@name' => $this->language->text('Address')));
-                return false;
-            }
-
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->address->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Address'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates a country code
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateCountryAddress(array &$submitted, array $options)
+    protected function validateCountryAddress(array $options)
     {
-        $country_code = $this->getSubmitted('country', $submitted, $options);
+        $code = $this->getSubmitted('country', $options);
 
-        if (!empty($submitted['update']) && !isset($country_code)) {
+        if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
-        if (!isset($country_code)) {
-
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Country')
-            ));
-
+        if (empty($code)) {
+            $vars = array('@field' => $this->language->text('Country'));
+            $error = $this->language->text('@field is required', $vars);
             $this->setError('country', $error, $options);
             return false;
         }
 
-        $country = $this->country->get($country_code);
+        $country = $this->country->get($code);
 
-        if (empty($country)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Country')));
+        if (empty($country['code'])) {
+            $vars = array('@name' => $this->language->text('Country'));
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('country', $error, $options);
             return false;
         }
 
-        $submitted['format'] = $this->country->getFormat($country_code, true);
+        $format = $this->country->getFormat($code, true);
+        $this->setSubmitted('format', $format);
         return true;
     }
 
     /**
      * Validates a country state
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateStateAddress(array &$submitted, array $options)
+    protected function validateStateAddress(array $options)
     {
-        $state_id = $this->getSubmitted('state_id', $submitted, $options);
+        $format = $this->getSubmitted('format');
+        $state_id = $this->getSubmitted('state_id', $options);
 
-        if (!isset($state_id)) {
+        if (!isset($state_id) || empty($format)) {
             return null;
         }
 
-        if (empty($submitted['format'])) {
-            return null;
-        }
-
-        if (empty($state_id) && !empty($submitted['format']['state_id']['required'])) {
-
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('State')
-            ));
-
+        if (empty($state_id) && !empty($format['state_id']['required'])) {
+            $vars = array('@field' => $this->language->text('State'));
+            $error = $this->language->text('@field is required', $vars);
             $this->setError('state_id', $error, $options);
             return false;
         }
 
         if (!is_numeric($state_id)) {
-            $options = array('@field' => $this->language->text('State'));
-            $error = $this->language->text('@field must be numeric', $options);
+            $vars = array('@field' => $this->language->text('State'));
+            $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('state_id', $error, $options);
             return false;
         }
@@ -184,9 +181,9 @@ class Address extends BaseValidator
 
         $state = $this->state->get($state_id);
 
-        if (empty($state)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('State')));
+        if (empty($state['state_id'])) {
+            $vars = array('@name' => $this->language->text('State'));
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('state_id', $error, $options);
             return false;
         }
@@ -196,28 +193,28 @@ class Address extends BaseValidator
 
     /**
      * Validates a city
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateCityAddress(array &$submitted, array $options)
+    protected function validateCityAddress(array $options)
     {
-        $city_id = $this->getSubmitted('city_id', $submitted, $options);
+        $city_id = $this->getSubmitted('city_id', $options);
 
-        if (!empty($submitted['update']) && !isset($city_id)) {
+        if ($this->isUpdating() && !isset($city_id)) {
             return null;
         }
 
-        if (empty($submitted['format'])) {
+        $format = $this->getSubmitted('format');
+
+        if (empty($format)) {
             return null;
         }
 
         if (empty($city_id)) {
 
-            if (!empty($submitted['format']['city_id']['required'])) {
-                $error = $this->language->text('@field is required', array(
-                    '@field' => $this->language->text('City')
-                ));
+            if (!empty($format['city_id']['required'])) {
+                $vars = array('@field' => $this->language->text('City'));
+                $error = $this->language->text('@field is required', $vars);
                 $this->setError('city_id', $error, $options);
                 return false;
             }
@@ -228,8 +225,8 @@ class Address extends BaseValidator
         if (is_numeric($city_id)) {
             $city = $this->city->get($city_id);
             if (empty($city)) {
-                $error = $this->language->text('Object @name does not exist', array(
-                    '@name' => $this->language->text('City')));
+                $vars = array('@name' => $this->language->text('City'));
+                $error = $this->language->text('@name is unavailable', $vars);
                 $this->setError('city_id', $error, $options);
                 return false;
             }
@@ -237,8 +234,8 @@ class Address extends BaseValidator
         }
 
         if (mb_strlen($city_id) > 255) {
-            $options = array('@max' => 255, '@field' => $this->language->text('City'));
-            $error = $this->language->text('@field must not be longer than @max characters', $options);
+            $vars = array('@max' => 255, '@field' => $this->language->text('City'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
             $this->setError('city_id', $error, $options);
             return false;
         }
@@ -248,23 +245,22 @@ class Address extends BaseValidator
 
     /**
      * Validates an address type
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateTypeAddress(array &$submitted, array $options)
+    protected function validateTypeAddress(array $options)
     {
-        $type = $this->getSubmitted('type', $submitted, $options);
+        $type = $this->getSubmitted('type', $options);
 
-        if (!empty($submitted['update']) && !isset($type)) {
+        if (!isset($type)) {
             return null;
         }
 
         $types = $this->address->getTypes();
 
-        if (isset($type) && !in_array($type, $types)) {
-            $error = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Type')));
+        if (!in_array($type, $types)) {
+            $vars = array('@name' => $this->language->text('Type'));
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('type', $error, $options);
             return false;
         }
@@ -274,23 +270,16 @@ class Address extends BaseValidator
 
     /**
      * Validates address text fields
-     * @param array $submitted
      * @param array $options
      * @return boolean|null
      */
-    protected function validateTextFieldsAddress(&$submitted, $options)
+    protected function validateTextFieldsAddress(array $options)
     {
-        $country_code = $this->getSubmitted('country', $submitted, $options);
+        $format = $this->getSubmitted('format');
 
-        if (!isset($country_code) || $this->isError('country', $options)) {
+        if (empty($format) || $this->isError('country', $options)) {
             return null;
         }
-
-        if (empty($submitted['format'])) {
-            return null;
-        }
-
-        $format = $this->country->getFormat($country_code, true);
 
         $fields = array('address_1', 'address_2', 'phone', 'middle_name',
             'last_name', 'first_name', 'postcode', 'company', 'fax');
@@ -301,7 +290,9 @@ class Address extends BaseValidator
                 continue;
             }
 
-            if (!empty($submitted['update']) && !isset($submitted[$field])) {
+            $submitted_value = $this->getSubmitted($field, $options);
+
+            if ($this->isUpdating() && !isset($submitted_value)) {
                 continue;
             }
 
@@ -309,12 +300,12 @@ class Address extends BaseValidator
                 continue;
             }
 
-            if (!isset($submitted[$field])//
-                    || $submitted[$field] === ''//
-                    || mb_strlen($submitted[$field]) > 255) {
+            if (!isset($submitted_value)//
+                    || $submitted_value === ''//
+                    || mb_strlen($submitted_value) > 255) {
 
-                $options = array('@min' => 1, '@max' => 255, '@field' => $format[$field]['name']);
-                $error = $this->language->text('@field must be @min - @max characters long', $options);
+                $vars = array('@min' => 1, '@max' => 255, '@field' => $format[$field]['name']);
+                $error = $this->language->text('@field must be @min - @max characters long', $vars);
                 $this->setError($field, $error, $options);
             }
         }

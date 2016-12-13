@@ -72,7 +72,7 @@ class Review extends BaseValidator
             $data = $this->review->get($submitted['update']);
 
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Review')));
                 return false;
             }
@@ -163,7 +163,7 @@ class Review extends BaseValidator
         $product = $this->product->get($submitted['product_id']);
 
         if (empty($product)) {
-            $this->errors['product_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['product_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Product')));
             return false;
         }
@@ -191,7 +191,7 @@ class Review extends BaseValidator
         $user = $this->user->getByEmail($submitted['email']);
 
         if (empty($user)) {
-            $this->errors['email'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['email'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Email')));
             return false;
         }

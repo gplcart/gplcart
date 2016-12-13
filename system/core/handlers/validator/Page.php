@@ -76,7 +76,7 @@ class Page extends BaseValidator
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
             $page = $this->page->get($submitted['update']);
             if (empty($page)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Page')));
                 return false;
             }
@@ -127,7 +127,7 @@ class Page extends BaseValidator
         $category = $this->category->get($submitted['category_id']);
 
         if (empty($category)) {
-            $this->errors['category_id'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['category_id'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Category')));
             return false;
         }

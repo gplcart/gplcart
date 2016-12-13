@@ -62,7 +62,7 @@ class Field extends BaseValidator
         if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
             $data = $this->field->get($submitted['update']);
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Field')));
                 return false;
             }
@@ -94,7 +94,7 @@ class Field extends BaseValidator
         $types = $this->field->getTypes();
 
         if (empty($types[$submitted['type']])) {
-            $this->errors['type'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['type'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Type')));
             return false;
         }
@@ -123,7 +123,7 @@ class Field extends BaseValidator
         $types = $this->field->getWidgetTypes();
 
         if (empty($types[$submitted['widget']])) {
-            $this->errors['widget'] = $this->language->text('Object @name does not exist', array(
+            $this->errors['widget'] = $this->language->text('@name is unavailable', array(
                 '@name' => $this->language->text('Widget')));
             return false;
         }

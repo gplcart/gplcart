@@ -18,7 +18,6 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Backup extends BaseValidator
 {
-
     /**
      * Backup model instance
      * @var \core\models\Backup $backup
@@ -47,110 +46,128 @@ class Backup extends BaseValidator
     /**
      * Performs full backup data validation
      * @param array $submitted
+     * @param array $options
      */
-    public function backup(array &$submitted)
+    public function backup(array &$submitted, array $options = array())
     {
-        $this->validateName($submitted);
-        $this->validateHandler($submitted);
-        $this->validateModuleId($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateName($options);
+        $this->validateHandler($options);
+        $this->validateModuleId($options);
         return $this->getResult();
     }
 
     /**
      * Performs full restore data validation
      * @param array $submitted
+     * @param array $options
      */
-    public function restore(array &$submitted)
+    public function restore(array &$submitted, array $options = array())
     {
-        $this->validateBackup($submitted);
-        $this->validateHandler($submitted);
-        $this->validateModuleId($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateBackup($options);
+        $this->validateHandler($options);
+        $this->validateModuleId($options);
         return $this->getResult();
     }
 
     /**
      * Validates a backup data
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateBackup(array &$submitted)
+    protected function validateBackup(array $options)
     {
-        if (empty($submitted['backup'])) {
+        $backup = $this->getSubmitted('backup', $options);
+
+        if (empty($backup)) {
             $vars = array('@field' => $this->language->text('Backup'));
-            $this->errors['backup'] = $this->language->text('@field is required', $vars);
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('backup', $error, $options);
             return false;
         }
 
-        // $submitted['backup'] can be either integer or array
+        // Can be either integer or array
         // Try to load if it's an integer
-        if (is_numeric($submitted['backup'])) {
+        if (is_numeric($backup)) {
 
-            $data = $this->backup->get($submitted['backup']);
+            $backup = $this->backup->get($backup);
 
-            if (empty($data)) {
+            if (empty($backup)) {
                 $vars = array('@name' => $this->language->text('Backup'));
-                $this->errors['backup'] = $this->language->text('Object @name does not exist', $vars);
+                $error = $this->language->text('@name is unavailable', $vars);
+                $this->setError('backup', $error, $options);
                 return false;
             }
 
-            $submitted['backup'] = $data;
+            $this->setSubmitted('backup', $backup, $options);
         }
 
         // Set handler and module ID to check later
-        $submitted['type'] = $submitted['backup']['type'];
-        $submitted['module_id'] = $submitted['backup']['module_id'];
+        $this->setSubmitted('type', $backup['type'], $options);
+        $this->setSubmitted('module_id', $backup['module_id'], $options);
         return true;
     }
 
     /**
      * Validates a backup type (handler ID)
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateHandler(array &$submitted)
+    protected function validateHandler(array $options)
     {
-        if (empty($submitted['type'])) {
+        $type = $this->getSubmitted('type', $options);
+
+        if (empty($type)) {
             $vars = array('@field' => $this->language->text('Type'));
-            $this->errors['type'] = $this->language->text('@field is required', $vars);
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
-        $handler = $this->backup->getHandler($submitted['type']);
+        $handler = $this->backup->getHandler($type);
 
         if (empty($handler)) {
             $vars = array('@name' => $this->language->text('Type'));
-            $this->errors['type'] = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
-        $submitted['handler'] = $handler;
+        $this->setSubmitted('handler', $handler, $options);
         return true;
     }
 
     /**
      * Validates a module ID
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateModuleId(array &$submitted)
+    protected function validateModuleId(array $options)
     {
-        if ($this->isError('type')) {
+        if ($this->isError('type', $options)) {
             return null;
         }
 
-        if (!isset($submitted['module_id']) && $submitted['type'] !== 'module') {
+        $type = $this->getSubmitted('type', $options);
+        $module_id = $this->getSubmitted('module_id', $options);
+
+        if (!isset($module_id) && $type !== 'module') {
             return null;
         }
 
-        $module = $this->module->get($submitted['module_id']);
+        $module = $this->module->get($module_id);
 
         if (empty($module)) {
             $vars = array('@name' => $this->language->text('Module'));
-            $this->errors['module_id'] = $this->language->text('Object @name does not exist', $vars);
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('module_id', $error, $options);
             return false;
         }
 
-        $submitted['module'] = $module;
+        $this->setSubmitted('module', $module, $options);
         return true;
     }
 

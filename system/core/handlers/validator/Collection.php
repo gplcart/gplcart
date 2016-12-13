@@ -17,7 +17,6 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Collection extends BaseValidator
 {
-
     /**
      * Collection model instance
      * @var \core\models\Collection $collection
@@ -41,61 +40,71 @@ class Collection extends BaseValidator
      */
     public function collection(array &$submitted, array $options = array())
     {
-        $this->validateCollection($submitted);
-        $this->validateStatus($submitted);
-        $this->validateTitle($submitted);
-        $this->validateDescription($submitted);
-        $this->validateTranslation($submitted);
-        $this->validateStoreId($submitted);
-        $this->validateTypeCollection($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateCollection($options);
+        $this->validateStatus($options);
+        $this->validateTitle($options);
+        $this->validateDescription($options);
+        $this->validateTranslation($options);
+        $this->validateStoreId($options);
+        $this->validateTypeCollection($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a collection to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCollection(array &$submitted)
+    protected function validateCollection(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
-            $data = $this->collection->get($submitted['update']);
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
-                    '@name' => $this->language->text('Collection')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->collection->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Collection'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setSubmitted('update', $data);
         return true;
     }
 
     /**
      * Validates collection type field
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateTypeCollection(array &$submitted)
+    protected function validateTypeCollection(array $options)
     {
-        if (!empty($submitted['update'])) {
+        if ($this->isUpdating()) {
             return true; // Type cannot be updated
         }
 
-        if (empty($submitted['type'])) {
-            $this->errors['type'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Type')
-            ));
+        $type = $this->getSubmitted('type', $options);
+
+        if (empty($type)) {
+            $vars = array('@field' => $this->language->text('Type'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
         $types = $this->collection->getTypes();
 
-        if (!isset($types[$submitted['type']])) {
-            $this->errors['type'] = $this->language->text('Object @name does not exist', array(
-                '@name' => $this->language->text('Type')));
+        if (!isset($types[$type])) {
+            $vars = array('@name' => $this->language->text('Type'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 

@@ -66,7 +66,7 @@ class Currency extends BaseValidator
             $data = $this->currency->get($submitted['update']);
 
             if (empty($data)) {
-                $this->errors['update'] = $this->language->text('Object @name does not exist', array(
+                $this->errors['update'] = $this->language->text('@name is unavailable', array(
                     '@name' => $this->language->text('Currency')));
                 return false;
             }
