@@ -62,17 +62,22 @@ class Country extends BaseValidator
      */
     public function country(array &$submitted, array $options = array())
     {
-        $this->validateCountry($submitted);
-        $this->validateWeight($submitted);
-        $this->validateDefault($submitted);
-        $this->validateStatus($submitted);
-        $this->validateCodeCountry($submitted);
-        $this->validateName($submitted);
-        $this->validateNativeNameCountry($submitted);
-        $this->validateZoneCountry($submitted);
+        $this->submitted = &$submitted;
 
-        if (empty($this->errors) && empty($submitted['default'])) {
-            $this->country->unsetDefault($submitted['code']);
+        $this->validateCountry($options);
+        $this->validateWeight($options);
+        $this->validateDefault($options);
+        $this->validateStatus($options);
+        $this->validateCodeCountry($options);
+        $this->validateName($options);
+        $this->validateNativeNameCountry($options);
+        $this->validateZoneCountry($options);
+
+        $code = $this->getSubmitted('code', $options);
+        $default = $this->getSubmitted('default', $options);
+
+        if (!$this->isError() && empty($default)) {
+            $this->country->unsetDefault($code);
         }
 
         return $this->getResult();
@@ -80,47 +85,56 @@ class Country extends BaseValidator
 
     /**
      * Validates a country to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCountry(array &$submitted)
+    protected function validateCountry(array $options)
     {
-        if (!empty($submitted['update']) && is_string($submitted['update'])) {
-            $data = $this->country->get($submitted['update']);
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Country')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->country->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Country'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates a zone ID
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateZoneCountry(array $submitted)
+    protected function validateZoneCountry(array $options)
     {
-        if (empty($submitted['zone_id'])) {
+        $zone_id = $this->getSubmitted('zone_id', $options);
+
+        if (empty($zone_id)) {
             return null;
         }
 
-        if (!is_numeric($submitted['zone_id'])) {
-            $options = array('@field' => $this->language->text('Zone'));
-            $this->errors['zone_id'] = $this->language->text('@field must be numeric', $options);
+        if (!is_numeric($zone_id)) {
+            $vars = array('@field' => $this->language->text('Zone'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('zone_id', $error, $options);
             return false;
         }
 
-        $zone = $this->zone->get($submitted['zone_id']);
+        $zone = $this->zone->get($zone_id);
 
-        if (empty($zone)) {
-            $this->errors['zone_id'] = $this->language->text('@name is unavailable', array(
-                '@name' => $this->language->text('Zone')));
+        if (empty($zone['zone_id'])) {
+            $vars = array('@name' => $this->language->text('Zone'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('zone_id', $error, $options);
             return false;
         }
 
@@ -129,18 +143,21 @@ class Country extends BaseValidator
 
     /**
      * Validates a native country name
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateNativeNameCountry(array &$submitted)
+    protected function validateNativeNameCountry(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['native_name'])) {
+        $native_name = $this->getSubmitted('native_name', $options);
+
+        if ($this->isUpdating() && !isset($native_name)) {
             return null;
         }
 
-        if (empty($submitted['native_name']) || mb_strlen($submitted['native_name']) > 255) {
-            $options = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Native name'));
-            $this->errors['native_name'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (empty($native_name) || mb_strlen($native_name) > 255) {
+            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Native name'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('native_name', $error, $options);
             return false;
         }
 
@@ -149,43 +166,48 @@ class Country extends BaseValidator
 
     /**
      * Validates a country code
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateCodeCountry(array &$submitted)
+    protected function validateCodeCountry(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['code'])) {
+        $code = $this->getSubmitted('code', $options);
+
+        if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
-        if (empty($submitted['code'])) {
-            $this->errors['code'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Code')
-            ));
+        if (empty($code)) {
+            $vars = array('@field' => $this->language->text('Code'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('code', $error, $options);
             return false;
         }
 
-        if (!preg_match('/^[A-Z]{2}$/', $submitted['code'])) {
-            $this->errors['code'] = $this->language->text('Invalid country code. It must conform to ISO 3166-2 standard');
+        if (!preg_match('/^[A-Z]{2}$/', $code)) {
+            $error = $this->language->text('Invalid country code. It must conform to ISO 3166-2 standard');
+            $this->setError('code', $error, $options);
             return false;
         }
 
-        $submitted['code'] = strtoupper($submitted['code']);
+        $code = strtoupper($code);
 
-        if (isset($submitted['country']['code'])//
-                && ($submitted['country']['code'] === $submitted['code'])) {
+        $updating = $this->getUpdating();
+        if (isset($updating['code']) && ($updating['code'] === $code)) {
             return true;
         }
 
-        $country = $this->country->get($submitted['code']);
+        $existing = $this->country->get($code);
 
-        if (empty($country)) {
-            return true;
+        if (!empty($existing['code'])) {
+            $vars = array('@object' => $this->language->text('Code'));
+            $error = $this->language->text('@object already exists', $vars);
+            $this->setError('code', $error, $options);
+            return false;
         }
 
-        $this->errors['code'] = $this->language->text('@object already exists', array(
-            '@object' => $this->language->text('Code')));
-        return false;
+        $this->setSubmitted('code', $code, $options);
+        return true;
     }
 
 }

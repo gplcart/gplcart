@@ -34,95 +34,107 @@ class Currency extends BaseValidator
         $this->currency = $currency;
     }
 
-    public function currency(array &$submitted)
+    public function currency(array &$submitted, array $options = array())
     {
-        $this->validateCurrency($submitted);
-        $this->validateDefault($submitted);
-        $this->validateStatus($submitted);
-        $this->validateCodeCurrency($submitted);
-        $this->validateName($submitted);
-        $this->validateNumericCodeCurrency($submitted);
-        $this->validateSymbolCurrency($submitted);
-        $this->validateMajorUnitCurrency($submitted);
-        $this->validateMinorUnitCurrency($submitted);
-        $this->validateConvertionRateCurrency($submitted);
-        $this->validateDecimalsCurrency($submitted);
-        $this->validateRoundingStepCurrency($submitted);
-        $this->validateSymbolPlacementCurrency($submitted);
-        $this->validateCodePlacementCurrency($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateCurrency($options);
+        $this->validateDefault($options);
+        $this->validateStatus($options);
+        $this->validateCodeCurrency($options);
+        $this->validateName($options);
+        $this->validateNumericCodeCurrency($options);
+        $this->validateSymbolCurrency($options);
+        $this->validateMajorUnitCurrency($options);
+        $this->validateMinorUnitCurrency($options);
+        $this->validateConvertionRateCurrency($options);
+        $this->validateDecimalsCurrency($options);
+        $this->validateRoundingStepCurrency($options);
+        $this->validateSymbolPlacementCurrency($options);
+        $this->validateCodePlacementCurrency($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a currency to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCurrency(array &$submitted)
+    protected function validateCurrency(array $options)
     {
-        if (!empty($submitted['update']) && is_string($submitted['update'])) {
+        $id = $this->getUpdatingId();
 
-            $data = $this->currency->get($submitted['update']);
-
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Currency')));
-                return false;
-            }
-
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->currency->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Currency'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates symbol placement field value
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateSymbolPlacementCurrency(array &$submitted)
+    protected function validateSymbolPlacementCurrency(array $options)
     {
-        if (isset($submitted['symbol_placement'])//
-                && !in_array($submitted['symbol_placement'], array('before', 'after'))) {
-            $this->errors['symbol_placement'] = $this->language->text('Symbol placement can be either "before" or "after"');
-            return false;
+        $symbol_placement = $this->getSubmitted('symbol_placement', $options);
+
+        if (!isset($symbol_placement) || in_array($symbol_placement, array('before', 'after'))) {
+            return true;
         }
 
-        return true;
+        $error = $this->language->text('Symbol placement can be either "before" or "after"');
+        $this->setError('symbol_placement', $error, $options);
+        return false;
     }
 
     /**
      * Validates code placement field value
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCodePlacementCurrency(array &$submitted)
+    protected function validateCodePlacementCurrency(array $options)
     {
-        if (isset($submitted['code_placement'])//
-                && !in_array($submitted['code_placement'], array('before', 'after'))) {
-            $this->errors['code_placement'] = $this->language->text('Code placement can be either "before" or "after"');
-            return false;
+        $code_placement = $this->getSubmitted('code_placement', $options);
+
+        if (!isset($code_placement) || in_array($code_placement, array('before', 'after'))) {
+            return true;
         }
 
-        return true;
+        $error = $this->language->text('Code placement can be either "before" or "after"');
+        $this->setError('code_placement', $error, $options);
+        return false;
     }
 
     /**
      * Validates currency symbol
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateSymbolCurrency(array &$submitted)
+    protected function validateSymbolCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['symbol'])) {
+        $symbol = $this->getSubmitted('symbol', $options);
+
+        if ($this->isUpdating() && !isset($symbol)) {
             return null;
         }
 
-        if (empty($submitted['symbol']) || mb_strlen($submitted['symbol']) > 10) {
-            $options = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Symbol'));
-            $this->errors['symbol'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (empty($symbol) || mb_strlen($symbol) > 10) {
+            $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Symbol'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('symbol', $error, $options);
             return false;
         }
 
@@ -131,18 +143,21 @@ class Currency extends BaseValidator
 
     /**
      * Validates currency major unit
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateMajorUnitCurrency(array &$submitted)
+    protected function validateMajorUnitCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['major_unit'])) {
+        $major_unit = $this->getSubmitted('major_unit', $options);
+
+        if ($this->isUpdating() && !isset($major_unit)) {
             return null;
         }
 
-        if (empty($submitted['major_unit']) || mb_strlen($submitted['major_unit']) > 50) {
-            $options = array('@min' => 1, '@max' => 50, '@field' => $this->language->text('Major unit'));
-            $this->errors['major_unit'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (empty($major_unit) || mb_strlen($major_unit) > 50) {
+            $vars = array('@min' => 1, '@max' => 50, '@field' => $this->language->text('Major unit'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('major_unit', $error, $options);
             return false;
         }
 
@@ -151,18 +166,21 @@ class Currency extends BaseValidator
 
     /**
      * Validates currency minor unit
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateMinorUnitCurrency(array &$submitted)
+    protected function validateMinorUnitCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['minor_unit'])) {
+        $minor_unit = $this->getSubmitted('minor_unit', $options);
+
+        if ($this->isUpdating() && !isset($minor_unit)) {
             return null;
         }
 
-        if (empty($submitted['minor_unit']) || mb_strlen($submitted['minor_unit']) > 50) {
-            $options = array('@min' => 1, '@max' => 50, '@field' => $this->language->text('Minor unit'));
-            $this->errors['minor_unit'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (empty($minor_unit) || mb_strlen($minor_unit) > 50) {
+            $vars = array('@min' => 1, '@max' => 50, '@field' => $this->language->text('Minor unit'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('minor_unit', $error, $options);
             return false;
         }
 
@@ -171,23 +189,27 @@ class Currency extends BaseValidator
 
     /**
      * Validates currency convertion rate
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateConvertionRateCurrency(array &$submitted)
+    protected function validateConvertionRateCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['convertion_rate'])) {
+        $convertion_rate = $this->getSubmitted('convertion_rate', $options);
+
+        if ($this->isUpdating() && !isset($convertion_rate)) {
             return null;
         }
 
-        if (empty($submitted['convertion_rate']) || strlen($submitted['convertion_rate']) > 10) {
-            $options = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Convertion rate'));
-            $this->errors['convertion_rate'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (empty($convertion_rate) || strlen($convertion_rate) > 10) {
+            $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Convertion rate'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('convertion_rate', $error, $options);
             return false;
         }
 
-        if (!preg_match('/^[0-9]\d*(\.\d+)?$/', $submitted['convertion_rate'])) {
-            $this->errors['convertion_rate'] = $this->language->text('Invalid convertion rate. It must be decimal or integer positive value');
+        if (!preg_match('/^[0-9]\d*(\.\d+)?$/', $convertion_rate)) {
+            $error = $this->language->text('Invalid convertion rate. It must be decimal or integer positive value');
+            $this->setError('convertion_rate', $error, $options);
             return false;
         }
 
@@ -196,23 +218,27 @@ class Currency extends BaseValidator
 
     /**
      * Validates currency rounding step
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateRoundingStepCurrency(array &$submitted)
+    protected function validateRoundingStepCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['rounding_step'])) {
+        $rounding_step = $this->getSubmitted('rounding_step', $options);
+
+        if ($this->isUpdating() && !isset($rounding_step)) {
             return null;
         }
 
-        if (!isset($submitted['rounding_step']) || strlen($submitted['rounding_step']) > 10) {
-            $options = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Rounding step'));
-            $this->errors['rounding_step'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (!isset($rounding_step) || strlen($rounding_step) > 10) {
+            $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Rounding step'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('rounding_step', $error, $options);
             return false;
         }
 
-        if (!preg_match('/^[0-9]\d*(\.\d+)?$/', $submitted['rounding_step'])) {
-            $this->errors['rounding_step'] = $this->language->text('Invalid rounding step value. It must be decimal or integer positive value');
+        if (!preg_match('/^[0-9]\d*(\.\d+)?$/', $rounding_step)) {
+            $error = $this->language->text('Invalid rounding step value. It must be decimal or integer positive value');
+            $this->setError('rounding_step', $error, $options);
             return false;
         }
 
@@ -221,24 +247,27 @@ class Currency extends BaseValidator
 
     /**
      * Validates currency decimals
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateDecimalsCurrency(array &$submitted)
+    protected function validateDecimalsCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['decimals'])) {
+        $decimals = $this->getSubmitted('decimals', $options);
+
+        if ($this->isUpdating() && !isset($decimals)) {
             return null;
         }
 
-        if (!isset($submitted['decimals'])) {
-            $this->errors['decimals'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Decimals')
-            ));
+        if (!isset($decimals)) {
+            $vars = array('@field' => $this->language->text('Decimals'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('decimals', $error, $options);
             return false;
         }
 
-        if (!preg_match('/^[0-2]+$/', $submitted['decimals'])) {
-            $this->errors['decimals'] = $this->language->text('Invalid decimals value. It must be 0 - 2');
+        if (!preg_match('/^[0-2]+$/', $decimals)) {
+            $error = $this->language->text('Invalid decimals value. It must be 0 - 2');
+            $this->setError('decimals', $error, $options);
             return false;
         }
 
@@ -247,82 +276,93 @@ class Currency extends BaseValidator
 
     /**
      * Validates currency numeric code
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateNumericCodeCurrency(array &$submitted)
+    protected function validateNumericCodeCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['numeric_code'])) {
+        $numeric_code = $this->getSubmitted('numeric_code', $options);
+
+        if ($this->isUpdating() && !isset($numeric_code)) {
             return null;
         }
 
-        if (empty($submitted['numeric_code'])) {
-            $this->errors['numeric_code'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Numeric code')
-            ));
+        if (empty($numeric_code)) {
+            $vars = array('@field' => $this->language->text('Numeric code'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('numeric_code', $error, $options);
             return false;
         }
 
-        if (!preg_match('/^[0-9]{3}$/', $submitted['numeric_code'])) {
-            $this->errors['numeric_code'] = $this->language->text('Invalid numeric code. It must conform to ISO 4217 standard');
+        if (!preg_match('/^[0-9]{3}$/', $numeric_code)) {
+            $error = $this->language->text('Invalid numeric code. It must conform to ISO 4217 standard');
+            $this->setError('numeric_code', $error, $options);
             return false;
         }
 
-        if (isset($submitted['update']['numeric_code']) //
-                && ($submitted['update']['numeric_code'] == $submitted['numeric_code'])) {
+        $updating = $this->getUpdating();
+
+        if (isset($updating['numeric_code']) //
+                && ($updating['numeric_code'] == $numeric_code)) {
             return true;
         }
 
-        $existing = $this->currency->getByNumericCode($submitted['numeric_code']);
+        $existing = $this->currency->getByNumericCode($numeric_code);
 
         if (empty($existing)) {
             return true;
         }
 
-        $this->errors['numeric_code'] = $this->language->text('@object already exists', array(
-            '@object' => $this->language->text('Numeric code')));
+        $vars = array('@object' => $this->language->text('Numeric code'));
+        $error = $this->language->text('@object already exists', $vars);
+        $this->setError('numeric_code', $error, $options);
         return false;
     }
 
     /**
      * Validates currency code
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateCodeCurrency(array &$submitted)
+    protected function validateCodeCurrency(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['code'])) {
+        $code = $this->getSubmitted('code', $options);
+
+        if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
-        if (empty($submitted['code'])) {
-            $this->errors['code'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Code')
-            ));
+        if (empty($code)) {
+            $vars = array('@field' => $this->language->text('Code'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('code', $error, $options);
             return false;
         }
 
-        if (!preg_match('/^[A-Z]{3}$/', $submitted['code'])) {
-            $this->errors['code'] = $this->language->text('Invalid currency code. It must conform to ISO 4217 standard');
+        if (!preg_match('/^[A-Z]{3}$/', $code)) {
+            $error = $this->language->text('Invalid currency code. It must conform to ISO 4217 standard');
+            $this->setError('code', $error, $options);
             return false;
         }
 
-        $submitted['code'] = strtoupper($submitted['code']);
+        $code = strtoupper($code);
+        $updating = $this->getUpdating();
 
-        if (isset($submitted['update']['code']) //
-                && ($submitted['update']['code'] === $submitted['code'])) {
+        if (isset($updating['code']) && ($updating['code'] === $code)) {
             return true;
         }
 
-        $existing = $this->currency->get($submitted['code']);
+        $existing = $this->currency->get($code);
 
-        if (empty($existing)) {
-            return true;
+        if (!empty($existing)) {
+            $vars = array('@object' => $this->language->text('Code'));
+            $error = $this->language->text('@object already exists', $vars);
+            $this->setError('code', $error, $options);
+            return false;
         }
 
-        $this->errors['code'] = $this->language->text('@object already exists', array(
-            '@object' => $this->language->text('Code')));
-        return false;
+        $this->setSubmitted('code', $code, $options);
+        return true;
     }
 
 }
