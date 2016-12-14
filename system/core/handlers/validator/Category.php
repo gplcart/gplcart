@@ -50,6 +50,7 @@ class Category extends BaseValidator
      * Performs full category data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function category(array &$submitted, array $options = array())
     {
@@ -74,7 +75,7 @@ class Category extends BaseValidator
     /**
      * Validates a category to be updated
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCategory(array $options)
     {
@@ -180,6 +181,7 @@ class Category extends BaseValidator
     /**
      * Validates first and second description
      * @param array $options
+     * @return boolean
      */
     protected function validateDescriptionCategory(array $options)
     {

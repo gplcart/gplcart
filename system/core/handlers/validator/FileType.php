@@ -61,7 +61,7 @@ class FileType
      * Whether the file is a ZIP file
      * @param string $file
      * @param array $options
-     * @return type
+     * @return boolean
      */
     public function zip($file, array $options)
     {

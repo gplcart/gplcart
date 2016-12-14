@@ -18,6 +18,10 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Module extends BaseValidator
 {
+    /**
+     * Path for uploaded module files that is relative to main file directory
+     */
+    const UPLOAD_PATH = 'private/modules';
 
     /**
      * File model instance
@@ -47,39 +51,44 @@ class Module extends BaseValidator
     /**
      * Performs module upload validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
     public function upload(array &$submitted, array $options = array())
     {
-        $this->validateUploadModule($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateUploadModule($options);
         return $this->getResult();
     }
 
     /**
      * Uploads and validates a module
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateUploadModule(array &$submitted)
+    protected function validateUploadModule(array $options)
     {
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $this->errors['file'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('File')
-            ));
+            $vars = array('@field' => $this->language->text('File'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('file', $error, $options);
             return false;
         }
 
-        $result = $this->file->setUploadPath('private/modules')
+        $result = $this->file->setUploadPath(self::UPLOAD_PATH)
                 ->setHandler('zip')
                 ->upload($file);
 
         if ($result !== true) {
-            $this->errors['file'] = $result;
+            $this->setError('file', $result, $options);
             return false;
         }
 
-        $submitted['destination'] = $this->file->getUploadedFile();
+        $uploaded = $this->file->getUploadedFile();
+        $this->setSubmitted('destination', $uploaded, $options);
         return true;
     }
 

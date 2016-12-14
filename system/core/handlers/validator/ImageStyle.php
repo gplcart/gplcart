@@ -36,106 +36,77 @@ class ImageStyle extends BaseValidator
     }
 
     /**
-     * Performs full image style validation
+     * Performs full image style data validation
      * @param array $submitted
-     * @param array $action
+     * @param array $options
+     * @return boolean|array
      */
-    public function imageStyle(array &$submitted)
+    public function imageStyle(array &$submitted, array $options = array())
     {
-        $this->validateImageStyle($submitted);
-        $this->validateName($submitted);
-        $this->validateStatus($submitted);
-        $this->validateActionsImageStyle($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateImageStyle($options);
+        $this->validateName($options);
+        $this->validateStatus($options);
+        $this->validateActionsImageStyle($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates an image style to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateImageStyle(array &$submitted)
+    protected function validateImageStyle(array $options)
     {
-        if (!empty($submitted['update']) && is_string($submitted['update'])) {
-            $imagestyle = $this->image->getStyle($submitted['update']);
-            if (empty($imagestyle)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Image style')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $imagestyle;
+        if ($id === false) {
+            return null;
         }
 
+        $imagestyle = $this->image->getStyle($id);
+
+        if (empty($imagestyle)) {
+            $vars = array('@name' => $this->language->text('Image style'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setSubmitted('update', $imagestyle);
         return true;
     }
 
     /**
      * Validates image actions
-     * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
-    public function validateActionsImageStyle(&$submitted)
+    public function validateActionsImageStyle(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['actions'])) {
+        $actions = $this->getSubmitted('actions', $options);
+
+        if ($this->isUpdating() && !isset($actions)) {
             return null;
         }
 
-        if (empty($submitted['actions'])) {
-            $this->errors['actions'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Actions')
-            ));
+        if (empty($actions)) {
+            $vars = array('@field' => $this->language->text('Actions'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('actions', $error, $options);
             return false;
         }
 
         $modified = $errors = array();
-        foreach ($submitted['actions'] as $line => $action) {
+        foreach ($actions as $line => $action) {
 
-            $valid = false;
             $parts = array_map('trim', explode(' ', trim($action)));
             $action_id = array_shift($parts);
             $value = array_filter(explode(',', implode('', $parts)));
 
-            switch ($action_id) {
-                case 'flip':
-                case 'rotate':
-                case 'brightness':
-                case 'contrast':
-                case 'smooth':
-                case 'fill':
-                case 'colorize':
-                case 'crop':
-                case 'overlay':
-                case 'text':
-                    $valid = $this->{"validateAction{$action_id}ImageStyle"}($value);
-                    break;
-                case 'fit_to_width':
-                case 'fit_to_height':
-                case 'pixelate':
-                case 'opacity':
-                    $valid = $this->validateActionOpacityImageStyle($value);
-                    break;
-                case 'resize':
-                case 'thumbnail':
-                case 'best_fit':
-                    $valid = $this->validateActionThumbnailImageStyle($value);
-                    break;
-                case 'auto_orient':
-                case 'desaturate':
-                case 'invert':
-                case 'edges':
-                case 'emboss':
-                case 'mean_remove':
-                case 'blur':
-                case 'sketch':
-                case 'sepia':
-                    $valid = empty($value);
-                    break;
-            }
-
-            if (!$valid) {
+            if (!$this->validateActionImageStyle($action_id, $value)) {
                 $errors[] = $line + 1;
                 continue;
             }
@@ -147,13 +118,49 @@ class ImageStyle extends BaseValidator
         }
 
         if (!empty($errors)) {
-            $this->errors['actions'] = $this->language->text('Error on lines %num', array(
-                '%num' => implode(',', $errors)));
+            $vars = array('%num' => implode(',', $errors));
+            $error = $this->language->text('Error on lines %num', $vars);
+            $this->setError('actions', $error, $options);
         }
 
-        if (empty($this->errors)) {
-            $submitted['actions'] = $modified;
-            return true;
+        if ($this->isError()) {
+            return false;
+        }
+
+        $this->setSubmitted('actions', $modified, $options);
+        return true;
+    }
+
+    /**
+     * Calls an appropriate validator method for the given action ID
+     * @param string $action_id
+     * @param array $value
+     * @return boolean
+     */
+    protected function validateActionImageStyle($action_id, array &$value)
+    {
+        $type1 = array('flip', 'rotate', 'brightness', 'contrast', 'smooth',
+            'fill', 'colorize', 'crop', 'overlay', 'text');
+
+        $type2 = array('fit_to_width', 'fit_to_height', 'pixelate', 'opacity');
+        $type3 = array('resize', 'thumbnail', 'best_fit');
+        $type4 = array('auto_orient', 'desaturate', 'invert', 'edges', 'emboss',
+            'mean_remove', 'blur', 'sketch', 'sepia');
+
+        if (in_array($action_id, $type1)) {
+            return $this->{"validateAction{$action_id}ImageStyle"}($value);
+        }
+
+        if (in_array($action_id, $type2)) {
+            return $this->validateActionOpacityImageStyle($value);
+        }
+
+        if (in_array($action_id, $type3)) {
+            return $this->validateActionThumbnailImageStyle($value);
+        }
+
+        if (in_array($action_id, $type4)) {
+            return empty($value);
         }
 
         return false;

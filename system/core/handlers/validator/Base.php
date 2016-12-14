@@ -202,12 +202,16 @@ class Base
 
     /**
      * Returns an error
-     * @param string $key
+     * @param string|null $key
      * @param array $options
      * @return mixed
      */
-    protected function getError($key, array $options = array())
+    protected function getError($key = null, array $options = array())
     {
+        if (!isset($key)) {
+            return $this->errors;
+        }
+
         $parents = $this->getParents($key, $options);
         return gplcart_array_get_value($this->errors, $parents);
     }

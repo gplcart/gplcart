@@ -38,42 +38,47 @@ class Install extends BaseValidator
     /**
      * Performs full installation data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function install(array &$submitted)
+    public function install(array &$submitted, array $options)
     {
-        $this->validateRequirementsInstall();
+        $this->submitted = &$submitted;
 
-        if (!empty($this->errors)) {
-            return $this->errors;
+        $this->validateRequirementsInstall($options);
+
+        if ($this->isError()) {
+            return $this->getError();
         }
 
-        $this->validateUserEmailInstall($submitted);
-        $this->validateUserPasswordInstall($submitted);
-        $this->validateStoreHostInstall($submitted);
-        $this->validateStoreTitleInstall($submitted);
-        $this->validateStoreBasepathInstall($submitted);
-        $this->validateStoreTimezoneInstall($submitted);
-        $this->validateInstallerInstall($submitted);
-        $this->validateDbNameInstall($submitted);
-        $this->validateDbUserInstall($submitted);
-        $this->validateDbPasswordInstall($submitted);
-        $this->validateDbHostInstall($submitted);
-        $this->validateDbTypeInstall($submitted);
-        $this->validateDbPortInstall($submitted);
-        $this->validateDbConnectInstall($submitted);
+        $this->validateUserEmailInstall($options);
+        $this->validateUserPasswordInstall($options);
+        $this->validateStoreHostInstall($options);
+        $this->validateStoreTitleInstall($options);
+        $this->validateStoreBasepathInstall($options);
+        $this->validateStoreTimezoneInstall($options);
+        $this->validateInstallerInstall($options);
+        $this->validateDbNameInstall($options);
+        $this->validateDbUserInstall($options);
+        $this->validateDbPasswordInstall($options);
+        $this->validateDbHostInstall($options);
+        $this->validateDbTypeInstall($options);
+        $this->validateDbPortInstall($options);
+        $this->validateDbConnectInstall($options);
 
         return $this->getResult();
     }
 
     /**
      * Checks system requirements
+     * @param array $options
      * @return boolean
      */
-    protected function validateRequirementsInstall()
+    protected function validateRequirementsInstall(array $options)
     {
         if ($this->install->isInstalled()) {
             $error = $this->language->text('System already installed');
-            $this->setError('installed', $error);
+            $this->setError('installed', $error, $options);
             return false;
         }
 
@@ -84,41 +89,41 @@ class Install extends BaseValidator
             return true;
         }
 
-        $messages = $this->language->text('Please fix all critical errors in your environment') . ":\n";
+        $messages = array();
+        $messages[] = $this->language->text('Please fix all critical errors in your environment');
 
         foreach ($requirements as $items) {
             foreach ($items as $name => $info) {
-
-                if (!in_array($name, $errors['danger'])) {
-                    continue;
+                if (in_array($name, $errors['danger'])) {
+                    $status = empty($info['status']) ? $this->language->text('No') : $this->language->text('Yes');
+                    $messages[] = " {$info['message']} - $status";
                 }
-
-                $status = empty($info['status']) ? $this->language->text('No') : $this->language->text('Yes');
-                $messages .= "  {$info['message']} - $status\n";
             }
         }
 
-        $this->setError('requirements', $messages);
+        $this->setError('requirements', implode(PHP_EOL, $messages), $options);
         return false;
     }
 
     /**
      * Validates a user E-mail
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateUserEmailInstall(array &$submitted)
+    protected function validateUserEmailInstall(array $options)
     {
-        if (empty($submitted['user']['email'])) {
+        $email = $this->getSubmitted('user.email', $options);
+
+        if (empty($email)) {
             $vars = array('@field' => $this->language->text('Email'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('user.email', $error);
+            $this->setError('user.email', $error, $options);
             return false;
         }
 
-        if (!filter_var($submitted['user']['email'], FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = $this->language->text('Invalid E-mail');
-            $this->setError('user.email', $error);
+            $this->setError('user.email', $error, $options);
             return false;
         }
 
@@ -127,26 +132,27 @@ class Install extends BaseValidator
 
     /**
      * Validates a user password
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateUserPasswordInstall(array &$submitted)
+    protected function validateUserPasswordInstall(array $options)
     {
-        if (empty($submitted['user']['password'])) {
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Password')
-            ));
-            $this->setError('user.password', $error);
+        $password = $this->getSubmitted('user.password', $options);
+
+        if (empty($password)) {
+            $vars = array('@field' => $this->language->text('Password'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('user.password', $error, $options);
             return false;
         }
 
         $limit = $this->user->getPasswordLength();
-        $length = mb_strlen($submitted['user']['password']);
+        $length = mb_strlen($password);
 
         if ($length < $limit['min'] || $length > $limit['max']) {
             $vars = array('@min' => $limit['min'], '@max' => $limit['max'], '@field' => $this->language->text('Password'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('user.password', $error);
+            $this->setError('user.password', $error, $options);
             return false;
         }
 
@@ -155,43 +161,43 @@ class Install extends BaseValidator
 
     /**
      * Validates a hostname (domain)
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateStoreHostInstall(array &$submitted)
+    protected function validateStoreHostInstall(array $options)
     {
-        if (empty($submitted['store']['host'])) {
-            $error = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Host')
-            ));
-            $this->setError('store.host', $error);
+        $host = $this->getSubmitted('store.host', $options);
+
+        if (empty($host)) {
+            $vars = array('@field' => $this->language->text('Host'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('store.host', $error, $options);
             return false;
         }
 
-        if ($submitted['store']['host'] === 'localhost') {
+        if ($host === 'localhost' || gplcart_valid_domain($host)) {
             return true;
         }
 
-        if (gplcart_valid_domain($submitted['store']['host'])) {
-            return true;
-        }
-
-        $error = $this->language->text('Invalid host');
-        $this->setError('store.host', $error);
+        $vars = array('@field' => $this->language->text('Host'));
+        $error = $this->language->text('@field has invalid value', $vars);
+        $this->setError('store.host', $error, $options);
         return false;
     }
 
     /**
      * Validates a store title
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateStoreTitleInstall(array &$submitted)
+    protected function validateStoreTitleInstall(array $options)
     {
-        if (empty($submitted['store']['title']) || mb_strlen($submitted['store']['title']) > 255) {
+        $title = $this->getSubmitted('store.title', $options);
+
+        if (empty($title) || mb_strlen($title) > 255) {
             $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Title'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('store.title', $error);
+            $this->setError('store.title', $error, $options);
             return false;
         }
 
@@ -200,19 +206,20 @@ class Install extends BaseValidator
 
     /**
      * Validates store base path
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateStoreBasepathInstall(array &$submitted)
+    protected function validateStoreBasepathInstall(array $options)
     {
-        if (!isset($submitted['store']['basepath'])//
-                || $submitted['store']['basepath'] === '') {
+        $basepath = $this->getSubmitted('store.basepath', $options);
+
+        if (!isset($basepath) || $basepath === '') {
             return true;
         }
 
-        if (preg_match('/^[a-z0-9]{0,50}$/', $submitted['store']['basepath']) !== 1) {
+        if (preg_match('/^[a-z0-9]{0,50}$/', $basepath) !== 1) {
             $error = $this->language->text('Invalid basepath');
-            $this->setError('store.basepath', $error);
+            $this->setError('store.basepath', $error, $options);
             return false;
         }
 
@@ -221,23 +228,25 @@ class Install extends BaseValidator
 
     /**
      * Validates the store time zone
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateStoreTimezoneInstall(array $submitted)
+    protected function validateStoreTimezoneInstall(array $options)
     {
-        if (empty($submitted['store']['timezone'])) {
+        $timezone = $this->getSubmitted('store.timezone', $options);
+
+        if (empty($timezone)) {
             $vars = array('@field' => $this->language->text('Timezone'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('store.timezone', $error);
+            $this->setError('store.timezone', $error, $options);
             return false;
         }
 
         $timezones = gplcart_timezones();
 
-        if (empty($timezones[$submitted['store']['timezone']])) {
+        if (empty($timezones[$timezone])) {
             $error = $this->language->text('Invalid timezone');
-            $this->setError('store.timezone', $error);
+            $this->setError('store.timezone', $error, $options);
             return false;
         }
 
@@ -246,22 +255,24 @@ class Install extends BaseValidator
 
     /**
      * Validates an installer ID
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateInstallerInstall(array &$submitted)
+    protected function validateInstallerInstall(array $options)
     {
-        if (empty($submitted['installer'])) {
+        $installer_id = $this->getSubmitted('installer', $options);
+
+        if (empty($installer_id)) {
             return null;
         }
 
-        $installer = $this->install->get($submitted['installer']);
+        $installer = $this->install->get($installer_id);
 
         if (empty($installer)) {
             $installers = $this->install->getList();
             $list = implode(',', array_keys($installers));
             $error = $this->language->text("Invalid installer ID. Available installers: @list", array('@list' => $list));
-            $this->setError('installer', $error);
+            $this->setError('installer', $error, $options);
             return false;
         }
 
@@ -270,15 +281,17 @@ class Install extends BaseValidator
 
     /**
      * Validates a database name
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateDbNameInstall(array &$submitted)
+    protected function validateDbNameInstall(array $options)
     {
-        if (empty($submitted['database']['name'])) {
+        $dbname = $this->getSubmitted('database.name', $options);
+
+        if (empty($dbname)) {
             $vars = array('@field' => $this->language->text('Database name'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.name', $error);
+            $this->setError('database.name', $error, $options);
             return false;
         }
 
@@ -287,15 +300,17 @@ class Install extends BaseValidator
 
     /**
      * Validates a database user name
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateDbUserInstall(array &$submitted)
+    protected function validateDbUserInstall(array $options)
     {
-        if (empty($submitted['database']['user'])) {
+        $dbuser = $this->getSubmitted('database.user', $options);
+
+        if (empty($dbuser)) {
             $vars = array('@field' => $this->language->text('Database user'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.user', $error);
+            $this->setError('database.user', $error, $options);
             return false;
         }
 
@@ -304,23 +319,34 @@ class Install extends BaseValidator
 
     /**
      * Validates a database password
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateDbPasswordInstall(array &$submitted)
+    protected function validateDbPasswordInstall(array $options)
     {
-        if (!isset($submitted['database']['password'])) {
-            $submitted['database']['password'] = '';
+        $dbpassword = $this->getSubmitted('database.password', $options);
+
+        if (!isset($dbpassword)) {
+            $this->setSubmitted('database.password', '', $options);
             return null;
         }
+
+        return true;
     }
 
-    protected function validateDbHostInstall(array $submitted)
+    /**
+     * Validates a database host
+     * @param array $options
+     * @return boolean
+     */
+    protected function validateDbHostInstall(array $options)
     {
-        if (empty($submitted['database']['host'])) {
+        $dbhost = $this->getSubmitted('database.host', $options);
+
+        if (empty($dbhost)) {
             $vars = array('@field' => $this->language->text('Database host'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.host', $error);
+            $this->setError('database.host', $error, $options);
             return false;
         }
 
@@ -329,48 +355,52 @@ class Install extends BaseValidator
 
     /**
      * Validates a database driver
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateDbTypeInstall(array &$submitted)
+    protected function validateDbTypeInstall(array $options)
     {
-        if (empty($submitted['database']['type'])) {
+        $dbtype = $this->getSubmitted('database.type', $options);
+
+        if (empty($dbtype)) {
             $vars = array('@field' => $this->language->text('Database type'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.type', $error);
+            $this->setError('database.type', $error, $options);
             return false;
         }
 
         $drivers = \PDO::getAvailableDrivers();
 
-        if (in_array($submitted['database']['type'], $drivers)) {
+        if (in_array($dbtype, $drivers)) {
             return true;
         }
 
         $vars = array('@list' => implode(',', $drivers));
         $error = $this->language->text('Unsupported database driver. Available drivers: @list', $vars);
-        $this->setError('database.type', $error);
+        $this->setError('database.type', $error, $options);
         return false;
     }
 
     /**
      * Validates a database port
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateDbPortInstall(array &$submitted)
+    protected function validateDbPortInstall(array $options)
     {
-        if (empty($submitted['database']['port'])) {
+        $dbport = $this->getSubmitted('database.port', $options);
+
+        if (empty($dbport)) {
             $vars = array('@field' => $this->language->text('Database port'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.port', $error);
+            $this->setError('database.port', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['database']['port'])) {
+        if (!is_numeric($dbport)) {
             $vars = array('@field' => $this->language->text('Database port'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('database.port', $error);
+            $this->setError('database.port', $error, $options);
             return false;
         }
 
@@ -379,22 +409,23 @@ class Install extends BaseValidator
 
     /**
      * Validates database connection
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateDbConnectInstall(array &$submitted)
+    protected function validateDbConnectInstall(array $options)
     {
-        if (!empty($this->errors)) {
-            return null;
+        if ($this->isError()) {
+            return null; // Do not connect to the database if an error has occurred
         }
 
-        $result = $this->install->connect($submitted['database']);
+        $settings = $this->getSubmitted('database', $options);
+        $result = $this->install->connect($settings);
 
         if ($result === true) {
             return true;
         }
 
-        $this->setError('database.connect', $result);
+        $this->setError('database.connect', $result, $options);
         return false;
     }
 

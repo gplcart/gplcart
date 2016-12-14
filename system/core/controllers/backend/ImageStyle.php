@@ -178,10 +178,10 @@ class ImageStyle extends BackendController
         $this->image->deleteStyle($imagestyle['imagestyle_id']);
         $this->image->clearCache($imagestyle['imagestyle_id']);
 
+        $message = $this->text('Image style has been reverted to default settings');
+
         if (empty($imagestyle['default'])) {
             $message = $this->text('Image style has been deleted');
-        } else {
-            $message = $this->text('Image style has been reverted to default settings');
         }
 
         $this->redirect('admin/settings/imagestyle', $message, 'success');
@@ -237,11 +237,11 @@ class ImageStyle extends BackendController
     {
         $actions = $this->getData('imagestyle.actions');
 
-        if (!is_array($actions)) {
-            return null;
+        if (!$this->isError()) {
+            // Do not sort on errors when "weight" data is not set
+            // bacause it changes order of array items
+            gplcart_array_sort($actions);
         }
-
-        gplcart_array_sort($actions);
 
         $modified = array();
         foreach ($actions as $action_id => $info) {
@@ -270,12 +270,11 @@ class ImageStyle extends BackendController
      */
     protected function setTitleEditImageStyle(array $imagestyle)
     {
+        $title = $this->text('Add image style');
+
         if (isset($imagestyle['imagestyle_id'])) {
-            $title = $this->text('Edit image style %name', array(
-                '%name' => $imagestyle['name']
-            ));
-        } else {
-            $title = $this->text('Add image style');
+            $vars = array('%name' => $imagestyle['name']);
+            $title = $this->text('Edit image style %name', $vars);
         }
 
         $this->setTitle($title);
@@ -287,7 +286,7 @@ class ImageStyle extends BackendController
     protected function setBreadcrumbEditImageStyle()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')

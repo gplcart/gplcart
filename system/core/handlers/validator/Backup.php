@@ -47,6 +47,7 @@ class Backup extends BaseValidator
      * Performs full backup data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function backup(array &$submitted, array $options = array())
     {
@@ -55,6 +56,7 @@ class Backup extends BaseValidator
         $this->validateName($options);
         $this->validateHandler($options);
         $this->validateModuleId($options);
+        
         return $this->getResult();
     }
 
@@ -62,6 +64,7 @@ class Backup extends BaseValidator
      * Performs full restore data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function restore(array &$submitted, array $options = array())
     {

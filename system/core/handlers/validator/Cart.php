@@ -54,6 +54,12 @@ class Cart extends BaseValidator
         $this->product = $product;
     }
 
+    /**
+     * Performs full cart data validation
+     * @param array $submitted
+     * @param array $options
+     * @return boolean|array
+     */
     public function cart(array &$submitted, array $options = array())
     {
         $this->submitted = &$submitted;

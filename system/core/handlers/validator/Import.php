@@ -22,6 +22,11 @@ class Import extends BaseValidator
 {
 
     /**
+     * Path for uploaded field value files that is relative to main file directory
+     */
+    const UPLOAD_PATH = 'private/import';
+
+    /**
      * CSV class instance
      * @var \core\helpers\Csv $csv
      */
@@ -66,30 +71,41 @@ class Import extends BaseValidator
     /**
      * Performs full import data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function import(array &$submitted)
+    public function import(array &$submitted, array $options = array())
     {
-        $this->validateOperationImport($submitted);
-        $this->validateFileImport($submitted);
-        $this->validateCsvHeaderImport($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateOperationImport($options);
+        $this->validateFilePathImport($options);
+        $this->validateFileUploadImport($options);
+        $this->validateCsvHeaderImport($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates an operation
-     * @param array $submitted
-     * @return boolean|null
+     * @param array $options
+     * @return boolean
      */
-    protected function validateOperationImport(array &$submitted)
+    protected function validateOperationImport(array $options)
     {
-        if (isset($submitted['operation_id'])) {
-            $submitted['operation'] = $this->import->getOperation($submitted['operation_id']);
+        $operation_id = $this->getSubmitted('operation_id', $options);
+
+        if (isset($operation_id)) {
+            $operation = $this->import->getOperation($operation_id);
+            $this->setSubmitted('operation', $operation);
         }
 
-        if (empty($submitted['operation'])) {
-            $this->errors['operation'] = $this->language->text('@name is unavailable', array(
-                '@name' => $this->language->text('Operation')));
+        $operation = $this->getSubmitted('operation');
+
+        if (empty($operation)) {
+            $vars = array('@name' => $this->language->text('Operation'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('operation', $error);
             return false;
         }
 
@@ -97,90 +113,86 @@ class Import extends BaseValidator
     }
 
     /**
-     * Validates a source file
-     * @param array $submitted
-     * @return boolean
-     */
-    protected function validateFileImport(array &$submitted)
-    {
-        $this->validateFilePathImport($submitted);
-        $this->validateFileUploadImport($submitted);
-    }
-
-    /**
      * Validates a relative file path
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateFilePathImport(array &$submitted)
+    protected function validateFilePathImport(array $options)
     {
-        if (!isset($submitted['path'])) {
+        $path = $this->getSubmitted('path', $options);
+
+        if (!isset($path)) {
             return null; // The file probably will be uploaded via UI, stop here
         }
 
-        $filepath = GC_FILE_DIR . "/{$submitted['path']}";
+        $filepath = GC_FILE_DIR . "/$path";
 
         if (is_readable($filepath)) {
-            $submitted['filepath'] = $filepath;
-            $submitted['filesize'] = filesize($filepath);
+            $this->setSubmitted('filepath', $filepath, $options);
+            $this->setSubmitted('filesize', filesize($filepath), $options);
             return true;
         }
 
-        $this->errors['file'] = $this->language->text('@name is unavailable', array(
-            '@name' => $this->language->text('File')));
+        $vars = array('@name' => $this->language->text('File'));
+        $error = $this->language->text('@name is unavailable', $vars);
+        $this->setError('file', $error, $options);
         return false;
     }
 
     /**
      * Validates a uploaded file
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateFileUploadImport(array &$submitted)
+    protected function validateFileUploadImport(array $options)
     {
-        if (isset($submitted['filepath'])) {
-            return null; // The filepath already defined by a relative path
+        $filepath = $this->getSubmitted('filepath', $options);
+
+        if (isset($filepath)) {
+            return null; // Filepath already defined by a relative path, exit
         }
 
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $this->errors['file'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('File')
-            ));
+            $vars = array('@field' => $this->language->text('File'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('file', $error, $options);
             return false;
         }
 
-        $result = $this->file->setUploadPath('private/import')
+        $result = $this->file->setUploadPath(self::UPLOAD_PATH)
                 ->setHandler('csv')
                 ->upload($file);
 
         if ($result !== true) {
-            $this->errors['file'] = $result;
+            $this->setError('file', $result, $options);
             return false;
         }
 
-        $filepath = $this->file->getUploadedFile();
-        $submitted['filepath'] = $filepath;
-        $submitted['filesize'] = filesize($filepath);
+        $uploaded = $this->file->getUploadedFile();
+        $this->setSubmitted('filepath', $uploaded, $options);
+        $this->setSubmitted('filesize', filesize($uploaded), $options);
         return true;
     }
 
     /**
      * Validates CSV header
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    public function validateCsvHeaderImport(array &$submitted)
+    public function validateCsvHeaderImport(array $options)
     {
-        if (!empty($this->errors)) {
+        if ($this->isError()) {
             return null; // Abort on existing errors
         }
 
-        $header = $submitted['operation']['csv']['header'];
+        $operation = $this->getSubmitted('operation');
+        $header = $operation['csv']['header'];
         $delimiter = $this->import->getCsvDelimiter();
+        $filepath = $this->getSubmitted('filepath', $options);
 
-        $real_header = $this->csv->setFile($submitted['filepath'])
+        $real_header = $this->csv->setFile($filepath)
                 ->setHeader($header)
                 ->setDelimiter($delimiter)
                 ->getHeader();
@@ -189,8 +201,9 @@ class Import extends BaseValidator
         $real_header_id = reset($real_header);
 
         if ($header_id !== $real_header_id || array_diff($header, $real_header)) {
-            $this->errors['file'] = $this->language->text('Wrong header. Required columns: @format', array(
-                '@format' => implode(' | ', $header)));
+            $vars = array('@format' => implode(' | ', $header));
+            $error = $this->language->text('Wrong header. Required columns: @format', $vars);
+            $this->setError('file', $error, $options);
             return false;
         }
 

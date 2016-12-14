@@ -28,96 +28,115 @@ class Language extends BaseValidator
     /**
      * Performs full language data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
     public function language(array &$submitted, array $options = array())
     {
-        $this->validateLanguage($submitted);
-        $this->validateWeight($submitted);
-        $this->validateStatus($submitted);
-        $this->validateDefault($submitted);
-        $this->validateNameLanguage($submitted);
-        $this->validateNativeNameLanguage($submitted);
-        $this->validateCodeLanguage($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateLanguage($options);
+        $this->validateWeight($options);
+        $this->validateStatus($options);
+        $this->validateDefault($options);
+        $this->validateNameLanguage($options);
+        $this->validateNativeNameLanguage($options);
+        $this->validateCodeLanguage($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a language to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateLanguage(array &$submitted)
+    protected function validateLanguage(array $options)
     {
-        if (!empty($submitted['update']) && is_string($submitted['update'])) {
-            $language = $this->language->get($submitted['update']);
-            if (empty($language)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Language')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $language;
+        if ($id === false) {
+            return null;
         }
 
+        $language = $this->language->get($id);
+
+        if (empty($language)) {
+            $vars = array('@name' => $this->language->text('Language'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($language);
         return true;
     }
 
     /**
      * Validates a language code
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateCodeLanguage(array &$submitted)
+    protected function validateCodeLanguage(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['code'])) {
+        $code = $this->getSubmitted('code', $options);
+
+        if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
-        if (empty($submitted['code'])) {
-            $this->errors['code'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Code')
-            ));
+        if (empty($code)) {
+            $vars = array('@field' => $this->language->text('Code'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('code', $error, $options);
             return false;
         }
 
-        if (preg_match('/^[A-Za-z-_]{1,10}$/', $submitted['code']) !== 1) {
-            $this->errors['code'] = $this->language->text('Invalid language code. It must conform to ISO 639-1 standard');
+        if (preg_match('/^[A-Za-z-_]{1,10}$/', $code) !== 1) {
+            $vars = array('@field' => $this->language->text('Code'));
+            $error = $this->language->text('@field has invalid value', $vars);
+            $this->setError('code', $error, $options);
             return false;
         }
 
-        if (isset($submitted['update']['code'])//
-                && $submitted['update']['code'] === $submitted['code']) {
+        $updating = $this->getUpdating();
+
+        if (isset($updating['code']) && $updating['code'] === $code) {
             return true; // Updating, dont check own code uniqueness
         }
 
-        $language = $this->language->get($submitted['code']);
+        $language = $this->language->get($code);
 
         if (!empty($language)) {
-            $this->errors['code'] = $this->language->text('@object already exists', array(
-                '@object' => $this->language->text('Code')));
+            $vars = array('@object' => $this->language->text('Code'));
+            $error = $this->language->text('@object already exists', $vars);
+            $this->setError('code', $error, $options);
             return false;
         }
 
         // Remove data of updating language
         // to prevent from saving in the serialized string
-        unset($submitted['update']);
+        $this->unsetSubmitted('update');
         return true;
     }
 
     /**
-     * Validates an language name
-     * @param array $submitted
+     * Validates a language name
+     * @param array $options
      * @return boolean
      */
-    protected function validateNameLanguage(array &$submitted)
+    protected function validateNameLanguage(array $options)
     {
-        if (!isset($submitted['name'])) {
+        $name = $this->getSubmitted('name', $options);
+
+        if (!isset($name)) {
             return true; // If not set, code will be used instead
         }
 
-        if (preg_match('/^[A-Za-z]{1,50}$/', $submitted['name']) !== 1) {
-            $this->errors['name'] = $this->language->text('Invalid language name. It must be in English and 1 - 50 characters long');
+        if (preg_match('/^[A-Za-z]{1,50}$/', $name) !== 1) {
+            $vars = array('@field' => $this->language->text('Name'));
+            $error = $this->language->text('@field has invalid value', $vars);
+            $this->setError('name', $error, $options);
             return false;
         }
 
@@ -126,21 +145,21 @@ class Language extends BaseValidator
 
     /**
      * Validates an language native name
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateNativeNameLanguage(array &$submitted)
+    protected function validateNativeNameLanguage(array $options)
     {
-        if (!isset($submitted['native_name'])) {
+        $name = $this->getSubmitted('native_name', $options);
+
+        if (!isset($name)) {
             return true; // If not set, code will be used instead
         }
 
-        if (mb_strlen($submitted['native_name']) > 50) {
-            $this->errors['native_name'] = $this->language->text('@field must not be longer than @max characters', array(
-                '@max' => 50,
-                '@field' => $this->language->text('Native name')
-            ));
-
+        if (mb_strlen($name) > 50) {
+            $vars = array('@max' => 50, '@field' => $this->language->text('Native name'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
+            $this->setError('native_name', $error, $options);
             return false;
         }
 

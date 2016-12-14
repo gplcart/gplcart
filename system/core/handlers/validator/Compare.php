@@ -39,6 +39,7 @@ class Compare extends BaseValidator
      * Performs full product comparison data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function compare(array &$submitted, array $options = array())
     {
@@ -51,7 +52,7 @@ class Compare extends BaseValidator
     /**
      * Validates a compared product ID
      * @param array $options
-     * @return boolean|null
+     * @return boolean
      */
     protected function validateProductCompare(array $options)
     {

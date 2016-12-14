@@ -38,6 +38,7 @@ class CategoryGroup extends BaseValidator
      * Performs full category group data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function categoryGroup(array &$submitted, array $options = array())
     {
@@ -55,7 +56,7 @@ class CategoryGroup extends BaseValidator
     /**
      * Validates a category group to be updated
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCategoryGroup(array $options)
     {

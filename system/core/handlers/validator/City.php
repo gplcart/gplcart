@@ -20,6 +20,7 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class City extends BaseValidator
 {
+
     /**
      * Country model instance
      * @var \core\models\Country $country
@@ -66,6 +67,7 @@ class City extends BaseValidator
      * Performs full city data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function city(array &$submitted, array $options = array())
     {
@@ -84,7 +86,7 @@ class City extends BaseValidator
     /**
      * Validates a city to be updated
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCity(array $options)
     {

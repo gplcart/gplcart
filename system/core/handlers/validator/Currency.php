@@ -34,6 +34,12 @@ class Currency extends BaseValidator
         $this->currency = $currency;
     }
 
+    /**
+     * Performs full currency data validation
+     * @param array $submitted
+     * @param array $options
+     * @return boolean|array
+     */
     public function currency(array &$submitted, array $options = array())
     {
         $this->submitted = &$submitted;
@@ -59,7 +65,7 @@ class Currency extends BaseValidator
     /**
      * Validates a currency to be updated
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCurrency(array $options)
     {
@@ -121,7 +127,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency symbol
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateSymbolCurrency(array $options)
     {
@@ -144,7 +150,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency major unit
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateMajorUnitCurrency(array $options)
     {
@@ -167,7 +173,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency minor unit
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateMinorUnitCurrency(array $options)
     {
@@ -190,7 +196,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency convertion rate
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateConvertionRateCurrency(array $options)
     {
@@ -219,7 +225,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency rounding step
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateRoundingStepCurrency(array $options)
     {
@@ -248,7 +254,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency decimals
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateDecimalsCurrency(array $options)
     {
@@ -277,7 +283,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency numeric code
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateNumericCodeCurrency(array $options)
     {
@@ -322,7 +328,7 @@ class Currency extends BaseValidator
     /**
      * Validates currency code
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCodeCurrency(array $options)
     {

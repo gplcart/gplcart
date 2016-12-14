@@ -39,63 +39,74 @@ class Field extends BaseValidator
      * Performs full field data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function field(array &$submitted, array $options = array())
     {
-        $this->validateField($submitted);
-        $this->validateTitle($submitted);
-        $this->validateWeight($submitted);
-        $this->validateTranslation($submitted);
-        $this->validateTypeField($submitted);
-        $this->validateWidgetTypeField($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateField($options);
+        $this->validateTitle($options);
+        $this->validateWeight($options);
+        $this->validateTranslation($options);
+        $this->validateTypeField($options);
+        $this->validateWidgetTypeField($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a field to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateField(array &$submitted)
+    protected function validateField(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
-            $data = $this->field->get($submitted['update']);
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Field')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->field->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Field'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
-     * Validates field type
-     * @param array $submitted
+     * Validates a field type
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateTypeField(array $submitted)
+    protected function validateTypeField(array $options)
     {
-        if (!empty($submitted['update'])) {
+        if ($this->isUpdating()) {
             return null; // Cannot change type of existing field
         }
 
-        if (empty($submitted['type'])) {
-            $this->errors['type'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Type')
-            ));
+        $type = $this->getSubmitted('type', $options);
+
+        if (empty($type)) {
+            $vars = array('@field' => $this->language->text('Type'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
         $types = $this->field->getTypes();
 
-        if (empty($types[$submitted['type']])) {
-            $this->errors['type'] = $this->language->text('@name is unavailable', array(
-                '@name' => $this->language->text('Type')));
+        if (empty($types[$type])) {
+            $vars = array('@name' => $this->language->text('Type'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('type', $error, $options);
             return false;
         }
 
@@ -103,28 +114,31 @@ class Field extends BaseValidator
     }
 
     /**
-     * Validates field widget type
-     * @param array $submitted
+     * Validates a field widget type
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateWidgetTypeField(array $submitted)
+    protected function validateWidgetTypeField(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['widget'])) {
+        $type = $this->getSubmitted('widget', $options);
+
+        if ($this->isUpdating() && !isset($type)) {
             return null;
         }
 
-        if (empty($submitted['widget'])) {
-            $this->errors['widget'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Widget')
-            ));
+        if (empty($type)) {
+            $vars = array('@field' => $this->language->text('Widget'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('widget', $error, $options);
             return false;
         }
 
         $types = $this->field->getWidgetTypes();
 
-        if (empty($types[$submitted['widget']])) {
-            $this->errors['widget'] = $this->language->text('@name is unavailable', array(
-                '@name' => $this->language->text('Widget')));
+        if (empty($types[$type])) {
+            $vars = array('@name' => $this->language->text('Widget'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('widget', $error, $options);
             return false;
         }
 

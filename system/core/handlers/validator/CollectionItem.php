@@ -79,7 +79,7 @@ class CollectionItem extends BaseValidator
      * Performs full collection item entity validation
      * @param array $submitted
      * @param array $options
-     * @return null
+     * @return boolean|array
      */
     public function collectionItem(array &$submitted, array $options = array())
     {
@@ -96,6 +96,7 @@ class CollectionItem extends BaseValidator
     /**
      * Validates collection item URL
      * @param array $options
+     * @return boolean
      */
     protected function validateUrlCollectionItem(array $options)
     {
@@ -114,6 +115,7 @@ class CollectionItem extends BaseValidator
     /**
      * Validates that collection data is provided
      * @param array $options
+     * @return boolean
      */
     protected function validateCollectionCollectionItem(array $options)
     {
@@ -149,7 +151,7 @@ class CollectionItem extends BaseValidator
     /**
      * Validates submitted value
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateValueCollectionItem(array $options)
     {
@@ -194,7 +196,7 @@ class CollectionItem extends BaseValidator
     /**
      * Validates collection item entities
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateEntityCollectionItem(array $options)
     {
@@ -221,8 +223,8 @@ class CollectionItem extends BaseValidator
 
     /**
      * Validates page collection item
-     * @param string $page_id
-     * @return boolean
+     * @param integer $page_id
+     * @return boolean|string
      */
     public function page($page_id)
     {
@@ -238,7 +240,7 @@ class CollectionItem extends BaseValidator
 
     /**
      * Validates product collection item
-     * @param string $product_id
+     * @param integer $product_id
      * @return boolean|string
      */
     public function product($product_id)
@@ -255,7 +257,7 @@ class CollectionItem extends BaseValidator
 
     /**
      * Validates file collection item
-     * @param string $file_id
+     * @param integer $file_id
      * @return boolean|string
      */
     public function file($file_id)

@@ -19,6 +19,7 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Country extends BaseValidator
 {
+
     /**
      * Country model instance
      * @var \core\models\Country $country
@@ -78,7 +79,7 @@ class Country extends BaseValidator
     /**
      * Validates a country to be updated
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCountry(array $options)
     {

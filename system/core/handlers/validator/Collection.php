@@ -17,6 +17,7 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Collection extends BaseValidator
 {
+
     /**
      * Collection model instance
      * @var \core\models\Collection $collection
@@ -37,6 +38,7 @@ class Collection extends BaseValidator
      * Performs full collection data validation
      * @param array $submitted
      * @param array $options
+     * @return boolean|array
      */
     public function collection(array &$submitted, array $options = array())
     {
@@ -56,7 +58,7 @@ class Collection extends BaseValidator
     /**
      * Validates a collection to be updated
      * @param array $options
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateCollection(array $options)
     {

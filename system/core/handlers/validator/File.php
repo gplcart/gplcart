@@ -20,6 +20,11 @@ class File extends BaseValidator
 {
 
     /**
+     * Default path for uploaded field that is relative to main file directory
+     */
+    const UPLOAD_PATH = 'image/upload/common';
+
+    /**
      * Request class instance
      * @var \core\helpers\Request $request
      */
@@ -47,52 +52,62 @@ class File extends BaseValidator
     /**
      * Performs full file data validation
      * @param array $submitted
+     * @param array $options
+     * @return boolean|array
      */
     public function file(array &$submitted, array $options = array())
     {
-        $this->validateFile($submitted);
-        $this->validateTitleFile($submitted);
-        $this->validateDescription($submitted);
-        $this->validateWeight($submitted);
-        $this->validateTranslation($submitted);
-        $this->validatePathFile($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateFile($options);
+        $this->validateTitleFile($options);
+        $this->validateDescription($options);
+        $this->validateWeight($options);
+        $this->validateTranslation($options);
+        $this->validatePathFile($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a file to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateFile(array &$submitted)
+    protected function validateFile(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
 
-            $file = $this->file->get($submitted['update']);
-
-            if (empty($file)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('File')));
-                return false;
-            }
-
-            $submitted['update'] = $file;
+        if ($id === false) {
+            return null;
         }
 
+        $file = $this->file->get($id);
+
+        if (empty($file)) {
+            $vars = array('@name' => $this->language->text('File'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setSubmitted('update', $file);
         return true;
     }
 
     /**
      * Validates a title field
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateTitleFile(array &$submitted)
+    protected function validateTitleFile(array $options)
     {
-        if (isset($submitted['title']) && mb_strlen($submitted['title']) > 255) {
-            $options = array('@max' => 255, '@field' => $this->language->text('Title'));
-            $this->errors['title'] = $this->language->text('@field must not be longer than @max characters', $options);
+        $title = $this->getSubmitted('title', $options);
+
+        if (isset($title) && mb_strlen($title) > 255) {
+            $vars = array('@max' => 255, '@field' => $this->language->text('Title'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
+            $this->setError('title', $error, $options);
             return false;
         }
 
@@ -101,50 +116,50 @@ class File extends BaseValidator
 
     /**
      * Validates a path of existing file or uploads a file
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validatePathFile(array &$submitted)
+    protected function validatePathFile(array $options)
     {
-        if (!empty($submitted['update'])) {
+        if ($this->isUpdating()) {
             return null; // Existing files cannot be changed
         }
 
-        // Prevent uploading if errors have occurred before
-        if (!empty($this->errors)) {
-            return null;
+        if ($this->isError()) {
+            return null; // Do not if an error has occured before
         }
 
-        //Validate an existing file if the path is provided
-        if (isset($submitted['path'])) {
+        $path = $this->getSubmitted('path', $options);
 
-            if (is_readable(GC_FILE_DIR . "/{$submitted['path']}")) {
+        //Validate an existing file if the path is provided
+        if (isset($path)) {
+            if (is_readable(GC_FILE_DIR . "/$path")) {
                 return true;
             }
-
-            $this->errors['file'] = $this->language->text('@name is unavailable', array(
-                '@name' => $this->language->text('File')));
+            $vars = array('@name' => $this->language->text('File'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('file', $error, $options);
             return false;
         }
 
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $this->errors['file'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('File')
-            ));
+            $vars = array('@field' => $this->language->text('File'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('file', $error, $options);
             return false;
         }
 
-        $result = $this->file->setUploadPath('image/upload/common')->upload($file);
+        $result = $this->file->setUploadPath(self::UPLOAD_PATH)->upload($file);
 
         if ($result !== true) {
-            $this->errors['file'] = $result;
+            $this->setError('file', $result, $options);
             return false;
         }
 
         $uploaded = $this->file->getUploadedFile(true);
-        $submitted['path'] = $uploaded;
+        $this->setSubmitted('path', $uploaded);
         return true;
     }
 
