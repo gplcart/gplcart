@@ -73,13 +73,6 @@ class Country extends BaseValidator
         $this->validateNativeNameCountry($options);
         $this->validateZoneCountry($options);
 
-        $code = $this->getSubmitted('code', $options);
-        $default = $this->getSubmitted('default', $options);
-
-        if (!$this->isError() && empty($default)) {
-            $this->country->unsetDefault($code);
-        }
-
         return $this->getResult();
     }
 

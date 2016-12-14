@@ -198,20 +198,6 @@ class Country extends Model
     }
 
     /**
-     * Removes a country from being default
-     * @param string $code
-     * @return boolean
-     */
-    public function unsetDefault($code)
-    {
-        if ($this->getDefault() === $code) {
-            return $this->setDefault('');
-        }
-
-        return false;
-    }
-
-    /**
      * Whether a country is default
      * @param string $code
      * @return boolean
