@@ -230,7 +230,7 @@ class ImageStyle extends BaseValidator
     protected function validateActionFillImageStyle(array $value)
     {
         return ((count($value) == 1)//
-                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]));
+                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) === 1);
     }
 
     /**
@@ -241,7 +241,7 @@ class ImageStyle extends BaseValidator
     protected function validateActionColorizeImageStyle(array $value)
     {
         return ((count($value) == 2)//
-                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0])//
+                && (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) === 1)//
                 && is_numeric($value[1]));
     }
 
@@ -275,8 +275,9 @@ class ImageStyle extends BaseValidator
     {
         return ((count($value) == 7)//
                 && is_numeric($value[2])//
-                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[3])//
-                && is_numeric($value[5]) && is_numeric($value[6]));
+                && (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[3]) === 1)//
+                && is_numeric($value[5])//
+                && is_numeric($value[6]));
     }
 
     /**

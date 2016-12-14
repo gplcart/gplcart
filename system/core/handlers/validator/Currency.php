@@ -207,7 +207,7 @@ class Currency extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[0-9]\d*(\.\d+)?$/', $convertion_rate)) {
+        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $convertion_rate) !== 1) {
             $error = $this->language->text('Invalid convertion rate. It must be decimal or integer positive value');
             $this->setError('convertion_rate', $error, $options);
             return false;
@@ -236,7 +236,7 @@ class Currency extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[0-9]\d*(\.\d+)?$/', $rounding_step)) {
+        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $rounding_step) !== 1) {
             $error = $this->language->text('Invalid rounding step value. It must be decimal or integer positive value');
             $this->setError('rounding_step', $error, $options);
             return false;
@@ -265,7 +265,7 @@ class Currency extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[0-2]+$/', $decimals)) {
+        if (preg_match('/^[0-2]+$/', $decimals) !== 1) {
             $error = $this->language->text('Invalid decimals value. It must be 0 - 2');
             $this->setError('decimals', $error, $options);
             return false;
@@ -294,7 +294,7 @@ class Currency extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[0-9]{3}$/', $numeric_code)) {
+        if (preg_match('/^[0-9]{3}$/', $numeric_code) !== 1) {
             $error = $this->language->text('Invalid numeric code. It must conform to ISO 4217 standard');
             $this->setError('numeric_code', $error, $options);
             return false;
@@ -339,7 +339,7 @@ class Currency extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[A-Z]{3}$/', $code)) {
+        if (preg_match('/^[A-Z]{3}$/', $code) !== 1) {
             $error = $this->language->text('Invalid currency code. It must conform to ISO 4217 standard');
             $this->setError('code', $error, $options);
             return false;

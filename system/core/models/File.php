@@ -759,7 +759,7 @@ class File extends Model
         $filename = preg_replace('/[^A-Za-z0-9.]/', '', $pathinfo['filename']);
         $extension = $pathinfo['extension'];
 
-        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $filename)) {
+        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $filename) === 1) {
             $filename = $this->language->translit($filename, null);
         }
 

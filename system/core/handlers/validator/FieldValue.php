@@ -162,7 +162,7 @@ class FieldValue extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $submitted['color'])) {
+        if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $submitted['color']) !== 1) {
             $this->errors['color'] = $this->language->text('Invalid color code');
             return false;
         }

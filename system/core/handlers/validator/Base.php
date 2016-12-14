@@ -488,7 +488,7 @@ class Base
             return false;
         }
 
-        if (!preg_match('/^[A-Za-z0-9_.-]+$/', $alias)) {
+        if (preg_match('/^[A-Za-z0-9_.-]+$/', $alias) !== 1) {
             $error = $this->language->text('Alias must contain only alphanumeric characters, dashes, dots and underscores');
             $this->setError('alias', $error, $options);
             return false;

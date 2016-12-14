@@ -210,7 +210,7 @@ class Install extends BaseValidator
             return true;
         }
 
-        if (!preg_match('/^[a-z0-9]{0,50}$/', $submitted['store']['basepath'])) {
+        if (preg_match('/^[a-z0-9]{0,50}$/', $submitted['store']['basepath']) !== 1) {
             $error = $this->language->text('Invalid basepath');
             $this->setError('store.basepath', $error);
             return false;

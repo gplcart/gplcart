@@ -19,7 +19,6 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Country extends BaseValidator
 {
-
     /**
      * Country model instance
      * @var \core\models\Country $country
@@ -177,7 +176,7 @@ class Country extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[A-Z]{2}$/', $code)) {
+        if (preg_match('/^[A-Z]{2}$/', $code) !== 1) {
             $error = $this->language->text('Invalid country code. It must conform to ISO 3166-2 standard');
             $this->setError('code', $error, $options);
             return false;

@@ -131,7 +131,7 @@ class Filter
             return '&lt;';
         }
 
-        if (!preg_match('%^<\s*(/\s*)?([a-zA-Z0-9\-]+)([^>]*)>?|(<!--.*?-->)$%', $string, $matches)) {
+        if (preg_match('%^<\s*(/\s*)?([a-zA-Z0-9\-]+)([^>]*)>?|(<!--.*?-->)$%', $string, $matches) !== 1) {
             // Seriously malformed.
             return '';
         }
@@ -189,7 +189,7 @@ class Filter
             switch ($mode) {
                 case 0:
                     // Attribute name, href for instance.
-                    if (preg_match('/^([-a-zA-Z]+)/', $attr, $match)) {
+                    if (preg_match('/^([-a-zA-Z]+)/', $attr, $match) === 1) {
                         $attrname = strtolower($match[1]);
                         $skip = ($attrname == 'style' || substr($attrname, 0, 2) == 'on');
                         $working = $mode = 1;
@@ -198,14 +198,14 @@ class Filter
                     break;
                 case 1:
                     // Equals sign or valueless ("selected").
-                    if (preg_match('/^\s*=\s*/', $attr)) {
+                    if (preg_match('/^\s*=\s*/', $attr) === 1) {
                         $working = 1;
                         $mode = 2;
                         $attr = preg_replace('/^\s*=\s*/', '', $attr);
                         break;
                     }
 
-                    if (preg_match('/^\s+/', $attr)) {
+                    if (preg_match('/^\s+/', $attr) === 1) {
                         $working = 1;
                         $mode = 0;
 
@@ -218,7 +218,7 @@ class Filter
                     break;
                 case 2:
                     // Attribute value, a URL after href= for instance.
-                    if (preg_match('/^"([^"]*)"(\s+|$)/', $attr, $match)) {
+                    if (preg_match('/^"([^"]*)"(\s+|$)/', $attr, $match) === 1) {
                         $thisval = $this->badProtocol($match[1]);
 
                         if (!$skip) {
@@ -231,7 +231,7 @@ class Filter
                         break;
                     }
 
-                    if (preg_match("/^'([^']*)'(\s+|$)/", $attr, $match)) {
+                    if (preg_match("/^'([^']*)'(\s+|$)/", $attr, $match) === 1) {
                         $thisval = $this->badProtocol($match[1]);
 
                         if (!$skip) {
@@ -244,7 +244,7 @@ class Filter
                         break;
                     }
 
-                    if (preg_match("%^([^\s\"']+)(\s+|$)%", $attr, $match)) {
+                    if (preg_match("%^([^\s\"']+)(\s+|$)%", $attr, $match) === 1) {
                         $thisval = $this->badProtocol($match[1]);
 
                         if (!$skip) {
@@ -314,7 +314,7 @@ class Filter
                 // If a colon is preceded by a slash, question mark or hash, it cannot
                 // possibly be part of the URL scheme. This must be a relative URL, which
                 // inherits the (safe) protocol of the base document.
-                if (preg_match('![/?#]!', $protocol)) {
+                if (preg_match('![/?#]!', $protocol) === 1) {
                     break;
                 }
 

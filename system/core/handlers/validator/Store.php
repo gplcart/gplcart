@@ -168,7 +168,7 @@ class Store extends BaseValidator
             return true;
         }
 
-        if (!preg_match('/^[a-z0-9]{0,50}$/', $submitted['basepath'])) {
+        if (preg_match('/^[a-z0-9]{0,50}$/', $submitted['basepath']) !== 1) {
             $this->errors['basepath'] = $this->language->text('Invalid basepath');
             return false;
         }

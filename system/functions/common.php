@@ -114,7 +114,7 @@ function gplcart_valid_host($host)
     return (strlen($host) <= 1000 //
             && substr_count($host, '.') <= 100 //
             && substr_count($host, ':') <= 100 //
-            && preg_match('/^\[?(?:[a-zA-Z0-9-:\]_]+\.?)+$/', $host));
+            && preg_match('/^\[?(?:[a-zA-Z0-9-:\]_]+\.?)+$/', $host) === 1);
 }
 
 /**

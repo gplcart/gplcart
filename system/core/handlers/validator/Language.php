@@ -81,7 +81,7 @@ class Language extends BaseValidator
             return false;
         }
 
-        if (!preg_match('/^[A-Za-z-_]{1,10}$/', $submitted['code'])) {
+        if (preg_match('/^[A-Za-z-_]{1,10}$/', $submitted['code']) !== 1) {
             $this->errors['code'] = $this->language->text('Invalid language code. It must conform to ISO 639-1 standard');
             return false;
         }
@@ -116,7 +116,7 @@ class Language extends BaseValidator
             return true; // If not set, code will be used instead
         }
 
-        if (!preg_match('/^[A-Za-z]{1,50}$/', $submitted['name'])) {
+        if (preg_match('/^[A-Za-z]{1,50}$/', $submitted['name']) !== 1) {
             $this->errors['name'] = $this->language->text('Invalid language name. It must be in English and 1 - 50 characters long');
             return false;
         }

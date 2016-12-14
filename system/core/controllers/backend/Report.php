@@ -316,7 +316,7 @@ class Report extends BackendController
         $items = $this->analytics->get('top_pages');
 
         foreach ($items as &$item) {
-            if (preg_match('!^[\w.]*$!', $item[0])) {
+            if (preg_match('!^[\w.]*$!', $item[0]) === 1) {
                 $item['url'] = $item[0] . $item[1];
             }
         }

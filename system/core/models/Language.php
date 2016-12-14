@@ -146,7 +146,7 @@ class Language extends Model
             $langcode = basename($directory);
 
             // Skip invalid language codes
-            if (!preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode)) {
+            if (preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode) !== 1) {
                 continue;
             }
 
