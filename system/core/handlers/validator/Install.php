@@ -112,22 +112,8 @@ class Install extends BaseValidator
      */
     protected function validateUserEmailInstall(array $options)
     {
-        $email = $this->getSubmitted('user.email', $options);
-
-        if (empty($email)) {
-            $vars = array('@field' => $this->language->text('Email'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('user.email', $error, $options);
-            return false;
-        }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = $this->language->text('Invalid E-mail');
-            $this->setError('user.email', $error, $options);
-            return false;
-        }
-
-        return true;
+        $options += array('parents' => 'user');
+        return $this->validateEmail($options);
     }
 
     /**
@@ -269,13 +255,13 @@ class Install extends BaseValidator
         $installer = $this->install->get($installer_id);
 
         if (empty($installer)) {
-            
+
             $installers = $this->install->getList();
             $list = implode(',', array_keys($installers));
-            
+
             $vars = array('@field' => $this->language->text('Installer'), '@allowed' => $list);
             $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
-            
+
             $this->setError('installer', $error, $options);
             return false;
         }

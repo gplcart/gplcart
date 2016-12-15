@@ -38,20 +38,23 @@ class User extends BaseValidator
     /**
      * Performs full validation of submitted user data
      * @param array $submitted
+     * @param array $options
      * @return array|boolean
      */
-    public function user(array &$submitted)
+    public function user(array &$submitted, array $options)
     {
-        $this->validateUser($submitted);
-        $this->validateStatus($submitted);
-        $this->validateNameUser($submitted);
-        $this->validateEmailUser($submitted);
-        $this->validateEmailUniqueUser($submitted);
-        $this->validatePasswordUser($submitted);
-        $this->validatePasswordLengthUser($submitted);
-        $this->validatePasswordOldUser($submitted);
-        $this->validateStoreId($submitted);
-        $this->validateRoleUser($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateUser($options);
+        $this->validateStatus($options);
+        $this->validateNameUser($options);
+        $this->validateEmail($options);
+        $this->validateEmailUniqueUser($options);
+        $this->validatePasswordUser($options);
+        $this->validatePasswordLengthUser($options);
+        $this->validatePasswordOldUser($options);
+        $this->validateStoreId($options);
+        $this->validateRoleUser($options);
 
         return $this->getResult();
     }
@@ -59,180 +62,180 @@ class User extends BaseValidator
     /**
      * Performs full login data validation
      * @param array $submitted
+     * @param array $options
      * @return array|boolean
      */
-    public function login(array &$submitted)
+    public function login(array &$submitted, array $options)
     {
-        $this->validateEmailUser($submitted);
-        $this->validatePasswordUser($submitted);
+        $this->submitted = &$submitted;
 
-        return empty($this->errors) ? true : $this->errors;
+        $this->validateEmailUser($options);
+        $this->validatePasswordUser($options);
+
+        return $this->getResult();
     }
 
     /**
      * Performs password reset validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function resetPassword(array &$submitted)
+    public function resetPassword(array &$submitted, array $options)
     {
-        if (isset($submitted['password'])) {
+        $this->submitted = &$submitted;
+
+        $email = $this->getSubmitted('email', $options);
+        $password = $this->getSubmitted('password', $options);
+
+        if (isset($password)) {
             $this->validatePasswordLengthUser($submitted);
-        } else if (isset($submitted['email'])) {
+        } else if (isset($email)) {
             $this->validateEmailUser($submitted);
             $this->validateEmailExistsUser($submitted);
         }
 
-        return empty($this->errors) ? true : $this->errors;
+        return $this->getResult();
     }
 
     /**
      * Validates a user to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateUser(array &$submitted)
+    protected function validateUser(array $options)
     {
-        if (empty($submitted['update']) || !is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
+
+        if ($id === false) {
             return null;
         }
 
-        $data = $this->user->get($submitted['update']);
+        $data = $this->user->get($id);
 
         if (empty($data)) {
-            $options = array('@name' => $this->language->text('User'));
-            $this->errors['update'] = $this->language->text('@name is unavailable', $options);
+            $vars = array('@name' => $this->language->text('User'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
             return false;
         }
 
-        $submitted['update'] = $data;
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates a user name
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateNameUser(array $submitted)
+    protected function validateNameUser(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['name'])) {
+        $value = $this->getSubmitted('name', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (empty($submitted['name'])) {
-            $this->errors['name'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Name')
-            ));
+        if (empty($value)) {
+            $vars = array('@field' => $this->language->text('Name'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('name', $error, $options);
             return false;
         }
 
-        if (isset($submitted['update']['name'])//
-                && ($submitted['update']['name'] === $submitted['name'])) {
+        $updating = $this->getUpdating();
+
+        if (isset($updating['name']) && ($updating['name'] === $value)) {
             return true;
         }
 
-        $user = $this->user->getByName($submitted['name']);
+        $user = $this->user->getByName($value);
 
-        if (empty($user)) {
+        if (empty($user['user_id'])) {
             return true;
         }
 
-        $this->errors['name'] = $this->language->text('@object already exists', array(
-            '@object' => $this->language->text('Name')));
+        $vars = array('@object' => $this->language->text('Name'));
+        $error = $this->language->text('@object already exists', $vars);
+        $this->setError('name', $error, $options);
         return false;
     }
 
     /**
-     * Validates a user E-mail
-     * @param array $submitted
-     * @return boolean
-     */
-    protected function validateEmailUser(array $submitted)
-    {
-        if (!empty($submitted['update']) && !isset($submitted['email'])) {
-            return null;
-        }
-
-        if (empty($submitted['email'])) {
-            $options = array('@field' => $this->language->text('E-mail'));
-            $this->errors['email'] = $this->language->text('@field is required', $options);
-            return false;
-        }
-
-        if (!filter_var($submitted['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->errors['email'] = $this->language->text('Invalid E-mail');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Validates uniqueness of submitted E-mail
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateEmailUniqueUser(array &$submitted)
+    protected function validateEmailUniqueUser(array $options)
     {
-        if ($this->isError('email') || !isset($submitted['email'])) {
+        $value = $this->getSubmitted('email', $options);
+
+        if ($this->isError('email') || !isset($value)) {
             return null;
         }
 
-        if (isset($submitted['update']['email'])//
-                && ($submitted['update']['email'] === $submitted['email'])) {
+        $updating = $this->getUpdating();
+
+        if (isset($updating['email']) && ($updating['email'] === $value)) {
             return true;
         }
 
-        $user = $this->user->getByEmail($submitted['email']);
+        $user = $this->user->getByEmail($value);
 
         if (empty($user)) {
             return true;
         }
 
-        $this->errors['email'] = $this->language->text('@object already exists', array(
-            '@object' => $this->language->text('E-mail')));
+        $vars = array('@object' => $this->language->text('E-mail'));
+        $error = $this->language->text('@object already exists', $vars);
+        $this->setError('email', $error, $options);
         return false;
     }
 
     /**
      * Validates an email and checks the responding user enabled
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateEmailExistsUser(array &$submitted)
+    protected function validateEmailExistsUser(array $options)
     {
-        if ($this->isError('email') || !isset($submitted['email'])) {
+        $value = $this->getSubmitted('email', $options);
+
+        if ($this->isError('email') || !isset($value)) {
             return null;
         }
 
-        $user = $this->user->getByEmail($submitted['email']);
+        $user = $this->user->getByEmail($value);
 
-        if (!empty($user['status'])) {
-            $submitted['user'] = $user;
-            return true;
+        if (empty($user['status'])) {
+            $vars = array('@name' => $this->language->text('E-mail'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('email', $error, $options);
+            return false;
         }
 
-        $vars = array('@name' => $this->language->text('E-mail'));
-        $error = $this->language->text('@name is unavailable', $vars);
-        $this->setError('email', $error);
-        return false;
+        $this->setSubmitted('user', $user);
+        return true;
     }
 
     /**
      * Validates a user password
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validatePasswordUser(array $submitted)
+    protected function validatePasswordUser(array $options)
     {
-        if (!empty($submitted['update'])//
-                && (!isset($submitted['password']) || $submitted['password'] === '')) {
+        $value = $this->getSubmitted('password', $options);
+
+        if ($this->isUpdating() && (!isset($value) || $value === '')) {
             return null;
         }
 
-        if (empty($submitted['password'])) {
-            $options = array('@field' => $this->language->text('Password'));
-            $this->errors['password'] = $this->language->text('@field is required', $options);
+        if (empty($value)) {
+            $vars = array('@field' => $this->language->text('Password'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('password', $error, $options);
             return false;
         }
 
@@ -241,21 +244,24 @@ class User extends BaseValidator
 
     /**
      * Validates password length
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validatePasswordLengthUser(array $submitted)
+    protected function validatePasswordLengthUser(array $options)
     {
-        if ($this->isError('password') || !isset($submitted['password'])) {
+        $value = $this->getSubmitted('password', $options);
+
+        if ($this->isError('password', $options) || !isset($value)) {
             return null;
         }
 
+        $length = mb_strlen($value);
         $limit = $this->user->getPasswordLength();
-        $length = mb_strlen($submitted['password']);
 
         if ($length < $limit['min'] || $length > $limit['max']) {
             $vars = array('@min' => $limit['min'], '@max' => $limit['max'], '@field' => $this->language->text('Password'));
-            $this->errors['password'] = $this->language->text('@field must be @min - @max characters long', $vars);
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('password', $error, $options);
             return false;
         }
 
@@ -264,61 +270,72 @@ class User extends BaseValidator
 
     /**
      * Validates an old user password
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validatePasswordOldUser(array $submitted)
+    protected function validatePasswordOldUser(array $options)
     {
-        if (empty($submitted['update'])) {
+        if (!$this->isUpdating()) {
             return null;
         }
 
-        if (!isset($submitted['password']) || $submitted['password'] === '') {
+        $password = $this->getSubmitted('password', $options);
+
+        if (!isset($password) || $password === '') {
             return null;
         }
 
-        if (!isset($submitted['password_old']) || $submitted['password_old'] === '') {
-            $options = array('@field' => $this->language->text('Old password'));
-            $this->errors['password_old'] = $this->language->text('@field is required', $options);
+        $old_password = $this->getSubmitted('password_old', $options);
+
+        if (!isset($old_password) || $old_password === '') {
+            $vars = array('@field' => $this->language->text('Old password'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('password_old', $error, $options);
             return false;
         }
 
-        $hash = gplcart_string_hash($submitted['password_old'], $submitted['update']['hash'], false);
+        $updating = $this->getUpdating();
+        $hash = gplcart_string_hash($old_password, $updating['hash'], false);
 
-        if (gplcart_string_equals($submitted['update']['hash'], $hash)) {
-            return true;
+        if (!gplcart_string_equals($updating['hash'], $hash)) {
+            $error = $this->language->text('Old and new password not matching');
+            $this->setError('password_old', $error, $options);
+            return false;
         }
 
-        $this->errors['password_old'] = $this->language->text('Old and new password not matching');
-        return false;
+        return true;
     }
 
     /**
      * Validates a user role
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateRoleUser(array $submitted)
+    protected function validateRoleUser(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['role_id'])) {
+        $value = $this->getSubmitted('role_id', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (isset($submitted['role_id']) && !is_numeric($submitted['role_id'])) {
-            $options = array('@field' => $this->language->text('Role'));
-            $this->errors['role_id'] = $this->language->text('@field must be numeric', $options);
+        if (isset($value) && !is_numeric($value)) {
+            $vars = array('@field' => $this->language->text('Role'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('role_id', $error, $options);
             return false;
         }
 
-        if (empty($submitted['role_id'])) {
+        if (empty($value)) {
             return true;
         }
 
-        $role = $this->role->get($submitted['role_id']);
+        $role = $this->role->get($value);
 
         if (empty($role)) {
-            $options = array('@name' => $this->language->text('Role'));
-            $this->errors['role_id'] = $this->language->text('@name is unavailable', $options);
+            $vars = array('@name' => $this->language->text('Role'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('role_id', $error, $options);
             return false;
         }
 

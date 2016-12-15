@@ -18,7 +18,6 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Wishlist extends BaseValidator
 {
-
     /**
      * Wishlist model instance
      * @var \core\models\Wishlist $wishlist
@@ -47,29 +46,35 @@ class Wishlist extends BaseValidator
     /**
      * Performs full wishlist data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function wishlist(array &$submitted)
+    public function wishlist(array &$submitted, array $options)
     {
-        $this->validateWishlist($submitted);
-        $this->validateProductWishlist($submitted);
-        $this->validateUserCartId($submitted);
-        $this->validateStoreId($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateWishlist($options);
+        $this->validateProductWishlist($options);
+        $this->validateUserCartId($options);
+        $this->validateStoreId($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates wishlist data to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateWishlist(array &$submitted)
+    protected function validateWishlist(array $options)
     {
-        if (empty($submitted['update']) || !is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
+
+        if ($id === false) {
             return null;
         }
 
-        $data = $this->wishlist->get($submitted['update']);
+        $data = $this->wishlist->get($id);
 
         if (empty($data)) {
             $vars = array('@name' => $this->language->text('Wishlist'));
@@ -78,41 +83,43 @@ class Wishlist extends BaseValidator
             return false;
         }
 
-        $submitted['update'] = $data;
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates a wishlist product ID
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateProductWishlist(array &$submitted)
+    protected function validateProductWishlist(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['product_id'])) {
+        $value = $this->getSubmitted('product_id', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (empty($submitted['product_id'])) {
+        if (empty($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setError('product_id', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['product_id'])) {
+        if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setError('product_id', $error, $options);
             return false;
         }
 
-        $product = $this->product->get($submitted['product_id']);
+        $product = $this->product->get($value);
 
         if (empty($product['status'])) {
             $vars = array('@name' => $this->language->text('Product'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error);
+            $this->setError('product_id', $error, $options);
             return false;
         }
 

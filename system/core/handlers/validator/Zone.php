@@ -38,36 +38,43 @@ class Zone extends BaseValidator
     /**
      * Performs full zone data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function zone(array &$submitted)
+    public function zone(array &$submitted, array $options)
     {
-        $this->validateZone($submitted);
-        $this->validateStatus($submitted);
-        $this->validateTitle($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateZone($options);
+        $this->validateStatus($options);
+        $this->validateTitle($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a zone to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateZone(array &$submitted)
+    protected function validateZone(array $options)
     {
-        if (empty($submitted['update']) || !is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
+
+        if ($id === false) {
             return null;
         }
 
-        $data = $this->zone->get($submitted['update']);
+        $data = $this->zone->get($id);
 
         if (empty($data)) {
-            $options = array('@name' => $this->language->text('Zone'));
-            $this->errors['zone_id'] = $this->language->text('@name is unavailable', $options);
+            $vars = array('@name' => $this->language->text('Zone'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
             return false;
         }
 
-        $submitted['update'] = $data;
+        $this->setUpdating($data);
         return true;
     }
 

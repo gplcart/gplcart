@@ -79,10 +79,10 @@ class Base
      */
     protected function getSubmitted($key = null, $options = array())
     {
-        if(!isset($key)){
+        if (!isset($key)) {
             return $this->submitted;
         }
-        
+
         $parents = $this->getParents($key, $options);
 
         if (!isset($parents)) {
@@ -133,7 +133,7 @@ class Base
     {
         $this->submitted[$key] = $data;
     }
-    
+
     /**
      * Returns an array of entity to be updated
      * @param string $key
@@ -627,6 +627,35 @@ class Base
             $vars = array('@name' => $this->language->text('User'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('user_id', $error, $options);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates an E-mail
+     * @param array $options
+     * @return boolean
+     */
+    protected function validateEmail(array $options)
+    {
+        $value = $this->getSubmitted('email', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        if (empty($value)) {
+            $vars = array('@field' => $this->language->text('E-mail'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('email', $error, $options);
+            return false;
+        }
+
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $error = $this->language->text('Invalid E-mail');
+            $this->setError('email', $error, $options);
             return false;
         }
 

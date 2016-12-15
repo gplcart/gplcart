@@ -38,61 +38,71 @@ class UserRole extends BaseValidator
     /**
      * Performs full user role data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function userRole(array &$submitted)
+    public function userRole(array &$submitted, array $options)
     {
-        $this->validateUserRole($submitted);
-        $this->validatePermissionsUserRole($submitted);
-        $this->validateStatus($submitted);
-        $this->validateName($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateUserRole($options);
+        $this->validatePermissionsUserRole($options);
+        $this->validateStatus($options);
+        $this->validateName($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a user role to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateUserRole(array &$submitted)
+    protected function validateUserRole(array $options)
     {
-        if (empty($submitted['update']) || !is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
+
+        if ($id === false) {
             return null;
         }
 
-        $data = $this->role->get($submitted['update']);
+        $data = $this->role->get($id);
 
         if (empty($data)) {
-            $options = array('@name' => $this->language->text('Role'));
-            $this->errors['role_id'] = $this->language->text('@name is unavailable', $options);
+            $vars = array('@name' => $this->language->text('Role'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
             return false;
         }
 
-        $submitted['update'] = $data;
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates permissions data
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validatePermissionsUserRole(array &$submitted)
+    protected function validatePermissionsUserRole(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['permissions'])) {
+        $value = $this->getSubmitted('permissions', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (empty($submitted['permissions'])) {
-            $submitted['permissions'] = array();
+        if (empty($value)) {
+            $value = array();
         }
 
         $permissions = $this->role->getPermissions();
-        $difference = array_diff($submitted['permissions'], array_keys($permissions));
+        $difference = array_diff($value, array_keys($permissions));
 
         if (!empty($difference)) {
-            $options = array('@name' => implode(',', $difference));
-            $this->errors['permissions'] = $this->language->text('@name is unavailable', $options);
+            $vars = array('@name' => implode(',', $difference));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('permissions', $error, $options);
             return false;
         }
 
