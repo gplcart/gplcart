@@ -36,8 +36,7 @@ class Trigger extends BaseValidator
      * @param ConditionModel $condition
      * @param TriggerModel $trigger
      */
-    public function __construct(ConditionModel $condition,
-            TriggerModel $trigger)
+    public function __construct(ConditionModel $condition, TriggerModel $trigger)
     {
         parent::__construct();
 
@@ -47,57 +46,67 @@ class Trigger extends BaseValidator
 
     /**
      * Performs full trigger data validation
-     * @param array $trigger
+     * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
-    public function trigger(array &$submitted)
+    public function trigger(array &$submitted, array $options)
     {
-        $this->validateTrigger($submitted);
-        $this->validateStatus($submitted);
-        $this->validateName($submitted);
-        $this->validateStoreId($submitted);
-        $this->validateWeight($submitted);
-        $this->validateConditionsTrigger($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateTrigger($options);
+        $this->validateStatus($options);
+        $this->validateName($options);
+        $this->validateStoreId($options);
+        $this->validateWeight($options);
+        $this->validateConditionsTrigger($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a trigger to be updated
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateTrigger(array &$submitted)
+    protected function validateTrigger(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
 
-            $data = $this->trigger->get($submitted['update']);
-
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Trigger')));
-                return false;
-            }
-
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->trigger->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Trigger'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 
     /**
      * Validates and modifies trigger conditions
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    public function validateConditionsTrigger(array &$submitted)
+    public function validateConditionsTrigger(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['data']['conditions'])) {
+        $value = $this->getSubmitted('data.conditions', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (empty($submitted['data']['conditions'])) {
-            $this->errors['data']['conditions'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('Conditions')
-            ));
+        if (empty($value)) {
+            $vars = array('@field' => $this->language->text('Conditions'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('data.conditions', $error, $options);
             return false;
         }
 
@@ -105,7 +114,7 @@ class Trigger extends BaseValidator
         $operators = $this->condition->getOperators();
         $prepared_operators = array_map('htmlspecialchars', array_keys($operators));
 
-        foreach ($submitted['data']['conditions'] as $line => $condition) {
+        foreach ($value as $line => $condition) {
             $line++;
 
             $condition = trim($condition);
@@ -135,7 +144,8 @@ class Trigger extends BaseValidator
                 continue;
             }
 
-            $result = call_user_func_array($validator, array($condition_id, $operator, &$parameters, $submitted));
+            $data = $this->getSubmitted();
+            $result = call_user_func_array($validator, array($condition_id, $operator, &$parameters, $data));
 
             if ($result !== true) {
                 $error = empty($result) ? $this->language->text('did not pass validation') : (string) $result;
@@ -153,11 +163,11 @@ class Trigger extends BaseValidator
         }
 
         if (!empty($errors)) {
-            $this->errors['data']['conditions'] = implode('<br>', $errors);
+            $this->setError('data.conditions', implode('<br>', $errors), $options);
         }
 
-        if (empty($this->errors)) {
-            $submitted['data']['conditions'] = $modified;
+        if (!$this->isError()) {
+            $this->setSubmitted('data.conditions', $modified, $options);
             return true;
         }
 

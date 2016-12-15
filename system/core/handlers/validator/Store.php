@@ -20,6 +20,8 @@ use core\handlers\validator\Base as BaseValidator;
 class Store extends BaseValidator
 {
 
+    const UPLOAD_PATH = 'image/upload/store';
+
     /**
      * File model instance
      * @var \core\models\File $file
@@ -57,138 +59,152 @@ class Store extends BaseValidator
     /**
      * Performs full store data validation
      * @param array $submitted
+     * @param array $options
      * @return array|boolean
      */
-    public function store(array &$submitted)
+    public function store(array &$submitted, array $options)
     {
-        $this->validateStore($submitted);
-        $this->validateStatus($submitted);
-        $this->validateDomainStore($submitted);
-        $this->validateBasepathStore($submitted);
-        $this->validateName($submitted);
-        $this->validateEmailStore($submitted);
-        $this->validateMapStore($submitted);
-        $this->validateTitleStore($submitted);
-        $this->validateMetaTitleStore($submitted);
-        $this->validateMetaDescriptionStore($submitted);
-        $this->validateTranslationStore($submitted);
-        $this->validateThemeStore($submitted);
-        $this->validateFaviconStore($submitted);
-        $this->validateLogoStore($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateStore($options);
+        $this->validateStatus($options);
+        $this->validateDomainStore($options);
+        $this->validateBasepathStore($options);
+        $this->validateName($options);
+        $this->validateEmailStore($options);
+        $this->validateMapStore($options);
+        $this->validateTitleStore($options);
+        $this->validateMetaTitleStore($options);
+        $this->validateMetaDescriptionStore($options);
+        $this->validateTranslationStore($options);
+        $this->validateThemeStore($options);
+        $this->validateImagesStore($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a store to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateStore(array &$submitted)
+    protected function validateStore(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
+        $id = $this->getUpdatingId();
 
-            $data = $this->store->get($submitted['update']);
-
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Store')));
-                return false;
-            }
-
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
-        $submitted['default'] = (isset($submitted['update']['store_id'])//
-                && $this->store->isDefault($submitted['update']['store_id']));
+        $data = $this->store->get($id);
 
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Store'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
+        $default = $this->store->isDefault($data['store_id']);
+        $this->setSubmitted('default', $default);
         return true;
     }
 
     /**
      * Validates a domain
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateDomainStore(array &$submitted)
+    protected function validateDomainStore(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['domain'])) {
+        $value = $this->getSubmitted('domain', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (!empty($submitted['default'])) {
-            unset($submitted['domain']);
+        if ($this->getSubmitted('default')) {
+            $this->unsetSubmitted('domain', $options);
             return null; // Cannot update domain of default store
         }
 
-        if (isset($submitted['update']['domain'])//
-                && ($submitted['update']['domain'] === $submitted['domain'])) {
+        $updating = $this->getUpdating();
+
+        if (isset($updating['domain']) && ($updating['domain'] === $value)) {
             return true;
         }
 
-        if (!gplcart_valid_domain($submitted['domain'])) {
-            $this->errors['domain'] = $this->language->text('Invalid domain');
+        if (!gplcart_valid_domain($updating)) {
+            $vars = array('@field' => $this->language->text('Domain'));
+            $error = $this->language->text('@field has invalid value', $vars);
+            $this->setError('domain', $error, $options);
             return false;
         }
 
-        $existing = $this->store->get($submitted['domain']);
+        $existing = $this->store->get($value);
 
-        if (empty($existing)) {
-            return true;
+        if (!empty($existing)) {
+            $vars = array('@object' => $this->language->text('Domain'));
+            $error = $this->language->text('@object already exists', $vars);
+            $this->setError('domain', $error, $options);
+            return false;
         }
 
-        $this->errors['domain'] = $this->language->text('@object already exists', array(
-            '@object' => $this->language->text('Domain')));
-        return false;
+        return true;
     }
 
     /**
      * Validates a store base path
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateBasepathStore(array &$submitted)
+    protected function validateBasepathStore(array $options)
     {
-        if (isset($this->errors['domain'])) {
+        if ($this->isError('domain', $options)) {
             return null;
         }
 
-        if (!empty($submitted['update']) && !isset($submitted['basepath'])) {
+        $value = $this->getSubmitted('basepath', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (!empty($submitted['default'])) {
-            unset($submitted['basepath']);
+        if ($this->getSubmitted('default')) {
+            $this->unsetSubmitted('basepath', $options);
             return null; // Cannot update basepath of default store
         }
 
-        if (isset($submitted['update']['basepath'])//
-                && $submitted['update']['basepath'] === $submitted['basepath']//
-                && $submitted['update']['domain'] === $submitted['domain']) {
+        $updating = $this->getUpdating();
+        $domain = $this->getSubmitted('domain', $options);
+
+        if (isset($updating['basepath'])//
+                && $updating['basepath'] === $value//
+                && $updating['domain'] === $domain) {
             return true;
         }
 
-        if (preg_match('/^[a-z0-9]{0,50}$/', $submitted['basepath']) !== 1) {
-            $this->errors['basepath'] = $this->language->text('Invalid basepath');
+        if (preg_match('/^[a-z0-9]{0,50}$/', $value) !== 1) {
+            $vars = array('@field' => $this->language->text('Base path'));
+            $error = $this->language->text('@field has invalid value', $vars);
+            $this->setError('basepath', $error, $options);
             return false;
         }
 
-        $stores = $this->store->getList(array(
-            'domain' => $submitted['domain'],
-            'basepath' => $submitted['basepath']
-        ));
+        $conditions = array('domain' => $domain, 'basepath' => $value);
+        $stores = $this->store->getList($conditions);
 
         foreach ($stores as $store_id => $data) {
 
-            if (isset($submitted['update']['store_id'])//
-                    && $submitted['update']['store_id'] == $store_id) {
+            if (isset($updating['store_id']) && $updating['store_id'] == $store_id) {
                 continue;
             }
 
-            if ($data['domain'] === $submitted['domain']//
-                    && $data['basepath'] === $submitted['basepath']) {
-                $this->errors['basepath'] = $this->language->text('@object already exists', array(
-                    '@object' => $this->language->text('Base path')));
+            if ($data['domain'] === $domain && $data['basepath'] === $value) {
+                $vars = array('@object' => $this->language->text('Base path'));
+                $error = $this->language->text('@object already exists', $vars);
+                $this->setError('basepath', $error, $options);
                 return false;
             }
         }
@@ -198,232 +214,163 @@ class Store extends BaseValidator
 
     /**
      * Validates E-mails
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateEmailStore(array &$submitted)
+    protected function validateEmailStore(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['data']['email'])) {
+        $value = $this->getSubmitted('data.email', $options);
+
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (empty($submitted['data']['email'])) {
-            $this->errors['data']['email'] = $this->language->text('@field is required', array(
-                '@field' => $this->language->text('E-mail')
-            ));
+        if (empty($value)) {
+            $vars = array('@field' => $this->language->text('E-mail'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('data.email', $error, $options);
             return false;
         }
 
-        $emails = $submitted['data']['email'];
-
-        $filtered = array_filter($emails, function($email) {
+        $filtered = array_filter($value, function($email) {
             return filter_var($email, FILTER_VALIDATE_EMAIL);
         });
 
-        if (count($emails) == count($filtered)) {
-            return true;
+        if (count($value) != count($filtered)) {
+            $error = $this->language->text('Invalid E-mail');
+            $this->setError('data.email', $error, $options);
+            return false;
         }
 
-        $this->errors['data']['email'] = $this->language->text('Invalid E-mail');
-        return false;
+        return true;
     }
 
     /**
      * Validates map coordinates
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateMapStore(array &$submitted)
+    protected function validateMapStore(array $options)
     {
-        if (empty($submitted['data']['map'])) {
+        $value = $this->getSubmitted('data.map', $options);
+
+        if (empty($value)) {
             return null;
         }
 
-        $map = $submitted['data']['map'];
-
-        if (count($map) != 2) {
-            $this->errors['data']['map'] = $this->language->text('Invalid map coordinates');
+        if (count($value) != 2) {
+            $vars = array('@field' => $this->language->text('Map'));
+            $error = $this->language->text('@field has invalid value', $vars);
+            $this->setError('data.map', $error, $options);
             return false;
         }
 
-        $filtered = array_filter($map, 'is_numeric');
+        $filtered = array_filter($value, 'is_numeric');
 
-        if (count($map) == count($filtered)) {
-            return true;
+        if (count($value) != count($filtered)) {
+            $vars = array('@field' => $this->language->text('Map'));
+            $error = $this->language->text('@field has invalid value', $vars);
+            $this->setError('data.map', $error, $options);
+            return false;
         }
 
-        $this->errors['data']['map'] = $this->language->text('Invalid map coordinates');
-        return false;
+        return true;
     }
 
     /**
      * Validates a store title
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateTitleStore(array &$submitted)
+    protected function validateTitleStore(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['data']['title'])) {
-            return null;
-        }
-
-        if (empty($submitted['data']['title']) || mb_strlen($submitted['data']['title']) > 255) {
-            $options = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Title'));
-            $this->errors['data']['title'] = $this->language->text('@field must be @min - @max characters long', $options);
-            return false;
-        }
-
-        return true;
+        $options += array('parents' => 'data');
+        return $this->validateTitle($options);
     }
 
     /**
      * Validates a store meta title
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateMetaTitleStore(array &$submitted)
+    protected function validateMetaTitleStore(array $options)
     {
-        if (empty($submitted['data']['meta_title'])) {
-            return null;
-        }
-
-        if (mb_strlen($submitted['data']['meta_title']) > 60) {
-            $options = array('@max' => 60, '@field' => $this->language->text('Meta title'));
-            $this->errors['data']['meta_title'] = $this->language->text('@field must not be longer than @max characters', $options);
-            return false;
-        }
-
-        return true;
+        $options += array('parents' => 'data');
+        return $this->validateMetaTitle($options);
     }
 
     /**
      * Validates a store meta description
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateMetaDescriptionStore(array &$submitted)
+    protected function validateMetaDescriptionStore(array $options)
     {
-        if (empty($submitted['data']['meta_description'])) {
-            return null;
-        }
-
-        if (mb_strlen($submitted['data']['meta_description']) > 160) {
-            $options = array('@max' => 160, '@field' => $this->language->text('Meta description'));
-            $this->errors['data']['meta_description'] = $this->language->text('@field must not be longer than @max characters', $options);
-            return false;
-        }
-
-        return true;
+        $options += array('parents' => 'data');
+        return $this->validateMetaDescription($options);
     }
 
     /**
      * Validates store translatable fields
-     * @param array $submitted
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateTranslationStore(array &$submitted)
+    protected function validateTranslationStore(array $options)
     {
-        if (empty($submitted['data']['translation'])) {
-            return null;
-        }
-
-        $lengths = array('meta_title' => 60, 'meta_description' => 160);
-
-        foreach ($submitted['data']['translation'] as $lang => $translation) {
-            foreach ($translation as $field => $value) {
-
-                $max = isset($lengths[$field]) ? $lengths[$field] : 255;
-
-                if (mb_strlen($value) > $max) {
-                    $options = array('@field' => ucfirst(str_replace('_', '', $field)), '@lang' => $lang, '@max' => $max);
-                    $this->errors['data']['translation'][$lang][$field] = $this->language->text('@field in @lang must not be longer than @max characters', $options);
-                }
-            }
-        }
-
-        return empty($this->errors['data']['translation']);
+        $options += array('parents' => 'data');
+        return $this->validateTranslation($options);
     }
 
     /**
      * Validates uploaded favicon
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateFaviconStore(array &$submitted)
+    protected function validateImagesStore(array $options)
     {
-        if (!empty($this->errors)) {
+        if ($this->isError()) {
             return null;
         }
 
-        if (!empty($submitted['delete_favicon'])) {
-            $submitted['data']['favicon'] = '';
+        $error = false;
+        foreach (array('logo', 'favicon') as $field) {
+
+            if ($this->getSubmitted("delete_$field", $options)) {
+                $this->setSubmitted("data.$field", '', $options);
+            }
+
+            $file = $this->request->file($field);
+
+            if ($this->isUpdating() && empty($file)) {
+                continue;
+            }
+
+            if (empty($file)) {
+                continue;
+            }
+
+            $result = $this->file->setUploadPath(self::UPLOAD_PATH)
+                    ->upload($file);
+
+            if ($result !== true) {
+                $error = true;
+                $this->setError($field, $result, $options);
+                continue;
+            }
+
+            $uploaded = $this->file->getUploadedFile(true);
+            $this->setSubmitted("data.$field", $uploaded, $options);
         }
 
-        $file = $this->request->file('favicon');
-
-        if (!empty($submitted['update']) && empty($file)) {
-            return null;
-        }
-
-        if (empty($file)) {
-            return true;
-        }
-
-        $result = $this->file->setUploadPath('image/upload/store')->upload($file);
-
-        if ($result !== true) {
-            $this->errors['favicon'] = $result;
-            return false;
-        }
-
-        $uploaded = $this->file->getUploadedFile(true);
-        $submitted['data']['favicon'] = $uploaded;
-        return true;
-    }
-
-    /**
-     * Validates uploaded logo
-     * @param array $submitted
-     * @return boolean
-     */
-    protected function validateLogoStore(array &$submitted)
-    {
-        if (!empty($this->errors)) {
-            return null;
-        }
-
-        if (!empty($submitted['delete_logo'])) {
-            $submitted['data']['logo'] = '';
-        }
-
-        $file = $this->request->file('logo');
-
-        if (!empty($submitted['update']) && empty($file)) {
-            return null;
-        }
-
-        if (empty($file)) {
-            return true;
-        }
-
-        $result = $this->file->setUploadPath('image/upload/store')->upload($file);
-
-        if ($result !== true) {
-            $this->errors['logo'] = $result;
-            return false;
-        }
-
-        $uploaded = $this->file->getUploadedFile(true);
-        $submitted['data']['logo'] = $uploaded;
-        return true;
+        return empty($error);
     }
 
     /**
      * Validates theme module IDs
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateThemeStore(array $submitted)
+    protected function validateThemeStore(array $options)
     {
         $mapping = array(
             'theme' => $this->language->text('Theme'),
@@ -431,27 +378,31 @@ class Store extends BaseValidator
             'theme_tablet' => $this->language->text('Tablet theme')
         );
 
-        $error = false;
         foreach ($mapping as $field => $name) {
 
-            if (!empty($submitted['update']) && !isset($submitted['data'][$field])) {
+            $value = $this->getSubmitted("data.$field", $options);
+
+            if ($this->isUpdating() && !isset($value)) {
                 continue;
             }
 
-            if (empty($submitted['data'][$field])) {
-                $error = true;
-                $this->errors['data'][$field] = $this->language->text('@field is required', array('@field' => $name));
+            if (empty($value)) {
+                $error = $this->language->text('@field is required', array('@field' => $name));
+                $this->setError("data.$field", $error, $options);
                 continue;
             }
 
-            if (!$this->module->isEnabled($submitted['data'][$field])) {
-                $error = true;
-                $this->errors['data'][$field] = $this->language->text('@name is unavailable', array('@name' => $name));
+            $module = $this->module->get($value);
+
+            if (isset($module['type']) || $module['type'] === 'theme' && !empty($module['status'])) {
                 continue;
             }
+
+            $error = $this->language->text('@name is unavailable', array('@name' => $name));
+            $this->setError("data.$field", $error, $options);
         }
 
-        return !$error;
+        return !isset($error);
     }
 
 }

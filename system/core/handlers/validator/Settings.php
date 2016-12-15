@@ -47,33 +47,44 @@ class Settings extends BaseValidator
     /**
      * Performs full settings data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
     public function settings(array &$submitted, array $options = array())
     {
-        $this->validateSettings($submitted);
-        $this->validateEmailSettings($submitted);
-        $this->validateFileSettings($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateSettings($options);
+        $this->validateEmailSettings($options);
+        $this->validateFileSettings($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates and prepares settings
-     * @param array $submitted
+     * @param array $options
      * @return boolean
      */
-    protected function validateSettings(array &$submitted)
+    protected function validateSettings(array $options)
     {
-        if (!empty($submitted['smtp_host'])) {
-            $submitted['smtp_host'] = gplcart_string_array($submitted['smtp_host']);
+        $cron_key = $this->getSubmitted('cron_key', $options);
+        $smtp_host = $this->getSubmitted('smtp_host', $options);
+        $smtp_auth = $this->getSubmitted('smtp_auth', $options);
+
+        if (!empty($smtp_host)) {
+            $smtp_host = gplcart_string_array($smtp_host);
+            $this->setSubmitted('smtp_host', $smtp_host, $options);
         }
 
-        if (empty($submitted['cron_key'])) {
-            $submitted['cron_key'] = gplcart_string_random();
+        if (empty($cron_key)) {
+            $cron_key = gplcart_string_random();
+            $this->setSubmitted('cron_key', $cron_key, $options);
         }
 
-        if (isset($submitted['smtp_auth'])) {
-            $submitted['smtp_auth'] = gplcart_string_bool($submitted['smtp_auth']);
+        if (isset($smtp_auth)) {
+            $smtp_auth = gplcart_string_bool($smtp_auth);
+            $this->setSubmitted('smtp_auth', $smtp_auth, $options);
         }
 
         return true;
@@ -81,17 +92,20 @@ class Settings extends BaseValidator
 
     /**
      * Validates E-mails
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateEmailSettings(array &$submitted)
+    protected function validateEmailSettings(array $options)
     {
-        if (empty($submitted['gapi_email'])) {
+        $value = $this->getSubmitted('gapi_email', $options);
+
+        if (empty($value)) {
             return null;
         }
 
-        if (!filter_var($submitted['gapi_email'], FILTER_VALIDATE_EMAIL)) {
-            $this->errors['gapi_email'] = $this->language->text('Invalid E-mail');
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $error = $this->language->text('Invalid E-mail');
+            $this->setError('gapi_email', $error, $options);
             return false;
         }
 
@@ -100,12 +114,12 @@ class Settings extends BaseValidator
 
     /**
      * Validates uploaded files
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateFileSettings(array &$submitted)
+    protected function validateFileSettings(array $options)
     {
-        if (!empty($this->errors)) {
+        if ($this->isError()) {
             return null;
         }
 
@@ -118,12 +132,12 @@ class Settings extends BaseValidator
         $result = $this->file->upload($file);
 
         if ($result !== true) {
-            $this->errors['gapi_certificate'] = $result;
+            $this->setError('gapi_certificate', $result, $options);
             return false;
         }
 
         $uploaded = $this->file->getUploadedFile(true);
-        $submitted['gapi_certificate'] = $uploaded;
+        $this->setSubmitted('gapi_certificate', $uploaded, $options);
         return true;
     }
 

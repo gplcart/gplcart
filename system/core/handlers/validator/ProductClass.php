@@ -38,34 +38,43 @@ class ProductClass extends BaseValidator
     /**
      * Performs full product class validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
     public function productClass(array &$submitted, array $options = array())
     {
-        $this->validateProductClass($submitted);
-        $this->validateStatus($submitted);
-        $this->validateTitle($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validateProductClass($options);
+        $this->validateStatus($options);
+        $this->validateTitle($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a product class ID
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateProductClass(array &$submitted)
+    protected function validateProductClass(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
-            $data = $this->product_class->get($submitted['update']);
-            if (empty($data)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Product class')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $data;
+        if ($id === false) {
+            return null;
         }
 
+        $data = $this->product_class->get($id);
+
+        if (empty($data)) {
+            $vars = array('@name' => $this->language->text('Product class'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($data);
         return true;
     }
 

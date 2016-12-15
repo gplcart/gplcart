@@ -269,9 +269,13 @@ class Install extends BaseValidator
         $installer = $this->install->get($installer_id);
 
         if (empty($installer)) {
+            
             $installers = $this->install->getList();
             $list = implode(',', array_keys($installers));
-            $error = $this->language->text("Invalid installer ID. Available installers: @list", array('@list' => $list));
+            
+            $vars = array('@field' => $this->language->text('Installer'), '@allowed' => $list);
+            $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
+            
             $this->setError('installer', $error, $options);
             return false;
         }

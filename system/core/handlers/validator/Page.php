@@ -20,16 +20,16 @@ class Page extends BaseValidator
 {
 
     /**
-     * Category model instance
-     * @var \core\models\Category $category
-     */
-    protected $category;
-
-    /**
      * Page model instance
      * @var \core\models\Page $page
      */
     protected $page;
+
+    /**
+     * Category model instance
+     * @var \core\models\Category $category
+     */
+    protected $category;
 
     /**
      * Constructor
@@ -47,60 +47,72 @@ class Page extends BaseValidator
     /**
      * Performs page data validation
      * @param array $submitted
+     * @param array $options
+     * @return array|boolean
      */
     public function page(array &$submitted, array $options = array())
     {
-        $this->validatePage($submitted);
-        $this->validateStatus($submitted);
-        $this->validateTitle($submitted);
-        $this->validateDescriptionPage($submitted);
-        $this->validateMetaTitle($submitted);
-        $this->validateMetaDescription($submitted);
-        $this->validateTranslation($submitted);
-        $this->validateStoreId($submitted);
-        $this->validateCategoryPage($submitted);
-        $this->validateUserId($submitted);
-        $this->validateImages($submitted);
-        $this->validateAliasPage($submitted);
+        $this->submitted = &$submitted;
+
+        $this->validatePage($options);
+        $this->validateStatus($options);
+        $this->validateTitle($options);
+        $this->validateDescriptionPage($options);
+        $this->validateMetaTitle($options);
+        $this->validateMetaDescription($options);
+        $this->validateTranslation($options);
+        $this->validateStoreId($options);
+        $this->validateCategoryPage($options);
+        $this->validateUserId($options);
+        $this->validateImages($options);
+        $this->validateAliasPage($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a page to be updated
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validatePage(array &$submitted)
+    protected function validatePage(array $options)
     {
-        if (!empty($submitted['update']) && is_numeric($submitted['update'])) {
-            $page = $this->page->get($submitted['update']);
-            if (empty($page)) {
-                $this->errors['update'] = $this->language->text('@name is unavailable', array(
-                    '@name' => $this->language->text('Page')));
-                return false;
-            }
+        $id = $this->getUpdatingId();
 
-            $submitted['update'] = $page;
+        if ($id === false) {
+            return null;
         }
 
+        $page = $this->page->get($id);
+
+        if (empty($page)) {
+            $vars = array('@name' => $this->language->text('Page'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('update', $error);
+            return false;
+        }
+
+        $this->setUpdating($page);
         return true;
     }
 
     /**
      * Validates a page description
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateDescriptionPage(array $submitted)
+    protected function validateDescriptionPage(array $options)
     {
-        if (!empty($submitted['update']) && !isset($submitted['description'])) {
+        $description = $this->getSubmitted('description', $options);
+
+        if ($this->isUpdating() && !isset($description)) {
             return null;
         }
 
-        if (empty($submitted['description']) || mb_strlen($submitted['description']) > 65535) {
-            $options = array('@min' => 1, '@max' => 65535, '@field' => $this->language->text('Description'));
-            $this->errors['description'] = $this->language->text('@field must be @min - @max characters long', $options);
+        if (empty($description) || mb_strlen($description) > 65535) {
+            $vars = array('@min' => 1, '@max' => 65535, '@field' => $this->language->text('Description'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('description', $error, $options);
             return false;
         }
 
@@ -109,26 +121,30 @@ class Page extends BaseValidator
 
     /**
      * Validates a category ID
-     * @param array $submitted
-     * @return boolean
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateCategoryPage(array &$submitted)
+    protected function validateCategoryPage(array $options)
     {
-        if (empty($submitted['category_id'])) {
+        $category_id = $this->getSubmitted('category_id', $options);
+
+        if (empty($category_id)) {
             return null; // Category ID is not required
         }
 
-        if (!is_numeric($submitted['category_id'])) {
-            $options = array('@field' => $this->language->text('Category'));
-            $this->errors['category_id'] = $this->language->text('@field must be numeric', $options);
+        if (!is_numeric($category_id)) {
+            $vars = array('@field' => $this->language->text('Category'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('category_id', $error, $options);
             return false;
         }
 
-        $category = $this->category->get($submitted['category_id']);
+        $category = $this->category->get($category_id);
 
-        if (empty($category)) {
-            $this->errors['category_id'] = $this->language->text('@name is unavailable', array(
-                '@name' => $this->language->text('Category')));
+        if (empty($category['category_id'])) {
+            $vars = array('@name' => $this->language->text('Category'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('category_id', $error, $options);
             return false;
         }
 
@@ -136,28 +152,33 @@ class Page extends BaseValidator
     }
 
     /**
-     * Validates / creates an alias
-     * @param array $submitted
-     * @return boolean
+     * Validates/creates an alias
+     * @param array $options
+     * @return boolean|null
      */
-    protected function validateAliasPage(array &$submitted)
+    protected function validateAliasPage(array $options)
     {
-        if (!empty($this->errors)) {
-            return null;
+        if ($this->isError()) {
+            return null; // Stop if a error has occured before
         }
 
-        if (isset($submitted['alias'])//
-                && isset($submitted['update']['alias'])//
-                && ($submitted['update']['alias'] === $submitted['alias'])) {
+        $updating = $this->getUpdating();
+        $alias = $this->getSubmitted('alias', $options);
+
+        if (isset($alias)//
+                && isset($updating['alias'])//
+                && ($updating['alias'] === $alias)) {
             return true; // Do not check own alias on update
         }
 
-        if (empty($submitted['alias']) && !empty($submitted['update'])) {
-            $submitted['alias'] = $this->page->createAlias($submitted);
+        if (empty($alias) && $this->isUpdating()) {
+            $data = $this->getSubmitted();
+            $alias = $this->page->createAlias($data);
+            $this->setSubmitted('alias', $alias, $options);
             return true;
         }
 
-        return $this->validateAlias($submitted);
+        return $this->validateAlias($options);
     }
 
 }

@@ -238,7 +238,7 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Design'); ?></div>
     <div class="panel-body">
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('data.theme', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Theme'); ?></label>
         <div class="col-md-4">
           <select name="store[data][theme]" class="form-control">
@@ -247,11 +247,14 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Select a theme module used to display front-end of the store to all devices'); ?>
+            <?php echo $this->error('data.theme'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Select a theme module used to display front-end of the store to all devices'); ?>
+            </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('data.theme_mobile', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Mobile theme'); ?></label>
         <div class="col-md-4">
           <select name="store[data][theme_mobile]" class="form-control">
@@ -260,11 +263,14 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Select a theme module used to display front-end of the store to all mobile devices'); ?>
+            <?php echo $this->error('data.theme_mobile'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Select a theme module used to display front-end of the store to all mobile devices'); ?>
+            </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('data.theme_tablet', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Tablet theme'); ?></label>
         <div class="col-md-4">
           <select name="store[data][theme_tablet]" class="form-control">
@@ -273,7 +279,10 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Select a theme module used to display front-end of the store to tablet devices'); ?>
+            <?php echo $this->error('data.theme_tablet'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Select a theme module used to display front-end of the store to tablet devices'); ?>
+            </div>
           </div>
         </div>
       </div>

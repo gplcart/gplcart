@@ -52,38 +52,41 @@ class Rating extends BaseValidator
      */
     public function rating(array &$submitted, array $options = array())
     {
-        $this->validateProductRating($submitted, $options);
-        $this->validateUserId($submitted, $options);
-        $this->validateValueRating($submitted, $options);
+        $this->submitted = &$submitted;
+
+        $this->validateProductRating($options);
+        $this->validateUserId($options);
+        $this->validateValueRating($options);
 
         return $this->getResult();
     }
 
     /**
      * Validates a submitted product ID
-     * @param array $submitted
      * @param array $options
      * @return boolean
      */
-    protected function validateProductRating(array &$submitted, array $options)
+    protected function validateProductRating(array $options)
     {
-        if (empty($submitted['product_id'])) {
+        $value = $this->getSubmitted('product_id', $options);
+
+        if (empty($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field is required', $vars);
             $this->setError('product_id', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['product_id'])) {
+        if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('product_id', $error, $options);
             return false;
         }
 
-        $product = $this->product->get($submitted['product_id']);
+        $product = $this->product->get($value);
 
-        if (empty($product)) {
+        if (empty($product['product_id'])) {
             $vars = array('@name' => $this->language->text('Product'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('product_id', $error, $options);
@@ -95,27 +98,28 @@ class Rating extends BaseValidator
 
     /**
      * Validates a rating value
-     * @param array $submitted
      * @param array $options
      * @return boolean
      */
-    protected function validateValueRating(array &$submitted, array $options)
+    protected function validateValueRating(array $options)
     {
-        if (!isset($submitted['rating'])) {
+        $value = $this->getSubmitted('rating', $options);
+
+        if (!isset($value)) {
             $vars = array('@field' => $this->language->text('Rating'));
             $error = $this->language->text('@field is required', $vars);
             $this->setError('rating', $error, $options);
             return false;
         }
 
-        if (!is_numeric($submitted['rating'])) {
+        if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Rating'));
             $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('rating', $error, $options);
             return false;
         }
 
-        if ((float) $submitted['rating'] > 5) {
+        if ((float) $value > 5) {
             $error = $this->language->text('Rating must not be greater than @max', array('@max' => 5));
             $this->setError('rating', $error, $options);
             return false;

@@ -77,8 +77,12 @@ class Base
      * @param array $options
      * @return mixed
      */
-    protected function getSubmitted($key, $options = array())
+    protected function getSubmitted($key = null, $options = array())
     {
+        if(!isset($key)){
+            return $this->submitted;
+        }
+        
         $parents = $this->getParents($key, $options);
 
         if (!isset($parents)) {
