@@ -16,21 +16,6 @@
     <div class="panel-heading"><?php echo $this->text('Twig'); ?></div>
     <div class="panel-body">
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
-        <div class="col-md-4">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="settings[twig][status]" value="1"<?php echo empty($settings['twig']['status']) ? '' : ' checked'; ?>> <?php echo $this->text('Enabled'); ?>
-            </label>
-          </div>
-          <div class="help-block">
-            <div class="text-muted">
-            <?php echo $this->text('If enabled you can use Twig templates (with .twig extension) along with simple PHP templates. In this case .twig templates will take preference over .php templates'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Debug mode'); ?></label>
         <div class="col-md-4">
           <div class="checkbox">

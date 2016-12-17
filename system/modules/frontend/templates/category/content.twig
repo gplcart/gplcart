@@ -1,0 +1,52 @@
+{#
+    Displays main category content including images, child categories etc
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+{% if images is not empty %}
+<div class="row section images">
+  <div class="col-md-12">{{ images|raw }}</div>
+</div>
+{% endif %}
+{% if category.description_1 is not empty %}
+<div class="row section description-1">
+  <div class="col-md-10">{{ xss(category.description_1)|raw }}</div>
+</div>
+{% endif %}
+{% if children is not empty %}
+    {{ children|raw }}
+{% endif %}
+{% if products is empty %}
+    {% if children is empty %}
+    <div class="row section empty">
+      <div class="col-md-12">
+        {{ text('This category has no content') }}
+      </div>
+    </div>
+    {% endif %}
+{% else %}
+    {{ navbar|raw }}
+    {{ products|raw }}
+    {% if pager is not empty %}
+    <div class="row">
+      <div class="col-md-12 text-right">
+        {{ pager|raw }}
+      </div>
+    </div>
+    {% endif %}
+{% endif %}
+{% if category.description_2 is not empty %}
+<div class="row section description-2">
+  <div class="col-md-12">
+    {{ xss(category.description_2)|raw }}
+  </div>
+</div>
+{% endif %}

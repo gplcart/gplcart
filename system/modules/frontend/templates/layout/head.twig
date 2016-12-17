@@ -1,0 +1,33 @@
+{#
+    Displays <head> section
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+    
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+<head>
+  {% for tag in meta %}
+      <meta{{ attributes(tag)|raw }}>
+  {% endfor %}
+  <title>{{ head_title }}</title>
+  {% for href,data in css %}
+      <link href="{{ href }}" rel="stylesheet">
+  {% endfor %}
+  {% for href,data in js_top %}
+      {% if data.text is not empty %}
+          <script>{{ data.text|raw }}</script>
+      {% else %}
+          <script src="{{ href }}"></script>
+      {% endif %}
+  {% endfor %}
+  <!--[if lt IE 9]>
+  <script src="{{ base ~ 'files/assets/html5shiv/dist/html5shiv.min.js' }}"></script>
+  <script src="{{ base ~ 'files/assets/respond/dest/respond.min.js' }}"></script>
+  <![endif]-->
+</head>

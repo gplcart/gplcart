@@ -1,0 +1,30 @@
+{#
+    Displays static rating widget
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+{% if rating is not empty %}
+<div class="star-rating static" title="{{ text('@num out of @total stars', {'@num': rating, '@total': 5}) }}">
+  <div class="star-rating-wrap">
+    {% for i in 0..5 %}
+        {% if loop.revindex > rating %}
+            <span class="star-rating-ico fa fa-star-o"></span>
+        {% else %}
+            <span class="star-rating-ico fa fa-star"></span>
+        {% endif %}
+    {% endfor %}
+    {% if votes is not empty %}
+        <span class="votes"> ({{ text('@num votes', {'@num': votes}) }})</span>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+

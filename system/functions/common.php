@@ -88,6 +88,21 @@ function gplcart_valid_domain($domain)
 }
 
 /**
+ * Whether the URL is absolute, e.g starts with http://, https:// etc
+ * @param string $url
+ * @return boolean
+ */
+function gplcart_absolute_url($url)
+{
+    $pattern = "/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+    return (bool) preg_match($pattern, $url);
+}
+
+/**
  * Parses and extracts arguments from a string
  * @param string $string
  * @param string $pattern

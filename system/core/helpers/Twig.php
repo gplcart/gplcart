@@ -69,6 +69,7 @@ class Twig
         $this->addFunctionUid($object);
         $this->addFunctionStore($object);
         $this->addFunctionVarDump($object);
+        $this->addFunctionXss($object);
     }
 
     /**
@@ -89,7 +90,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::error()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionError($object)
     {
@@ -102,7 +103,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::token()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionToken($object)
     {
@@ -115,7 +116,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::text()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionText($object)
     {
@@ -128,7 +129,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::access()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionAccess($object)
     {
@@ -141,7 +142,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::url()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionUrl($object)
     {
@@ -154,7 +155,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::isSuperadmin()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionIsSuperadmin($object)
     {
@@ -167,7 +168,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::date()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionDate($object)
     {
@@ -180,7 +181,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::attributes()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionAttributes($object)
     {
@@ -193,7 +194,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::config()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionConfig($object)
     {
@@ -206,7 +207,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::summary()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionSummary($object)
     {
@@ -219,7 +220,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::uid()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionUid($object)
     {
@@ -232,7 +233,7 @@ class Twig
 
     /**
      * Adds function \core\Controller::store()
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionStore($object)
     {
@@ -245,16 +246,29 @@ class Twig
 
     /**
      * Adds debug function to see template variables \core\Controller::$data
-     * @param object $object
+     * @param \core\Controller $object
      */
     protected function addFunctionVarDump($object)
     {
         $function = new \Twig_SimpleFunction('var_dump', function ($key = null) use ($object) {
-            if (function_exists('dd')) {
-                dd($object->getData($key));
+            if (function_exists('ddd')) {
+                ddd($object->getData($key));
             } else {
-                var_dump($object->getData($key));
+                print_r($object->getData($key));
             }
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \core\Controller::xss()
+     * @param \core\Controller $object
+     */
+    protected function addFunctionXss($object)
+    {
+        $function = new \Twig_SimpleFunction('xss', function ($text, $tags = null, $protocols = null) use ($object) {
+            return $object->xss($text, $tags, $protocols);
         });
 
         $this->twig->addFunction($function);

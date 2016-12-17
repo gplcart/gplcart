@@ -67,12 +67,7 @@ class Url
      */
     public function isAbsolute($url)
     {
-        $pattern = "/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-        return (bool) preg_match($pattern, $url);
+        return gplcart_absolute_url($url);
     }
 
     /**
@@ -86,23 +81,25 @@ class Url
     public function get($path = '', $options = array(), $absolute = false,
             $exclude_langcode = false)
     {
+        $pass_absolute = false;
 
         if (!empty($path)) {
-            $url = $this->request->base($exclude_langcode) . trim($path, '/');
+            if ($absolute && $this->isAbsolute($path)) {
+                $url = $path;
+                $pass_absolute = true;
+            } else {
+                $url = $this->request->base($exclude_langcode) . trim($path, '/');
+            }
         } else {
             $url = $this->request->urn();
         }
 
         $url = strtok($url, '?');
 
-        if ($absolute) {
-            if ($this->isAbsolute($url)) {
-                $url = $path;
-            } else {
-                $host = $this->request->host();
-                $scheme = $this->request->scheme();
-                $url = "$scheme$host$url";
-            }
+        if ($absolute && !$pass_absolute) {
+            $host = $this->request->host();
+            $scheme = $this->request->scheme();
+            $url = "$scheme$host$url";
         }
 
         $url = rtrim($url, '/');

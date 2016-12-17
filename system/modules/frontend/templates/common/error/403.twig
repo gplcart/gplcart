@@ -1,0 +1,22 @@
+{#
+    Displays 403 Access Denied page
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+    
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+
+<div class="row">
+  <div class="col-md-3"></div>
+  <div class="col-md-6 text-center">
+    <h1>{{ text('403 - Permission denied') }}</h1>
+    <p>{{ text('You do not have permission to retrieve the URL or link you requested') }}</p>
+  </div>
+  <div class="col-md-3"></div>
+</div>

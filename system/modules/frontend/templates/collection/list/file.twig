@@ -1,0 +1,31 @@
+{#
+    Displays list of file collection items
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+    
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+{% if files is not empty %}
+<div class="row section collection collection-file">
+  <div class="col-md-12">
+    <ul class="slider" data-slider="true" data-slider-settings='{
+        "item": 2,
+        "loop": true,
+        "auto": false,
+        "pager": false,
+        "autoWidth": true,
+        "pauseOnHover": true
+        }'>
+      {% for file in files %}
+        <li>{{ file.rendered|raw }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}

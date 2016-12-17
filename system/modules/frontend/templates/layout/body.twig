@@ -1,0 +1,257 @@
+{#
+    Main site content
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+<body{{ attributes({'class': body_classes})|raw }}>
+  <div class="container wrapper">
+    <div class="row">
+
+      {# Top navbar #}
+      <nav class="navbar navbar-inverse navbar-static-top first">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">{{ text('Toggle navigation') }}</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ base }}">{{ store('data.title')|striptags }}</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="cart">
+                <a rel="nofollow" id="cart-link" href="{{ url('checkout') }}">
+                  {% if cart_quantity.total is not empty %}
+                      <span class="badge" id="cart-quantity">{{ cart_quantity.total }}</span>
+                  {% else %}
+                      <span class="badge" id="cart-quantity" style="display:none;"></span>
+                  {% endif %}
+                  <i class="fa fa-shopping-cart"></i>
+                </a>
+              </li>
+              <li class="wishlist">
+                <a rel="nofollow" id="wishlist-link" href="{{ url('wishlist') }}">
+                  {% if wishlist_quantity is not empty %}
+                  <span class="badge" id="wishlist-quantity">
+                    {{ wishlist_quantity }}
+                  </span>
+                  <i class="fa fa-heart"></i>
+                  {% else %}
+                  <span class="badge" id="wishlist-quantity"></span>
+                  <i class="fa fa-heart"></i>
+                  {% endif %}
+                </a>
+              </li>
+              <li class="compare">
+                {% if compare_content is not empty %}
+                <a rel="nofollow" id="compare-link" href="{{ url('compare') }}">
+                  <span class="badge" id="compare-quantity">
+                    {{ compare_content.length }}
+                  </span>
+                  <i class="fa fa-balance-scale"></i>
+                </a>
+                {% else %}
+                <span class="navbar-text">
+                  <span class="badge" id="compare-quantity" style="display:none;"></span>
+                  <i class="fa fa-balance-scale"></i>
+                </span>
+                {% endif %}
+              </li>
+              {% if uid() %}
+              <li class="dropdown account">
+                <a href="{{ url('account/' ~ uid()) }}" class="dropdown-toggle " data-toggle="dropdown">
+                  <i class="fa fa-user"></i></a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li>
+                    <a href="{{ url('account/' ~ uid()) }}">
+                      {{ text('Orders') }}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{{ url('account/' ~ uid() ~ '/wishlist') }}">
+                      {{ text('Wishlist') }}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{{ url('account/' ~ uid() ~ '/address') }}">
+                      {{ text('Addresses') }}
+                    </a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="{{ url('logout') }}">
+                      <i class="fa fa-sign-out"></i> {{ text('Log out') }}
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              {% else %}
+              <li>
+                <a rel="nofollow" href="{{ url('login') }}"><i class="fa fa-user"></i></a>
+              </li>
+              {% endif %}
+            </ul>
+            <form class="navbar-form navbar-left search" action="{{ url('search') }}">
+              <div class="input-group">
+                <input type="search" class="form-control" autocomplete="off" name="q" value="{{ query.q | default('') }}" placeholder="{{ text('Enter search keyword...') }}">
+                <i class="fa fa-spinner fa-spin hidden"></i>
+                <span class="input-group-btn">
+                  <button class="btn btn-default">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </span>
+              </div>
+            </form>
+            {% if store('data.phone.0') %}
+            <p class="nav navbar-text">
+            <i class="fa fa-phone"></i> {{ store('data.phone.0') }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+
+      {# Top region #}
+      {% if region_top is not empty %}
+      <nav class="navbar navbar-static-top second">
+        <div class="container-fluid region top">
+          {{ region_top|raw }}
+        </div>
+      </nav>
+      {% endif %}
+    </div>
+
+    {# Breadcrumbs #}
+    {% if breadcrumb is not empty %}
+    <div class="breadcrumb">
+      <ol class="breadcrumb">
+        {% for item in breadcrumb %}
+            {% if item.url is empty %}
+                <li>{{ item.text }}</li>
+                {% else %}
+                <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if page_title is not empty %}
+            <li><h1>{{ page_title|e('html') }}</h1></li>
+        {% endif %}
+      </ol>
+    </div>
+    {% endif %}
+
+    <div class="row main">
+
+      {# Left column #}
+      {% if region_left is not empty %}
+      <div class="col-md-2">
+        <div class="region left">{{ region_left|raw }}</div>
+      </div>
+      {% endif %}
+
+      {# Define content column width depending on enabled left/right columns #}
+      {% set region_content_class = 'col-md-12' %}
+
+      {# Only left column enabled #}
+      {% if region_left is not empty and region_right is empty %}
+          {% set region_content_class = 'col-md-10' %}
+      {% endif %}
+
+      {# Only right column enabled #}
+      {% if region_left is empty and region_right is not empty %}
+          {% set region_content_class = 'col-md-10' %}
+      {% endif %}
+
+      {# Both left and right columns are enabled #}
+      {% if region_left is not empty and region_right is not empty %}
+          {% set region_content_class = 'col-md-8' %}
+      {% endif %}
+
+      <div class="{{ region_content_class }}">
+
+        {# Messages #}
+        {% if messages is not empty %}
+        <div class="row" id="message">
+          <div class="col-md-12">
+            {% for type,strings in messages %}
+            <div class="alert alert-{{ type }} alert-dismissible fade in">
+              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
+              {% for string in strings %}
+              {{ string|escape('html') }}<br>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {# Content region #}
+        {% if region_content is not empty %}
+        <div class="region content">{{ region_content|raw }}</div>
+        {% endif %}
+
+        {# Bottom region #}
+        {% if region_bottom is not empty %}
+            <div class="region bottom">{{ region_bottom|raw }}</div>
+        {% endif %}
+      </div>
+
+      {# Right column #}
+      {% if region_right is not empty %}
+      <div class="col-md-2">
+        <div class="region right">{{ region_right|raw }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Footer #}
+  <div class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <p>
+            {{ store('data.owner') }}
+            &copy; 2015 - {{ 'now'|date('Y') }} {{ text('All Rights Reserved') }}
+          <ul class="list-unstyled">
+            {% if store('data.address') %}
+            <li><i class="fa fa-map-marker"></i> {{ xss(store('data.address')) }}</li>
+            {% endif %}
+            {% if store('data.phone') %}
+            <li><i class="fa fa-phone"></i> {{ store('data.phone')|join(', ') }}</li>
+            {% endif %}
+            {% if store('data.fax') %}
+            <li><i class="fa fa-fax"></i> {{ store('data.fax')|join(', ') }}</li>
+            {% endif %}
+          </ul>
+          <p class="small text-muted">Powered by <a href="http://gplcart.com">GPL Cart</a></p>
+        </div>
+        <div class="col-md-4">
+          <ul class="list-unstyled">
+            <li>
+              <a rel="nofollow" href="{{ url('about.html') }}">{{ text('About us') }}</a>
+            </li>
+            <li>
+              <a rel="nofollow" href="{{ url('contact.html') }}">{{ text('Contact us') }}</a>
+            </li>
+            <li>
+              <a rel="nofollow" href="{{ url('terms.html') }}">{{ text('Terms and conditions') }}</a>
+            </li>
+            <li>
+              <a rel="nofollow" href="{{ url('faq.html') }}">{{ text('Questions and answers') }}</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-2"></div>
+      </div>
+    </div>
+  </div>
+</body>

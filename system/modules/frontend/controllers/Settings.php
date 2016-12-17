@@ -127,7 +127,6 @@ class Settings extends BackendController
      */
     protected function validateSettings()
     {
-        $this->setSubmittedBool('twig.status');
         $this->setSubmittedBool('twig.debug');
         $this->setSubmittedBool('twig.auto_reload');
         $this->setSubmittedBool('twig.strict_variables');

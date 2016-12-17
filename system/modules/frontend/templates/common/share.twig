@@ -1,0 +1,37 @@
+{#
+    Displays simple "Share this" widget
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+    
+    @package GPL Cart core
+    @category theme
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+#}
+<div class="btn-group btn-group-xs">
+  <button type="button" class="btn btn-default"><i class="fa fa-share-alt"></i> {{ text('Share') }}</button>
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">{{ text('Toggle dropdown') }}</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <a rel="nofollow" target="_blank" href="{{ url('http://www.facebook.com/sharer.php', {'u': url}, true) }}">
+        <i class="fa fa-facebook-official"></i> {{ text('Facebook') }}
+      </a>
+    </li>
+    <li>
+      <a rel="nofollow" target="_blank" href="{{ url('https://plus.google.com/share', {'url': url}, true) }}">
+        <i class="fa fa-google-plus-square"></i> {{ text('Google+') }}
+      </a>
+    </li>
+    <li>
+      <a rel="nofollow" target="_blank" href="{{ url('https://twitter.com/share', {'url': url, 'text': title}, true) }}">
+        <i class="fa fa-twitter-square"></i> {{ text('Twitter') }}
+      </a>
+    </li>
+  </ul>
+</div>

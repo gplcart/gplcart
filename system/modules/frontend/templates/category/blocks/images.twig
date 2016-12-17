@@ -1,12 +1,21 @@
 {#
+    List of category images
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+    
     @package GPL Cart core
+    @category theme
     @author Iurii Makukh <gplcart.software@gmail.com>
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
-
-    To see available variables: {{ var_dump() }}
 #}
 {% if category.images is not empty %}
+{#
+    data-slider-settings attribute contains JSON with JQuery lightSlider configuration.
+    See all available options http://sachinchoolur.github.io/lightslider/settings.html
+#}
 <ul class="list-unstyled" data-slider="true" data-slider-settings='{
     "gallery":false,
     "item":1,

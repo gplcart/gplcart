@@ -1,27 +1,25 @@
 {#
-    List of child categories
+    Displays list of page collection items
 
     To see available variables:
         - without enabling Twig debug mode: {{ var_dump() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
-
+    
     @package GPL Cart core
     @category theme
     @author Iurii Makukh <gplcart.software@gmail.com>
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
 #}
-{% if children is not empty %}
-<div class="row section">
-  {% for child in children %}
-  <div class="col-md-2">
-    <a href="{{ child.url }}">
-      {% if child.thumb is not empty %}
-      <img class="img-responsive thumbnail" src="{{ child.thumb }}" alt="{{ child.title }}">
-      {% endif %}
-      <div class="clearfix">{{ child.title }}</div>
-    </a>
+{% if pages is not empty %}
+<div class="panel panel-default collection collection-page">
+  <div class="panel-heading">{{ title }}</div>
+  <div class="panel-body">
+    <div class="row">
+      {% for page in pages %}
+        <li>{{ page.rendered|raw }}</li>
+      {% endfor %}
+    </div>
   </div>
-  {% endfor %}
 </div>
 {% endif %}
