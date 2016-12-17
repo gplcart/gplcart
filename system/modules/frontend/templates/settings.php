@@ -4,7 +4,7 @@
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
- * 
+ *
  * To see available variables: <?php print_r(get_defined_vars()); ?>
  * To see the current controller object: <?php print_r($this); ?>
  * To call a controller method: <?php $this->exampleMethod(); ?>
@@ -12,6 +12,84 @@
 ?>
 <form method="post" id="edit-module-settings" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
+  <div class="panel panel-default">
+    <div class="panel-heading"><?php echo $this->text('Twig'); ?></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+        <div class="col-md-4">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="settings[twig][status]" value="1"<?php echo empty($settings['twig']['status']) ? '' : ' checked'; ?>> <?php echo $this->text('Enabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <div class="text-muted">
+            <?php echo $this->text('If enabled you can use Twig templates (with .twig extension) along with simple PHP templates. In this case .twig templates will take preference over .php templates'); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Debug mode'); ?></label>
+        <div class="col-md-4">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="settings[twig][debug]" value="1"<?php echo empty($settings['twig']['debug']) ? '' : ' checked'; ?>> <?php echo $this->text('Enabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <div class="text-muted">
+            <?php echo $this->text('If enabled you can use native Twig debugger to see available variables in templates {{ dump }}. Otherwise use built-in tool {{ var_dump }} which is probably better'); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Auto reload'); ?></label>
+        <div class="col-md-4">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="settings[twig][auto_reload]" value="1"<?php echo empty($settings['twig']['auto_reload']) ? '' : ' checked'; ?>> <?php echo $this->text('Enabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <div class="text-muted">
+            <?php echo $this->text('Recompile Twig templates whenever their source code changed. Should be disabled in production!'); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Strict variables'); ?></label>
+        <div class="col-md-4">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="settings[twig][strict_variables]" value="1"<?php echo empty($settings['twig']['strict_variables']) ? '' : ' checked'; ?>> <?php echo $this->text('Enabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <div class="text-muted">
+            <?php echo $this->text('If enabled Twig will throw exceptions on invalid variables. Should be disabled in production!'); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label">
+          <?php echo $this->text('Cache'); ?>
+        </label>
+        <div class="col-md-3">
+          <input name="settings[twig][cache]" class="form-control" value="<?php echo $this->escape($settings['twig']['cache']); ?>">
+          <div class="help-block">
+            <div class="text-muted">
+            <?php echo $this->text('A folder within the module directory to keep compiled Twig templates. Recommended name - "cache". If the folder does not exist, it will be created. If not specified, caching will be disabled, which is bad for performance'); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Options'); ?></div>
     <div class="panel-body">

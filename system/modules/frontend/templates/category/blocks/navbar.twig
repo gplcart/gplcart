@@ -1,0 +1,48 @@
+{#
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+
+    To see available variables:
+        - without enabling Debug mode: {{ var_dump() }}
+        - using native TWIG debugger (Debug mode must be enabled): {{ dump() }}
+#}
+<nav class="navbar category navbar-default">
+  <div class="container-fluid">
+    <span class="navbar-text navbar-left">
+      {{ text('Showing @num from @total', {'@num': quantity, '@total': total}) }}
+    </span>
+    <form class="navbar-form navbar-right" onchange="$(this).submit();">
+      <span class="form-control-static">{{ text('Sort') }}</span>
+      <select name="sort" class="form-control input-sm">
+        <option value="price-asc"{{ (sort == 'price-asc') ? ' selected' : '' }}>
+          {{ text('Low prices first') }}
+        </option>
+        <option value="price-desc"{{ (sort == 'price-desc') ? ' selected' }}>
+          {{ text('High prices first') }}
+        </option>
+        <option value="title-asc"{{ (sort == 'title-asc') ? ' selected' : '' }}>
+          {{ text('Title A-Z') }}
+        </option>
+        <option value="title-desc"{{ (sort == 'title-desc') ? ' selected' : '' }}>
+          {{ text('Title Z-A') }}
+        </option>
+      </select>
+      <div class="btn-group btn-group-sm" data-toggle="buttons">
+        <label class="btn btn-default{{ (view == 'list') ? ' active' : '' }}">
+          <input type="radio" name="view" value="list"{{ (view == 'list') ? ' checked' : '' }}><i class="fa fa-th-list"></i>
+        </label>
+        <label class="btn btn-default{{ (view == 'grid') ? ' active' : '' }}">
+          <input type="radio" name="view" value="grid"{{ (view == 'grid') ? ' checked' : '' }}><i class="fa fa-th-large"></i>
+        </label>
+      </div>
+      {% for key,value in query %}
+      {% if key not in ['sort', 'view'] %}
+      <input type="hidden" name="{{ key }}" value="{{ value }}">
+      {% endif %}
+      {% endfor %}
+      <button class="btn btn-default hidden-js">{{ text('Go') }}</button>
+    </form>
+  </div>
+</nav>

@@ -69,7 +69,7 @@ class User extends BaseValidator
     {
         $this->submitted = &$submitted;
 
-        $this->validateEmailUser($options);
+        $this->validateEmail($options);
         $this->validatePasswordUser($options);
 
         return $this->getResult();
@@ -91,7 +91,7 @@ class User extends BaseValidator
         if (isset($password)) {
             $this->validatePasswordLengthUser($submitted);
         } else if (isset($email)) {
-            $this->validateEmailUser($submitted);
+            $this->validateEmail($submitted);
             $this->validateEmailExistsUser($submitted);
         }
 

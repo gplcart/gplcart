@@ -11,9 +11,12 @@ namespace modules\frontend\controllers;
 
 use core\models\Image as ImageModel;
 use core\models\Module as ModuleModel;
-use modules\frontend\Frontend as ModulesFrontend;
+use modules\frontend\Frontend as FrontendModule;
 use core\controllers\backend\Controller as BackendController;
 
+/**
+ * Handles incoming requests and outputs data related to Frontend module settings
+ */
 class Settings extends BackendController
 {
 
@@ -39,10 +42,10 @@ class Settings extends BackendController
      * Constructor
      * @param ImageModel $image
      * @param ModuleModel $module
-     * @param ModulesFrontend $frontend
+     * @param FrontendModule $frontend
      */
     public function __construct(ImageModel $image, ModuleModel $module,
-            ModulesFrontend $frontend)
+            FrontendModule $frontend)
     {
         parent::__construct();
 
@@ -56,13 +59,13 @@ class Settings extends BackendController
      */
     public function editSettings()
     {
-        $this->submitSettings();
-
         $imagestyles = $this->image->getStyleNames();
         $settings = $this->config->module('frontend');
 
         $this->setData('settings', $settings);
         $this->setData('imagestyles', $imagestyles);
+
+        $this->submitSettings();
 
         $this->setTitleEditSettings();
         $this->setBreadcrumbEditSettings();
@@ -71,6 +74,7 @@ class Settings extends BackendController
 
     /**
      * Saves the submitted settings
+     * @return null
      */
     protected function submitSettings()
     {
@@ -79,7 +83,7 @@ class Settings extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('settings');
@@ -88,6 +92,8 @@ class Settings extends BackendController
         if (!$this->hasErrors('settings')) {
             $this->updateSettings();
         }
+
+        return null;
     }
 
     /**
@@ -121,6 +127,11 @@ class Settings extends BackendController
      */
     protected function validateSettings()
     {
+        $this->setSubmittedBool('twig.status');
+        $this->setSubmittedBool('twig.debug');
+        $this->setSubmittedBool('twig.auto_reload');
+        $this->setSubmittedBool('twig.strict_variables');
+
         $limit = $this->getSubmitted('catalog_limit');
 
         if (!is_numeric($limit) || strlen($limit) > 2) {
@@ -161,9 +172,8 @@ class Settings extends BackendController
      */
     protected function setTitleEditSettings()
     {
-        $title = $this->text('Edit %module settings', array(
-            '%module' => $this->text('Frontend')));
-
+        $vars = array('%module' => $this->text('Frontend'));
+        $title = $this->text('Edit %module settings', $vars);
         $this->setTitle($title);
     }
 

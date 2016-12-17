@@ -40,53 +40,64 @@ class Front extends FrontendController
      */
     public function indexFront()
     {
-        $this->setRegionBannerFront();
-        $this->setRegionFeaturedFront();
-        $this->setRegionPageFront();
+        $this->setDataCollectionBannersFront();
+        $this->setDataCollectionProductsFront();
+        $this->setDataCollectionPagesFront();
+        
+        $this->setRegionContentFront();
 
         $this->setTitleIndexFront();
         $this->outputIndexFront();
+    }
+    
+    /**
+     * Adds main content to content region
+     */
+    protected function setRegionContentFront()
+    {
+        $html = $this->render('front/content', $this->data);
+        $this->setRegion('region_content', $html);
     }
 
     /**
      * Adds a block with featured products on the front page
      */
-    protected function setRegionFeaturedFront()
+    protected function setDataCollectionProductsFront()
     {
         $collection_id = $this->store->config('collection_featured');
 
         if (!empty($collection_id)) {
             $options = array('collection_id' => $collection_id);
             $html = $this->renderCollectionProduct($options);
-            $this->setRegion('region_content', $html);
+            $this->setData('collection_products', $html);
         }
     }
 
     /**
      * Adds a block with banners on the front page
      */
-    protected function setRegionBannerFront()
+    protected function setDataCollectionBannersFront()
     {
         $collection_id = $this->store->config('collection_banner');
 
         if (!empty($collection_id)) {
             $options = array('collection_id' => $collection_id);
             $html = $this->renderCollectionFile($options);
-            $this->setRegion('region_content', $html);
+            $this->setData('collection_banners', $html);
         }
     }
 
     /**
      * Adds a block with pages on the front page
      */
-    protected function setRegionPageFront()
+    protected function setDataCollectionPagesFront()
     {
         $collection_id = $this->store->config('collection_page');
 
         if (!empty($collection_id)) {
             $options = array('collection_id' => $collection_id);
             $html = $this->renderCollectionPage($options);
-            $this->setRegion('region_content', $html);
+            $this->setData('collection_pages', $html);
         }
     }
 
@@ -104,7 +115,7 @@ class Front extends FrontendController
      */
     protected function outputIndexFront()
     {
-        $this->output('front/front');
+        $this->output();
     }
 
 }

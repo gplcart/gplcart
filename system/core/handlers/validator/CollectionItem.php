@@ -83,12 +83,14 @@ class CollectionItem extends BaseValidator
      */
     public function collectionItem(array &$submitted, array $options = array())
     {
-        $this->validateStatus($submitted);
-        $this->validateWeight($submitted);
-        $this->validateUrlCollectionItem($submitted);
-        $this->validateCollectionCollectionItem($submitted);
-        $this->validateValueCollectionItem($submitted);
-        $this->validateEntityCollectionItem($submitted);
+        $this->submitted = &$submitted;
+        
+        $this->validateStatus($options);
+        $this->validateWeight($options);
+        $this->validateUrlCollectionItem($options);
+        $this->validateCollectionCollectionItem($options);
+        $this->validateValueCollectionItem($options);
+        $this->validateEntityCollectionItem($options);
 
         return $this->getResult();
     }

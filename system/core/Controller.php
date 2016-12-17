@@ -155,6 +155,12 @@ class Controller
     protected $current_device;
 
     /**
+     * Array of the current theme
+     * @var array
+     */
+    protected $current_theme = array();
+
+    /**
      * Array of the current theme module info
      * @var array
      * @see \modules\example\Example::info()
@@ -268,6 +274,12 @@ class Controller
      * @var \core\helpers\Twig $twig
      */
     protected $twig;
+
+    /**
+     * Whether the current theme supports TWIG templates
+     * @var boolean
+     */
+    protected $twig_enabled = false;
 
     /**
      * Logger class instance
@@ -388,7 +400,7 @@ class Controller
         $path = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
 
         $extensions = array('php');
-        if (isset($this->theme_settings['twig'])) {
+        if ($this->twig_enabled) {
             array_unshift($extensions, 'twig');
         }
 
@@ -720,15 +732,18 @@ class Controller
             $this->response->error404();
         }
 
-        $theme_data = $this->config->getModuleData($this->theme);
+        $this->current_theme = $this->config->getModuleData($this->theme);
 
-        if (empty($theme_data['info'])) {
+        if (empty($this->current_theme['info'])) {
             $this->response->error404();
         }
 
         $this->theme_settings = $this->config->module($this->theme, null, array());
 
-        if (isset($this->theme_settings['twig'])) {
+        if (!empty($this->theme_settings['twig']['status'])) {
+
+            $this->twig_enabled = true;
+
             /* @var $twig \core\helpers\Twig */
             $this->twig = Container::instance('core\\helpers\\Twig');
         }
@@ -747,6 +762,24 @@ class Controller
     public function setTheme($theme)
     {
         $this->theme = $theme;
+    }
+
+    /**
+     * Returns a module ID of the current theme
+     * @return string
+     */
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
+    /**
+     * Returns an array of the current theme data
+     * @return array
+     */
+    public function theme()
+    {
+        return $this->current_theme;
     }
 
     /**
@@ -861,12 +894,16 @@ class Controller
 
     /**
      * Returns a value from an array of template variables
-     * @param string|array $key
+     * @param string|array|null $key
      * @param mixed
      * @return mixed
      */
-    public function getData($key, $default = null)
+    public function getData($key = null, $default = null)
     {
+        if (!isset($key)) {
+            return $this->data;
+        }
+
         $result = gplcart_array_get_value($this->data, $key);
         return isset($result) ? $result : $default;
     }
@@ -1342,6 +1379,10 @@ class Controller
         $directory = implode('/', $parts);
 
         $this->twig->set($directory, $this, $options);
+
+        // Make global $this->data available in every .twig template
+        $data = gplcart_array_merge($this->data, $data);
+
         return $this->twig->render($file, $data);
     }
 
@@ -1407,7 +1448,7 @@ class Controller
     {
         $allowed = array(
             'token', 'base', 'lang',
-            'lang_region', 'urn', 'uri', 'path');
+            'lang_region', 'urn', 'uri', 'path', 'query');
 
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, -800);
@@ -1473,6 +1514,7 @@ class Controller
         $this->data['path'] = $this->path;
         $this->data['base'] = $this->base;
         $this->data['token'] = $this->token;
+        $this->data['query'] = $this->query;
         $this->data['lang'] = empty($this->langcode) ? 'en' : $this->langcode;
 
         if (!empty($this->langcode) && strpos($this->langcode, '_') === false) {

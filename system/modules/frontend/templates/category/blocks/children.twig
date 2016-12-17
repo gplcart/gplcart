@@ -1,0 +1,22 @@
+{#
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+
+    To see available variables: {{ var_dump() }}
+#}
+{% if children is not empty %}
+<div class="row section">
+  {% for child in children %}
+      <div class="col-md-2">
+        <a href="{{ child.url }}">
+          {% if child.thumb is not empty %}
+          <img class="img-responsive thumbnail" src="{{ child.thumb }}" alt="{{ child.title }}">
+          {% endif %}
+          <div class="clearfix">{{ child.title }}</div>
+        </a>
+      </div>
+  {% endfor %}
+</div>
+{% endif %}

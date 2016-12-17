@@ -14,7 +14,6 @@ namespace modules\frontend;
  */
 class Frontend
 {
-
     /**
      * Module info
      * @return array
@@ -94,7 +93,11 @@ class Frontend
             'image_style_product_list' => 3,
             'image_style_cart' => 3,
             'image_style_option' => 1,
-            'image_style_collection_banner' => 7
+            'image_style_collection_banner' => 7,
+            'twig' => array(
+                'status' => true,
+                'cache' => 'cache'
+            )
         );
     }
 

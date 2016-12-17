@@ -1,0 +1,24 @@
+{#
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+
+    To see available variables: {{ var_dump() }}
+#}
+{% if category.images is not empty %}
+<ul class="list-unstyled" data-slider="true" data-slider-settings='{
+    "gallery":false,
+    "item":1,
+    "loop":true,
+    "thumbItem":9,
+    "slideMargin":0,
+    "currentPagerPosition":"left"
+    }'>
+  {% for image in category.images %}
+      <li class="thumb" data-thumb="{{ image.thumb }}" data-src="{{ image.url }}">
+        <img src="{{ image.thumb }}">
+      </li>
+  {% endfor %}
+</ul>
+{% endif %}

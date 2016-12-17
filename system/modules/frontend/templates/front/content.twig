@@ -1,0 +1,17 @@
+{#
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+
+    To see available variables: {{ var_dump() }}
+#}
+{% if collection_banners is not empty %}
+    {{collection_banners|raw}}
+{% endif %}
+{% if collection_products is not empty %}
+    {{collection_products|raw}}
+{% endif %}
+{% if collection_pages is not empty %}
+    {{collection_pages|raw}}
+{% endif %}

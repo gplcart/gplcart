@@ -39,13 +39,22 @@ class Twig
     /**
      * Sets up Twig
      * @param string $path
-     * @param object $object
+     * @param \core\Controller $object
      * @param array $options
      */
     public function set($path, $object, array $options = array())
     {
+        if (!empty($options['cache'])) {
+            $theme = $object->getTheme();
+            $options['cache'] = GC_MODULE_DIR . "/$theme/{$options['cache']}";
+        }
+
         $this->loader = new \Twig_Loader_Filesystem($path);
         $this->twig = new \Twig_Environment($this->loader, $options);
+
+        if (!empty($options['debug'])) {
+            $this->twig->addExtension(new \Twig_Extension_Debug());
+        }
 
         $this->addFunctionUrl($object);
         $this->addFunctionDate($object);
@@ -59,6 +68,7 @@ class Twig
         $this->addFunctionIsSuperadmin($object);
         $this->addFunctionUid($object);
         $this->addFunctionStore($object);
+        $this->addFunctionVarDump($object);
     }
 
     /**
@@ -228,6 +238,23 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('store', function ($item = null) use ($object) {
             return $object->store($item);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds debug function to see template variables \core\Controller::$data
+     * @param object $object
+     */
+    protected function addFunctionVarDump($object)
+    {
+        $function = new \Twig_SimpleFunction('var_dump', function ($key = null) use ($object) {
+            if (function_exists('dd')) {
+                dd($object->getData($key));
+            } else {
+                var_dump($object->getData($key));
+            }
         });
 
         $this->twig->addFunction($function);

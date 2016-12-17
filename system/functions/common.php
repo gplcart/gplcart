@@ -142,5 +142,11 @@ function gplcart_timezones()
  */
 function gplcart_require_library($path)
 {
-    require_once GC_LIBRARY_DIR . "/$path";
+    $file = GC_LIBRARY_DIR . "/$path";
+
+    if (!is_readable($file)) {
+        throw new \RuntimeException("Could not read library file $file");
+    }
+
+    require_once $file;
 }

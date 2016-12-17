@@ -247,7 +247,7 @@ class Controller extends BaseController
             'menu_max_depth' => $max_depth
         );
 
-        return $this->render('category/menu', $data);
+        return $this->render('category/blocks/menu', $data);
     }
 
     /**

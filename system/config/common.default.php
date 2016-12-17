@@ -123,7 +123,6 @@ $config = array();
 # $config['order_complete_message'] = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
 # $config['order_complete_message_anonymous'] = 'Thank you for your order! Order ID: !order_id, status: !status';
 # $config['cli_disabled'] = 0;
-
 /**
  * End of configurable settings
  * The settings below are appended automatically during installation.

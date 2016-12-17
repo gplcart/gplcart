@@ -87,7 +87,7 @@ class Category extends FrontendController
      */
     protected function setRegionContentCategory()
     {
-        $html = $this->render('category/category', $this->data);
+        $html = $this->render('category/content', $this->data);
         $this->setRegion('region_content', $html);
     }
 
@@ -131,7 +131,7 @@ class Category extends FrontendController
             'sort' => "{$query['sort']}-{$query['order']}"
         );
 
-        $html = $this->render('category/navbar', $options);
+        $html = $this->render('category/blocks/navbar', $options);
         $this->setData('navbar', $html);
     }
 
@@ -156,7 +156,7 @@ class Category extends FrontendController
 
         $this->setItemThumb($category, $options);
 
-        $html = $this->render('category/images', array('category' => $category));
+        $html = $this->render('category/blocks/images', array('category' => $category));
         $this->setData('images', $html);
     }
 
@@ -176,7 +176,7 @@ class Category extends FrontendController
      */
     protected function setDataChildrenCategory($categories)
     {
-        $html = $this->render('category/children', array('children' => $categories));
+        $html = $this->render('category/blocks/children', array('children' => $categories));
         $this->setData('children', $html);
     }
 
