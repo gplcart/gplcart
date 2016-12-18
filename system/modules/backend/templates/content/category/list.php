@@ -41,7 +41,7 @@
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
       <?php if ($this->access('import') && $this->access('file_upload')) { ?>
-      <a class="btn btn-default import" href="<?php echo $this->url('admin/tool/import/category'); ?>">
+      <a class="btn btn-default import" href="<?php echo $this->url('admin/tool/import'); ?>">
         <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
       </a>
       <?php } ?>
@@ -118,7 +118,7 @@
       <?php echo $this->text('Add'); ?>
     </a>
     <?php if ($this->access('import') && $this->access('file_upload')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import/category'); ?>">
+    <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import'); ?>">
       <?php echo $this->text('Import'); ?>
     </a>
     <?php } ?>

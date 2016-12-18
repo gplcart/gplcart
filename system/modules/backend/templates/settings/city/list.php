@@ -40,11 +40,6 @@
       <a href="<?php echo $this->url("admin/settings/city/add/{$country['code']}/{$state['state_id']}"); ?>" class="btn btn-default add">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
-      <?php if ($this->access('import')) { ?>
-      <a href="<?php echo $this->url('admin/tool/import/city'); ?>" class="btn btn-default add">
-        <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
-      </a>
-      <?php } ?>
       <?php } ?>
     </div>
   </div>
@@ -130,11 +125,6 @@
     <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/city/add/{$country['code']}/{$state['state_id']}"); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
-    <?php if ($this->access('import')) { ?>
-    <a class="btn btn-default import" href="<?php echo $this->url('admin/tool/import/city'); ?>">
-      <?php echo $this->text('Import'); ?>
-    </a>
-    <?php } ?>
     <?php } ?>
   </div>
 </div>

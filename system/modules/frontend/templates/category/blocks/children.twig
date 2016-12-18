@@ -17,7 +17,7 @@
   <div class="col-md-2">
     <a href="{{ child.url }}">
       {% if child.thumb is not empty %}
-      <img class="img-responsive thumbnail" src="{{ child.thumb }}" alt="{{ child.title }}">
+      <img class="img-responsive thumbnail" src="{{ child.thumb }}" alt="{{ child.title }}" title="{{ child.title }}">
       {% endif %}
       <div class="clearfix">{{ child.title }}</div>
     </a>

@@ -1,29 +1,29 @@
 {#
-    Nested menu that represents the current category tree
+    Displays a menu that represents the current category tree
 
     To see available variables:
         - without enabling Twig debug mode: {{ var_dump() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
-    
+
     @package GPL Cart core
-    @category theme
     @author Iurii Makukh <gplcart.software@gmail.com>
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
 #}
 {% if tree is not empty %}
-<ul class="{{ menu_class }}">
-  {% for item in tree %}
-  {% if menu_max_depth is defined or item.depth <= menu_max_depth %}
-  <li class="depth-{{ item.depth }}{{ item.active ? ' active' : '' }}">
-    {{ item.indentation|raw }}
-    {% if item.active is empty %}
-    <a title="{{ item.title }}" href="{{ item.url }}">{{ item.title }}</a>
-    {% else %}
-    <a class="disabled">{{ item.title }}</a>
-    {% endif %}
-  </li>
-  {% endif %}
-  {% endfor %}
-</ul>
+    <ul class="{{ menu_class }}">
+      {% for item in tree %}
+          {% if menu_max_depth is empty or item.depth <= menu_max_depth %}
+              <li class="depth-{{ item.depth }}{{ item.active ? ' active' : '' }}">
+                {{ item.indentation|raw }}
+                {% if item.active is empty %}
+                    <a title="{{ item.title }}" href="{{ item.url }}">{{ item.title }}</a>
+                {% else %}
+                    <a class="disabled">{{ item.title }}</a>
+                {% endif %}
+              </li>
+          {% endif %}
+      {% endfor %}
+    </ul>
 {% endif %}

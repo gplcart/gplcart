@@ -175,7 +175,7 @@ class State extends BaseValidator
     {
         $value = $this->getSubmitted('zone_id', $options);
 
-        if (!isset($value)) {
+        if (empty($value)) {
             return null;
         }
 

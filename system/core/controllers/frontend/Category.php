@@ -201,8 +201,6 @@ class Category extends FrontendController
      */
     protected function outputIndexCategory()
     {
-        // No content template specified
-        // We set region_content above
         $this->output();
     }
 
@@ -234,7 +232,8 @@ class Category extends FrontendController
         $options = array(
             'limit' => $limit,
             'category_id' => $category_id,
-                //'language' => $this->langcode
+            'placeholder' => true,
+            //'language' => $this->langcode
         );
 
         $options += $query;

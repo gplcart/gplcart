@@ -56,7 +56,7 @@
                 {% if compare_content is not empty %}
                 <a rel="nofollow" id="compare-link" href="{{ url('compare') }}">
                   <span class="badge" id="compare-quantity">
-                    {{ compare_content.length }}
+                    {{ compare_content|length }}
                   </span>
                   <i class="fa fa-balance-scale"></i>
                 </a>

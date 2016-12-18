@@ -289,8 +289,9 @@ class CategoryGroup extends Model
         }
 
         $conditions = array('category_group_id' => $category_group_id);
-
         $updated = (int) $this->db->update('category_group', $data, $conditions);
+        
+        $data['category_group_id'] = $category_group_id;
         $updated += (int) $this->setTranslation($data);
 
         $result = ($updated > 0);

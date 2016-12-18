@@ -44,11 +44,6 @@
         <a class="btn btn-default" href="<?php echo $this->url('admin/user/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
-        <?php } ?>   
-        <?php if ($this->access('import')) { ?>
-        <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import/user'); ?>">
-          <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
-        </a>
         <?php } ?>
       </div>
       <?php } ?>

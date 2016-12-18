@@ -61,7 +61,7 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group required<?php echo $this->error('file', ' has-error'); ?>">
+      <div class="form-group<?php echo empty($file['file_id']) ? ' required' : ''; ?><?php echo $this->error('file', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('File'); ?>
         </label>
@@ -73,7 +73,7 @@
             <div class="text-muted"><?php echo $this->text('Supported extensions: %list', array('%list' => implode(',', $extensions))); ?></div>
           </div>
           <?php } else { ?>
-          <a class="form-control" href="<?php echo $this->url('', array('download' => $file['file_id'])); ?>"><?php echo $this->truncate($this->escape($file['path'])); ?></a>
+          <a href="<?php echo $this->url('', array('download' => $file['file_id'])); ?>"><?php echo $this->truncate($this->escape($file['path'])); ?></a>
           <?php } ?>
         </div>
       </div>

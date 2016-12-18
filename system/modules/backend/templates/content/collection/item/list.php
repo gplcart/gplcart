@@ -16,19 +16,19 @@
       <ul class="dropdown-menu">
         <?php if ($this->access('collection_item_edit')) { ?>
         <li>
-          <a data-action="status" data-action-value="1" href="#">
+          <a data-action="status" data-action-value="1" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
             <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
           </a>
         </li>
         <li>
-          <a data-action="status" data-action-value="0" href="#">
+          <a data-action="status" data-action-value="0" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
             <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
           </a>
         </li>
         <?php } ?>
         <?php if ($this->access('collection_item_delete')) { ?>
         <li>
-          <a data-action="delete" href="#">
+          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
             <?php echo $this->text('Delete'); ?>
           </a>
         </li>
@@ -70,7 +70,7 @@
           </td>
           <td class="middle">
             <?php if(!isset($item['status'])) { ?>
-            <i title="<?php echo $this->text('Unknown'); ?>" class="fa fa-question-circle-o"></i>
+            <?php echo $this->text('Unknown') ;?>
             <?php } else if (empty($item['status'])){ ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
