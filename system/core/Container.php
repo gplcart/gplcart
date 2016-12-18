@@ -10,6 +10,7 @@
 namespace core;
 
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * Dependency injection container
@@ -31,17 +32,18 @@ class Container
 
     /**
      * Instantiates and registers a class
-     * TODO: rebuild argument
      * @param string $class
      * @param array $arguments
      * @param boolean $share
      * @return object
+     * @throws ReflectionException
      */
-    public static function instance($class, $arguments = array(), $share = true)
+    public static function instance($class, array $arguments = array(),
+            $share = true)
     {
         if (is_array($class)) {
             if (!is_callable($class)) {
-                return false;
+                throw new ReflectionException("Class $class is not callable");
             }
 
             $class = reset($class);
@@ -68,7 +70,7 @@ class Container
         }
 
         if (!class_exists($class)) {
-            return false;
+            throw new ReflectionException("Class $class does not exist");
         }
 
         $reflection = new ReflectionClass($class);
