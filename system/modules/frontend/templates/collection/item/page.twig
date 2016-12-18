@@ -13,6 +13,5 @@
 #}
 <div class="page item col-md-12">
   <div class="title"><a href="{{ page.url }}">{{ page.title }}</a></div>
-  {% set description = page.description|striptags %}
-  <p>{{ description|length > 50 ? description|slice(0, 50) ~ '...' : description }}</p>
+  <p>{{ truncate(page.description|striptags, 50) }}</p>
 </div>

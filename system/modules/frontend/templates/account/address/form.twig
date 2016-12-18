@@ -1,0 +1,89 @@
+{#
+    Displays the edit address form
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @category theme
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+<div>
+  <div id="address-form-wrapper">
+    <form method="post" id="edit-address" class="form-horizontal">
+      <input type="hidden" name="token" value="{{ token() }}">
+      {% if countries is not empty %}
+          <div class="form-group country{{ error('country', ' has-error') }}">
+            <label class="col-md-2 control-label">
+              {{ format_country.name }}
+            </label>
+            <div class="col-md-6">
+              <select class="form-control" name="address[country]">
+                {% if address.country is empty %}
+                    <option value=""><?php echo $this->text('- select -'); ?></option>
+                {% endif %}
+                {% for code,name in countries %}
+                    <option value="{{ code }}"{{ (address.country is defined and address.country == code) ? ' selected' }}>{{ name }}</option>
+                {% endfor %}
+              </select>
+              <div class="help-block">
+                {{ error('country') }}
+              </div>
+            </div>
+          </div>
+      {% endif %}
+      {% if states is not empty %}
+          <div class="form-group state_id{{ error('state_id', ' has-error') }}">
+            <label class="col-md-2 control-label">
+              {% if format_state_id.required is not empty %}
+                  <span class="text-danger">* </span>
+              {% endif %}
+              {{ format_state_id.name }}
+            </label>
+            <div class="col-md-6">
+              <select class="form-control" name="address[state_id]">
+                {% for state_id,state in states %}
+                    <option value="{{ state_id }}"{{ (address.state_id is defined and address.state_id == state_id) ? ' selected' }}>{{ state.name }}</option>
+                {% endfor %}
+              </select>
+              <div class="help-block">
+                {{ error('state_id') }}
+              </div>
+            </div>
+          </div>
+      {% endif %}
+      {% if countries is empty or address.country is not empty %}
+          {% for key,value in format %}
+              <div class="form-group {{ key }}{{ error(key, ' has-error') }}">
+                <label class="col-md-2 control-label">
+                  {% if value.required is not empty %}
+                      <span class="text-danger">* </span>
+                  {% endif %}
+                  {{ value.name }}
+                </label>
+                <div class="col-md-6">
+                  <input name="address[{{ key }}]" maxlength="255" class="form-control" value="{{ address[key]|default('') }}">
+                  <div class="help-block">{{ error(key) }}</div>
+                </div>
+              </div>
+          {% endfor %}
+          <div class="row">
+            <div class="col-md-2 text-right">
+              <a class="btn btn-default" href="{{ url('account/' ~ uid() ~ '/address') }}">
+                {{ text('Cancel') }}
+              </a>
+            </div>
+            <div class="col-md-10">
+              <button class="btn btn-default save" name="save" value="1">
+                <i class="fa fa-floppy-o"></i> {{ text('Save') }}
+              </button>
+            </div>
+          </div>
+      {% endif %}
+    </form>
+  </div>
+</div>

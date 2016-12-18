@@ -6,10 +6,12 @@ html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 160px;
 }
+
 .footer {
   position: absolute;
   bottom: 0;
@@ -118,6 +120,7 @@ body.checkout .navbar .cart {
 
 .navbar.second {
     background-color: #444;
+    z-index: 999;
 }
 
 

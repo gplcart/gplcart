@@ -1,0 +1,51 @@
+{#
+    Displays the cart preview block
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+<div id="cart-preview">
+  {% if cart['items'] is empty %}
+      <div class="row items">
+        <div class="col-md-12">
+          {{ text('Shopping cart is empty.') }}
+        </div>
+      </div>
+  {% else %}
+      <div class="row items">
+        <div class="col-md-12 pre-scrollable">
+          {% for item in cart['items'] %}
+              <div class="media cart-item">
+                <div class="media-left image col-md-2">
+                  <img class="media-object thumbnail img-responsive" alt="{{ item['product']['title'] }}" src="{{ item['thumb'] }}">
+                </div>
+                <div class="media-body info">
+                  <div class="media-heading">{{ item['product']['title'] }}</div>
+                  <p>{{ item['sku'] }}</p>
+                  <p>{{ item['quantity'] }} X {{ item['price_formatted'] }} = {{ item['total_formatted'] }}</p>
+                </div>
+              </div>
+          {% endfor %}
+        </div>
+      </div>
+      <hr>
+      <div class="row subtotal">
+        <div class="col-md-12">
+          <b>{{ text('Subtotal') }}</b> : <span class="price">{{ cart['total_formatted'] }}</span>
+          <div class="help-block">{{ text('Final price will be shown on checkout page') }}</div>
+        </div>
+      </div>
+      <div class="row buttons">
+        <div class="col-md-12 checkout">
+          <a href="{{ url('checkout') }}" class="btn btn-block btn-success">{{ text('Cart / Checkout') }}</a>
+        </div>
+      </div>
+  {% endif %}
+</div>

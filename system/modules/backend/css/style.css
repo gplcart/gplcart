@@ -24,6 +24,10 @@ body {
     color: #fff;
 }
 
+.CodeMirror {
+  height: auto;
+}
+
 .indentation {
     margin-left: 10px;
 }

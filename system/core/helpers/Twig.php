@@ -70,6 +70,8 @@ class Twig
         $this->addFunctionStore($object);
         $this->addFunctionVarDump($object);
         $this->addFunctionXss($object);
+        $this->addFunctionTruncate($object);
+        $this->addFunctionDate($object);
     }
 
     /**
@@ -269,6 +271,19 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('xss', function ($text, $tags = null, $protocols = null) use ($object) {
             return $object->xss($text, $tags, $protocols);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \core\Controller::truncate()
+     * @param \core\Controller $object
+     */
+    protected function addFunctionTruncate($object)
+    {
+        $function = new \Twig_SimpleFunction('truncate', function ($string, $length = 100, $trimmarker = '...') use ($object) {
+            return $object->truncate($string, $length, $trimmarker);
         });
 
         $this->twig->addFunction($function);

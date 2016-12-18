@@ -40,7 +40,7 @@
           </div>
           <div class="help-block">
             <div class="text-muted">
-            <?php echo $this->text('Recompile Twig templates whenever their source code changed. Should be disabled in production!'); ?>
+            <?php echo $this->text('Recompile Twig template whenever the source code changes. Should be disabled in production!'); ?>
             </div>
           </div>
         </div>
