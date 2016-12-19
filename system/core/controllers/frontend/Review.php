@@ -27,7 +27,7 @@ class Review extends FrontendController
 
     /**
      * Rating model instance
-     * @var \core\model\Rating $rating
+     * @var \core\models\Rating $rating
      */
     protected $rating;
 

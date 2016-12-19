@@ -650,7 +650,7 @@ class Product extends BaseValidator
 
     /**
      * Validates option combination SKUs
-     * @param insteger $index
+     * @param integer $index
      * @param array $combination
      * @param array $options
      * @return boolean|null

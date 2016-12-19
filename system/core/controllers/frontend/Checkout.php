@@ -209,7 +209,7 @@ class Checkout extends FrontendController
 
     /**
      * Loads a user and sets properties for a new order
-     * @param integer $user_id
+     * @param integer|string $user_id
      */
     protected function setUserCheckout($user_id)
     {

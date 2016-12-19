@@ -135,7 +135,7 @@ class Store extends BaseValidator
             return true;
         }
 
-        if (!gplcart_valid_domain($updating)) {
+        if (!gplcart_valid_domain($value)) {
             $vars = array('@field' => $this->language->text('Domain'));
             $error = $this->language->text('@field has invalid value', $vars);
             $this->setError('domain', $error, $options);

@@ -172,7 +172,7 @@ class Category extends FrontendController
 
     /**
      * Sets rendered category children
-     * @param integer $categories
+     * @param array $categories
      */
     protected function setDataChildrenCategory($categories)
     {
@@ -222,18 +222,18 @@ class Category extends FrontendController
 
     /**
      * Returns an array of prepared products
-     * @param integer $limit
+     * @param array $limit
      * @param array $query
-     * @param integer $category_id
+     * @param integer $cid
      * @return array
      */
-    protected function getListProductCategory($limit, array $query, $category_id)
+    protected function getListProductCategory(array $limit, array $query, $cid)
     {
         $options = array(
             'limit' => $limit,
-            'category_id' => $category_id,
+            'category_id' => $cid,
             'placeholder' => true,
-            //'language' => $this->langcode
+                //'language' => $this->langcode
         );
 
         $options += $query;

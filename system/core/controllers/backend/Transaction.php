@@ -132,7 +132,7 @@ class Transaction extends BackendController
     protected function getListTransaction($limit, array $query)
     {
         $query['limit'] = $limit;
-        return $this->transaction->getList($query);
+        return (array) $this->transaction->getList($query);
     }
 
     /**

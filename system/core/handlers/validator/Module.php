@@ -18,6 +18,7 @@ use core\handlers\validator\Base as BaseValidator;
  */
 class Module extends BaseValidator
 {
+
     /**
      * Path for uploaded module files that is relative to main file directory
      */
@@ -25,7 +26,7 @@ class Module extends BaseValidator
 
     /**
      * File model instance
-     * @var core\models\File $file
+     * @var \core\models\File $file
      */
     protected $file;
 

@@ -52,7 +52,7 @@ class Category extends BaseHandler
         $options = $this->job['data']['options'];
         $options += array('limit' => array($this->offset, $this->limit));
 
-        $this->items = $this->category->getList($options);
+        $this->items = (array) $this->category->getList($options);
 
         foreach ($this->items as $item) {
             $data = $this->getData($item);

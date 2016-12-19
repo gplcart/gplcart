@@ -26,7 +26,7 @@ class Controller extends BaseController
 
     /**
      * An array of fired triggers for the current context
-     * @var type 
+     * @var array
      */
     protected $triggers = array();
 
@@ -189,18 +189,18 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        $this->cart_quantity = $this->cart->getQuantity($options);
+        $this->cart_quantity = (array) $this->cart->getQuantity($options);
 
         // Don't count, use the same arguments to avoid an extra query
         // see $this->setItemProductWishlist()
-        $this->wishlist_content = $this->wishlist->getList($options);
+        $this->wishlist_content = (array) $this->wishlist->getList($options);
 
         $this->data['cart_quantity'] = $this->cart_quantity;
         $this->data['wishlist_quantity'] = count($this->wishlist_content);
         $this->data['compare_content'] = $this->compare_content;
         return null;
     }
-    
+
     protected function setFrontendMenu()
     {
         $menu = $this->renderMenu(0, 'nav navbar-nav menu-top');
@@ -225,17 +225,18 @@ class Controller extends BaseController
     {
         $options += array(
             'title' => $this->getPageTitle(),
-            'url' => $this->url(false, array(), true)
+            'url' => $this->url('', array(), true)
         );
 
         return $this->render('common/share', $options);
     }
-    
+
     /**
      * Returns a rendered menu
      * @return string
      */
-    protected function renderMenu($max_depth = null, $class = 'list-unstyled menu')
+    protected function renderMenu($max_depth = null,
+            $class = 'list-unstyled menu')
     {
         if (empty($this->category_tree)) {
             return '';
@@ -832,13 +833,14 @@ class Controller extends BaseController
         $this->outputAjaxResponse($data);
         $this->redirect($data['redirect'], $data['message'], $data['severity']);
     }
-    
+
     /**
      * Returns an array of default error result
      * @return array
      */
-    protected function getErrorSubmitResult(){
-        
+    protected function getErrorSubmitResult()
+    {
+
         // Get validation errors
         $errors = $this->error();
 

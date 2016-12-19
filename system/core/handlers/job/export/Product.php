@@ -60,7 +60,8 @@ class Product extends BaseHandler
     {
         $options = $this->job['data']['options'];
         $options += array('limit' => array($this->offset, $this->limit));
-        $this->items = $this->product->getList($options);
+        
+        $this->items = (array) $this->product->getList($options);
 
         foreach ($this->items as $item) {
             $data = $this->getData($item);

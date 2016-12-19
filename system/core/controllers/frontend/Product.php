@@ -273,7 +273,7 @@ class Product extends FrontendController
             $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
 
             $breadcrumb = array(
-                'url' => $url,
+                'url' => $this->url($url),
                 'text' => $category['title']
             );
 
