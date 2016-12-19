@@ -197,12 +197,13 @@ class Module extends BackendController
         $result = $this->module->installFromZip($uploaded);
 
         if ($result !== true) {
-            $this->redirect('', $result, 'warning');
+            $errors = implode('<br>', array_filter((array) $result));
+            $message = empty($errors) ? $this->text('An error occurred') : $errors;
+            $this->redirect('', $message, 'warning');
         }
 
-        $options = array('!href' => $this->url('admin/module/list'));
-        $message = $this->text('The module has been <a href="!href">uploaded and installed</a>.'
-                . ' You have to enable it manually', $options);
+        $vars = array('!href' => $this->url('admin/module/list'));
+        $message = $this->text('The module has been <a href="!href">uploaded and installed</a>. You have to enable it manually', $vars);
         $this->redirect('', $message, 'success');
     }
 

@@ -135,7 +135,7 @@ class Country extends BackendController
     protected function getTotalCountry(array $query)
     {
         $query['count'] = true;
-        return $this->country->getList($query);
+        return (int) $this->country->getList($query);
     }
 
     /**

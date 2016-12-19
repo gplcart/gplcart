@@ -164,7 +164,7 @@ class FieldValue extends BackendController
      * Returns total number of values for a given field and conditions
      * @param integer $field_id
      * @param array $query
-     * @return array
+     * @return integer
      */
     protected function getTotalFieldValue($field_id, array $query)
     {
@@ -174,7 +174,7 @@ class FieldValue extends BackendController
         );
 
         $options += $query;
-        return $this->field_value->getList($options);
+        return (int) $this->field_value->getList($options);
     }
 
     /**
@@ -192,7 +192,7 @@ class FieldValue extends BackendController
         );
 
         $options += $query;
-        $values = $this->field_value->getList($options);
+        $values = (array) $this->field_value->getList($options);
         $preset = $this->config('admin_image_preset', 2);
 
         foreach ($values as &$value) {

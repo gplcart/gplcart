@@ -117,6 +117,7 @@ class Container
     /**
      * Removes a class(es) from the storage
      * @param null|string $class
+     * @return boolean
      */
     public static function unregister($class = null)
     {

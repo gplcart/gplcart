@@ -91,7 +91,7 @@ function gplcart_array_get_value(array &$array, $parents, $glue = '.')
 /**
  * Sets a value in a nested array with variable depth
  * @param array $array
- * @param array $parents
+ * @param array|string $parents
  * @param mixed $value
  * @param string $glue
  */

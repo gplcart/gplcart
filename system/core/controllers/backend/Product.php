@@ -185,7 +185,7 @@ class Product extends BackendController
     protected function getTotalProduct(array $query)
     {
         $query['count'] = true;
-        return $this->product->getList($query);
+        return (int) $this->product->getList($query);
     }
 
     /**
@@ -197,13 +197,13 @@ class Product extends BackendController
     protected function getListProduct(array $limit, array $query)
     {
         $query['limit'] = $limit;
-
-        $stores = $this->store->getList();
-        $products = $this->product->getList($query);
+        $products = (array) $this->product->getList($query);
 
         if (empty($products)) {
             return array();
         }
+
+        $stores = $this->store->getList();
 
         foreach ($products as &$product) {
             $product['view_url'] = '';
@@ -260,7 +260,7 @@ class Product extends BackendController
         $stores = $this->store->getNames();
         $currency = $this->currency->getDefault();
         $subtract_default = $this->config->get('product_subtract', 0);
-        
+
         $related = $this->getRelatedProduct($product);
         $classes = $this->getClassesProduct();
 
@@ -279,7 +279,7 @@ class Product extends BackendController
         $this->setBreadcrumbEditProduct();
         $this->outputEditProduct();
     }
-    
+
     /**
      * Returns an array of enabled product classes
      * @return array

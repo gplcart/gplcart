@@ -90,12 +90,12 @@ class Field extends BackendController
     /**
      * Returns total number of fields for pager
      * @param array $query
-     * @return array
+     * @return integer
      */
     protected function getTotalField(array $query)
     {
         $query['count'] = true;
-        return $this->field->getList($query);
+        return (int) $this->field->getList($query);
     }
 
     /**

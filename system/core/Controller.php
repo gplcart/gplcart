@@ -665,7 +665,7 @@ class Controller
 
         $this->path = $this->url->path();
         $this->base = $this->request->base();
-        $this->query = $this->request->get();
+        $this->query = (array) $this->request->get();
         $this->langcode = $this->route->getLangcode();
         $this->uri = $this->scheme . $this->host . $this->urn;
     }
@@ -738,7 +738,7 @@ class Controller
             $this->response->error404();
         }
 
-        $this->theme_settings = $this->config->module($this->theme, null, array());
+        $this->theme_settings = (array) $this->config->module($this->theme, null, array());
 
         if (!empty($this->theme_settings['twig']['status'])) {
 

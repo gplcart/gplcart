@@ -261,19 +261,12 @@ class Order extends BackendController
      */
     protected function setDataLogsOrder(array $order)
     {
-        $options = array(
-            'count' => true,
-            'order_id' => $order['order_id']
-        );
-
         $query = $this->getFilterQuery();
-        $total = $this->order->getLogList($options);
+        $total = $this->getTotalLogOrder($order);
+
         $max = $this->config('order_log_limit', 5);
         $limit = $this->setPager($total, $query, $max);
-
-        $options['limit'] = $limit;
-        unset($options['count']);
-        $items = $this->order->getLogList($options);
+        $items = $this->getListLogOrder($order, $limit);
 
         $data = array(
             'order' => $order,
@@ -283,6 +276,38 @@ class Order extends BackendController
 
         $html = $this->render('sale/order/panes/log', $data);
         $this->setData('pane_log', $html);
+    }
+
+    /**
+     * Returns a total logs found for the order
+     * @param array $order
+     * @return integer
+     */
+    protected function getTotalLogOrder(array $order)
+    {
+        $options = array(
+            'count' => true,
+            'order_id' => $order['order_id']
+        );
+
+        return (int) $this->order->getLogList($options);
+    }
+
+    /**
+     * Returns an array of log records for the order
+     * @param array $order
+     * @param array $limit
+     * @return array
+     */
+    protected function getListLogOrder(array $order, array $limit)
+    {
+
+        $options = array(
+            'limit' => $limit,
+            'order_id' => $order['order_id']
+        );
+
+        return (array) $this->order->getLogList($options);
     }
 
     /**
@@ -328,7 +353,7 @@ class Order extends BackendController
     /**
      * Returns an order
      * @param integer $order_id
-     * @return array|void
+     * @return array
      */
     protected function getOrder($order_id)
     {
@@ -338,11 +363,11 @@ class Order extends BackendController
 
         $order = $this->order->get($order_id);
 
-        if (!empty($order)) {
-            return $this->prepareOrder($order);
+        if (empty($order)) {
+            $this->outputError(404);
         }
 
-        return $this->outputError(404);
+        return $this->prepareOrder($order);
     }
 
     /**

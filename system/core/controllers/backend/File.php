@@ -126,7 +126,7 @@ class File extends BackendController
     protected function getListFile(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $files = $this->file->getList($query);
+        $files = (array) $this->file->getList($query);
 
         foreach ($files as &$file) {
 

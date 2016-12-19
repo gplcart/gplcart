@@ -154,7 +154,8 @@ class CliController
     {
         if (GC_CLI_EMULATE && !$this->config->tokenValid($this->request->post('cli_token'))) {
             $error = $this->text('Invalid CLI token');
-            $this->setError($error)->output();
+            $this->setError($error);
+            $this->output();
         }
     }
 
@@ -263,7 +264,7 @@ class CliController
      * Sets an error
      * @param string $error
      * @param string $key
-     * @return \core\CliController
+     * @return array
      */
     protected function setError($error, $key = null)
     {
@@ -273,7 +274,7 @@ class CliController
         }
 
         $this->errors[] = $error;
-        return $this;
+        return $this->errors;
     }
 
     /**

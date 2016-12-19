@@ -278,19 +278,19 @@ class Config
     /**
      * Returns an array containing module info and instance
      * @param string $name
-     * @return boolean
+     * @return array
      */
     public function getModuleData($name)
     {
         $class = $this->getModuleClass($name);
         $instance = Container::instance($class);
 
-        if (!is_callable(array($instance, 'info'))) {
-            return false;
+        if (is_callable(array($instance, 'info'))) {
+            $info = $instance->info();
+            return array('class' => $class, 'info' => $info, 'instance' => $instance);
         }
 
-        $info = $instance->info();
-        return array('class' => $class, 'info' => $info, 'instance' => $instance);
+        return array();
     }
 
     /**

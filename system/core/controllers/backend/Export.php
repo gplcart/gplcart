@@ -227,11 +227,11 @@ class Export extends BackendController
     {
         $submitted = $this->getSubmitted();
 
-        $vars = array('@href' => $this->url(false, array('download' => 1)), '%count' => $submitted['total']);
-        $finish = $this->text('Exported %count items. <a href="@href">Download</a>', $vars);
+        $vars1 = array('@href' => $this->url('', array('download' => 1)), '%count' => $submitted['total']);
+        $finish = $this->text('Exported %count items. <a href="@href">Download</a>', $vars1);
 
-        $vars = array('!url' => $this->url(false, array('download_errors' => 1)));
-        $redirect = $this->text('Errors: %errors. <a href="!url">See error log</a>', $vars);
+        $vars2 = array('!url' => $this->url('', array('download_errors' => 1)));
+        $redirect = $this->text('Errors: %errors. <a href="!url">See error log</a>', $vars2);
 
         $job = array(
             'data' => $submitted,

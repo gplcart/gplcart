@@ -115,7 +115,7 @@ class Alias extends BackendController
 
     /**
      * Returns an array of aliases
-     * @param integer $limit
+     * @param array $limit
      * @param array $query
      * @return array
      */

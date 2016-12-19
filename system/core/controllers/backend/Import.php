@@ -123,7 +123,6 @@ class Import extends BackendController
 
     /**
      * Starts import
-     * @param array $operation
      * @return null
      */
     protected function submitImport()
@@ -182,7 +181,7 @@ class Import extends BackendController
         );
 
         if (!empty($operation['log']['errors'])) {
-            $options = array('!url' => $this->url(false, array('download_errors' => $operation['id'])));
+            $options = array('!url' => $this->url('', array('download_errors' => $operation['id'])));
             $error = $this->text('Inserted: %inserted, updated: %updated, errors: %errors. <a href="!url">See error log</a>', $options);
 
             $job['redirect_message']['errors'] = $error;

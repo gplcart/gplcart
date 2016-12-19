@@ -210,7 +210,7 @@ class Dashboard extends BackendController
                 'limit' => array(0, $this->dashboard_limit)
             );
 
-            $items = $this->report->getList($options);
+            $items = (array) $this->report->getList($options);
 
             foreach ($items as &$item) {
                 $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];

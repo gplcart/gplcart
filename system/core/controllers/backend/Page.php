@@ -9,10 +9,10 @@
 
 namespace core\controllers\backend;
 
+use core\models\Page as PageModel;
+use core\models\Image as ImageModel;
 use core\models\Alias as AliasModel;
 use core\models\Category as CategoryModel;
-use core\models\Image as ImageModel;
-use core\models\Page as PageModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -127,10 +127,10 @@ class Page extends BackendController
         if ($deleted > 0) {
             $this->setMessage($this->text('Pages have been deleted'), 'success', true);
         }
-        
+
         return null;
     }
-    
+
     /**
      * Outputs JSON string with categories
      */
@@ -138,7 +138,7 @@ class Page extends BackendController
     {
         $default = $this->store->getDefault();
         $store_id = (int) $this->request->post('store_id', $default);
-        
+
         $categories = $this->category->getOptionListByStore($store_id);
         $this->response->json($categories);
     }
@@ -151,7 +151,7 @@ class Page extends BackendController
     protected function getTotalPage(array $query)
     {
         $query['count'] = true;
-        return $this->page->getList($query);
+        return (int) $this->page->getList($query);
     }
 
     /**
@@ -165,7 +165,7 @@ class Page extends BackendController
         $stores = $this->store->getList();
 
         $query['limit'] = $limit;
-        $pages = $this->page->getList($query);
+        $pages = (array) $this->page->getList($query);
 
         foreach ($pages as &$page) {
 
@@ -251,7 +251,7 @@ class Page extends BackendController
 
         return $this->preparePage($page);
     }
-    
+
     /**
      * Prepares an array of page data
      * @param array $page
@@ -268,7 +268,7 @@ class Page extends BackendController
             return $page;
         }
 
-        foreach ($page['images'] as &$image) {
+        foreach ((array) $page['images'] as &$image) {
             $image['translation'] = $this->image->getTranslation($image['file_id']);
         }
 
@@ -439,7 +439,7 @@ class Page extends BackendController
     protected function setBreadcrumbEditPage()
     {
         $breadcrumbs = array();
-        
+
         $breadcrumbs[] = array(
             'text' => $this->text('Dashboard'),
             'url' => $this->url('admin')

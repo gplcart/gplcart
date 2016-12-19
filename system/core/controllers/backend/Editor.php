@@ -18,6 +18,7 @@ use core\controllers\backend\Controller as BackendController;
  */
 class Editor extends BackendController
 {
+
     /**
      * Editor model instance
      * @var \core\models\Editor $editor
@@ -73,11 +74,11 @@ class Editor extends BackendController
             $this->outputError(404);
         }
 
-        if ($module['type'] === 'theme') {
-            return $module;
+        if ($module['type'] !== 'theme') {
+            $this->outputError(403);
         }
 
-        $this->outputError(403);
+        return $module;
     }
 
     /**
@@ -332,7 +333,7 @@ class Editor extends BackendController
      * Returns a path to the file to be edited
      * @param array $module
      * @param string $encoded_filename URL encoded base64 hash
-     * @return array|null
+     * @return string
      */
     protected function getFilePathEditor(array $module, $encoded_filename)
     {

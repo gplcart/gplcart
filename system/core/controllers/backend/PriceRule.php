@@ -145,7 +145,7 @@ class PriceRule extends BackendController
     protected function getTotalPriceRule(array $query)
     {
         $query['count'] = true;
-        return $this->rule->getList($query);
+        return (int) $this->rule->getList($query);
     }
 
     /**
@@ -157,7 +157,7 @@ class PriceRule extends BackendController
     protected function getListPriceRule(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $rules = $this->rule->getList($query);
+        $rules = (array) $this->rule->getList($query);
 
         foreach ($rules as &$rule) {
             if ($rule['value_type'] == 'fixed') {
