@@ -931,7 +931,6 @@ class Checkout extends FrontendController
 
     /**
      * Sets breadcrumbs on the complete order page
-     * @param array $order
      */
     protected function setBreadcrumbCompleteCheckout()
     {

@@ -471,7 +471,7 @@ class Controller extends BaseController
             'prepare' => true
         );
 
-        $products = $this->product->getList($conditions);
+        $products = (array) $this->product->getList($conditions);
 
         if (empty($products)) {
             return array();

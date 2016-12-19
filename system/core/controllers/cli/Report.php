@@ -100,8 +100,8 @@ class Report extends CliController
         return array(
             'type' => 'type',
             'clear' => 'clear',
-            'severity' => 'severity',
-            'limit' => 'limit'
+            'limit' => 'limit',
+            'severity' => 'severity'
         );
     }
 
@@ -125,7 +125,7 @@ class Report extends CliController
     protected function getMessageEventReport()
     {
         $submitted = $this->getSubmitted();
-        $records = $this->report->getList($submitted);
+        $records = (array) $this->report->getList($submitted);
 
         $message = '';
         foreach ($records as $record) {

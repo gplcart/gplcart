@@ -113,7 +113,7 @@ class User extends BackendController
     protected function getTotalUser(array $query)
     {
         $query['count'] = true;
-        return $this->user->getList($query);
+        return (int) $this->user->getList($query);
     }
 
     /**
@@ -185,8 +185,7 @@ class User extends BackendController
         $is_superadmin = (isset($user['user_id'])//
                 && $this->isSuperadmin($user['user_id']));
 
-        $can_delete = (isset($user['user_id'])//
-                && $this->user->canDelete($user['user_id']));
+        $can_delete = $this->canDeleteUser($user);
 
         $this->setData('user', $user);
         $this->setData('roles', $roles);
@@ -199,6 +198,17 @@ class User extends BackendController
         $this->setTitleEditUser($user);
         $this->setBreadcrumbEditUser();
         $this->outputEditUser();
+    }
+
+    /**
+     * Whether the user can be deleted
+     * @param array $user
+     * @return boolean
+     */
+    protected function canDeleteUser(array $user)
+    {
+        return (isset($user['user_id'])//
+                && $this->user->canDelete($user['user_id']));
     }
 
     /**
@@ -299,9 +309,8 @@ class User extends BackendController
         $values = $this->getSubmitted();
         $this->user->update($user['user_id'], $values);
 
-        $message = $this->text('User %name has been updated', array(
-            '%name' => $user['name']
-        ));
+        $vars = array('%name' => $user['name']);
+        $message = $this->text('User %name has been updated', $vars);
 
         $this->redirect('admin/user/list', $message, 'success');
     }
@@ -326,10 +335,10 @@ class User extends BackendController
      */
     protected function setTitleEditUser(array $user)
     {
-        $title = $this->text('Add user');
-
         if (isset($user['name'])) {
             $title = $this->text('Edit %user', array('%user' => $user['name']));
+        } else {
+            $title = $this->text('Add user');
         }
 
         $this->setTitle($title);

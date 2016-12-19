@@ -32,15 +32,14 @@ class Url
 
     /**
      * Redirects the user to a new location
-     * @param string $url
+     * @param string|null $url
      * @param array $options
      * @param boolean $full
      */
-    final public function redirect($url = '', array $options = array(),
-            $full = false)
+    final public function redirect($url = '', $options = array(), $full = false)
     {
         if (!isset($url)) {
-            return;
+            return null;
         }
 
         if (!empty($url) && ($full || $this->isAbsolute($url))) {
@@ -51,7 +50,7 @@ class Url
         $target = (string) $this->request->get('target');
 
         if (!empty($target)) {
-            $url = parse_url($target, PHP_URL_PATH);
+            $url = (string) parse_url($target, PHP_URL_PATH);
             $parsed = parse_url($target, PHP_URL_QUERY);
             $options = is_array($parsed) ? $parsed : array();
         }

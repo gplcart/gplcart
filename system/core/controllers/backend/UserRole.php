@@ -276,7 +276,7 @@ class UserRole extends BackendController
     protected function getTotalUserRole(array $query)
     {
         $query['count'] = true;
-        return $this->role->getList($query);
+        return (int) $this->role->getList($query);
     }
 
     /**
@@ -288,7 +288,7 @@ class UserRole extends BackendController
     protected function getListUserRole(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $roles = $this->role->getList($query);
+        $roles = (array) $this->role->getList($query);
         $permissions = $this->role->getPermissions();
 
         foreach ($roles as &$role) {

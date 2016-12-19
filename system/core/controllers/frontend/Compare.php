@@ -192,8 +192,8 @@ class Compare extends FrontendController
 
             foreach ($product_fields as $type => $items) {
 
-                $fields = $this->field->getList(array('field_id' => array_keys($items)));
-                $values = $this->field_value->getList(array('field_id' => array_keys($items)));
+                $fields = (array) $this->field->getList(array('field_id' => array_keys($items)));
+                $values = (array) $this->field_value->getList(array('field_id' => array_keys($items)));
 
                 foreach ($fields as $field_id => $field) {
                     $fields[$type][$field_id] = $field['title'];

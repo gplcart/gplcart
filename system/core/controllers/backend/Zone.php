@@ -85,16 +85,14 @@ class Zone extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Updated %num zones', array(
-                '%num' => $updated
-            ));
+            $vars = array('%num' => $updated);
+            $message = $this->text('Updated %num zones', $vars);
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num zones', array(
-                '%num' => $deleted
-            ));
+            $vars = array('%num' => $deleted);
+            $message = $this->text('Deleted %num zones', $vars);
             $this->setMessage($message, 'success', true);
         }
 
@@ -109,7 +107,7 @@ class Zone extends BackendController
     public function getTotalZone(array $query)
     {
         $query['count'] = true;
-        return $this->zone->getList($query);
+        return (int) $this->zone->getList($query);
     }
 
     /**

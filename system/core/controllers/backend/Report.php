@@ -90,7 +90,7 @@ class Report extends BackendController
     protected function getTotalEventReport(array $query)
     {
         $query['count'] = true;
-        return $this->report->getList($query);
+        return (int) $this->report->getList($query);
     }
 
     /**
@@ -102,7 +102,7 @@ class Report extends BackendController
     protected function getListEventReport(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $records = $this->report->getList($query);
+        $records = (array) $this->report->getList($query);
         return $this->prepareListEventReport($records);
     }
 

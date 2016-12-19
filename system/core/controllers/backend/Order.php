@@ -9,18 +9,18 @@
 
 namespace core\controllers\backend;
 
-use core\controllers\backend\Controller as BackendController;
-use core\models\Address as AddressModel;
 use core\models\Cart as CartModel;
-use core\models\Country as CountryModel;
-use core\models\Currency as CurrencyModel;
 use core\models\Order as OrderModel;
 use core\models\Price as PriceModel;
-use core\models\PriceRule as PriceRuleModel;
-use core\models\Product as ProductModel;
 use core\models\State as StateModel;
+use core\models\Address as AddressModel;
 use core\models\Payment as PaymentModel;
+use core\models\Product as ProductModel;
+use core\models\Country as CountryModel;
+use core\models\Currency as CurrencyModel;
 use core\models\Shipping as ShippingModel;
+use core\models\PriceRule as PriceRuleModel;
+use core\controllers\backend\Controller as BackendController;
 
 /**
  * Provides data to the view and interprets user actions related to orders
@@ -134,8 +134,7 @@ class Order extends BackendController
      */
     public function snapshotOrder($order_log_id)
     {
-        $order = $this->getLogOrder($order_log_id);
-        $order = $this->prepareOrder($order);
+        $order = $this->prepareOrder($this->getLogOrder($order_log_id));
 
         $this->setDataOrder($order);
         $this->setMessageSnapshotOrder($order);
@@ -151,11 +150,12 @@ class Order extends BackendController
      */
     protected function setMessageSnapshotOrder(array $order)
     {
-        $message = $this->text('This is a saved snapshot of order #@order_id. You can see current state of the order <a href="@url">here</a>', array(
-            '@url' => $this->url("admin/sale/order/{$order['order_id']}"),
-            '@order_id' => $order['order_id']
-        ));
+        $vars = array(
+            '@order_id' => $order['order_id'],
+            '@url' => $this->url("admin/sale/order/{$order['order_id']}")
+        );
 
+        $message = $this->text('This is a saved snapshot of order #@order_id. You can see current state of the order <a href="@url">here</a>', $vars);
         $this->setMessage($message, 'warning');
     }
 
@@ -165,8 +165,8 @@ class Order extends BackendController
      */
     protected function setTitleSnapshotOrder(array $order)
     {
-        $title = $this->text('Snapshot of order #@order_id', array(
-            '@order_id' => $order['order_id']));
+        $vars = array('@order_id' => $order['order_id']);
+        $title = $this->text('Snapshot of order #@order_id', $vars);
         $this->setTitle($title);
     }
 
@@ -324,9 +324,8 @@ class Order extends BackendController
      */
     protected function setTitleViewOrder(array $order)
     {
-        $title = $this->text('Order #@order_id', array(
-            '@order_id' => $order['order_id']));
-
+        $vars = array('@order_id' => $order['order_id']);
+        $title = $this->text('Order #@order_id', $vars);
         $this->setTitle($title);
     }
 
@@ -515,26 +514,29 @@ class Order extends BackendController
      * Checks cart products and sets notifications for order manager
      * @param string $sku
      * @param array $order
+     * @return null
      */
     protected function validateCarProductOrder($sku, array $order)
     {
         if (empty($order['cart'][$sku]) || empty($order['cart'][$sku]['product_id'])) {
             $message = $this->text('SKU %sku is invalid', array('%sku' => $sku));
             $this->setMessage($message, 'warning');
-            return; // Exit here to avoid "undefined" errors below
+            return null; // Exit here to avoid "undefined" errors below
         }
 
         if (empty($order['cart'][$sku]['product_status'])) {
-            $message = $this->text('Product %product_id is disabled', array(
-                '%product_id' => $order['cart'][$sku]['product_id']));
+            $vars = array('%product_id' => $order['cart'][$sku]['product_id']);
+            $message = $this->text('Product %product_id is disabled', $vars);
             $this->setMessage($message, 'warning');
         }
 
         if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
-            $message = $this->text('Product %product_id does not belong to the order\'s store', array(
-                '%product_id' => $order['cart'][$sku]['product_id']));
+            $vars = array('%product_id' => $order['cart'][$sku]['product_id']);
+            $message = $this->text('Product %product_id does not belong to the order\'s store', $vars);
             $this->setMessage($message, 'warning');
         }
+
+        return null;
     }
 
     /**
@@ -545,8 +547,8 @@ class Order extends BackendController
      * @param array $order
      * @return null
      */
-    protected function setComponentMethodOrder(array &$components, $type,
-            $price, array $order)
+    protected function setComponentMethodOrder(&$components, $type, $price,
+            $order)
     {
         if (!in_array($type, array('shipping', 'payment'))) {
             return null;
@@ -573,8 +575,7 @@ class Order extends BackendController
      * @param integer $price
      * @return null
      */
-    protected function setComponentRuleOrder(array &$components, $rule_id,
-            $price)
+    protected function setComponentRuleOrder(&$components, $rule_id, $price)
     {
         if (!is_numeric($rule_id)) {
             return null;
@@ -743,7 +744,7 @@ class Order extends BackendController
     protected function getListOrder($limit, array $query)
     {
         $query['limit'] = $limit;
-        $orders = $this->order->getList($query);
+        $orders = (array) $this->order->getList($query);
         return $this->prepareListOrder($orders);
     }
 

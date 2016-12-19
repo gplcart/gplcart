@@ -89,7 +89,7 @@ class Ajax extends FrontendController
     public function responseAjax()
     {
         if (!$this->request->isAjax()) {
-            exit(1); // Reject non-ajax requests
+            $this->response->error403();
         }
 
         $action = (string) $this->request->post('action');
@@ -129,7 +129,7 @@ class Ajax extends FrontendController
             'limit' => array(0, $this->config('admin_autocomplete_limit', 10))
         );
 
-        $products = $this->product->getList($options);
+        $products = (array) $this->product->getList($options);
         return $this->prepareProductsAjax($products);
     }
 
@@ -346,16 +346,16 @@ class Ajax extends FrontendController
         $product_id = (int) $this->request->post('product_id');
 
         if (empty($product_id) || empty($this->uid)) {
-            return array(
-                'error' => $this->text('No access'));
+            return array('error' => $this->text('No access'));
         }
 
         $options = array(
-            'stars' => $stars,
+            'rating' => $stars,
+            'user_id' => $this->uid,
             'product_id' => $product_id
         );
 
-        $added = $this->rating->add($options);
+        $added = $this->rating->set($options);
 
         if ($added) {
             return array('success' => 1);

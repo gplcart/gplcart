@@ -36,8 +36,7 @@ class Trigger extends BackendController
      * @param TriggerModel $trigger
      * @param ConditionModel $condition
      */
-    public function __construct(TriggerModel $trigger,
-            ConditionModel $condition)
+    public function __construct(TriggerModel $trigger, ConditionModel $condition)
     {
         parent::__construct();
 
@@ -118,7 +117,7 @@ class Trigger extends BackendController
     protected function getTotalTrigger(array $query)
     {
         $query['count'] = true;
-        return $this->trigger->getList($query);
+        return (int) $this->trigger->getList($query);
     }
 
     /**
@@ -130,7 +129,7 @@ class Trigger extends BackendController
     protected function getListTrigger(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        return $this->trigger->getList($query);
+        return (array) $this->trigger->getList($query);
     }
 
     /**
@@ -366,9 +365,8 @@ class Trigger extends BackendController
         $title = $this->text('Add trigger');
 
         if (isset($trigger['name'])) {
-            $title = $this->text('Edit trigger %name', array(
-                '%name' => $trigger['name']
-            ));
+            $vars = array('%name' => $trigger['name']);
+            $title = $this->text('Edit trigger %name', $vars);
         }
 
         $this->setTitle($title);

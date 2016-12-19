@@ -116,7 +116,7 @@ class Review extends BackendController
     protected function getTotalReview(array $query)
     {
         $query['count'] = true;
-        return $this->review->getList($query);
+        return (int) $this->review->getList($query);
     }
 
     /**
@@ -128,7 +128,7 @@ class Review extends BackendController
     protected function getListReview(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $reviews = $this->review->getList($query);
+        $reviews = (array) $this->review->getList($query);
 
         foreach ($reviews as &$review) {
             $review['product'] = '';

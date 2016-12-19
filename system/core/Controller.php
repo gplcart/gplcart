@@ -15,7 +15,6 @@ namespace core;
  */
 class Controller
 {
-
     /**
      * Whether we're installing the system
      * @var boolean

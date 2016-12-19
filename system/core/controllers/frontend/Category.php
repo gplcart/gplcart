@@ -255,7 +255,7 @@ class Category extends FrontendController
         );
 
         $options += $query;
-        return $this->product->getList($options);
+        return (int) $this->product->getList($options);
     }
 
 }

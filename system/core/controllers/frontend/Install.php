@@ -207,12 +207,16 @@ class Install extends FrontendController
 
         $result = $this->install->full($submitted);
 
-        if ($result !== true) {
-            $url = $this->url('', $this->query);
-            $this->redirect($url, $result, 'danger');
+        if ($result === true) {
+            $this->processFinishInstall();
         }
 
-        $this->processFinishInstall();
+        if (empty($result)) {
+            $result = $this->text('An error occurred');
+        }
+
+        $url = $this->url('', $this->query);
+        $this->redirect($url, (string) $result, 'danger');
     }
 
     /**

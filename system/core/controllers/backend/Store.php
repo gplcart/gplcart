@@ -124,7 +124,7 @@ class Store extends BackendController
     protected function getTotalStore(array $query)
     {
         $query['count'] = true;
-        return $this->store->getList($query);
+        return (int) $this->store->getList($query);
     }
 
     /**
@@ -260,7 +260,7 @@ class Store extends BackendController
     protected function getListCollectionStore($store_id)
     {
         $conditions = array('status' => 1, 'store_id' => $store_id);
-        $collections = $this->collection->getList($conditions);
+        $collections = (array) $this->collection->getList($conditions);
 
         $list = array();
         foreach ($collections as $collection) {

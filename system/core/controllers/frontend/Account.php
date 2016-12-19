@@ -9,15 +9,15 @@
 
 namespace core\controllers\frontend;
 
-use core\controllers\frontend\Controller as FrontendController;
-use core\models\Address as AddressModel;
-use core\models\Country as CountryModel;
 use core\models\Order as OrderModel;
 use core\models\State as StateModel;
-use core\models\UserRole as UserRoleModel;
-use core\models\PriceRule as PriceRuleModel;
 use core\models\Payment as PaymentModel;
+use core\models\Address as AddressModel;
+use core\models\Country as CountryModel;
+use core\models\UserRole as UserRoleModel;
 use core\models\Shipping as ShippingModel;
+use core\models\PriceRule as PriceRuleModel;
+use core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
@@ -146,7 +146,7 @@ class Account extends FrontendController
     /**
      * Returns a number of total orders for the customer
      * @param integer $user_id
-     * @return array
+     * @return integer
      */
     protected function getTotalOrderAccount($user_id)
     {
@@ -155,7 +155,7 @@ class Account extends FrontendController
             'user_id' => $user_id
         );
 
-        return $this->order->getList($options);
+        return (int) $this->order->getList($options);
     }
 
     /**
@@ -174,7 +174,7 @@ class Account extends FrontendController
         );
 
         $query['user_id'] = $user_id;
-        $orders = $this->order->getList($query);
+        $orders = (array) $this->order->getList($query);
 
         foreach ($orders as $order_id => &$order) {
 

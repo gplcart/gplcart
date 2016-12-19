@@ -18,6 +18,7 @@ use core\controllers\backend\Controller as BackendController;
  */
 class ProductClass extends BackendController
 {
+
     /**
      * Product model instance
      * @var \core\models\ProductClass $product_class
@@ -117,7 +118,7 @@ class ProductClass extends BackendController
     public function getTotalProductClass(array $query)
     {
         $query['count'] = true;
-        return $this->product_class->getList($query);
+        return (int) $this->product_class->getList($query);
     }
 
     /**
@@ -129,7 +130,7 @@ class ProductClass extends BackendController
     protected function getListProductClass(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        return $this->product_class->getList($query);
+        return (array) $this->product_class->getList($query);
     }
 
     /**
@@ -357,15 +358,17 @@ class ProductClass extends BackendController
      */
     protected function getFieldsProductClass($product_class_id, $unique = false)
     {
-        $fields = $this->product_class->getFields($product_class_id);
+        $class_fields = $this->product_class->getFields($product_class_id);
 
         if (!$unique) {
-            return $fields;
+            return $class_fields;
         }
 
         $unique_fields = array();
-        foreach ($this->field->getList() as $field) {
-            if (empty($fields[$field['field_id']])) {
+        $fields = (array) $this->field->getList();
+
+        foreach ($fields as $field) {
+            if (empty($class_fields[$field['field_id']])) {
                 $type = ($field['type'] === 'option') ? $this->text('Option') : $this->text('Attribute');
                 $unique_fields[$field['field_id']] = "{$field['title']} ($type)";
             }

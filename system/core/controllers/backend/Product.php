@@ -24,7 +24,6 @@ use core\controllers\backend\Controller as BackendController;
  */
 class Product extends BackendController
 {
-
     /**
      * Product model instance
      * @var \core\models\Product $product

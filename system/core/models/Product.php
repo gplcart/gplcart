@@ -616,7 +616,7 @@ class Product extends Model
             $list = $this->getList($data);
         }
 
-        return $list;
+        return (array) $list;
     }
 
     /**

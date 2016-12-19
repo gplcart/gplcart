@@ -259,7 +259,7 @@ class User extends FrontendController
 
     /**
      * Returns a user from the current reset password URL
-     * @return boolean|array
+     * @return array
      */
     protected function getForgetfulUser()
     {
@@ -291,7 +291,7 @@ class User extends FrontendController
 
         // Expired
         if ((int) $data['reset_password']['expires'] < GC_TIME) {
-            return $this->redirect('forgot');
+            $this->redirect('forgot');
         }
 
         return $user;
@@ -331,7 +331,6 @@ class User extends FrontendController
 
     /**
      * Validates an array of submitted data to restore forgotten password
-     * @param array $user
      * @return boolean
      */
     protected function validateResetPasswordUser()

@@ -124,16 +124,14 @@ class State extends BackendController
         }
 
         if ($updated > 0) {
-            $text = $this->text('Updated %num country states', array(
-                '%num' => $updated
-            ));
+            $vars = array('%num' => $updated);
+            $text = $this->text('Updated %num country states', $vars);
             $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $text = $this->text('Deleted %num country states', array(
-                '%num' => $deleted
-            ));
+            $vars = array('%num' => $deleted);
+            $text = $this->text('Deleted %num country states', $vars);
             $this->setMessage($text, 'success', true);
         }
 
@@ -154,7 +152,7 @@ class State extends BackendController
         );
 
         $options += $query;
-        return $this->state->getList($options);
+        return (int) $this->state->getList($options);
     }
 
     /**
@@ -172,7 +170,7 @@ class State extends BackendController
         );
 
         $options += $query;
-        return $this->state->getList($options);
+        return (array) $this->state->getList($options);
     }
 
     /**
@@ -181,10 +179,8 @@ class State extends BackendController
      */
     protected function setTitleListState(array $country)
     {
-        $text = $this->text('States of %country', array(
-            '%country' => $country['name']
-        ));
-
+        $vars = array('%country' => $country['name']);
+        $text = $this->text('States of %country', $vars);
         $this->setTitle($text);
     }
 
@@ -243,11 +239,11 @@ class State extends BackendController
 
     /**
      * Returns an array of active zones
-     * @return type
+     * @return array
      */
     protected function getZonesState()
     {
-        return $this->zone->getList(array('status' => 1));
+        return (array) $this->zone->getList(array('status' => 1));
     }
 
     /**
@@ -257,7 +253,7 @@ class State extends BackendController
     protected function canDeleteState(array $state)
     {
         return (isset($state['state_id'])//
-                && $this->canDelete($state['state_id'])//
+                && $this->state->canDelete($state['state_id'])//
                 && $this->access('state_delete'));
     }
 

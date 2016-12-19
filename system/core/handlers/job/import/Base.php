@@ -323,7 +323,7 @@ class Base
             return $path;
         }
 
-        $this->setError($result);
+        $this->setError((string) $result);
         return false;
     }
 
@@ -345,7 +345,7 @@ class Base
             return $this->file->getUploadedFile(true);
         }
 
-        $this->setError($result);
+        $this->setError((string) $result);
         return false;
     }
 

@@ -344,8 +344,10 @@ class Report extends Model
      */
     public function checkFilesystem()
     {
-        $results[] = $this->checkPermissions(GC_CONFIG_COMMON);
-        $results[] = $this->checkPermissions(GC_CONFIG_DATABASE);
+        $results = array(
+            $this->checkPermissions(GC_CONFIG_COMMON),
+            $this->checkPermissions(GC_CONFIG_DATABASE)
+        );
 
         if (file_exists(GC_CONFIG_OVERRIDE)) {
             $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
@@ -358,13 +360,13 @@ class Report extends Model
             $results[] = $this->checkHtaccess($directory, $private);
         }
 
-        $results = array_filter($results, 'is_string');
+        $filtered = array_filter($results, 'is_string');
 
-        if (empty($results)) {
+        if (empty($filtered)) {
             return true;
         }
 
-        return $results;
+        return $filtered;
     }
 
     /**

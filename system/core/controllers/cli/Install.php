@@ -72,7 +72,12 @@ class Install extends CliController
         if ($result === true) {
             $this->setMessageComplete($submitted);
         } else {
-            $this->setError($result);
+
+            if (empty($result)) {
+                $result = $this->text('An error occurred');
+            }
+
+            $this->setError((string) $result);
         }
 
         $this->output();
