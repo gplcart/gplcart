@@ -322,11 +322,10 @@ class Route
      */
     protected function callControllerNotFound()
     {
-        $class = 'core\\controllers\\frontend\\Controller';
-
-        // Use correct templates
         if ($this->url->isBackend()) {
             $class = 'core\\controllers\\backend\\Controller';
+        } else {
+            $class = 'core\\controllers\\frontend\\Controller';
         }
 
         $route = array(

@@ -65,7 +65,7 @@ class Container
 
         $registered = static::registered($class);
 
-        if ($share && $registered) {
+        if ($share && is_object($registered)) {
             return $registered;
         }
 
@@ -133,12 +133,15 @@ class Container
     /**
      * Returns a registered class instance
      * @param string $class
-     * @return object|boolean
+     * @return object
      */
     public static function registered($class)
     {
         $key = strtolower(trim($class, '\\'));
-        return isset(static::$registry[$key]) ? static::$registry[$key] : false;
+
+        if (isset(static::$registry[$key])) {
+            return static::$registry[$key];
+        }
     }
 
 }
