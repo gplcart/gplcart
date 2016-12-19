@@ -48,17 +48,17 @@ class Backend
      */
     protected function addCss($controller)
     {
-        $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css');
-        $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css');
-        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css');
-        $controller->setCss('files/assets/jquery/summernote/summernote.css');
-        $controller->setCss('files/assets/bootstrap/select/dist/css/bootstrap-select.min.css');
-        $controller->setCss('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css');
-        $controller->setCss('files/assets/jquery/primeui/components/core/core.css');
-        $controller->setCss('files/assets/jquery/primeui/components/growl/growl.css');
-        $controller->setCss('files/assets/jquery/primeui/components/terminal/terminal.css');
-        $controller->setCss('files/assets/codemirror/lib/codemirror.css');
-        $controller->setCss('system/modules/backend/css/style.css');
+        $controller->setCss('files/assets/bootstrap/bootstrap/css/bootstrap.min.css', 0);
+        $controller->setCss('files/assets/font-awesome/css/font-awesome.min.css', 10);
+        $controller->setCss('files/assets/jquery/ui/jquery-ui.min.css', 20);
+        $controller->setCss('files/assets/jquery/summernote/summernote.css', 30);
+        $controller->setCss('files/assets/bootstrap/select/dist/css/bootstrap-select.min.css', 40);
+        $controller->setCss('files/assets/bootstrap/colorpicker/dist/css/bootstrap-colorpicker.min.css', 50);
+        $controller->setCss('files/assets/jquery/primeui/components/core/core.css', 60);
+        $controller->setCss('files/assets/jquery/primeui/components/growl/growl.css', 70);
+        $controller->setCss('files/assets/jquery/primeui/components/terminal/terminal.css', 80);
+        $controller->setCss('files/assets/codemirror/lib/codemirror.css', 90);
+        $controller->setCss('system/modules/backend/css/style.css', 100);
     }
 
     /**

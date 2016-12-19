@@ -239,7 +239,7 @@ class Editor extends BackendController
         $this->setSubmitted('path', $file);
         $this->setSubmitted('module', $module);
         $this->setSubmitted('user_id', $this->uid);
-        
+
         $this->validate('editor');
     }
 
@@ -337,7 +337,7 @@ class Editor extends BackendController
     protected function getFilePathEditor(array $module, $encoded_filename)
     {
         $filepath = base64_decode(urldecode($encoded_filename));
-        
+
         $file = "{$module['directory']}/$filepath";
 
         if (!is_file($file) || !is_readable($file)) {
