@@ -32,7 +32,7 @@ class Container
 
     /**
      * Instantiates and registers a class
-     * @param string $class
+     * @param string|array $class
      * @param array $arguments
      * @param boolean $share
      * @return object

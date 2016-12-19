@@ -29,7 +29,7 @@ function gplcart_file_delete($directory, $pattern, $lifespan = 0)
 /**
  * Finds all files matching a given pattern in a given directory
  * @param string $path
- * @param string $pattern Either an array of allowed extensions or a pattern for glob()
+ * @param string|array $pattern
  * @return array
  */
 function gplcart_file_scan($path, $pattern)

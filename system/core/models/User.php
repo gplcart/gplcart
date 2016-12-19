@@ -357,7 +357,7 @@ class User extends Model
             return $result;
         }
 
-        $expected = gplcart_string_hash($data['password'], $user['hash'], false);
+        $expected = gplcart_string_hash($data['password'], $user['hash'], 0);
 
         if (!gplcart_string_equals($user['hash'], $expected)) {
             return $result;

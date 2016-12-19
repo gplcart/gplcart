@@ -157,7 +157,7 @@ class Logger
 
     /**
      * Formats an error message
-     * @param string $error
+     * @param array $error
      * @param string $header
      * @return string
      */

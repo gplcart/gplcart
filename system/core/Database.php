@@ -158,7 +158,7 @@ class Database extends PDO
      * @param $table
      * @param array $data
      * @param bool $prepare
-     * @return bool|string
+     * @return string
      */
     public function insert($table, array $data, $prepare = true)
     {
@@ -167,7 +167,7 @@ class Database extends PDO
         }
 
         if (empty($data)) {
-            return false;
+            return '0';
         }
 
         $keys = array_keys($data);

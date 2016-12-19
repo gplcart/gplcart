@@ -125,7 +125,7 @@ class Transaction extends BackendController
 
     /**
      * Returns an array of transactions
-     * @param integer $limit
+     * @param array $limit
      * @param array $query
      * @return array
      */

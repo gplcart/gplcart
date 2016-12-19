@@ -9,8 +9,6 @@
 
 namespace core\helpers;
 
-use BadMethodCallException;
-
 /**
  * Wrapper methods for translit library
  */
@@ -33,19 +31,15 @@ class Translit
     }
 
     /**
-     * Access to library methods
-     * @param string $method
-     * @param array $arguments
-     * @return mixed
-     * @throws BadMethodCallException
+     * Transliterates a string
+     * @param string $string
+     * @param string $unknown
+     * @param null|string $source_langcode
+     * @return string
      */
-    public function __call($method, array $arguments)
+    public function get($string, $unknown = '?', $source_langcode = null)
     {
-        if (is_callable(array($this->lib, $method))) {
-            return call_user_func_array(array($this->lib, $method), $arguments);
-        }
-
-        throw new BadMethodCallException("No such method exists: $method");
+        return $this->lib->get($string, $unknown, $source_langcode);
     }
 
 }

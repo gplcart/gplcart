@@ -14,7 +14,6 @@ use core\Container;
 use core\helpers\Zip as ZipHelper;
 use core\models\Backup as BackupModel;
 use core\models\Language as LanguageModel;
-use InvalidArgumentException;
 use core\exceptions\ModuleException;
 
 /**
@@ -731,7 +730,7 @@ class Module extends Model
 
     /**
      * Updates an existing module from a ZIP file
-     * @param array $file
+     * @param string $file
      * @param array $module
      * @return boolean|string
      */
@@ -795,7 +794,7 @@ class Module extends Model
     {
         try {
             $files = $this->zip->set($file)->getList();
-        } catch (InvalidArgumentException $e) {
+        } catch (ModuleException $e) {
             trigger_error($e->getMessage());
             return array();
         }

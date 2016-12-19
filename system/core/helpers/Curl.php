@@ -14,10 +14,9 @@ namespace core\helpers;
  */
 class Curl
 {
-
     /**
      * Array of curl response info
-     * @var array
+     * @var mixed
      */
     protected $info = array();
 

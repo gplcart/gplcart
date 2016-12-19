@@ -54,8 +54,8 @@ function &gplcart_cache($name, $default_value = null, $reset = false)
 
 /**
  * Converts human readable file syzes to numeric bytes
- * @param type $value
- * @return int
+ * @param string $value
+ * @return integer
  */
 function gplcart_to_bytes($value)
 {

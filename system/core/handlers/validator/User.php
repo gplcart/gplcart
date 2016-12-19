@@ -295,7 +295,7 @@ class User extends BaseValidator
         }
 
         $updating = $this->getUpdating();
-        $hash = gplcart_string_hash($old_password, $updating['hash'], false);
+        $hash = gplcart_string_hash($old_password, $updating['hash'], 0);
 
         if (!gplcart_string_equals($updating['hash'], $hash)) {
             $error = $this->language->text('Old and new password not matching');

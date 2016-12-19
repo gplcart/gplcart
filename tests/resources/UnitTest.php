@@ -10,6 +10,7 @@
 namespace tests\resources;
 
 use ReflectionClass;
+use ReflectionException;
 use PHPUnit_Framework_TestCase;
 
 class UnitTest extends PHPUnit_Framework_TestCase
@@ -22,8 +23,8 @@ class UnitTest extends PHPUnit_Framework_TestCase
     protected $object;
 
     /**
-     *
-     * @var array An array of created temporary files
+     * An array of temporary created files
+     * @var array
      */
     protected $files = array();
 
@@ -54,7 +55,7 @@ class UnitTest extends PHPUnit_Framework_TestCase
     protected function getInstance($class)
     {
         if (!class_exists($class)) {
-            return false;
+            throw new ReflectionException("Class $class is not callable");
         }
 
         $reflection = new ReflectionClass($class);

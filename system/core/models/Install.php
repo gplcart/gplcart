@@ -10,8 +10,8 @@
 namespace core\models;
 
 use core\Model as Model;
-use core\Container as Container;
 use core\Database as Database;
+use core\Container as Container;
 use core\models\Store as StoreModel;
 use core\models\Language as LanguageModel;
 use core\exceptions\DatabaseException;
@@ -331,7 +331,7 @@ class Install extends Model
             $this->database->insert('category_group', $group);
         }
     }
-
+    
     /**
      * Creates default store
      * @param array $settings
@@ -356,7 +356,7 @@ class Install extends Model
         $store_id = $this->database->insert('store', $store);
         $this->config->set('store', $store_id);
 
-        return $store_id;
+        return (int) $store_id;
     }
 
     /**

@@ -18,6 +18,7 @@ use core\Handler;
  */
 class Mail extends Model
 {
+
     /**
      * Debug info
      * @var string
@@ -32,7 +33,7 @@ class Mail extends Model
 
     /**
      * PHPMailer instance
-     * @var \libraries\phpmailer\class.phpmailer $mailer
+     * @var \PHPMailer $mailer
      */
     protected $mailer;
 

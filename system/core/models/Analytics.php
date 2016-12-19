@@ -76,7 +76,7 @@ class Analytics extends Model
      * @param string $email
      * @param string $certificate
      * @param string $app_name
-     * @return object $this
+     * @return \core\models\Analytics
      */
     public function setCredentials($email, $certificate, $app_name)
     {
@@ -110,8 +110,8 @@ class Analytics extends Model
 
     /**
      * Sets a Google Analytics view to work with
-     * @param string $view
-     * @return object $this
+     * @param integer $view
+     * @return \core\models\Analytics
      */
     public function setView($view)
     {

@@ -121,7 +121,7 @@ class Checkout extends FrontendController
 
     /**
      * Order customer ID. Default to cart UID
-     * @var string|integer 
+     * @var mixed
      */
     protected $order_user_id;
 
