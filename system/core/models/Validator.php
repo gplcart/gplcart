@@ -50,14 +50,10 @@ class Validator extends Model
         $result = null;
         $handlers = $this->getHandlers();
 
-        // Do not use Handler::call()
-        // as we need to pass $submitted by reference
         if (!empty($handlers[$handler_id]['handlers']['validate'])) {
             $class = $handlers[$handler_id]['handlers']['validate'];
             $instance = Container::instance($class);
-            if (is_object($instance)) {
-                $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
-            }
+            $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
         }
 
         $this->hook->fire('validate.after', $submitted, $options, $result);
@@ -158,6 +154,12 @@ class Validator extends Model
         $handlers['compare'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\Compare', 'compare')
+            ),
+        );
+
+        $handlers['editor'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Editor', 'editor')
             ),
         );
 

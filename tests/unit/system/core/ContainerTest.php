@@ -10,6 +10,7 @@
 namespace tests\unit\system\core;
 
 use core\Container;
+use ReflectionException;
 use tests\resources\UnitTest;
 
 /**
@@ -24,8 +25,17 @@ class ContainerTest extends UnitTest
      */
     public function testInstance()
     {
+        $passed = 0;
         $instance = Container::instance('core\\Facade');
-        $this->assertTrue(is_object($instance));
+        $passed += (int) is_object($instance);
+
+        try {
+            Container::instance('fake\\Class');
+        } catch (ReflectionException $e) {
+            $passed ++;
+        }
+
+        $this->assertEquals(2, $passed);
     }
 
     /**

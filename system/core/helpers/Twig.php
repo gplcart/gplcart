@@ -32,7 +32,7 @@ class Twig
      */
     public function __construct()
     {
-        gplcart_require_library('twig/Autoloader.php');
+        gplcart_require_library('twig/lib/Twig/Autoloader.php');
         \Twig_Autoloader::register();
     }
 
@@ -88,6 +88,26 @@ class Twig
 
         $template = $this->twig->loadTemplate($file);
         return $template->render($data);
+    }
+
+    /**
+     * Validates Twig syntax for a given template
+     * @param string $content
+     * @param string $file
+     * @param \core\Controller $object
+     * @return boolean
+     */
+    public function validate($content, $file, $object)
+    {
+        $info = pathinfo($file);
+        $this->set($info['dirname'], $object);
+
+        try {
+            $this->twig->parse($this->twig->tokenize(new \Twig_Source($content, $info['basename'])));
+            return true;
+        } catch (\Twig_Error_Syntax $e) {
+            return $e->getMessage();
+        }
     }
 
     /**

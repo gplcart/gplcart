@@ -140,10 +140,6 @@ class Hook
     {
         $instance = Container::instance(array($namespace, $method));
 
-        if (empty($instance)) {
-            return false;
-        }
-
         try {
             $instance->{$method}($a, $b, $c, $d, $e);
             $this->setCalled($method, $namespace);

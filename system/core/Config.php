@@ -285,7 +285,7 @@ class Config
         $class = $this->getModuleClass($name);
         $instance = Container::instance($class);
 
-        if (empty($instance) || !is_callable(array($instance, 'info'))) {
+        if (!is_callable(array($instance, 'info'))) {
             return false;
         }
 

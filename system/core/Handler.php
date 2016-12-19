@@ -10,6 +10,7 @@
 namespace core;
 
 use core\Container;
+use ReflectionException;
 
 /**
  * Provides methods to work with various system handlers
@@ -59,13 +60,7 @@ class Handler
             $handler = $handlers['handlers'][$name];
         }
 
-        $instance = Container::instance($handler);
-
-        if (empty($instance)) {
-            return false;
-        }
-
-        $handler[0] = $instance;
+        $handler[0] = Container::instance($handler);
         return $handler;
     }
 

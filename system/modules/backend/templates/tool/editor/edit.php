@@ -20,7 +20,9 @@
       <div class="form-group<?php echo $this->error('content', ' has-error'); ?>">
         <div class="col-md-12">
           <textarea name="editor[content]" data-codemirror="true" rows="<?php echo $lines; ?>" class="form-control"><?php echo isset($editor['content']) ? $this->escape($editor['content']) : ''; ?></textarea>
-          <div class="help-block"><?php echo $this->error('content'); ?></div>
+          <div class="help-block">
+              <?php echo $this->error('content'); ?>
+          </div>
         </div>
       </div>
     </div>
