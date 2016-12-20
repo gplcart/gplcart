@@ -217,6 +217,7 @@ class UserRole extends Model
     /**
      * Returns an array of default permissions
      * @return array
+     * @todo move to config folder
      */
     protected function defaultPermissions()
     {

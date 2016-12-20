@@ -15,6 +15,7 @@ namespace core;
  */
 class Controller
 {
+
     /**
      * Whether we're installing the system
      * @var boolean
@@ -26,6 +27,12 @@ class Controller
      * @var boolean
      */
     protected $backend;
+
+    /**
+     * Global filter ID
+     * @var integer
+     */
+    protected $filter_id;
 
     /**
      * Name of the current theme
@@ -634,7 +641,7 @@ class Controller
         $this->document = Container::instance('core\\helpers\\Document');
 
         /* @var $filter \core\helpers\Filter */
-        $this->filter = Container::instance('core\\helpers\\Filter');
+        $this->filter = Container::instance('core\\models\\Filter');
 
         /* @var $device \core\helpers\Device */
         $this->device = Container::instance('core\\helpers\\Device');
@@ -1657,15 +1664,27 @@ class Controller
     }
 
     /**
-     * Removes dangerous stuff from a string
+     * Cleans up HTML string
      * @param string $string
-     * @param array|null $tags
-     * @param array|null $protocols
+     * @param null|integer $filter_id
      * @return string
      */
-    public function xss($string, $tags = null, $protocols = null)
+    public function xss($string, $filter_id = null)
     {
-        return $this->filter->xss($string, $tags, $protocols);
+        if (!isset($filter_id)) {
+            $filter_id = $this->filter_id;
+        }
+
+        return $this->filter->filter($string, $filter_id);
+    }
+
+    /**
+     * Sets a ID of Html filter globally
+     * @param integer $filter_id
+     */
+    public function setHtmlFilter($filter_id)
+    {
+        $this->filter_id = $filter_id;
     }
 
     /**

@@ -38,8 +38,8 @@
     </div>
     <?php } else { ?>
     <?php echo $this->text('No have no orders yet'); ?>
-    <?php if ($this->access('order_add')) { ?>
-    <a href="<?php echo $this->url('admin/sale/order/add'); ?>">
+    <?php if ($this->access('order_add') && $this->access('user')) { ?>
+    <a href="<?php echo $this->url('admin/user/list'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>

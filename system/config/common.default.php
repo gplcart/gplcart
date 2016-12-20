@@ -122,9 +122,12 @@ $config = array();
 # $config['user_superadmin'] = 1; // Superadmin database UID
 # $config['order_complete_message'] = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
 # $config['order_complete_message_anonymous'] = 'Thank you for your order! Order ID: !order_id, status: !status';
-# $config['cli_disabled'] = 0;
+# $config['cli_disabled'] = 0; // Wheter comman line support enabled
+# $config['filter_1'] = array(); // Config for filter "Minimal"
+# $config['filter_2'] = array(); // Config for filter "Advanced"
+# $config['filter_3'] = array(); Config for filter "Maximum"
+
 /**
  * End of configurable settings
  * The settings below are appended automatically during installation.
  */
-
