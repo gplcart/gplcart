@@ -104,16 +104,19 @@ class Database extends PDO
      * Prepares a single result, e.g unserialize serialized data
      * @param mixed $data
      * @param array $options
+     * @return null
      */
     protected function prepareResult(&$data, array $options)
     {
         if (empty($options['unserialize']) || empty($data)) {
-            return;
+            return null;
         }
 
         foreach ((array) $options['unserialize'] as $field) {
             $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
         }
+
+        return null;
     }
 
     /**
@@ -305,7 +308,7 @@ class Database extends PDO
      * @param array $data
      * @param array $conditions
      * @param bool $filter
-     * @return bool|int
+     * @return integer
      */
     public function update($table, array $data, array $conditions,
             $filter = true
@@ -316,7 +319,7 @@ class Database extends PDO
         }
 
         if (empty($data)) {
-            return false;
+            return 0;
         }
 
         $farray = array();
@@ -350,12 +353,12 @@ class Database extends PDO
      * Performs a DELETE query
      * @param string $table
      * @param array $conditions
-     * @return integer|boolean
+     * @return integer
      */
     public function delete($table, array $conditions)
     {
         if (empty($conditions)) {
-            return false;
+            return 0;
         }
 
         $carray = array();

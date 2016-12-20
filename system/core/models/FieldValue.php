@@ -291,7 +291,7 @@ class FieldValue extends Model
         }
 
         $conditions = array('field_value_id' => $field_value_id);
-        $updated = (int) $this->db->update('field_value', $data, $conditions);
+        $updated = $this->db->update('field_value', $data, $conditions);
 
         $data['field_value_id'] = $field_value_id;
 

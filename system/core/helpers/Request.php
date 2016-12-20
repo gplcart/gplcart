@@ -200,7 +200,7 @@ class Request
         $post = empty($_POST) ? array() : $_POST;
 
         if ($filter !== 'raw') {
-            $this->sanitize($post, $filter);
+            $this->sanitize($post, (bool) $filter);
         }
 
         if (isset($name)) {

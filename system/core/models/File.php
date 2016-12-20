@@ -182,7 +182,7 @@ class File extends Model
         $this->hook->fire('update.file.before', $file_id, $data);
 
         $conditions = array('file_id' => $file_id);
-        $updated = (int) $this->db->update('file', $data, $conditions);
+        $updated = $this->db->update('file', $data, $conditions);
 
         $data['file_id'] = $file_id;
 

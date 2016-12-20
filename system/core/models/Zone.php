@@ -76,7 +76,7 @@ class Zone extends Model
             return false;
         }
 
-        $result = (bool) $this->db->update('zone', $data, array('zone_id' => $zone_id));
+        $result = $this->db->update('zone', $data, array('zone_id' => $zone_id));
 
         $this->hook->fire('update.zone.after', $zone_id, $data, $result);
 

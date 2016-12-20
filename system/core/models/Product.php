@@ -190,7 +190,7 @@ class Product extends Model
 
         $conditions = array('product_id' => $product_id);
 
-        $updated = (int) $this->db->update('product', $data, $conditions);
+        $updated = $this->db->update('product', $data, $conditions);
         $updated += (int) $this->setSku($data);
         $updated += (int) $this->setTranslation($data);
         $updated += (int) $this->setImages($data);

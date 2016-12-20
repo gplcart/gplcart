@@ -11,6 +11,7 @@ namespace core\handlers\trigger;
 
 use core\Route;
 use core\models\User as UserModel;
+use core\models\Address as AddressModel;
 use core\models\Product as ProductModel;
 use core\models\Currency as CurrencyModel;
 use core\models\Condition as ConditionModel;
@@ -49,21 +50,30 @@ class Condition
     protected $currency;
 
     /**
+     * Address model instance
+     * @var \core\models\Address $address
+     */
+    protected $address;
+
+    /**
      * Constructor
      * @param ConditionModel $condition
      * @param UserModel $user
      * @param CurrencyModel $currency
      * @param ProductModel $product
+     * @param AddressModel $address
      * @param Route $route
      */
     public function __construct(ConditionModel $condition, UserModel $user,
-            CurrencyModel $currency, ProductModel $product, Route $route)
+            CurrencyModel $currency, ProductModel $product,
+            AddressModel $address, Route $route)
     {
-        $this->route = $route;
         $this->user = $user;
-        $this->condition = $condition;
+        $this->route = $route;
+        $this->address = $address;
         $this->product = $product;
         $this->currency = $currency;
+        $this->condition = $condition;
     }
 
     /**
@@ -207,8 +217,8 @@ class Condition
         foreach ($data['cart']['items'] as $item) {
             $product_ids[] = $item['product_id'];
         }
-        
-        if(empty($product_ids)){
+
+        if (empty($product_ids)) {
             return false;
         }
 
@@ -249,9 +259,9 @@ class Condition
         foreach ($data['cart']['items'] as $item) {
             $product_ids[] = $item['product_id'];
         }
-        
-        if(empty($product_ids)){
-           return false; 
+
+        if (empty($product_ids)) {
+            return false;
         }
 
         $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));

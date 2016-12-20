@@ -11,6 +11,7 @@ namespace core\handlers\validator;
 
 use core\models\Sku as SkuModel;
 use core\models\Cart as CartModel;
+use core\models\Order as OrderModel;
 use core\models\Product as ProductModel;
 use core\handlers\validator\Base as BaseValidator;
 
@@ -39,18 +40,26 @@ class Cart extends BaseValidator
     protected $sku;
 
     /**
+     * Order model instance
+     * @var \core\models\Order $order
+     */
+    protected $order;
+
+    /**
      * Constructor
      * @param CartModel $cart
      * @param ProductModel $product
      * @param SkuModel $sku
+     * @param OrderModel $order
      */
     public function __construct(CartModel $cart, ProductModel $product,
-            SkuModel $sku)
+            SkuModel $sku, OrderModel $order)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->cart = $cart;
+        $this->order = $order;
         $this->product = $product;
     }
 

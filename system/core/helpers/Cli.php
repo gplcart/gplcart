@@ -33,6 +33,8 @@ class Cli
         $out = array();
         for ($i = 0, $j = count($argv); $i < $j; $i++) {
 
+            $key = null;
+
             $arg = $argv[$i];
             if (substr($arg, 0, 2) === '--') {
 

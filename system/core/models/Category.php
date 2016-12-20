@@ -574,7 +574,7 @@ class Category extends Model
         }
 
         $conditions = array('category_id' => (int) $category_id);
-        $updated = (int) $this->db->update('category', $data, $conditions);
+        $updated = $this->db->update('category', $data, $conditions);
 
         $data['category_id'] = $category_id;
 

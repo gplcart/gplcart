@@ -147,7 +147,7 @@ class State extends Model
 
         $conditions = array('state_id' => (int) $state_id);
 
-        $deleted = $this->db->delete('state', $conditions);
+        $deleted = (bool) $this->db->delete('state', $conditions);
 
         if ($deleted) {
             $this->db->delete('zone', $conditions);

@@ -160,7 +160,7 @@ class Base
 
     /**
      * Returns an array that represents a path to the nested array value
-     * @param string $key A base key
+     * @param string|array $key A base key
      * @param array $options
      * @return array
      */

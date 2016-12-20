@@ -130,7 +130,7 @@ class Wishlist extends Model
 
         if (!$this->canAdd($data['user_id'], $data['store_id'])) {
 
-            $limit = $this->wishlist->getLimits($data['user_id']);
+            $limit = $this->getLimits($data['user_id']);
 
             return array(
                 'severity' => 'warning',

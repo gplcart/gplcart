@@ -86,7 +86,7 @@ class User extends Model
     /**
      * Adds a user
      * @param array $data
-     * @return integer
+     * @return integer|boolean
      */
     public function add(array $data)
     {
@@ -157,7 +157,7 @@ class User extends Model
         }
 
         $options = array('user_id' => $user_id);
-        $updated = (int) $this->db->update('user', $data, $options);
+        $updated = $this->db->update('user', $data, $options);
         $updated += (int) $this->setAddress($data);
 
         $result = ($updated > 0);

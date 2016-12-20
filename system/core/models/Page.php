@@ -221,7 +221,7 @@ class Page extends Model
         $data['modified'] = GC_TIME;
         $conditions = array('page_id' => (int) $page_id);
 
-        $updated = (int) $this->db->update('page', $data, $conditions);
+        $updated = $this->db->update('page', $data, $conditions);
 
         $data['page_id'] = $page_id;
 

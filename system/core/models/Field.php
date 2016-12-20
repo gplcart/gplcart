@@ -346,7 +346,7 @@ class Field extends Model
         }
 
         $conditions = array('field_id' => $field_id);
-        $updated = (int) $this->db->update('field', $data, $conditions);
+        $updated = $this->db->update('field', $data, $conditions);
 
         $data['field_id'] = $field_id;
         $updated += (int) $this->setTranslation($data);

@@ -9,6 +9,7 @@
 
 namespace core\handlers\validator;
 
+use core\models\Price as PriceModel;
 use core\models\Trigger as TriggerModel;
 use core\models\Currency as CurrencyModel;
 use core\models\PriceRule as PriceRuleModel;
@@ -39,16 +40,25 @@ class PriceRule extends BaseValidator
     protected $currency;
 
     /**
+     * Price model instance
+     * @var \core\models\Price $price
+     */
+    protected $price;
+
+    /**
      * Constructor
      * @param PriceRuleModel $rule
      * @param TriggerModel $trigger
+     * @param CurrencyModel $currency
+     * @param PriceModel $price
      */
     public function __construct(PriceRuleModel $rule, TriggerModel $trigger,
-            CurrencyModel $currency)
+            CurrencyModel $currency, PriceModel $price)
     {
         parent::__construct();
 
         $this->rule = $rule;
+        $this->price = $price;
         $this->trigger = $trigger;
         $this->currency = $currency;
     }

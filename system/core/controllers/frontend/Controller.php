@@ -74,7 +74,7 @@ class Controller extends BaseController
 
     /**
      * Collection item model instance
-     * @var \core\models\Collection item $collection_item
+     * @var \core\models\CollectionItem $collection_item
      */
     protected $collection_item;
 

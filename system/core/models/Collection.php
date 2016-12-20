@@ -293,7 +293,7 @@ class Collection extends Model
         unset($data['type']); // Cannot change item type!
 
         $conditions = array('collection_id' => (int)$collection_id);
-        $updated = (int)$this->db->update('collection', $data, $conditions);
+        $updated = $this->db->update('collection', $data, $conditions);
 
         $data['collection_id'] = $collection_id;
         $updated += (int)$this->setTranslation($data);

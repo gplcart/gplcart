@@ -122,7 +122,7 @@ class TwoCheckout
             return false;
         }
 
-        $settings = $this->congig->module('twocheckout');
+        $settings = $this->config->module('twocheckout');
 
         $string = $settings['secret']
                 . $settings['account']
