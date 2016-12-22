@@ -12,7 +12,7 @@
     <div class="panel-body">
       <div class="form-group">
         <div class="col-md-12">
-          <?php echo $this->text('You\'re about to replace all corresponding data with the data from the backup. It cannot be undone. Make sure you have a valid backup of the data to be replaced!'); ?>
+          <?php echo $this->text('You\'re about to replace all corresponding data with a data from the backup. It cannot be undone. Make sure you have a valid backup of the data to be replaced!'); ?>
         </div>
       </div>
       <div class="form-group">

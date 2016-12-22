@@ -6,14 +6,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-
 <form method="post" class="form-horizontal edit-filter">
   <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
-    <div class="panel-body">
-      
-
-              
+    <div class="panel-body">     
       <div class="form-group">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Status'); ?>
@@ -48,9 +44,6 @@
           </div>
         </div>
       </div>
-      
-
-      
     </div>
   </div>
   <div class="panel panel-default">

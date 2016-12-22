@@ -42,8 +42,8 @@
         <a class="btn btn-default" href="<?php echo $this->url('admin/content/page/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
-        <?php } ?> 
-      </div>  
+        <?php } ?>
+      </div>
     </div>
     <div class="panel-body table-responsive">
       <table class="table pages-list">

@@ -157,7 +157,7 @@
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
-    <?php echo $this->text('Nothing to display. Check your internet connection'); ?>
+    <?php echo $this->text('Nothing to display'); ?>
   </div>
 </div>
 <?php } ?>

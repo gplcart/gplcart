@@ -65,26 +65,6 @@ class Filter extends Model
     }
 
     /**
-     * Filters a string using configuration for the given user role ID
-     * @param string $text
-     * @param integer $role_id
-     * @return string
-  
-    public function filterByRole($text, $role_id)
-    {
-        $filter = $this->getByRole($role_id);
-
-        $config = array();
-        if (!empty($filter['status'])) {
-            $config = $filter['config'];
-        }
-
-        return $this->filter->filter($text, $config);
-    }
-     * 
-     */
-
-    /**
      * Returns a filter
      * @param integer $filter_id
      * @return array
