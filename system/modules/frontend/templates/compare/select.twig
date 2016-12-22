@@ -1,0 +1,33 @@
+{#
+    Displays the select to compare page
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if products is not empty %}
+    {% for items in products %}
+        <div class="row products">
+          {% for product in items %}
+              {{ product['rendered']|raw }}
+          {% endfor %}
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            {% if items|length > 1 %}
+                <a href="{{ url('compare/' ~ items|keys|join(',')) }}" class="btn btn-default">
+                  <i class="fa fa-balance-scale"></i> {{ text('Compare') }}
+                </a>
+            {% endif %}
+          </div>
+        </div>
+    {% endfor %}
+{% else %}
+    {{ text('Nothing to compare') }}
+{% endif %}

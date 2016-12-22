@@ -42,11 +42,11 @@ class Page extends FrontendController
     public function indexPage($page_id)
     {
         $page = $this->getPage($page_id);
-        
-        $this->setHtmlFilter($page);
 
-        $this->setImagesPage($page);
+        $this->setHtmlFilter($page);
+        $this->setDataImagesPage($page);
         $this->setData('page', $page);
+        $this->setRegionContentPage();
 
         $this->setTitlePage($page);
         $this->setMetaEntity($page);
@@ -55,11 +55,20 @@ class Page extends FrontendController
     }
 
     /**
-     * Renders the page
+     * Sets main content region
+     */
+    protected function setRegionContentPage()
+    {
+        $html = $this->render('page/content', $this->data);
+        $this->setRegion('region_content', $html);
+    }
+
+    /**
+     * Renders the page tempaltes
      */
     protected function outputPage()
     {
-        $this->output('page/page');
+        $this->output();
     }
 
     /**
@@ -113,12 +122,12 @@ class Page extends FrontendController
      * Sets rendered page images
      * @param array $page
      */
-    protected function setImagesPage(array $page)
+    protected function setDataImagesPage(array $page)
     {
         $imagestyle = $this->setting('image_style_page', 5);
         $this->setItemThumb($page, array('imagestyle' => $imagestyle));
 
-        $html = $this->render('page/images', array('page' => $page));
+        $html = $this->render('page/blocks/images', array('page' => $page));
         $this->setData('images', $html);
     }
 

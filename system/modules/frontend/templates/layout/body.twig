@@ -6,15 +6,14 @@
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
 
     @package GPL Cart core
-    @category theme
     @author Iurii Makukh <gplcart.software@gmail.com>
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
 #}
 <body{{ attributes({'class': body_classes})|raw }}>
   <div class="container wrapper">
     <div class="row">
-
       {# Top navbar #}
       <nav class="navbar navbar-inverse navbar-static-top first">
         <div class="container-fluid">
@@ -119,7 +118,6 @@
           </div>
         </div>
       </nav>
-
       {# Top region #}
       {% if region_top is not empty %}
       <nav class="navbar navbar-static-top second">
@@ -129,7 +127,6 @@
       </nav>
       {% endif %}
     </div>
-
     {# Breadcrumbs #}
     {% if breadcrumb is not empty %}
     <div class="breadcrumb">
@@ -147,9 +144,7 @@
       </ol>
     </div>
     {% endif %}
-
     <div class="row main">
-
       {# Left column #}
       {% if region_left is not empty %}
       <div class="col-md-2">
@@ -164,19 +159,18 @@
       {% if region_left is not empty and region_right is empty %}
           {% set region_content_class = 'col-md-10' %}
       {% endif %}
-
+      
       {# Only right column enabled #}
       {% if region_left is empty and region_right is not empty %}
           {% set region_content_class = 'col-md-10' %}
       {% endif %}
-
+      
       {# Both left and right columns are enabled #}
       {% if region_left is not empty and region_right is not empty %}
           {% set region_content_class = 'col-md-8' %}
       {% endif %}
-
+      
       <div class="{{ region_content_class }}">
-
         {# Messages #}
         {% if messages is not empty %}
         <div class="row" id="message">
@@ -192,18 +186,15 @@
           </div>
         </div>
         {% endif %}
-
         {# Content region #}
         {% if region_content is not empty %}
         <div class="region content">{{ region_content|raw }}</div>
         {% endif %}
-
         {# Bottom region #}
         {% if region_bottom is not empty %}
             <div class="region bottom">{{ region_bottom|raw }}</div>
         {% endif %}
       </div>
-
       {# Right column #}
       {% if region_right is not empty %}
       <div class="col-md-2">
@@ -212,7 +203,6 @@
       {% endif %}
     </div>
   </div>
-
   {# Footer #}
   <div class="footer">
     <div class="container">
@@ -237,16 +227,16 @@
         <div class="col-md-4">
           <ul class="list-unstyled">
             <li>
-              <a rel="nofollow" href="{{ url('about.html') }}">{{ text('About us') }}</a>
+              <a rel="nofollow" href="{{ url('page/1') }}">{{ text('About us') }}</a>
             </li>
             <li>
-              <a rel="nofollow" href="{{ url('contact.html') }}">{{ text('Contact us') }}</a>
+              <a rel="nofollow" href="{{ url('page/2') }}">{{ text('Contact us') }}</a>
             </li>
             <li>
-              <a rel="nofollow" href="{{ url('terms.html') }}">{{ text('Terms and conditions') }}</a>
+              <a rel="nofollow" href="{{ url('page/3') }}">{{ text('Terms and conditions') }}</a>
             </li>
             <li>
-              <a rel="nofollow" href="{{ url('faq.html') }}">{{ text('Questions and answers') }}</a>
+              <a rel="nofollow" href="{{ url('page/4') }}">{{ text('Questions and answers') }}</a>
             </li>
           </ul>
         </div>

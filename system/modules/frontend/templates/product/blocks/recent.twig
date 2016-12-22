@@ -1,0 +1,30 @@
+{#
+    Displays block of recent products
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if products is not empty %}
+<div class="panel panel-default recent-products">
+  <div class="panel-heading">{{ text('Recently viewed') }}</div>
+  <div class="panel-body">
+    <div class="row products" data-slider="true" data-slider-settings='{
+         "item": 4,
+         "pager": false,
+         "autoWidth": false,
+         "slideMargin": 0
+         }'>
+      {% for product in products %}
+          {{ product['rendered']|raw }}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}

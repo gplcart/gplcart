@@ -315,7 +315,7 @@ class Product extends FrontendController
         $products = $this->getRecentProduct($product['product_id']);
 
         $options = array('products' => $products);
-        $html = $this->render('product/block/recent', $options);
+        $html = $this->render('product/blocks/recent', $options);
 
         $this->setData('recent', $html);
     }
@@ -329,7 +329,7 @@ class Product extends FrontendController
         $products = $this->getRelatedProduct($product['product_id']);
 
         $options = array('products' => $products);
-        $html = $this->render('product/block/related', $options);
+        $html = $this->render('product/blocks/related', $options);
         $this->setData('related', $html);
     }
 
