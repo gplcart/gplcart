@@ -29,12 +29,6 @@ class Controller
     protected $backend;
 
     /**
-     * Global filter ID
-     * @var integer
-     */
-    protected $filter_id;
-
-    /**
      * Name of the current theme
      * @var string
      */
@@ -165,6 +159,12 @@ class Controller
      * @var array
      */
     protected $current_theme = array();
+
+    /**
+     * The current HTML filter
+     * @var array|false FALSE means disabled XSS filter, i.e raw output
+     */
+    protected $current_filter;
 
     /**
      * Array of the current theme module info
@@ -300,8 +300,8 @@ class Controller
     protected $document;
 
     /**
-     * Filter class instance
-     * @var \core\Filter $filter
+     * Filter model instance
+     * @var \core\models\Filter $filter
      */
     protected $filter;
 
@@ -613,6 +613,9 @@ class Controller
         /* @var $validator \core\models\Validator */
         $this->validator = Container::instance('core\\models\\Validator');
 
+        /* @var $filter \core\models\Filter */
+        $this->filter = Container::instance('core\\models\\Filter');
+
         /* @var $url \core\helpers\Url */
         $this->url = Container::instance('core\\helpers\\Url');
 
@@ -639,9 +642,6 @@ class Controller
 
         /* @var $document \core\helpers\Document */
         $this->document = Container::instance('core\\helpers\\Document');
-
-        /* @var $filter \core\helpers\Filter */
-        $this->filter = Container::instance('core\\models\\Filter');
 
         /* @var $device \core\helpers\Device */
         $this->device = Container::instance('core\\helpers\\Device');
@@ -1664,27 +1664,56 @@ class Controller
     }
 
     /**
-     * Cleans up HTML string
+     * Cleans up HTML string using HTML Purifier
      * @param string $string
-     * @param null|integer $filter_id
+     * @param mixed $filter
      * @return string
      */
-    public function xss($string, $filter_id = null)
+    public function xss($string, $filter = null)
     {
-        if (!isset($filter_id)) {
-            $filter_id = $this->filter_id;
+        if (!isset($filter)) {
+            $filter = $this->current_filter;
         }
 
-        return $this->filter->filter($string, $filter_id);
+        if ($filter === false) {
+            return $string; // Superadmin output
+        }
+
+        return $this->filter->filter($string, $filter);
     }
 
     /**
-     * Sets a ID of Html filter globally
-     * @param integer $filter_id
+     * Sets HTML filter globally
+     * @param array $data
+     * @return array|boolean
      */
-    public function setHtmlFilter($filter_id)
+    public function setHtmlFilter($data)
     {
-        $this->filter_id = $filter_id;
+        if (isset($data['user_id']) && $this->isSuperadmin($data['user_id'])) {
+
+            $filter_id = $this->config('filter_superadmin');
+
+            if (empty($filter_id)) {
+                $this->current_filter = false; // Disable filtering at all
+            } else {
+                $this->current_filter = $this->filter->get($filter_id);
+            }
+
+            return $this->current_filter;
+        }
+
+        $role_id = isset($data['role_id']) ? $data['role_id'] : 0;
+        $this->current_filter = $this->filter->getByRole($role_id);
+        return $this->current_filter;
+    }
+
+    /**
+     * Returns the current HTML filter
+     * @return array
+     */
+    public function getHtmlFilter()
+    {
+        return $this->current_filter;
     }
 
     /**

@@ -47,20 +47,42 @@ class Filter extends Model
     /**
      * Filters a text string
      * @param string $text
-     * @param integer|null $filter_id
+     * @param integer|array $filter
      * @return string
      */
-    public function filter($text, $filter_id = null)
+    public function filter($text, $filter)
     {
-        $config = array();
+        if (is_numeric($filter)) {
+            $filter = $this->get($filter);
+        }
 
-        if (isset($filter_id)) {
-            $filter = $this->get($filter_id);
-            $config = empty($filter['config']) ? array() : $filter['config'];
+        $config = array();
+        if (!empty($filter['status']) && !empty($filter['config'])) {
+            $config = $filter['config'];
         }
 
         return $this->filter->filter($text, $config);
     }
+
+    /**
+     * Filters a string using configuration for the given user role ID
+     * @param string $text
+     * @param integer $role_id
+     * @return string
+  
+    public function filterByRole($text, $role_id)
+    {
+        $filter = $this->getByRole($role_id);
+
+        $config = array();
+        if (!empty($filter['status'])) {
+            $config = $filter['config'];
+        }
+
+        return $this->filter->filter($text, $config);
+    }
+     * 
+     */
 
     /**
      * Returns a filter
@@ -74,26 +96,87 @@ class Filter extends Model
     }
 
     /**
-     * Returns an array of defined filters
-     * @param boolean $only_enabled
+     * Returns a filter for the given user role ID
+     * @param integer $role_id
      * @return array
      */
-    public function getList($only_enabled = false)
+    public function getByRole($role_id)
     {
-        $filters = &gplcart_cache('filters');
+        $filters = $this->getList();
+
+        foreach ($filters as $filter) {
+            if ($filter['role_id'] == $role_id) {
+                return $filter;
+            }
+        }
+
+        return array();
+    }
+
+    /**
+     * Updates a filter
+     * @param integer $filter_id
+     * @param array $data
+     * @return bool
+     */
+    public function update($filter_id, array $data)
+    {
+        $this->hook->fire('update.filter.before', $data);
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $overridable = array('status', 'role_id', 'config');
+
+        foreach ($overridable as $option) {
+            if (isset($data[$option])) {
+                $this->config->set("filter_{$filter_id}_{$option}", $data[$option]);
+            }
+        }
+
+        $this->hook->fire('update.filter.after', $data);
+        return true;
+    }
+
+    /**
+     * Returns an array of defined filters
+     * @param boolean $enabled
+     * @return array
+     */
+    public function getList($enabled = false)
+    {
+        $filters = &gplcart_cache("filters.$enabled");
 
         if (isset($filters)) {
             return $filters;
         }
 
-        $default = $this->getDefault();
+        $filters = $this->getDefault();
+        $overridable = array('status', 'role_id', 'config');
 
-        $filters = array();
-        foreach (array(1, 2, 3) as $level) {
-            $filters[$level] = $this->config->get("filter_$level", $default[$level]);
+        foreach ($filters as $filter_id => &$filter) {
+
+            // Make sure that filter ID is set
+            $filter['filter_id'] = $filter_id;
+
+            // Check overridable options and set them accordingly
+            foreach ($overridable as $option) {
+                $value = $this->config->get("filter_{$filter_id}_{$option}");
+                if (isset($value)) {
+                    $filter[$option] = $value;
+                }
+            }
         }
 
         $this->hook->fire('filters', $filters);
+
+        if ($enabled) {
+            $filters = array_filter($filters, function ($filter) {
+                return !empty($filter['status']);
+            });
+        }
+
         return $filters;
     }
 
@@ -106,22 +189,22 @@ class Filter extends Model
 
         $filters[1] = array(
             'name' => $this->language->text('Minimal'),
-            'description' => '',
+            'description' => $this->language->text('Minimal configuration for untrusted users'),
             'status' => true,
+            'role_id' => 0, // Anonymous
             'config' => array(
                 'AutoFormat.DisplayLinkURI' => true,
                 'AutoFormat.RemoveEmpty' => true,
-                'AutoFormat.RemoveSpansWithoutAttributes' => true,
                 'HTML.Allowed' => 'strong,em,p,b,s,i,a[href|title],img[src|alt],'
-                . 'blockquote,code,pre,del,ul,ol,li',
-                'HTML.Nofollow' => true
+                . 'blockquote,code,pre,del,ul,ol,li'
             )
         );
 
         $filters[2] = array(
             'name' => $this->language->text('Advanced'),
-            'description' => '',
+            'description' => $this->language->text('Advanced configuration for trusted users, e.g content managers'),
             'status' => true,
+            'role_id' => 3, // Content manager
             'config' => array(
                 'AutoFormat.Linkify' => true,
                 'AutoFormat.RemoveEmpty.RemoveNbsp' => true,
@@ -138,15 +221,15 @@ class Filter extends Model
                 'HTML.SafeObject' => true,
                 'HTML.SafeEmbed' => true,
                 'HTML.Trusted' => true,
-                'Output.FlashCompat' => true,
-                'Filter.YouTube' => true
+                'Output.FlashCompat' => true
             )
         );
 
         $filters[3] = array(
             'name' => $this->language->text('Maximum'),
-            'description' => '',
+            'description' => $this->language->text('Maximal configuration for experienced and trusted users, e.g superadmin'),
             'status' => true,
+            'role_id' => 1, // Director
             'config' => array(
                 'AutoFormat.Linkify' => true,
                 'AutoFormat.RemoveEmpty.RemoveNbsp' => false,
@@ -163,7 +246,6 @@ class Filter extends Model
                 'HTML.SafeEmbed' => true,
                 'HTML.Trusted' => true,
                 'Output.FlashCompat' => true,
-                'Filter.YouTube' => true,
                 'Attr.AllowedFrameTargets' => array('_blank', '_self', '_parent', '_top')
             )
         );

@@ -6,7 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-
 $routes = array();
 
 $routes['install'] = array(
@@ -851,6 +850,21 @@ $routes['admin/settings/zone/edit/(\d+)'] = array(
     'access' => 'zone_edit',
     'handlers' => array(
         'controller' => array('core\\controllers\\backend\\Zone', 'editZone')
+    )
+);
+
+$routes['admin/settings/filter'] = array(
+    'access' => 'filter',
+    'menu' => array('admin' => 'Filters'),
+    'handlers' => array(
+        'controller' => array('core\\controllers\\backend\\Filter', 'listFilter')
+    )
+);
+
+$routes['admin/settings/filter/edit/(\d+)'] = array(
+    'access' => 'filter_edit',
+    'handlers' => array(
+        'controller' => array('core\\controllers\\backend\\Filter', 'editFilter')
     )
 );
 

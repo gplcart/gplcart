@@ -372,6 +372,11 @@ class Category extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $category);
+        
+        if (empty($category['category_id'])) {
+            $this->setSubmitted('user_id', $this->uid);
+        }
+        
         $this->validate('category');
     }
 

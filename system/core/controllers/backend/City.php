@@ -198,10 +198,8 @@ class City extends BackendController
      */
     protected function setTitleListCity(array $state)
     {
-        $text = $this->text('Cities of state %state', array(
-            '%state' => $state['name']
-        ));
-
+        $vars = array('%state' => $state['name']);
+        $text = $this->text('Cities of state %state', $vars);
         $this->setTitle($text);
     }
 

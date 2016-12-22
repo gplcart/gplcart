@@ -66,6 +66,7 @@ class Category extends BaseValidator
         $this->validateGroupCategory($options);
         $this->validateParentCategory($options);
         $this->validateTranslation($options);
+        $this->validateUserId($options);
         $this->validateImages($options);
         $this->validateAliasCategory($options);
 

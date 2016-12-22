@@ -43,6 +43,8 @@ class Filter
      */
     public function filter($text, array $config = array())
     {
+        ksort($config);
+        
         $key = md5(json_encode($config));
 
         if (isset($this->instances[$key])) {

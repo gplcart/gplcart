@@ -70,6 +70,9 @@ class Product extends FrontendController
     public function indexProduct($product_id)
     {
         $product = $this->getProduct($product_id);
+        
+        $this->setHtmlFilter($product);
+        
         $share = $this->renderShareWidget();
 
         $this->setData('share', $share);

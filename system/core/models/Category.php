@@ -11,9 +11,9 @@ namespace core\models;
 
 use core\Model;
 use core\models\Alias as AliasModel;
-use core\models\CategoryGroup as CategoryGroupModel;
 use core\models\Image as ImageModel;
 use core\models\Language as LanguageModel;
+use core\models\CategoryGroup as CategoryGroupModel;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -78,10 +78,10 @@ class Category extends Model
 
         $conditions = array($category_id);
 
-        $sql = 'SELECT c.*, cg.store_id'
+        $sql = 'SELECT c.*, cg.store_id, u.role_id'
                 . ' FROM category c'
-                . ' LEFT JOIN category_group cg'
-                . ' ON(c.category_group_id=cg.category_group_id)'
+                . ' LEFT JOIN category_group cg ON(c.category_group_id=cg.category_group_id)'
+                . ' LEFT JOIN user u ON(c.user_id=u.user_id)'
                 . ' WHERE c.category_id=?';
 
         if (isset($store_id)) {

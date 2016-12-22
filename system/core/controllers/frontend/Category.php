@@ -53,6 +53,8 @@ class Category extends FrontendController
     {
         $category = $this->getCategory($category_id);
 
+        $this->setHtmlFilter($category);
+
         $this->setData('category', $category);
 
         $filter = array(

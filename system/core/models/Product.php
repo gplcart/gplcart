@@ -320,7 +320,11 @@ class Product extends Model
             return array();
         }
 
-        $sql = 'SELECT * FROM product WHERE product_id=?';
+        $sql = 'SELECT p.*, u.role_id'
+                . ' FROM product p'
+                . ' LEFT JOIN user u ON(p.user_id=u.user_id)'
+                . ' WHERE p.product_id=?';
+
         $product = $this->db->fetch($sql, array($product_id));
 
         $this->attachFields($product);

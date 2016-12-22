@@ -42,6 +42,8 @@ class Page extends FrontendController
     public function indexPage($page_id)
     {
         $page = $this->getPage($page_id);
+        
+        $this->setHtmlFilter($page);
 
         $this->setImagesPage($page);
         $this->setData('page', $page);

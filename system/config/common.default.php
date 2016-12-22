@@ -123,9 +123,24 @@ $config = array();
 # $config['order_complete_message'] = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
 # $config['order_complete_message_anonymous'] = 'Thank you for your order! Order ID: !order_id, status: !status';
 # $config['cli_disabled'] = 0; // Wheter comman line support enabled
-# $config['filter_1'] = array(); // Config for filter "Minimal"
-# $config['filter_2'] = array(); // Config for filter "Advanced"
-# $config['filter_3'] = array(); Config for filter "Maximum"
+# 
+# $config['filter_superadmin'] = 0; // Filter ID for admin. Defaults to disabled, i.e raw output
+# 
+# // Filter settings
+# // "Minimal" filter (ID 1)
+# $config['filter_1_status'] = 1; // Status
+# $config['filter_1_role_id'] = 1; // Role ID
+# $config['filter_1_config'] = array(); // Array of HTML Purifier's options
+# 
+# // "Advanced" filter (ID 2)
+# $config['filter_2_status'] = 1; // Status
+# $config['filter_2_role_id'] = 1; // Role ID
+# $config['filter_2_config'] = array(); // Array of HTML Purifier's options
+
+# // "Maximum" filter (ID 3)
+# $config['filter_3_status'] = 1; // Status
+# $config['filter_3_role_id'] = 1; // Role ID
+# $config['filter_3_config'] = array(); // Array of HTML Purifier's options
 
 /**
  * End of configurable settings

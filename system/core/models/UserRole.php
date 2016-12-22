@@ -346,6 +346,8 @@ class UserRole extends Model
             'file_edit' => $this->language->text('File: edit'),
             'file_delete' => $this->language->text('File: delete'),
             'file_upload' => $this->language->text('File: upload'),
+            'filter' => $this->language->text('Filter: access'),
+            'filter_edit' => $this->language->text('Filter: edit'),
             'cron' => $this->language->text('Cron: access'),
             'import' => $this->language->text('Import: access'),
             'export' => $this->language->text('Export: access'),

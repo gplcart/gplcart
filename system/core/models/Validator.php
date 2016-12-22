@@ -205,6 +205,12 @@ class Validator extends Model
             ),
         );
 
+        $handlers['filter'] = array(
+            'handlers' => array(
+                'validate' => array('core\\handlers\\validator\\Filter', 'filter')
+            ),
+        );
+
         $handlers['image_style'] = array(
             'handlers' => array(
                 'validate' => array('core\\handlers\\validator\\ImageStyle', 'imageStyle')

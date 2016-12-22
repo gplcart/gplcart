@@ -21,7 +21,6 @@ use core\exceptions\RouteException;
  */
 class Route
 {
-
     /**
      * Url class instance
      * @var \core\helpers\Url $url

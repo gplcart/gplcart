@@ -43,7 +43,8 @@ class Container
     {
         if (is_array($class)) {
             if (!is_callable($class)) {
-                throw new ReflectionException("Class $class is not callable");
+                $method = implode('::', $class);
+                throw new ReflectionException("$method is not callable");
             }
 
             $class = reset($class);

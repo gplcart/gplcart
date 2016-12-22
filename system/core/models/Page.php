@@ -73,7 +73,12 @@ class Page extends Model
     {
         $this->hook->fire('get.page.before', $page_id, $language);
 
-        $sql = 'SELECT * FROM page WHERE page_id=?';
+        $sql = 'SELECT p.*, u.role_id'
+                . ' FROM page p'
+                . ' LEFT JOIN user u ON(p.user_id=u.user_id)'
+                . ' WHERE p.page_id=?';
+
+
         $page = $this->db->fetch($sql, array($page_id));
 
         $this->attachTranslation($page, $language);
