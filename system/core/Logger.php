@@ -169,10 +169,10 @@ class Logger
             $message .= "<h3>$header</h3>\n";
         }
 
-        $message .= "Message: {$error['message']}</br>";
-        $message .= "Code: {$error['code']}</br>";
-        $message .= "File: {$error['file']}</br>";
-        $message .= "Line: {$error['line']}</br>";
+        $message .= "Message: {$error['message']}<br>";
+        $message .= "Code: {$error['code']}<br>";
+        $message .= "File: {$error['file']}<br>";
+        $message .= "Line: {$error['line']}<br>";
 
         return $message;
     }

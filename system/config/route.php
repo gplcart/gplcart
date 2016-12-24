@@ -899,4 +899,12 @@ $routes['admin/report/ga'] = array(
     )
 );
 
+$routes['admin/report/library'] = array(
+    'access' => 'report_library',
+    'menu' => array('admin' => 'Libraries'),
+    'handlers' => array(
+        'controller' => array('core\\controllers\\backend\\Library', 'listLibrary')
+    )
+);
+
 return $routes;

@@ -341,6 +341,7 @@ class UserRole extends Model
             'report_events' => $this->language->text('Report: system events'),
             'report_ga' => $this->language->text('Report: Google Analytics'),
             'report_status' => $this->language->text('Report: System status'),
+            'report_library' => $this->language->text('Report: Libraries'),
             'file' => $this->language->text('File: access'),
             'file_add' => $this->language->text('File: add'),
             'file_edit' => $this->language->text('File: edit'),

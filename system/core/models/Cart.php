@@ -287,7 +287,7 @@ class Cart extends Model
             return (string) $user_id;
         }
 
-        $user_id = '_' . String::random(6); // Add prefix to prevent from being "numeric"
+        $user_id = '_' . gplcart_string_random(6); // Add prefix to prevent from being "numeric"
         $this->request->setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
         return (string) $user_id;
     }
