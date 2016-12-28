@@ -6,9 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-$asset_dir = GC_ASSET_DIR;
-$lib_dir = GC_LIBRARY_DIR;
-
 $_libraries = array();
 
 $_libraries['jquery'] = array(
@@ -16,14 +13,13 @@ $_libraries['jquery'] = array(
     'description' => 'jQuery JavaScript Library',
     'type' => 'js',
     'url' => 'https://github.com/jquery/jquery',
-    'download' => 'https://github.com/jquery/jquery/archive/1.11.3.zip',
+    'download' => 'https://github.com/jquery/jquery/archive/2.2.4.tar.gz',
     'version' => array(
         'file' => 'dist/jquery.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/jquery",
     'files' => array(
-        "dist/jquery.min.js"
+        'dist/jquery.min.js'
     )
 );
 
@@ -37,9 +33,8 @@ $_libraries['cookie'] = array(
         'file' => 'src/js.cookie.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/cookie",
     'files' => array(
-        "src/js.cookie.js"
+        'src/js.cookie.js'
     )
 );
 
@@ -52,11 +47,10 @@ $_libraries['jquery_file_upload'] = array(
     'version' => array(
         'file' => 'bower.json'
     ),
-    'basepath' => "$asset_dir/jquery-file-upload",
     'files' => array(
         'js/vendor/jquery.ui.widget.js',
         'js/jquery.iframe-transport.js',
-        'js/jquery.fileupload.js',
+        'js/jquery.fileupload.js'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.7.0'
@@ -73,14 +67,9 @@ $_libraries['lightgallery'] = array(
         'file' => 'dist/js/lightgallery.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/lightgallery",
     'files' => array(
-        'js' => array(
-            'dist/js/lightgallery.min.js'
-        ),
-        'css' => array(
-            'dist/css/lightgallery.min.css'
-        )
+        'dist/js/lightgallery.min.js',
+        'dist/css/lightgallery.min.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.8'
@@ -97,21 +86,16 @@ $_libraries['lightslider'] = array(
         'file' => 'dist/js/lightslider.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/lightslider",
     'files' => array(
-        'js' => array(
-            "dist/js/lightslider.min.js"
-        ),
-        'css' => array(
-            "dist/css/lightslider.min.css"
-        )
+        'dist/js/lightslider.min.js',
+        'dist/css/lightslider.min.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.8'
     )
 );
 
-$_libraries['match_height'] = array(
+$_libraries['jquery_match_height'] = array(
     'name' => 'jQuery Match Height',
     'description' => 'A responsive equal heights plugin for jQuery',
     'type' => 'js',
@@ -121,7 +105,6 @@ $_libraries['match_height'] = array(
         'file' => 'dist/jquery.matchHeight-min.js',
         'pattern' => '/(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/jquery-match-height",
     'files' => array(
         'dist/jquery.matchHeight-min.js'
     ),
@@ -139,21 +122,16 @@ $_libraries['primeui'] = array(
     'version' => array(
         'file' => 'package.json'
     ),
-    'basepath' => "$asset_dir/primeui",
     'files' => array(
-        'css' => array(
-            'components/core/core.css',
-            'components/growl/growl.css',
-            'components/terminal/terminal.css',
-        ),
-        'js' => array(
-            'components/core/core.js',
-            'components/growl/growl.js',
-            'components/terminal/terminal.js',
-        )
+        'components/core/core.js',
+        'components/growl/growl.js',
+        'components/terminal/terminal.js',
+        'components/core/core.css',
+        'components/growl/growl.css',
+        'components/terminal/terminal.css'
     ),
     'dependencies' => array(
-        'jquery-ui' => '>= 1.12'
+        'jquery_ui' => '>= 1.12'
     )
 );
 
@@ -167,14 +145,9 @@ $_libraries['summernote'] = array(
         'file' => 'dist/summernote.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/summernote",
     'files' => array(
-        'css' => array(
-            'dist/summernote.css',
-        ),
-        'js' => array(
-            'dist/summernote.min.js',
-        )
+        'dist/summernote.min.js',
+        'dist/summernote.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.9.0',
@@ -189,17 +162,12 @@ $_libraries['jquery_ui'] = array(
     'url' => 'https://jqueryui.com',
     'download' => 'https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip',
     'version' => array(
-        'file' => 'dist/summernote.min.js',
+        'file' => 'jquery-ui.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/jquery-ui",
     'files' => array(
-        'css' => array(
-            'jquery-ui.min.css',
-        ),
-        'js' => array(
-            'jquery-ui.min.js',
-        )
+        'jquery-ui.min.js',
+        'jquery-ui.min.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.7.0',
@@ -216,7 +184,6 @@ $_libraries['chart'] = array(
         'file' => 'Chart.min.js',
         'pattern' => '/(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/chart",
     'files' => array(
         'Chart.min.js'
     )
@@ -231,19 +198,14 @@ $_libraries['codemirror'] = array(
     'version' => array(
         'file' => 'package.json'
     ),
-    'basepath' => "$asset_dir/codemirror",
     'files' => array(
-        'css' => array(
-            'lib/codemirror.css',
-        ),
-        'js' => array(
-            'lib/codemirror.js',
-            'mode/css/css.js',
-            'mode/javascript/javascript.js',
-            'mode/twig/twig.js',
-            'mode/xml/xml.js',
-            'mode/htmlmixed/htmlmixed.js'
-        )
+        'lib/codemirror.js',
+        'mode/css/css.js',
+        'mode/javascript/javascript.js',
+        'mode/twig/twig.js',
+        'mode/xml/xml.js',
+        'mode/htmlmixed/htmlmixed.js',
+        'lib/codemirror.css'
     )
 );
 
@@ -257,7 +219,6 @@ $_libraries['font_awesome'] = array(
         'file' => 'css/font-awesome.min.css',
         'pattern' => '/(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/font-awesome",
     'files' => array(
         'css/font-awesome.min.css'
     )
@@ -273,7 +234,6 @@ $_libraries['html5shiv'] = array(
         'file' => 'dist/html5shiv.min.js',
         'pattern' => '/(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/html5shiv",
     'files' => array(
         'dist/html5shiv.min.js'
     )
@@ -289,7 +249,6 @@ $_libraries['respond'] = array(
         'file' => 'dest/respond.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/respond",
     'files' => array(
         'dest/respond.min.js'
     )
@@ -305,14 +264,9 @@ $_libraries['bootstrap'] = array(
         'file' => 'dist/css/bootstrap.min.css',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/bootstrap",
     'files' => array(
-        'css' => array(
-            'dist/css/bootstrap.min.css',
-        ),
-        'js' => array(
-            'dist/js/bootstrap.min.js',
-        )
+        'dist/js/bootstrap.min.js',
+        'dist/css/bootstrap.min.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.9.1',
@@ -329,14 +283,9 @@ $_libraries['bootstrap_colorpicker'] = array(
         'file' => 'dist/js/bootstrap-colorpicker.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/bootstrap-colorpicker",
     'files' => array(
-        'css' => array(
-            'dist/css/bootstrap-colorpicker.min.css',
-        ),
-        'js' => array(
-            'dist/js/bootstrap-colorpicker.min.js',
-        )
+        'dist/js/bootstrap-colorpicker.min.js',
+        'dist/css/bootstrap-colorpicker.min.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.1',
@@ -354,14 +303,9 @@ $_libraries['bootstrap_select'] = array(
         'file' => 'dist/js/bootstrap-select.min.js',
         'pattern' => '/v(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$asset_dir/bootstrap-select",
     'files' => array(
-        'css' => array(
-            'dist/css/bootstrap-select.min.css',
-        ),
-        'js' => array(
-            'dist/js/bootstrap-select.min.js',
-        )
+        'dist/js/bootstrap-select.min.js',
+        'dist/css/bootstrap-select.min.css'
     ),
     'dependencies' => array(
         'jquery' => '>= 1.8',
@@ -381,7 +325,6 @@ $_libraries['google_api'] = array(
         'pattern' => '/.*LIBVER.*(\d+\.+\d+\.+\d+)/',
         'lines' => 100,
     ),
-    'basepath' => "$lib_dir/google-api-php-client",
     'files' => array(
         'src/Google/autoload.php'
     )
@@ -398,7 +341,6 @@ $_libraries['htmlpurifier'] = array(
         'pattern' => '/.*VERSION.*(\d+\.+\d+\.+\d+)/',
         'lines' => 100,
     ),
-    'basepath' => "$lib_dir/htmlpurifier",
     'files' => array(
         'library/HTMLPurifier.auto.php'
     )
@@ -411,7 +353,6 @@ $_libraries['kint'] = array(
     'url' => 'https://github.com/raveren/kint',
     'download' => 'https://github.com/raveren/kint/archive/1.0.10.zip',
     'version' => array('number' => '1.0.1'),
-    'basepath' => "$lib_dir/kint",
     'files' => array(
         'Kint.class.php'
     )
@@ -428,7 +369,6 @@ $_libraries['mobile_detect'] = array(
         'pattern' => '/.*VERSION.*(\d+\.+\d+\.+\d+)/',
         'lines' => 100,
     ),
-    'basepath' => "$lib_dir/mobile-detect",
     'files' => array(
         'Mobile_Detect.php'
     )
@@ -445,7 +385,6 @@ $_libraries['phpmailer'] = array(
         'pattern' => '/.*\$Version.*(\d+\.+\d+\.+\d+)/',
         'lines' => 100,
     ),
-    'basepath' => "$lib_dir/phpmailer",
     'files' => array(
         'PHPMailerAutoload.php'
     )
@@ -461,7 +400,6 @@ $_libraries['simpleimage'] = array(
         'file' => 'src/abeautifulsite/SimpleImage.php',
         'pattern' => '/.*@version.*(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$lib_dir/simpleimage",
     'files' => array(
         'src/abeautifulsite/SimpleImage.php'
     )
@@ -477,7 +415,6 @@ $_libraries['transliterator'] = array(
         'file' => 'Transliterator.php',
         'pattern' => '/.*@version.*(\d+\.+\d+\.+\d+)/'
     ),
-    'basepath' => "$lib_dir/transliterator",
     'files' => array(
         'Transliterator.php'
     )
@@ -494,7 +431,6 @@ $_libraries['twig'] = array(
         'pattern' => '/.*VERSION.*(\d+\.+\d+\.+\d+)/',
         'lines' => 100,
     ),
-    'basepath' => "$lib_dir/twig",
     'files' => array(
         'lib/Twig/Autoloader.php'
     )

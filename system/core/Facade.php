@@ -81,7 +81,6 @@ class Facade
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
-        $this->setDebuggingTools();
 
         // Register hooks
         $modules = $this->config->getEnabledModules();
@@ -171,16 +170,6 @@ class Facade
         register_shutdown_function(array($this->logger, 'shutdownHandler'));
         set_exception_handler(array($this->logger, 'exceptionHandler'));
         set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
-    }
-
-    /**
-     * Sets debugging tools
-     */
-    protected function setDebuggingTools()
-    {
-        //if ($this->config->get('kint', 0)) {
-        gplcart_require_library('kint/Kint.class.php');
-        //}
     }
 
 }

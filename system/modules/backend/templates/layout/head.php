@@ -15,8 +15,8 @@
   <link href="<?php echo $href; ?>" rel="stylesheet">
   <?php } ?>
   <?php foreach ($js_top as $key => $info) { ?>
-    <?php if ($info['text']) { ?>
-    <script><?php echo $info['text']; ?></script>
+    <?php if (!empty($info['text'])) { ?>
+    <script><?php echo $info['asset']; ?></script>
     <?php } else { ?>
     <script src="<?php echo $key; ?>"></script>
     <?php } ?>

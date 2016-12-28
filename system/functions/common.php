@@ -152,8 +152,56 @@ function gplcart_timezones()
 }
 
 /**
+ * Wrapper for Kint's ddd() debugger
+ * @param mixed $data
+ */
+function ddd($data)
+{
+    require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+
+    if (Kint::enabled()) {
+        Kint::dump($data);
+        exit;
+    }
+}
+
+/**
+ * Wrapper for Kint's d() debugger
+ * @param mixed $data
+ */
+function d($data)
+{
+    require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+
+    if (Kint::enabled()) {
+        Kint::dump($data);
+    }
+}
+
+/**
+ * Extracts an array of components from strings like ">= 1.0.0"
+ * @param string $data
+ * @return array
+ */
+function gplcart_version_components($data)
+{
+    $string = str_replace(' ', '', $data);
+    
+    $matches = array();
+    preg_match_all('/(^(==|=|!=|<>|>|<|>=|<=)?(?=\d))(.*)/', $string, $matches);
+
+    if (empty($matches[3][0])) {
+        return array();
+    }
+
+    $operator = empty($matches[2][0]) ? '=' : $matches[2][0];
+    return array($operator, $matches[3][0]);
+}
+
+/**
  * Requires a library file
  * @param string $path
+ * @todo Remove
  */
 function gplcart_require_library($path)
 {

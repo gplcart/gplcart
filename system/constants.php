@@ -19,7 +19,6 @@ define('GC_MODULE_DIR', GC_SYSTEM_DIR . '/modules');
 define('GC_LIBRARY_DIR', GC_SYSTEM_DIR . '/libraries');
 define('GC_CACHE_DIR', GC_ROOT_DIR . '/cache');
 define('GC_FILE_DIR', GC_ROOT_DIR . '/files');
-define('GC_ASSET_DIR', GC_FILE_DIR . '/assets');
 define('GC_CONFIG_OVERRIDE', GC_SYSTEM_DIR . '/config/override.php');
 define('GC_CONFIG_COMMON', GC_SYSTEM_DIR . '/config/common.php');
 define('GC_CONFIG_DATABASE', GC_SYSTEM_DIR . '/config/database.php');

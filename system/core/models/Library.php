@@ -10,6 +10,8 @@
 namespace core\models;
 
 use core\Model;
+use core\helpers\Graph as GraphHelper;
+use core\models\Cache as CacheModel;
 use core\models\Language as LanguageModel;
 
 /**
@@ -25,69 +27,119 @@ class Library extends Model
     protected $errors = array();
 
     /**
+     * Graph helper class instance
+     * @var \core\helpers\Graph $graph
+     */
+    protected $graph;
+
+    /**
      * Language model instance
      * @var \core\models\Language $language
      */
     protected $language;
 
     /**
-     * Constructor
-     * @param LanguageModel $language
+     * Cache model instance
+     * @var \core\models\Cache $cache
      */
-    public function __construct(LanguageModel $language)
+    protected $cache;
+
+    /**
+     * Constructor
+     * @param CacheModel $cache
+     * @param LanguageModel $language
+     * @param GraphHelper $graph
+     */
+    public function __construct(CacheModel $cache, LanguageModel $language,
+            GraphHelper $graph)
     {
         parent::__construct();
 
+        $this->cache = $cache;
+        $this->graph = $graph;
         $this->language = $language;
     }
 
     /**
-     * Returns an array of libraries
+     * Returns an array of a library
+     * @param string $library_id
      * @return array
      */
-    public function getList()
+    public function get($library_id)
+    {
+        $libraries = $this->getList();
+
+        if (empty($libraries[$library_id])) {
+            return array();
+        }
+
+        return $libraries[$library_id];
+    }
+
+    /**
+     * Returns an array of libraries
+     * @param bool $cache
+     * @return array
+     */
+    public function getList($cache = true)
     {
         $libraries = &gplcart_cache('libraries');
 
         if (isset($libraries)) {
             return $libraries;
         }
-        
-        $_libraries = include_once GC_CONFIG_LIBRARY;
 
-        $libraries = array();
-        foreach ($_libraries as $library_id => $library) {
+        $cached = $this->cache->get('libraries');
 
+        if ($cache && isset($cached)) {
+            $libraries = $cached;
+        } else {
+            $_libraries = include_once GC_CONFIG_LIBRARY;
+            $libraries = $this->prepareList($_libraries);
+
+            gplcart_array_sort($libraries);
+
+            $cached = $this->cache->set('libraries', $libraries);
+        }
+
+        $this->hook->fire('libraries', $libraries);
+        return $libraries;
+    }
+
+    /**
+     * Removes cached libraries
+     */
+    public function clearCache()
+    {
+        $this->cache->clear('libraries');
+    }
+
+    /**
+     * Validates/ filter an array of libraries
+     * @param array $libraries
+     * @return array
+     */
+    protected function prepareList(array $libraries)
+    {
+        foreach ($libraries as $library_id => &$library) {
+
+            $library['id'] = $library_id;
             $version = $this->getVersion($library);
 
             if (!isset($version)) {
                 $vars = array('%name' => $library['name']);
                 $error = $this->language->text('Unknown version for library %name', $vars);
                 $this->errors[$library_id][] = $error;
-                continue;
             }
 
             $library['version']['number'] = $version;
-
-            if (!$this->checkDependencies($libraries, $library)) {
-                continue;
-            }
-            
-            $libraries[$library_id] = $library;
-
         }
 
-        $this->hook->fire('library', $libraries);
-        return $libraries;
-    }
+        foreach ($libraries as $library_id => &$library) {
+            $this->checkDependencies($libraries, $library);
+        }
 
-    /**
-     * Returns library validation errors
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
+        return $this->graph->build($libraries);
     }
 
     /**
@@ -111,7 +163,7 @@ class Library extends Model
                 continue;
             }
 
-            $components = $this->getVersionComponents($version);
+            $components = gplcart_version_components($version);
 
             if (empty($components)) {
                 $vars = array('%version' => $version, '%name' => $libraries[$library_id]['name']);
@@ -122,10 +174,10 @@ class Library extends Model
 
             list($operator, $number) = $components;
 
-            if (!$this->isCompatibleVersion($library, $number, $operator)) {
+            if (!version_compare($libraries[$library_id]['version']['number'], $number, $operator)) {
                 $vars = array('%required' => $libraries[$library_id]['name'], '%dependent' => $library['name']);
                 $error = $this->language->text('Required library %required is not compatible with %dependent', $vars);
-                $this->errors[$library_id][] = $error;
+                $this->errors[$library['id']][] = $error;
             }
         }
 
@@ -133,52 +185,16 @@ class Library extends Model
     }
 
     /**
-     * Checks version compatibility using a version number and comparison operator
-     * @param array $library
-     * @param string $version
-     * @param string $operator
-     * @return boolean
-     */
-    protected function isCompatibleVersion(array $library, $version, $operator)
-    {
-        return version_compare($library['version']['number'], $version, $operator);
-    }
-
-    /**
-     * Extracts an array of components from strings like ">= 1.0.0"
-     * @param string $data
-     * @return array
-     */
-    protected function getVersionComponents($data)
-    {
-        $string = str_replace(' ', '', $data);
-        preg_match('/^.*?(?=\d)/', $string, $matches);
-
-        $operatop = empty($matches[0]) ? '==' : $matches[0];
-
-        $allowed = array('==', '=', '!=', '<>', '>', '<', '>=', '<=');
-
-        if (!in_array($operatop, $allowed, true)) {
-            return array();
-        }
-
-        $version = substr($string, strlen($operatop));
-
-        if (preg_match('/^(\*|\d+(\.\d+){0,2}(\.\*)?)$/', $version) === 1) {
-            return array($operatop, $version);
-        }
-
-        return array();
-    }
-
-    /**
-     * Parses source code and returns a version number
+     * Parses either .json file or source code
+     * and returns a version number for the library
      * @param array $library
      * @return null|string
      */
-    public function getVersion(array $library)
+    public function getVersion(array &$library)
     {
         if (isset($library['version']['number'])) {
+            // Some libraries have no version number.
+            // In this case the version can be provided in the library definition
             return $library['version']['number'];
         }
 
@@ -186,48 +202,153 @@ class Library extends Model
             return null;
         }
 
-        $file = "{$library['basepath']}/{$library['version']['file']}";
+        $file = $this->getVersionFile($library);
 
-        if (!is_readable($file)) {
+        if (empty($file)) {
+            $vars = array('%path' => $file);
+            $error = $this->language->text('Failed to load file %path', $vars);
+            $this->errors[$library['id']][] = $error;
             return null;
         }
 
-        // Check package.json, bower.json etc
-        if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+        // First check if there's a .json file, e.g bower.json
+        $version = $this->getVersionJson($file);
 
-            $json = file_get_contents($file);
-
-            if (empty($json)) {
-                return null;
-            }
-
-            $data = json_decode($json, true);
-
-            if (isset($data['version'])) {
-                return $data['version'];
-            }
-            return null;
+        if (isset($version)) {
+            return $version;
         }
 
+        return $this->getVersionSource($file, $library);
+    }
+
+    /**
+     * Returns a source file containing verison info
+     * @param array $library
+     * @return string
+     */
+    protected function getVersionFile(array &$library)
+    {
+        $base = $library['type'] == 'php' ? 'system/libraries' : 'files/assets/libraries';
+        $file = GC_ROOT_DIR . "/$base/{$library['id']}/{$library['version']['file']}";
+        $library['basepath'] = "$base/{$library['id']}";
+
+        return is_readable($file) ? $file : '';
+    }
+
+    /**
+     * Search for version string in the source code using a regexp pattern
+     * @param string $file
+     * @param array $library
+     * @return null|string
+     */
+    protected function getVersionSource($file, array $library)
+    {
         $library['version'] += array(
             'pattern' => '',
-            'lines' => 20, // Default depth
-            'cols' => 200, // Default length
+            'lines' => 20,
+            'cols' => 200,
         );
 
-        // Parse source code from the top to bottom
         $handle = fopen($file, 'r');
 
         while ($library['version']['lines'] && $line = fgets($handle, $library['version']['cols'])) {
             if (preg_match($library['version']['pattern'], $line, $version)) {
                 fclose($handle);
-                return $version[1];
+                // Clean up
+                return preg_replace('/^[\D\\s]+/', '', $version[1]);
             }
+
             $library['version']['lines'] --;
         }
 
         fclose($handle);
         return null;
+    }
+
+    /**
+     * Returns an array of sorted files for the given library IDs
+     * according to their dependencies
+     * @param string|array $ids
+     * @return array
+     */
+    public function getFiles($ids)
+    {
+        $libraries = $this->getList();
+
+        // Sort library IDs according to their dependencies
+        // Dependent libraries always go last
+        $sorted = $this->graph->sort((array) $ids, $libraries);
+
+        if (empty($sorted)) {
+            return array();
+        }
+
+        // Merge into groups, prepare file URLs
+        return $this->prepareFiles($sorted, $libraries);
+    }
+
+    /**
+     * Prepares files of given library IDs
+     * @param array $ids
+     * @param array $libraries
+     * @return array
+     */
+    protected function prepareFiles(array $ids, array $libraries)
+    {
+        $prepared = array();
+        foreach ($ids as $id) {
+
+            $library = $libraries[$id];
+            array_walk($library['files'], function(&$file) use($library) {
+                $file = "{$library['basepath']}/$file";
+            });
+
+            $prepared = array_merge($prepared, $library['files']);
+        }
+
+        return $prepared;
+    }
+
+    /**
+     * Extracts a version string from .json files
+     * @param string $file
+     * @return null|string
+     */
+    public function getVersionJson($file)
+    {
+        if (pathinfo($file, PATHINFO_EXTENSION) !== 'json') {
+            return null;
+        }
+
+        $json = file_get_contents($file);
+
+        if ($json === false) {
+            return null;
+        }
+
+        $json = trim($json);
+
+        if (empty($json)) {
+            return null;
+        }
+
+        $data = json_decode($json, true);
+
+        if (isset($data['version'])) {
+            // Clean up
+            return preg_replace('/^[\D\\s]+/', '', $data['version']);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns library validation errors
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
 }

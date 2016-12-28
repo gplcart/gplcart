@@ -353,7 +353,7 @@ class Report extends Model
             $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
         }
 
-        $directories = array(GC_ROOT_DIR, GC_CACHE_DIR, GC_PRIVATE_DIR, GC_FILE_DIR);
+        $directories = array(GC_ROOT_DIR, GC_CACHE_DIR, GC_PRIVATE_DIR, GC_FILE_DIR, GC_LIBRARY_DIR);
 
         foreach ($directories as $directory) {
             $private = ($directory !== GC_FILE_DIR);

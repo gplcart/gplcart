@@ -56,7 +56,6 @@ $config = array();
 # $config['image_cache_lifetime'] = 31536000;
 # $config['import_lifespan'] = 86400;
 # $config['import_limit'] = 10;
-# $config['kint'] = 0;
 # $config['language'] = ''; // Default language
 # $config['log_lifespan'] = 86400;
 # $config['marketplace_sort'] = 'views';

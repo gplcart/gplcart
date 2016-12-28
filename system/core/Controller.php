@@ -10,8 +10,7 @@
 namespace core;
 
 /**
- * Base controller class. Contents methods to be used in the child classes and
- * some basic system functions such as access control etc.
+ * Base controller class
  */
 class Controller
 {
@@ -21,6 +20,30 @@ class Controller
      * @var boolean
      */
     protected $installing = false;
+    
+    /**
+     * Page meta title
+     * @var string
+     */
+    protected $title = '';
+
+    /**
+     * Page header title
+     * @var string
+     */
+    protected $ptitle = '';
+
+    /**
+     * Array of meta tags
+     * @var array
+     */
+    protected $meta = array();
+
+    /**
+     * Array of breadcrumbs
+     * @var array
+     */
+    protected $breadcrumbs = array();
 
     /**
      * Whether the current view is backend
@@ -232,6 +255,12 @@ class Controller
      * @var \core\models\Validator $validator
      */
     protected $validator;
+    
+    /**
+     * Library model instance
+     * @var \core\models\Library $library
+     */
+    protected $library;
 
     /**
      * Current language code
@@ -244,6 +273,12 @@ class Controller
      * @var \core\helpers\Url $url
      */
     protected $url;
+    
+    /**
+     * Asset class instance
+     * @var \core\helpers\Asset $asset
+     */
+    protected $asset;
 
     /**
      * Request class instance
@@ -292,12 +327,6 @@ class Controller
      * @var \core\Logger $logger
      */
     protected $logger;
-
-    /**
-     * Document class instance
-     * @var \core\Document $document
-     */
-    protected $document;
 
     /**
      * Filter model instance
@@ -507,6 +536,14 @@ class Controller
     {
         return $this->uid;
     }
+    
+    /**
+     * 
+     * @return string
+     */
+    public function path(){
+        return $this->path;
+    }
 
     /**
      * Whether a key is presented in the POST query
@@ -615,6 +652,9 @@ class Controller
 
         /* @var $filter \core\models\Filter */
         $this->filter = Container::instance('core\\models\\Filter');
+        
+        /* @var $library \core\models\Library */
+        $this->library = Container::instance('core\\models\\Library');
 
         /* @var $url \core\helpers\Url */
         $this->url = Container::instance('core\\helpers\\Url');
@@ -624,6 +664,9 @@ class Controller
 
         /* @var $response \core\helpers\Response */
         $this->response = Container::instance('core\\helpers\\Response');
+        
+        /* @var $asset \core\helpers\Asset */
+        $this->asset = Container::instance('core\\helpers\\Asset');
 
         /* @var $session \core\helpers\Session */
         $this->session = Container::instance('core\\helpers\\Session');
@@ -639,9 +682,6 @@ class Controller
 
         /* @var $logger \core\helpers\Logger */
         $this->logger = Container::instance('core\\Logger');
-
-        /* @var $document \core\helpers\Document */
-        $this->document = Container::instance('core\\helpers\\Document');
 
         /* @var $device \core\helpers\Device */
         $this->device = Container::instance('core\\helpers\\Device');
@@ -1119,7 +1159,14 @@ class Controller
      */
     public function setTitle($title, $both = true)
     {
-        return $this->document->title($title, $both);
+        $this->title = strip_tags($title);
+
+        if ($both && $this->ptitle === '') {
+            return $this->setPageTitle($title);
+        }
+
+        return $this->title;
+        
     }
 
     /**
@@ -1279,7 +1326,7 @@ class Controller
      */
     public function getTitle()
     {
-        return $this->document->title();
+        return $this->title;
     }
 
     /**
@@ -1288,7 +1335,7 @@ class Controller
      */
     public function getPageTitle()
     {
-        return $this->document->ptitle();
+        return $this->ptitle;
     }
 
     /**
@@ -1297,7 +1344,7 @@ class Controller
      */
     public function getBreadcrumbs()
     {
-        return $this->document->breadcrumb();
+        return $this->breadcrumbs;
     }
 
     /**
@@ -1306,7 +1353,7 @@ class Controller
      */
     public function getMeta()
     {
-        return $this->document->meta();
+        return $this->meta;
     }
 
     /**
@@ -1315,19 +1362,19 @@ class Controller
      */
     public function getCss()
     {
-        $css = $this->document->css();
+        $css = $this->asset->getCss();
         gplcart_array_sort($css);
         return $css;
     }
 
     /**
      * Returns an array of attached Java scripts
-     * @param string $region
+     * @param string $position
      * @return array
      */
-    public function getJs($region)
+    public function getJs($position)
     {
-        $scripts = $this->document->js(null, $region);
+        $scripts = $this->asset->getJs($position);
         gplcart_array_sort($scripts);
         return $scripts;
     }
@@ -1443,8 +1490,8 @@ class Controller
      */
     protected function setDefaultJsAssets()
     {
-        $this->setJs('files/assets/jquery/jquery/jquery-1.11.3.js', 'top', -999);
-        $this->setJs('files/assets/system/js/common.js', 'top', -900);
+        $this->addAssetLibrary('jquery');
+        $this->setJs('files/assets/system/js/common.js');
     }
 
     /**
@@ -1457,7 +1504,7 @@ class Controller
             'lang_region', 'urn', 'uri', 'path', 'query');
 
         $settings = array_intersect_key($this->data, array_flip($allowed));
-        $this->setJsSettings('', $settings, -800);
+        $this->setJsSettings('', $settings, 60);
     }
 
     /**
@@ -1471,7 +1518,7 @@ class Controller
         if ($add) {
             $url = $this->url('cron', array('key' => $this->cron_key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
-            $this->document->js($js, 'bottom');
+            $this->setJs($js, 'bottom');
         }
     }
 
@@ -1488,7 +1535,7 @@ class Controller
         foreach ($classes as $class) {
             $filename = strtolower(str_replace('\\', '-', $class));
             $file = GC_LOCALE_JS_DIR . "/{$this->langcode}/$filename.js";
-            $this->document->js(str_replace(GC_ROOT_DIR, '', $file), 'top', -70);
+            $this->setJs(str_replace(GC_ROOT_DIR . '/', '', $file));
         }
     }
 
@@ -1506,8 +1553,8 @@ class Controller
         if (!isset($weight)) {
             $weight = -75;
         }
-
-        $this->document->js("$var = $json;", 'top', $weight);
+        
+        $this->setJs("$var = $json;", 'top', $weight);
     }
 
     /**
@@ -1540,13 +1587,27 @@ class Controller
     /**
      * Adds a JS on the page
      * @param string $script
-     * @param string $position
+     * @param string $pos
      * @param integer $weight
      * @return array
      */
-    public function setJs($script, $position, $weight = null)
+    public function setJs($script, $pos = 'top', $weight = null)
     {
-        return $this->document->js($script, $position, $weight);
+        return $this->asset->setJs($script, $pos, $weight);
+    }
+    
+    /**
+     * Sets a JS depending on the current URL path
+     * @param string $directory A directory to scan
+     * @param string $pos Either "top" or "bottom"
+     */
+    public function setJsContext($directory, $pos)
+    {
+        $file = gplcart_file_contex($directory, 'js', $this->path);
+
+        if (isset($file['filename'])) {
+            $this->setJs("system/modules/backend/js/{$file['filename']}.js", $pos);
+        }
     }
 
     /**
@@ -1557,7 +1618,30 @@ class Controller
      */
     public function setCss($css, $weight = null)
     {
-        return $this->document->css($css, $weight);
+        return $this->asset->setCss($css, $weight);
+    }
+    
+    /**
+     * Adds single or multiple asset libraries
+     * @param string|array $library_id
+     * @param string $position
+     */
+    public function addAssetLibrary($library_id, $position = 'top')
+    {
+        $files = $this->library->getFiles($library_id);
+
+        foreach ($files as $file) {
+
+            $type = pathinfo($file, PATHINFO_EXTENSION);
+
+            switch ($type) {
+                case 'js':
+                    $this->setJs($file, $position);
+                    break;
+                case 'css':
+                    $this->setCss($file);
+            }
+        }
     }
 
     /**
@@ -1567,7 +1651,8 @@ class Controller
      */
     public function setMeta($content)
     {
-        return $this->document->meta($content);
+        $this->meta[] = $content;
+        return $this->meta;
     }
 
     /**
@@ -1577,7 +1662,8 @@ class Controller
      */
     public function setBreadcrumb(array $breadcrumb)
     {
-        return $this->document->breadcrumb($breadcrumb);
+        $this->breadcrumbs[] = $breadcrumb;
+        return $this->breadcrumbs;
     }
 
     /**
@@ -1598,7 +1684,8 @@ class Controller
      */
     public function setPageTitle($title)
     {
-        return $this->document->ptitle($title);
+        $this->ptitle = $title;
+        return $this->ptitle;
     }
 
     /**
@@ -1719,7 +1806,6 @@ class Controller
     /**
      * Returns true if an error occurred
      * and passes back to template the submitted data
-     * 
      * @param string $key
      * @param boolean $message
      * @return boolean

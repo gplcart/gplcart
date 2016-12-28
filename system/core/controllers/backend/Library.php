@@ -9,7 +9,6 @@
 
 namespace core\controllers\backend;
 
-use core\models\Library as LibraryModel;
 use core\controllers\backend\Controller as BackendController;
 
 /**
@@ -17,22 +16,12 @@ use core\controllers\backend\Controller as BackendController;
  */
 class Library extends BackendController
 {
-
-    /**
-     * Library model instance
-     * @var \core\models\Library $library
-     */
-    protected $library;
-
     /**
      * Constructor
-     * @param LibraryModel $library
      */
-    public function __construct(LibraryModel $library)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->library = $library;
     }
 
     /**
@@ -40,8 +29,14 @@ class Library extends BackendController
      */
     public function listLibrary()
     {
+        $this->library->clearCache();
+        
         $libraries = $this->getListLibrary();
+        $errors = $this->library->getErrors();
+        
+        //ddd($this->library->getFiles('bootstrap'));
 
+        $this->setData('errors', $errors);
         $this->setData('libraries', $libraries);
 
         $this->setTitleListLibrary();
@@ -56,11 +51,9 @@ class Library extends BackendController
     protected function getListLibrary()
     {
         $libraries = $this->library->getList();
-
-        usort($libraries, function($a, $b){
-            return strcmp($a["type"], $b["type"]);
-        });
-
+        
+        uasort($libraries, function($a, $b){ return strcmp($a['type'], $b['type']); });
+        
         return $libraries;
     }
 
