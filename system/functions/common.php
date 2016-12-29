@@ -178,3 +178,13 @@ function gplcart_phpinfo()
 
     return $result;
 }
+
+/**
+ * Measures script execution time in seconds
+ * @return string
+ */
+function gplcart_timer()
+{
+    $time = microtime(true) - GC_START;
+    return number_format($time, 3);
+}

@@ -17,12 +17,13 @@ class Cache
 
     /**
      * Sets a cache data
-     * @param string $key
+     * @param string|array $cid
      * @param mixed $data
      * @return boolean
      */
-    public function set($key, $data)
+    public function set($cid, $data)
     {
+        $key = $this->buildKey($cid);
         $file = GC_CACHE_DIR . "/$key.cache";
 
         if (file_put_contents($file, serialize((array) $data)) !== false) {
@@ -35,14 +36,14 @@ class Cache
 
     /**
      * Returns a cached data
-     * @param string $key
+     * @param string|array $cid
      * @param array $options
      * @return mixed
      */
-    public function get($key, $options = array())
+    public function get($cid, $options = array())
     {
+        $key = $this->buildKey($cid);
         $options += array('default' => null, 'lifespan' => 0);
-
         $file = GC_CACHE_DIR . "/$key.cache";
 
         if (!file_exists($file)) {
@@ -63,22 +64,23 @@ class Cache
 
     /**
      * Clears a cached data
-     * @param string $key
+     * @param string|null|array $cid
      * @param array $options
      * @return boolean
      */
-    public function clear($key, $options = array())
+    public function clear($cid, $options = array())
     {
         $options += array('pattern' => '.cache');
 
         // Clear also memory cache
-        static::clearMemory($key);
+        static::clearMemory($cid);
 
-        if ($key === null) {
+        if ($cid === null) {
             array_map('unlink', glob(GC_CACHE_DIR . '/*.cache'));
             return true;
         }
 
+        $key = $this->buildKey($cid);
         array_map('unlink', glob(GC_CACHE_DIR . "/$key{$options['pattern']}"));
         return true;
     }
@@ -86,18 +88,14 @@ class Cache
     /**
      * Central static variable storage
      * Taken from Drupal
-     * @param string $name
+     * @param string|null|array $cid
      * @param mixed $default_value
      * @param boolean $reset
      * @return mixed
      */
-    public static function &memory($name, $default_value = null, $reset = false)
+    public static function &memory($cid, $default_value = null, $reset = false)
     {
-        if (is_array($name)) {
-            list($key, $hash) = each($name);
-            ksort($hash);
-            $name = $key . md5(json_encode($hash));
-        }
+        $name = $this->buildKey($cid);
 
         static $data = array(), $default = array();
 
@@ -126,11 +124,32 @@ class Cache
     }
 
     /**
-     * Clears memory cache
-     * @param string|null $key
+     * Generates a cache key from an array of arguments like ('prefix' => array(...))
+     * @param string|array $data
+     * @return string|null
      */
-    public static function clearMemory($key = null)
+    protected function buildKey($data)
     {
+        if ($data === null) {
+            return null;
+        }
+
+        if (is_array($data)) {
+            list($key, $hash) = each($data);
+            ksort($hash);
+            $data = $key . md5(json_encode($hash));
+        }
+
+        return $data;
+    }
+
+    /**
+     * Clears memory cache
+     * @param mixed $cid
+     */
+    public static function clearMemory($cid = null)
+    {
+        $key = $this->buildKey($cid);
         static::memory($key, null, true);
     }
 

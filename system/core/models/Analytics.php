@@ -14,7 +14,6 @@ use core\Cache;
 use core\Logger;
 use core\Handler;
 use core\Library;
-use core\Container;
 
 /**
  * Manages basic behaviors and data related to Google Analytics
@@ -90,16 +89,15 @@ class Analytics extends Model
      */
     public function setCredentials($email, $certificate, $app_name)
     {
-        $this->client = Container::instance('Google_Client');
+        $this->client = new \Google_Client;
         $this->client->setApplicationName($app_name);
-        $this->service = Container::instance('Google_Service_Analytics', array($this->client));
+        $this->service = new Google_Service_Analytics($this->client);
 
         $key = file_get_contents(GC_FILE_DIR . "/$certificate");
 
         try {
 
-            $args = array($email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key);
-            $this->credentials = Container::instance('Google_Auth_AssertionCredentials', $args);
+            $this->credentials = new \Google_Auth_AssertionCredentials($email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key);
             $this->client->setAssertionCredentials($this->credentials);
 
             if ($this->client->getAuth()->isAccessTokenExpired()) {
@@ -225,7 +223,8 @@ class Analytics extends Model
 
         $return = array();
         $lifespan = $this->config->get('ga_cache_lifespan', 86400);
-        $cid = "ga.{$this->profile_id}." . md5(serialize($arguments));
+        $cid = array("ga.{$this->profile_id}" => $arguments);
+
         $cache = $this->cache->get($cid, array('lifespan' => $lifespan));
 
         if (isset($cache)) {

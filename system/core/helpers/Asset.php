@@ -48,7 +48,6 @@ class Asset
      * @param string $script
      * @param string $pos
      * @param integer $weight
-     * @return array
      */
     public function setJs($script, $pos = 'top', $weight = null)
     {
@@ -63,14 +62,13 @@ class Asset
             'weight' => $weight
         );
 
-        return $this->set($data);
+        $this->set($data);
     }
 
     /**
      * Adds a CSS file
      * @param string $css
      * @param integer $weight
-     * @return array
      */
     public function setCss($css, $weight = null)
     {
@@ -84,8 +82,7 @@ class Asset
             'weight' => $weight
         );
 
-        $result = $this->set($data);
-        return $result['top'];
+        $this->set($data);
     }
 
     /**
@@ -149,21 +146,25 @@ class Asset
     /**
      * Sets an asset
      * @param array $data
-     * @return array
+     * @return bool
      */
     protected function set(array $data)
     {
         $key = $this->getKey($data);
         $position = empty($data['position']) ? 'top' : $data['position'];
 
-        if (isset($this->assets[$data['type']][$position][$key]) || empty($key)) {
-            return $this->assets[$data['type']];
+        if (empty($key)) {
+            return false;
         }
-        
+
+        if (isset($this->assets[$data['type']][$position][$key])) {
+            return false;
+        }
+
         $data['text'] = strpos($key, 'text.') === 0;
 
         $this->assets[$data['type']][$position][$key] = $data;
-        return $this->assets[$data['type']];
+        return true;
     }
 
     /**

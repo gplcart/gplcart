@@ -41,7 +41,7 @@ class Backend
         
         // Add asset libraries
         $libraries = array('bootstrap', 'font_awesome', 'summernote', 'primeui',
-            'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker', 'codemirror');
+            'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker', 'codemirror', 'chart');
         
         $controller->addAssetLibrary($libraries);
         

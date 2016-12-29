@@ -6,8 +6,8 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-
 define('GC_VERSION', '1.0.0');
+define('GC_START', microtime(true));
 define('GC_CLI', (PHP_SAPI === 'cli'));
 define('GC_CLI_EMULATE', (isset($_POST['cli_token']) && isset($_POST['command'])));
 define('GC_ROOT_DIR', realpath(__DIR__ . '/../'));

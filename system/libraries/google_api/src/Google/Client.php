@@ -228,13 +228,12 @@ class Google_Client
     $credentials = $this->createApplicationDefaultCredentials();
 
     $httpHandler = HttpHandlerFactory::build($authHttp);
-    $creds = $credentials->fetchAuthToken($httpHandler);
-    if ($creds && isset($creds['access_token'])) {
-      $creds['created'] = time();
-      $this->setAccessToken($creds);
+    $accessToken = $credentials->fetchAuthToken($httpHandler);
+    if ($accessToken && isset($accessToken['access_token'])) {
+      $this->setAccessToken($accessToken);
     }
 
-    return $creds;
+    return $accessToken;
   }
 
   /**
@@ -832,7 +831,7 @@ class Google_Client
    * This structure should match the file downloaded from
    * the "Download JSON" button on in the Google Developer
    * Console.
-   * @param string|array $config the configuration json
+   * @param string|array $json the configuration json
    * @throws Google_Exception
    */
   public function setAuthConfig($config)

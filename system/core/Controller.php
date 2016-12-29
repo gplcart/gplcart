@@ -21,6 +21,8 @@ class Controller
      */
     protected $installing = false;
     
+    protected $js_settings_weight = 0;
+    
     /**
      * Page meta title
      * @var string
@@ -1549,9 +1551,13 @@ class Controller
     {
         $json = json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
-
-        if (!isset($weight)) {
-            $weight = -75;
+        
+        // Track weight of JS settings to keep them together
+        if(isset($weight)){
+            $this->js_settings_weight += (int) $weight;
+        } else {
+            $this->js_settings_weight++;
+            $weight = $this->js_settings_weight;
         }
         
         $this->setJs("$var = $json;", 'top', $weight);
@@ -1589,11 +1595,10 @@ class Controller
      * @param string $script
      * @param string $pos
      * @param integer $weight
-     * @return array
      */
     public function setJs($script, $pos = 'top', $weight = null)
     {
-        return $this->asset->setJs($script, $pos, $weight);
+        $this->asset->setJs($script, $pos, $weight);
     }
     
     /**
@@ -1614,11 +1619,10 @@ class Controller
      * Adds a CSS on the page
      * @param string $css
      * @param integer $weight
-     * @return array
      */
     public function setCss($css, $weight = null)
     {
-        return $this->asset->setCss($css, $weight);
+        $this->asset->setCss($css, $weight);
     }
     
     /**
