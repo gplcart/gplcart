@@ -201,14 +201,20 @@ class Library
     protected function getVersionFile(array &$library)
     {
         if ($library['type'] === 'php') {
-            $base = GC_LIBRARY_DIR . "/{$library['id']}";
-            $file = "/$base/{$library['version']['file']}";
-        } else {
+            $base = "system/libraries/{$library['id']}";
+        } else if ($library['type'] === 'asset') {
             $base = "files/assets/libraries/{$library['id']}";
-            $file = GC_ROOT_DIR . "/$base/{$library['version']['file']}";
         }
 
-        $library['basepath'] = $base;
+        if (empty($library['basepath'])) {
+            $library['basepath'] = $base;
+        }
+
+        if (empty($library['basepath'])) {
+            return '';
+        }
+
+        $file = GC_ROOT_DIR . "/{$library['basepath']}/{$library['version']['file']}";
         return is_readable($file) ? $file : '';
     }
 
@@ -318,9 +324,9 @@ class Library
         $prepared = $this->prepareFiles($sorted, $libraries);
 
         foreach ($prepared as $file) {
-            require_once $file;
+            require_once GC_ROOT_DIR . "/$file";
         }
-        
+
         return true;
     }
 

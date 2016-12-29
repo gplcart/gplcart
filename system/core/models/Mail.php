@@ -12,6 +12,7 @@ namespace core\models;
 use core\Model;
 use core\Cache;
 use core\Logger;
+use core\Library;
 use core\Handler;
 
 /**
@@ -39,6 +40,12 @@ class Mail extends Model
     protected $mailer;
 
     /**
+     * Library class instance
+     * @var \core\Library $library
+     */
+    protected $library;
+
+    /**
      * Logger class instance
      * @var \core\Logger $logger
      */
@@ -48,11 +55,12 @@ class Mail extends Model
      * Constructor
      * @param Logger $logger
      */
-    public function __construct(Logger $logger)
+    public function __construct(Logger $logger, Library $library)
     {
         parent::__construct();
         $this->logger = $logger;
-        gplcart_require_library('phpmailer/PHPMailerAutoload.php');
+        $this->library = $library;
+        $this->library->load('phpmailer');
     }
 
     /**
@@ -200,6 +208,15 @@ class Mail extends Model
 
         $this->hook->fire('mail.after', $to, $message, $options);
         return (bool) $options['status'];
+    }
+
+    /**
+     * Returns the current instance of PHPMailer
+     * @return object
+     */
+    public function getMailer()
+    {
+        return $this->mailer;
     }
 
     /**

@@ -32,7 +32,7 @@ class Twig
      */
     public function __construct()
     {
-        gplcart_require_library('twig/lib/Twig/Autoloader.php');
+        require_once GC_LIBRARY_DIR . '/twig/lib/Twig/Autoloader.php';
         \Twig_Autoloader::register();
     }
 

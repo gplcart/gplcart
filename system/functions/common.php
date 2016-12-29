@@ -14,18 +14,19 @@
  */
 function gplcart_to_bytes($value)
 {
+    $bytes = (int) $value;
     $unit = strtolower(substr($value, -1, 1));
-    $value = (int) $value;
+
     switch ($unit) {
         case 'g':
-            $value *= 1024;
+            $bytes *= 1024;
         case 'm':
-            $value *= 1024;
+            $bytes *= 1024;
         case 'k':
-            $value *= 1024;
+            $bytes *= 1024;
     }
 
-    return $value;
+    return $bytes;
 }
 
 /**
@@ -141,7 +142,7 @@ function d($data)
 function gplcart_version_components($data)
 {
     $string = str_replace(' ', '', $data);
-    
+
     $matches = array();
     preg_match_all('/(^(==|=|!=|<>|>|<|>=|<=)?(?=\d))(.*)/', $string, $matches);
 
@@ -151,20 +152,4 @@ function gplcart_version_components($data)
 
     $operator = empty($matches[2][0]) ? '=' : $matches[2][0];
     return array($operator, $matches[3][0]);
-}
-
-/**
- * Requires a library file
- * @param string $path
- * @todo Remove
- */
-function gplcart_require_library($path)
-{
-    $file = GC_LIBRARY_DIR . "/$path";
-
-    if (!is_readable($file)) {
-        throw new \RuntimeException("Could not read library file $file");
-    }
-
-    require_once $file;
 }
