@@ -23,7 +23,7 @@ class Cache
      */
     public function set($cid, $data)
     {
-        $key = $this->buildKey($cid);
+        $key = static::buildKey($cid);
         $file = GC_CACHE_DIR . "/$key.cache";
 
         if (file_put_contents($file, serialize((array) $data)) !== false) {
@@ -42,7 +42,7 @@ class Cache
      */
     public function get($cid, $options = array())
     {
-        $key = $this->buildKey($cid);
+        $key = static::buildKey($cid);
         $options += array('default' => null, 'lifespan' => 0);
         $file = GC_CACHE_DIR . "/$key.cache";
 
@@ -80,7 +80,7 @@ class Cache
             return true;
         }
 
-        $key = $this->buildKey($cid);
+        $key = static::buildKey($cid);
         array_map('unlink', glob(GC_CACHE_DIR . "/$key{$options['pattern']}"));
         return true;
     }
@@ -95,7 +95,7 @@ class Cache
      */
     public static function &memory($cid, $default_value = null, $reset = false)
     {
-        $name = $this->buildKey($cid);
+        $name = static::buildKey($cid);
 
         static $data = array(), $default = array();
 
@@ -128,7 +128,7 @@ class Cache
      * @param string|array $data
      * @return string|null
      */
-    protected function buildKey($data)
+    protected static function buildKey($data)
     {
         if ($data === null) {
             return null;
@@ -149,7 +149,7 @@ class Cache
      */
     public static function clearMemory($cid = null)
     {
-        $key = $this->buildKey($cid);
+        $key = static::buildKey($cid);
         static::memory($key, null, true);
     }
 
