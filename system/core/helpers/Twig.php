@@ -9,11 +9,19 @@
 
 namespace core\helpers;
 
+use core\Library;
+
 /**
  * Wrapper class for TWIG template engine
  */
 class Twig
 {
+
+    /**
+     * Library class instance
+     * @var object
+     */
+    protected $library;
 
     /**
      * Twig loader instance
@@ -29,10 +37,12 @@ class Twig
 
     /**
      * Constructor
+     * @param Library $library
      */
-    public function __construct()
+    public function __construct(Library $library)
     {
-        require_once GC_LIBRARY_DIR . '/twig/lib/Twig/Autoloader.php';
+        $this->library = $library;
+        $this->library->load('twig');
         \Twig_Autoloader::register();
     }
 
