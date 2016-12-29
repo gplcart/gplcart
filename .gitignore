@@ -3,15 +3,6 @@
 nbproject
 *sublime*
 
-# Config folder. Ignore all but default config
-system/config/*
-!system/config/common.default.php
-!system/config/database.php
-!system/config/language.php
-!system/config/country.php
-!system/config/route.php
-!system/config/library.php
-
 # Module folder. Ignore all but core modules
 system/modules/*
 !system/modules/frontend

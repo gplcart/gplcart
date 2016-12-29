@@ -222,31 +222,6 @@ class Report extends Model
     }
 
     /**
-     * Returns PHP info as a string
-     * @return string
-     */
-    public function phpinfo()
-    {
-        ob_start();
-        phpinfo(INFO_MODULES);
-        $result = ob_get_clean();
-
-        // remove auth data
-        if (isset($_SERVER['AUTH_USER'])) {
-            $result = str_replace($_SERVER['AUTH_USER'], '***', $$result);
-        }
-
-        if (isset($_SERVER['AUTH_PASSWORD'])) {
-            $result = str_replace($_SERVER['AUTH_PASSWORD'], '***', $result);
-        }
-
-        $result = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $result);
-        $result = str_replace('<table', '<table class="table"', $result);
-
-        return $result;
-    }
-
-    /**
      * Returns an array of system statuses
      * @return array
      */
@@ -354,7 +329,8 @@ class Report extends Model
             $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
         }
 
-        $directories = array(GC_ROOT_DIR, GC_CACHE_DIR, GC_PRIVATE_DIR, GC_FILE_DIR, GC_LIBRARY_DIR);
+        $directories = array(GC_ROOT_DIR, GC_CACHE_DIR, GC_PRIVATE_DIR,
+            GC_FILE_DIR, GC_LIBRARY_DIR, GC_CONFIG_DIR, GC_CORE_DIR);
 
         foreach ($directories as $directory) {
             $private = ($directory !== GC_FILE_DIR);

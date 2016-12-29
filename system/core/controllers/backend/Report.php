@@ -356,7 +356,7 @@ class Report extends BackendController
     protected function setDataStatusReport()
     {
         if ($this->isQuery('phpinfo')) {
-            $phpinfo = $this->report->phpinfo();
+            $phpinfo = gplcart_phpinfo();
             $this->setData('phpinfo', $phpinfo);
         }
     }
