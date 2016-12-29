@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\helpers\Request as RequestHelper;
 use core\models\Language as LanguageModel;
 
@@ -170,7 +171,7 @@ class Compare extends Model
      */
     public function get()
     {
-        $items = &gplcart_cache('comparison');
+        $items = &Cache::memory('comparison');
 
         if (isset($items)) {
             return (array) $items;
@@ -211,7 +212,7 @@ class Compare extends Model
         $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
         $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
 
-        gplcart_cache_clear('comparison');
+        Cache::clearMemory('comparison');
         return $result;
     }
 

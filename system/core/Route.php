@@ -9,9 +9,6 @@
 
 namespace core;
 
-use core\Hook;
-use core\Config;
-use core\Handler;
 use core\helpers\Url as UrlHelper;
 use core\helpers\Request as RequestHelper;
 use core\exceptions\RouteException;
@@ -95,7 +92,7 @@ class Route
      */
     public function getList()
     {
-        $routes = &gplcart_cache('routes');
+        $routes = &Cache::memory('routes');
 
         if (isset($routes)) {
             return $routes;

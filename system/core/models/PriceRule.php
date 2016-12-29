@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Trigger as TriggerModel;
 use core\models\Currency as CurrencyModel;
 use core\models\Language as LanguageModel;
@@ -61,9 +62,7 @@ class PriceRule extends Model
      */
     public function getList(array $data = array())
     {
-        ksort($data);
-
-        $price_rules = &gplcart_cache('price.rules.' . md5(json_encode($data)));
+        $price_rules = &Cache::memory(array('price.rules' => $data));
 
         if (isset($price_rules)) {
             return $price_rules;

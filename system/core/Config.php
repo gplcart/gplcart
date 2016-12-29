@@ -9,7 +9,6 @@
 
 namespace core;
 
-use core\Container;
 use core\exceptions\DatabaseException;
 
 /**
@@ -203,7 +202,7 @@ class Config
      */
     public function getModules()
     {
-        $modules = &gplcart_cache('modules');
+        $modules = &Cache::memory('modules');
 
         if (isset($modules)) {
             return $modules;

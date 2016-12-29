@@ -9,6 +9,7 @@
 
 namespace core\models;
 
+use core\Cache;
 use core\Model;
 use core\Handler;
 use core\models\Language as LanguageModel;
@@ -193,7 +194,7 @@ class Backup extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_cache('backup.handles');
+        $handlers = &Cache::memory('backup.handles');
 
         if (isset($handlers)) {
             return $handlers;

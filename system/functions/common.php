@@ -8,51 +8,6 @@
  */
 
 /**
- * Deletes a variable from the static storage
- * @param string|null $key
- */
-function gplcart_cache_clear($key = null)
-{
-    gplcart_cache($key, null, true);
-}
-
-/**
- * Central static variable storage
- * Taken from Drupal
- * @param string $name
- * @param mixed $default_value
- * @param boolean $reset
- * @return mixed
- */
-function &gplcart_cache($name, $default_value = null, $reset = false)
-{
-    static $data = array(), $default = array();
-
-    if (isset($data[$name]) || array_key_exists($name, $data)) {
-        if ($reset) {
-            $data[$name] = $default[$name];
-        }
-
-        return $data[$name];
-    }
-
-    if (isset($name)) {
-        if ($reset) {
-            return $data;
-        }
-
-        $default[$name] = $data[$name] = $default_value;
-        return $data[$name];
-    }
-
-    foreach ($default as $name => $value) {
-        $data[$name] = $value;
-    }
-
-    return $data;
-}
-
-/**
  * Converts human readable file syzes to numeric bytes
  * @param string $value
  * @return integer

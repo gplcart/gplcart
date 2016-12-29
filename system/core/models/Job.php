@@ -9,9 +9,10 @@
 
 namespace core\models;
 
-use core\Model as Model;
-use core\Handler as Handler;
-use core\Container as Container;
+use core\Model;
+use core\Cache;
+use core\Handler;
+use core\Container;
 use core\helpers\Url as UrlHelper;
 use core\helpers\Session as SessionHelper;
 use core\models\Language as LanguageModel;
@@ -367,7 +368,7 @@ class Job extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &gplcart_cache('job.handlers');
+        $handlers = &Cache::memory('job.handlers');
 
         if (isset($handlers)) {
             return $handlers;

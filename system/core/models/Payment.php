@@ -9,6 +9,7 @@
 
 namespace core\models;
 
+use core\Cache;
 use core\Model;
 use core\models\Language as LanguageModel;
 
@@ -42,7 +43,7 @@ class Payment extends Model
      */
     public function getList($enabled = false)
     {
-        $methods = &gplcart_cache('payment.method');
+        $methods = &Cache::memory('payment.method');
 
         if (isset($methods)) {
             return $methods;

@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\Handler;
 use core\models\Collection as CollectionModel;
 
@@ -42,9 +43,7 @@ class CollectionItem extends Model
      */
     public function getList(array $data = array())
     {
-        ksort($data);
-
-        $items = &gplcart_cache('collection.item.list.' . md5(json_encode($data)));
+        $items = &Cache::memory(array('collection.item.list' => $data));
 
         if (isset($items)) {
             return $items;

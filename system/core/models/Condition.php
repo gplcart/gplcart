@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\Handler;
 use core\models\Language as LanguageModel;
 
@@ -181,7 +182,7 @@ class Condition extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_cache('condition.handlers');
+        $handlers = &Cache::memory('condition.handlers');
 
         if (isset($handlers)) {
             return $handlers;

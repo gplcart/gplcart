@@ -11,7 +11,7 @@ namespace core\models;
 
 use DateTime;
 use core\Model;
-use core\models\Cache as CacheModel;
+use core\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -21,8 +21,8 @@ class Report extends Model
 {
 
     /**
-     * Cache model instance
-     * @var \core\models\Cache $cache
+     * Cache instance
+     * @var \core\Cache $cache
      */
     protected $cache;
 
@@ -34,10 +34,10 @@ class Report extends Model
 
     /**
      * Constructor
-     * @param CacheModel $cache
      * @param LanguageModel $language
+     * @param Cache $cache
      */
-    public function __construct(CacheModel $cache, LanguageModel $language)
+    public function __construct(LanguageModel $language, Cache $cache)
     {
         parent::__construct();
 
@@ -82,7 +82,8 @@ class Report extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'severity', 'time', 'text');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY time DESC';

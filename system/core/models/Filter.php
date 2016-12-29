@@ -10,7 +10,8 @@
 namespace core\models;
 
 use core\Model;
-use core\helpers\Filter as FilterHelper;
+use core\Cache;
+use core\Library;
 use core\models\Language as LanguageModel;
 
 /**
@@ -26,22 +27,35 @@ class Filter extends Model
     protected $language;
 
     /**
-     * Filter helper instance
-     * @var \core\helpers\Filter $filter
+     * Librray class instance
+     * @var \cor\Librray $librray
      */
-    protected $filter;
+    protected $library;
+
+    /**
+     * An array of HTML Purifier with different config
+     * @var array
+     */
+    protected $htmlpurifiers = array();
+
+    /**
+     * The current HTML Purifier library instance
+     * @var obgect
+     */
+    protected $htmlpurifier;
 
     /**
      * Constructor
+     * @param Library $library
      * @param LanguageModel $language
-     * @param FilterHelper $filter
      */
-    public function __construct(LanguageModel $language, FilterHelper $filter)
+    public function __construct(Library $library, LanguageModel $language)
     {
         parent::__construct();
 
-        $this->filter = $filter;
+        $this->library = $library;
         $this->language = $language;
+        $this->library->load('htmlpurifier');
     }
 
     /**
@@ -61,7 +75,24 @@ class Filter extends Model
             $config = $filter['config'];
         }
 
-        return $this->filter->filter($text, $config);
+        ksort($config);
+        $key = md5(json_encode($config));
+
+        if (isset($this->htmlpurifiers[$key])) {
+            $this->htmlpurifier = $this->htmlpurifiers[$key];
+            return $this->htmlpurifier->purify($text);
+        }
+
+        if (empty($config)) {
+            $config = \HTMLPurifier_Config::createDefault();
+        } else {
+            $config = \HTMLPurifier_Config::create($config);
+        }
+
+        $this->htmlpurifier = new \HTMLPurifier($config);
+        $this->htmlpurifiers[$key] = $this->htmlpurifier;
+
+        return $this->htmlpurifier->purify($text);
     }
 
     /**
@@ -126,7 +157,7 @@ class Filter extends Model
      */
     public function getList($enabled = false)
     {
-        $filters = &gplcart_cache("filters.$enabled");
+        $filters = &Cache::memory("filters.$enabled");
 
         if (isset($filters)) {
             return $filters;

@@ -257,8 +257,8 @@ class Controller
     protected $validator;
     
     /**
-     * Library model instance
-     * @var \core\models\Library $library
+     * Library instance
+     * @var \core\Library $library
      */
     protected $library;
 
@@ -652,9 +652,6 @@ class Controller
 
         /* @var $filter \core\models\Filter */
         $this->filter = Container::instance('core\\models\\Filter');
-        
-        /* @var $library \core\models\Library */
-        $this->library = Container::instance('core\\models\\Library');
 
         /* @var $url \core\helpers\Url */
         $this->url = Container::instance('core\\helpers\\Url');
@@ -670,6 +667,9 @@ class Controller
 
         /* @var $session \core\helpers\Session */
         $this->session = Container::instance('core\\helpers\\Session');
+        
+        /* @var $library \core\Library */
+        $this->library = Container::instance('core\\Library');
 
         /* @var $hook \core\Hook */
         $this->hook = Container::instance('core\\Hook');
@@ -682,9 +682,6 @@ class Controller
 
         /* @var $logger \core\helpers\Logger */
         $this->logger = Container::instance('core\\Logger');
-
-        /* @var $device \core\helpers\Device */
-        $this->device = Container::instance('core\\helpers\\Device');
 
         /* @var $pager \core\helpers\Pager */
         $this->pager = Container::instance('core\\helpers\\Pager');
@@ -730,6 +727,9 @@ class Controller
         }
 
         $this->current_device = 'desktop';
+        
+        $this->library->load('mobile_detect');
+        $this->device = Container::instance('Mobile_Detect');
 
         if ($this->device->isMobile()) {
             $this->current_device = $this->device->isTablet() ? 'tablet' : 'mobile';

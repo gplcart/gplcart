@@ -16,6 +16,7 @@ use core\controllers\backend\Controller as BackendController;
  */
 class Library extends BackendController
 {
+
     /**
      * Constructor
      */
@@ -31,10 +32,13 @@ class Library extends BackendController
     {
         $this->library->clearCache();
         
+        $this->getListLibrary();
+        $this->getListLibrary();
+        $this->getListLibrary();
+        $this->getListLibrary();
+
         $libraries = $this->getListLibrary();
         $errors = $this->library->getErrors();
-        
-        //ddd($this->library->getFiles('bootstrap'));
 
         $this->setData('errors', $errors);
         $this->setData('libraries', $libraries);
@@ -43,7 +47,7 @@ class Library extends BackendController
         $this->setBreadcrumbListLibrary();
         $this->outputListLibrary();
     }
-    
+
     /**
      * Returns an array of libraries
      * @return array
@@ -51,9 +55,9 @@ class Library extends BackendController
     protected function getListLibrary()
     {
         $libraries = $this->library->getList();
-        
-        uasort($libraries, function($a, $b){ return strcmp($a['type'], $b['type']); });
-        
+        uasort($libraries, function($a, $b) {
+            return strcmp($a['type'], $b['type']);
+        });
         return $libraries;
     }
 

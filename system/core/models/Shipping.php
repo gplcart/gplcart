@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -42,7 +43,7 @@ class Shipping extends Model
      */
     public function getList($enabled = false)
     {
-        $methods = &gplcart_cache('shipping.methods');
+        $methods = &Cache::memory('shipping.methods');
 
         if (isset($methods)) {
             return $methods;

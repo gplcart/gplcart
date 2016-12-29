@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Alias as AliasModel;
 use core\models\Image as ImageModel;
 use core\models\Language as LanguageModel;
@@ -224,9 +225,7 @@ class Category extends Model
      */
     public function getTree(array $data)
     {
-        ksort($data);
-
-        $tree = &gplcart_cache('category.tree.' . md5(json_encode($data)));
+        $tree = &Cache::memory(array('category.tree' => $data));
 
         if (isset($tree)) {
             return $tree;

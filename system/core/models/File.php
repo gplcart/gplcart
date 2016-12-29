@@ -9,7 +9,8 @@
 
 namespace core\models;
 
-use core\Model as Model;
+use core\Model;
+use core\Cache;
 use core\helpers\Url as UrlHelper;
 use core\helpers\Curl as CurlHelper;
 use core\models\Language as LanguageModel;
@@ -525,9 +526,7 @@ class File extends Model
      */
     public function getList(array $data = array())
     {
-        ksort($data);
-
-        $files = &gplcart_cache('files.' . md5(json_encode($data)));
+        $files = &Cache::memory(array('files' => $data));
 
         if (isset($files)) {
             return $files;
@@ -709,7 +708,7 @@ class File extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &gplcart_cache('file.handlers');
+        $handlers = &Cache::memory('file.handlers');
 
         if (isset($handlers)) {
             return $handlers;

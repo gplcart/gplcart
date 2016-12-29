@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\Container;
 use core\helpers\Zip as ZipHelper;
 use core\models\Backup as BackupModel;
@@ -436,7 +437,7 @@ class Module extends Model
      */
     public function getActiveThemes()
     {
-        $themes = &gplcart_cache('active.themes');
+        $themes = &Cache::memory('active.themes');
 
         if (isset($themes)) {
             return $themes;
@@ -500,7 +501,7 @@ class Module extends Model
     {
         // Clear static cache to see available modules.
         // Important when uploading a module!
-        gplcart_cache_clear('modules');
+        Cache::clearMemory('modules');
 
         $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
@@ -588,7 +589,7 @@ class Module extends Model
     protected function getOverrideMap()
     {
         // Clear all caches before getting enabled modules
-        gplcart_cache_clear('modules');
+        Cache::clearMemory('modules');
 
         $map = array();
         foreach ($this->getEnabled() as $module) {

@@ -9,11 +9,10 @@
 
 namespace core\models;
 
-use core\Model as Model;
+use core\Model;
+use core\Library;
 use core\helpers\Url as UrlHelper;
-use core\helpers\Image as ImageHelper;
 use core\models\File as FileModel;
-use BadMethodCallException;
 
 /**
  * Manages basic behaviors and data related to images
@@ -28,31 +27,33 @@ class Image extends Model
     protected $file;
 
     /**
-     * Imagestyle class instance
-     * @var \core\helpers\Image $imagestyle
-     */
-    protected $imagestyle;
-
-    /**
      * Url class instance
      * @var \core\helpers\Url $url
      */
     protected $url;
 
     /**
+     * Library class instance
+     * @var \core\Library $library
+     */
+    protected $library;
+
+    /**
      * Constructor
      * @param FileModel $file
-     * @param ImageHelper $imagestyle
      * @param UrlHelper $url
+     * @param Library $library
      */
-    public function __construct(FileModel $file, ImageHelper $imagestyle,
-            UrlHelper $url)
+    public function __construct(FileModel $file, UrlHelper $url,
+            Library $library)
     {
         parent::__construct();
 
         $this->url = $url;
         $this->file = $file;
-        $this->imagestyle = $imagestyle;
+        $this->library = $library;
+
+        $this->library->load('simpleimage');
     }
 
     /**
@@ -173,11 +174,24 @@ class Image extends Model
      */
     public function modify($file, array $actions = array())
     {
+        $applied = 0;
+
         try {
-            $this->applyActions($file, $actions);
-        } catch (BadMethodCallException $exception) {
-            trigger_error($exception->getMessage());
+
+            $object = new \abeautifulsite\SimpleImage($file);
+
+            foreach ($actions as $action_id => $action) {
+                if ($this->validateAction($file, $action_id, $action)) {
+                    $applied++;
+                    call_user_func_array(array($object, $action_id), (array) $action['value']);
+                }
+            }
+        } catch (\Exception $e) {
+            trigger_error($e->getMessage());
+            return 0;
         }
+
+        return $applied;
     }
 
     /**
@@ -379,22 +393,6 @@ class Image extends Model
         $fullpath = GC_FILE_DIR . "/$path";
         $path = 'files/' . trim(str_replace(GC_ROOT_DIR, '', $path), "/");
         return $this->url->get($path, array('v' => filemtime($fullpath)));
-    }
-
-    /**
-     * Applies an array of image style actions to an image
-     * @param string $file
-     * @param array $actions
-     */
-    protected function applyActions($file, array $actions)
-    {
-        $library = $this->imagestyle->set($file);
-
-        foreach ($actions as $action_id => $action) {
-            if ($this->validateAction($file, $action_id, $action)) {
-                call_user_func_array(array($library, $action_id), (array) $action['value']);
-            }
-        }
     }
 
     /**

@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\helpers\Request as RequestHelper;
 
 /**
@@ -56,13 +57,7 @@ class Store extends Model
      */
     public function getList(array $data = array())
     {
-        $cache_key = 'stores';
-
-        if (!empty($data)) {
-            $cache_key .= md5(json_encode($data));
-        }
-
-        $stores = &gplcart_cache($cache_key);
+        $stores = &Cache::memory(array('stores' => $data));
 
         if (isset($stores)) {
             return $stores;
@@ -168,7 +163,7 @@ class Store extends Model
 
         $this->hook->fire('get.store.before', $store_id);
 
-        $store = &gplcart_cache("store.$store_id");
+        $store = &Cache::memory("store.$store_id");
 
         if (isset($store)) {
             return $store;

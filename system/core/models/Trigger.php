@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Condition as ConditionModel;
 
 /**
@@ -41,8 +42,7 @@ class Trigger extends Model
      */
     public function getList(array $data = array())
     {
-        $cache_key = 'trigger.list.' . md5(json_encode($data));
-        $triggers = &gplcart_cache($cache_key);
+        $triggers = &Cache::memory(array('trigger.list' => $data));
 
         if (isset($triggers)) {
             return $triggers;

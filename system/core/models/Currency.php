@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\helpers\Request as RequestHelper;
 
 /**
@@ -91,9 +92,8 @@ class Currency extends Model
      */
     public function getList($enabled = false)
     {
-        $cache_key = $enabled ? 'currencies.enabled' : 'currencies';
-
-        $currencies = &gplcart_cache($cache_key);
+        $key = $enabled ? 'currencies.enabled' : 'currencies';
+        $currencies = &Cache::memory($key);
 
         if (isset($currencies)) {
             return $currencies;
@@ -215,7 +215,7 @@ class Currency extends Model
      */
     public function get($code = null)
     {
-        $currency = &gplcart_cache("currency.$code");
+        $currency = &Cache::memory("currency.$code");
 
         if (isset($currency)) {
             return $currency;

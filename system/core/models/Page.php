@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Alias as AliasModel;
 use core\models\Image as ImageModel;
-use core\models\Cache as CacheModel;
 use core\models\Language as LanguageModel;
 
 /**
@@ -22,8 +22,8 @@ class Page extends Model
 {
 
     /**
-     * Cache model instance
-     * @var \core\models\Cache $cache
+     * Cache instance
+     * @var \core\Cache $cache
      */
     protected $cache;
 
@@ -50,10 +50,10 @@ class Page extends Model
      * @param ImageModel $image
      * @param AliasModel $alias
      * @param LanguageModel $language
-     * @param CacheModel $cache
+     * @param Cache $cache
      */
     public function __construct(ImageModel $image, AliasModel $alias,
-            LanguageModel $language, CacheModel $cache)
+            LanguageModel $language, Cache $cache)
     {
         parent::__construct();
 

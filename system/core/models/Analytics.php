@@ -10,9 +10,11 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\Logger;
 use core\Handler;
-use core\models\Cache as CacheModel;
+use core\Library;
+use core\Container;
 
 /**
  * Manages basic behaviors and data related to Google Analytics
@@ -21,10 +23,16 @@ class Analytics extends Model
 {
 
     /**
-     * Cache model instance
-     * @var \core\models\Cache $cache
+     * Cache instance
+     * @var \core\Cache $cache
      */
     protected $cache;
+
+    /**
+     * Library instance
+     * @var \core\Library $library
+     */
+    protected $library;
 
     /**
      * GA service class instance
@@ -58,17 +66,19 @@ class Analytics extends Model
 
     /**
      * Constructor
-     * @param CacheModel $cache
+     * @param Cache $cache
      * @param Logger $logger
+     * @param Library $library
      */
-    public function __construct(CacheModel $cache, Logger $logger)
+    public function __construct(Cache $cache, Logger $logger, Library $library)
     {
         parent::__construct();
 
         $this->cache = $cache;
         $this->logger = $logger;
+        $this->library = $library;
 
-        gplcart_require_library('gapi/src/Google/autoload.php');
+        $this->library->load('google_api');
     }
 
     /**
@@ -80,20 +90,16 @@ class Analytics extends Model
      */
     public function setCredentials($email, $certificate, $app_name)
     {
-        $key_file = GC_FILE_DIR . '/' . $certificate;
-
-        $this->client = new \Google_Client();
+        $this->client = Container::instance('Google_Client');
         $this->client->setApplicationName($app_name);
-        $this->service = new \Google_Service_Analytics($this->client);
+        $this->service = Container::instance('Google_Service_Analytics', array($this->client));
 
-        $key = file_get_contents($key_file);
+        $key = file_get_contents(GC_FILE_DIR . "/$certificate");
 
         try {
 
-            $this->credentials = new \Google_Auth_AssertionCredentials(
-                    $email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key
-            );
-
+            $args = array($email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key);
+            $this->credentials = Container::instance('Google_Auth_AssertionCredentials', $args);
             $this->client->setAssertionCredentials($this->credentials);
 
             if ($this->client->getAuth()->isAccessTokenExpired()) {
@@ -159,7 +165,7 @@ class Analytics extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &gplcart_cache('ga.handlers');
+        $handlers = &Cache::memory('ga.handlers');
 
         if (isset($handlers)) {
             return $handlers;

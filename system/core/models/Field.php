@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -41,7 +42,7 @@ class Field extends Model
      */
     public function getWidgetTypes()
     {
-        $types = &gplcart_cache('field.widget.types');
+        $types = &Cache::memory('field.widget.types');
 
         if (isset($types)) {
             return $types;
@@ -64,7 +65,7 @@ class Field extends Model
      */
     public function getTypes()
     {
-        $types = &gplcart_cache('field.types');
+        $types = &Cache::memory('field.types');
 
         if (isset($types)) {
             return $types;

@@ -10,6 +10,7 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\models\Language as LanguageModel;
 
 /**
@@ -331,9 +332,7 @@ class Country extends Model
      */
     public function getList(array $data = array())
     {
-        ksort($data);
-        
-        $list = &gplcart_cache('countries.' . md5(json_encode($data)));
+        $list = &Cache::memory(array('countries' => $data));
 
         if (isset($list)) {
             return $list;

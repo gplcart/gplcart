@@ -10,9 +10,9 @@
 namespace core\models;
 
 use core\Model;
+use core\Cache;
 use core\helpers\Request as RequestHelper;
 use core\models\Sku as SkuModel;
-use core\models\Cache as CacheModel;
 use core\models\Price as PriceModel;
 use core\models\Image as ImageModel;
 use core\models\Alias as AliasModel;
@@ -28,8 +28,8 @@ class Product extends Model
 {
 
     /**
-     * Cache model instance
-     * @var \core\models\Cache $cache
+     * Cache instance
+     * @var \core\Cache $cache
      */
     protected $cache;
 
@@ -97,13 +97,13 @@ class Product extends Model
      * @param SkuModel $sku
      * @param SearchModel $search
      * @param ProductFieldModel $product_field
-     * @param CacheModel $cache
+     * @param Cache $cache
      * @param RequestHelper $request
      */
     public function __construct(PriceModel $price, PriceRuleModel $pricerule,
             ImageModel $image, AliasModel $alias, LanguageModel $language,
             SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, CacheModel $cache,
+            ProductFieldModel $product_field, Cache $cache,
             RequestHelper $request)
     {
         parent::__construct();

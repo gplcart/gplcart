@@ -9,9 +9,10 @@
 
 namespace core\models;
 
-use core\Route as Route;
-use core\Model as Model;
-use core\helpers\Translit as TranslitHelper;
+use core\Route;
+use core\Cache;
+use core\Model;
+use core\Library;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -32,8 +33,14 @@ class Language extends Model
     protected $route;
 
     /**
-     * Translit helper instance
-     * @var \core\helpers\Translit $translit
+     * Library instance
+     * @var \core\Translit $library
+     */
+    protected $library;
+
+    /**
+     * Translit library instance
+     * @var object
      */
     protected $translit;
 
@@ -65,15 +72,15 @@ class Language extends Model
 
     /**
      * Constructor
-     * @param TranslitHelper $translit
      * @param Route $route
+     * @param Library $library
      */
-    public function __construct(TranslitHelper $translit, Route $route)
+    public function __construct(Route $route, Library $library)
     {
         parent::__construct();
 
         $this->route = $route;
-        $this->translit = $translit;
+        $this->library = $library;
 
         $langcode = $this->route->getLangcode();
 
@@ -102,7 +109,7 @@ class Language extends Model
      */
     public function getAll()
     {
-        $languages = &gplcart_cache('languages');
+        $languages = &Cache::memory('languages');
 
         if (isset($languages)) {
             return $languages;
@@ -151,11 +158,11 @@ class Language extends Model
             }
 
             $languages[$langcode] = array(
+                'weight' => 0,
                 'status' => false,
                 'default' => false,
                 'code' => $langcode,
                 'name' => $langcode,
-                'weight' => 0,
                 'native_name' => $langcode
             );
         }
@@ -390,7 +397,7 @@ class Language extends Model
             $cache_key .= ".$filename";
         }
 
-        $translations = &gplcart_cache($cache_key);
+        $translations = &Cache::memory($cache_key);
 
         if (isset($translations)) {
             return (array) $translations;
@@ -499,7 +506,9 @@ class Language extends Model
             return '';
         }
 
-        $translit = $this->translit->get($string, '?', $language);
+        $this->library->load('translit');
+
+        $translit = \Translit::get($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);
         return $translit;
     }
