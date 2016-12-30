@@ -346,6 +346,18 @@ $_libraries['htmlpurifier'] = array(
     )
 );
 
+$_libraries['jsqueeze'] = array(
+    'name' => 'JSqueeze',
+    'description' => 'Efficient JavaScript minification in PHP',
+    'type' => 'php',
+    'url' => 'https://github.com/tchwork/jsqueeze',
+    'download' => 'https://github.com/tchwork/jsqueeze/archive/v2.0.5.zip',
+    'version' => array('number' => '2.0.5'),
+    'files' => array(
+        'src/JSqueeze.php'
+    )
+);
+
 $_libraries['kint'] = array(
     'name' => 'Kint',
     'description' => 'A powerful and modern PHP debugging tool',
@@ -416,7 +428,7 @@ $_libraries['transliterator'] = array(
         'pattern' => '/.*@version.*(\d+\.+\d+\.+\d+)/'
     ),
     'files' => array(
-        'Transliterator.php'
+        'Translit.php'
     )
 );
 

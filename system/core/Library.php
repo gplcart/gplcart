@@ -109,6 +109,11 @@ class Library
         foreach ($libraries as $library_id => &$library) {
 
             $library['id'] = $library_id;
+
+            if (empty($library['basepath'])) {
+                $library['basepath'] = $this->getBasePath($library);
+            }
+
             $version = $this->getVersion($library);
 
             if (!isset($version)) {
@@ -116,6 +121,17 @@ class Library
             }
 
             $library['version']['number'] = $version;
+
+            if (empty($library['files'])) {
+                $this->errors[$library_id][] = 'missing_files';
+                continue;
+            }
+
+            // Check at least one file exists
+            $file = reset($library['files']);
+            if (!is_readable(GC_ROOT_DIR . "/{$library['basepath']}/$file")) {
+                $this->errors[$library_id][] = 'missing_files';
+            }
         }
 
         foreach ($libraries as $library_id => &$library) {
@@ -176,9 +192,9 @@ class Library
             return null;
         }
 
-        $file = $this->getVersionFile($library);
+        $file = GC_ROOT_DIR . "/{$library['basepath']}/{$library['version']['file']}";
 
-        if (empty($file)) {
+        if (!is_readable($file)) {
             $this->errors[$library['id']][] = 'failed_load_file';
             return null;
         }
@@ -194,11 +210,12 @@ class Library
     }
 
     /**
-     * Returns a source file containing verison info
+     * Returns a base path to a library
      * @param array $library
+     * @param boolean $absolute
      * @return string
      */
-    protected function getVersionFile(array &$library)
+    protected function getBasePath(array $library, $absolute = false)
     {
         if ($library['type'] === 'php') {
             $base = "system/libraries/{$library['id']}";
@@ -206,16 +223,11 @@ class Library
             $base = "files/assets/libraries/{$library['id']}";
         }
 
-        if (empty($library['basepath'])) {
-            $library['basepath'] = $base;
+        if ($absolute) {
+            $base = GC_ROOT_DIR . "/$base";
         }
 
-        if (empty($library['basepath'])) {
-            return '';
-        }
-
-        $file = GC_ROOT_DIR . "/{$library['basepath']}/{$library['version']['file']}";
-        return is_readable($file) ? $file : '';
+        return $base;
     }
 
     /**
