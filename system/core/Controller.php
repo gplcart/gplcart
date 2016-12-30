@@ -20,9 +20,13 @@ class Controller
      * @var boolean
      */
     protected $installing = false;
-    
+
+    /**
+     *
+     * @var type 
+     */
     protected $js_settings_weight = 0;
-    
+
     /**
      * Page meta title
      * @var string
@@ -257,7 +261,7 @@ class Controller
      * @var \core\models\Validator $validator
      */
     protected $validator;
-    
+
     /**
      * Library instance
      * @var \core\Library $library
@@ -275,7 +279,7 @@ class Controller
      * @var \core\helpers\Url $url
      */
     protected $url;
-    
+
     /**
      * Asset class instance
      * @var \core\helpers\Asset $asset
@@ -347,6 +351,12 @@ class Controller
      * @var \core\helpers\Pager $pager
      */
     protected $pager;
+
+    /**
+     * Compressor class instance
+     * @var \core\helpers\Compressor $compressor
+     */
+    protected $compressor;
 
     /**
      * Config class instance
@@ -538,12 +548,13 @@ class Controller
     {
         return $this->uid;
     }
-    
+
     /**
      * 
      * @return string
      */
-    public function path(){
+    public function path()
+    {
         return $this->path;
     }
 
@@ -663,13 +674,13 @@ class Controller
 
         /* @var $response \core\helpers\Response */
         $this->response = Container::instance('core\\helpers\\Response');
-        
+
         /* @var $asset \core\helpers\Asset */
         $this->asset = Container::instance('core\\helpers\\Asset');
 
         /* @var $session \core\helpers\Session */
         $this->session = Container::instance('core\\helpers\\Session');
-        
+
         /* @var $library \core\Library */
         $this->library = Container::instance('core\\Library');
 
@@ -687,6 +698,9 @@ class Controller
 
         /* @var $pager \core\helpers\Pager */
         $this->pager = Container::instance('core\\helpers\\Pager');
+
+        /* @var $compressor \core\helpers\Compressor */
+        $this->compressor = Container::instance('core\\helpers\\Compressor');
     }
 
     /**
@@ -729,7 +743,7 @@ class Controller
         }
 
         $this->current_device = 'desktop';
-        
+
         $this->library->load('mobile_detect');
         $this->device = Container::instance('Mobile_Detect');
 
@@ -1168,7 +1182,6 @@ class Controller
         }
 
         return $this->title;
-        
     }
 
     /**
@@ -1364,9 +1377,9 @@ class Controller
      */
     public function getCss()
     {
-        $css = $this->asset->getCss();
-        gplcart_array_sort($css);
-        return $css;
+        $stylesheets = $this->asset->getCss();
+        $this->aggregateAssets($stylesheets, 'css');
+        return $stylesheets;
     }
 
     /**
@@ -1377,8 +1390,60 @@ class Controller
     public function getJs($position)
     {
         $scripts = $this->asset->getJs($position);
-        gplcart_array_sort($scripts);
+        $this->aggregateAssets($scripts, 'js');
         return $scripts;
+    }
+
+    /**
+     * Aggregates assets
+     * @param array $assets
+     * @param string $type
+     * @return array
+     */
+    protected function aggregateAssets(array &$assets, $type)
+    {
+        if (!$this->config("aggregate_$type", 0)) {
+            return $assets;
+        }
+
+        $directory = GC_FILE_DIR . "/assets/compressed/$type";
+
+        $group = 0;
+        $groups = $results = array();
+
+        // Split assets by groups
+        // "text" assets (e.g JS settings) are excluded from aggregation
+        foreach ($assets as $key => $asset) {
+
+            if (!empty($asset['text'])) {
+                // Add underscrore to make the key not numeric
+                // We check it later to define which assets should be aggregated
+                $groups["_$group"] = $asset;
+                $group++;
+                continue;
+            }
+
+            // Add also text assets which should not be aggregated to keep same order
+            if (!empty($asset['asset'])) {
+                $groups[$group][$key] = $asset['asset'];
+            }
+        }
+
+        // Finally build groups of aggregated files
+        foreach ($groups as $group => $content) {
+            if (is_numeric($group)) {
+                $method = "compress$type";
+                $aggregated = $this->compressor->$method($content, $directory);
+                $asset = $this->asset->build(array('asset' => $aggregated));
+                $results[$asset['key']] = $asset;
+            } else {
+                // Text assets remain untouched
+                $results[$group] = $content;
+            }
+        }
+
+        $assets = $results;
+        return $assets;
     }
 
     /**
@@ -1551,15 +1616,15 @@ class Controller
     {
         $json = json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
-        
+
         // Track weight of JS settings to keep them together
-        if(isset($weight)){
+        if (isset($weight)) {
             $this->js_settings_weight += (int) $weight;
         } else {
             $this->js_settings_weight++;
             $weight = $this->js_settings_weight;
         }
-        
+
         $this->setJs("$var = $json;", 'top', $weight);
     }
 
@@ -1600,7 +1665,7 @@ class Controller
     {
         $this->asset->setJs($script, $pos, $weight);
     }
-    
+
     /**
      * Sets a JS depending on the current URL path
      * @param string $directory A directory to scan
@@ -1624,7 +1689,7 @@ class Controller
     {
         $this->asset->setCss($css, $weight);
     }
-    
+
     /**
      * Adds single or multiple asset libraries
      * @param string|array $library_id

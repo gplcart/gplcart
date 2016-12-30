@@ -92,7 +92,9 @@ class Asset
      */
     public function getJs($pos)
     {
-        return $this->get('js', $pos);
+        $js = $this->get('js', $pos);
+        gplcart_array_sort($js);
+        return $js;
     }
 
     /**
@@ -101,7 +103,9 @@ class Asset
      */
     public function getCss()
     {
-        return $this->get('css', 'top');
+        $css = $this->get('css', 'top');
+        gplcart_array_sort($css);
+        return $css;
     }
 
     /**
@@ -150,51 +154,53 @@ class Asset
      */
     protected function set(array $data)
     {
-        $key = $this->getKey($data);
-        $position = empty($data['position']) ? 'top' : $data['position'];
+        $data = $this->build($data);
 
-        if (empty($key)) {
+        if (isset($this->assets[$data['type']][$data['position']][$data['key']])) {
             return false;
         }
 
-        if (isset($this->assets[$data['type']][$position][$key])) {
-            return false;
-        }
-
-        $data['text'] = strpos($key, 'text.') === 0;
-
-        $this->assets[$data['type']][$position][$key] = $data;
+        $this->assets[$data['type']][$data['position']][$data['key']] = $data;
         return true;
     }
-
+    
     /**
-     * Returns a string containing either asset URL or MD5 hash of its content
+     * 
      * @param array $data
      * @return string
      */
-    protected function getKey(array $data)
+    public function build(array $data)
     {
-        if (pathinfo($data['asset'], PATHINFO_EXTENSION) !== $data['type']) {
-            return 'text.' . md5($data['asset']);
+        $type = pathinfo($data['asset'], PATHINFO_EXTENSION);
+
+        $data += array(
+            'type' => $type,
+            'position' => 'top'
+        );
+
+        $data['text'] = (!in_array($data['type'], array('css', 'js')) || $type != $data['type']);
+
+        if ($data['text']) {
+            $data['key'] = 'text.' . md5($data['asset']);
+            return $data;
         }
 
-        $file = GC_ROOT_DIR . '/' . $data['asset'];
+        $is_absolute = (strpos($data['asset'], GC_ROOT_DIR) === 0);
 
-        if (!file_exists($file)) {
-            return '';
+        if ($is_absolute) {
+            $data['file'] = $data['asset'];
+            $data['asset'] = str_replace(GC_ROOT_DIR . '/', '', $data['asset']);
+        } else {
+            $data['file'] = GC_ROOT_DIR . "/{$data['asset']}";
+        }
+        
+        if(!file_exists($data['file'])){
+            $data['asset'] = $data['key'] = '';
+            return $data;
         }
 
-        return $this->getUrl($data['asset']);
-    }
-
-    /**
-     * Returns a URL of an asset with "version" ID
-     * @param string $file
-     * @return string
-     */
-    public function getUrl($file)
-    {
-        return $this->request->base(true) . "$file?v=" . filemtime($file);
+        $data['key'] = $this->request->base(true) . "{$data['asset']}?v=" . filemtime($data['file']);
+        return $data;
     }
 
 }

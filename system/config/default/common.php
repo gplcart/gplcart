@@ -141,6 +141,9 @@ $config = array();
 # $config['filter_3_role_id'] = 1; // Role ID
 # $config['filter_3_config'] = array(); // Array of HTML Purifier's options
 
+# $config['aggregate_js'] = 0; // Aggregate JS files
+# $config['aggregate_css'] = 0; // Aggregate and compress CSS files
+
 /**
  * End of configurable settings
  * The settings below are appended automatically during installation.
