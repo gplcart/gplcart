@@ -9,6 +9,50 @@
 <form method="post" enctype="multipart/form-data" id="common-settings" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
+    <div class="panel-heading"><?php echo $this->text('Performance'); ?></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Compress JS'); ?></label>
+        <div class="col-md-4">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default<?php echo empty($settings['compress_js']) ? '' : ' active'; ?>">
+              <input name="settings[compress_js]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['compress_js']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
+            </label>
+            <label class="btn btn-default<?php echo empty($settings['compress_js']) ? ' active' : ''; ?>">
+              <input name="settings[compress_js]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['compress_js']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <?php echo $this->text('If enabled, JS files will be merged into several big files. It reduces number of HTTP queries and improves site loading speed'); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Compress CSS'); ?></label>
+        <div class="col-md-4">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default<?php echo empty($settings['compress_css']) ? '' : ' active'; ?>">
+              <input name="settings[compress_css]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['compress_css']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
+            </label>
+            <label class="btn btn-default<?php echo empty($settings['compress_css']) ? ' active' : ''; ?>">
+              <input name="settings[compress_css]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['compress_css']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <?php echo $this->text('If enabled, CSS files will be minified and merged into one big file. It reduces number of HTTP queries and improves site loading speed'); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-4 col-md-offset-2">
+          <button class="btn btn-default" name="delete_cached_assets" value="1">
+            <?php echo $this->text('Delete cached assets'); ?>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Google API'); ?></div>
     <div class="panel-body">
       <div class="form-group<?php echo $this->error('gapi_browser_key', ' has-error'); ?>">

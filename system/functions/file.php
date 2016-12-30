@@ -53,22 +53,12 @@ function gplcart_file_delete_recursive($directory)
         return false;
     }
 
-    if (!is_dir($directory)) {
-        return false;
-    }
-
-    foreach (scandir($directory) as $object) {
-        if ($object == '.' || $object == '..') {
-            continue;
+    foreach (glob("{$directory}/*") as $file) {
+        if (is_dir($file)) {
+            gplcart_file_delete_recursive($file);
+        } else {
+            unlink($file);
         }
-
-        $path = $directory . '/' . $object;
-        if (is_dir($path)) {
-            gplcart_file_delete_recursive($path);
-            continue;
-        }
-
-        unlink($path);
     }
 
     return rmdir($directory);

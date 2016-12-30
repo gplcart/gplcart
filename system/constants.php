@@ -19,6 +19,7 @@ define('GC_MODULE_DIR', GC_SYSTEM_DIR . '/modules');
 define('GC_LIBRARY_DIR', GC_SYSTEM_DIR . '/libraries');
 define('GC_CACHE_DIR', GC_ROOT_DIR . '/cache');
 define('GC_FILE_DIR', GC_ROOT_DIR . '/files');
+define('GC_COMPRESSED_ASSET_DIR', GC_FILE_DIR . '/assets/compressed');
 define('GC_CONFIG_DIR', GC_SYSTEM_DIR . '/config');
 define('GC_CONFIG_OVERRIDE', GC_CONFIG_DIR . '/runtime/override.php');
 define('GC_CONFIG_COMMON', GC_CONFIG_DIR . '/runtime/common.php');

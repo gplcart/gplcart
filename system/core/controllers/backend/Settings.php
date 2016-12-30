@@ -79,6 +79,11 @@ class Settings extends BackendController
      */
     protected function submitSettings()
     {
+        if ($this->isPosted('delete_cached_assets')) {
+            $this->deleteCachedAssets();
+            return null;
+        }
+
         if (!$this->isPosted('save')) {
             return;
         }
@@ -91,6 +96,20 @@ class Settings extends BackendController
         }
 
         $this->updateSettings();
+    }
+
+    /**
+     * Deletes all aggregated assets
+     */
+    protected function deleteCachedAssets()
+    {
+        $result = gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR);
+
+        if ($result) {
+            $this->redirect('', $this->text('Cache has been cleared'), 'success');
+        }
+
+        $this->redirect('');
     }
 
     /**

@@ -1378,7 +1378,7 @@ class Controller
     public function getCss()
     {
         $stylesheets = $this->asset->getCss();
-        $this->aggregateAssets($stylesheets, 'css');
+        $this->compressAssets($stylesheets, 'css');
         return $stylesheets;
     }
 
@@ -1390,23 +1390,23 @@ class Controller
     public function getJs($position)
     {
         $scripts = $this->asset->getJs($position);
-        $this->aggregateAssets($scripts, 'js');
+        $this->compressAssets($scripts, 'js');
         return $scripts;
     }
 
     /**
-     * Aggregates assets
+     * Compresses and aggregates assets
      * @param array $assets
      * @param string $type
      * @return array
      */
-    protected function aggregateAssets(array &$assets, $type)
+    protected function compressAssets(array &$assets, $type)
     {
-        if (!$this->config("aggregate_$type", 0)) {
+        if (!$this->config("compress_$type", 0)) {
             return $assets;
         }
 
-        $directory = GC_FILE_DIR . "/assets/compressed/$type";
+        $directory = GC_COMPRESSED_ASSET_DIR . "/$type";
 
         $group = 0;
         $groups = $results = array();

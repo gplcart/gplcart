@@ -15,7 +15,6 @@ namespace core\helpers;
  */
 class Compressor
 {
-
     /**
      * Request class instance
      * @var \core\helpers\Request $request 
@@ -56,7 +55,7 @@ class Compressor
         $filename = "js_$key.js";
         $uri = "$directory/$filename";
 
-        if (is_readable($uri)) {
+        if (file_exists($uri)) {
             return $uri;
         }
 
@@ -86,7 +85,7 @@ class Compressor
         $filename = "css_$key.css";
         $uri = "$directory/$filename";
 
-        if (is_readable($uri)) {
+        if (file_exists($uri)) {
             return $uri;
         }
 
