@@ -127,9 +127,12 @@ class Library
                 continue;
             }
 
-            // Check at least one file exists
-            $file = reset($library['files']);
-            if (!is_readable(GC_ROOT_DIR . "/{$library['basepath']}/$file")) {
+            $readable = 0;
+            foreach ($library['files'] as $file) {
+                $readable += (int) is_readable(GC_ROOT_DIR . "/{$library['basepath']}/$file");
+            }
+
+            if (count($library['files']) != $readable) {
                 $this->errors[$library_id][] = 'missing_files';
             }
         }

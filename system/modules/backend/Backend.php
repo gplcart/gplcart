@@ -46,7 +46,7 @@ class Backend
         $controller->addAssetLibrary($libraries);
         
         // Add theme JS depending on the current URL path
-        $controller->setJsContext(GC_MODULE_DIR . '/backend/js', 'bottom');
+        $controller->setJsContext(GC_MODULE_DIR . '/backend/js', array('position' => 'bottom'));
         
         // Add theme-specific CSS. Goes after all added CSS
         $controller->setCss('system/modules/backend/css/style.css');

@@ -271,7 +271,7 @@ class Install extends FrontendController
      */
     protected function setCssInstall()
     {
-        $this->setCss('system/modules/frontend/css/install.css', 99);
+        $this->setCss('system/modules/frontend/css/install.css');
     }
 
     /**

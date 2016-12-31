@@ -1412,10 +1412,13 @@ class Controller
         $groups = $results = array();
 
         // Split assets by groups
-        // "text" assets (e.g JS settings) are excluded from aggregation
+        // "text" assets (e.g JS settings) and those who have "aggregate=>false"
+        // are excluded from aggregation
         foreach ($assets as $key => $asset) {
 
-            if (!empty($asset['text'])) {
+            $exclude = (isset($asset['aggregate']) && empty($asset['aggregate']));
+
+            if (!empty($asset['text']) || $exclude) {
                 // Add underscrore to make the key not numeric
                 // We check it later to define which assets should be aggregated
                 $groups["_$group"] = $asset;
@@ -1423,7 +1426,6 @@ class Controller
                 continue;
             }
 
-            // Add also text assets which should not be aggregated to keep same order
             if (!empty($asset['asset'])) {
                 $groups[$group][$key] = $asset['asset'];
             }
@@ -1431,15 +1433,18 @@ class Controller
 
         // Finally build groups of aggregated files
         foreach ($groups as $group => $content) {
+
             if (is_numeric($group)) {
+
                 $method = "compress$type";
                 $aggregated = $this->compressor->$method($content, $directory);
                 $asset = $this->asset->build(array('asset' => $aggregated));
                 $results[$asset['key']] = $asset;
-            } else {
-                // Text assets remain untouched
-                $results[$group] = $content;
+                continue;
             }
+
+            // Text / excluded assets remain untouched
+            $results[$group] = $content;
         }
 
         $assets = $results;
@@ -1585,7 +1590,7 @@ class Controller
         if ($add) {
             $url = $this->url('cron', array('key' => $this->cron_key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
-            $this->setJs($js, 'bottom');
+            $this->setJs($js, array('position' => 'bottom'));
         }
     }
 
@@ -1625,7 +1630,7 @@ class Controller
             $weight = $this->js_settings_weight;
         }
 
-        $this->setJs("$var = $json;", 'top', $weight);
+        $this->setJs("$var = $json;", array('weight' => $weight));
     }
 
     /**
@@ -1658,44 +1663,43 @@ class Controller
     /**
      * Adds a JS on the page
      * @param string $script
-     * @param string $pos
-     * @param integer $weight
+     * @param array $data
      */
-    public function setJs($script, $pos = 'top', $weight = null)
+    public function setJs($script, array $data = array())
     {
-        $this->asset->setJs($script, $pos, $weight);
+        $this->asset->setJs($script, $data);
     }
 
     /**
      * Sets a JS depending on the current URL path
      * @param string $directory A directory to scan
-     * @param string $pos Either "top" or "bottom"
+     * @param array $data
      */
-    public function setJsContext($directory, $pos)
+    public function setJsContext($directory, array $data = array())
     {
         $file = gplcart_file_contex($directory, 'js', $this->path);
 
         if (isset($file['filename'])) {
-            $this->setJs("system/modules/backend/js/{$file['filename']}.js", $pos);
+            $this->setJs("system/modules/backend/js/{$file['filename']}.js", $data);
         }
     }
 
     /**
      * Adds a CSS on the page
      * @param string $css
-     * @param integer $weight
+     * @param array $data
      */
-    public function setCss($css, $weight = null)
+    public function setCss($css, array $data = array())
     {
-        $this->asset->setCss($css, $weight);
+        $this->asset->setCss($css, $data);
     }
 
     /**
      * Adds single or multiple asset libraries
      * @param string|array $library_id
-     * @param string $position
+     * @param array $data
      */
-    public function addAssetLibrary($library_id, $position = 'top')
+    public function addAssetLibrary($library_id, array $data = array())
     {
         $files = $this->library->getFiles($library_id);
 
@@ -1705,10 +1709,10 @@ class Controller
 
             switch ($type) {
                 case 'js':
-                    $this->setJs($file, $position);
+                    $this->setJs($file, $data);
                     break;
                 case 'css':
-                    $this->setCss($file);
+                    $this->setCss($file, $data);
             }
         }
     }

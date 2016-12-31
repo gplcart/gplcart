@@ -15,6 +15,7 @@ namespace core\helpers;
  */
 class Compressor
 {
+
     /**
      * Request class instance
      * @var \core\helpers\Request $request 

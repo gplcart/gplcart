@@ -284,7 +284,7 @@ class Dashboard extends BackendController
      */
     protected function setJsDashboard()
     {
-        $this->setJs('files/assets/chart/Chart.min.js', 'top');
+        $this->setJs('files/assets/chart/Chart.min.js');
     }
 
     /**

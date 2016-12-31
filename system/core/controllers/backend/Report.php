@@ -272,7 +272,7 @@ class Report extends BackendController
         $chart = $this->report->buildTrafficChart($this->analytics);
 
         $this->setJsSettings('chart_traffic', $chart);
-        $this->setJs('files/assets/chart/Chart.min.js', 'top');
+        $this->setJs('files/assets/chart/Chart.min.js');
 
         $html = $this->render('report/ga/panels/traffic');
         $this->setData('panel_traffic', $html);

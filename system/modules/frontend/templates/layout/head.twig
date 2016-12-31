@@ -16,18 +16,28 @@
       <meta{{ attributes(tag)|raw }}>
   {% endfor %}
   <title>{{ head_title }}</title>
-  {% for href,data in css %}
-      <link href="{{ href }}" rel="stylesheet">
+  {% for data in css %}
+      <link href="{{ data.key }}" rel="stylesheet">
   {% endfor %}
-  {% for href,data in js_top %}
+  {% for data in js_top %}
       {% if data.text is not empty %}
-          <script>{{ data.text|raw }}</script>
+          {% if data.asset is not empty %}
+              {% if data.condition is not empty %}
+                  <!--[{{ data.condition }}]>
+                  <script>{{ data.asset|raw }}</script>
+                  <![endif]-->
+              {% else %}
+                  <script>{{ data.asset|raw }}</script>
+              {% endif %}
+          {% endif %}
       {% else %}
-          <script src="{{ href }}"></script>
+          {% if data.condition is not empty %}
+              <!--[{{ data.condition }}]>
+              <script src="{{ data.key }}"></script>
+              <![endif]-->
+          {% else %}
+              <script src="{{ data.key }}"></script>
+          {% endif %}
       {% endif %}
   {% endfor %}
-  <!--[if lt IE 9]>
-  <script src="{{ base ~ 'files/assets/html5shiv/dist/html5shiv.min.js' }}"></script>
-  <script src="{{ base ~ 'files/assets/respond/dest/respond.min.js' }}"></script>
-  <![endif]-->
 </head>

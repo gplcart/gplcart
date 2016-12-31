@@ -47,20 +47,19 @@ class Asset
      * Adds a JS file
      * @param string $script
      * @param string $pos
-     * @param integer $weight
+     * @param array $data
      */
-    public function setJs($script, $pos = 'top', $weight = null)
+    public function setJs($script, $data = array())
     {
-        if (!isset($weight)) {
-            $weight = $this->getNextWeight('js', $pos);
-        }
-
-        $data = array(
+        $data += array(
             'type' => 'js',
             'asset' => $script,
-            'position' => $pos,
-            'weight' => $weight
+            'position' => 'top'
         );
+
+        if (!isset($data['weight'])) {
+            $data['weight'] = $this->getNextWeight('js', $data['position']);
+        }
 
         $this->set($data);
     }
@@ -68,19 +67,18 @@ class Asset
     /**
      * Adds a CSS file
      * @param string $css
-     * @param integer $weight
+     * @param array $data
      */
-    public function setCss($css, $weight = null)
+    public function setCss($css, $data = array())
     {
-        if (!isset($weight)) {
-            $weight = $this->getNextWeight('css', 'top');
-        }
-
-        $data = array(
+        $data += array(
             'asset' => $css,
             'type' => 'css',
-            'weight' => $weight
         );
+
+        if (!isset($data['weight'])) {
+            $data['weight'] = $this->getNextWeight('css', 'top');
+        }
 
         $this->set($data);
     }
@@ -156,6 +154,10 @@ class Asset
     {
         $data = $this->build($data);
 
+        if (empty($data['asset'])) {
+            return false;
+        }
+
         if (isset($this->assets[$data['type']][$data['position']][$data['key']])) {
             return false;
         }
@@ -163,11 +165,11 @@ class Asset
         $this->assets[$data['type']][$data['position']][$data['key']] = $data;
         return true;
     }
-    
+
     /**
-     * 
+     * Builds asset data
      * @param array $data
-     * @return string
+     * @return array
      */
     public function build(array $data)
     {
@@ -175,7 +177,9 @@ class Asset
 
         $data += array(
             'type' => $type,
-            'position' => 'top'
+            'position' => 'top',
+            'aggregate' => true,
+            'condition' => ''
         );
 
         $data['text'] = (!in_array($data['type'], array('css', 'js')) || $type != $data['type']);
@@ -193,10 +197,9 @@ class Asset
         } else {
             $data['file'] = GC_ROOT_DIR . "/{$data['asset']}";
         }
-        
-        if(!file_exists($data['file'])){
-            $data['asset'] = $data['key'] = '';
-            return $data;
+
+        if (!file_exists($data['file'])) {
+            return array();
         }
 
         $data['key'] = $this->request->base(true) . "{$data['asset']}?v=" . filemtime($data['file']);
