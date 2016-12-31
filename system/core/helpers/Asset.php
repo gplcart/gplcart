@@ -179,7 +179,8 @@ class Asset
             'type' => $type,
             'position' => 'top',
             'aggregate' => true,
-            'condition' => ''
+            'condition' => '',
+            'version' => 'v'
         );
 
         $data['text'] = (!in_array($data['type'], array('css', 'js')) || $type != $data['type']);
@@ -202,7 +203,12 @@ class Asset
             return array();
         }
 
-        $data['key'] = $this->request->base(true) . "{$data['asset']}?v=" . filemtime($data['file']);
+        $data['key'] = $this->request->base(true) . $data['asset'];
+
+        if (!empty($data['version'])) {
+            $data['key'] .= "?{$data['version']}=" . filemtime($data['file']);
+        }
+
         return $data;
     }
 

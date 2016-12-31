@@ -1438,7 +1438,7 @@ class Controller
 
                 $method = "compress$type";
                 $aggregated = $this->compressor->$method($content, $directory);
-                $asset = $this->asset->build(array('asset' => $aggregated));
+                $asset = $this->asset->build(array('asset' => $aggregated, 'version' => false));
                 $results[$asset['key']] = $asset;
                 continue;
             }
