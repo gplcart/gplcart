@@ -1,0 +1,77 @@
+{#
+    Displays a single product item in "grid" view
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+<div class="grid product item col-md-3 col-sm-4 col-xs-6">
+  <div class="thumbnail">
+    {% if product['thumb'] is not empty %}
+        <a href="{{ product['url'] }}">
+          <img class="img-responsive thumbnail" title="{{ product['title'] }}" alt="{{ product['title'] }}" src="{{ product['thumb'] }}">
+        </a>
+    {% endif %}
+    <div class="caption text-center">
+      <div class="title">
+        <a href="{{ product['url'] }}">
+          {{ truncate(product['title'], 50) }}
+        </a>
+      </div>
+      <p>{{ product['price_formatted'] }}</p>
+      {% if buttons is not empty %}
+          <form method="post" class="form-horizontal product-action">
+            <input type="hidden" name="token" value="{{ token() }}">
+            <input type="hidden" name="product[product_id]" value="{{ product['product_id'] }}">
+            <div class="row">
+              <div class="col-md-12">
+                {% if 'wishlist_remove' in buttons %}
+                    <button title="{{ text('Remove') }}" class="btn btn-default" data-ajax="true" name="remove_from_wishlist" value="1">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                {% endif %}
+                {% if 'compare_remove' in buttons %}
+                    <button title="{{ text('Remove') }}" class="btn btn-default" name="remove_from_compare" value="1">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                {% endif %}
+                {% if 'wishlist_add' in buttons %}
+                    {% if product['in_wishlist'] is empty %}
+                        <button title="{{ text('Add to wishlist') }}" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
+                          <i class="fa fa-heart"></i>
+                        </button>
+                    {% else %}
+                        <a rel="nofollow" title="{{ text('Already in wishlist') }}" href="{{ url('wishlist') }}" class="btn btn-default active">
+                          <i class="fa fa-heart"></i>
+                        </a>
+                    {% endif %}
+                {% endif %}
+                {% if 'compare_add' in buttons %}
+                    {% if product['in_comparison'] is empty %}
+                        <button title="{{ text('Compare') }}" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
+                          <i class="fa fa-balance-scale"></i>
+                        </button>
+                    {% else %}
+                        <a rel="nofollow" title="{{ text('Already in comparison') }}" href="{{ url('compare') }}" class="btn btn-default active">
+                          <i class="fa fa-balance-scale"></i>
+                        </a>
+                    {% endif %}
+                {% endif %}
+                {% if 'cart_add' in buttons %}
+                    <button title="{{ text('Add to cart') }}" class="btn btn-success" data-ajax="true" name="add_to_cart" value="1">
+                      <i class="fa fa-shopping-cart"></i>
+                    </button>
+                {% endif %}
+              </div>
+            </div>
+          </form>
+      {% endif %}
+    </div>
+  </div>
+</div>

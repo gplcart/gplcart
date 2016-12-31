@@ -1,0 +1,65 @@
+{#
+    Displays main product content
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+<div class="row section">
+  <div class="col-md-5">
+    <div class="row">
+      <div class="col-md-12">
+        {{ images|raw }}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="row">
+      <div class="col-md-6">
+        <div id="sku" class="small"># {{ product['sku'] }}</div>
+      </div>
+      <div class="col-md-6 text-right">
+        {{ share|raw }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="h4">{{ product['title'] }}</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="price" class="h3">{{ product['price_formatted'] }}</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">{{ rating|raw }}</div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">{{ cart_form|raw }}</div>
+    </div>
+  </div>
+</div>
+{% if product['description'] is not empty %}
+    <hr>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="margin-bottom-20">{{ xss(product['description'])|raw }}</div>
+      </div>
+    </div>
+{% endif %}
+{% if related is defined and related is not empty %}
+    {{ related|raw }}
+{% endif %}
+{% if recent is defined and recent is not empty %}
+    {{ recent|raw }}
+{% endif %}
+{% if reviews is defined and reviews is not empty %}
+    {{ reviews|raw }}
+{% endif %}

@@ -69,7 +69,6 @@ class Install extends FrontendController
         $this->setData('languages', $languages);
         $this->setData('requirements', $requirements);
         $this->setData('url_licence', $this->url('license.txt'));
-        $this->setData('settings.store.timezone', 'Europe/London');
         $this->setData('settings.store.language', $this->install_language);
 
         $this->setCssInstall();
@@ -257,13 +256,7 @@ class Install extends FrontendController
      */
     protected function outputInstall()
     {
-        $variables = array(
-            'layout' => 'install/layout',
-            'region_body' => 'install/body',
-            'region_head' => 'install/head'
-        );
-
-        $this->output($variables);
+        $this->output(array('region_body' => 'install/body'));
     }
 
     /**

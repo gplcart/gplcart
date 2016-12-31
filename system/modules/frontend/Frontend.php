@@ -97,7 +97,8 @@ class Frontend
             'image_style_collection_banner' => 7,
             'twig' => array(
                 'status' => true,
-                'cache' => 'cache'
+                'cache' => 'cache',
+                'auto_reload' => true
             )
         );
     }

@@ -1,5 +1,5 @@
 {#
-    Displays the front page
+    Displays list of products
 
     To see available variables:
         - without enabling Twig debug mode: {{ var_dump() }}
@@ -11,12 +11,10 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-{% if collection_banners is not empty %}
-    {{collection_banners|raw}}
-{% endif %}
-{% if collection_products is not empty %}
-    {{collection_products|raw}}
-{% endif %}
-{% if collection_pages is not empty %}
-    {{collection_pages|raw}}
+{% if products is not empty %}
+    <div class="products row section">
+      {% for product in products %}
+          {{ product['rendered']|raw }}
+      {% endfor %}
+    </div>
 {% endif %}

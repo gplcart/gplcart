@@ -471,6 +471,10 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
         var params,
                 url = GplCart.settings.base + 'ajax',
                 input = $('input[name="q"]');
+        
+        if(input.length === 0){
+            return;
+        }
 
         input.autocomplete({
             minLength: 2,

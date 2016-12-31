@@ -300,7 +300,7 @@ class Compressor
      */
     protected function getKey(array $files)
     {
-        return md5(serialize($files));
+        return md5(json_encode($files));
     }
 
     /**

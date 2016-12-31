@@ -1,0 +1,34 @@
+{#
+    Displays product images block
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if product['images'] is not empty %}
+    <ul class="list-unstyled" data-slider="true" data-slider-settings='{
+        "gallery":true,
+        "item":1,
+        "loop":true,
+        "thumbItem":9,
+        "slideMargin":0,
+        "currentPagerPosition":"left"
+        }' data-slider-gallery='{
+        "download":false,
+        "actualSize":false,
+        "scale":false,
+        "autoplayControls":false
+        }'>
+      {% for image in product['images'] %}
+          <li class="thumb" data-thumb="{{ image['thumb'] }}" data-src="{{ image['url'] }}">
+            <img src="{{ image['thumb'] }}">
+          </li>
+      {% endfor %}
+    </ul>
+{% endif %}
