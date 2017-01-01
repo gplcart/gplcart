@@ -422,7 +422,8 @@ class Controller
         }
 
         if (pathinfo($template, PATHINFO_EXTENSION) === 'twig') {
-            return $this->renderTwig($template, $data, (array) $this->theme_settings['twig']);
+            $settings = empty($this->theme_settings['twig']) ? array() : $this->theme_settings['twig'];
+            return $this->renderTwig($template, $data, $settings);
         }
 
         return $this->renderPhp($template, $data);
@@ -437,18 +438,34 @@ class Controller
     protected function getTemplateFile($file, $fullpath)
     {
         $module = $this->theme;
+        $is_twig = $this->twig_enabled;
 
         if (strpos($file, '|') !== false) {
+
+            // This template from another theme
             $fullpath = false;
-            $parts = explode('|', $file, 2);
-            $module = $parts[0];
-            $file = $parts[1];
+
+            list($module, $file) = explode('|', $file, 2);
+
+            if ($module !== $this->theme) {
+                // Check if another theme uses .twig template to avoid
+                // "Template not found"
+                $settings = $this->config->module($module, 'twig');
+                $is_twig = !empty($settings['status']);
+            }
         }
 
         $path = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
 
         $extensions = array('php');
-        if ($this->twig_enabled) {
+
+        if ($is_twig) {
+
+            if (!isset($this->twig)) {
+                // Load Twig helper only when needed to save a bit of resources
+                $this->twig = Container::instance('gplcart\\core\\helpers\\Twig');
+            }
+
             array_unshift($extensions, 'twig');
         }
 
@@ -802,14 +819,7 @@ class Controller
         }
 
         $this->theme_settings = (array) $this->config->module($this->theme, null, array());
-
-        if (!empty($this->theme_settings['twig']['status'])) {
-
-            $this->twig_enabled = true;
-
-            /* @var $twig \gplcart\core\helpers\Twig */
-            $this->twig = Container::instance('gplcart\\core\\helpers\\Twig');
-        }
+        $this->twig_enabled = !empty($this->theme_settings['twig']['status']);
 
         if (empty($this->theme_settings['templates'])) {
             $this->templates = $this->getDefaultTemplates();
