@@ -1,0 +1,94 @@
+{#
+    Displays a list of reviews on a product page
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if reviews is not empty %}
+    <div id="reviews" class="panel panel-default reviews">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+            {{ text('Reviews') }}
+          </div>
+          <div class="col-md-6 text-right">
+            <ul class="list-inline">
+              <li>
+                <div class="dropdown btn-group">
+                  {{ text('Sort') }}
+                  <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                    {% if query['sort'] is defined and query['order'] is defined %}
+                        {% if query['sort'] == 'created' and query['order'] == 'asc' %}
+                            {{ text('older first') }}
+                        {% endif %}
+                        {% if query['sort'] == 'created' and query['order'] == 'desc' %}
+                            {{ text('recent first') }}
+                        {% endif %}
+                    {% else %}
+                        {{ text('recent first') }}
+                    {% endif %}
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a rel="nofollow" href="{{ url(false, {'sort':'created','order':'desc'}) }}#reviews">
+                        {{ text('Recent first') }}
+                      </a>
+                    </li>
+                    <li>
+                      <a rel="nofollow" href="{{ url(false, {'sort':'created','order':'asc'}) }}#reviews">
+                        {{ text('Older first') }}
+                      </a>
+                    </li>
+                  </ul> 
+                </div>
+              </li>
+              {% if editable and uid() > 0 %}
+                  <li>
+                    <a rel="nofollow" href="{{ url('review/add/' ~ product['product_id']) }}">
+                      {{ text('Add review') }}
+                    </a>
+                  </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          {% for review in reviews %}
+              <div class="col-md-12">
+                <div class="media">
+                  <div class="media-body">
+                    <div class="media-heading">
+                      {{ review['rating_widget']|raw }}
+                      <b>{{ review['name'] }}</b>
+                      <span class="text-muted small">{{ date(review['created']) }}</span>
+                    </div>
+                    <p class="text">{{ review['text'] }}</p>
+                    <p class="actions">
+                      {% if review['user_id'] == uid() and editable %}
+                          <a href="{{ url('review/edit/' ~ product['product_id'] ~ '/' ~ review['review_id']) }}">
+                            {{ text('edit') }}
+                          </a>
+                      {% endif %}
+                    </p>
+                  </div>
+                </div>
+              </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% if pager is defined and pager is not empty %}
+          <div class="panel-footer">
+            <div class="text-right">{{ pager }}</div>
+          </div>
+      {% endif %}
+    </div>
+{% endif %}

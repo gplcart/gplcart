@@ -1,0 +1,66 @@
+{#
+    Displays the checkout form
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if cart['items'] is defined and cart['items'] is not empty %}
+    <div class="row">
+      <div class="col-md-12">
+        {{ text('Shopping cart is empty.') }}
+        {% if access('order_add') %}
+            <p>{{ text('If you want to add a new order for a customer, add all needed products to your cart then add an order for a <a href="@href">user</a>. Your cart items will be assigned to that user.', {'@href': url('admin/user/list')}) }}</p>
+        {% endif %}
+      </div>
+    </div>
+{% else %}
+    <form method="post" class="form-horizontal" id="checkout" data-settings='{{ settings|raw }}'>
+      <input type="hidden" name="token" value="{{ token() }}">
+      <div class="row">
+        <div class="col-md-12">
+          {{ pane_admin|raw }}
+          {% if login_form %}
+              {{ pane_login|raw }}
+          {% elseif uid() is empty %}
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-md-2 control-label">{{ text('Already registered?') }}</label>
+                    <div class="col-md-3">
+                      <button class="btn btn-default form-control" name="checkout_login" value="1">
+                        {{ text('Click to login') }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">{{ pane_shipping_address|raw }}</div>
+        {% if shipping_methods or payment_methods %}
+            <div class="col-md-3">
+              <div class="form-group">
+                <div class="col-md-12">
+                  {% if shipping_methods %}
+                      {{ pane_shipping_methods|raw }}
+                  {% endif %}
+                  {% if payment_methods %}
+                      {{ pane_payment_methods|raw }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+        {% endif %}
+        <div class="col-md-5">{{ pane_review|raw }}</div>
+      </div>
+    </form>
+{% endif %}

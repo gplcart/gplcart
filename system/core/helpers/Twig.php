@@ -128,7 +128,7 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('error', function ($key = null, $has_error = null, $no_error = '') use ($object) {
             return $object->error($key, $has_error, $no_error);
-        });
+        }, array('is_safe' => array('html')));
 
         $this->twig->addFunction($function);
     }
@@ -154,7 +154,7 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('text', function ($text, $arguments = array()) use ($object) {
             return $object->text($text, $arguments);
-        });
+        }, array('is_safe' => array('html')));
 
         $this->twig->addFunction($function);
     }
@@ -245,7 +245,7 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('summary', function ($text, $xss = false, $tags = null, $protocols = null) use ($object) {
             return $object->summary($text, $xss, $tags, $protocols);
-        });
+        }, array('is_safe' => array('all')));
 
         $this->twig->addFunction($function);
     }
@@ -297,7 +297,7 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('xss', function ($text, $tags = null, $protocols = null) use ($object) {
             return $object->xss($text, $tags, $protocols);
-        });
+        }, array('is_safe' => array('all')));
 
         $this->twig->addFunction($function);
     }

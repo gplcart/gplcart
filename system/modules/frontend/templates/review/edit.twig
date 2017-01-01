@@ -1,0 +1,56 @@
+{#
+    Displays the review edit form
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+
+<div class="row">
+  {% if image is not empty %}
+      <div class="col-md-1">
+        <img class="img-responsive thumbnail" alt="{{ image['title'] }}" title="{{ image['description'] }}" src="{{ image['thumb'] }}">
+      </div>
+  {% endif %}
+  <div class="col-md-11">
+    <h4 class="title">{{ product['title'] }}</h4>
+    <div class="h4 price">{{ product['price_formatted'] }}</div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <form method="post" class="form-horizontal" id="edit-review">
+      {{ honeypot }}
+      <input type="hidden" name="token" value="{{ token() }}">
+      <div class="form-group">
+        <label class="col-md-1">{{ text('Rating') }}</label>
+        <div class="col-md-6">{{ rating|raw }}</div>
+      </div>
+      <div class="form-group required{{ error('text', ' has-error') }}">
+        <label class="col-md-1">{{ text('Review') }}</label>
+        <div class="col-md-6">
+          <textarea class="form-control" rows="2" name="review[text]">{{ review['text']|default('') }}</textarea>
+          <div class="help-block">{{ error('text') }}</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-1">
+          {% if can_delete %}
+              <button class="btn btn-danger" name="delete" value="1">{{ text('Delete') }}</button>
+          {% endif %}
+          <a class="btn btn-default" href="{{ url('product/' ~ product['product_id']) }}">
+            <i class="fa fa-reply"></i> {{ text('Cancel') }}
+          </a>
+          <button class="btn btn-default" name="save" value="1">{{ text('Save') }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+

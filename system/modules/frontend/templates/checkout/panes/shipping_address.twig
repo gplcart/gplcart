@@ -1,0 +1,111 @@
+{#
+    Displays the shipping address pane on the checkout page
+
+    To see available variables:
+        - without enabling Twig debug mode: {{ var_dump() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+<div class="panel panel-default">
+  <div class="panel-heading">{{ text('Shipping address') }}</div>
+  <div class="panel-body">
+    {% if addresses is not empty and address_form is empty %}
+        <div class="form-group">
+          <div class="col-md-12">
+            <div class="btn-group margin-top-20 saved-addresses" data-toggle="buttons">
+              {% for address_id,address in addresses %}
+                  <label class="address btn btn-default{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' active'}}">
+                    {% for name,value in address %}
+                        <span class="clearfix">
+                          <span class="pull-left">{{ name }} : {{ value }}</span>
+                        </span>
+                    {% endfor %}
+                    <input type="radio" name="order[shipping_address]" value="{{ address_id }}" autocomplete="off"{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' checked'}}>
+                  </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-12">
+            <button class="btn btn-default" name="add_address" value="1"><i class="fa fa-plus"></i> {{ text('Add address') }}</button>
+          </div>
+        </div>
+    {% else %}
+        <div class="form-group">
+          <div class="col-md-12">
+            <table class="table table-borderless table-striped table-condensed margin-top-20 shipping-address">
+              {% if countries is not empty %}
+                  <tr>
+                    <td class="middle">{{ text('Country') }}</td>
+                    <td>
+                      <div class="btn-toolbar">
+                        <div class="btn-group country{{ error('address.country', ' has-error') }}">
+                          <select class="form-control" name="order[address][country]">
+                            {% for code,name in countries %}
+                                <option value="{{ code }}"{{ (country_code == code) ? ' selected' }}>{{ name }}</option>
+                            {% endfor %}
+                          </select>
+                          <div class="help-block">{{ error('address.country') }}</div>
+                        </div>
+                        <div class="btn-group hidden-js">
+                          <button class="btn btn-default" name="get_states" value="1">{{ text('Get states') }}</button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+              {% endif %}
+              {% for key,data in format %}
+                  {% if key != 'country' %}
+                      <tr>
+                        <td class="middle{{ data['required'] is not empty ? ' required' }}">
+                          {{ data['name'] }}
+                        </td>
+                        <td>
+                          <div class="{{ key }}{{ error('address.' ~ key, ' has-error') }}">
+                            {% if key == 'state_id' %}
+                                <select class="form-control" name="order[address][state_id]">
+                                  <option value="" disabled selected>{{ text('Select') }}</option>
+                                  {% for state_id,state in states %}
+                                      <option value="{{ state_id }}"{{ (address['state_id'] is defined and address['state_id'] == state_id) ? ' selected' }}>
+                                        {{ state['name'] }}
+                                      </option>
+                                  {% endfor %}
+                                </select>
+                            {% else %}
+                                <input name="order[address][{{ key }}]" maxlength="255" class="form-control" value="{{ address[key] ?? '' }}">
+                            {% endif %}
+                            <div class="help-block">{{ error('address.' ~ key) }}</div>
+                          </div>
+                        </td>
+                      </tr>
+                  {% endif %}
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+        {% if addresses is not empty %}
+            <div class="form-group">
+              <div class="col-md-12">
+                <button class="btn btn-default" name="cancel_address_form" value="1">
+                  <i class="fa fa-reply"></i> {{ text('Select saved address') }}
+                </button>
+              </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if error('shipping_address', true) %}
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ error('shipping_address') }}
+        </div>
+    {% endif %}
+  </div>
+</div>
