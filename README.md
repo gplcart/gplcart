@@ -41,6 +41,7 @@ For developers:
 - Command line support (extensible)
 - Ability to rewrite almost any core method from a module (no monkey patching, "VQ mods")
 - Supports both PHP and TWIG templates (you can even mix them!)
+- Supports versioned dependencies for modules and 3-d party libraries
 
 For owners:
 
@@ -56,5 +57,6 @@ For owners:
 - Roles and access control
 - Built-in template/css/js editor
 - Backups
+- JS/CSS aggregation and compression
 
 ...and much more!
