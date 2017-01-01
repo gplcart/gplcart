@@ -32,6 +32,9 @@
             "gplcart\\tests\\unit\\": "tests/unit/"
         }
     },
+    "config": {
+        "vendor-dir": "system/vendor"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
