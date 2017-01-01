@@ -762,14 +762,17 @@ class Module extends Model
 
     /**
      * Backups an existing module
-     * @param array $module
+     * @param array|string $module
      * @return boolean
      */
-    protected function backup(array $module)
+    public function backup($module)
     {
-        $vars = array('@name' => $module['name'], '@date' => date("D M j G:i:s"));
-        $name = $this->language->text('Module @name. Automatically backed up on @date', $vars);
+        if (!is_array($module)) {
+            $module = $this->get($module);
+        }
 
+        $vars = array('@name' => $module['name'], '@date' => date("D M j G:i:s"));
+        $name = $this->language->text('Module @name. Backed up on @date', $vars);
         $data = array('name' => $name, 'module' => $module);
 
         $result = $this->backup->backup('module', $data);

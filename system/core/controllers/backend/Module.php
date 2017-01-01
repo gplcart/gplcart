@@ -84,7 +84,7 @@ class Module extends BackendController
             $this->outputError(403);
         }
 
-        $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete');
+        $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete', 'backup');
 
         if (!in_array($action, $allowed)) {
             $this->outputError(403);
@@ -95,7 +95,15 @@ class Module extends BackendController
         $result = $this->module->{$action}($module_id);
 
         if ($result === true) {
-            $this->redirect('', $this->text('Module has been updated'), 'success');
+
+            $message = $this->text('Module has been updated');
+
+            if ($action === 'backup') {
+                $vars = array('@url' => $this->url('admin/tool/backup'));
+                $message = $this->text('Backup has been <a href="@url">created</a>', $vars);
+            }
+
+            $this->redirect('', $message, 'success');
         }
 
         if (is_string($result)) {

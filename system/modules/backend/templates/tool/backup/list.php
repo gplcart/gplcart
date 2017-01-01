@@ -23,13 +23,6 @@
         <?php } ?>
       </ul>
     </div>
-    <?php if ($this->access('backup_add')) { ?>
-    <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('admin/tool/backup/add'); ?>">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
-    </div>
-    <?php } ?>
   </div>
   <div class="panel-body table-responsive">
     <table class="table backups">
@@ -98,13 +91,6 @@
               <a href="<?php echo $this->url('', array('download' => $id)); ?>">
                 <?php echo mb_strtolower($this->text('Download')); ?>
               </a>
-              <?php if ($this->access('backup_restore')) { ?>
-              <li>
-                <a href="<?php echo $this->url("admin/tool/backup/restore/$id"); ?>">
-                  <?php echo mb_strtolower($this->text('Restore')); ?>
-                </a>
-              </li>
-              <?php } ?>
             </ul>
           </td>
         </tr>

@@ -226,13 +226,8 @@ class Backup extends Model
 
         $handlers['module'] = array(
             'name' => $this->language->text('Module'),
-            'access' => array(
-                'backup' => 'backup_module',
-                'restore' => 'backup_restore_module'
-            ),
             'handlers' => array(
-                'backup' => array('core\\handlers\\backup\\Module', 'backup'),
-                'restore' => array('core\\handlers\\backup\\Module', 'restore')
+                'backup' => array('core\\handlers\\backup\\Module', 'backup')
         ));
 
         return $handlers;

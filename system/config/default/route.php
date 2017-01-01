@@ -321,20 +321,6 @@ $routes['admin/tool/backup'] = array(
     )
 );
 
-$routes['admin/tool/backup/add'] = array(
-    'access' => 'backup_add',
-    'handlers' => array(
-        'controller' => array('core\\controllers\\backend\\Backup', 'editBackup')
-    )
-);
-
-$routes['admin/tool/backup/restore/(\d+)'] = array(
-    'access' => 'backup_restore',
-    'handlers' => array(
-        'controller' => array('core\\controllers\\backend\\Backup', 'editRestoreBackup')
-    )
-);
-
 $routes['admin/tool/editor/(\w+)'] = array(
     'access' => 'editor',
     'handlers' => array(

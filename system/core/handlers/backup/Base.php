@@ -16,7 +16,6 @@ use core\Container;
  */
 class Base
 {
-
     /**
      * Zip helper class instance
      * @var \core\helpers\Zip $zip

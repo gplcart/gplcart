@@ -112,6 +112,15 @@
                 </a>
               </li>
               <?php } ?>
+              
+              <?php if ($this->access('backup_add')) { ?>
+              <li>
+                <a href="<?php echo $this->url(false, array('action' => 'backup', 'module_id' => $module_id, 'token' => $token)); ?>">
+                  <?php echo mb_strtolower($this->text('Backup')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              
               <?php if (isset($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url($info['configure']); ?>">

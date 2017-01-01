@@ -35,13 +35,13 @@ class Module extends BaseHandler
         $data['type'] = 'module';
         $data['module_id'] = $data['module']['id'];
         $data['version'] = isset($data['module']['version']) ? $data['module']['version'] : '';
-        
+
         $data['path'] = $this->zip($data);
 
         if (empty($data['path'])) {
             return false;
         }
-        
+
         $data['path'] = $this->getRelativePath($data['path']);
         return $this->backup->add($data);
     }
@@ -61,39 +61,6 @@ class Module extends BaseHandler
             return $destination;
         }
 
-        return false;
-    }
-
-    /**
-     * Restores a module
-     * @param array $data
-     * @return boolean
-     */
-    public function restore(array $data)
-    {
-        // Rename an existing folder to avoid collision
-        $temppath = $this->renameTemp($data['module']['directory']);
-
-        if (empty($temppath)) {
-            return false; // Cannot rename, exit
-        }
-
-        // Extract zipped content
-        $zippath = GC_FILE_DIR . "/{$data['backup']['path']}";
-        $extracted = $this->zip->set($zippath)->extract(GC_MODULE_DIR);
-
-        if ($extracted) {
-            // Success. Remove old folder
-            $this->delete($temppath);
-            return true;
-        }
-
-        // Error. Roll back changes
-        // Delete a directory that can be created after extraction
-        $this->delete($data['module']['directory']);
-
-        // Restore original folder name
-        rename($temppath, $data['module']['directory']);
         return false;
     }
 
