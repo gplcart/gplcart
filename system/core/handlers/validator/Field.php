@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Field as FieldModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate field data
@@ -20,7 +20,7 @@ class Field extends BaseValidator
 
     /**
      * Field model instance
-     * @var \core\models\Field $field
+     * @var \gplcart\core\models\Field $field
      */
     protected $field;
 

@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\Container;
-use core\Controller as BaseController;
+use gplcart\core\Container;
+use gplcart\core\Controller as BaseController;
 
 /**
  * Contents specific to the backend methods
@@ -26,7 +26,7 @@ class Controller extends BaseController
 
     /**
      * Job model instance
-     * @var \core\models\Job $job
+     * @var \gplcart\core\models\Job $job
      */
     protected $job;
 
@@ -59,8 +59,8 @@ class Controller extends BaseController
      */
     protected function setJobProperties()
     {
-        /* @var $job \core\models\Job */
-        $this->job = Container::instance('core\\models\\Job');
+        /* @var $job \gplcart\core\models\Job */
+        $this->job = Container::instance('gplcart\\core\\models\\Job');
 
         $job_id = (string) $this->request->get('job_id');
 

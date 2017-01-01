@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Page as PageModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Page as PageModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to pages
@@ -20,7 +20,7 @@ class Page extends FrontendController
 
     /**
      * Page model instance
-     * @var \core\models\Page $page
+     * @var \gplcart\core\models\Page $page
      */
     protected $page;
 

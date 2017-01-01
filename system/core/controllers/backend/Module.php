@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\helpers\Curl as CurlHelper;
-use core\models\Module as ModuleModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\helpers\Curl as CurlHelper;
+use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to modules
@@ -21,13 +21,13 @@ class Module extends BackendController
 
     /**
      * Module model instance
-     * @var \core\models\Module $module
+     * @var \gplcart\core\models\Module $module
      */
     protected $module;
 
     /**
      * Curl class instance
-     * @var \core\helpers\Curl $curl
+     * @var \gplcart\core\helpers\Curl $curl
      */
     protected $curl;
 

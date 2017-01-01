@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
 /**
  * Basic CLI controller
@@ -17,37 +17,37 @@ class CliController
 
     /**
      * Validator model instance
-     * @var \core\models\Validator $validator
+     * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
     /**
      * CLI router class instance
-     * @var \core\CliRoute $route
+     * @var \gplcart\core\CliRoute $route
      */
     protected $route;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
@@ -117,23 +117,23 @@ class CliController
      */
     protected function setInstanceProperties()
     {
-        /* @var $validator \core\models\Validator */
-        $this->validator = Container::instance('core\\models\\Validator');
+        /* @var $validator \gplcart\core\models\Validator */
+        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
 
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\\models\\Language');
+        /* @var $language \gplcart\core\models\Language */
+        $this->language = Container::instance('gplcart\\core\\models\\Language');
 
-        /* @var $request \core\helpers\Request */
-        $this->request = Container::instance('core\\helpers\Request');
+        /* @var $request \gplcart\core\helpers\Request */
+        $this->request = Container::instance('gplcart\\core\\helpers\Request');
 
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\\Config');
+        /* @var $config \gplcart\core\Config */
+        $this->config = Container::instance('gplcart\\core\\Config');
 
-        /* @var $logger \core\Logger */
-        $this->logger = Container::instance('core\\Logger');
+        /* @var $logger \gplcart\core\Logger */
+        $this->logger = Container::instance('gplcart\\core\\Logger');
 
-        /* @var $route \core\CliRoute */
-        $this->route = Container::instance('core\\CliRoute');
+        /* @var $route \gplcart\core\CliRoute */
+        $this->route = Container::instance('gplcart\\core\\CliRoute');
     }
 
     /**
@@ -214,7 +214,7 @@ class CliController
     /**
      * Sets a single message
      * @param string $message
-     * @return \core\CliController
+     * @return \gplcart\core\CliController
      */
     protected function setMessage($message)
     {

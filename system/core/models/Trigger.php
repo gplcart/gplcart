@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\models\Condition as ConditionModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Manages basic behaviors and data related to triggers
@@ -21,7 +21,7 @@ class Trigger extends Model
 
     /**
      * Condition model instance
-     * @var \core\models\Condition $condition
+     * @var \gplcart\core\models\Condition $condition
      */
     protected $condition;
 

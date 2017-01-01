@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\helpers\Url as UrlHelper;
-use core\helpers\Curl as CurlHelper;
-use core\models\Language as LanguageModel;
-use core\models\Validator as ValidatorModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\helpers\Curl as CurlHelper;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Validator as ValidatorModel;
 
 /**
  * Manages basic behaviors and data related to files
@@ -24,19 +24,19 @@ class File extends Model
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Validator model instance
-     * @var \core\models\Validator $validator
+     * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
 
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
@@ -48,7 +48,7 @@ class File extends Model
 
     /**
      * CURL class instance
-     * @var \core\helpers\Curl $curl
+     * @var \gplcart\core\helpers\Curl $curl
      */
     protected $curl;
 
@@ -443,7 +443,7 @@ class File extends Model
     /**
      * Sets the current handler
      * @param string $id
-     * @return \core\models\File
+     * @return \gplcart\core\models\File
      */
     public function setHandler($id)
     {
@@ -497,7 +497,7 @@ class File extends Model
     /**
      * Sets a upload destination
      * @param string $path
-     * @return \core\models\File
+     * @return \gplcart\core\models\File
      */
     public function setUploadPath($path)
     {

@@ -7,31 +7,31 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\mail;
+namespace gplcart\core\handlers\mail;
 
-use core\helpers\Url as UrlHelper;
-use core\models\Price as PriceModel;
-use core\models\Order as OrderModel;
-use core\handlers\mail\Base as BaseHandler;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\handlers\mail\Base as BaseHandler;
 
 class Order extends BaseHandler
 {
 
     /**
      * Order model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 

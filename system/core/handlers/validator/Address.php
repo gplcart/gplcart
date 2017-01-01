@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\City as CityModel;
-use core\models\State as StateModel;
-use core\models\Country as CountryModel;
-use core\models\Address as AddressModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\City as CityModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate address data
@@ -23,25 +23,25 @@ class Address extends BaseValidator
 
     /**
      * City model instance
-     * @var \core\models\City $city
+     * @var \gplcart\core\models\City $city
      */
     protected $city;
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 
     /**
      * State model instance
-     * @var \core\models\State $state
+     * @var \gplcart\core\models\State $state
      */
     protected $state;
 
     /**
      * Address model instance
-     * @var \core\models\Address $address
+     * @var \gplcart\core\models\Address $address
      */
     protected $address;
 

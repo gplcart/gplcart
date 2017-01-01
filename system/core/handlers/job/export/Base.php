@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\job\export;
+namespace gplcart\core\handlers\job\export;
 
-use core\Container;
+use gplcart\core\Container;
 
 /**
  * Base export handler class
@@ -18,13 +18,13 @@ class Base
 {
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Store model instance
-     * @var \core\models\Store $store
+     * @var \gplcart\core\models\Store $store
      */
     protected $store;
 
@@ -69,11 +69,11 @@ class Base
      */
     public function __construct()
     {
-        /* @var $image \core\models\Image */
-        $this->image = Container::instance('core\\models\\Image');
+        /* @var $image \gplcart\core\models\Image */
+        $this->image = Container::instance('gplcart\\core\\models\\Image');
 
-        /* @var $store \core\models\Store */
-        $this->store = Container::instance('core\\models\\Store');
+        /* @var $store \gplcart\core\models\Store */
+        $this->store = Container::instance('gplcart\\core\\models\\Store');
     }
 
     /**

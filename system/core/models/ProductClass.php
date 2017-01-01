@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\models\Field as FieldModel;
-use core\models\Language as LanguageModel;
-use core\models\FieldValue as FieldValueModel;
+use gplcart\core\Model;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
 
 /**
  * Manages basic behaviors and data related to product classes
@@ -22,19 +22,19 @@ class ProductClass extends Model
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Field model instance
-     * @var \core\models\Field $field
+     * @var \gplcart\core\models\Field $field
      */
     protected $field;
 
     /**
      * FieldValue model instance
-     * @var \core\models\FieldValue $field_value
+     * @var \gplcart\core\models\FieldValue $field_value
      */
     protected $field_value;
 

@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Review as ReviewModel;
-use core\models\Rating as RatingModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to reviews
@@ -21,13 +21,13 @@ class Review extends FrontendController
 
     /**
      * Review model instance
-     * @var \core\models\Review $review
+     * @var \gplcart\core\models\Review $review
      */
     protected $review;
 
     /**
      * Rating model instance
-     * @var \core\models\Rating $rating
+     * @var \gplcart\core\models\Rating $rating
      */
     protected $rating;
 

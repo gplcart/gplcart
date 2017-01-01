@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\Container;
+use gplcart\core\Container;
 
 /**
  * Parent class for models
@@ -19,19 +19,19 @@ class Model
 
     /**
      * Hook class instance
-     * @var \core\Hook $hook
+     * @var \gplcart\core\Hook $hook
      */
     protected $hook;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
     /**
      * Database helper instance
-     * @var \core\Database $db
+     * @var \gplcart\core\Database $db
      */
     protected $db;
 
@@ -40,19 +40,19 @@ class Model
      */
     public function __construct()
     {
-        /* @var $hook \core\Hook */
-        $this->hook = Container::instance('core\\Hook');
+        /* @var $hook \gplcart\core\Hook */
+        $this->hook = Container::instance('gplcart\\core\\Hook');
 
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\\Config');
+        /* @var $config \gplcart\core\Config */
+        $this->config = Container::instance('gplcart\\core\\Config');
 
-        /* @var $db \core\Database */
+        /* @var $db \gplcart\core\Database */
         $this->db = $this->config->getDb();
     }
 
     /**
      * Returns config instance
-     * @return \core\Config
+     * @return \gplcart\core\Config
      */
     public function getConfig()
     {
@@ -61,7 +61,7 @@ class Model
 
     /**
      * Returns PDO database instance
-     * @return \core\Database
+     * @return \gplcart\core\Database
      */
     public function getDb()
     {

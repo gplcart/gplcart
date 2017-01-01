@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Search as SearchModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Search as SearchModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to search functionality
@@ -20,7 +20,7 @@ class Search extends FrontendController
 
     /**
      * Search model instance
-     * @var \core\models\Search $search
+     * @var \gplcart\core\models\Search $search
      */
     protected $search;
 

@@ -7,26 +7,25 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace tests\unit\system\core;
+namespace gplcart\tests\unit\system\core;
 
-use core\Container;
 use ReflectionException;
-use tests\resources\UnitTest;
+use gplcart\core\Container;
+use gplcart\tests\resources\UnitTest;
 
 /**
  * Test cases for DI container class
  */
 class ContainerTest extends UnitTest
 {
-
     /**
-     * @covers core\Container::instance
+     * @covers gplcart\core\Container::instance
      * @group core
      */
     public function testInstance()
     {
         $passed = 0;
-        $instance = Container::instance('core\\Facade');
+        $instance = Container::instance('gplcart\\core\\Facade');
         $passed += (int) is_object($instance);
 
         try {
@@ -39,19 +38,19 @@ class ContainerTest extends UnitTest
     }
 
     /**
-     * @covers core\Container::registered
+     * @covers gplcart\core\Container::registered
      * @depends testInstance
      * @group core
      */
     public function testRegistered()
     {
-        Container::instance('core\\Facade');
-        $instance = Container::registered('core\\Facade');
+        Container::instance('gplcart\\core\\Facade');
+        $instance = Container::registered('gplcart\\core\\Facade');
         $this->assertTrue(is_object($instance));
     }
 
     /**
-     * @covers core\Container::register
+     * @covers gplcart\core\Container::register
      * @depends testRegistered
      * @group core
      */
@@ -63,7 +62,7 @@ class ContainerTest extends UnitTest
     }
 
     /**
-     * @covers core\Container::unregister
+     * @covers gplcart\core\Container::unregister
      * @depends testRegister
      * @group core
      */

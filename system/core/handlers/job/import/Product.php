@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\job\import;
+namespace gplcart\core\handlers\job\import;
 
-use core\models\Product as ProductModel;
-use core\handlers\job\import\Base as BaseHandler;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\handlers\job\import\Base as BaseHandler;
 
 /**
  * Imports products
@@ -20,7 +20,7 @@ class Product extends BaseHandler
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 

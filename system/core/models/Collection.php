@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\models\Language as LanguageModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to collections
@@ -21,7 +21,7 @@ class Collection extends Model
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
@@ -323,8 +323,8 @@ class Collection extends Model
             'title' => $this->language->text('Product'),
             'id_key' => 'product_id',
             'handlers' => array(
-                'list' => array('core\\models\\Product', 'getList'),
-                'validate' => array('core\\handlers\\validator\\CollectionItem', 'product'),
+                'list' => array('gplcart\\core\\models\\Product', 'getList'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'product'),
             ),
         );
 
@@ -332,8 +332,8 @@ class Collection extends Model
             'title' => $this->language->text('File'),
             'id_key' => 'file_id',
             'handlers' => array(
-                'list' => array('core\\models\\File', 'getList'),
-                'validate' => array('core\\handlers\\validator\\CollectionItem', 'file'),
+                'list' => array('gplcart\\core\\models\\File', 'getList'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'file'),
             ),
         );
 
@@ -341,8 +341,8 @@ class Collection extends Model
             'title' => $this->language->text('Page'),
             'id_key' => 'page_id',
             'handlers' => array(
-                'list' => array('core\\models\\Page', 'getList'),
-                'validate' => array('core\\handlers\\validator\\CollectionItem', 'page'),
+                'list' => array('gplcart\\core\\models\\Page', 'getList'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'page'),
             ),
         );
 

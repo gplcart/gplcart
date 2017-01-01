@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Handler;
-use core\models\Language as LanguageModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Handler;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to trigger conditions
@@ -22,7 +22,7 @@ class Condition extends Model
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
@@ -194,8 +194,8 @@ class Condition extends Model
             'title' => $this->language->text('Route (global)'),
             'description' => $this->language->text('Parameters: system route pattern. Only = and != operators allowed'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'route'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'route'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'route'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'route'),
             ),
         );
 
@@ -203,8 +203,8 @@ class Condition extends Model
             'title' => $this->language->text('Path (global)'),
             'description' => $this->language->text('Parameters: path with regexp pattern. Only = and != operators allowed'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'path'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'path'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'path'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'path'),
             ),
         );
 
@@ -212,8 +212,8 @@ class Condition extends Model
             'title' => $this->language->text('User ID (global)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'userId'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'userId'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'userId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'userId'),
             ),
         );
 
@@ -221,8 +221,8 @@ class Condition extends Model
             'title' => $this->language->text('User role ID (global)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'userRole'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'userRole'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'userRole'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'userRole'),
             ),
         );
 
@@ -230,8 +230,8 @@ class Condition extends Model
             'title' => $this->language->text('Current date (global)'),
             'description' => $this->language->text('Parameters: One value in time format'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'date'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'date'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'date'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'date'),
             ),
         );
 
@@ -239,8 +239,8 @@ class Condition extends Model
             'title' => $this->language->text('Product ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'productId'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'productId'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'productId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'productId'),
             ),
         );
 
@@ -248,8 +248,8 @@ class Condition extends Model
             'title' => $this->language->text('Product category ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'categoryId'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'categoryId'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'categoryId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'categoryId'),
             ),
         );
 
@@ -257,8 +257,8 @@ class Condition extends Model
             'title' => $this->language->text('Product brand category ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'brandCategoryId'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'categoryId'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'brandCategoryId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'categoryId'),
             ),
         );
 
@@ -266,8 +266,8 @@ class Condition extends Model
             'title' => $this->language->text('Number of times the coupon was used (checkout)'),
             'description' => $this->language->text('Parameters: One numeric value'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'used'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'used'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'used'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'used'),
             ),
         );
 
@@ -275,8 +275,8 @@ class Condition extends Model
             'title' => $this->language->text('Shipping method (checkout)'),
             'description' => $this->language->text('Parameters: Shipping service ID'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'shipping'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'shipping'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shipping'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shipping'),
             ),
         );
 
@@ -284,8 +284,8 @@ class Condition extends Model
             'title' => $this->language->text('Payment method (checkout)'),
             'description' => $this->language->text('Parameters: Payment service ID'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'payment'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'payment'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'payment'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'payment'),
             ),
         );
 
@@ -293,8 +293,8 @@ class Condition extends Model
             'title' => $this->language->text('Shipping address ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'shippingAddressId'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'shippingAddressId'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shippingAddressId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shippingAddressId'),
             ),
         );
 
@@ -302,8 +302,8 @@ class Condition extends Model
             'title' => $this->language->text('Country code (checkout)'),
             'description' => $this->language->text('Parameters: List of country codes separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'country'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'country'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'country'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'country'),
             ),
         );
 
@@ -311,8 +311,8 @@ class Condition extends Model
             'title' => $this->language->text('Country state code (checkout)'),
             'description' => $this->language->text('Parameters: List of country state codes separated by comma'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'state'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'state'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'state'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'state'),
             ),
         );
 
@@ -320,8 +320,8 @@ class Condition extends Model
             'title' => $this->language->text('Cart total (checkout)'),
             'description' => $this->language->text('Parameters: numeric value'),
             'handlers' => array(
-                'process' => array('core\\handlers\\trigger\\Condition', 'cartTotal'),
-                'validate' => array('core\\handlers\\validator\\Condition', 'price'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'cartTotal'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'price'),
             ),
         );
 

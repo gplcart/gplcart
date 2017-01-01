@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Review as ReviewModel;
-use core\models\Product as ProductModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate reviews
@@ -21,13 +21,13 @@ class Review extends BaseValidator
 
     /**
      * Review model instance
-     * @var \core\models\Review $review
+     * @var \gplcart\core\models\Review $review
      */
     protected $review;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 

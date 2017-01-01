@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\cli;
+namespace gplcart\core\controllers\cli;
 
-use core\CliController;
-use core\models\Report as ReportModel;
+use gplcart\core\CliController;
+use gplcart\core\models\Report as ReportModel;
 
 /**
  * Handles CLI commands related to reporting system events, statistic etc
@@ -20,7 +20,7 @@ class Report extends CliController
 
     /**
      * Report model instance
-     * @var \core\models\Report $report
+     * @var \gplcart\core\models\Report $report
      */
     protected $report;
 

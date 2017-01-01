@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\helpers;
+namespace gplcart\core\helpers;
 
 /**
  * Provides methods to work with URLs
@@ -17,7 +17,7 @@ class Url
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

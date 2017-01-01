@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace modules\frontend;
+namespace gplcart\modules\frontend;
 
 /**
  * Main class for Frontend theme
@@ -41,14 +41,14 @@ class Frontend
         $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
             'handlers' => array(
-                'controller' => array('modules\\frontend\\controllers\\Settings', 'editSettings')
+                'controller' => array('gplcart\\modules\\frontend\\controllers\\Settings', 'editSettings')
             )
         );
     }
 
     /**
      * Implements hook init.frontend
-     * @param \core\controllers\frontend\Controller $controller
+     * @param \gplcart\core\controllers\frontend\Controller $controller
      */
     public function hookInitFrontend($controller)
     {

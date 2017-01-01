@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Collection as CollectionModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to collections
@@ -20,7 +20,7 @@ class Collection extends BackendController
 
     /**
      * Collection model instance
-     * @var \core\models\Collection $collection
+     * @var \gplcart\core\models\Collection $collection
      */
     protected $collection;
 

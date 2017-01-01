@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Export as ExportModel;
-use core\models\Product as ProductModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Export as ExportModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to export operations
@@ -21,13 +21,13 @@ class Export extends BackendController
 
     /**
      * Export model instance
-     * @var \core\models\Export $export
+     * @var \gplcart\core\models\Export $export
      */
     protected $export;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 

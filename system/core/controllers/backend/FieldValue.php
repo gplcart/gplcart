@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\File as FileModel;
-use core\models\Image as ImageModel;
-use core\models\Field as FieldModel;
-use core\models\FieldValue as FieldValueModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to field values
@@ -22,31 +22,31 @@ class FieldValue extends BackendController
 {
     /**
      * Field model instance
-     * @var \core\models\Field $field
+     * @var \gplcart\core\models\Field $field
      */
     protected $field;
 
     /**
      * FieldValue module instance
-     * @var \core\models\FieldValue $value
+     * @var \gplcart\core\models\FieldValue $value
      */
     protected $value;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
      * Field value model instance
-     * @var \core\models\FieldValue $field_value
+     * @var \gplcart\core\models\FieldValue $field_value
      */
     protected $field_value;
 

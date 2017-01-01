@@ -28,8 +28,8 @@
     },
     "autoload": {
         "psr-4": {
-            "core\\": "system/core/",
-            "tests\\unit\\": "tests/unit/"
+            "gplcart\\core\\": "system/core/",
+            "gplcart\\tests\\unit\\": "tests/unit/"
         }
     },
     "minimum-stability": "dev",

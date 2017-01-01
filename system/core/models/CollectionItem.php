@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Handler;
-use core\models\Collection as CollectionModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Handler;
+use gplcart\core\models\Collection as CollectionModel;
 
 /**
  * Manages basic behaviors and data related to collection items
@@ -22,7 +22,7 @@ class CollectionItem extends Model
 
     /**
      * Collection model instance
-     * @var \core\models\Collection $collection
+     * @var \gplcart\core\models\Collection $collection
      */
     protected $collection;
 

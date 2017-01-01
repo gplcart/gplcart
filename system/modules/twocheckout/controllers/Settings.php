@@ -9,16 +9,16 @@
 
 namespace modules\twocheckout\controllers;
 
-use core\models\Module as ModuleModel;
+use gplcart\core\models\Module as ModuleModel;
 use modules\twocheckout\TwoCheckout as ModulesTwoCheckout;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
 {
 
     /**
      * Module model instance
-     * @var \core\models\Module $module
+     * @var \gplcart\core\models\Module $module
      */
     protected $module;
 

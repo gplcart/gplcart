@@ -7,20 +7,20 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Cart as CartModel;
-use core\models\Order as OrderModel;
-use core\models\Price as PriceModel;
-use core\models\State as StateModel;
-use core\models\Address as AddressModel;
-use core\models\Payment as PaymentModel;
-use core\models\Product as ProductModel;
-use core\models\Country as CountryModel;
-use core\models\Currency as CurrencyModel;
-use core\models\Shipping as ShippingModel;
-use core\models\PriceRule as PriceRuleModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Provides data to the view and interprets user actions related to orders
@@ -30,67 +30,67 @@ class Order extends BackendController
 
     /**
      * Order model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
      * Price rule model instance
-     * @var \core\models\PriceRule $pricerule
+     * @var \gplcart\core\models\PriceRule $pricerule
      */
     protected $pricerule;
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 
     /**
      * State model instance
-     * @var \core\models\State $state
+     * @var \gplcart\core\models\State $state
      */
     protected $state;
 
     /**
      * Address model instance
-     * @var \core\models\Address $address
+     * @var \gplcart\core\models\Address $address
      */
     protected $address;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * Cart model instance
-     * @var \core\models\Cart $cart
+     * @var \gplcart\core\models\Cart $cart
      */
     protected $cart;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Payment model instance
-     * @var \core\models\Payment $payment
+     * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
 
     /**
      * Shipping model instance
-     * @var \core\models\Shipping $shipping
+     * @var \gplcart\core\models\Shipping $shipping
      */
     protected $shipping;
 

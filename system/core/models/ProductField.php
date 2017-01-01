@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
+use gplcart\core\Model;
 
 /**
  * Manages basic behaviors and data related to product fields

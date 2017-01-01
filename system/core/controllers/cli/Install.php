@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\cli;
+namespace gplcart\core\controllers\cli;
 
-use core\CliController;
-use core\models\User as UserModel;
-use core\models\Install as InstallModel;
+use gplcart\core\CliController;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Install as InstallModel;
 
 /**
  * Handles CLI commands related to system installation
@@ -21,13 +21,13 @@ class Install extends CliController
 
     /**
      * Install model instance
-     * @var \core\models\Install $install
+     * @var \gplcart\core\models\Install $install
      */
     protected $install;
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 

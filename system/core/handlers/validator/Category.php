@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Category as CategoryModel;
-use core\models\CategoryGroup as CategoryGroupModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate various data related to categories
@@ -21,13 +21,13 @@ class Category extends BaseValidator
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Category group model instance
-     * @var \core\models\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 

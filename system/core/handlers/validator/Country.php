@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Zone as ZoneModel;
-use core\models\State as StateModel;
-use core\models\Country as CountryModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Zone as ZoneModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate various database related data
@@ -22,19 +22,19 @@ class Country extends BaseValidator
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 
     /**
      * Zone model instance
-     * @var \core\models\Zone $zone
+     * @var \gplcart\core\models\Zone $zone
      */
     protected $zone;
 
     /**
      * State model instance
-     * @var \core\models\State $state
+     * @var \gplcart\core\models\State $state
      */
     protected $state;
 

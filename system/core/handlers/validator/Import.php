@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\helpers\Csv as CsvHelper;
-use core\helpers\Request as RequestHelper;
-use core\models\File as FileModel;
-use core\models\Import as ImportModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\helpers\Csv as CsvHelper;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Import as ImportModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate import data
@@ -28,25 +28,25 @@ class Import extends BaseValidator
 
     /**
      * CSV class instance
-     * @var \core\helpers\Csv $csv
+     * @var \gplcart\core\helpers\Csv $csv
      */
     protected $csv;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request
+     * @var \gplcart\core\helpers\Request
      */
     protected $request;
 
     /**
      * Import model instance
-     * @var \core\models\Import $import
+     * @var \gplcart\core\models\Import $import
      */
     protected $import;
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 

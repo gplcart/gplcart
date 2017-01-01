@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\models\Country as CountryModel;
+use gplcart\core\Model;
+use gplcart\core\models\Country as CountryModel;
 
 /**
  * Manages basic behaviors and data related to user addresses
@@ -20,7 +20,7 @@ class Address extends Model
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 

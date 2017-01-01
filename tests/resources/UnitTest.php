@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace tests\resources;
+namespace gplcart\tests\resources;
 
 use ReflectionClass;
 use ReflectionException;

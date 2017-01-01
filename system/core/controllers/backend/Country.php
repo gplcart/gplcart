@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Zone as ZoneModel;
-use core\models\Country as CountryModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Zone as ZoneModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to countries
@@ -21,13 +21,13 @@ class Country extends BackendController
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 
     /**
      * Zone model instance
-     * @var \core\models\Zone $zone
+     * @var \gplcart\core\models\Zone $zone
      */
     protected $zone;
 

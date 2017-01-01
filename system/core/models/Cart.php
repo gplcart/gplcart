@@ -7,18 +7,18 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Logger;
-use core\models\Sku as SkuModel;
-use core\models\User as UserModel;
-use core\models\Product as ProductModel;
-use core\models\Currency as CurrencyModel;
-use core\models\Language as LanguageModel;
-use core\models\Wishlist as WishlistModel;
-use core\helpers\Request as RequestHelper;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Logger;
+use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Wishlist as WishlistModel;
+use gplcart\core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to user carts
@@ -28,49 +28,49 @@ class Cart extends Model
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Sku model instance
-     * @var \core\models\Sku $sku
+     * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
+     * @var \gplcart\core\models\Wishlist $wishlist
      */
     protected $wishlist;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Request model instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 

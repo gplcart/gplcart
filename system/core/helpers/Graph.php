@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\helpers;
+namespace gplcart\core\helpers;
 
 /**
  * Contains methods to directed acyclic graph manipulation

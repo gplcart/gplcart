@@ -7,15 +7,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Container;
-use core\helpers\Zip as ZipHelper;
-use core\models\Backup as BackupModel;
-use core\models\Language as LanguageModel;
-use core\exceptions\ModuleException;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Container;
+use gplcart\core\helpers\Zip as ZipHelper;
+use gplcart\core\models\Backup as BackupModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\exceptions\ModuleException;
 
 /**
  * Manages basic behaviors and data related to modules
@@ -25,19 +25,19 @@ class Module extends Model
 
     /**
      * Zip helper instance
-     * @var \core\helpers\Zip $zip
+     * @var \gplcart\core\helpers\Zip $zip
      */
     protected $zip;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Backup model instance
-     * @var \core\models\Backup $backup
+     * @var \gplcart\core\models\Backup $backup
      */
     protected $backup;
 

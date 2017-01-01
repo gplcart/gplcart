@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Zone as ZoneModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Zone as ZoneModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate geo zones
@@ -20,7 +20,7 @@ class Zone extends BaseValidator
 
     /**
      * Review model instance
-     * @var \core\models\Zone $zone
+     * @var \gplcart\core\models\Zone $zone
      */
     protected $zone;
 

@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Product as ProductModel;
-use core\models\Wishlist as WishlistModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Wishlist as WishlistModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate wishlist data
@@ -20,13 +20,13 @@ class Wishlist extends BaseValidator
 {
     /**
      * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
+     * @var \gplcart\core\models\Wishlist $wishlist
      */
     protected $wishlist;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 

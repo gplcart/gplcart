@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Image as ImageModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate image style data
@@ -20,7 +20,7 @@ class ImageStyle extends BaseValidator
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 

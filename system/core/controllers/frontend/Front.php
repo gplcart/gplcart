@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\CollectionItem as CollectionItemModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to front page
@@ -20,7 +20,7 @@ class Front extends FrontendController
 
     /**
      * Collection item model instance
-     * @var \core\models\CollectionItem $collection_item
+     * @var \gplcart\core\models\CollectionItem $collection_item
      */
     protected $collection_item;
 

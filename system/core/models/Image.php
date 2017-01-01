@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Library;
-use core\helpers\Url as UrlHelper;
-use core\models\File as FileModel;
+use gplcart\core\Model;
+use gplcart\core\Library;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\models\File as FileModel;
 
 /**
  * Manages basic behaviors and data related to images
@@ -22,19 +22,19 @@ class Image extends Model
 
     /**
      * File model instance
-     * @var \core\models\File $file;
+     * @var \gplcart\core\models\File $file;
      */
     protected $file;
 
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Library class instance
-     * @var \core\Library $library
+     * @var \gplcart\core\Library $library
      */
     protected $library;
 

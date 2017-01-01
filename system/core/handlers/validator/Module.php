@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\File as FileModel;
-use core\helpers\Request as RequestHelper;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate modules
@@ -26,13 +26,13 @@ class Module extends BaseValidator
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

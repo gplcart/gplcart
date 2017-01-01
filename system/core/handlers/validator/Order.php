@@ -7,15 +7,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Order as OrderModel;
-use core\models\Payment as PaymentModel;
-use core\models\Address as AddressModel;
-use core\models\Currency as CurrencyModel;
-use core\models\Shipping as ShippingModel;
-use core\models\Transaction as TransactionModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate orders to be stored in the database
@@ -25,37 +25,37 @@ class Order extends BaseValidator
 
     /**
      * Order model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
      * Shipping model instance
-     * @var \core\models\Shipping $shipping
+     * @var \gplcart\core\models\Shipping $shipping
      */
     protected $shipping;
 
     /**
      * Payment model instance
-     * @var \core\models\Payment $payment
+     * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
 
     /**
      * Address model instance
-     * @var \core\models\Address $address
+     * @var \gplcart\core\models\Address $address
      */
     protected $address;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * Transaction model instance
-     * @var \core\models\Transaction $transaction
+     * @var \gplcart\core\models\Transaction $transaction
      */
     protected $transaction;
 

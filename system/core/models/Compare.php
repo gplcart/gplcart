@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\helpers\Request as RequestHelper;
-use core\models\Language as LanguageModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to product comparison
@@ -22,13 +22,13 @@ class Compare extends Model
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 

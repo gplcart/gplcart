@@ -115,18 +115,31 @@ function gplcart_setup_autoload()
 {
     return spl_autoload_register(function($namespace) {
 
+        // Convert \ to /
         $path = str_replace('\\', '/', $namespace);
+
+        // Our stuff under "gplcart"
+        if (strpos($path, 'gplcart/') !== 0) {
+            return false;
+        }
+
+        // Strip "gplcart/" from the path
+        $path = substr($path, 8);
+
+        // Define the root
         $file = (strpos($path, 'tests') === 0) ? GC_ROOT_DIR : GC_SYSTEM_DIR;
+
+        // Final full path
         $file .= "/$path.php";
 
         if (file_exists($file)) {
-            include $file;
+            require $file;
             return true;
         }
 
         // Check lowercase class name
         // to prevent "file not found" for
-        // classes like core\\modules\\test_module\\TestModule
+        // classes like gplcart\\modules\\test_module\\TestModule
         $lowerfile = strtolower($file);
 
         foreach (glob(dirname($file) . '/*') as $file) {

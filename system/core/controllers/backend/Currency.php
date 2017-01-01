@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Currency as CurrencyModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to currency
@@ -20,7 +20,7 @@ class Currency extends BackendController
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 

@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Currency as CurrencyModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate various currency related data
@@ -20,7 +20,7 @@ class Currency extends BaseValidator
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 

@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace tests\unit\system\core;
+namespace gplcart\tests\unit\system\core;
 
-use tests\resources\UnitTest;
+use gplcart\tests\resources\UnitTest;
 
 /**
  * Test cases for Hook class
@@ -23,12 +23,12 @@ class HookTest extends UnitTest
      */
     protected function setUp()
     {
-        /* @var $object \core\Hook */
-        $this->setInstance('core\\Hook');
+        /* @var $object \gplcart\core\Hook */
+        $this->setInstance('gplcart\\core\\Hook');
     }
 
     /**
-     * @covers core\Hook::getRegistered
+     * @covers gplcart\core\Hook::getRegistered
      */
     public function testGetRegistered()
     {
@@ -37,7 +37,7 @@ class HookTest extends UnitTest
     }
 
     /**
-     * @covers core\Hook::getCalled
+     * @covers gplcart\core\Hook::getCalled
      */
     public function testGetCalled()
     {
@@ -46,7 +46,7 @@ class HookTest extends UnitTest
     }
 
     /**
-     * @covers core\Hook::register
+     * @covers gplcart\core\Hook::register
      */
     public function testRegister()
     {
@@ -67,7 +67,7 @@ class HookTest extends UnitTest
     }
 
     /**
-     * @covers core\Hook::unregister
+     * @covers gplcart\core\Hook::unregister
      * @depends testRegister
      */
     public function testUnregister()
@@ -83,7 +83,7 @@ class HookTest extends UnitTest
     }
 
     /**
-     * @covers core\Hook::getMethod
+     * @covers gplcart\core\Hook::getMethod
      */
     public function testGetMethod()
     {

@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
 /**
  * Provides methods to log various errors and events
@@ -52,7 +52,7 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
-        $config = Container::instance('core\\Config');
+        $config = Container::instance('gplcart\\core\\Config');
         $database = $config->getDb();
 
         if (empty($database)) {

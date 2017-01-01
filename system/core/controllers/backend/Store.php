@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Image as ImageModel;
-use core\models\Module as ModuleModel;
-use core\models\Collection as CollectionModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to multistore functionality
@@ -22,19 +22,19 @@ class Store extends BackendController
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Module model instance
-     * @var \core\models\Module $module
+     * @var \gplcart\core\models\Module $module
      */
     protected $module;
 
     /**
      * Collection model instance
-     * @var \core\models\Collection $collection
+     * @var \gplcart\core\models\Collection $collection
      */
     protected $collection;
 

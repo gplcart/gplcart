@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\Cache;
-use core\helpers\Graph as GraphHelper;
+use gplcart\core\Cache;
+use gplcart\core\helpers\Graph as GraphHelper;
 
 /**
  * Provides methods to work with 3-d party libraries
@@ -20,13 +20,13 @@ class Library
 
     /**
      * Cache instance
-     * @var \core\Cache $cache
+     * @var \gplcart\core\Cache $cache
      */
     protected $cache;
 
     /**
      * Graph helper class instance
-     * @var \core\helpers\Graph $graph
+     * @var \gplcart\core\helpers\Graph $graph
      */
     protected $graph;
 

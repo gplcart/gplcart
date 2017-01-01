@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
 /**
  * Base controller class
@@ -198,7 +198,7 @@ class Controller
     /**
      * Array of the current theme module info
      * @var array
-     * @see \modules\example\Example::info()
+     * @see \gplcart\modules\example\Example::info()
      */
     protected $theme_settings = array();
 
@@ -240,31 +240,31 @@ class Controller
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Store model instance
-     * @var \core\models\Store $store
+     * @var \gplcart\core\models\Store $store
      */
     protected $store;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Validator model instance
-     * @var \core\models\Validator $validator
+     * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
 
     /**
      * Library instance
-     * @var \core\Library $library
+     * @var \gplcart\core\Library $library
      */
     protected $library;
 
@@ -276,49 +276,49 @@ class Controller
 
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Asset class instance
-     * @var \core\helpers\Asset $asset
+     * @var \gplcart\core\helpers\Asset $asset
      */
     protected $asset;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
     /**
      * Response class instance
-     * @var \core\helpers\Response $response
+     * @var \gplcart\core\helpers\Response $response
      */
     protected $response;
 
     /**
      * Route class instance
-     * @var \core\Route $route
+     * @var \gplcart\core\Route $route
      */
     protected $route;
 
     /**
      * Session class instance
-     * @var \core\helpers\Session $session
+     * @var \gplcart\core\helpers\Session $session
      */
     protected $session;
 
     /**
      * Hook class instance
-     * @var \core\Hook $hook
+     * @var \gplcart\core\Hook $hook
      */
     protected $hook;
 
     /**
      * Twig class instance
-     * @var \core\helpers\Twig $twig
+     * @var \gplcart\core\helpers\Twig $twig
      */
     protected $twig;
 
@@ -330,37 +330,37 @@ class Controller
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
     /**
      * Filter model instance
-     * @var \core\models\Filter $filter
+     * @var \gplcart\core\models\Filter $filter
      */
     protected $filter;
 
     /**
      * Device class instance
-     * @var \core\Device $device
+     * @var \gplcart\core\Device $device
      */
     protected $device;
 
     /**
      * Pager class instance
-     * @var \core\helpers\Pager $pager
+     * @var \gplcart\core\helpers\Pager $pager
      */
     protected $pager;
 
     /**
      * Compressor class instance
-     * @var \core\helpers\Compressor $compressor
+     * @var \gplcart\core\helpers\Compressor $compressor
      */
     protected $compressor;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
@@ -369,6 +369,7 @@ class Controller
      */
     public function __construct()
     {
+
         $this->setInstanceProperties();
 
         $this->token = $this->config->token();
@@ -651,56 +652,56 @@ class Controller
      */
     protected function setInstanceProperties()
     {
-        /* @var $user \core\models\User */
-        $this->user = Container::instance('core\\models\\User');
+        /* @var $user \gplcart\core\models\User */
+        $this->user = Container::instance('gplcart\\core\\models\\User');
 
-        /* @var $store \core\models\Store */
-        $this->store = Container::instance('core\\models\\Store');
+        /* @var $store \gplcart\core\models\Store */
+        $this->store = Container::instance('gplcart\\core\\models\\Store');
 
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\\models\\Language');
+        /* @var $language \gplcart\core\models\Language */
+        $this->language = Container::instance('gplcart\\core\\models\\Language');
 
-        /* @var $validator \core\models\Validator */
-        $this->validator = Container::instance('core\\models\\Validator');
+        /* @var $validator \gplcart\core\models\Validator */
+        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
 
-        /* @var $filter \core\models\Filter */
-        $this->filter = Container::instance('core\\models\\Filter');
+        /* @var $filter \gplcart\core\models\Filter */
+        $this->filter = Container::instance('gplcart\\core\\models\\Filter');
 
-        /* @var $url \core\helpers\Url */
-        $this->url = Container::instance('core\\helpers\\Url');
+        /* @var $url \gplcart\core\helpers\Url */
+        $this->url = Container::instance('gplcart\\core\\helpers\\Url');
 
-        /* @var $request \core\helpers\Request */
-        $this->request = Container::instance('core\\helpers\\Request');
+        /* @var $request \gplcart\core\helpers\Request */
+        $this->request = Container::instance('gplcart\\core\\helpers\\Request');
 
-        /* @var $response \core\helpers\Response */
-        $this->response = Container::instance('core\\helpers\\Response');
+        /* @var $response \gplcart\core\helpers\Response */
+        $this->response = Container::instance('gplcart\\core\\helpers\\Response');
 
-        /* @var $asset \core\helpers\Asset */
-        $this->asset = Container::instance('core\\helpers\\Asset');
+        /* @var $asset \gplcart\core\helpers\Asset */
+        $this->asset = Container::instance('gplcart\\core\\helpers\\Asset');
 
-        /* @var $session \core\helpers\Session */
-        $this->session = Container::instance('core\\helpers\\Session');
+        /* @var $session \gplcart\core\helpers\Session */
+        $this->session = Container::instance('gplcart\\core\\helpers\\Session');
 
-        /* @var $library \core\Library */
-        $this->library = Container::instance('core\\Library');
+        /* @var $library \gplcart\core\Library */
+        $this->library = Container::instance('gplcart\\core\\Library');
 
-        /* @var $hook \core\Hook */
-        $this->hook = Container::instance('core\\Hook');
+        /* @var $hook \gplcart\core\Hook */
+        $this->hook = Container::instance('gplcart\\core\\Hook');
 
-        /* @var $route \core\Route */
-        $this->route = Container::instance('core\\Route');
+        /* @var $route \gplcart\core\Route */
+        $this->route = Container::instance('gplcart\\core\\Route');
 
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\\Config');
+        /* @var $config \gplcart\core\Config */
+        $this->config = Container::instance('gplcart\\core\\Config');
 
-        /* @var $logger \core\helpers\Logger */
-        $this->logger = Container::instance('core\\Logger');
+        /* @var $logger \gplcart\core\helpers\Logger */
+        $this->logger = Container::instance('gplcart\\core\\Logger');
 
-        /* @var $pager \core\helpers\Pager */
-        $this->pager = Container::instance('core\\helpers\\Pager');
+        /* @var $pager \gplcart\core\helpers\Pager */
+        $this->pager = Container::instance('gplcart\\core\\helpers\\Pager');
 
-        /* @var $compressor \core\helpers\Compressor */
-        $this->compressor = Container::instance('core\\helpers\\Compressor');
+        /* @var $compressor \gplcart\core\helpers\Compressor */
+        $this->compressor = Container::instance('gplcart\\core\\helpers\\Compressor');
     }
 
     /**
@@ -806,8 +807,8 @@ class Controller
 
             $this->twig_enabled = true;
 
-            /* @var $twig \core\helpers\Twig */
-            $this->twig = Container::instance('core\\helpers\\Twig');
+            /* @var $twig \gplcart\core\helpers\Twig */
+            $this->twig = Container::instance('gplcart\\core\\helpers\\Twig');
         }
 
         if (empty($this->theme_settings['templates'])) {
@@ -1600,7 +1601,7 @@ class Controller
     protected function setDefaultJsTranslation()
     {
         $classes = array(
-            'core\\models\\Language', // text() called in modules
+            'gplcart\\core\\models\\Language', // text() called in modules
             $this->current_route['handlers']['controller'][0]
         );
 

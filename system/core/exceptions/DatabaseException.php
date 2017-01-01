@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\exceptions;
+namespace gplcart\core\exceptions;
 
-use core\Exception as CoreException;
+use gplcart\core\Exception as CoreException;
 
 class DatabaseException extends CoreException
 {

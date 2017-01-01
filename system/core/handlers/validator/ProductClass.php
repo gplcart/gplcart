@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\ProductClass as ProductClassModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate a product class data
@@ -20,7 +20,7 @@ class ProductClass extends BaseValidator
 
     /**
      * Product class model instance
-     * @var \core\models\ProductClass $product_class
+     * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
 

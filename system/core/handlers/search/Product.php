@@ -7,16 +7,16 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\search;
+namespace gplcart\core\handlers\search;
 
-use core\models\Product as ProductModel;
-use core\handlers\search\Base as BaseHandler;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\handlers\search\Base as BaseHandler;
 
 class Product extends BaseHandler
 {
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 

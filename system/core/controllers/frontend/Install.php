@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Install as InstallModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Install as InstallModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to installation process
@@ -20,7 +20,7 @@ class Install extends FrontendController
 
     /**
      * Install model instance
-     * @var \core\models\Install $install
+     * @var \gplcart\core\models\Install $install
      */
     protected $install;
 

@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 class Wishlist extends FrontendController
 {

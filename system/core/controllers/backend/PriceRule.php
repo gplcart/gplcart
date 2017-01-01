@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Price as PriceModel;
-use core\models\Trigger as TriggerModel;
-use core\models\Currency as CurrencyModel;
-use core\models\PriceRule as PriceRuleModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Trigger as TriggerModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to price rules
@@ -23,25 +23,25 @@ class PriceRule extends BackendController
 
     /**
      * Trigger model instance
-     * @var \core\models\Trigger $trigger
+     * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
 
     /**
      * Price rule model instance
-     * @var \core\models\PriceRule $rule
+     * @var \gplcart\core\models\PriceRule $rule
      */
     protected $rule;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 

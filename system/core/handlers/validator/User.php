@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\UserRole as UserRoleModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate various user related data
@@ -20,7 +20,7 @@ class User extends BaseValidator
 
     /**
      * User role model instance
-     * @var \core\models\UserRole $role
+     * @var \gplcart\core\models\UserRole $role
      */
     protected $role;
 

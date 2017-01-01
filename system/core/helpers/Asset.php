@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\helpers;
+namespace gplcart\core\helpers;
 
-use core\helpers\Request as RequestHelper;
+use gplcart\core\helpers\Request as RequestHelper;
 
 /**
  * Helpers to work with CSS/JS files
@@ -24,7 +24,7 @@ class Asset
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

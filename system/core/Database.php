@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
 use PDO;
 use PDOException;
-use core\exceptions\DatabaseException;
+use gplcart\core\exceptions\DatabaseException;
 
 /**
  * Provides wrappers for PDO methods

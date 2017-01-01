@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace modules\backend;
+namespace gplcart\modules\backend;
 
 /**
  * Main backend theme class
@@ -32,7 +32,7 @@ class Backend
 
     /**
      * Implements hook.backend
-     * @param \core\controllers\backend\Controller $controller
+     * @param \gplcart\core\controllers\backend\Controller $controller
      */
     public function hookInitBackend($controller)
     {

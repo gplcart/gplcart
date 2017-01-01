@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Trigger as TriggerModel;
-use core\models\Condition as ConditionModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Trigger as TriggerModel;
+use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate trigger data
@@ -21,13 +21,13 @@ class Trigger extends BaseValidator
 
     /**
      * Condition model instance
-     * @var \core\models\Condition $condition
+     * @var \gplcart\core\models\Condition $condition
      */
     protected $condition;
 
     /**
      * Trigger model instance
-     * @var \core\models\Trigger $trigger
+     * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
 

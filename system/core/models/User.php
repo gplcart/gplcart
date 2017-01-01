@@ -7,16 +7,16 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model as Model;
-use core\Logger as Logger;
-use core\models\Mail as MailModel;
-use core\models\Address as AddressModel;
-use core\models\UserRole as UserRoleModel;
-use core\models\Language as LanguageModel;
-use core\helpers\Session as SessionHelper;
-use core\exceptions\UserAccessException;
+use gplcart\core\Model as Model;
+use gplcart\core\Logger as Logger;
+use gplcart\core\models\Mail as MailModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\exceptions\UserAccessException;
 
 /**
  * Manages basic behaviors and data related to users
@@ -26,37 +26,37 @@ class User extends Model
 
     /**
      * Address model instance
-     * @var \core\models\Address $address;
+     * @var \gplcart\core\models\Address $address;
      */
     protected $address;
 
     /**
      * User role model instance
-     * @var \core\models\UserRole $role
+     * @var \gplcart\core\models\UserRole $role
      */
     protected $role;
 
     /**
      * Mail model instance
-     * @var \core\models\Mail $mail
+     * @var \gplcart\core\models\Mail $mail
      */
     protected $mail;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Session class instance
-     * @var \core\helpers\Session $session
+     * @var \gplcart\core\helpers\Session $session
      */
     protected $session;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 

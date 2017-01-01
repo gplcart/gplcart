@@ -7,19 +7,19 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Logger;
-use core\helpers\Request as RequestHelper;
-use core\models\Mail as MailModel;
-use core\models\Cart as CartModel;
-use core\models\User as UserModel;
-use core\models\Price as PriceModel;
-use core\models\Product as ProductModel;
-use core\models\Language as LanguageModel;
-use core\models\PriceRule as PriceRuleModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Logger;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\models\Mail as MailModel;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -29,55 +29,55 @@ class Order extends Model
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Price rule model instance
-     * @var \core\models\PriceRule $pricerule
+     * @var \gplcart\core\models\PriceRule $pricerule
      */
     protected $pricerule;
 
     /**
      * Cart model instance
-     * @var \core\models\Cart $cart
+     * @var \gplcart\core\models\Cart $cart
      */
     protected $cart;
 
     /**
      * Mail model instance
-     * @var \core\models\Mail $mail
+     * @var \gplcart\core\models\Mail $mail
      */
     protected $mail;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

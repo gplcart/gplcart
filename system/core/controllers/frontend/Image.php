@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\helpers\Response as ResponseHelper;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\helpers\Response as ResponseHelper;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to image cache
@@ -20,7 +20,7 @@ class Image extends FrontendController
 
     /**
      * Response class instance
-     * @var \core\helpers\Response $response
+     * @var \gplcart\core\helpers\Response $response
      */
     protected $response;
 

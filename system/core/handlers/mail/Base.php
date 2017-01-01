@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\mail;
+namespace gplcart\core\handlers\mail;
 
-use core\Container;
+use gplcart\core\Container;
 
 /**
  * Base mail handler class
@@ -19,25 +19,25 @@ class Base
 
     /**
      * Store model instance
-     * @var \core\models\Store $store
+     * @var \gplcart\core\models\Store $store
      */
     protected $store;
 
     /**
      * Mail model instance
-     * @var \core\models\Mail $mail
+     * @var \gplcart\core\models\Mail $mail
      */
     protected $mail;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
@@ -46,17 +46,17 @@ class Base
      */
     public function __construct()
     {
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\Config');
+        /* @var $config \gplcart\core\Config */
+        $this->config = Container::instance('gplcart\\core\\Config');
 
-        /* @var $mail \core\models\Mail */
-        $this->mail = Container::instance('core\models\Mail');
+        /* @var $mail \gplcart\core\models\Mail */
+        $this->mail = Container::instance('gplcart\\core\\models\\Mail');
 
-        /* @var $store \core\models\Store */
-        $this->store = Container::instance('core\models\Store');
+        /* @var $store \gplcart\core\models\Store */
+        $this->store = Container::instance('gplcart\\core\\models\\Store');
 
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\models\Language');
+        /* @var $language \gplcart\core\models\Language */
+        $this->language = Container::instance('gplcart\\core\\models\\Language');
     }
 
     /**

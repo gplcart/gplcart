@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\helpers\Request as RequestHelper;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to currencies
@@ -21,7 +21,7 @@ class Currency extends Model
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

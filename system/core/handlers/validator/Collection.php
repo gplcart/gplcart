@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Collection as CollectionModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate collection data
@@ -20,7 +20,7 @@ class Collection extends BaseValidator
 
     /**
      * Collection model instance
-     * @var \core\models\Collection $collection
+     * @var \gplcart\core\models\Collection $collection
      */
     protected $collection;
 

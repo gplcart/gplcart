@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Image as ImageModel;
-use core\models\Alias as AliasModel;
-use core\models\Category as CategoryModel;
-use core\models\CategoryGroup as CategoryGroupModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to categories
@@ -23,25 +23,25 @@ class Category extends BackendController
 
     /**
      * Category model instance
-     * @var  \core\models\Category $category
+     * @var  \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Category group model instance
-     * @var \core\models\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 

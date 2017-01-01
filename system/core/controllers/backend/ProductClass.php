@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Field as FieldModel;
-use core\models\ProductClass as ProductClassModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to product classes
@@ -21,13 +21,13 @@ class ProductClass extends BackendController
 
     /**
      * Product model instance
-     * @var \core\models\ProductClass $product_class
+     * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
 
     /**
      * Field model instance
-     * @var \core\models\Field $field
+     * @var \gplcart\core\models\Field $field
      */
     protected $field;
 

@@ -7,10 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\Container;
-use ReflectionException;
+use gplcart\core\Container;
 
 /**
  * Provides methods to work with various system handlers

@@ -7,15 +7,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\State as StateModel;
-use core\models\Order as OrderModel;
-use core\models\Address as AddressModel;
-use core\models\Country as CountryModel;
-use core\models\Payment as PaymentModel;
-use core\models\Shipping as ShippingModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to checkout process
@@ -25,37 +25,37 @@ class Checkout extends FrontendController
 
     /**
      * Order model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
      * Address model instance
-     * @var \core\models\Address $address
+     * @var \gplcart\core\models\Address $address
      */
     protected $address;
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 
     /**
      * State model instance
-     * @var \core\models\State $state
+     * @var \gplcart\core\models\State $state
      */
     protected $state;
 
     /**
      * Shipping model instance
-     * @var \core\models\Shipping $shipping
+     * @var \gplcart\core\models\Shipping $shipping
      */
     protected $shipping;
 
     /**
      * Payment model instance
-     * @var \core\models\Payment $payment
+     * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
 

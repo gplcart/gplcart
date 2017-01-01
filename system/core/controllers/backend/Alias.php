@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Alias as AliasModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to the URL aliases
@@ -20,7 +20,7 @@ class Alias extends BackendController
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 

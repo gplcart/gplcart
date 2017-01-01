@@ -7,15 +7,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\Handler;
-use core\models\File as FileModel;
-use core\models\Page as PageModel;
-use core\models\Product as ProductModel;
-use core\models\Collection as CollectionModel;
-use core\models\CollectionItem as CollectionItemModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\Handler;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate collection item data
@@ -25,31 +25,31 @@ class CollectionItem extends BaseValidator
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Page model instance
-     * @var \core\models\Page $page
+     * @var \gplcart\core\models\Page $page
      */
     protected $page;
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
      * Collection model instance
-     * @var \core\models\Collection $collection
+     * @var \gplcart\core\models\Collection $collection
      */
     protected $collection;
 
     /**
      * Collection item model instance
-     * @var \core\models\CollectionItem $collection_item
+     * @var \gplcart\core\models\CollectionItem $collection_item
      */
     protected $collection_item;
 

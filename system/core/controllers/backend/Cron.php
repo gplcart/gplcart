@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Report as ReportModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Report as ReportModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to cron jobs
@@ -20,7 +20,7 @@ class Cron extends BackendController
 
     /**
      * Report model instance
-     * @var \core\models\Report $report
+     * @var \gplcart\core\models\Report $report
      */
     protected $report;
 
@@ -91,7 +91,7 @@ class Cron extends BackendController
         $lifespan = (int) $this->config('history_lifespan', 2628000);
         $ago = (GC_TIME - $lifespan);
 
-        /* @var $database \core\Database */
+        /* @var $database \gplcart\core\Database */
         $database = $this->config->getDb();
         $database->run('DELETE FROM history WHERE time < ?', array($ago));
     }

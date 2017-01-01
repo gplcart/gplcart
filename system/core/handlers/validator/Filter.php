@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Filter as FilterModel;
-use core\models\UserRole as UserRoleModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Filter as FilterModel;
+use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate HTML filter data
@@ -21,13 +21,13 @@ class Filter extends BaseValidator
 
     /**
      * Filter model instance
-     * @var \core\models\Filter $filter
+     * @var \gplcart\core\models\Filter $filter
      */
     protected $filter;
 
     /**
      * User role model instance
-     * @var \core\models\UserRole $role
+     * @var \gplcart\core\models\UserRole $role
      */
     protected $role;
 

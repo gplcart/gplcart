@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\models\Alias as AliasModel;
-use core\models\Image as ImageModel;
-use core\models\Language as LanguageModel;
-use core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -24,25 +24,25 @@ class Category extends Model
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Category group model instance
-     * @var \core\models\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 

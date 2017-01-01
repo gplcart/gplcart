@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\File as FileModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to files
@@ -20,7 +20,7 @@ class File extends BackendController
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 

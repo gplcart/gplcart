@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Report as ReportModel;
-use core\models\Analytics as AnalyticsModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Report as ReportModel;
+use gplcart\core\models\Analytics as AnalyticsModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to various reports
@@ -21,13 +21,13 @@ class Report extends BackendController
 
     /**
      * Report model instance
-     * @var \core\models\Report $report
+     * @var \gplcart\core\models\Report $report
      */
     protected $report;
 
     /**
      * Analytics model instance
-     * @var \core\models\Analytics $analytics
+     * @var \gplcart\core\models\Analytics $analytics
      */
     protected $analytics;
 

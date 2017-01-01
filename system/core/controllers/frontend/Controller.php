@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\Container;
-use core\Controller as BaseController;
+use gplcart\core\Container;
+use gplcart\core\Controller as BaseController;
 
 /**
  * Contents specific to the frontend methods
@@ -20,7 +20,7 @@ class Controller extends BaseController
 
     /**
      * Trigger model instance
-     * @var \core\models\Trigger $trigger
+     * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
 
@@ -32,49 +32,49 @@ class Controller extends BaseController
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Cart model instance
-     * @var \core\models\Cart $cart
+     * @var \gplcart\core\models\Cart $cart
      */
     protected $cart;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Compare model instance
-     * @var \core\models\Compare $compare
+     * @var \gplcart\core\models\Compare $compare
      */
     protected $compare;
 
     /**
      * Wishlist model instance
-     * @var \core\models\Wishlist $wishlist
+     * @var \gplcart\core\models\Wishlist $wishlist
      */
     protected $wishlist;
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Collection item model instance
-     * @var \core\models\CollectionItem $collection_item
+     * @var \gplcart\core\models\CollectionItem $collection_item
      */
     protected $collection_item;
 
@@ -140,32 +140,32 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        /* @var $price \core\models\Price */
-        $this->price = Container::instance('core\\models\\Price');
+        /* @var $price \gplcart\core\models\Price */
+        $this->price = Container::instance('gplcart\\core\\models\\Price');
 
-        /* @var $image \core\models\Image */
-        $this->image = Container::instance('core\\models\\Image');
+        /* @var $image \gplcart\core\models\Image */
+        $this->image = Container::instance('gplcart\\core\\models\\Image');
 
-        /* @var $cart \core\models\Cart */
-        $this->cart = Container::instance('core\\models\\Cart');
+        /* @var $cart \gplcart\core\models\Cart */
+        $this->cart = Container::instance('gplcart\\core\\models\\Cart');
 
-        /* @var $product \core\models\Product */
-        $this->product = Container::instance('core\\models\\Product');
+        /* @var $product \gplcart\core\models\Product */
+        $this->product = Container::instance('gplcart\\core\\models\\Product');
 
-        /* @var $compare \core\models\Compare */
-        $this->compare = Container::instance('core\\models\\Compare');
+        /* @var $compare \gplcart\core\models\Compare */
+        $this->compare = Container::instance('gplcart\\core\\models\\Compare');
 
-        /* @var $wishlist \core\models\Wishlist */
-        $this->wishlist = Container::instance('core\\models\\Wishlist');
+        /* @var $wishlist \gplcart\core\models\Wishlist */
+        $this->wishlist = Container::instance('gplcart\\core\\models\\Wishlist');
 
-        /* @var $category \core\models\Category */
-        $this->category = Container::instance('core\\models\\Category');
+        /* @var $category \gplcart\core\models\Category */
+        $this->category = Container::instance('gplcart\\core\\models\\Category');
 
-        /* @var $trigger \core\models\Trigger */
-        $this->trigger = Container::instance('core\\models\\Trigger');
+        /* @var $trigger \gplcart\core\models\Trigger */
+        $this->trigger = Container::instance('gplcart\\core\\models\\Trigger');
 
-        /* @var $collection_item \core\models\CollectionItem */
-        $this->collection_item = Container::instance('core\\models\\CollectionItem');
+        /* @var $collection_item \gplcart\core\models\CollectionItem */
+        $this->collection_item = Container::instance('gplcart\\core\\models\\CollectionItem');
     }
 
     /**

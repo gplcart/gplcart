@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Order as OrderModel;
-use core\models\Review as ReviewModel;
-use core\models\Rating as RatingModel;
-use core\models\ProductClass as ProductClassModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to products
@@ -23,25 +23,25 @@ class Product extends FrontendController
 
     /**
      * Product class model instance
-     * @var \core\models\ProductClass $product_class
+     * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
 
     /**
      * Orders model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
      * Review model instance
-     * @var \core\models\Review $review
+     * @var \gplcart\core\models\Review $review
      */
     protected $review;
 
     /**
      * Rating model instance
-     * @var \core\models\Rating $rating
+     * @var \gplcart\core\models\Rating $rating
      */
     protected $rating;
 

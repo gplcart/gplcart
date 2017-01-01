@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model as Model;
-use core\Database as Database;
-use core\Container as Container;
-use core\models\Store as StoreModel;
-use core\models\Language as LanguageModel;
-use core\exceptions\DatabaseException;
+use gplcart\core\Model as Model;
+use gplcart\core\Database as Database;
+use gplcart\core\Container as Container;
+use gplcart\core\models\Store as StoreModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\exceptions\DatabaseException;
 
 /**
  * Manages basic behaviors and data related to system installation
@@ -24,25 +24,25 @@ class Install extends Model
 
     /**
      * Store model instance
-     * @var \core\models\Store $store
+     * @var \gplcart\core\models\Store $store
      */
     protected $store;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * PDO instance
-     * @var \core\Database $db
+     * @var \gplcart\core\Database $db
      */
     protected $database;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
@@ -261,7 +261,7 @@ class Install extends Model
     {
         Container::unregister(); // Remove old instances to prevent conflicts
 
-        $this->config = Container::instance('core\\Config');
+        $this->config = Container::instance('gplcart\\core\\Config');
         $this->database = $this->config->getDb();
 
         if (empty($this->database)) {

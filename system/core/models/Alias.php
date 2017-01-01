@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Route as Route;
-use core\Model as Model;
-use core\models\Language as LanguageModel;
+use gplcart\core\Route as Route;
+use gplcart\core\Model as Model;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to URL aliasing
@@ -21,13 +21,13 @@ class Alias extends Model
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Route class instance
-     * @var \core\Route $route
+     * @var \gplcart\core\Route $route
      */
     protected $route;
 

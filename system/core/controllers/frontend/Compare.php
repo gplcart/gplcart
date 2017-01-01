@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Field as FieldModel;
-use core\models\FieldValue as FieldValueModel;
-use core\models\ProductClass as ProductClassModel;
-use core\models\ProductField as ProductFieldModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\ProductField as ProductFieldModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to product comparison
@@ -23,25 +23,25 @@ class Compare extends FrontendController
 
     /**
      * Product class model instance
-     * @var \core\models\ProductClass $product_class
+     * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
 
     /**
      * Product field model instance
-     * @var \core\models\ProductField $product_field
+     * @var \gplcart\core\models\ProductField $product_field
      */
     protected $product_field;
 
     /**
      * Field class instance
-     * @var \core\models\Field $field
+     * @var \gplcart\core\models\Field $field
      */
     protected $field;
 
     /**
      * Field values instance
-     * @var \core\models\FieldValue $field_value
+     * @var \gplcart\core\models\FieldValue $field_value
      */
     protected $field_value;
 

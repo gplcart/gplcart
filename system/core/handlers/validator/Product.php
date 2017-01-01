@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Sku as SkuModel;
-use core\models\Product as ProductModel;
-use core\models\Currency as CurrencyModel;
-use core\models\Category as CategoryModel;
-use core\models\ProductClass as ProductClassModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate a product data
@@ -42,31 +42,31 @@ class Product extends BaseValidator
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Product class model instance
-     * @var \core\models\ProductClass $product_class
+     * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
 
     /**
      * Sku model instance
-     * @var \core\models\Sku $sku
+     * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 

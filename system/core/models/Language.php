@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Route;
-use core\Cache;
-use core\Model;
-use core\Library;
+use gplcart\core\Route;
+use gplcart\core\Cache;
+use gplcart\core\Model;
+use gplcart\core\Library;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -28,13 +28,13 @@ class Language extends Model
 
     /**
      * Route class instance
-     * @var \core\Route $route
+     * @var \gplcart\core\Route $route
      */
     protected $route;
 
     /**
      * Library instance
-     * @var \core\Translit $library
+     * @var \gplcart\core\Translit $library
      */
     protected $library;
 

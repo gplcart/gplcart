@@ -7,19 +7,19 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\helpers\Request as RequestHelper;
-use core\models\Sku as SkuModel;
-use core\models\Price as PriceModel;
-use core\models\Image as ImageModel;
-use core\models\Alias as AliasModel;
-use core\models\Search as SearchModel;
-use core\models\Language as LanguageModel;
-use core\models\PriceRule as PriceRuleModel;
-use core\models\ProductField as ProductFieldModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Search as SearchModel;
+use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\ProductField as ProductFieldModel;
 
 /**
  * Manages basic behaviors and data related to products
@@ -29,61 +29,61 @@ class Product extends Model
 
     /**
      * Cache instance
-     * @var \core\Cache $cache
+     * @var \gplcart\core\Cache $cache
      */
     protected $cache;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Product field model instance
-     * @var \core\models\ProductField $product_field
+     * @var \gplcart\core\models\ProductField $product_field
      */
     protected $product_field;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Price rule model instance
-     * @var \core\models\PriceRule $pricerule
+     * @var \gplcart\core\models\PriceRule $pricerule
      */
     protected $pricerule;
 
     /**
      * Sku model instance
-     * @var \core\models\Sku $sku
+     * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
 
     /**
      * Search module instance
-     * @var \core\models\Search $search
+     * @var \gplcart\core\models\Search $search
      */
     protected $search;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

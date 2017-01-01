@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\exceptions\DatabaseException;
+use gplcart\core\exceptions\DatabaseException;
 
 /**
  * Contains methods to work with system configurations
@@ -19,7 +19,7 @@ class Config
 
     /**
      * PDO instance
-     * @var \core\Database $db
+     * @var \gplcart\core\Database $db
      */
     protected $db;
 
@@ -299,7 +299,7 @@ class Config
      */
     public function getModuleClass($module_id)
     {
-        return "modules\\$module_id\\" . ucfirst(str_replace('_', '', $module_id));
+        return "gplcart\\modules\\$module_id\\" . ucfirst(str_replace('_', '', $module_id));
     }
 
     /**
@@ -352,7 +352,7 @@ class Config
             return true;
         }
 
-        $this->db = Container::instance('core\\Database', array($this->config['database']));
+        $this->db = Container::instance('gplcart\\core\\Database', array($this->config['database']));
         $this->config = array_merge($this->config, $this->select());
         $this->key = $this->get('private_key', '');
 

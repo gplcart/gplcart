@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\exceptions\ModuleException;
+use gplcart\core\exceptions\ModuleException;
 
 /**
  * Provides methods to work with system hooks (event system)

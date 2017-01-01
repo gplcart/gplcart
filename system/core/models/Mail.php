@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Logger;
-use core\Library;
-use core\Handler;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Logger;
+use gplcart\core\Library;
+use gplcart\core\Handler;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -41,13 +41,13 @@ class Mail extends Model
 
     /**
      * Library class instance
-     * @var \core\Library $library
+     * @var \gplcart\core\Library $library
      */
     protected $library;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
@@ -80,38 +80,38 @@ class Mail extends Model
         $handlers['order_created_admin'] = array(
             'access' => 'order',
             'handlers' => array(
-                'process' => array('core\\handlers\\mail\\Order', 'createdToAdmin')
+                'process' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToAdmin')
             ),
         );
 
         $handlers['order_created_customer'] = array(
             'handlers' => array(
-                'process' => array('core\\handlers\\mail\\Order', 'createdToCustomer'),
+                'process' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToCustomer'),
             ),
         );
 
         $handlers['user_registered_admin'] = array(
             'access' => 'user',
             'handlers' => array(
-                'process' => array('core\\handlers\\mail\\Account', 'registeredToAdmin'),
+                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToAdmin'),
             ),
         );
 
         $handlers['user_registered_customer'] = array(
             'handlers' => array(
-                'process' => array('core\\handlers\\mail\\Account', 'registeredToCustomer'),
+                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToCustomer'),
             ),
         );
 
         $handlers['user_reset_password'] = array(
             'handlers' => array(
-                'process' => array('core\\handlers\\mail\\Account', 'resetPassword'),
+                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'resetPassword'),
             ),
         );
 
         $handlers['user_changed_password'] = array(
             'handlers' => array(
-                'process' => array('core\\handlers\\mail\\Account', 'changedPassword'),
+                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'changedPassword'),
             ),
         );
 

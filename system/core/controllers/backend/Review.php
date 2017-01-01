@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Review as ReviewModel;
-use core\models\Product as ProductModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to user reviews
@@ -21,13 +21,13 @@ class Review extends BackendController
 
     /**
      * Review model instance
-     * @var \core\models\Review $review
+     * @var \gplcart\core\models\Review $review
      */
     protected $review;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 

@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace modules\frontend\controllers;
+namespace gplcart\modules\frontend\controllers;
 
-use core\models\Image as ImageModel;
-use core\models\Module as ModuleModel;
-use modules\frontend\Frontend as FrontendModule;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Module as ModuleModel;
+use gplcart\modules\frontend\Frontend as FrontendModule;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to Frontend module settings
@@ -22,13 +22,13 @@ class Settings extends BackendController
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Module model instance
-     * @var \core\models\Module $module
+     * @var \gplcart\core\models\Module $module
      */
     protected $module;
 

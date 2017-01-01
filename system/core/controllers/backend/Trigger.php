@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Trigger as TriggerModel;
-use core\models\Condition as ConditionModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Trigger as TriggerModel;
+use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to triggers
@@ -21,13 +21,13 @@ class Trigger extends BackendController
 
     /**
      * Condition model instance
-     * @var \core\models\Condition $condition
+     * @var \gplcart\core\models\Condition $condition
      */
     protected $condition;
 
     /**
      * Trigger model instance
-     * @var \core\models\Trigger $trigger
+     * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
 

@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Payment as PaymentModel;
-use core\models\Transaction as TransactionModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to order payment transactions
@@ -21,13 +21,13 @@ class Transaction extends BackendController
 
     /**
      * Transaction model instance
-     * @var \core\models\Transaction $transaction
+     * @var \gplcart\core\models\Transaction $transaction
      */
     protected $transaction;
 
     /**
      * Payment model instance
-     * @var \core\models\Payment $payment
+     * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
 

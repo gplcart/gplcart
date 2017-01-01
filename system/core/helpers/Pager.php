@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  */
 
-namespace core\helpers;
+namespace gplcart\core\helpers;
 
 /**
  * Provides methods to paging a data
@@ -76,7 +76,7 @@ class Pager
     /**
      * Sets total number of items
      * @param integer $num
-     * @return \core\helpers\Pager
+     * @return \gplcart\core\helpers\Pager
      */
     public function setTotal($num)
     {
@@ -87,7 +87,7 @@ class Pager
 
     /**
      * Updates the current number of pages
-     * @return \core\helpers\Pager
+     * @return \gplcart\core\helpers\Pager
      */
     protected function updateNumPages()
     {
@@ -98,7 +98,7 @@ class Pager
     /**
      * Sets items per page
      * @param integer $num
-     * @return \core\helpers\Pager
+     * @return \gplcart\core\helpers\Pager
      */
     public function setPerPage($num)
     {
@@ -110,7 +110,7 @@ class Pager
     /**
      * Sets the current page
      * @param integer $current
-     * @return \core\helpers\Pager
+     * @return \gplcart\core\helpers\Pager
      */
     public function setPage($current)
     {
@@ -416,7 +416,7 @@ class Pager
     /**
      * Sets "Previous" text
      * @param string $text
-     * @return \core\helpers\Pager
+     * @return \gplcart\core\helpers\Pager
      */
     public function setPreviousText($text)
     {
@@ -427,7 +427,7 @@ class Pager
     /**
      * Sets "Next" text
      * @param string $text
-     * @return \core\helpers\Pager
+     * @return \gplcart\core\helpers\Pager
      */
     public function setNextText($text)
     {

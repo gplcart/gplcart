@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\Hook as Hook;
-use core\Route as Route;
-use core\Config as Config;
-use core\Logger as Logger;
-use core\helpers\Url as UrlHelper;
-use core\helpers\Session as SessionHelper;
+use gplcart\core\Hook as Hook;
+use gplcart\core\Route as Route;
+use gplcart\core\Config as Config;
+use gplcart\core\Logger as Logger;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\helpers\Session as SessionHelper;
 
 /**
  * Provides methods to route incoming requests and setup the system
@@ -24,37 +24,37 @@ class Facade
 
     /**
      * Route class instance
-     * @var \core\Route $route
+     * @var \gplcart\core\Route $route
      */
     protected $route;
 
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Session class instance
-     * @var \core\helpers\Session $session
+     * @var \gplcart\core\helpers\Session $session
      */
     protected $session;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
     /**
      * Hook class instance
-     * @var \core\Hook $hook
+     * @var \gplcart\core\Hook $hook
      */
     protected $hook;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
@@ -81,10 +81,11 @@ class Facade
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
-
         // Register hooks
         $modules = $this->config->getEnabledModules();
         $this->hook->modules($modules);
+        
+        
     }
 
     /**
@@ -113,7 +114,7 @@ class Facade
             exit(1);
         }
 
-        Container::instance('core\\CliRoute')->process();
+        Container::instance('gplcart\\core\\CliRoute')->process();
     }
 
     /**

@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\helpers;
+namespace gplcart\core\helpers;
 
-use core\exceptions\UserAccessException;
+use gplcart\core\exceptions\UserAccessException;
 
 /**
  * Provides methods to work with sessions

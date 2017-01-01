@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\backup;
+namespace gplcart\core\handlers\backup;
 
-use core\Container;
+use gplcart\core\Container;
 
 /**
  * Base backup handler class
@@ -18,13 +18,13 @@ class Base
 {
     /**
      * Zip helper class instance
-     * @var \core\helpers\Zip $zip
+     * @var \gplcart\core\helpers\Zip $zip
      */
     protected $zip;
 
     /**
      * Backup model instance
-     * @var \core\models\Backup $backup
+     * @var \gplcart\core\models\Backup $backup
      */
     protected $backup;
 
@@ -35,11 +35,11 @@ class Base
     {
         ini_set('max_execution_time', 0);
 
-        /* @var $zip \core\helpers\Zip */
-        $this->zip = Container::instance('core\\helpers\\Zip');
+        /* @var $zip \gplcart\core\helpers\Zip */
+        $this->zip = Container::instance('gplcart\\core\\helpers\\Zip');
 
-        /* @var $backup \core\models\Backup */
-        $this->backup = Container::instance('core\\models\\Backup');
+        /* @var $backup \gplcart\core\models\Backup */
+        $this->backup = Container::instance('gplcart\\core\\models\\Backup');
     }
 
     /**

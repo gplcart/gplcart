@@ -7,24 +7,23 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace tests\unit\system\core\handlers\validator;
+namespace gplcart\tests\unit\system\gplcart\core\handlers\validator;
 
-use tests\resources\UnitTest;
+use gplcart\tests\resources\UnitTest;
 
 /**
  * Test cases for file validators
  */
 class FileTypeTest extends UnitTest
 {
-
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        /* @var $object \core\handlers\validator\FileType */
-        $this->setInstance('core\\handlers\\validator\\FileType');
+        /* @var $object \gplcart\core\handlers\validator\FileType */
+        $this->setInstance('gplcart\\core\\handlers\\validator\\FileType');
     }
 
     /**
@@ -37,7 +36,7 @@ class FileTypeTest extends UnitTest
     }
 
     /**
-     * @covers core\handlers\validator\FileType::image
+     * @covers gplcart\core\handlers\validator\FileType::image
      * @group validators
      */
     public function testImage()
@@ -53,7 +52,7 @@ class FileTypeTest extends UnitTest
     }
 
     /**
-     * @covers core\handlers\validator\FileType::csv
+     * @covers gplcart\core\handlers\validator\FileType::csv
      * @group validators
      */
     public function testCsv()
@@ -64,7 +63,7 @@ class FileTypeTest extends UnitTest
     }
 
     /**
-     * @covers core\handlers\validator\FileType::zip
+     * @covers gplcart\core\handlers\validator\FileType::zip
      * @group validators
      */
     public function testZip()

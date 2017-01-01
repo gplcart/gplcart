@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\models\Currency as CurrencyModel;
+use gplcart\core\Model;
+use gplcart\core\models\Currency as CurrencyModel;
 
 /**
  * Manages basic behaviors and data related to currencies
@@ -20,7 +20,7 @@ class Price extends Model
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
@@ -164,7 +164,7 @@ class Price extends Model
     }
 
     /**
-     * Converts currencies. Alias of \core\models\Currency::convert()
+     * Converts currencies. Alias of \gplcart\core\models\Currency::convert()
      * @param integer $amount
      * @param string $currency_code
      * @param string $target_currency_code

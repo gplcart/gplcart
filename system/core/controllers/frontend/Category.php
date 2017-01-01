@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Search as SearchModel;
-use core\models\CategoryGroup as CategoryGroupModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Search as SearchModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to product catalog
@@ -21,13 +21,13 @@ class Category extends FrontendController
 
     /**
      * Category group model instance
-     * @var \core\models\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 
     /**
      * Search model instance
-     * @var \core\models\Search $search
+     * @var \gplcart\core\models\Search $search
      */
     protected $search;
 

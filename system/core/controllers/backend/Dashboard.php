@@ -7,15 +7,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Analytics as AnalyticsModel;
-use core\models\Order as OrderModel;
-use core\models\Price as PriceModel;
-use core\models\Product as ProductModel;
-use core\models\Report as ReportModel;
-use core\models\Review as ReviewModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Analytics as AnalyticsModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Report as ReportModel;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to admin dashboard
@@ -25,31 +25,31 @@ class Dashboard extends BackendController
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Order model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
      * Report model instance
-     * @var \core\models\Report $report
+     * @var \gplcart\core\models\Report $report
      */
     protected $report;
 
     /**
      * Analytics model instance
-     * @var \core\models\Analytics $analytics
+     * @var \gplcart\core\models\Analytics $analytics
      */
     protected $analytics;
 
@@ -61,7 +61,7 @@ class Dashboard extends BackendController
 
     /**
      * Review model instance
-     * @var \core\models\Review $review
+     * @var \gplcart\core\models\Review $review
      */
     protected $review;
 

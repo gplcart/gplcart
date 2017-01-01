@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\job\export;
+namespace gplcart\core\handlers\job\export;
 
-use core\models\Price as PriceModel;
-use core\models\Product as ProductModel;
-use core\handlers\job\export\Base as BaseHandler;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\handlers\job\export\Base as BaseHandler;
 
 /**
  * Product export handler
@@ -21,13 +21,13 @@ class Product extends BaseHandler
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 

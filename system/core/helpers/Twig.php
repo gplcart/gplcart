@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\helpers;
+namespace gplcart\core\helpers;
 
-use core\Library;
+use gplcart\core\Library;
 
 /**
  * Wrapper class for TWIG template engine
@@ -49,7 +49,7 @@ class Twig
     /**
      * Sets up Twig
      * @param string $path
-     * @param \core\Controller $object
+     * @param \gplcart\core\Controller $object
      * @param array $options
      */
     public function set($path, $object, array $options = array())
@@ -104,7 +104,7 @@ class Twig
      * Validates Twig syntax for a given template
      * @param string $content
      * @param string $file
-     * @param \core\Controller $object
+     * @param \gplcart\core\Controller $object
      * @return boolean
      */
     public function validate($content, $file, $object)
@@ -121,8 +121,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::error()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::error()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionError($object)
     {
@@ -134,8 +134,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::token()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::token()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionToken($object)
     {
@@ -147,8 +147,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::text()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::text()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionText($object)
     {
@@ -160,8 +160,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::access()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::access()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionAccess($object)
     {
@@ -173,8 +173,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::url()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::url()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionUrl($object)
     {
@@ -186,8 +186,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::isSuperadmin()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::isSuperadmin()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionIsSuperadmin($object)
     {
@@ -199,8 +199,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::date()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::date()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionDate($object)
     {
@@ -212,8 +212,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::attributes()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::attributes()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionAttributes($object)
     {
@@ -225,8 +225,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::config()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::config()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionConfig($object)
     {
@@ -238,8 +238,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::summary()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::summary()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionSummary($object)
     {
@@ -251,8 +251,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::uid()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::uid()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionUid($object)
     {
@@ -264,8 +264,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::store()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::store()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionStore($object)
     {
@@ -277,8 +277,8 @@ class Twig
     }
 
     /**
-     * Adds debug function to see template variables \core\Controller::$data
-     * @param \core\Controller $object
+     * Adds debug function to see template variables \gplcart\core\Controller::$data
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionVarDump($object)
     {
@@ -290,8 +290,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::xss()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::xss()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionXss($object)
     {
@@ -303,8 +303,8 @@ class Twig
     }
 
     /**
-     * Adds function \core\Controller::truncate()
-     * @param \core\Controller $object
+     * Adds function \gplcart\core\Controller::truncate()
+     * @param \gplcart\core\Controller $object
      */
     protected function addFunctionTruncate($object)
     {

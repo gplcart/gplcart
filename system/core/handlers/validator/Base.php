@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\Container as Container;
+use gplcart\core\Container as Container;
 
 /**
  * Base validator class
@@ -31,25 +31,25 @@ class Base
 
     /**
      * Alias model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Store model instance
-     * @var \core\models\Store $store
+     * @var \gplcart\core\models\Store $store
      */
     protected $store;
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
@@ -58,17 +58,17 @@ class Base
      */
     public function __construct()
     {
-        /* @var $user \core\models\User */
-        $this->user = Container::instance('core\\models\\User');
+        /* @var $user \gplcart\core\models\User */
+        $this->user = Container::instance('gplcart\\core\\models\\User');
 
-        /* @var $store \core\models\Store */
-        $this->store = Container::instance('core\\models\\Store');
+        /* @var $store \gplcart\core\models\Store */
+        $this->store = Container::instance('gplcart\\core\\models\\Store');
 
-        /* @var $alias \core\models\Alias */
-        $this->alias = Container::instance('core\\models\\Alias');
+        /* @var $alias \gplcart\core\models\Alias */
+        $this->alias = Container::instance('gplcart\\core\\models\\Alias');
 
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\\models\\Language');
+        /* @var $language \gplcart\core\models\Language */
+        $this->language = Container::instance('gplcart\\core\\models\\Language');
     }
 
     /**

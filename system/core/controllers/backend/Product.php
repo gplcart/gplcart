@@ -7,17 +7,17 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Alias as AliasModel;
-use core\models\Image as ImageModel;
-use core\models\Price as PriceModel;
-use core\models\Product as ProductModel;
-use core\models\Category as CategoryModel;
-use core\models\Currency as CurrencyModel;
-use core\models\ProductClass as ProductClassModel;
-use core\models\CategoryGroup as CategoryGroupModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to products
@@ -26,49 +26,49 @@ class Product extends BackendController
 {
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Product class model instance
-     * @var \core\models\ProductClass $product_class
+     * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Category group model instance
-     * @var \core\models\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 

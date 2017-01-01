@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\models\Alias as AliasModel;
-use core\models\Image as ImageModel;
-use core\models\Language as LanguageModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to pages
@@ -23,25 +23,25 @@ class Page extends Model
 
     /**
      * Cache instance
-     * @var \core\Cache $cache
+     * @var \gplcart\core\Cache $cache
      */
     protected $cache;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 

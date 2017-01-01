@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\CategoryGroup as CategoryGroupModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate category groups
@@ -20,7 +20,7 @@ class CategoryGroup extends BaseValidator
 
     /**
      * Category group model instance
-     * @var \core\models\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 

@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Handler;
-use core\models\Language as LanguageModel;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Handler;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to the search system
@@ -22,7 +22,7 @@ class Search extends Model
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
@@ -146,8 +146,8 @@ class Search extends Model
         $handlers['product'] = array(
             'name' => $this->language->text('Products'),
             'handlers' => array(
-                'search' => array('core\\handlers\\search\\Product', 'search'),
-                'index' => array('core\\handlers\\search\\Product', 'index')
+                'search' => array('gplcart\\core\\handlers\\search\\Product', 'search'),
+                'index' => array('gplcart\\core\\handlers\\search\\Product', 'index')
         ));
 
         $this->hook->fire('search.handlers', $handlers);

@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Page as PageModel;
-use core\models\Image as ImageModel;
-use core\models\Alias as AliasModel;
-use core\models\Category as CategoryModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to pages
@@ -23,25 +23,25 @@ class Page extends BackendController
 
     /**
      * Page model instance
-     * @var \core\models\Page $page
+     * @var \gplcart\core\models\Page $page
      */
     protected $page;
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Url model instance
-     * @var \core\models\Alias $alias
+     * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
 
     /**
      * Image model instance
-     * @var \core\models\Image $image
+     * @var \gplcart\core\models\Image $image
      */
     protected $image;
 

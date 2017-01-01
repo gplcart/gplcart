@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Backup as BackupModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Backup as BackupModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to backups
@@ -20,7 +20,7 @@ class Backup extends BackendController
 
     /**
      * Backup model instance
-     * @var \core\models\Backup $backup
+     * @var \gplcart\core\models\Backup $backup
      */
     protected $backup;
 

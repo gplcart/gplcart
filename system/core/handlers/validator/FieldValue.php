@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\File as FileModel;
-use core\models\Field as FieldModel;
-use core\models\FieldValue as FieldValueModel;
-use core\helpers\Request as RequestHelper;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate field data
@@ -28,25 +28,25 @@ class FieldValue extends BaseValidator
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
      * Field model instance
-     * @var \core\models\Field $field
+     * @var \gplcart\core\models\Field $field
      */
     protected $field;
 
     /**
      * Field value model instance
-     * @var \core\models\FieldValue $field_value
+     * @var \gplcart\core\models\FieldValue $field_value
      */
     protected $field_value;
 

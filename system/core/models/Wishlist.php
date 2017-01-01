@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Logger;
-use core\Cache;
-use core\helpers\Url as UrlHelper;
-use core\models\User as UserModel;
-use core\models\Language as LanguageModel;
+use gplcart\core\Model;
+use gplcart\core\Logger;
+use gplcart\core\Cache;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to user wishlists
@@ -24,25 +24,25 @@ class Wishlist extends Model
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 

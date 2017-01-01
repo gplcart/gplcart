@@ -7,51 +7,51 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\trigger;
+namespace gplcart\core\handlers\trigger;
 
-use core\Route;
-use core\models\User as UserModel;
-use core\models\Address as AddressModel;
-use core\models\Product as ProductModel;
-use core\models\Currency as CurrencyModel;
-use core\models\Condition as ConditionModel;
+use gplcart\core\Route;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Condition as ConditionModel;
 
 class Condition
 {
 
     /**
      * Route class instance
-     * @var \core\Route $route
+     * @var \gplcart\core\Route $route
      */
     protected $route;
 
     /**
      * Condition model instance
-     * @var \core\models\Condition $condition
+     * @var \gplcart\core\models\Condition $condition
      */
     protected $condition;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * Address model instance
-     * @var \core\models\Address $address
+     * @var \gplcart\core\models\Address $address
      */
     protected $address;
 

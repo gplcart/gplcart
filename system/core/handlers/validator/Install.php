@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Install as InstallModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Install as InstallModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate installation data
@@ -20,7 +20,7 @@ class Install extends BaseValidator
 
     /**
      * Install model instance
-     * @var \core\models\Install $install
+     * @var \gplcart\core\models\Install $install
      */
     protected $install;
 

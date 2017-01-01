@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
-use core\models\Transaction as TransactionModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to payment transactions
@@ -20,7 +20,7 @@ class Transaction extends FrontendController
 
     /**
      * Transaction model instance
-     * @var \core\models\Transaction $transaction
+     * @var \gplcart\core\models\Transaction $transaction
      */
     protected $transaction;
 

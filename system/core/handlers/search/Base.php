@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\search;
+namespace gplcart\core\handlers\search;
 
-use core\Container;
+use gplcart\core\Container;
 
 /**
  * Base search handler class
@@ -18,19 +18,19 @@ class Base
 {
     /**
      * Database helper instance
-     * @var \core\Database $db
+     * @var \gplcart\core\Database $db
      */
     protected $db;
 
     /**
      * Search model instance
-     * @var \core\models\Search $search
+     * @var \gplcart\core\models\Search $search
      */
     protected $search;
 
     /**
      * Config instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
@@ -39,11 +39,11 @@ class Base
      */
     public function __construct()
     {
-        /* @var $search \core\models\Search */
-        $this->search = Container::instance('core\\models\\Search');
+        /* @var $search \gplcart\core\models\Search */
+        $this->search = Container::instance('gplcart\\core\\models\\Search');
 
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\\Config');
+        /* @var $config \gplcart\core\Config */
+        $this->config = Container::instance('gplcart\\core\\Config');
 
         $this->db = $this->config->getDb();
     }

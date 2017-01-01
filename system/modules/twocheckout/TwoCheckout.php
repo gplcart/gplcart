@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace modules\twocheckout;
+namespace gplcart\modules\twocheckout;
 
-use core\Config;
-use core\models\Language as LanguageModel;
+use gplcart\core\Config;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Main module class
@@ -20,13 +20,13 @@ class TwoCheckout
 
     /**
      * Config instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 

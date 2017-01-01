@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\UserRole as UserRoleModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to user management
@@ -20,7 +20,7 @@ class User extends BackendController
 
     /**
      * User role model instance
-     * @var \core\models\UserRole $role
+     * @var \gplcart\core\models\UserRole $role
      */
     protected $role;
 

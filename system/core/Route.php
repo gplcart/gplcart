@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\helpers\Url as UrlHelper;
-use core\helpers\Request as RequestHelper;
-use core\exceptions\RouteException;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\exceptions\RouteException;
 
 /**
  * Routes incoming requests
@@ -20,25 +20,25 @@ class Route
 {
     /**
      * Url class instance
-     * @var \core\helpers\Url $url
+     * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
     /**
      * Request class instance
-     * @var \core\helpers\Request $request
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
     /**
      * Hook class instance
-     * @var \core\Hook $hook
+     * @var \gplcart\core\Hook $hook
      */
     protected $hook;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
@@ -62,7 +62,7 @@ class Route
 
     /**
      * PDO instance
-     * @var \core\Database $db
+     * @var \gplcart\core\Database $db
      */
     protected $db;
 
@@ -319,9 +319,9 @@ class Route
     protected function callControllerNotFound()
     {
         if ($this->url->isBackend()) {
-            $class = 'core\\controllers\\backend\\Controller';
+            $class = 'gplcart\\core\\controllers\\backend\\Controller';
         } else {
-            $class = 'core\\controllers\\frontend\\Controller';
+            $class = 'gplcart\\core\\controllers\\frontend\\Controller';
         }
 
         $route = array(

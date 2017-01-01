@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Sku as SkuModel;
-use core\models\Cart as CartModel;
-use core\models\Order as OrderModel;
-use core\models\Product as ProductModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate cart data
@@ -23,25 +23,25 @@ class Cart extends BaseValidator
 
     /**
      * Cart model instance
-     * @var \core\models\Cart $cart
+     * @var \gplcart\core\models\Cart $cart
      */
     protected $cart;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Sku model instance
-     * @var \core\models\Sku $sku
+     * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
 
     /**
      * Order model instance
-     * @var \core\models\Order $order
+     * @var \gplcart\core\models\Order $order
      */
     protected $order;
 

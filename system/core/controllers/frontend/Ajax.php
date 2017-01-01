@@ -7,16 +7,16 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\frontend;
+namespace gplcart\core\controllers\frontend;
 
 use BadMethodCallException;
-use core\models\Sku as SkuModel;
-use core\models\File as FileModel;
-use core\models\Search as SearchModel;
-use core\models\Rating as RatingModel;
-use core\models\Collection as CollectionModel;
-use core\models\CollectionItem as CollectionItemModel;
-use core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Search as SearchModel;
+use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to AJAX operations
@@ -26,37 +26,37 @@ class Ajax extends FrontendController
 
     /**
      * Search model instance
-     * @var \core\models\Search $search
+     * @var \gplcart\core\models\Search $search
      */
     protected $search;
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
      * Rating model instance
-     * @var \core\models\Rating $rating
+     * @var \gplcart\core\models\Rating $rating
      */
     protected $rating;
 
     /**
      * Sku model instance
-     * @var \core\models\Sku $sku
+     * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
 
     /**
      * Collection model instance
-     * @var \core\models\Collection $collection
+     * @var \gplcart\core\models\Collection $collection
      */
     protected $collection;
 
     /**
      * Collection item model instance
-     * @var \core\models\CollectionItem $collection_item
+     * @var \gplcart\core\models\CollectionItem $collection_item
      */
     protected $collection_item;
 

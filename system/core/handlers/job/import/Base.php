@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\job\import;
+namespace gplcart\core\handlers\job\import;
 
-use core\Container;
+use gplcart\core\Container;
 
 /**
  * Base class for import handlers
@@ -19,37 +19,37 @@ class Base
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * User model instance
-     * @var \core\models\User $user
+     * @var \gplcart\core\models\User $user
      */
     protected $user;
 
     /**
      * Validator model instance
-     * @var \core\models\Validator $validator
+     * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
 
     /**
      * File model instance
-     * @var \core\models\File $file
+     * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
      * Config class instance
-     * @var \core\Config $config
+     * @var \gplcart\core\Config $config
      */
     protected $config;
 
     /**
      * CSV class instance
-     * @var \core\helpers\Csv $csv
+     * @var \gplcart\core\helpers\Csv $csv
      */
     protected $csv;
 
@@ -82,23 +82,23 @@ class Base
      */
     public function __construct()
     {
-        /* @var $config \core\Config */
-        $this->config = Container::instance('core\\Config');
+        /* @var $config \gplcart\core\Config */
+        $this->config = Container::instance('gplcart\\core\\Config');
 
-        /* @var $csv \core\helpers\Csv */
-        $this->csv = Container::instance('core\\helpers\\Csv');
+        /* @var $csv \gplcart\core\helpers\Csv */
+        $this->csv = Container::instance('gplcart\\core\\helpers\\Csv');
 
-        /* @var $file \core\models\File */
-        $this->file = Container::instance('core\\models\\File');
+        /* @var $file \gplcart\core\models\File */
+        $this->file = Container::instance('gplcart\\core\\models\\File');
 
-        /* @var $user \core\models\User */
-        $this->user = Container::instance('core\\models\\User');
+        /* @var $user \gplcart\core\models\User */
+        $this->user = Container::instance('gplcart\\core\\models\\User');
 
-        /* @var $language \core\models\Language */
-        $this->language = Container::instance('core\\models\\Language');
+        /* @var $language \gplcart\core\models\Language */
+        $this->language = Container::instance('gplcart\\core\\models\\Language');
 
-        /* @var $validator \core\models\Validator */
-        $this->validator = Container::instance('core\\models\\Validator');
+        /* @var $validator \gplcart\core\models\Validator */
+        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
     }
 
     /**

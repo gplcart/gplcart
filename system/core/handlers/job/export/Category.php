@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\job\export;
+namespace gplcart\core\handlers\job\export;
 
-use core\models\Category as CategoryModel;
-use core\handlers\job\export\Base as BaseHandler;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\handlers\job\export\Base as BaseHandler;
 
 /**
  * Category export handler
@@ -20,7 +20,7 @@ class Category extends BaseHandler
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 

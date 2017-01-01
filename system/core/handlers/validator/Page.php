@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Page as PageModel;
-use core\models\Category as CategoryModel;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate page data
@@ -21,13 +21,13 @@ class Page extends BaseValidator
 
     /**
      * Page model instance
-     * @var \core\models\Page $page
+     * @var \gplcart\core\models\Page $page
      */
     protected $page;
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 

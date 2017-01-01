@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\models;
+namespace gplcart\core\models;
 
-use core\Model;
-use core\Cache;
-use core\Logger;
-use core\Handler;
-use core\Library;
+use gplcart\core\Model;
+use gplcart\core\Cache;
+use gplcart\core\Logger;
+use gplcart\core\Handler;
+use gplcart\core\Library;
 
 /**
  * Manages basic behaviors and data related to Google Analytics
@@ -23,13 +23,13 @@ class Analytics extends Model
 
     /**
      * Cache instance
-     * @var \core\Cache $cache
+     * @var \gplcart\core\Cache $cache
      */
     protected $cache;
 
     /**
      * Library instance
-     * @var \core\Library $library
+     * @var \gplcart\core\Library $library
      */
     protected $library;
 
@@ -59,7 +59,7 @@ class Analytics extends Model
 
     /**
      * Logger class instance
-     * @var \core\Logger $logger
+     * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
@@ -85,7 +85,7 @@ class Analytics extends Model
      * @param string $email
      * @param string $certificate
      * @param string $app_name
-     * @return \core\models\Analytics
+     * @return \gplcart\core\models\Analytics
      */
     public function setCredentials($email, $certificate, $app_name)
     {
@@ -115,7 +115,7 @@ class Analytics extends Model
     /**
      * Sets a Google Analytics view to work with
      * @param integer $view
-     * @return \core\models\Analytics
+     * @return \gplcart\core\models\Analytics
      */
     public function setView($view)
     {
@@ -173,31 +173,31 @@ class Analytics extends Model
 
         $handlers['traffic'] = array(
             'handlers' => array(
-                'query' => array('core\\handlers\\ga\\Query', 'traffic')
+                'query' => array('gplcart\\core\\handlers\\ga\\Query', 'traffic')
             ),
         );
 
         $handlers['keywords'] = array(
             'handlers' => array(
-                'query' => array('core\\handlers\\ga\\Query', 'keywords')
+                'query' => array('gplcart\\core\\handlers\\ga\\Query', 'keywords')
             ),
         );
 
         $handlers['sources'] = array(
             'handlers' => array(
-                'query' => array('core\\handlers\\ga\\Query', 'sources')
+                'query' => array('gplcart\\core\\handlers\\ga\\Query', 'sources')
             ),
         );
 
         $handlers['top_pages'] = array(
             'handlers' => array(
-                'query' => array('core\\handlers\\ga\\Query', 'topPages')
+                'query' => array('gplcart\\core\\handlers\\ga\\Query', 'topPages')
             ),
         );
 
         $handlers['software'] = array(
             'handlers' => array(
-                'query' => array('core\\handlers\\ga\\Query', 'software')
+                'query' => array('gplcart\\core\\handlers\\ga\\Query', 'software')
             ),
         );
 

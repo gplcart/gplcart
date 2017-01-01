@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\backup;
+namespace gplcart\core\handlers\backup;
 
-use core\handlers\backup\Base as BaseHandler;
+use gplcart\core\handlers\backup\Base as BaseHandler;
 
 /**
  * Provides methods to backup/restore modules

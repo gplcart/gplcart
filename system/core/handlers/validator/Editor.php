@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\helpers\Twig as TwigHelper;
-use core\models\Module as ModuleModel;
-use core\Controller as BaseController;
-use core\handlers\validator\Base as BaseValidator;
+use gplcart\core\helpers\Twig as TwigHelper;
+use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\Controller as BaseController;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Provides methods to validate editing theme templates
@@ -22,20 +22,20 @@ class Editor extends BaseValidator
 
     /**
      * Twig helper instance
-     * @var \core\helpers\Twig $twig
+     * @var \gplcart\core\helpers\Twig $twig
      */
     protected $twig;
 
     /**
      * Module model instance
-     * @var \core\models\Module $module
+     * @var \gplcart\core\models\Module $module
      */
     protected $module;
 
     /**
      * Base controller class instance
      * Needed to correctly validate Twig markup
-     * @var \core\Controller $controller
+     * @var \gplcart\core\Controller $controller
      */
     protected $controller;
 

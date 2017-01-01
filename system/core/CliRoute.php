@@ -7,11 +7,11 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core;
+namespace gplcart\core;
 
-use core\Hook;
-use core\Handler;
-use core\helpers\Cli as CliHelper;
+use gplcart\core\Hook;
+use gplcart\core\Handler;
+use gplcart\core\helpers\Cli as CliHelper;
 
 /**
  * Routes CLI commands
@@ -21,13 +21,13 @@ class CliRoute
 
     /**
      * Hook class instance
-     * @var \core\Hook $hook
+     * @var \gplcart\core\Hook $hook
      */
     protected $hook;
 
     /**
      * Cli class instance
-     * @var \core\helpers\Cli $cli
+     * @var \gplcart\core\helpers\Cli $cli
      */
     protected $cli;
 
@@ -92,7 +92,7 @@ class CliRoute
 
         $routes['help'] = array(
             'handlers' => array(
-                'process' => array('core\CliController', 'help')
+                'process' => array('gplcart\core\CliController', 'help')
             ),
             'help' => array(
                 'description' => 'Displays all available commands'
@@ -101,7 +101,7 @@ class CliRoute
 
         $routes['report-event'] = array(
             'handlers' => array(
-                'process' => array('core\controllers\cli\Report', 'eventReport')
+                'process' => array('gplcart\core\controllers\cli\Report', 'eventReport')
             ),
             'help' => array(
                 'description' => 'Reports system events like PHP errors etc',
@@ -116,7 +116,7 @@ class CliRoute
 
         $routes['report-status'] = array(
             'handlers' => array(
-                'process' => array('core\controllers\cli\Report', 'statusReport')
+                'process' => array('gplcart\core\controllers\cli\Report', 'statusReport')
             ),
             'help' => array(
                 'description' => 'Reports system status'
@@ -125,7 +125,7 @@ class CliRoute
 
         $routes['install'] = array(
             'handlers' => array(
-                'process' => array('core\controllers\cli\Install', 'storeInstall')
+                'process' => array('gplcart\core\controllers\cli\Install', 'storeInstall')
             ),
             'help' => array(
                 'description' => 'Performs full system installation',

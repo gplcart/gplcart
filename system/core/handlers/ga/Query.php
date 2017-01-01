@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\ga;
+namespace gplcart\core\handlers\ga;
 
 /**
  * Query handlers for Google Analytics

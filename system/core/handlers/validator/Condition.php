@@ -7,86 +7,86 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\validator;
+namespace gplcart\core\handlers\validator;
 
-use core\models\Price as PriceModel;
-use core\models\State as StateModel;
-use core\models\Payment as PaymentModel;
-use core\models\Product as ProductModel;
-use core\models\Address as AddressModel;
-use core\models\Country as CountryModel;
-use core\models\Category as CategoryModel;
-use core\models\Currency as CurrencyModel;
-use core\models\Shipping as ShippingModel;
-use core\models\UserRole as UserRoleModel;
-use core\models\Language as LanguageModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\models\Language as LanguageModel;
 
 class Condition
 {
 
     /**
      * Language model instance
-     * @var \core\models\Language $language
+     * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
      * Currency model instance
-     * @var \core\models\Currency $currency
+     * @var \gplcart\core\models\Currency $currency
      */
     protected $currency;
 
     /**
      * Price model instance
-     * @var \core\models\Price $price
+     * @var \gplcart\core\models\Price $price
      */
     protected $price;
 
     /**
      * Product model instance
-     * @var \core\models\Product $product
+     * @var \gplcart\core\models\Product $product
      */
     protected $product;
 
     /**
      * Address model instance
-     * @var \core\models\Address $address
+     * @var \gplcart\core\models\Address $address
      */
     protected $address;
 
     /**
      * Country model instance
-     * @var \core\models\Country $country
+     * @var \gplcart\core\models\Country $country
      */
     protected $country;
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
     /**
      * Payment model instance
-     * @var \core\models\Payment $payment
+     * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
 
     /**
      * Shipping model instance
-     * @var \core\models\Shipping $shipping
+     * @var \gplcart\core\models\Shipping $shipping
      */
     protected $shipping;
 
     /**
      * State model instance
-     * @var \core\models\State $state
+     * @var \gplcart\core\models\State $state
      */
     protected $state;
 
     /**
      * User role model instance
-     * @var \core\models\UserRole $role
+     * @var \gplcart\core\models\UserRole $role
      */
     protected $role;
 

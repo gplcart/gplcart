@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\controllers\backend;
+namespace gplcart\core\controllers\backend;
 
-use core\models\Import as ImportModel;
-use core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Import as ImportModel;
+use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
  * Handles incoming requests and outputs data related to import operations
@@ -20,7 +20,7 @@ class Import extends BackendController
 
     /**
      * Import model instance
-     * @var \core\models\Import $import
+     * @var \gplcart\core\models\Import $import
      */
     protected $import;
 

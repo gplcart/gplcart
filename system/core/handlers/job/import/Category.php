@@ -7,10 +7,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace core\handlers\job\import;
+namespace gplcart\core\handlers\job\import;
 
-use core\models\Category as CategoryModel;
-use core\handlers\job\import\Base as BaseHandler;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\handlers\job\import\Base as BaseHandler;
 
 /**
  * Imports categories
@@ -20,7 +20,7 @@ class Category extends BaseHandler
 
     /**
      * Category model instance
-     * @var \core\models\Category $category
+     * @var \gplcart\core\models\Category $category
      */
     protected $category;
 
