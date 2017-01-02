@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model as Model;
-use gplcart\core\Database as Database;
-use gplcart\core\Container as Container;
+use gplcart\core\Model;
+use gplcart\core\Database;
+use gplcart\core\Container;
 use gplcart\core\models\Store as StoreModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\exceptions\DatabaseException;
@@ -82,7 +82,7 @@ class Install extends Model
         $installers['default'] = array(
             'weight' => 0,
             'path' => 'install',
-            'title' => $this->language->text('Install'),
+            'title' => $this->language->text('Default GPL Cart installation'),
             'description' => $this->language->text('Default system installer'),
         );
 
@@ -205,17 +205,19 @@ class Install extends Model
     {
         try {
             $this->database = new Database($settings);
+            return true;
         } catch (DatabaseException $e) {
             $this->database = null;
-            return $e->getMessage();
+            return $this->language->text($e->getMessage());
         }
 
         $existing = $this->database->query('SHOW TABLES')->fetchColumn();
+
         if (!empty($existing)) {
             return $this->language->text('The database you specified already has tables');
         }
 
-        return true;
+        return false;
     }
 
     /**

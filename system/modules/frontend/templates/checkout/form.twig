@@ -11,7 +11,7 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-{% if cart['items'] is defined and cart['items'] is not empty %}
+{% if cart['items'] is not defined or cart['items'] is empty %}
     <div class="row">
       <div class="col-md-12">
         {{ text('Shopping cart is empty.') }}

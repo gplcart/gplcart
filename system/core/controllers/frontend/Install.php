@@ -98,7 +98,6 @@ class Install extends FrontendController
      */
     protected function getInstall($installer_id)
     {
-
         if (empty($installer_id)) {
             $installer_id = 'default';
         }
@@ -158,18 +157,18 @@ class Install extends FrontendController
     }
 
     /**
-     * Returns a string with the current severity
+     * Returns a string with the current issue severity
      * @param array $issues
      * @return string
      */
     protected function getSeverityInstall(array $issues)
     {
-        if (isset($issues['warning'])) {
-            return 'warning';
-        }
-
         if (isset($issues['danger'])) {
             return 'danger';
+        }
+        
+        if (isset($issues['warning'])) {
+            return 'warning';
         }
 
         return '';

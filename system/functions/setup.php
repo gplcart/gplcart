@@ -123,13 +123,13 @@ function gplcart_setup_autoload()
             return false;
         }
 
-        // Strip "gplcart/" from the path
+        // Remove "gplcart/" from the path
         $path = substr($path, 8);
 
         // Define the root
         $file = (strpos($path, 'tests') === 0) ? GC_ROOT_DIR : GC_SYSTEM_DIR;
 
-        // Final full path
+        // Final full path to the class
         $file .= "/$path.php";
 
         if (file_exists($file)) {
@@ -144,7 +144,7 @@ function gplcart_setup_autoload()
 
         foreach (glob(dirname($file) . '/*') as $file) {
             if (strtolower($file) == $lowerfile) {
-                include $file;
+                require $file;
                 return true;
             }
         }

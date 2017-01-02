@@ -52,19 +52,27 @@ class Frontend
      */
     public function hookInitFrontend($controller)
     {
-        // This one goes before libraries
-        $controller->setJs('system/modules/frontend/js/script.js');
+        if (!$controller->isInstalling()) {
+            // This one goes before libraries
+            $controller->setJs('system/modules/frontend/js/script.js');
+        }
 
-        $libraries = array('bootstrap', 'font_awesome', 'jquery_match_height',
-            'lightgallery', 'lightslider', 'jquery_ui');
+        $libraries = array('bootstrap', 'font_awesome');
+
+        if (!$controller->isInstalling()) {
+            $libraries += array('jquery_match_height', 'lightgallery', 'lightslider', 'jquery_ui');
+        }
+
         $controller->addAssetLibrary($libraries);
 
         // Do not aggregate conditional scripts
         $condition_libraries = array('html5shiv', 'respond');
         $controller->addAssetLibrary($condition_libraries, array('aggregate' => false, 'condition' => 'if lt IE 9'));
 
-        // This one goes at the bottom to be able to rewrite styles added above
-        $controller->setCss('system/modules/frontend/css/style.css');
+        if (!$controller->isInstalling()) {
+            // This one goes at the bottom to be able to rewrite styles added above
+            $controller->setCss('system/modules/frontend/css/style.css');
+        }
 
         // Meta tags
         $controller->setMeta(array('charset' => 'utf-8'));

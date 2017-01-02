@@ -397,6 +397,15 @@ class Controller
     {
         return $this->user->access($permission);
     }
+    
+    /**
+     * Whether the system is installing
+     * @return bool
+     */
+    public function isInstalling()
+    {
+        return $this->installing;
+    }
 
     /**
      * Renders a template
