@@ -125,7 +125,7 @@ class User extends BackendController
     protected function getListUser(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $users = $this->user->getList($query);
+        $users = (array) $this->user->getList($query);
         $stores = $this->store->getList();
 
         foreach ($users as &$user) {

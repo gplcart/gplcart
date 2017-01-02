@@ -193,7 +193,7 @@ class Store extends BaseValidator
         }
 
         $conditions = array('domain' => $domain, 'basepath' => $value);
-        $stores = $this->store->getList($conditions);
+        $stores = (array) $this->store->getList($conditions);
 
         foreach ($stores as $store_id => $data) {
 

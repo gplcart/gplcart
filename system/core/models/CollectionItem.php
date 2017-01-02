@@ -216,7 +216,7 @@ class CollectionItem extends Model
         $handler_id = null;
 
         $items = array();
-        foreach ($list as $item) {
+        foreach ((array) $list as $item) {
             $handler_id = $item['type'];
             $items[$item['value']] = $item;
         }

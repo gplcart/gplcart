@@ -9,7 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model as Model;
+use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -42,7 +42,7 @@ class Sku extends Model
      */
     public function getByProduct($product_id)
     {
-        $skus = $this->getList(array('product_id' => $product_id));
+        $skus = (array) $this->getList(array('product_id' => $product_id));
 
         $results = array('base' => '');
 
@@ -275,9 +275,10 @@ class Sku extends Model
      */
     public function get($sku, $store_id = null, $exclude_product_id = null)
     {
-        $results = $this->getList(array('sku' => $sku, 'store_id' => $store_id));
+        $results = (array) $this->getList(array('sku' => $sku, 'store_id' => $store_id));
 
         foreach ($results as $result) {
+
             if (isset($exclude_product_id) && $result['product_id'] == $exclude_product_id) {
                 continue;
             }

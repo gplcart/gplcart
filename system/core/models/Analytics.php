@@ -35,7 +35,7 @@ class Analytics extends Model
 
     /**
      * GA service class instance
-     * @var \Google_Service_Analytics $service
+     * @var object
      */
     protected $service;
 
@@ -47,13 +47,13 @@ class Analytics extends Model
 
     /**
      * GA client class instance
-     * @var \Google_Client $client
+     * @var object
      */
     protected $client;
 
     /**
      * GA credentials class instance
-     * @var \Google_Auth_AssertionCredentials $credentials
+     * @var object
      */
     protected $credentials;
 
@@ -96,6 +96,8 @@ class Analytics extends Model
         $key = file_get_contents(GC_FILE_DIR . "/$certificate");
 
         try {
+            
+            //@todo Fix removed lib methods
 
             $this->credentials = new \Google_Auth_AssertionCredentials($email, array(\Google_Service_Analytics::ANALYTICS_READONLY), $key);
             $this->client->setAssertionCredentials($this->credentials);

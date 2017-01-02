@@ -385,7 +385,7 @@ class Product extends Model
             return null;
         }
 
-        $images = $this->image->getList('product_id', $product['product_id']);
+        $images = (array) $this->image->getList('product_id', $product['product_id']);
 
         foreach ($images as &$image) {
 
@@ -440,7 +440,7 @@ class Product extends Model
             return null;
         }
 
-        $skus = $this->sku->getList(array('product_id' => $product['product_id']));
+        $skus = (array) $this->sku->getList(array('product_id' => $product['product_id']));
 
         foreach ($skus as $sku) {
 
@@ -558,17 +558,21 @@ class Product extends Model
      * @param array $product
      * @param integer $store_id
      * @return array
+     * @todo check this method
      */
     public function calculate(array $product, $store_id = 1)
     {
-        $rules = $this->pricerule->getSuited('catalog', $product, $store_id);
+        //@todo check method, options and data arrays
+        $options = array('store_id' => $store_id, 'value_type' => 'product');
+        $rules = $this->pricerule->getTriggered($options, $product);
 
         $components = array();
         $price = $product['price'];
         $currency_code = $product['currency'];
 
         foreach ($rules as $rule) {
-            $this->pricerule->calculateComponents($price, $components, $currency_code, $rule);
+            
+            //$this->pricerule->calculate($total, $cart, $data, $components);
         }
 
         $result = array(

@@ -145,7 +145,7 @@ class Category extends Model
             return;
         }
 
-        $images = $this->image->getList('category_id', $category['category_id']);
+        $images = (array) $this->image->getList('category_id', $category['category_id']);
 
         foreach ($images as &$image) {
 
@@ -176,7 +176,7 @@ class Category extends Model
             'store_id' => $store_id
         );
 
-        $groups = $this->category_group->getList($conditions);
+        $groups = (array) $this->category_group->getList($conditions);
 
         $list = array();
         foreach ($groups as $group) {

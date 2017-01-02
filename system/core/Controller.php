@@ -397,7 +397,7 @@ class Controller
     {
         return $this->user->access($permission);
     }
-    
+
     /**
      * Whether the system is installing
      * @return bool
@@ -1456,10 +1456,20 @@ class Controller
 
             if (is_numeric($group)) {
 
-                $method = "compress$type";
-                $aggregated = $this->compressor->$method($content, $directory);
-                $asset = $this->asset->build(array('asset' => $aggregated, 'version' => false));
-                $results[$asset['key']] = $asset;
+                switch ($type) {
+                    case 'js':
+                        $aggregated = $this->compressor->compressJs($content, $directory);
+                        break;
+                    case 'css':
+                        $aggregated = $this->compressor->compressCss($content, $directory);
+                        break;
+                }
+
+                if (!empty($aggregated)) {
+                    $asset = $this->asset->build(array('asset' => $aggregated, 'version' => false));
+                    $results[$asset['key']] = $asset;
+                }
+
                 continue;
             }
 

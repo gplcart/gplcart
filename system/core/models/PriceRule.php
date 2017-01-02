@@ -286,7 +286,7 @@ class PriceRule extends Model
 
         $options['trigger_id'] = $triggers;
 
-        $rules = $this->getList($options);
+        $rules = (array) $this->getList($options);
 
         $coupons = 0;
         $results = array();

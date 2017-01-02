@@ -44,7 +44,7 @@ class Price extends Model
      */
     public function get($amount, $code, $convert = true)
     {
-        $current = $this->currency->get();
+        $current = (string) $this->currency->get();
 
         if ($convert && ($code != $current)) {
             $amount = $this->currency->convert($amount, $code, $current);
@@ -121,10 +121,10 @@ class Price extends Model
     /**
      * Rounds a price value
      * @param integer $amount
-     * @param string $currency
+     * @param array $currency
      * @return integer
      */
-    public function round($amount, $currency)
+    public function round($amount, array $currency)
     {
         if (empty($currency['rounding_step'])) {
             return round($amount, $currency['decimals']);
@@ -156,7 +156,8 @@ class Price extends Model
         }
 
         if ($round) {
-            $decimal = $this->round($decimal, $this->currency->get($currency_code));
+            $currency = $this->currency->get($currency_code);
+            $decimal = $this->round($decimal, $currency);
             return (int) round($decimal * $factors[$currency_code]);
         }
 

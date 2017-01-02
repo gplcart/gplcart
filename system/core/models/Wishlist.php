@@ -364,8 +364,7 @@ class Wishlist extends Model
 
     /**
      * Whether a product ID is in a wishlist
-     * @param integer $product_id
-     * @param array $conditions
+     * @param array $data
      * @return boolean
      */
     public function exists(array $data)
@@ -378,7 +377,9 @@ class Wishlist extends Model
 
         unset($data['product_id']);
 
-        foreach ($this->getList($data) as $item) {
+        $items = (array) $this->getList($data);
+
+        foreach ($items as $item) {
             if ($item['product_id'] == $product_id) {
                 return true;
             }

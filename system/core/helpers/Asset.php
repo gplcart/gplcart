@@ -46,7 +46,6 @@ class Asset
     /**
      * Adds a JS file
      * @param string $script
-     * @param string $pos
      * @param array $data
      */
     public function setJs($script, $data = array())

@@ -47,7 +47,7 @@ class Compressor
      * Aggregates an array of scripts into one compressed file
      * @param array $files
      * @param string $directory
-     * @return bool|string
+     * @return string
      */
     public function compressJs(array $files, $directory)
     {
@@ -71,12 +71,13 @@ class Compressor
             return $uri;
         }
 
-        return false;
+        return '';
     }
 
     /**
      * Aggregates an array of stylesheets into one compressed file
-     * @param array $stylesheets
+     * @param array $files
+     * @param string $directory
      * @return string
      */
     public function compressCss(array $files, $directory)
@@ -122,12 +123,12 @@ class Compressor
             return $uri;
         }
 
-        return false;
+        return '';
     }
 
     /**
      * Processes the contents of a stylesheet for aggregation.
-     * @param staring $contents
+     * @param string $contents
      * @param bool $optimize
      * @return string
      */
@@ -158,7 +159,7 @@ class Compressor
         $filename = $matches[1];
 
         // Load the imported stylesheet and replace @import commands in there as well.
-        $file = $this->load($filename, null, false);
+        $file = $this->loadCss($filename, null, false);
 
         // Determine the file's directory.
         $directory = dirname($filename);

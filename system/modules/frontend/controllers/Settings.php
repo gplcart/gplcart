@@ -34,7 +34,7 @@ class Settings extends BackendController
 
     /**
      * Module instance
-     * @var \modules\frontend\Frontend $frontend
+     * @var \gplcart\modules\frontend\Frontend $frontend
      */
     protected $frontend;
 

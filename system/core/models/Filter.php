@@ -28,7 +28,7 @@ class Filter extends Model
 
     /**
      * Librray class instance
-     * @var \cor\Librray $librray
+     * @var \gplcart\core\Librray $librray
      */
     protected $library;
 
@@ -40,7 +40,7 @@ class Filter extends Model
 
     /**
      * The current HTML Purifier library instance
-     * @var obgect
+     * @var object
      */
     protected $htmlpurifier;
 

@@ -289,7 +289,6 @@ class Route
 
     /**
      * Calls an appropriate controller for the current URL
-     * @param array $routes
      */
     protected function callControllerRoute()
     {

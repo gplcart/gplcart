@@ -270,7 +270,7 @@ class PriceRule extends BaseValidator
 
         // Search for exact match
         // because $this->rule->getList() uses LIKE for "code" field
-        foreach ($rules as $rule) {
+        foreach ((array) $rules as $rule) {
 
             if ($rule['code'] === $code) {
                 $vars = array('@object' => $this->language->text('Code'));

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Route as Route;
-use gplcart\core\Model as Model;
+use gplcart\core\Route;
+use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -111,7 +111,7 @@ class Alias extends Model
         $results = $this->getList($conditions);
 
         $aliases = array();
-        foreach ($results as $result) {
+        foreach ((array) $results as $result) {
             $aliases[$result['id_value']] = $result['alias'];
         }
 

@@ -176,11 +176,12 @@ class Base
 
         return array_merge((array) $options['parents'], (array) $key);
     }
-
+    
     /**
-     * Sets an error
-     * @param string|array $key
-     * @param mixed $value
+     * Sets a validation error
+     * @param string $key
+     * @param string $error
+     * @param array $options
      */
     protected function setError($key, $error, array $options = array())
     {

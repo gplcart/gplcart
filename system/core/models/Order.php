@@ -441,7 +441,7 @@ class Order extends Model
         }
 
         // Get fresh order from the database
-        $order = $this->get($order_id);
+        $order = $this->get((int) $order_id);
 
         $this->logSubmit($order);
         $this->setPriceRule($order);

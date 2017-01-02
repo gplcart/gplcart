@@ -220,9 +220,9 @@ class Library
      */
     protected function getBasePath(array $library, $absolute = false)
     {
-        if ($library['type'] === 'php') {
-            $base = "system/libraries/{$library['id']}";
-        } else if ($library['type'] === 'asset') {
+        $base = "system/libraries/{$library['id']}";
+
+        if ($library['type'] === 'asset') {
             $base = "files/assets/libraries/{$library['id']}";
         }
 

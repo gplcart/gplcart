@@ -125,7 +125,7 @@ class Cache
 
     /**
      * Generates a cache key from an array of arguments like ('prefix' => array(...))
-     * @param string|array $data
+     * @param string|array|null $data
      * @return string|null
      */
     protected static function buildKey($data)

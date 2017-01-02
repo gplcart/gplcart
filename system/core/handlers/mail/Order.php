@@ -78,7 +78,9 @@ class Order extends BaseHandler
                 . "View: !order\n";
 
         $message_text = $this->config->get('email_message_order_created_admin', $message_default);
-        $url = $this->store->url($this->store->getDefault(true));
+        
+        $default = (array) $this->store->getDefault(true);
+        $url = $this->store->url($default);
 
         $message_arguments = array(
             '!store' => $store_name,

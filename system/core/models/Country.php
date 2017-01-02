@@ -315,7 +315,7 @@ class Country extends Model
      */
     public function getNames($enabled = false)
     {
-        $countries = $this->getList(array('status' => $enabled));
+        $countries = (array) $this->getList(array('status' => $enabled));
 
         $names = array();
         foreach ($countries as $code => $country) {

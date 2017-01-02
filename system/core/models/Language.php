@@ -34,7 +34,7 @@ class Language extends Model
 
     /**
      * Library instance
-     * @var \gplcart\core\Translit $library
+     * @var \gplcart\core\Library $library
      */
     protected $library;
 

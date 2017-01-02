@@ -202,7 +202,7 @@ class Trigger extends Model
     public function getFired(array $options = array(), array $data = array())
     {
         $options += array('status' => 1);
-        $triggers = $this->getList($options);
+        $triggers = (array) $this->getList($options);
 
         if (empty($triggers)) {
             return array();

@@ -42,12 +42,14 @@ class Store extends Model
      */
     public function getNames()
     {
-        $list = array();
-        foreach ($this->getList() as $store) {
-            $list[$store['store_id']] = $store['name'];
+        $stores = (array) $this->getList();
+
+        $names = array();
+        foreach ($stores as $store) {
+            $names[$store['store_id']] = $store['name'];
         }
 
-        return $list;
+        return $names;
     }
 
     /**

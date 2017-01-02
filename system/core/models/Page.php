@@ -126,7 +126,7 @@ class Page extends Model
             return null;
         }
 
-        $images = $this->image->getList('page_id', $page['page_id']);
+        $images = (array) $this->image->getList('page_id', $page['page_id']);
 
         foreach ($images as &$image) {
             $translations = $this->image->getTranslation($image['file_id']);

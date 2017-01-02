@@ -81,11 +81,10 @@ class Facade
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
+
         // Register hooks
         $modules = $this->config->getEnabledModules();
         $this->hook->modules($modules);
-        
-        
     }
 
     /**

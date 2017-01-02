@@ -222,7 +222,8 @@ class Condition
             return false;
         }
 
-        $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
+        $args = array('product_id' => $product_ids, 'status' => 1);
+        $products = $this->product->getList($args);
 
         if (empty($products)) {
             return false;
@@ -234,7 +235,7 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        foreach ($products as $product) {
+        foreach ((array) $products as $product) {
             if ($this->condition->compareNumeric((int) $product['category_id'], $condition_value, $condition['operator'])) {
                 return true;
             }
@@ -276,7 +277,7 @@ class Condition
             $condition_value = (int) reset($condition_value);
         }
 
-        foreach ($products as $product) {
+        foreach ((array) $products as $product) {
             $match = $this->condition->compareNumeric((int) $product['brand_category_id'], $condition_value, $condition['operator']);
 
             if ($match) {
