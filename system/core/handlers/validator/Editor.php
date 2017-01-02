@@ -159,7 +159,7 @@ class Editor extends BaseValidator
             return true;
         }
 
-        $this->setError('content', $result, $options);
+        $this->setError('content', (string) $result, $options);
         return false;
     }
 

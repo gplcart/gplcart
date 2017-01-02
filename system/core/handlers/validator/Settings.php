@@ -132,7 +132,7 @@ class Settings extends BaseValidator
         $result = $this->file->upload($file);
 
         if ($result !== true) {
-            $this->setError('gapi_certificate', $result, $options);
+            $this->setError('gapi_certificate', (string) $result, $options);
             return false;
         }
 

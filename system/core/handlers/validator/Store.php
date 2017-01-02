@@ -354,7 +354,7 @@ class Store extends BaseValidator
 
             if ($result !== true) {
                 $error = true;
-                $this->setError($field, $result, $options);
+                $this->setError($field, (string) $result, $options);
                 continue;
             }
 

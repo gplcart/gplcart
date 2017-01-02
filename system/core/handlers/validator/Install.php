@@ -419,7 +419,7 @@ class Install extends BaseValidator
             $result = $this->language->text('Could not connect to database');
         }
 
-        $this->setError('database.connect', $result, $options);
+        $this->setError('database.connect', (string) $result, $options);
         return false;
     }
 

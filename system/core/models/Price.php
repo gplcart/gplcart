@@ -63,7 +63,7 @@ class Price extends Model
      */
     public function format($amount, $currency_code, $convert = true)
     {
-        $currency = $this->currency->get($currency_code);
+        $currency = (array) $this->currency->get($currency_code);
 
         if ($convert) {
             $amount = $this->decimal($amount, $currency_code);
@@ -151,12 +151,12 @@ class Price extends Model
         }
 
         if (empty($factors[$currency_code])) {
-            $currency = $this->currency->get($currency_code);
+            $currency = (array) $this->currency->get($currency_code);
             $factors[$currency_code] = pow(10, $currency['decimals']);
         }
 
         if ($round) {
-            $currency = $this->currency->get($currency_code);
+            $currency = (array) $this->currency->get($currency_code);
             $decimal = $this->round($decimal, $currency);
             return (int) round($decimal * $factors[$currency_code]);
         }

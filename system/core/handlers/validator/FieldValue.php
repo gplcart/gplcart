@@ -231,7 +231,7 @@ class FieldValue extends BaseValidator
                 ->upload($file);
 
         if ($result !== true) {
-            $this->setError('file', $result, $options);
+            $this->setError('file', (string) $result, $options);
             return false;
         }
 

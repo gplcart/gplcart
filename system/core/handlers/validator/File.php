@@ -154,7 +154,7 @@ class File extends BaseValidator
         $result = $this->file->setUploadPath(self::UPLOAD_PATH)->upload($file);
 
         if ($result !== true) {
-            $this->setError('file', $result, $options);
+            $this->setError('file', (string) $result, $options);
             return false;
         }
 

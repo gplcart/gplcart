@@ -28,7 +28,7 @@ class Filter extends Model
 
     /**
      * Librray class instance
-     * @var \gplcart\core\Librray $librray
+     * @var \gplcart\core\Library $library
      */
     protected $library;
 

@@ -122,7 +122,7 @@ class Cart extends Model
 
         $total = 0;
         $quantity = 0;
-        $current_currency = (array) $this->currency->get();
+        $current_currency = $this->currency->get();
 
         $cart = array();
         foreach ($items as $sku => $item) {
