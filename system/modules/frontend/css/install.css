@@ -1,3 +1,13 @@
+body {
+    background-color: #edeff0;
+}
+
+.container {
+    background-color: #fff;
+}
+
+
+
 .form-group.required .control-label:before, span.required:before {
     content:"* ";
     color:red;
