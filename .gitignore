@@ -3,6 +3,10 @@
 nbproject
 *sublime*
 
+# Ignore library folders
+system/libraries
+files/assets
+
 # Module folder. Ignore all but core modules
 system/modules/*
 !system/modules/frontend
