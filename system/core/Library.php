@@ -347,7 +347,7 @@ class Library
             return false;
         }
 
-        $this->loaded = array_unique(array_merge($this->loaded, $sorted));
+        $this->loaded = array_merge($this->loaded, $sorted);
 
         $prepared = $this->prepareFiles($sorted, $libraries);
 
@@ -368,7 +368,7 @@ class Library
     }
 
     /**
-     * Whether a given librray is already loaded
+     * Whether a given library is already loaded
      * @param string $name
      * @return bool
      */
