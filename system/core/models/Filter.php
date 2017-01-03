@@ -55,7 +55,6 @@ class Filter extends Model
 
         $this->library = $library;
         $this->language = $language;
-        $this->library->load('htmlpurifier');
     }
 
     /**
@@ -82,6 +81,8 @@ class Filter extends Model
             $this->htmlpurifier = $this->htmlpurifiers[$key];
             return $this->htmlpurifier->purify($text);
         }
+        
+        $this->library->load('htmlpurifier');
 
         if (empty($config)) {
             $config = \HTMLPurifier_Config::createDefault();

@@ -20,7 +20,6 @@ use gplcart\core\Handler;
  */
 class Mail extends Model
 {
-
     /**
      * Debug info
      * @var string
@@ -60,7 +59,6 @@ class Mail extends Model
         parent::__construct();
         $this->logger = $logger;
         $this->library = $library;
-        $this->library->load('phpmailer');
     }
 
     /**
@@ -136,6 +134,8 @@ class Mail extends Model
         if (empty($options['from']) || empty($to) || empty($message)) {
             return false; // Allows modules to abort sending
         }
+        
+        $this->library->load('phpmailer');
 
         // Get fresh instance for each sending
         $this->mailer = new \PHPMailer;

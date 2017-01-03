@@ -52,8 +52,6 @@ class Image extends Model
         $this->url = $url;
         $this->file = $file;
         $this->library = $library;
-
-        $this->library->load('simpleimage');
     }
 
     /**
@@ -174,6 +172,8 @@ class Image extends Model
      */
     public function modify($file, array $actions = array())
     {
+        $this->library->load('simpleimage');
+        
         $applied = 0;
 
         try {

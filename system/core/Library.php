@@ -37,6 +37,12 @@ class Library
     protected $errors = array();
 
     /**
+     * Array of loaded libraries
+     * @var array
+     */
+    protected $loaded = array();
+
+    /**
      * Constructor
      * @param Cache $cache
      * @param GraphHelper $graph
@@ -324,8 +330,13 @@ class Library
         $libraries = $this->getList();
 
         $ids = (array) $ids;
+
         foreach ($ids as $key => $id) {
             if (empty($libraries[$id]['type']) || $libraries[$id]['type'] !== 'php') {
+                unset($ids[$key]);
+            }
+
+            if ($this->isLoaded($id)) {
                 unset($ids[$key]);
             }
         }
@@ -336,6 +347,8 @@ class Library
             return false;
         }
 
+        $this->loaded = array_unique(array_merge($this->loaded, $sorted));
+
         $prepared = $this->prepareFiles($sorted, $libraries);
 
         foreach ($prepared as $file) {
@@ -343,6 +356,25 @@ class Library
         }
 
         return true;
+    }
+
+    /**
+     * Returns an array of loaded libraies
+     * @return array
+     */
+    public function getLoaded()
+    {
+        return $this->loaded;
+    }
+
+    /**
+     * Whether a given librray is already loaded
+     * @param string $name
+     * @return bool
+     */
+    public function isLoaded($name)
+    {
+        return in_array($name, $this->loaded);
     }
 
     /**

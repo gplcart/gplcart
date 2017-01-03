@@ -75,7 +75,6 @@ class Language extends Model
 
         $this->route = $route;
         $this->library = $library;
-        $this->library->load('translit');
 
         $langcode = $this->route->getLangcode();
 
@@ -500,6 +499,8 @@ class Language extends Model
         if (empty($string)) {
             return '';
         }
+        
+        $this->library->load('translit');
 
         $translit = \Translit::get($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);

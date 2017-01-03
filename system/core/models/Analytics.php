@@ -76,8 +76,6 @@ class Analytics extends Model
         $this->cache = $cache;
         $this->logger = $logger;
         $this->library = $library;
-
-        $this->library->load('google_api');
     }
 
     /**
@@ -89,6 +87,8 @@ class Analytics extends Model
      */
     public function setCredentials($email, $certificate, $app_name)
     {
+        $this->library->load('google_api');
+        
         $this->client = new \Google_Client;
         $this->client->setApplicationName($app_name);
         $this->service = new Google_Service_Analytics($this->client);
