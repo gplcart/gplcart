@@ -14,7 +14,6 @@ namespace gplcart\modules\frontend;
  */
 class Frontend
 {
-
     /**
      * Module info
      * @return array

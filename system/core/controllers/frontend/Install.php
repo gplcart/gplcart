@@ -56,7 +56,6 @@ class Install extends FrontendController
         $languages = $this->getLanguagesInstall();
         $requirements = $this->getRequirementsInstall();
         $installers = $this->getListInstall();
-
         $issues = $this->getRequirementErrorsInstall($requirements);
         $severity = $this->getSeverityInstall($issues);
 
@@ -66,6 +65,7 @@ class Install extends FrontendController
         $this->setData('severity', $severity);
         $this->setData('url_wiki', GC_WIKI_URL);
         $this->setData('timezones', $timezones);
+        $this->setData('language', $this->install_language);
         $this->setData('languages', $languages);
         $this->setData('requirements', $requirements);
         $this->setData('url_licence', $this->url('license.txt'));

@@ -332,8 +332,15 @@ class Library
         $ids = (array) $ids;
 
         foreach ($ids as $key => $id) {
-            if (empty($libraries[$id]['type']) || $libraries[$id]['type'] !== 'php') {
+
+            if (empty($libraries[$id]['type'])) {
                 unset($ids[$key]);
+                continue;
+            }
+
+            if ($libraries[$id]['type'] !== 'php') {
+                unset($ids[$key]);
+                continue;
             }
 
             if ($this->isLoaded($id)) {
@@ -387,12 +394,10 @@ class Library
     {
         $prepared = array();
         foreach ($ids as $id) {
-
             $library = $libraries[$id];
             array_walk($library['files'], function(&$file) use($library) {
                 $file = "{$library['basepath']}/$file";
             });
-
             $prepared = array_merge($prepared, $library['files']);
         }
 

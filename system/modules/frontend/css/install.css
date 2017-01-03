@@ -1,48 +1,4 @@
-body {
-    margin-top: 20px;
-    background-color: #fff;  
-    background-image: -webkit-linear-gradient(top, #b1cae8 0%, #fff 50%); /* Chrome10+,Safari5.1+ */
-    background-image: -moz-linear-gradient(top, #b1cae8 0%, #fff 50%); /* FF3.6+ */
-    background-image: linear-gradient(top, #b1cae8 0%, #fff 50%); /* W3C */
-}
-
-.container {
-    background-color: #fff;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-.motto {
-    margin: 0 0 50px 0;
-}
-
-.panel {
-    box-shadow: none;
-}
-
 .form-group.required .control-label:before, span.required:before {
     content:"* ";
     color:red;
-}
-
-.footer {
-    padding-bottom: 20px;
-}
-
-.nav .open>a, .nav .open>a:focus, .nav .open>a:hover,
-.nav > li > a:hover {
-    background-color: transparent !important;
-}
-
-@media (min-width: 768px) {
-    .container {
-        max-width: 730px;
-    }
-}
-
-@media screen and (min-width: 768px) {
-    .header, .footer {
-        padding-right: 0;
-        padding-left: 0;
-    }
 }
