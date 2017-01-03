@@ -23,6 +23,9 @@ function gplcart_setup_requirements()
     if (!function_exists('mb_internal_encoding')) {
         exit('"mbstring" must be enabled in your PHP settings');
     }
+
+    if (!file_exists(GC_CONFIG_LIBRARY)) {
+    }
 }
 
 /**

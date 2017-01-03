@@ -1,0 +1,37 @@
+Before installation make sure that all requirements are met:
+
+- PHP 5.4+
+- Mysql 5+
+- Apache 1+
+
+Extensions:
+- Curl
+- OpenSSL
+- Mb string
+- Apache Mod Rewrite
+- ZipArchive
+
+MANUAL INSTALLATION
+------------
+
+1. Download and extract to your hosting directory.
+2. Download 3th party libraries from https://github.com/gplcart/libraries, extract and copy all folders to your installation directory.
+
+After that you should have the following structure:
+
+system
+  -- config
+    -- default
+      -- library.php
+  -- libraries
+    -- library folder 1
+    -- library folder 2
+    ...
+files
+  -- assets
+    -- libraries
+      -- library folder 1
+      -- library folder 2
+      ...
+
+3. Go to your http://site.com or http://localhost/site and follow the instructions

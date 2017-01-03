@@ -20,13 +20,7 @@ Also you'll need the following extension enabled:
 
 ## Installation ##
 
-Step 1. Download and unpack to your installation directory. It can be done manually or using Composer: `composer create-project gplcart/gplcart path/to/installation/folder`. You may want to use some optional parameters like: `--no-install --`. See [composer docs](https://getcomposer.org/doc).
-
-Step 2. Perform full system installation using one of the following options:
-
-1. **Web installer:** Go to `yourdomain.com/install` and follow the instructions
-2. **Console:** Go to your installation directory `cd /your/installation/directory`, then `php gplcart install --db-name="example" --user-email="example@example.com"`. To see all available install options: `php gplcart install --help`
-
+See INSTALL.txt
 
 ## Some key features ##
 
