@@ -120,7 +120,7 @@ function gplcart_array_set_value(array &$array, $parents, $value, $glue = '.')
  * @param array|string $parents
  * @param string $glue
  */
-function gplcart_array_unset_value(array &$array, $parents, $glue = '.')
+function gplcart_array_unset_value(&$array, $parents, $glue = '.')
 {
     if (is_string($parents)) {
         $parents = explode($glue, $parents);
@@ -131,10 +131,7 @@ function gplcart_array_unset_value(array &$array, $parents, $glue = '.')
     if (empty($parents)) {
         unset($array[$key]);
     } else {
-
-        if (isset($array[$key])) {
-            gplcart_array_unset_value($array[$key], $parents);
-        }
+        gplcart_array_unset_value($array[$key], $parents);
     }
 }
 

@@ -1,3 +1,9 @@
+# Protect files and directories from direct access
+<FilesMatch "\.(htaccess|htpasswd|ini|fla|psd|log|sh|c|twig|exe|cache)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
 # Block access to directories without a default document.
 Options -Indexes
 
@@ -28,15 +34,20 @@ AddEncoding gzip svgz
     # Redirect from http://.www to http://
     RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
     RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
-    
-    # Pass all requests (except files in the public files directory) to index.php
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [L]
 
     # Restrict php files direct access
     RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
-    RewriteRule \.php$ - [F]
+    RewriteRule \.php$ - [F,L]
+
+    # Restrict access to directories
+    RewriteRule ^system/ - [F,L]
+    RewriteRule ^cache/ - [F,L]
+    RewriteRule ^tests/ - [F,L]
+    RewriteRule ^files/private/ - [F,L]
+    
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
 
     # Rules to correctly serve gzip compressed CSS and JS files
     <IfModule mod_headers.c>

@@ -329,14 +329,6 @@ class Report extends Model
             $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
         }
 
-        $directories = array(GC_ROOT_DIR, GC_CACHE_DIR, GC_PRIVATE_DIR,
-            GC_FILE_DIR, GC_LIBRARY_DIR, GC_CONFIG_DIR, GC_CORE_DIR);
-
-        foreach ($directories as $directory) {
-            $private = ($directory !== GC_FILE_DIR);
-            $results[] = $this->checkHtaccess($directory, $private);
-        }
-
         $filtered = array_filter($results, 'is_string');
 
         if (empty($filtered)) {
@@ -360,54 +352,6 @@ class Report extends Model
 
         $vars = array('%s' => $file, '%perm' => $permissions);
         return $this->language->text('File %s is not secure. The file permissions must be %perm', $vars);
-    }
-
-    /**
-     * Checks permissions and existance of .htaccess file
-     * @param string $directory
-     * @param boolean $private
-     * @return boolean|array
-     */
-    protected function checkHtaccess($directory, $private = true)
-    {
-        $htaccess = $directory . '/.htaccess';
-
-        if (file_exists($htaccess)) {
-            return $this->checkPermissions($htaccess);
-        }
-
-        // Try to create the missing file
-        if ($this->createHtaccess($directory, $private)) {
-            return true;
-        }
-
-        return $this->language->text('Missing .htaccess file %s', array(
-                    '%s' => $htaccess));
-    }
-
-    /**
-     * Creates a .htaccess file
-     * @param string $directory
-     * @param boolean $private
-     * @return boolean
-     */
-    protected function createHtaccess($directory, $private = true)
-    {
-        $content = array('Options None', 'Options +FollowSymLinks',
-            'SetHandler Gplcart_Dont_Touch', 'php_flag engine off');
-
-        if ($private) {
-            array_unshift($content, 'Deny from all');
-        }
-
-        $file = $directory . '/.htaccess';
-
-        if (file_put_contents($file, implode(PHP_EOL, $content)) === false) {
-            return false;
-        }
-
-        chmod($file, 0444);
-        return true;
     }
 
 }
