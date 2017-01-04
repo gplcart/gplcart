@@ -13,59 +13,26 @@
 #}
 <body class="install">
   <div class="container">
-    
     <form method="post" class="form-horizontal">
-      
-      
-        <div class="row">
-            <div class="col-md-12">
-
-          
+      <div class="row">
+        <div class="col-md-12">
           <h1 class="h4">{{ text('Welcome to GPL Cart') }}</h1>
-          
-          
           {% if languages|length > 1 %}
-                
               <div class="select-language clearfix">
-                <span class="pull-left">{{ text ('Select a language') }}: </span>
-              <ul class="list-inline languages pull-left">
-                    {% for code,name in languages %}
-                        <li class="{{ (code == language) ? 'active' }}">
-                          <a href="{{ url('', {'lang': code}) }}">
-                            {{ name[1]|default(name[0]) }}
-                          </a>
-                        </li>
-                    {% endfor %}
-              </ul>
+                <span class="pull-left">{{ text ('Select a language') }}:&nbsp;&nbsp;</span>
+                <ul class="list-inline languages pull-left">
+                  {% for code,name in languages %}
+                      <li class="{{ (code == language) ? 'active' }}">
+                        <a href="{{ url('', {'lang': code}) }}">
+                          {{ name[1]|default(name[0]) }}
+                        </a>
+                      </li>
+                  {% endfor %}
+                </ul>
               </div>
           {% endif %}
-          
-          <p class="clearfix">
-
-          {{ text('Before installation please read the <a target="_blank" href="@href">licensing agreement</a>. Make sure you have already created an empty database. Contact your hosting provider if in doubt<br>
-.<br>
-', {'@href': url_licence}) }}
-
-          </p>
-          
-          
-
-
-          </div>
-      </div>
-
-
-    <div class="row">
-      <div class="col-md-8">
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        </div>
+      </div> 
       {% if messages is not empty %}
           <div class="row">
             <div class="col-md-12">
@@ -82,37 +49,20 @@
             </div>
           </div>
       {% endif %}
-      {% if error('database.connect', true) %}
-          <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            {{ error('database.connect') }}
-          </div>
-      {% endif %}
-          {% if installers|length > 1 %}
-              <div class="panel panel-default installers">
-                <div class="panel-heading">{{ text('Select installer') }}</div>
+      <div class="row">
+        {% if severity != 'danger' %}
+            <div class="col-md-8">
+              <div class="panel panel-default">
                 <div class="panel-body">
-                  {% for installer_id,installer in installers %}
-                      <p>
-                      <div class="installer title">
-                        <a href="{{ installer['url'] }}">{{ installer['title'] }}</a>
+                  {% if error('database.connect', true) %}
+                      <div class="alert alert-warning alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        {{ error('database.connect') }}
                       </div>
-                      <div class="installer description">{{ xss(installer['description']) }}</div>
-                      </p>
-                  {% endfor %}
-                </div>
-              </div>
-          {% else %}
-                  
-              
-                  <div class="panel panel-default">
-                    <div class="panel-body">
-              
-              
-              
-              <div class="required form-group{{ error('database.name', ' has-error') }}">
+                  {% endif %}
+                  <div class="required form-group{{ error('database.name', ' has-error') }}">
                     <label class="col-md-3 control-label">{{ text('Database name') }}</label>
                     <div class="col-md-4">
                       <input name="settings[database][name]" class="form-control" value="{{ settings['database']['name'] ?? '' }}">
@@ -120,8 +70,7 @@
                         {{ error('database.name') }}
                       </div>
                     </div>
-                      <div class="col-md-5">{{ text('A name of database you want to connect to') }}</div>
-                      
+                    <div class="col-md-5">{{ text('A name of the database you want to connect to') }}</div>
                   </div>
                   <div class="required form-group{{ error('database.user', ' has-error') }}">
                     <label class="col-md-3 control-label">{{ text('Database user') }}</label>
@@ -131,10 +80,9 @@
                         {{ error('database.user') }}
                       </div>
                     </div>
-                        <div class="col-md-5">
-                          {{ text('An existing username to access the database') }}
-                      </div>
-                      
+                    <div class="col-md-5">
+                      {{ text('An existing username to access the database') }}
+                    </div>
                   </div>
                   <div class="form-group{{ error('database.password', ' has-error') }}">
                     <label class="col-md-3 control-label">{{ text('Database password') }}</label>
@@ -144,7 +92,7 @@
                         {{ error('database.password') }}
                       </div>
                     </div>
-                      <div class="col-md-5">{{ text('Can be empty, e.g if you created database using XAMPP with default settings') }}</div>
+                    <div class="col-md-5">{{ text('A password to access the database. Can be empty') }}</div>
                   </div>
                   {% if error(null, true) is empty %}
                       <div class="form-group">
@@ -178,17 +126,11 @@
                       </div>
                     </div>
                   </div>
-                  
-                    </div>
-                  </div>
-                        
-                        
-                      
-                  <div class="panel panel-default">
-                    <div class="panel-body"> 
-                      
-                      
-                        <div class="required form-group{{ error('user.email', ' has-error') }}">
+                </div>
+              </div> 
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <div class="required form-group{{ error('user.email', ' has-error') }}">
                     <label class="col-md-3 control-label">{{ text('E-mail') }}</label>
                     <div class="col-md-4">
                       <input name="settings[user][email]" class="form-control" value="{{ settings['user']['email'] ?? '' }}">
@@ -206,7 +148,7 @@
                         {{ error('user.password') }}
                       </div>
                     </div>
-                   <div class="col-md-5">{{ text('A password for superadmin') }}</div>
+                    <div class="col-md-5">{{ text('A password for superadmin') }}</div>
                   </div>
                   <div class="required form-group{{ error('store.title', ' has-error') }}">
                     <label class="col-md-3 control-label">{{ text('Store title') }}</label>
@@ -216,7 +158,7 @@
                         {{ error('store.title') }}
                       </div>
                     </div>
-<div class="col-md-5">{{ text('A name of the store') }}</div>
+                    <div class="col-md-5">{{ text('A name of the store') }}</div>
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 control-label">{{ text('Timezone') }}</label>
@@ -227,48 +169,44 @@
                         {% endfor %}
                       </select>
                     </div>
-                      <div class="col-md-5">{{ text('Choose your local timezone') }}</div>
+                    <div class="col-md-5">{{ text('Choose your local timezone') }}</div>
                   </div>
-                      
-                    </div>
-                  </div>
-                      
-                      
-                  <div class="form-group">
-                    <div class="col-md-9 col-md-offset-3 text-right">
-                      <button class="btn btn btn-default" name="install" value="1"{{ (severity == 'danger') ? ' disabled'}}>{{ text('Install now!') }}</button>
-                    </div>
-                  </div>
+                </div>
+              </div> 
+              <div class="form-group">
+                <div class="col-md-12 text-right">    
+                  <button class="btn btn btn-default" name="install" value="1">{{ text('Install') }}</button>  
+                </div>
+              </div>
+            </div>
+        {% endif %}
+        <div class="{{ severity == 'danger' ? 'col-md-12' : 'col-md-4' }}">
+          <table class="table-condensed requirements">
+            <tbody>
+              {% for section,items in requirements %}
+                  {% for name,info in items %}
+                      <tr class="{{ info['status'] ? '' : ' bg-' ~ info['severity'] }}">
+                        <td>{{ text(info['message']) }}</td>
+                        <td> {{ info['status'] ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>' }}</td>
+                        <td>
+                          {% if not info['status'] %}
+                              {% if info['severity'] == 'warning' %}
+                                  {{ text('non-critical') }}
+                              {% elseif info['severity'] == 'danger' %}
+                                  {{ text('critical') }}
+                              {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+                  {% endfor %}
+              {% endfor %}
+            </tbody>
+          </table>
+          {% if severity == 'danger' %}
+              <p><b>{{ text('Please fix all critical errors in your environment before continue') }}</b></p>
           {% endif %}
-    <div class="row">
-      <div class="col-md-12">
-        &copy; 2015 - {{ 'now'|date('Y') }}  GPL Cart.
+        </div>
       </div>
-    </div>
-    </div>
-     <div class="col-md-4">
-              {% if issues is not empty %}
-
-                  
-                  
-
-                  
-                    <table class="table-condensed">
-                      <tbody>
-                        {% for section,items in requirements %}
-                            {% for name,info in items %}
-                                <tr class="{{ info['status'] ? ' bg-' ~ info['status'] : '' }}">
-                                  <td>{{ text(info['message']) }}</td>
-                                  <td> - {{ info['status'] ? text('Yes') : text('No') }}</td>
-                                </tr>
-                            {% endfor %}
-                        {% endfor %}
-                      </tbody>
-                    </table>
-              {% endif %}
-
-      </div>
-    </div>
-      </form>
-  </div>
+    </form>            
+  </div>                
 </body>

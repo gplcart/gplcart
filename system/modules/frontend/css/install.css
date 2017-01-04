@@ -4,11 +4,15 @@ body {
 
 .container {
     background-color: #fff;
+    min-height: 100vh;
 }
 
+table.requirements {
+    margin-bottom: 20px;
+}
 
-
-.form-group.required .control-label:before, span.required:before {
-    content:"* ";
-    color:red;
+.form-group.required .control-label:before,
+span.required:before {
+    content: "* ";
+    color: red;
 }

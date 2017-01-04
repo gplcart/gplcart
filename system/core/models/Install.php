@@ -21,7 +21,6 @@ use gplcart\core\exceptions\DatabaseException;
  */
 class Install extends Model
 {
-
     /**
      * Store model instance
      * @var \gplcart\core\models\Store $store
@@ -75,14 +74,14 @@ class Install extends Model
     public function getList()
     {
         $installers = array();
-        $this->hook->fire('installer', $installers);
+        $this->hook->fire('installer', $installers, $this);
 
         // Default installer definition goes after the hook 
         // to prevent changing form a module
         $installers['default'] = array(
             'weight' => 0,
             'path' => 'install',
-            'title' => $this->language->text('Default GPL Cart installation'),
+            'title' => $this->language->text('Default'),
             'description' => $this->language->text('Default system installer'),
         );
 
@@ -271,6 +270,8 @@ class Install extends Model
         }
 
         $this->config->set('intro', 1);
+        $this->config->set('installed', GC_TIME);
+        $this->config->set('installation_id', gplcart_string_random());
         $this->config->set('timezone', $settings['store']['timezone']);
 
         $store_id = $this->createStore($settings);

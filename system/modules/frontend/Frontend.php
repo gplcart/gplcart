@@ -14,6 +14,7 @@ namespace gplcart\modules\frontend;
  */
 class Frontend
 {
+
     /**
      * Module info
      * @return array
@@ -68,8 +69,10 @@ class Frontend
         $condition_libraries = array('html5shiv', 'respond');
         $controller->addAssetLibrary($condition_libraries, array('aggregate' => false, 'condition' => 'if lt IE 9'));
 
-        if (!$controller->isInstalling()) {
+        if ($controller->isInstalling()) {
             // This one goes at the bottom to be able to rewrite styles added above
+            $controller->setCss('system/modules/frontend/css/install.css');
+        } else {
             $controller->setCss('system/modules/frontend/css/style.css');
         }
 
