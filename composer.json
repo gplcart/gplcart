@@ -24,7 +24,8 @@
         "ext-fileinfo": "*",
         "ext-zip": "*",
         "ext-openssl": "*",
-        "ext-spl": "*"
+        "ext-spl": "*",
+        "gplcart/libraries": "dev-master"
     },
     "autoload": {
         "psr-4": {
