@@ -85,7 +85,7 @@ class Install extends FrontendController
      */
     protected function controlAccessInstall()
     {
-        if ($this->config->exists() && !$this->session->get('install', 'processing')) {
+        if ($this->config->exists() && !$this->session->get('install.processing')) {
             $this->redirect('/');
         }
     }
@@ -178,8 +178,8 @@ class Install extends FrontendController
         ini_set('max_execution_time', 0);
 
         $this->session->delete('install');
-        $this->session->set('install', 'processing', true);
-        $this->session->set('install', 'settings', $submitted);
+        $this->session->set('install.processing', true);
+        $this->session->set('install.settings', $submitted);
     }
 
     /**

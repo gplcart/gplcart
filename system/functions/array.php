@@ -131,7 +131,10 @@ function gplcart_array_unset_value(array &$array, $parents, $glue = '.')
     if (empty($parents)) {
         unset($array[$key]);
     } else {
-        gplcart_array_unset_value($array[$key], $parents);
+
+        if (isset($array[$key])) {
+            gplcart_array_unset_value($array[$key], $parents);
+        }
     }
 }
 

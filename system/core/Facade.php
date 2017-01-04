@@ -135,7 +135,7 @@ class Facade
     protected function isInstalling()
     {
         return (!$this->config->exists() // No config/common.php exists
-                || $this->session->get('install', 'processing')) // Installation in progress
+                || $this->session->get('install.processing')) // Installation in progress
                 && !$this->url->isInstall(); // and not on /install page
     }
 

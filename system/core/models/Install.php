@@ -21,6 +21,7 @@ use gplcart\core\exceptions\DatabaseException;
  */
 class Install extends Model
 {
+
     /**
      * Store model instance
      * @var \gplcart\core\models\Store $store

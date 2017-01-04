@@ -70,33 +70,28 @@ class Session
             return false;
         }
 
-        $messages = (array) $this->get('messages', $type, array());
+        $messages = (array) $this->get("messages.$type", array());
 
         if (in_array($message, $messages)) {
             return false;
         }
 
         $messages[] = $message;
-        return $this->set('messages', $type, $messages);
+        return $this->set("messages.$type", $messages);
     }
 
     /**
      * Returns a session data
-     * @param string $key
-     * @param string $secondkey
+     * @param string|array $key
      * @param mixed $default
      * @return mixed
      */
-    public function get($key, $secondkey = null, $default = null)
+    public function get($key, $default = null)
     {
-        if (isset($secondkey)) {
-            if (isset($_SESSION[GC_SESSION_PREFIX . $key][$secondkey])) {
-                return $_SESSION[GC_SESSION_PREFIX . $key][$secondkey];
-            }
-        } else {
-            if (isset($_SESSION[GC_SESSION_PREFIX . $key])) {
-                return $_SESSION[GC_SESSION_PREFIX . $key];
-            }
+        $value = gplcart_array_get_value($_SESSION, $key);
+
+        if (isset($value)) {
+            return $value;
         }
 
         return $default;
@@ -104,39 +99,14 @@ class Session
 
     /**
      * Saves/updates a data in the session
-     * @param string $key
-     * @param string $secondkey
+     * @param string|array $key
      * @param mixed $value
      * @return boolean
      */
-    public function set($key, $secondkey = null, $value = null)
+    public function set($key, $value = null)
     {
-        if (is_array($key)) {
-            foreach ($key as $k => $v) {
-                $_SESSION[GC_SESSION_PREFIX . $k] = $v;
-            }
-            return true;
-        }
-
-        if (isset($secondkey)) {
-            $_SESSION[GC_SESSION_PREFIX . $key][$secondkey] = $value;
-            return true;
-        }
-
-        $_SESSION[GC_SESSION_PREFIX . $key] = $value;
+        gplcart_array_set_value($_SESSION, $key, $value);
         return true;
-    }
-
-    /**
-     * Returns messages from the session
-     * @param string $type
-     * @return string
-     */
-    public function getMessage($type = null)
-    {
-        $message = $this->get('messages', $type, array());
-        $this->delete('messages', $type);
-        return $message;
     }
 
     /**
@@ -145,7 +115,7 @@ class Session
      * @param string $secondkey
      * @return boolean
      */
-    public function delete($key = null, $secondkey = null)
+    public function delete($key = null)
     {
         if (!$this->started()) {
             return false;
@@ -156,13 +126,26 @@ class Session
             return session_destroy();
         }
 
-        if (isset($secondkey)) {
-            unset($_SESSION[GC_SESSION_PREFIX . $key][$secondkey]);
-            return true;
+        gplcart_array_unset_value($_SESSION, $key);
+        return true;
+    }
+
+    /**
+     * Returns messages from the session
+     * @param string $type
+     * @return string
+     */
+    public function getMessage($type = null)
+    {
+        $key = array('messages');
+
+        if (isset($type)) {
+            $key[] = $type;
         }
 
-        unset($_SESSION[GC_SESSION_PREFIX . $key]);
-        return true;
+        $message = $this->get($key, array());
+        $this->delete($key);
+        return $message;
     }
 
     /**
@@ -173,7 +156,7 @@ class Session
     public function token($value = null)
     {
         if (isset($value)) {
-            return $this->set('token', null, $value);
+            return $this->set('token', $value);
         }
 
         return $this->get('token');

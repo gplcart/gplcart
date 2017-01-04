@@ -164,7 +164,7 @@ class Job extends Model
             return false;
         }
 
-        $this->session->delete(self::SESSION_KEY, $job_id);
+        $this->session->delete(self::SESSION_KEY . ".$job_id");
         $this->hook->fire('delete.job.after', $job_id);
         return true;
     }
@@ -279,7 +279,7 @@ class Job extends Model
      */
     protected function getSession($job_id)
     {
-        return $this->session->get(self::SESSION_KEY, $job_id, array());
+        return $this->session->get(self::SESSION_KEY . ".$job_id", array());
     }
 
     /**
@@ -289,7 +289,7 @@ class Job extends Model
      */
     protected function setSession(array $job)
     {
-        return $this->session->set(self::SESSION_KEY, $job['id'], $job);
+        return $this->session->set(self::SESSION_KEY . ".{$job['id']}", $job);
     }
 
     /**

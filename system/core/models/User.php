@@ -245,7 +245,7 @@ class User extends Model
      */
     public function id()
     {
-        return (int) $this->session->get('user', 'user_id');
+        return (int) $this->session->get('user.user_id');
     }
 
     /**
@@ -294,7 +294,7 @@ class User extends Model
     public function roleId($user = null)
     {
         if (!isset($user)) {
-            return (int) $this->session->get('user', 'role_id');
+            return (int) $this->session->get('user.role_id');
         }
 
         if (is_numeric($user)) {
@@ -368,7 +368,7 @@ class User extends Model
         }
 
         unset($user['hash']);
-        $this->session->set('user', null, $user);
+        $this->session->set('user', $user);
 
         $this->logLogin($user);
 
@@ -471,7 +471,7 @@ class User extends Model
      */
     public function current()
     {
-        return (array) $this->session->get('user', null, array());
+        return (array) $this->session->get('user', array());
     }
 
     /**

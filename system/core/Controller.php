@@ -778,7 +778,7 @@ class Controller
             $this->current_device = $this->device->isTablet() ? 'tablet' : 'mobile';
         }
 
-        $this->session->set('device', null, $this->current_device);
+        $this->session->set('device', $this->current_device);
         return null;
     }
 
