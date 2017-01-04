@@ -24,13 +24,17 @@
         "ext-fileinfo": "*",
         "ext-zip": "*",
         "ext-openssl": "*",
-        "ext-spl": "*"
+        "ext-spl": "*",
+        "gplcart/libraries": "dev-master"
     },
     "autoload": {
         "psr-4": {
             "gplcart\\core\\": "system/core/",
             "gplcart\\tests\\unit\\": "tests/unit/"
         }
+    },
+    "config": {
+        "vendor-dir": "system/vendor"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
