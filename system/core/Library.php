@@ -135,7 +135,7 @@ class Library
 
             $readable = 0;
             foreach ($library['files'] as $file) {
-                $readable += (int) is_readable(GC_ROOT_DIR . "/{$library['basepath']}/$file");
+                $readable += (int) is_readable(gplcart_absolute_path("{$library['basepath']}/$file"));
             }
 
             if (count($library['files']) != $readable) {
@@ -201,7 +201,7 @@ class Library
             return null;
         }
 
-        $file = GC_ROOT_DIR . "/{$library['basepath']}/{$library['version']['file']}";
+        $file = gplcart_absolute_path("{$library['basepath']}/{$library['version']['file']}");
 
         if (!is_readable($file)) {
             $this->errors[$library['id']][] = 'failed_load_file';
@@ -226,14 +226,10 @@ class Library
      */
     protected function getBasePath(array $library, $absolute = false)
     {
-        $base = "system/libraries/{$library['id']}";
-
-        if ($library['type'] === 'asset') {
-            $base = "files/assets/libraries/{$library['id']}";
-        }
+        $base = GC_VENDOR_DIR_NAME . '/' . GC_VENDOR_LIBRARY . "/{$library['type']}/{$library['id']}";
 
         if ($absolute) {
-            $base = GC_ROOT_DIR . "/$base";
+            $base = gplcart_absolute_path($base);
         }
 
         return $base;
@@ -359,7 +355,7 @@ class Library
         $prepared = $this->prepareFiles($sorted, $libraries);
 
         foreach ($prepared as $file) {
-            require_once GC_ROOT_DIR . "/$file";
+            require_once gplcart_absolute_path($file);
         }
 
         return true;

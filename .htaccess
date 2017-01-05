@@ -37,14 +37,16 @@ AddEncoding gzip svgz
 
     # Restrict php files direct access
     RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
-    RewriteRule \.php$ - [F,L]
+    RewriteRule \.php$ - [F]
 
     # Restrict access to directories
-    RewriteRule ^system/ - [F,L]
-    RewriteRule ^cache/ - [F,L]
-    RewriteRule ^tests/ - [F,L]
-    RewriteRule ^files/private/ - [F,L]
+    RewriteRule ^system/ - [F]
+    RewriteRule ^vendor/ - [F]
+    RewriteRule ^cache/ - [F]
+    RewriteRule ^tests/ - [F]
+    RewriteRule ^files/private/ - [F]
     
+    # Pass all requests (except public files) to index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [L]

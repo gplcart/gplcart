@@ -113,7 +113,7 @@ function gplcart_timezones()
  */
 function ddd($data)
 {
-    require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+    require_once gplcart_library_path('php', 'kint', 'Kint.class.php');
 
     if (Kint::enabled()) {
         Kint::dump($data);
@@ -127,11 +127,33 @@ function ddd($data)
  */
 function d($data)
 {
-    require_once GC_LIBRARY_DIR . '/kint/Kint.class.php';
+    require_once gplcart_library_path('php', 'kint', 'Kint.class.php');
 
     if (Kint::enabled()) {
         Kint::dump($data);
     }
+}
+
+/**
+ * Returns an absolute path to the library file
+ * @param string $type
+ * @param string $name
+ * @param string $file
+ * @return string
+ */
+function gplcart_library_path($type, $name, $file)
+{
+    return GC_VENDOR_DIR . '/' . GC_VENDOR_LIBRARY . "/$type/$name/$file";
+}
+
+/**
+ * Returns an absolute path to the file
+ * @param string $file
+ * @return string
+ */
+function gplcart_absolute_path($file)
+{
+    return GC_ROOT_DIR . "/$file";
 }
 
 /**

@@ -195,7 +195,7 @@ class Asset
             $data['file'] = $data['asset'];
             $data['asset'] = str_replace(GC_ROOT_DIR . '/', '', $data['asset']);
         } else {
-            $data['file'] = GC_ROOT_DIR . "/{$data['asset']}";
+            $data['file'] = gplcart_absolute_path($data['asset']);
         }
 
         if (!file_exists($data['file'])) {
