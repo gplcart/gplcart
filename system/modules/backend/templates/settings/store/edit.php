@@ -443,34 +443,6 @@
     </div>
   </div>
   <div class="panel panel-default">
-    <div class="panel-heading"><?php echo $this->text('Google Analytics'); ?></div>
-    <div class="panel-body">
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Account ID'); ?></label>
-        <div class="col-md-4">
-          <input name="store[data][ga_account]" class="form-control" value="<?php echo isset($store['data']['ga_account']) ? $this->escape($store['data']['ga_account']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->text('A numeric ID of your Google Analytics account'); ?>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Property ID'); ?></label>
-        <div class="col-md-4">
-          <input name="store[data][ga_property]" class="form-control" value="<?php echo isset($store['data']['ga_property']) ? $this->escape($store['data']['ga_property']) : ''; ?>">
-          <div class="help-block"><?php echo $this->text('A property ID of your Google Analytics account, e.g UA-10876-2'); ?></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('View ID'); ?></label>
-        <div class="col-md-4">
-          <input name="store[data][ga_view]" class="form-control" value="<?php echo isset($store['data']['ga_view']) ? $this->escape($store['data']['ga_view']) : ''; ?>">
-          <div class="help-block"><?php echo $this->text('A numeric view ID from your Google Analytics account. The view determines which data from your property appears in the reports'); ?></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">

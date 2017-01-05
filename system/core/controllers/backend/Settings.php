@@ -49,9 +49,6 @@ class Settings extends BackendController
         return array(
             'cron_key' => '',
             'error_level' => 2,
-            'gapi_email' => '',
-            'gapi_browser_key' => '',
-            'gapi_certificate' => '',
             'email_method' => 'mail',
             'smtp_auth' => 1,
             'smtp_secure' => 'tls',
@@ -127,11 +124,6 @@ class Settings extends BackendController
     protected function updateSettings()
     {
         $this->controlAccess('settings_edit');
-
-        if ($this->isPosted('delete_gapi_certificate')) {
-            unlink(GC_FILE_DIR . '/' . $this->config('gapi_certificate'));
-            $this->config->reset('gapi_certificate');
-        }
 
         $submitted = $this->getSubmitted();
 

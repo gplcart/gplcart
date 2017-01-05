@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Analytics as AnalyticsModel;
 use gplcart\core\models\Order as OrderModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Product as ProductModel;
@@ -48,12 +47,6 @@ class Dashboard extends BackendController
     protected $report;
 
     /**
-     * Analytics model instance
-     * @var \gplcart\core\models\Analytics $analytics
-     */
-    protected $analytics;
-
-    /**
      * Max items to be shown in the dashboard panels
      * @var integer
      */
@@ -71,12 +64,10 @@ class Dashboard extends BackendController
      * @param PriceModel $price
      * @param OrderModel $order
      * @param ReportModel $report
-     * @param AnalyticsModel $analytics
      * @param ReviewModel $review
      */
     public function __construct(ProductModel $product, PriceModel $price,
-            OrderModel $order, ReportModel $report,
-            AnalyticsModel $analytics, ReviewModel $review
+            OrderModel $order, ReportModel $report, ReviewModel $review
     )
     {
         parent::__construct();
@@ -86,7 +77,6 @@ class Dashboard extends BackendController
         $this->report = $report;
         $this->review = $review;
         $this->product = $product;
-        $this->analytics = $analytics;
 
         $this->dashboard_limit = (int) $this->config('dashboard_limit', 10);
     }
@@ -98,13 +88,10 @@ class Dashboard extends BackendController
     {
         $this->toggleIntroDashboard();
 
-        $this->setDataGaDashboard();
         $this->setDataUsersDashboard();
         $this->setDataOrdersDashboard();
         $this->setDataEventsDashboard();
         $this->setDataSummaryDashboard();
-
-        $this->setJsDashboard();
 
         $this->setTitleDashboard();
         $this->outputDashboard();
@@ -119,48 +106,6 @@ class Dashboard extends BackendController
             $this->config->reset('intro');
             $this->redirect();
         }
-    }
-
-    /**
-     * Sets Google Analytics panel
-     * @return null
-     */
-    protected function setDataGaDashboard()
-    {
-        $gapi_email = $this->config('gapi_email', '');
-        $gapi_certificate = $this->config('gapi_certificate', '');
-
-        $default = $this->store->getDefault();
-        $store_id = $this->request->get('store_id', $default);
-        $store = $this->store->get($store_id);
-        $stores = $this->store->getList();
-
-        $data = array(
-            'store' => $store,
-            'stores' => $stores,
-            'chart_traffic' => array(),
-            'missing_settings' => empty($store['data']['ga_view']),
-            'missing_credentials' => (empty($gapi_email) || empty($gapi_certificate))
-        );
-
-        if (!$data['missing_settings']) {
-            $data['ga_view'] = $store['data']['ga_view'];
-        }
-
-        if ($this->isQuery('ga_update') && $this->access('report_ga') && !empty($data['ga_view'])) {
-            $this->report->clearGaCache($data['ga_view']);
-            $this->redirect();
-        }
-
-        if (!$data['missing_credentials'] && !$data['missing_settings']) {
-            $this->analytics->setCredentials($gapi_email, $gapi_certificate, "Analytics for {$store['domain']}");
-            $this->analytics->setView($data['ga_view']);
-            $chart = $this->report->buildTrafficChart($this->analytics);
-            $this->setJsSettings('chart_traffic', $chart);
-        }
-
-        $html = $this->render('dashboard/panels/ga', $data);
-        $this->setData('dashboard_panel_ga_chart', $html);
     }
 
     /**
@@ -277,14 +222,6 @@ class Dashboard extends BackendController
 
         $html = $this->render('dashboard/panels/summary', $data);
         $this->setData('dashboard_panel_summary', $html);
-    }
-
-    /**
-     * Sets Java Scripts on the dashboard page
-     */
-    protected function setJsDashboard()
-    {
-        $this->setJs('files/assets/chart/Chart.min.js');
     }
 
     /**

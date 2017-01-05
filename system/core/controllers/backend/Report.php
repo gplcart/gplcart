@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Report as ReportModel;
-use gplcart\core\models\Analytics as AnalyticsModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,22 +25,14 @@ class Report extends BackendController
     protected $report;
 
     /**
-     * Analytics model instance
-     * @var \gplcart\core\models\Analytics $analytics
-     */
-    protected $analytics;
-
-    /**
      * Constructor
      * @param ReportModel $report
-     * @param AnalyticsModel $analytics
      */
-    public function __construct(ReportModel $report, AnalyticsModel $analytics)
+    public function __construct(ReportModel $report)
     {
         parent::__construct();
 
         $this->report = $report;
-        $this->analytics = $analytics;
     }
 
     /**
@@ -154,11 +145,6 @@ class Report extends BackendController
             'text' => $this->text('Dashboard')
         );
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/report/ga'),
-            'text' => $this->text('Google Analytics')
-        );
-
         $this->setBreadcrumbs($breadcrumbs);
     }
 
@@ -168,171 +154,6 @@ class Report extends BackendController
     protected function outputListEventReport()
     {
         $this->output('report/events');
-    }
-
-    /**
-     * Displays Google Analytics page
-     */
-    public function listGaReport()
-    {
-        $this->setTitleListGaReport();
-        $this->setBreadcrumbListGaReport();
-
-        $default_store = $this->store->getDefault();
-        $store_id = (int) $this->request->get('store_id', $default_store);
-        $stores = $this->store->getList();
-        $store = $this->store->get($store_id);
-
-        $email = $this->config('gapi_email', '');
-        $certificate = $this->config('gapi_certificate', '');
-        $missing_settings = empty($store['data']['ga_view']);
-        $missing_credentials = (empty($email) || empty($certificate));
-
-        $this->setData('store', $store);
-        $this->setData('stores', $stores);
-        $this->setData('missing_settings', $missing_settings);
-        $this->setData('missing_credentials', $missing_credentials);
-
-        if ($missing_settings || $missing_credentials) {
-            $this->outputListGaReport();
-        }
-
-        $this->updateGaReport($store_id);
-
-        $view = $store['data']['ga_view'];
-        $this->analytics->setCredentials($email, $certificate, "Analytics for {$store['domain']}");
-        $this->analytics->setView($view);
-        $this->setData('ga_view', $view);
-
-        $this->setDataGaTrafficReport();
-        $this->setDataGaSoftwareReport();
-        $this->setDataGaSourcesReport();
-        $this->setDataGaTopPagesReport();
-        $this->setDataGaKeywordsReport();
-
-        $this->outputListGaReport();
-    }
-
-    /**
-     * Sets titles on the GA page
-     */
-    protected function setTitleListGaReport()
-    {
-        $this->setTitle($this->text('Google Analytics'));
-    }
-
-    /**
-     * Sets breadcrumbs on the GA page
-     */
-    protected function setBreadcrumbListGaReport()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/report/events'),
-            'text' => $this->text('System events')
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders the GA page templates
-     */
-    protected function outputListGaReport()
-    {
-        $this->output('report/ga/ga');
-    }
-
-    /**
-     * Listen to URL parameter and updates cached GA data for the store ID
-     * @param integer $store_id
-     */
-    protected function updateGaReport($store_id)
-    {
-        $view = (string) $this->request->get('ga_view');
-
-        if ($this->isQuery('ga_update') && !empty($view)) {
-            $this->report->clearGaCache($view);
-            $this->setMessage($this->text('Google Analytics has been updated'), 'success', true);
-            $this->url->redirect('admin/report/ga', array('store_id' => $store_id));
-        }
-    }
-
-    /**
-     * Sets Traffic statistic panel
-     */
-    protected function setDataGaTrafficReport()
-    {
-        $chart = $this->report->buildTrafficChart($this->analytics);
-
-        $this->setJsSettings('chart_traffic', $chart);
-        $this->setJs('files/assets/chart/Chart.min.js');
-
-        $html = $this->render('report/ga/panels/traffic');
-        $this->setData('panel_traffic', $html);
-    }
-
-    /**
-     * Sets Software statistic panel
-     */
-    protected function setDataGaSoftwareReport()
-    {
-        $items = array();
-        foreach ($this->analytics->get('software') as $i => $result) {
-
-            $os_version = ($result[1] === "(not set)") ? '' : $result[1];
-            $browser_version = ($result[3] === "(not set)") ? '' : $result[3];
-
-            $items[$i][0] = $result[0] . " $os_version";
-            $items[$i][1] = $result[2] . " $browser_version";
-            $items[$i][2] = $result[4];
-        }
-
-        $html = $this->render('report/ga/panels/software', array('items' => $items));
-        $this->setData('panel_software', $html);
-    }
-
-    /**
-     * Sets Sources statistic panel
-     */
-    protected function setDataGaSourcesReport()
-    {
-        $items = $this->analytics->get('sources');
-        $html = $this->render('report/ga/panels/sources', array('items' => $items));
-        $this->setData('panel_sources', $html);
-    }
-
-    /**
-     * Sets Top Pages statistic panel
-     */
-    protected function setDataGaTopPagesReport()
-    {
-        $items = $this->analytics->get('top_pages');
-
-        foreach ($items as &$item) {
-            if (preg_match('!^[\w.]*$!', $item[0]) === 1) {
-                $item['url'] = $item[0] . $item[1];
-            }
-        }
-
-        $html = $this->render('report/ga/panels/top_pages', array('items' => $items));
-        $this->setData('panel_top_pages', $html);
-    }
-
-    /**
-     * Sets Keywords statistic panel
-     */
-    protected function setDataGaKeywordsReport()
-    {
-        $items = $this->analytics->get('keywords');
-        $html = $this->render('report/ga/panels/keywords', array('items' => $items));
-        $this->setData('panel_keywords', $html);
     }
 
     /**

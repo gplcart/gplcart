@@ -53,59 +53,6 @@
     </div>
   </div>
   <div class="panel panel-default">
-    <div class="panel-heading"><?php echo $this->text('Google API'); ?></div>
-    <div class="panel-body">
-      <div class="form-group<?php echo $this->error('gapi_browser_key', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Google API browser key'); ?></label>
-        <div class="col-md-4">
-          <input name="settings[gapi_browser_key]" class="form-control" value="<?php echo $this->escape($settings['gapi_browser_key']); ?>">
-          <div class="help-block">
-            <?php echo $this->error('gapi_browser_key'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('A browser key from Google Developers Console. Used for standard API like Google Maps etc'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group<?php echo $this->error('gapi_email', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Google API service e-mail'); ?></label>
-        <div class="col-md-4">
-          <input name="settings[gapi_email]" class="form-control" value="<?php echo $this->escape($settings['gapi_email']); ?>">
-          <div class="help-block">
-            <?php echo $this->error('gapi_email'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('A service account e-mail from Google Developers Console'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group<?php echo $this->error('gapi_certificate', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Google API certificate'); ?></label>
-        <div class="col-md-4">
-          <input type="file" accept=".p12" name="gapi_certificate" class="form-control">
-          <div class="help-block">
-            <?php echo $this->error('gapi_certificate'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Upload your .p12 certificate file you got from Google Developers Console'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <?php if (!empty($settings['gapi_certificate'])) { ?>
-      <div class="form-group">
-          <div class="col-md-4 col-md-offset-2">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="delete_gapi_certificate" value="1">
-                <?php echo $this->text('Delete %file', array('%file' => $settings['gapi_certificate'])); ?>
-              </label>
-            </div>
-          </div>
-      </div>
-      <?php } ?>
-    </div>
-  </div>
-  <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('E-mail'); ?></div>
     <div class="panel-body">
       <div class="form-group">

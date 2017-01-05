@@ -47,7 +47,6 @@ For owners:
 - Product combinations (XL + red, XL + green etc)
 - Powerful export/import for everything (*100.000* products? No problem!)
 - Super flexible price rules both for catalog and checkout (including coupons)
-- Integrated with Google Analytics
 - Roles and access control
 - Built-in template/css/js editor
 - Backups

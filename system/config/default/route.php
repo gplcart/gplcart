@@ -877,14 +877,6 @@ $routes['admin/report/status'] = array(
     )
 );
 
-$routes['admin/report/ga'] = array(
-    'access' => 'report_ga',
-    'menu' => array('admin' => 'Analytics'),
-    'handlers' => array(
-        'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listGaReport')
-    )
-);
-
 $routes['admin/report/library'] = array(
     'access' => 'report_library',
     'menu' => array('admin' => 'Libraries'),
