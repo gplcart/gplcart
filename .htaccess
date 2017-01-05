@@ -39,9 +39,18 @@ AddEncoding gzip svgz
     RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
     RewriteRule \.php$ - [F]
 
-    # Restrict access to directories
+    # Protect hidden directories whose names begin with a period, e.g .git
+    RewriteRule "(^|/)\." - [F]
+
+    # Block direct access to system files, except module asset folders
+    RewriteRule ^system/\w+/\w+/(js|css)/ - [L]
     RewriteRule ^system/ - [F]
+
+    # Block direct access to vendor files, except asset folders
+    RewriteRule ^vendor/\w+/\w+/asset/ - [L]
     RewriteRule ^vendor/ - [F]
+
+    # Restrict access to directories
     RewriteRule ^cache/ - [F]
     RewriteRule ^tests/ - [F]
     RewriteRule ^files/private/ - [F]
