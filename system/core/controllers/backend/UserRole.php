@@ -42,17 +42,33 @@ class UserRole extends BackendController
     public function editUserRole($role_id = null)
     {
         $role = $this->getUserRole($role_id);
-        $permissions = $this->role->getPermissions();
-        $permissions_chunked = array_chunk($permissions, 30, true);
+        $permissions = $this->getPermissionsUserRole(true);
 
         $this->setData('role', $role);
-        $this->setData('permissions', $permissions_chunked);
+        $this->setData('permissions', $permissions);
 
         $this->submitUserRole($role);
 
         $this->setTitleEditUserRole($role);
         $this->setBreadcrumbEditUserRole();
         $this->outputEditUserRole();
+    }
+
+    /**
+     * Returns an array of prepared permissions
+     * @param bool $chunked
+     * @return array
+     */
+    protected function getPermissionsUserRole($chunked = false)
+    {
+        $permissions = $this->role->getPermissions();
+        $translated = array_map(array($this, 'text'), $permissions);
+
+        if ($chunked) {
+            return array_chunk($translated, 30, true);
+        }
+
+        return $translated;
     }
 
     /**
@@ -289,7 +305,7 @@ class UserRole extends BackendController
     {
         $query['limit'] = $limit;
         $roles = (array) $this->role->getList($query);
-        $permissions = $this->role->getPermissions();
+        $permissions = $this->getPermissionsUserRole();
 
         foreach ($roles as &$role) {
 

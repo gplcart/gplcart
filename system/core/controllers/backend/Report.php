@@ -78,7 +78,7 @@ class Report extends BackendController
         foreach ($routes as $pattern => &$route) {
 
             if (strpos($pattern, 'admin') === 0) {
-                $route['permission_name'] = array($permissions['admin']);
+                $route['permission_name'] = array($this->text($permissions['admin']));
             } else {
                 $route['permission_name'] = array($this->text('Public'));
             }
@@ -92,7 +92,7 @@ class Report extends BackendController
                 continue;
             }
 
-            $route['permission_name'][] = $permissions[$route['access']];
+            $route['permission_name'][] = $this->text($permissions[$route['access']]);
         }
 
         ksort($routes);

@@ -12,20 +12,12 @@ namespace gplcart\core\models;
 use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\helpers\Session as SessionHelper;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to user roles
  */
 class UserRole extends Model
 {
-
-    /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
     /**
      * Session class instance
      * @var \gplcart\core\helpers\Session $session
@@ -34,15 +26,13 @@ class UserRole extends Model
 
     /**
      * Constructor
-     * @param LanguageModel $language
      * @param SessionHelper $session
      */
-    public function __construct(LanguageModel $language, SessionHelper $session)
+    public function __construct(SessionHelper $session)
     {
         parent::__construct();
 
         $this->session = $session;
-        $this->language = $language;
     }
 
     /**
@@ -218,146 +208,10 @@ class UserRole extends Model
     /**
      * Returns an array of default permissions
      * @return array
-     * @todo move to config folder
      */
     protected function defaultPermissions()
     {
-        $permissions = array(
-            'admin' => $this->language->text('Admin: access'),
-            'editor' => $this->language->text('Theme editor: access'),
-            'editor_edit' => $this->language->text('Theme editor: edit files'),
-            'backup' => $this->language->text('Backup: access'),
-            'backup_delete' => $this->language->text('Backup: delete'),
-            'product' => $this->language->text('Product: access'),
-            'product_add' => $this->language->text('Product: add'),
-            'product_edit' => $this->language->text('Product: edit'),
-            'product_delete' => $this->language->text('Product: delete'),
-            'product_class' => $this->language->text('Product class: access'),
-            'product_class_add' => $this->language->text('Product class: add'),
-            'product_class_edit' => $this->language->text('Product class: edit'),
-            'product_class_delete' => $this->language->text('Product class: delete'),
-            'price_rule' => $this->language->text('Price rule: access'),
-            'price_rule_add' => $this->language->text('Price rule: add'),
-            'price_rule_edit' => $this->language->text('Price rule: edit'),
-            'price_rule_delete' => $this->language->text('Price rule: delete'),
-            'page' => $this->language->text('Page: access'),
-            'page_add' => $this->language->text('Page: add'),
-            'page_edit' => $this->language->text('Page: edit'),
-            'page_delete' => $this->language->text('Page: delete'),
-            'review' => $this->language->text('Review: access'),
-            'review_add' => $this->language->text('Review: add'),
-            'review_edit' => $this->language->text('Review: edit'),
-            'review_delete' => $this->language->text('Review: delete'),
-            'category' => $this->language->text('Category: access'),
-            'category_add' => $this->language->text('Category: add'),
-            'category_edit' => $this->language->text('Category: edit'),
-            'category_delete' => $this->language->text('Category: delete'),
-            'category_group' => $this->language->text('Category group: access'),
-            'category_group_add' => $this->language->text('Category group: add'),
-            'category_group_edit' => $this->language->text('Category group: edit'),
-            'category_group_delete' => $this->language->text('Category group: delete'),
-            'collection' => $this->language->text('Collection: access'),
-            'collection_add' => $this->language->text('Collection: add'),
-            'collection_edit' => $this->language->text('Collection: edit'),
-            'collection_delete' => $this->language->text('Collection: delete'),
-            'collection_item' => $this->language->text('Collection items: access'),
-            'collection_item_add' => $this->language->text('Collection item: add'),
-            'collection_item_edit' => $this->language->text('Collection item: edit'),
-            'collection_item_delete' => $this->language->text('Collection item: delete'),
-            'wishlist_add' => $this->language->text('Wishlist: add'),
-            'wishlist_delete' => $this->language->text('Wishlist: delete'),
-            'user' => $this->language->text('User: access'),
-            'user_add' => $this->language->text('User: add'),
-            'user_edit' => $this->language->text('User: edit'),
-            'user_delete' => $this->language->text('User: delete'),
-            'user_role' => $this->language->text('User role: access'),
-            'user_role_add' => $this->language->text('User role: add'),
-            'user_role_edit' => $this->language->text('User role: edit'),
-            'user_role_delete' => $this->language->text('User role: delete'),
-            'field' => $this->language->text('Field: access'),
-            'field_edit' => $this->language->text('Field: edit'),
-            'field_add' => $this->language->text('Field: add'),
-            'field_delete' => $this->language->text('Field: delete'),
-            'field_value' => $this->language->text('Field value: delete'),
-            'field_value_edit' => $this->language->text('Field value: edit'),
-            'field_value_add' => $this->language->text('Field value: add'),
-            'field_value_delete' => $this->language->text('Field value: delete'),
-            'order' => $this->language->text('Order: access'),
-            'order_add' => $this->language->text('Order: add'),
-            'order_edit' => $this->language->text('Order: edit'),
-            'order_delete' => $this->language->text('Order: delete'),
-            'marketplace' => $this->language->text('Marketplace: access'),
-            'module' => $this->language->text('Module: access'),
-            'module_edit' => $this->language->text('Module: edit'),
-            'module_install' => $this->language->text('Module: install'),
-            'module_uninstall' => $this->language->text('Module: uninstall'),
-            'module_enable' => $this->language->text('Module: enable'),
-            'module_disable' => $this->language->text('Module: disable'),
-            'module_upload' => $this->language->text('Module: upload'),
-            'module_delete' => $this->language->text('Module: delete'),
-            'module_backup' => $this->language->text('Module: backup'),
-            'store' => $this->language->text('Store: access'),
-            'store_edit' => $this->language->text('Store: edit'),
-            'store_add' => $this->language->text('Store: add'),
-            'store_delete' => $this->language->text('Store: delete'),
-            'dashboard' => $this->language->text('Dashboard: access'),
-            'dashboard_edit' => $this->language->text('Dashboard: edit'),
-            'image_style' => $this->language->text('Image style: access'),
-            'image_style_edit' => $this->language->text('Image style: edit'),
-            'image_style_add' => $this->language->text('Image style: add'),
-            'language' => $this->language->text('Language: access'),
-            'language_add' => $this->language->text('Language: add'),
-            'language_edit' => $this->language->text('Language: edit'),
-            'language_delete' => $this->language->text('Language: delete'),
-            'currency' => $this->language->text('Currency: access'),
-            'currency_add' => $this->language->text('Currency: add'),
-            'currency_edit' => $this->language->text('Currency: edit'),
-            'currency_delete' => $this->language->text('Currency: delete'),
-            'country' => $this->language->text('Country: access'),
-            'country_edit' => $this->language->text('Country: edit'),
-            'country_add' => $this->language->text('Country: add'),
-            'country_delete' => $this->language->text('Country: delete'),
-            'country_format' => $this->language->text('Country format: access'),
-            'country_format_add' => $this->language->text('Country format: add'),
-            'country_format_edit' => $this->language->text('Country format: edit'),
-            'country_format_delete' => $this->language->text('Country format: delete'),
-            'state' => $this->language->text('Country state: access'),
-            'state_add' => $this->language->text('Country state: add'),
-            'state_edit' => $this->language->text('Country state: edit'),
-            'state_delete' => $this->language->text('Country state: delete'),
-            'transaction' => $this->language->text('Transaction: access'),
-            'transaction_edit' => $this->language->text('Transaction: edit'),
-            'transaction_delete' => $this->language->text('Transaction: delete'),
-            'trigger' => $this->language->text('Trigger: access'),
-            'trigger_add' => $this->language->text('Trigger: add'),
-            'trigger_edit' => $this->language->text('Trigger: edit'),
-            'trigger_delete' => $this->language->text('Trigger: delete'),
-            'city' => $this->language->text('City: access'),
-            'city_add' => $this->language->text('City: add'),
-            'city_edit' => $this->language->text('City: edit'),
-            'city_delete' => $this->language->text('City: delete'),
-            'report' => $this->language->text('Report: common access'),
-            'report_events' => $this->language->text('Report: system events'),
-            'report_status' => $this->language->text('Report: System status'),
-            'report_library' => $this->language->text('Report: Libraries'),
-            'file' => $this->language->text('File: access'),
-            'file_add' => $this->language->text('File: add'),
-            'file_edit' => $this->language->text('File: edit'),
-            'file_delete' => $this->language->text('File: delete'),
-            'file_upload' => $this->language->text('File: upload'),
-            'filter' => $this->language->text('Filter: access'),
-            'filter_edit' => $this->language->text('Filter: edit'),
-            'cron' => $this->language->text('Cron: access'),
-            'import' => $this->language->text('Import: access'),
-            'export' => $this->language->text('Export: access'),
-            'settings' => $this->language->text('Settings: access'),
-            'alias' => $this->language->text('Alias: access'),
-            'zone' => $this->language->text('Zone: access'),
-            'zone_edit' => $this->language->text('Zone: edit'),
-            'zone_add' => $this->language->text('Zone: add'),
-            'zone_delete' => $this->language->text('Zone: delete'),
-        );
-
+        $permissions = include GC_CONFIG_PERMISSION;
         return $permissions;
     }
 

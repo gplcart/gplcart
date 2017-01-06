@@ -1,8 +1,0 @@
-*
-!.gitignore
-!common.php
-!database.php
-!language.php
-!country.php
-!route.php
-!library.php
