@@ -414,8 +414,8 @@ class Install extends BaseValidator
         if ($result === true) {
             return true;
         }
-        
-        if(empty($result)){
+
+        if (empty($result)) {
             $result = $this->language->text('Could not connect to database');
         }
 

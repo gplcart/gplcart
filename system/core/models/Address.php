@@ -44,10 +44,17 @@ class Address extends Model
     {
         $this->hook->fire('get.address.before', $address_id);
 
+        if (empty($address_id)) {
+            $address = array();
+            return $address;
+        }
+
         $sql = 'SELECT a.*, c.name AS country_name,'
                 . ' c.native_name AS country_native_name,'
-                . ' c.format AS country_format, s.name AS state_name,'
-                . ' ci.name AS city_name FROM address a'
+                . ' c.format AS country_format, c.zone_id AS country_zone_id,'
+                . ' s.name AS state_name, s.zone_id AS state_zone_id,'
+                . ' ci.name AS city_name, ci.zone_id AS city_zone_id'
+                . ' FROM address a'
                 . ' LEFT JOIN country c ON(a.country=c.code)'
                 . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
                 . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
@@ -134,7 +141,7 @@ class Address extends Model
 
         $list = $this->prepareList($results, $data);
 
-        $this->hook->fire('address.list', $data, $list);
+        $this->hook->fire('addresses', $data, $list);
         return $list;
     }
 

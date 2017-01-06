@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($modules)) { ?>
+<?php if (!empty($modules) || $filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
@@ -23,13 +23,16 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
+    <?php if ($filtering && empty($modules)) { ?>
+    <?php echo $this->text('No results'); ?>
+    <?php } ?>
+    <?php if (!empty($modules)) { ?>
     <table class="table modules">
       <thead>
-        <tr class="active">
-          <th><?php echo $this->text('Name'); ?></th>
-          <th><?php echo $this->text('Version'); ?></th>
-          <th><?php echo $this->text('Core'); ?></th>
-          <th><?php echo $this->text('Type'); ?></th>
+        <tr>
+          <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_version; ?>"><?php echo $this->text('Version'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th><?php echo $this->text('Status'); ?></th>
           <th></th>
         </tr>
@@ -46,9 +49,6 @@
           </td>
           <td class="middle">
             <?php echo $info['version'] ? $this->escape($info['version']) : $this->text('Unknown'); ?>
-          </td>
-          <td class="middle">
-            <?php echo $this->escape($info['core']); ?>
           </td>
           <td class="middle">
             <?php echo $this->escape($info['type_name']); ?>
@@ -112,7 +112,6 @@
                 </a>
               </li>
               <?php } ?>
-              
               <?php if ($this->access('backup_add')) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'backup', 'module_id' => $module_id, 'token' => $token)); ?>">
@@ -120,7 +119,6 @@
                 </a>
               </li>
               <?php } ?>
-              
               <?php if (isset($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url($info['configure']); ?>">
@@ -143,13 +141,20 @@
             <b><?php echo $this->text('Dependencies'); ?></b>: <?php echo $this->escape(implode(',', $info['dependencies'])); ?><br>
             <?php } ?>
             <?php if (isset($info['weight'])) { ?>
-            <b><?php echo $this->text('Weight'); ?></b>: <?php echo $this->escape($info['weight']); ?>
+            <b><?php echo $this->text('Weight'); ?></b>: <?php echo $this->escape($info['weight']); ?><br>
+            <?php } ?>
+            <?php if (!empty($info['hooks'])) { ?>
+            <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->escape(implode(',', $info['hooks'])); ?>
             <?php } ?>
           </td>
         </tr>
         <?php } ?>
       </tbody>
     </table>
+    <?php } ?>
+    <?php if (!empty($pager)) { ?>
+    <div class="panel-footer"><?php echo $pager; ?></div>
+    <?php } ?>
   </div>
 </div>
 <?php } else { ?>

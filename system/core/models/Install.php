@@ -398,6 +398,11 @@ class Install extends Model
         }
 
         $code = key($settings['store']['language']);
+        
+        if($code == 'en'){
+            return false;
+        }
+        
         $this->config->set('language', $code);
 
         $native_name = $name = $settings['store']['language'][$code][0];

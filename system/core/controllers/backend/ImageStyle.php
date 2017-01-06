@@ -112,6 +112,7 @@ class ImageStyle extends BackendController
         $this->submitImageStyle($imagestyle);
 
         $this->setDataEditImageStyle();
+        
         $this->setTitleEditImageStyle($imagestyle);
         $this->setBreadcrumbEditImageStyle();
         $this->outputEditImageStyle();
@@ -238,8 +239,7 @@ class ImageStyle extends BackendController
         $actions = $this->getData('imagestyle.actions');
 
         if (!$this->isError()) {
-            // Do not sort on errors when "weight" data is not set
-            // bacause it changes order of array items
+            // Do not sort on errors when "weight" is not set
             gplcart_array_sort($actions);
         }
 

@@ -51,7 +51,14 @@ class Module extends BackendController
     {
         $this->actionModule();
 
-        $modules = $this->getListModule();
+        $query = $this->getFilterQuery();
+        $total = $this->getTotalModule($query);
+        $limit = $this->setPager($total, $query);
+        $modules = $this->getListModule($query, $limit);
+
+        $allowed = array('type', 'name', 'version');
+        $this->setFilter($allowed, $query);
+
         $this->setData('modules', $modules);
 
         $this->setTitleListModule();
@@ -120,9 +127,11 @@ class Module extends BackendController
 
     /**
      * Returns an array of modules
+     * @param array $query
+     * @param array $limit
      * @return array
      */
-    protected function getListModule()
+    protected function getListModule(array $query, array $limit = array())
     {
         $modules = $this->module->getList();
 
@@ -130,6 +139,101 @@ class Module extends BackendController
             $module['always_enabled'] = $this->module->isActiveTheme($module['id']);
             $module['type_name'] = $this->text(ucfirst($module['type']));
         }
+
+        $this->sortListModule($modules, $query);
+        $this->filterListModule($modules, $query);
+        $this->limitListModule($modules, $limit);
+        return $modules;
+    }
+
+    /**
+     * Returns a total number of modules found 
+     * @param array $query
+     * @return integer
+     */
+    protected function getTotalModule(array $query)
+    {
+        $modules = $this->getListModule($query);
+        return count($modules);
+    }
+
+    /**
+     * Filters modules using by a field
+     * @param array $modules
+     * @param array $query
+     * @return array
+     */
+    protected function filterListModule(array &$modules, array $query)
+    {
+        $allowed = array('type', 'name', 'version');
+
+        // Remove all but white-listed fields
+        $filter = array_intersect_key($query, array_flip($allowed));
+
+        if (empty($filter)) {
+            return $modules;
+        }
+
+        // Use only first pair field => search term
+        $term = reset($filter);
+        $field = key($filter);
+
+        // %LIKE% filter
+        $filtered = array_filter($modules, function ($module) use ($field, $term) {
+            return stripos($module[$field], $term) !== false;
+        });
+
+        $modules = $filtered;
+        return $modules;
+    }
+
+    /**
+     * Slices an array of modules using starting offset and max length
+     * @param array $modules
+     * @param array $limit
+     */
+    protected function limitListModule(array &$modules, array $limit)
+    {
+        if (!empty($limit)) {
+            list($from, $to) = $limit;
+            $modules = array_slice($modules, $from, $to, true);
+        }
+    }
+
+    /**
+     * Sort modules by a field
+     * @param array $modules
+     * @param array $query
+     * @return array
+     */
+    protected function sortListModule(array &$modules, array $query)
+    {
+        if (empty($query['order']) || empty($query['sort'])) {
+            return $modules;
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('type', 'name', 'version');
+
+        if (!in_array($query['order'], $allowed_order)//
+                || !in_array($query['sort'], $allowed_sort)) {
+            return $modules;
+        }
+
+        uasort($modules, function($a, $b) use ($query) {
+
+            $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
+
+            if ($diff === 0) {
+                return 0;
+            }
+
+            if ($query['order'] == 'asc') {
+                return $diff > 0;
+            }
+
+            return $diff < 0;
+        });
 
         return $modules;
     }

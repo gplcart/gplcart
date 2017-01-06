@@ -303,12 +303,7 @@ class Trigger extends BackendController
         $this->controlAccess('trigger_edit');
         $submitted = $this->getSubmitted();
 
-        $result = $this->trigger->update($trigger['trigger_id'], $submitted);
-
-        if (empty($result)) {
-            $message = $this->text('Trigger has not been updated');
-            $this->redirect('', $message, 'danger');
-        }
+        $this->trigger->update($trigger['trigger_id'], $submitted);
 
         $message = $this->text('Trigger has been updated');
         $this->redirect('admin/settings/trigger', $message, 'success');
@@ -345,7 +340,10 @@ class Trigger extends BackendController
             return null;
         }
 
-        gplcart_array_sort($conditions);
+        if (!$this->isError()) {
+            // Do not sort on errors when "weight" is not set
+            gplcart_array_sort($conditions);
+        }
 
         $modified = array();
         foreach ($conditions as $condition) {

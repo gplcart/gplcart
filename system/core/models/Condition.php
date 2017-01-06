@@ -12,6 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\Handler;
+use gplcart\core\helpers\Url;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -27,12 +28,21 @@ class Condition extends Model
     protected $language;
 
     /**
-     * Constructor
+     * Url helper instance
+     * @var \gplcart\core\helpers\Url $url
      */
-    public function __construct(LanguageModel $language)
+    protected $url;
+
+    /**
+     * Constructor
+     * @param LanguageModel $language
+     * @param Url $url
+     */
+    public function __construct(LanguageModel $language, Url $url)
     {
         parent::__construct();
 
+        $this->url = $url;
         $this->language = $language;
     }
 
@@ -192,7 +202,7 @@ class Condition extends Model
 
         $handlers['route'] = array(
             'title' => $this->language->text('Route (global)'),
-            'description' => $this->language->text('Parameters: system route pattern. Only = and != operators allowed'),
+            'description' => $this->language->text('Parameters: <a href="@url">system route pattern</a>. Only = and != operators allowed', array('@url' => $this->url->get('admin/report/route'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'route'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'route'),
@@ -210,7 +220,7 @@ class Condition extends Model
 
         $handlers['user_id'] = array(
             'title' => $this->language->text('User ID (global)'),
-            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/user/list'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'userId'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'userId'),
@@ -219,7 +229,7 @@ class Condition extends Model
 
         $handlers['user_role_id'] = array(
             'title' => $this->language->text('User role ID (global)'),
-            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/user/role'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'userRole'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'userRole'),
@@ -237,7 +247,7 @@ class Condition extends Model
 
         $handlers['product_id'] = array(
             'title' => $this->language->text('Product ID (checkout)'),
-            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/product'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'productId'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'productId'),
@@ -245,8 +255,8 @@ class Condition extends Model
         );
 
         $handlers['product_category_id'] = array(
-            'title' => $this->language->text('Product category ID (checkout)'),
-            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'catalog')),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'categoryId'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'categoryId'),
@@ -254,8 +264,8 @@ class Condition extends Model
         );
 
         $handlers['product_brand_category_id'] = array(
-            'title' => $this->language->text('Product brand category ID (checkout)'),
-            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'brand')),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'brandCategoryId'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'categoryId'),
@@ -300,7 +310,7 @@ class Condition extends Model
 
         $handlers['country'] = array(
             'title' => $this->language->text('Country code (checkout)'),
-            'description' => $this->language->text('Parameters: List of country codes separated by comma'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of codes</a>, separated by comma', array('@url' => $this->url->get('admin/settings/country'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'country'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'country'),
@@ -309,10 +319,19 @@ class Condition extends Model
 
         $handlers['state'] = array(
             'title' => $this->language->text('Country state code (checkout)'),
-            'description' => $this->language->text('Parameters: List of country state codes separated by comma'),
+            'description' => $this->language->text('Parameters: list of codes, separated by comma'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'state'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'state'),
+            ),
+        );
+        
+        $handlers['shipping_zone_id'] = array(
+            'title' => $this->language->text('Shipping address zone ID (checkout)'),
+            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shippingZone'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shippingZone'),
             ),
         );
 

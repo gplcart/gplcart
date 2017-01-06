@@ -293,6 +293,8 @@ class Route
     protected function callControllerRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
+            
+            $pattern = trim($pattern, '/');
 
             if (empty($route['arguments'])) {
                 $route['arguments'] = array();

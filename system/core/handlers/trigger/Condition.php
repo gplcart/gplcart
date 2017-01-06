@@ -10,6 +10,7 @@
 namespace gplcart\core\handlers\trigger;
 
 use gplcart\core\Route;
+use gplcart\core\models\Zone as ZoneModel;
 use gplcart\core\models\User as UserModel;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Product as ProductModel;
@@ -18,6 +19,7 @@ use gplcart\core\models\Condition as ConditionModel;
 
 class Condition
 {
+
     /**
      * Route class instance
      * @var \gplcart\core\Route $route
@@ -55,18 +57,26 @@ class Condition
     protected $address;
 
     /**
+     * Zone model instance
+     * @var \gplcart\core\models\Zone $zone
+     */
+    protected $zone;
+
+    /**
      * Constructor
      * @param ConditionModel $condition
      * @param UserModel $user
      * @param CurrencyModel $currency
      * @param ProductModel $product
      * @param AddressModel $address
+     * @param ZoneModel $zone
      * @param Route $route
      */
     public function __construct(ConditionModel $condition, UserModel $user,
             CurrencyModel $currency, ProductModel $product,
-            AddressModel $address, Route $route)
+            AddressModel $address, ZoneModel $zone, Route $route)
     {
+        $this->zone = $zone;
         $this->user = $user;
         $this->route = $route;
         $this->address = $address;
@@ -76,20 +86,69 @@ class Condition
     }
 
     /**
+     * Returns true if shipping zone ID condition is met
+     * @param array $condition
+     * @param array $data
+     * @return boolean
+     */
+    public function shippingZone(array $condition, array $data)
+    {
+        if (!isset($data['data']['shipping_address'])) {
+            return false;
+        }
+
+        $address = $this->address->get($data['data']['shipping_address']);
+
+        if (empty($address)) {
+            return false;
+        }
+
+        // Filter out removed/disabled condition zones 
+        $value = array_filter((array) $condition['value'], function ($id) {
+            $zone = $this->zone->get($id);
+            return !empty($zone['status']);
+        });
+
+        if (empty($value)) {
+            return false;
+        }
+
+        if (!in_array($condition['operator'], array('=', '!='))) {
+            $value = (int) reset($value);
+        }
+
+        $fields = array('country_zone_id', 'state_zone_id', 'city_zone_id');
+
+        foreach ($fields as $field) {
+
+            $matched = $this->condition->compareNumeric($address[$field], $value, $condition['operator']);
+
+            if ($matched) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns true if route condition is met
      * @param array $condition
      * @return boolean
      */
     public function route(array $condition)
     {
-        $patterns = (array) $condition['value'];
-
         if (!in_array($condition['operator'], array('=', '!='))) {
             return false;
         }
 
         $route = $this->route->getCurrent();
-        return $this->condition->compareString($route['pattern'], $patterns, $condition['operator']);
+
+        if (empty($route['pattern'])) {
+            return false;
+        }
+
+        return $this->condition->compareString($route['pattern'], (array) $condition['value'], $condition['operator']);
     }
 
     /**
@@ -99,8 +158,6 @@ class Condition
      */
     public function path(array $condition)
     {
-        $patterns = (array) $condition['value'];
-
         if (!in_array($condition['operator'], array('=', '!='))) {
             return false;
         }
@@ -108,7 +165,7 @@ class Condition
         $path = $this->route->path();
 
         $found = false;
-        foreach ($patterns as $pattern) {
+        foreach ((array) $condition['value'] as $pattern) {
             if (gplcart_parse_pattern($path, $pattern)) {
                 $found = true;
             }
@@ -124,8 +181,8 @@ class Condition
      */
     public function date(array $condition)
     {
-        $condition_value = reset($condition['value']);
-        return $this->condition->compareNumeric(GC_TIME, (int) $condition_value, $condition['operator']);
+        $value = reset($condition['value']);
+        return $this->condition->compareNumeric(GC_TIME, (int) $value, $condition['operator']);
     }
 
     /**
@@ -140,8 +197,8 @@ class Condition
             return false;
         }
 
-        $condition_value = reset($condition['value']);
-        return $this->condition->compareNumeric((int) $data['rule']['used'], (int) $condition_value, $condition['operator']);
+        $value = reset($condition['value']);
+        return $this->condition->compareNumeric((int) $data['rule']['used'], (int) $value, $condition['operator']);
     }
 
     /**
@@ -158,16 +215,14 @@ class Condition
 
         $condition_value = explode('|', reset($condition['value']));
         $cart_currency = $data['cart']['currency'];
-        $cart_subtotal = (int) $data['cart']['total'];
         $condition_currency = $cart_currency;
-        $condition_operator = $condition['operator'];
 
         if (!empty($condition_value[1])) {
             $condition_currency = $condition_value[1];
         }
 
-        $condition_price = $this->currency->convert((int) $condition_value[0], $condition_currency, $cart_currency);
-        return $this->condition->compareNumeric($cart_subtotal, $condition_price, $condition_operator);
+        $value = $this->currency->convert((int) $condition_value[0], $condition_currency, $cart_currency);
+        return $this->condition->compareNumeric((int) $data['cart']['total'], $value, $condition['operator']);
     }
 
     /**
@@ -182,14 +237,13 @@ class Condition
             return false;
         }
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
         foreach ($data['cart']['items'] as $item) {
-            if ($this->condition->compareNumeric((int) $item['product_id'], $condition_value, $condition['operator'])) {
+            if ($this->condition->compareNumeric((int) $item['product_id'], $value, $condition['operator'])) {
                 return true;
             }
         }
@@ -225,14 +279,16 @@ class Condition
             return false;
         }
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
         foreach ((array) $products as $product) {
-            if ($this->condition->compareNumeric((int) $product['category_id'], $condition_value, $condition['operator'])) {
+
+            $matched = $this->condition->compareNumeric((int) $product['category_id'], $value, $condition['operator']);
+
+            if ($matched) {
                 return true;
             }
         }
@@ -267,16 +323,16 @@ class Condition
             return false;
         }
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
         foreach ((array) $products as $product) {
-            $match = $this->condition->compareNumeric((int) $product['brand_category_id'], $condition_value, $condition['operator']);
 
-            if ($match) {
+            $matched = $this->condition->compareNumeric((int) $product['brand_category_id'], $value, $condition['operator']);
+
+            if ($matched) {
                 return true;
             }
         }
@@ -293,13 +349,12 @@ class Condition
     {
         $user_id = $this->user->id();
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
-        return $this->condition->compareNumeric($user_id, $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($user_id, $value, $condition['operator']);
     }
 
     /**
@@ -311,13 +366,12 @@ class Condition
     {
         $role_id = $this->user->roleId();
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
-        return $this->condition->compareNumeric($role_id, $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($role_id, $value, $condition['operator']);
     }
 
     /**
@@ -332,13 +386,12 @@ class Condition
             return false;
         }
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
-        return $this->condition->compareString($data['data']['order']['shipping'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['order']['shipping'], $value, $condition['operator']);
     }
 
     /**
@@ -353,13 +406,12 @@ class Condition
             return false;
         }
 
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
-        return $this->condition->compareString($data['data']['order']['payment'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($data['data']['order']['payment'], $value, $condition['operator']);
     }
 
     /**
@@ -374,14 +426,12 @@ class Condition
             return false;
         }
 
-        $condition_value = (array) $condition['value'];
-        $address_id = $data['data']['shipping_address'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
-        return $this->condition->compareNumeric($address_id, $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($data['data']['shipping_address'], $value, $condition['operator']);
     }
 
     /**
@@ -392,15 +442,14 @@ class Condition
      */
     public function country(array $condition, array $data)
     {
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
         if (isset($data['data']['address']['country'])) {
             $country = $data['data']['address']['country'];
-            return $this->condition->compareString($country, $condition_value, $condition['operator']);
+            return $this->condition->compareString($country, $value, $condition['operator']);
         }
 
         if (!isset($data['data']['shipping_address'])) {
@@ -414,7 +463,7 @@ class Condition
             return false;
         }
 
-        return $this->condition->compareString($address['country'], $condition_value, $condition['operator']);
+        return $this->condition->compareString($address['country'], $value, $condition['operator']);
     }
 
     /**
@@ -425,15 +474,14 @@ class Condition
      */
     public function state(array $condition, array $data)
     {
-        $condition_value = (array) $condition['value'];
-
+        $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
-            $condition_value = (int) reset($condition_value);
+            $value = (int) reset($value);
         }
 
         if (isset($data['data']['address']['state_id'])) {
             $country = $data['data']['address']['state_id'];
-            return $this->condition->compareNumeric($country, $condition_value, $condition['operator']);
+            return $this->condition->compareNumeric($country, $value, $condition['operator']);
         }
 
         if (!isset($data['data']['shipping_address'])) {
@@ -447,7 +495,7 @@ class Condition
             return false;
         }
 
-        return $this->condition->compareNumeric($address['state_id'], $condition_value, $condition['operator']);
+        return $this->condition->compareNumeric($address['state_id'], $value, $condition['operator']);
     }
 
 }

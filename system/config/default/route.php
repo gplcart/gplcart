@@ -20,7 +20,7 @@ $routes['ajax'] = array(
     )
 );
 
-$routes[''] = array(
+$routes['/'] = array(
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\frontend\\Front', 'indexFront')
     )
@@ -882,6 +882,13 @@ $routes['admin/report/library'] = array(
     'menu' => array('admin' => 'Libraries'),
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Library', 'listLibrary')
+    )
+);
+
+$routes['admin/report/route'] = array(
+    'menu' => array('admin' => 'Routes'),
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listRoutesReport')
     )
 );
 

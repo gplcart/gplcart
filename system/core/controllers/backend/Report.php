@@ -36,6 +36,49 @@ class Report extends BackendController
     }
 
     /**
+     * Displays the routes overview page
+     */
+    public function listRoutesReport()
+    {
+
+        $routes = $this->route->getList();
+        $this->setData('routes', $routes);
+
+        $this->setTitleListRoutesReport();
+        $this->setBreadcrumbListRoutesReport();
+        $this->outputListRoutesReport();
+    }
+
+    /**
+     * Sets title on the routes overview page
+     */
+    protected function setTitleListRoutesReport()
+    {
+        $this->setTitle($this->text('Routes'));
+    }
+
+    /**
+     * Sets breadcrumbs on the routes overview page
+     */
+    protected function setBreadcrumbListRoutesReport()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Renders templates on the routes overview page
+     */
+    protected function outputListRoutesReport()
+    {
+        $this->output('report/routes');
+    }
+
+    /**
      * Displays the system events overview page
      */
     public function listEventReport()
@@ -138,14 +181,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListEventReport()
     {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin'),
             'text' => $this->text('Dashboard')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

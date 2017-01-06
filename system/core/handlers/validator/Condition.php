@@ -9,6 +9,9 @@
 
 namespace gplcart\core\handlers\validator;
 
+use gplcart\core\Route;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Zone as ZoneModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\State as StateModel;
 use gplcart\core\models\Payment as PaymentModel;
@@ -73,6 +76,12 @@ class Condition
     protected $payment;
 
     /**
+     * Route class instance
+     * @var \gplcart\core\Route $route
+     */
+    protected $route;
+
+    /**
      * Shipping model instance
      * @var \gplcart\core\models\Shipping $shipping
      */
@@ -91,6 +100,18 @@ class Condition
     protected $role;
 
     /**
+     * User model instance
+     * @var \gplcart\core\models\User $user
+     */
+    protected $user;
+
+    /**
+     * Zone model instance
+     * @var \gplcart\core\models\Zone $zone
+     */
+    protected $zone;
+
+    /**
      * Constructor
      * @param CurrencyModel $currency
      * @param PriceModel $price
@@ -103,13 +124,21 @@ class Condition
      * @param CountryModel $country
      * @param StateModel $state
      * @param LanguageModel $language
+     * @param ZoneModel $zone
+     * @param UserModel $user
+     * @param Route $route
      */
     public function __construct(CurrencyModel $currency, PriceModel $price,
             PaymentModel $payment, ShippingModel $shipping,
-            ProductModel $product, CategoryModel $category,
-            UserRoleModel $role, AddressModel $address,
-            CountryModel $country, StateModel $state, LanguageModel $language)
+            ProductModel $product, CategoryModel $category, UserRoleModel $role,
+            AddressModel $address, CountryModel $country, StateModel $state,
+            LanguageModel $language, ZoneModel $zone, UserModel $user,
+            Route $route
+    )
     {
+        $this->user = $user;
+        $this->zone = $zone;
+        $this->route = $route;
         $this->role = $role;
         $this->price = $price;
         $this->state = $state;
@@ -124,6 +153,31 @@ class Condition
     }
 
     /**
+     * 
+     * @param string $key
+     * @param string $operator
+     * @param array $values
+     * @param array $data
+     * @return boolean|string
+     */
+    public function shippingZone($key, $operator, array &$values, array $data)
+    {
+        if (!in_array($operator, array('=', '!='))) {
+            return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
+        }
+
+        $zone_id = reset($values);
+        $zone = $this->zone->get($zone_id);
+
+        if (empty($zone)) {
+            $vars = array('@name' => $this->language->text('Zone'));
+            return $this->language->text('@name is unavailable', $vars);
+        }
+
+        return true;
+    }
+
+    /**
      * Validates the route pattern
      * @param string $key
      * @param string $operator
@@ -133,11 +187,19 @@ class Condition
      */
     public function route($key, $operator, array &$values, array $data)
     {
-        if (in_array($operator, array('=', '!='))) {
-            return true;
+        if (!in_array($operator, array('=', '!='))) {
+            return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
         }
 
-        return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
+        $route = reset($values);
+        $routes = $this->route->getList();
+
+        if (empty($routes[$route])) {
+            $vars = array('@name' => $this->language->text('Route'));
+            return $this->language->text('@name is unavailable', $vars);
+        }
+
+        return true;
     }
 
     /**
@@ -150,11 +212,20 @@ class Condition
      */
     public function path($key, $operator, array &$values, array $data)
     {
-        if (in_array($operator, array('=', '!='))) {
-            return true;
+        if (!in_array($operator, array('=', '!='))) {
+            return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
         }
 
-        return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
+        $value = reset($values);
+
+        // Validate regexp. Invalid pattern will trigger an error
+        // depending on the current error reporting level
+        if (preg_match($value, null) === false) {
+            $vars = array('@field' => $this->language->text('Path'));
+            return $this->language->text('@field has invalid value', $vars);
+        }
+
+        return true;
     }
 
     /**
@@ -173,8 +244,9 @@ class Condition
 
         $timestamp = strtotime(reset($values));
 
-        if (empty($timestamp)) {
-            return $this->language->text('Date is not valid English textual datetime');
+        if (empty($timestamp) || $timestamp <= GC_TIME) {
+            $vars = array('@field' => $this->language->text('Date'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $values = array($timestamp);
@@ -226,15 +298,19 @@ class Condition
         }
 
         if (!is_numeric($components[0])) {
-            return $this->language->text('Price must be numeric');
+            $vars = array('@field' => $this->language->text('Price'));
+            return $this->language->text('@field must be numeric', $vars);
         }
 
         $price = $components[0];
 
         if (isset($components[1])) {
+
             $currency = $components[1];
+
             if (!$this->currency->get($currency)) {
-                return $this->language->text('Unknown currency');
+                $vars = array('@name' => $this->language->text('Currency'));
+                return $this->language->text('@name is unavailable', $vars);
             }
         }
 
@@ -270,7 +346,8 @@ class Condition
         });
 
         if ($count != count($exists)) {
-            return $this->language->text('Some products do not exist');
+            $vars = array('@name' => $this->language->text('Product'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -299,7 +376,8 @@ class Condition
         });
 
         if ($count != count($exists)) {
-            return $this->language->text('Some categories do not exist');
+            $vars = array('@name' => $this->language->text('Category'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -315,8 +393,21 @@ class Condition
      */
     public function userId($key, $operator, array &$values, array $data)
     {
-        if (count($values) != count(array_filter($values, 'is_numeric'))) {
+        $count = count($values);
+        $ids = array_filter($values, 'is_numeric');
+
+        if ($count != count($ids)) {
             return $this->language->text('Only numeric parameters allowed');
+        }
+
+        $exists = array_filter($values, function ($user_id) {
+            $user = $this->user->get($user_id);
+            return isset($user['user_id']);
+        });
+
+        if ($count != count($exists)) {
+            $vars = array('@name' => $this->language->text('User'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -345,7 +436,8 @@ class Condition
         });
 
         if ($count != count($exists)) {
-            return $this->language->text('Some roles do not exist');
+            $vars = array('@name' => $this->language->text('Role'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -366,7 +458,8 @@ class Condition
         });
 
         if (count($values) != count($exists)) {
-            return $this->language->text('Some shipping methods do not exist');
+            $vars = array('@name' => $this->language->text('Shipping'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -387,7 +480,8 @@ class Condition
         });
 
         if (count($values) != count($exists)) {
-            return $this->language->text('Some payment methods do not exist');
+            $vars = array('@name' => $this->language->text('Payment'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -401,8 +495,7 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function shippingAddressId($key, $operator, array &$values,
-            array $data)
+    public function shippingAddressId($key, $operator, &$values, $data)
     {
         $count = count($values);
         $ids = array_filter($values, 'is_numeric');
@@ -417,7 +510,8 @@ class Condition
         });
 
         if ($count != count($exists)) {
-            return $this->language->text('Some addresses do not exist');
+            $vars = array('@name' => $this->language->text('Address'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -439,7 +533,8 @@ class Condition
         });
 
         if (count($values) != count($exists)) {
-            return $this->language->text('Some countries do not exist');
+            $vars = array('@name' => $this->language->text('Country'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -468,7 +563,8 @@ class Condition
         });
 
         if ($count != count($exists)) {
-            return $this->language->text('Some country states do not exist');
+            $vars = array('@name' => $this->language->text('State'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
         return true;
