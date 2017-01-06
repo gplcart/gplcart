@@ -71,16 +71,15 @@ class Address extends BaseValidator
      */
     public function address(array &$submitted, array $options = array())
     {
-        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateAddress();
-        $this->validateCountryAddress();
-        $this->validateStateAddress();
-        $this->validateCityAddress();
-        $this->validateTypeAddress();
-        $this->validateTextFieldsAddress();
-        $this->validateUserId();
+        $this->validateAddress($options);
+        $this->validateCountryAddress($options);
+        $this->validateStateAddress($options);
+        $this->validateCityAddress($options);
+        $this->validateTypeAddress($options);
+        $this->validateTextFieldsAddress($options);
+        $this->validateUserId($options);
 
         // No more needed, remove
         $this->unsetSubmitted('format');
@@ -115,11 +114,12 @@ class Address extends BaseValidator
 
     /**
      * Validates a country code
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateCountryAddress()
+    protected function validateCountryAddress(array $options)
     {
-        $code = $this->getSubmitted('country', $this->options);
+        $code = $this->getSubmitted('country', $options);
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -128,7 +128,7 @@ class Address extends BaseValidator
         if (empty($code)) {
             $vars = array('@field' => $this->language->text('Country'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('country', $error, $this->options);
+            $this->setError('country', $error, $options);
             return false;
         }
 
@@ -137,7 +137,7 @@ class Address extends BaseValidator
         if (empty($country['code'])) {
             $vars = array('@name' => $this->language->text('Country'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('country', $error, $this->options);
+            $this->setError('country', $error, $options);
             return false;
         }
 
@@ -148,12 +148,13 @@ class Address extends BaseValidator
 
     /**
      * Validates a country state
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateStateAddress()
+    protected function validateStateAddress(array $options)
     {
         $format = $this->getSubmitted('format');
-        $state_id = $this->getSubmitted('state_id', $this->options);
+        $state_id = $this->getSubmitted('state_id', $options);
 
         if (!isset($state_id) || empty($format)) {
             return null;
@@ -162,14 +163,14 @@ class Address extends BaseValidator
         if (empty($state_id) && !empty($format['state_id']['required'])) {
             $vars = array('@field' => $this->language->text('State'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('state_id', $error, $this->options);
+            $this->setError('state_id', $error, $options);
             return false;
         }
 
         if (!is_numeric($state_id)) {
             $vars = array('@field' => $this->language->text('State'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('state_id', $error, $this->options);
+            $this->setError('state_id', $error, $options);
             return false;
         }
 
@@ -182,7 +183,7 @@ class Address extends BaseValidator
         if (empty($state['state_id'])) {
             $vars = array('@name' => $this->language->text('State'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('state_id', $error, $this->options);
+            $this->setError('state_id', $error, $options);
             return false;
         }
 
@@ -191,11 +192,12 @@ class Address extends BaseValidator
 
     /**
      * Validates a city
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateCityAddress()
+    protected function validateCityAddress(array $options)
     {
-        $city_id = $this->getSubmitted('city_id', $this->options);
+        $city_id = $this->getSubmitted('city_id', $options);
 
         if ($this->isUpdating() && !isset($city_id)) {
             return null;
@@ -212,7 +214,7 @@ class Address extends BaseValidator
             if (!empty($format['city_id']['required'])) {
                 $vars = array('@field' => $this->language->text('City'));
                 $error = $this->language->text('@field is required', $vars);
-                $this->setError('city_id', $error, $this->options);
+                $this->setError('city_id', $error, $options);
                 return false;
             }
 
@@ -224,7 +226,7 @@ class Address extends BaseValidator
             if (empty($city)) {
                 $vars = array('@name' => $this->language->text('City'));
                 $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError('city_id', $error, $this->options);
+                $this->setError('city_id', $error, $options);
                 return false;
             }
             return true;
@@ -233,7 +235,7 @@ class Address extends BaseValidator
         if (mb_strlen($city_id) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('City'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('city_id', $error, $this->options);
+            $this->setError('city_id', $error, $options);
             return false;
         }
 
@@ -242,11 +244,12 @@ class Address extends BaseValidator
 
     /**
      * Validates an address type
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateTypeAddress()
+    protected function validateTypeAddress(array $options)
     {
-        $type = $this->getSubmitted('type', $this->options);
+        $type = $this->getSubmitted('type', $options);
 
         if (!isset($type)) {
             return null;
@@ -257,7 +260,7 @@ class Address extends BaseValidator
         if (!in_array($type, $types)) {
             $vars = array('@name' => $this->language->text('Type'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error, $this->options);
+            $this->setError('type', $error, $options);
             return false;
         }
 
@@ -266,13 +269,14 @@ class Address extends BaseValidator
 
     /**
      * Validates address text fields
+     * @param array $options
      * @return boolean|null
      */
-    protected function validateTextFieldsAddress()
+    protected function validateTextFieldsAddress(array $options)
     {
         $format = $this->getSubmitted('format');
 
-        if (empty($format) || $this->isError('country', $this->options)) {
+        if (empty($format) || $this->isError('country', $options)) {
             return null;
         }
 
@@ -285,7 +289,7 @@ class Address extends BaseValidator
                 continue;
             }
 
-            $submitted_value = $this->getSubmitted($field, $this->options);
+            $submitted_value = $this->getSubmitted($field, $options);
 
             if ($this->isUpdating() && !isset($submitted_value)) {
                 continue;
@@ -301,7 +305,7 @@ class Address extends BaseValidator
 
                 $vars = array('@min' => 1, '@max' => 255, '@field' => $format[$field]['name']);
                 $error = $this->language->text('@field must be @min - @max characters long', $vars);
-                $this->setError($field, $error, $this->options);
+                $this->setError($field, $error, $options);
             }
         }
 

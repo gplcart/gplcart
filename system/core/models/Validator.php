@@ -91,12 +91,6 @@ class Validator extends Model
             ),
         );
 
-        $handlers['p12'] = array(
-            'handlers' => array(
-                'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'p12')
-            ),
-        );
-
         $handlers['csv'] = array(
             'handlers' => array(
                 'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'csv')

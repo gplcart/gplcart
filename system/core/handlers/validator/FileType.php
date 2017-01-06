@@ -21,36 +21,17 @@ class FileType
      * @param array $options
      * @return boolean
      */
-    public function image($file, array $options)
+    public function image($file)
     {
         return is_array(getimagesize($file));
     }
 
     /**
-     * Whether the file is a .p12 sertificate
-     * @param string $file
-     * @param array $options
-     * @return boolean
-     */
-    public function p12($file, array $options)
-    {
-        $content = file_get_contents($file);
-        $secret = isset($options['secret']) ? $options['secret'] : 'notasecret';
-
-        if (empty($content)) {
-            return false;
-        }
-
-        return openssl_pkcs12_read($content, $info, $secret);
-    }
-
-    /**
      * Whether the file is a CSV file
      * @param string $file
-     * @param array $options
      * @return boolean
      */
-    public function csv($file, array $options)
+    public function csv($file)
     {
         $allowed = array('text/plain', 'text/csv', 'text/tsv');
         $mimetype = gplcart_file_mime($file);
@@ -60,10 +41,9 @@ class FileType
     /**
      * Whether the file is a ZIP file
      * @param string $file
-     * @param array $options
      * @return boolean
      */
-    public function zip($file, array $options)
+    public function zip($file)
     {
         $zip = zip_open($file);
         return is_resource($zip);
