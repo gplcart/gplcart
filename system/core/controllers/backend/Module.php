@@ -56,7 +56,7 @@ class Module extends BackendController
         $limit = $this->setPager($total, $query);
         $modules = $this->getListModule($query, $limit);
 
-        $allowed = array('type', 'name', 'version');
+        $allowed = array('type', 'name', 'version', 'id');
         $this->setFilter($allowed, $query);
 
         $this->setData('modules', $modules);
@@ -165,7 +165,7 @@ class Module extends BackendController
      */
     protected function filterListModule(array &$modules, array $query)
     {
-        $allowed = array('type', 'name', 'version');
+        $allowed = array('type', 'name', 'version', 'id');
 
         // Remove all but white-listed fields
         $filter = array_intersect_key($query, array_flip($allowed));
@@ -213,7 +213,7 @@ class Module extends BackendController
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('type', 'name', 'version');
+        $allowed_sort = array('type', 'name', 'version', 'id');
 
         if (!in_array($query['order'], $allowed_order)//
                 || !in_array($query['sort'], $allowed_sort)) {

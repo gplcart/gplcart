@@ -30,6 +30,7 @@
     <table class="table modules">
       <thead>
         <tr>
+          <th><a href="<?php echo $sort_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_version; ?>"><?php echo $this->text('Version'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
@@ -40,6 +41,9 @@
       <tbody>
         <?php foreach ($modules as $module_id => $info) { ?>
         <tr>
+          <td class="middle">
+            <?php echo $this->escape($info['id']); ?>
+          </td>
           <td>
             <div class="name">
               <a href="#" onclick="return false;" data-toggle="collapse" data-target="#module-details-<?php echo $module_id; ?>">
