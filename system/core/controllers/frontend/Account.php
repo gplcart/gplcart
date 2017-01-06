@@ -543,7 +543,7 @@ class Account extends FrontendController
         $this->setData('user', $user);
         $this->setData('address', $address);
 
-        $this->submitAddressAccount($user, $address);
+        $this->submitAddressAccount($user);
 
         $this->setDataEditAddressAccount();
         $this->setTitleEditAddressAccount();

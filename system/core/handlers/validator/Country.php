@@ -78,10 +78,9 @@ class Country extends BaseValidator
 
     /**
      * Validates a country to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCountry(array $options)
+    protected function validateCountry()
     {
         $id = $this->getUpdatingId();
 

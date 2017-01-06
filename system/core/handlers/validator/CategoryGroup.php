@@ -58,7 +58,7 @@ class CategoryGroup extends BaseValidator
      * @param array $options
      * @return boolean|null
      */
-    protected function validateCategoryGroup(array $options)
+    protected function validateCategoryGroup()
     {
         $id = $this->getUpdatingId();
 

@@ -88,7 +88,7 @@ class City extends BaseValidator
      * @param array $options
      * @return boolean|null
      */
-    protected function validateCity(array $options)
+    protected function validateCity()
     {
         $id = $this->getUpdatingId();
 

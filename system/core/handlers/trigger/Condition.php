@@ -18,7 +18,6 @@ use gplcart\core\models\Condition as ConditionModel;
 
 class Condition
 {
-
     /**
      * Route class instance
      * @var \gplcart\core\Route $route
@@ -79,10 +78,9 @@ class Condition
     /**
      * Returns true if route condition is met
      * @param array $condition
-     * @param array $data
      * @return boolean
      */
-    public function route(array $condition, array $data)
+    public function route(array $condition)
     {
         $patterns = (array) $condition['value'];
 
@@ -97,10 +95,9 @@ class Condition
     /**
      * Returns true if path condition is met
      * @param array $condition
-     * @param array $data
      * @return boolean
      */
-    public function path(array $condition, array $data)
+    public function path(array $condition)
     {
         $patterns = (array) $condition['value'];
 
@@ -123,10 +120,9 @@ class Condition
     /**
      * Returns true if a date condition is met
      * @param array $condition
-     * @param array $data
      * @return boolean
      */
-    public function date(array $condition, array $data)
+    public function date(array $condition)
     {
         $condition_value = reset($condition['value']);
         return $this->condition->compareNumeric(GC_TIME, (int) $condition_value, $condition['operator']);
@@ -291,10 +287,9 @@ class Condition
     /**
      * Returns true if a user ID condition is met
      * @param array $condition
-     * @param array $data
      * @return boolean
      */
-    public function userId(array $condition, array $data)
+    public function userId(array $condition)
     {
         $user_id = $this->user->id();
 
@@ -310,10 +305,9 @@ class Condition
     /**
      * Returns true if a user role condition is met
      * @param array $condition
-     * @param array $data
      * @return boolean
      */
-    public function userRole(array $condition, array $data)
+    public function userRole(array $condition)
     {
         $role_id = $this->user->roleId();
 

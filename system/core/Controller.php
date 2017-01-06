@@ -1976,16 +1976,15 @@ class Controller
         $delimiter = $this->config('summary_delimiter', '<!--summary-->');
         return array_filter(array_map('trim', explode($delimiter, $text, 2)));
     }
-
+    
     /**
      * Returns a string from a text before the summary delimiter
      * @param string $text
      * @param boolean $xss
-     * @param array|null $tags
-     * @param array|null $protocols
+     * @param mixed $filter
      * @return string
      */
-    public function summary($text, $xss = false, $tags = null, $protocols = null)
+    public function summary($text, $xss = true, $filter = null)
     {
         $summary = '';
 
@@ -1995,7 +1994,7 @@ class Controller
         }
 
         if ($summary !== '' && $xss) {
-            $summary = $this->xss($summary, $tags, $protocols);
+            $summary = $this->xss($summary, $filter);
         }
 
         return $summary;

@@ -77,7 +77,7 @@ class Category extends FrontendController
         $this->setDataNavbarCategory($products, $total, $query);
 
         $this->setRegionMenuCategory();
-        $this->setRegionContentCategory($category);
+        $this->setRegionContentCategory();
 
         $this->setTitleIndexCategory($category);
         $this->setMetaIndexCategory($category, $children, $products);

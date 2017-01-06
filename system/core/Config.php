@@ -219,7 +219,7 @@ class Config
             }
 
             $module_name = $module_dir;
-            $module_data = $this->getModuleData($module_name, $saved_modules);
+            $module_data = $this->getModuleData($module_name);
 
             if (empty($module_data['info']['core'])) {
                 continue;

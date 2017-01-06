@@ -18,6 +18,12 @@ class User extends FrontendController
 {
 
     /**
+     * The current user data
+     * @var array
+     */
+    protected $data_user = array();
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -233,14 +239,14 @@ class User extends FrontendController
         $this->controlAccessResetPasswordUser();
 
         $honeypot = $this->renderHoneyPotField();
-        $user = $this->getForgetfulUser();
+        $this->data_user = $this->getForgetfulUser();
         $limit = $this->user->getPasswordLength();
 
         $this->setData('honeypot', $honeypot);
-        $this->setData('forgetful_user', $user);
+        $this->setData('forgetful_user', $this->data_user);
         $this->setData('password_limit', $limit);
 
-        $this->submitResetPasswordUser($user);
+        $this->submitResetPasswordUser();
 
         $this->setTitleEditResetPasswordUser();
         $this->setBreadcrumbEditResetPasswordUser();
@@ -299,10 +305,9 @@ class User extends FrontendController
 
     /**
      * Restores forgotten password
-     * @param array $user
      * @return null
      */
-    protected function submitResetPasswordUser(array $user)
+    protected function submitResetPasswordUser()
     {
         if (!$this->isPosted('reset')) {
             return null;

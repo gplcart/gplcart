@@ -120,6 +120,10 @@ class Library
                 $library['basepath'] = $this->getBasePath($library);
             }
 
+            if (empty($library['vendor'])) {
+                $library['vendor'] = GC_VENDOR_LIBRARY;
+            }
+
             $version = $this->getVersion($library);
 
             if (!isset($version)) {

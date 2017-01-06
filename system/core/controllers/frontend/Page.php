@@ -25,6 +25,12 @@ class Page extends FrontendController
     protected $page;
 
     /**
+     * The current page data
+     * @var array
+     */
+    protected $data_page = array();
+
+    /**
      * Constructor
      * @param PageModel $page
      */
@@ -41,16 +47,16 @@ class Page extends FrontendController
      */
     public function indexPage($page_id)
     {
-        $page = $this->getPage($page_id);
+        $this->data_page = $this->getPage($page_id);
 
-        $this->setHtmlFilter($page);
-        $this->setDataImagesPage($page);
-        $this->setData('page', $page);
+        $this->setHtmlFilter($this->data_page);
+        $this->setDataImagesPage();
+        $this->setData('page', $this->data_page);
         $this->setRegionContentPage();
 
-        $this->setTitlePage($page);
-        $this->setMetaEntity($page);
-        $this->setBreadcrumbPage($page);
+        $this->setTitlePage();
+        $this->setMetaEntity($this->data_page);
+        $this->setBreadcrumbPage();
         $this->outputPage();
     }
 
@@ -73,9 +79,8 @@ class Page extends FrontendController
 
     /**
      * Sets breadcrumbs on the page
-     * @param array $page
      */
-    protected function setBreadcrumbPage(array $page)
+    protected function setBreadcrumbPage()
     {
         $breadcrumb = array(
             'url' => $this->url('/'),
@@ -87,11 +92,10 @@ class Page extends FrontendController
 
     /**
      * Sets titles on the page
-     * @param array $page
      */
-    protected function setTitlePage(array $page)
+    protected function setTitlePage()
     {
-        $this->setTitle($page['title']);
+        $this->setTitle($this->data_page['title']);
     }
 
     /**
@@ -120,14 +124,13 @@ class Page extends FrontendController
 
     /**
      * Sets rendered page images
-     * @param array $page
      */
-    protected function setDataImagesPage(array $page)
+    protected function setDataImagesPage()
     {
         $imagestyle = $this->setting('image_style_page', 5);
-        $this->setItemThumb($page, array('imagestyle' => $imagestyle));
+        $this->setItemThumb($this->data_page, array('imagestyle' => $imagestyle));
 
-        $html = $this->render('page/blocks/images', array('page' => $page));
+        $html = $this->render('page/blocks/images', array('page' => $this->data_page));
         $this->setData('images', $html);
     }
 

@@ -85,7 +85,7 @@ class Image extends FrontendController
             $this->response->error404(false);
         }
 
-        $actions = $this->image->getStyleActions($imagestyle_id, true);
+        $actions = $this->image->getStyleActions($imagestyle_id);
 
         if (empty($actions)) {
             $this->response->error404(false);

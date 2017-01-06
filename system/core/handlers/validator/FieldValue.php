@@ -94,7 +94,7 @@ class FieldValue extends BaseValidator
      * @param array $options
      * @return boolean|null
      */
-    protected function validateFieldValue(array $options)
+    protected function validateFieldValue()
     {
         $id = $this->getUpdatingId();
 

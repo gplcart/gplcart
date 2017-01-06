@@ -75,10 +75,9 @@ class Category extends BaseValidator
 
     /**
      * Validates a category to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCategory(array $options)
+    protected function validateCategory()
     {
         $id = $this->getUpdatingId();
 

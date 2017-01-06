@@ -833,7 +833,7 @@ class Checkout extends FrontendController
         $this->setData('templates', $templates);
 
         $this->setTitleCompleteCheckout($order);
-        $this->setBreadcrumbCompleteCheckout($order);
+        $this->setBreadcrumbCompleteCheckout();
         $this->outputCompleteCheckout();
     }
 

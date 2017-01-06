@@ -112,7 +112,6 @@ class Session
     /**
      * Deletes a data from the session
      * @param string $key
-     * @param string $secondkey
      * @return boolean
      */
     public function delete($key = null)

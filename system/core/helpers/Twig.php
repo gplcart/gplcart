@@ -243,8 +243,8 @@ class Twig
      */
     protected function addFunctionSummary($object)
     {
-        $function = new \Twig_SimpleFunction('summary', function ($text, $xss = false, $tags = null, $protocols = null) use ($object) {
-            return $object->summary($text, $xss, $tags, $protocols);
+        $function = new \Twig_SimpleFunction('summary', function ($text, $xss = false, $filter = null) use ($object) {
+            return $object->summary($text, $xss, $filter);
         }, array('is_safe' => array('all')));
 
         $this->twig->addFunction($function);

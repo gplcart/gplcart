@@ -57,10 +57,9 @@ class Collection extends BaseValidator
 
     /**
      * Validates a collection to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCollection(array $options)
+    protected function validateCollection()
     {
         $id = $this->getUpdatingId();
 

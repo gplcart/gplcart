@@ -192,7 +192,7 @@ class Controller extends BaseController
         $this->cart_quantity = (array) $this->cart->getQuantity($options);
 
         // Don't count, use the same arguments to avoid an extra query
-        // see $this->setItemProductWishlist()
+        // @see $this->setItemProductWishlist()
         $this->wishlist_content = (array) $this->wishlist->getList($options);
 
         $this->data['cart_quantity'] = $this->cart_quantity;
@@ -868,7 +868,7 @@ class Controller extends BaseController
 
             $response = $data;
             if ($this->isPosted('add_to_cart') && $data['severity'] === 'success') {
-                $cart = $this->renderCartPreview($data);
+                $cart = $this->renderCartPreview();
                 $response += array('modal' => $cart);
             }
 

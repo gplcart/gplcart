@@ -64,10 +64,9 @@ class Currency extends BaseValidator
 
     /**
      * Validates a currency to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCurrency(array $options)
+    protected function validateCurrency()
     {
         $id = $this->getUpdatingId();
 

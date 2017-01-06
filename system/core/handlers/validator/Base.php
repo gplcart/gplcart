@@ -28,6 +28,12 @@ class Base
      * @var array
      */
     protected $submitted = array();
+    
+    /**
+     * An array of validator options
+     * @var array
+     */
+    protected $options = array();
 
     /**
      * Alias model instance

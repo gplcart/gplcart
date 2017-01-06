@@ -57,10 +57,9 @@ class Field extends BaseValidator
 
     /**
      * Validates a field to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateField(array $options)
+    protected function validateField()
     {
         $id = $this->getUpdatingId();
 
