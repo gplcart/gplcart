@@ -336,6 +336,7 @@ class UserRole extends Model
             'city_add' => $this->language->text('City: add'),
             'city_edit' => $this->language->text('City: edit'),
             'city_delete' => $this->language->text('City: delete'),
+            'report' => $this->language->text('Report: common access'),
             'report_events' => $this->language->text('Report: system events'),
             'report_status' => $this->language->text('Report: System status'),
             'report_library' => $this->language->text('Report: Libraries'),

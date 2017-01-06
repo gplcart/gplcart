@@ -10,6 +10,7 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Report as ReportModel;
+use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -25,13 +26,21 @@ class Report extends BackendController
     protected $report;
 
     /**
+     * User role model instance
+     * @var \gplcart\core\models\UserRole $role
+     */
+    protected $role;
+
+    /**
      * Constructor
      * @param ReportModel $report
+     * @param UserRoleModel $role
      */
-    public function __construct(ReportModel $report)
+    public function __construct(ReportModel $report, UserRoleModel $role)
     {
         parent::__construct();
 
+        $this->role = $role;
         $this->report = $report;
     }
 
@@ -40,13 +49,54 @@ class Report extends BackendController
      */
     public function listRoutesReport()
     {
-
-        $routes = $this->route->getList();
+        $routes = $this->getRoutesReport();
         $this->setData('routes', $routes);
 
         $this->setTitleListRoutesReport();
         $this->setBreadcrumbListRoutesReport();
         $this->outputListRoutesReport();
+    }
+
+    /**
+     * Returns an array of prepared routes 
+     */
+    protected function getRoutesReport()
+    {
+        $routes = $this->route->getList();
+        return $this->prepareRoutesReport($routes);
+    }
+
+    /**
+     * Prepares an array of routes
+     * @param array $routes
+     * @return array
+     */
+    protected function prepareRoutesReport(array $routes)
+    {
+        $permissions = $this->role->getPermissions();
+
+        foreach ($routes as $pattern => &$route) {
+
+            if (strpos($pattern, 'admin') === 0) {
+                $route['permission_name'] = array($permissions['admin']);
+            } else {
+                $route['permission_name'] = array($this->text('Public'));
+            }
+
+            if (!isset($route['access'])) {
+                continue;
+            }
+
+            if (!isset($permissions[$route['access']])) {
+                $route['permission_name'] = array($this->text('Unknown'));
+                continue;
+            }
+
+            $route['permission_name'][] = $permissions[$route['access']];
+        }
+
+        ksort($routes);
+        return $routes;
     }
 
     /**

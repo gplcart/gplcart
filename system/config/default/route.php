@@ -855,6 +855,7 @@ $routes['admin/settings/filter/edit/(\d+)'] = array(
 );
 
 $routes['admin/report'] = array(
+    'access' => 'report',
     'menu' => array('admin' => 'Reports'),
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
@@ -886,6 +887,7 @@ $routes['admin/report/library'] = array(
 );
 
 $routes['admin/report/route'] = array(
+    'access' => 'report',
     'menu' => array('admin' => 'Routes'),
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listRoutesReport')

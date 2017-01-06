@@ -12,15 +12,14 @@
       <thead>
         <tr>
           <th><?php echo $this->text('Pattern'); ?></th>
-          <th><?php echo $this->text('Controller'); ?></th>
-          <th></th>
+          <th><?php echo $this->text('Access'); ?></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($routes as $pattern => $route) { ?>
         <tr>
           <td><?php echo $this->escape($pattern); ?></td>
-          <td><?php echo empty($route['handlers']['controller']) ? $this->text('Unknown') : implode('::', $route['handlers']['controller']); ?></td>
+          <td><?php echo $this->escape(implode(' + ', $route['permission_name'])); ?></td>
         </tr>
         <?php } ?>
       </tbody>
