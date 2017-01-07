@@ -18,6 +18,7 @@ use gplcart\core\helpers\Session as SessionHelper;
  */
 class UserRole extends Model
 {
+
     /**
      * Session class instance
      * @var \gplcart\core\helpers\Session $session

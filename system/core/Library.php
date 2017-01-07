@@ -87,14 +87,37 @@ class Library
         if ($cache && isset($cached)) {
             $libraries = $cached;
         } else {
-            $_libraries = include GC_CONFIG_LIBRARY;
-            $libraries = $this->prepareList($_libraries);
 
-            gplcart_array_sort($libraries);
+            $configs = $this->scan(GC_VENDOR_CONFIG);
+            $prepared = $this->prepareList($configs);
+
+            $libraries = $prepared;
             $this->cache->set('libraries', $libraries);
         }
 
         return $libraries;
+    }
+
+    /**
+     * Scans vendor config files
+     * @param string $filename
+     * @return array
+     */
+    protected function scan($filename)
+    {
+        $files = gplcart_file_scan_recursive(GC_VENDOR_DIR . "/$filename");
+
+        if (empty($files)) {
+            return array();
+        }
+
+        $config = array();
+        foreach ($files as $file) {
+            $vendor = substr(dirname($file), strlen(GC_VENDOR_DIR . '/'));
+            $config[$vendor] = $this->getJsonData($file);
+        }
+
+        return $config;
     }
 
     /**
@@ -107,59 +130,73 @@ class Library
 
     /**
      * Validates/ filter an array of libraries
-     * @param array $libraries
+     * @param array $vendors
      * @return array
      */
-    protected function prepareList(array $libraries)
+    protected function prepareList(array $vendors)
     {
-        foreach ($libraries as $library_id => &$library) {
+        $libraries = array();
+        foreach ($vendors as $vendor => $config) {
+            foreach ($config as $library_id => $library) {
 
-            $library['id'] = $library_id;
+                $library['id'] = $library_id;
+                $library['vendor'] = $vendor;
 
-            if (empty($library['basepath'])) {
-                $library['basepath'] = $this->getBasePath($library);
-            }
+                if (empty($library['basepath'])) {
+                    $library['basepath'] = $this->getBasePath($library);
+                }
 
-            if (empty($library['vendor'])) {
-                $library['vendor'] = GC_VENDOR_LIBRARY;
-            }
+                $version = $this->getVersion($library);
 
-            $version = $this->getVersion($library);
+                if (!isset($version)) {
+                    $this->errors[$library_id][] = 'unknown_version';
+                }
 
-            if (!isset($version)) {
-                $this->errors[$library_id][] = 'unknown_version';
-            }
+                $library['version']['number'] = $version;
 
-            $library['version']['number'] = $version;
+                if (empty($library['files'])) {
+                    $this->errors[$library_id][] = 'missing_files';
+                    continue;
+                }
 
-            if (empty($library['files'])) {
-                $this->errors[$library_id][] = 'missing_files';
-                continue;
-            }
+                if (!$this->validateFiles($library)) {
+                    $this->errors[$library_id][] = 'missing_files';
+                }
 
-            $readable = 0;
-            foreach ($library['files'] as $file) {
-                $readable += (int) is_readable(gplcart_absolute_path("{$library['basepath']}/$file"));
-            }
-
-            if (count($library['files']) != $readable) {
-                $this->errors[$library_id][] = 'missing_files';
+                $libraries[$library_id] = $library;
             }
         }
 
-        foreach ($libraries as $library_id => &$library) {
-            $this->checkDependencies($libraries, $library);
+        foreach ($libraries as $library_id => $library) {
+            $this->validateDependencies($libraries, $library);
         }
 
-        return $this->graph->build($libraries);
+        $prepared = $this->graph->build($libraries);
+        gplcart_array_sort($prepared);
+        return $prepared;
     }
 
     /**
-     * Checks library dependencies
+     * Validates libarary files
+     * @param array $library
+     * @return bool
+     */
+    protected function validateFiles(array $library)
+    {
+        $readable = 0;
+        foreach ($library['files'] as $file) {
+            $readable += (int) is_readable(gplcart_absolute_path("{$library['basepath']}/$file"));
+        }
+
+        return count($library['files']) == $readable;
+    }
+
+    /**
+     * Validates library dependencies
      * @param array $libraries
      * @param array $library
      */
-    protected function checkDependencies(array $libraries, array $library)
+    protected function validateDependencies(array $libraries, array $library)
     {
         if (empty($library['dependencies'])) {
             return true;
@@ -230,7 +267,8 @@ class Library
      */
     protected function getBasePath(array $library, $absolute = false)
     {
-        $base = GC_VENDOR_DIR_NAME . '/' . GC_VENDOR_LIBRARY . "/{$library['type']}/{$library['id']}";
+        $base = GC_VENDOR_DIR_NAME
+                . "/{$library['vendor']}/{$library['type']}/{$library['id']}";
 
         if ($absolute) {
             $base = gplcart_absolute_path($base);
@@ -280,19 +318,11 @@ class Library
             return null;
         }
 
-        $json = file_get_contents($file);
+        $data = $this->getJsonData($file);
 
-        if ($json === false) {
+        if (empty($data)) {
             return null;
         }
-
-        $json = trim($json);
-
-        if (empty($json)) {
-            return null;
-        }
-
-        $data = json_decode($json, true);
 
         if (isset($data['version'])) {
             // Clean up
@@ -300,6 +330,23 @@ class Library
         }
 
         return null;
+    }
+
+    /**
+     * Extracts an array of data from a .json file
+     * @param string $file
+     * @return array
+     */
+    protected function getJsonData($file)
+    {
+        $json = file_get_contents($file);
+
+        if ($json === false) {
+            return array();
+        }
+
+        $data = json_decode(trim($json), true);
+        return empty($data) ? array() : (array) $data;
     }
 
     /**
@@ -355,7 +402,6 @@ class Library
         }
 
         $this->loaded = array_merge($this->loaded, $sorted);
-
         $prepared = $this->prepareFiles($sorted, $libraries);
 
         foreach ($prepared as $file) {

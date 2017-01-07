@@ -79,10 +79,14 @@
               </p>
             </div>
             <?php } ?>
-            <?php if (!empty($library['basepath'])) { ?>
+            <div class="vendor">
+              <b><?php echo $this->text('Vendor'); ?>:</b>
+              <p>
+                <?php echo $this->text($library['vendor']); ?>
+              </p>
+            </div>
             <b><?php echo $this->text('Directory'); ?>:</b>
             <p><?php echo $this->escape($library['basepath']); ?></p>
-            <?php } ?>
             <?php if (!empty($library['requires'])) { ?>
             <div class="requires">
               <b><?php echo $this->text('Requires'); ?>:</b>
