@@ -41,24 +41,24 @@ class UserRole extends BaseValidator
      * @param array $options
      * @return array|boolean
      */
-    public function userRole(array &$submitted, array $options)
+    public function userRole(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateUserRole($options);
-        $this->validatePermissionsUserRole($options);
-        $this->validateStatus($options);
-        $this->validateName($options);
+        $this->validateUserRole();
+        $this->validatePermissionsUserRole();
+        $this->validateStatus();
+        $this->validateName();
 
         return $this->getResult();
     }
 
     /**
      * Validates a user role to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateUserRole(array $options)
+    protected function validateUserRole()
     {
         $id = $this->getUpdatingId();
 
@@ -81,12 +81,11 @@ class UserRole extends BaseValidator
 
     /**
      * Validates permissions data
-     * @param array $options
      * @return boolean|null
      */
-    protected function validatePermissionsUserRole(array $options)
+    protected function validatePermissionsUserRole()
     {
-        $value = $this->getSubmitted('permissions', $options);
+        $value = $this->getSubmitted('permissions');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -102,7 +101,7 @@ class UserRole extends BaseValidator
         if (!empty($difference)) {
             $vars = array('@name' => implode(',', $difference));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('permissions', $error, $options);
+            $this->setError('permissions', $error);
             return false;
         }
 

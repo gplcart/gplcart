@@ -52,23 +52,23 @@ class Filter extends BaseValidator
      */
     public function filter(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateFilter($options);
-        $this->validateStatus($options);
-        $this->validateName($options);
-        $this->validateDescription($options);
-        $this->validateRoleFilter($options);
+        $this->validateFilter();
+        $this->validateStatus();
+        $this->validateName();
+        $this->validateDescription();
+        $this->validateRoleFilter();
 
         return $this->getResult();
     }
 
     /**
      * Validates a filter to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateFilter(array $options)
+    protected function validateFilter()
     {
         $id = $this->getUpdatingId();
 
@@ -91,26 +91,25 @@ class Filter extends BaseValidator
 
     /**
      * Validates a user role
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateRoleFilter(array $options)
+    protected function validateRoleFilter()
     {
-        $value = $this->getSubmitted('role_id', $options);
+        $value = $this->getSubmitted('role_id');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $this->setSubmitted('role_id', 0, $options);
+            $this->setSubmitted('role_id', 0);
             return true;
         }
 
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Role'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('role_id', $error, $options);
+            $this->setError('role_id', $error);
             return false;
         }
 
@@ -119,7 +118,7 @@ class Filter extends BaseValidator
         if (empty($role['status'])) {
             $vars = array('@name' => $this->language->text('Role'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('role_id', $error, $options);
+            $this->setError('role_id', $error);
             return false;
         }
 

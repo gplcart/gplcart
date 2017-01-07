@@ -18,6 +18,7 @@ use gplcart\core\handlers\validator\Base as BaseValidator;
  */
 class Wishlist extends BaseValidator
 {
+
     /**
      * Wishlist model instance
      * @var \gplcart\core\models\Wishlist $wishlist
@@ -51,22 +52,22 @@ class Wishlist extends BaseValidator
      */
     public function wishlist(array &$submitted, array $options)
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateWishlist($options);
-        $this->validateProductWishlist($options);
-        $this->validateUserCartId($options);
-        $this->validateStoreId($options);
+        $this->validateWishlist();
+        $this->validateProductWishlist();
+        $this->validateUserCartId();
+        $this->validateStoreId();
 
         return $this->getResult();
     }
 
     /**
      * Validates wishlist data to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateWishlist(array $options)
+    protected function validateWishlist()
     {
         $id = $this->getUpdatingId();
 
@@ -89,12 +90,11 @@ class Wishlist extends BaseValidator
 
     /**
      * Validates a wishlist product ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateProductWishlist(array $options)
+    protected function validateProductWishlist()
     {
-        $value = $this->getSubmitted('product_id', $options);
+        $value = $this->getSubmitted('product_id');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -103,14 +103,14 @@ class Wishlist extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
@@ -119,7 +119,7 @@ class Wishlist extends BaseValidator
         if (empty($product['status'])) {
             $vars = array('@name' => $this->language->text('Product'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 

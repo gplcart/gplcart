@@ -52,24 +52,24 @@ class Review extends BaseValidator
      */
     public function review(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateReview($options);
-        $this->validateStatus($options);
-        $this->validateTextReview($options);
-        $this->validateCreatedReview($options);
-        $this->validateProductReview($options);
-        $this->validateEmailReview($options);
+        $this->validateReview();
+        $this->validateStatus();
+        $this->validateTextReview();
+        $this->validateCreatedReview();
+        $this->validateProductReview();
+        $this->validateEmailReview();
 
         return $this->getResult();
     }
 
     /**
      * Validates a review to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateReview(array $options)
+    protected function validateReview()
     {
         $id = $this->getUpdatingId();
 
@@ -92,12 +92,11 @@ class Review extends BaseValidator
 
     /**
      * Validates a review text
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTextReview(array $options)
+    protected function validateTextReview()
     {
-        $value = $this->getSubmitted('text', $options);
+        $value = $this->getSubmitted('text');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -106,7 +105,7 @@ class Review extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Text'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('text', $error, $options);
+            $this->setError('text', $error);
             return false;
         }
 
@@ -116,7 +115,7 @@ class Review extends BaseValidator
         if ($length < $limits['min'] || $length > $limits['max']) {
             $vars = array('@min' => $limits['min'], '@max' => $limits['max'], '@field' => $this->language->text('Text'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('text', $error, $options);
+            $this->setError('text', $error);
             return false;
         }
 
@@ -125,12 +124,11 @@ class Review extends BaseValidator
 
     /**
      * Validates a created review date
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCreatedReview(array $options)
+    protected function validateCreatedReview()
     {
-        $value = $this->getSubmitted('created', $options);
+        $value = $this->getSubmitted('created');
 
         if (!isset($value)) {
             return null;
@@ -141,22 +139,21 @@ class Review extends BaseValidator
         if (empty($timestamp)) {
             $vars = array('@field' => $this->language->text('Created'));
             $error = $this->language->text('@field is not a valid datetime description', $vars);
-            $this->setError('created', $error, $options);
+            $this->setError('created', $error);
             return false;
         }
 
-        $this->setSubmitted('created', $timestamp, $options);
+        $this->setSubmitted('created', $timestamp);
         return true;
     }
 
     /**
      * Validates a product ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateProductReview(array $options)
+    protected function validateProductReview()
     {
-        $value = $this->getSubmitted('product_id', $options);
+        $value = $this->getSubmitted('product_id');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -165,14 +162,14 @@ class Review extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
@@ -181,7 +178,7 @@ class Review extends BaseValidator
         if (empty($product['product_id'])) {
             $vars = array('@name' => $this->language->text('Product'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
@@ -190,12 +187,11 @@ class Review extends BaseValidator
 
     /**
      * Validates a user E-mail
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateEmailReview(array $options)
+    protected function validateEmailReview()
     {
-        $value = $this->getSubmitted('email', $options);
+        $value = $this->getSubmitted('email');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -204,7 +200,7 @@ class Review extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Email'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('email', $error, $options);
+            $this->setError('email', $error);
             return false;
         }
 
@@ -213,11 +209,11 @@ class Review extends BaseValidator
         if (empty($user['user_id'])) {
             $vars = array('@name' => $this->language->text('Email'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('email', $error, $options);
+            $this->setError('email', $error);
             return false;
         }
 
-        $this->setSubmitted('user_id', $user['user_id'], $options);
+        $this->setSubmitted('user_id', $user['user_id']);
         return true;
     }
 

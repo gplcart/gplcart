@@ -71,27 +71,27 @@ class PriceRule extends BaseValidator
      */
     public function priceRule(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validatePriceRule($options);
-        $this->validateName($options);
-        $this->validateWeight($options);
-        $this->validateUsedPriceRule($options);
-        $this->validateTriggerPriceRule($options);
-        $this->validateCurrencyPriceRule($options);
-        $this->validateValueTypePriceRule($options);
-        $this->validateCodePriceRule($options);
-        $this->validateValuePriceRule($options);
+        $this->validatePriceRule();
+        $this->validateName();
+        $this->validateWeight();
+        $this->validateUsedPriceRule();
+        $this->validateTriggerPriceRule();
+        $this->validateCurrencyPriceRule();
+        $this->validateValueTypePriceRule();
+        $this->validateCodePriceRule();
+        $this->validateValuePriceRule();
 
         return $this->getResult();
     }
 
     /**
      * Validates a price rule to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validatePriceRule(array $options)
+    protected function validatePriceRule()
     {
         $id = $this->getUpdatingId();
 
@@ -114,12 +114,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Validates a trigger ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTriggerPriceRule(array $options)
+    protected function validateTriggerPriceRule()
     {
-        $trigger_id = $this->getSubmitted('trigger_id', $options);
+        $trigger_id = $this->getSubmitted('trigger_id');
 
         if ($this->isUpdating() && !isset($trigger_id)) {
             return null;
@@ -128,14 +127,14 @@ class PriceRule extends BaseValidator
         if (empty($trigger_id)) {
             $vars = array('@field' => $this->language->text('Trigger'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('trigger_id', $error, $options);
+            $this->setError('trigger_id', $error);
             return false;
         }
 
         if (!is_numeric($trigger_id)) {
             $vars = array('@field' => $this->language->text('Trigger'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('trigger_id', $error, $options);
+            $this->setError('trigger_id', $error);
             return false;
         }
 
@@ -144,7 +143,7 @@ class PriceRule extends BaseValidator
         if (empty($trigger)) {
             $vars = array('@name' => $this->language->text('Trigger'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('trigger_id', $error, $options);
+            $this->setError('trigger_id', $error);
             return false;
         }
 
@@ -153,12 +152,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Validates "Times used" field
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateUsedPriceRule(array $options)
+    protected function validateUsedPriceRule()
     {
-        $used = $this->getSubmitted('used', $options);
+        $used = $this->getSubmitted('used');
 
         if (!isset($used)) {
             return null;
@@ -167,14 +165,14 @@ class PriceRule extends BaseValidator
         if (!is_numeric($used)) {
             $vars = array('@field' => $this->language->text('Times used'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('used', $error, $options);
+            $this->setError('used', $error);
             return false;
         }
 
         if (strlen($used) > 10) {
             $vars = array('@max' => 10, '@field' => $this->language->text('Times used'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('used', $error, $options);
+            $this->setError('used', $error);
             return false;
         }
 
@@ -183,12 +181,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Validates a submitted currency
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCurrencyPriceRule(array $options)
+    protected function validateCurrencyPriceRule()
     {
-        $code = $this->getSubmitted('currency', $options);
+        $code = $this->getSubmitted('currency');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -197,7 +194,7 @@ class PriceRule extends BaseValidator
         if (empty($code)) {
             $vars = array('@field' => $this->language->text('Currency'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('currency', $error, $options);
+            $this->setError('currency', $error);
             return false;
         }
 
@@ -206,7 +203,7 @@ class PriceRule extends BaseValidator
         if (empty($currency)) {
             $vars = array('@name' => $this->language->text('Currency'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('currency', $error, $options);
+            $this->setError('currency', $error);
             return false;
         }
 
@@ -215,12 +212,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Validates a price rule value type
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateValueTypePriceRule(array $options)
+    protected function validateValueTypePriceRule()
     {
-        $type = $this->getSubmitted('value_type', $options);
+        $type = $this->getSubmitted('value_type');
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
@@ -229,7 +225,7 @@ class PriceRule extends BaseValidator
         if (empty($type) || !in_array($type, array('percent', 'fixed'))) {
             $vars = array('@field' => $this->language->text('Value type'), '@allowed' => 'percent, fixed');
             $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
-            $this->setError('value_type', $error, $options);
+            $this->setError('value_type', $error);
             return false;
         }
 
@@ -238,12 +234,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Validates a price rule code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCodePriceRule(array $options)
+    protected function validateCodePriceRule()
     {
-        $code = $this->getSubmitted('code', $options);
+        $code = $this->getSubmitted('code');
 
         if (empty($code)) {
             return null;
@@ -258,7 +253,7 @@ class PriceRule extends BaseValidator
         if (mb_strlen($code) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('Code'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
@@ -275,7 +270,7 @@ class PriceRule extends BaseValidator
             if ($rule['code'] === $code) {
                 $vars = array('@object' => $this->language->text('Code'));
                 $error = $this->language->text('@object already exists', $vars);
-                $this->setError('code', $error, $options);
+                $this->setError('code', $error);
                 return false;
             }
         }
@@ -285,12 +280,11 @@ class PriceRule extends BaseValidator
 
     /**
      * Validates a price rule value
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateValuePriceRule(array $options)
+    protected function validateValuePriceRule()
     {
-        $value = $this->getSubmitted('value', $options);
+        $value = $this->getSubmitted('value');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -299,14 +293,14 @@ class PriceRule extends BaseValidator
         if (!isset($value) || strlen($value) > 10) {
             $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Value'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('value', $error, $options);
+            $this->setError('value', $error);
             return false;
         }
 
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Value'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('value', $error, $options);
+            $this->setError('value', $error);
             return false;
         }
 
@@ -315,8 +309,8 @@ class PriceRule extends BaseValidator
         }
 
         $updating = $this->getUpdating();
-        $submitted_currency = $this->getSubmitted('currency', $options);
-        $submitted_value_type = $this->getSubmitted('value_type', $options);
+        $submitted_currency = $this->getSubmitted('currency');
+        $submitted_value_type = $this->getSubmitted('value_type');
 
         // Prepare value
         if (isset($submitted_value_type)) {
@@ -333,7 +327,7 @@ class PriceRule extends BaseValidator
 
         if (isset($value_type) && isset($currency) && $value_type === 'fixed') {
             $value = $this->price->amount((float) $value, $currency, false);
-            $this->setSubmitted('value', $value, $options);
+            $this->setSubmitted('value', $value);
         }
 
         return true;

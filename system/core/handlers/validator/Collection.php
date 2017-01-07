@@ -42,15 +42,16 @@ class Collection extends BaseValidator
      */
     public function collection(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateCollection($options);
-        $this->validateStatus($options);
-        $this->validateTitle($options);
-        $this->validateDescription($options);
-        $this->validateTranslation($options);
-        $this->validateStoreId($options);
-        $this->validateTypeCollection($options);
+        $this->validateCollection();
+        $this->validateStatus();
+        $this->validateTitle();
+        $this->validateDescription();
+        $this->validateTranslation();
+        $this->validateStoreId();
+        $this->validateTypeCollection();
 
         return $this->getResult();
     }
@@ -82,21 +83,20 @@ class Collection extends BaseValidator
 
     /**
      * Validates collection type field
-     * @param array $options
      * @return boolean
      */
-    protected function validateTypeCollection(array $options)
+    protected function validateTypeCollection()
     {
         if ($this->isUpdating()) {
             return true; // Type cannot be updated
         }
 
-        $type = $this->getSubmitted('type', $options);
+        $type = $this->getSubmitted('type');
 
         if (empty($type)) {
             $vars = array('@field' => $this->language->text('Type'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('type', $error, $options);
+            $this->setError('type', $error);
             return false;
         }
 
@@ -105,7 +105,7 @@ class Collection extends BaseValidator
         if (!isset($types[$type])) {
             $vars = array('@name' => $this->language->text('Type'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error, $options);
+            $this->setError('type', $error);
             return false;
         }
 

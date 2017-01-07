@@ -43,32 +43,32 @@ class Compare extends BaseValidator
      */
     public function compare(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateProductCompare($options);
+        $this->validateProductCompare();
         return $this->getResult();
     }
 
     /**
      * Validates a compared product ID
-     * @param array $options
      * @return boolean
      */
-    protected function validateProductCompare(array $options)
+    protected function validateProductCompare()
     {
-        $product_id = $this->getSubmitted('product_id', $options);
+        $product_id = $this->getSubmitted('product_id');
 
         if (empty($product_id)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
         if (!is_numeric($product_id)) {
             $vars = array('@field' => $this->language->text('Product'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 
@@ -77,7 +77,7 @@ class Compare extends BaseValidator
         if (empty($product['status'])) {
             $vars = array('@name' => $this->language->text('Product'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error, $options);
+            $this->setError('product_id', $error);
             return false;
         }
 

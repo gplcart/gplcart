@@ -57,25 +57,25 @@ class Module extends BaseValidator
      */
     public function upload(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateUploadModule($options);
+        $this->validateUploadModule();
         return $this->getResult();
     }
 
     /**
      * Uploads and validates a module
-     * @param array $options
      * @return boolean
      */
-    protected function validateUploadModule(array $options)
+    protected function validateUploadModule()
     {
         $file = $this->request->file('file');
 
         if (empty($file)) {
             $vars = array('@field' => $this->language->text('File'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error, $options);
+            $this->setError('file', $error);
             return false;
         }
 
@@ -84,12 +84,12 @@ class Module extends BaseValidator
                 ->upload($file);
 
         if ($result !== true) {
-            $this->setError('file', (string) $result, $options);
+            $this->setError('file', (string) $result);
             return false;
         }
 
         $uploaded = $this->file->getUploadedFile();
-        $this->setSubmitted('destination', $uploaded, $options);
+        $this->setSubmitted('destination', $uploaded);
         return true;
     }
 

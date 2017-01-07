@@ -62,16 +62,17 @@ class Country extends BaseValidator
      */
     public function country(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateCountry($options);
-        $this->validateWeight($options);
-        $this->validateDefault($options);
-        $this->validateStatus($options);
-        $this->validateCodeCountry($options);
-        $this->validateName($options);
-        $this->validateNativeNameCountry($options);
-        $this->validateZoneCountry($options);
+        $this->validateCountry();
+        $this->validateWeight();
+        $this->validateDefault();
+        $this->validateStatus();
+        $this->validateCodeCountry();
+        $this->validateName();
+        $this->validateNativeNameCountry();
+        $this->validateZoneCountry();
 
         return $this->getResult();
     }
@@ -103,12 +104,11 @@ class Country extends BaseValidator
 
     /**
      * Validates a zone ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateZoneCountry(array $options)
+    protected function validateZoneCountry()
     {
-        $zone_id = $this->getSubmitted('zone_id', $options);
+        $zone_id = $this->getSubmitted('zone_id');
 
         if (empty($zone_id)) {
             return null;
@@ -117,7 +117,7 @@ class Country extends BaseValidator
         if (!is_numeric($zone_id)) {
             $vars = array('@field' => $this->language->text('Zone'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('zone_id', $error, $options);
+            $this->setError('zone_id', $error);
             return false;
         }
 
@@ -126,7 +126,7 @@ class Country extends BaseValidator
         if (empty($zone['zone_id'])) {
             $vars = array('@name' => $this->language->text('Zone'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('zone_id', $error, $options);
+            $this->setError('zone_id', $error);
             return false;
         }
 
@@ -135,12 +135,11 @@ class Country extends BaseValidator
 
     /**
      * Validates a native country name
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateNativeNameCountry(array $options)
+    protected function validateNativeNameCountry()
     {
-        $native_name = $this->getSubmitted('native_name', $options);
+        $native_name = $this->getSubmitted('native_name');
 
         if ($this->isUpdating() && !isset($native_name)) {
             return null;
@@ -149,7 +148,7 @@ class Country extends BaseValidator
         if (empty($native_name) || mb_strlen($native_name) > 255) {
             $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Native name'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('native_name', $error, $options);
+            $this->setError('native_name', $error);
             return false;
         }
 
@@ -158,12 +157,11 @@ class Country extends BaseValidator
 
     /**
      * Validates a country code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCodeCountry(array $options)
+    protected function validateCodeCountry()
     {
-        $code = $this->getSubmitted('code', $options);
+        $code = $this->getSubmitted('code');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -172,13 +170,13 @@ class Country extends BaseValidator
         if (empty($code)) {
             $vars = array('@field' => $this->language->text('Code'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
         if (preg_match('/^[A-Z]{2}$/', $code) !== 1) {
             $error = $this->language->text('Invalid country code. It must conform to ISO 3166-2 standard');
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
@@ -194,11 +192,11 @@ class Country extends BaseValidator
         if (!empty($existing['code'])) {
             $vars = array('@object' => $this->language->text('Code'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
-        $this->setSubmitted('code', $code, $options);
+        $this->setSubmitted('code', $code);
         return true;
     }
 

@@ -33,25 +33,25 @@ class Language extends BaseValidator
      */
     public function language(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateLanguage($options);
-        $this->validateWeight($options);
-        $this->validateStatus($options);
-        $this->validateDefault($options);
-        $this->validateNameLanguage($options);
-        $this->validateNativeNameLanguage($options);
-        $this->validateCodeLanguage($options);
+        $this->validateLanguage();
+        $this->validateWeight();
+        $this->validateStatus();
+        $this->validateDefault();
+        $this->validateNameLanguage();
+        $this->validateNativeNameLanguage();
+        $this->validateCodeLanguage();
 
         return $this->getResult();
     }
 
     /**
      * Validates a language to be updated
-     * @param array $options
      * @return boolean
      */
-    protected function validateLanguage(array $options)
+    protected function validateLanguage()
     {
         $id = $this->getUpdatingId();
 
@@ -74,12 +74,11 @@ class Language extends BaseValidator
 
     /**
      * Validates a language code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCodeLanguage(array $options)
+    protected function validateCodeLanguage()
     {
-        $code = $this->getSubmitted('code', $options);
+        $code = $this->getSubmitted('code');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -88,14 +87,14 @@ class Language extends BaseValidator
         if (empty($code)) {
             $vars = array('@field' => $this->language->text('Code'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
         if (preg_match('/^[A-Za-z-_]{1,10}$/', $code) !== 1) {
             $vars = array('@field' => $this->language->text('Code'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
@@ -110,7 +109,7 @@ class Language extends BaseValidator
         if (!empty($language)) {
             $vars = array('@object' => $this->language->text('Code'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
@@ -122,12 +121,11 @@ class Language extends BaseValidator
 
     /**
      * Validates a language name
-     * @param array $options
      * @return boolean
      */
-    protected function validateNameLanguage(array $options)
+    protected function validateNameLanguage()
     {
-        $name = $this->getSubmitted('name', $options);
+        $name = $this->getSubmitted('name');
 
         if (!isset($name)) {
             return true; // If not set, code will be used instead
@@ -136,7 +134,7 @@ class Language extends BaseValidator
         if (preg_match('/^[A-Za-z]{1,50}$/', $name) !== 1) {
             $vars = array('@field' => $this->language->text('Name'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('name', $error, $options);
+            $this->setError('name', $error);
             return false;
         }
 
@@ -145,12 +143,11 @@ class Language extends BaseValidator
 
     /**
      * Validates an language native name
-     * @param array $options
      * @return boolean
      */
-    protected function validateNativeNameLanguage(array $options)
+    protected function validateNativeNameLanguage()
     {
-        $name = $this->getSubmitted('native_name', $options);
+        $name = $this->getSubmitted('native_name');
 
         if (!isset($name)) {
             return true; // If not set, code will be used instead
@@ -159,7 +156,7 @@ class Language extends BaseValidator
         if (mb_strlen($name) > 50) {
             $vars = array('@max' => 50, '@field' => $this->language->text('Native name'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('native_name', $error, $options);
+            $this->setError('native_name', $error);
             return false;
         }
 

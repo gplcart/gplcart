@@ -61,26 +61,26 @@ class Editor extends BaseValidator
      * @param array $options
      * @return array|boolean
      */
-    public function editor(array &$submitted, array $options)
+    public function editor(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateModuleEditor($options);
-        $this->validateFileEditor($options);
-        $this->validateTwigEditor($options);
-        $this->validateUserId($options);
+        $this->validateModuleEditor();
+        $this->validateFileEditor();
+        $this->validateTwigEditor();
+        $this->validateUserId();
 
         return $this->getResult();
     }
 
     /**
      * Validates a theme module
-     * @param array $options
      * @return boolean
      */
-    protected function validateModuleEditor(array $options)
+    protected function validateModuleEditor()
     {
-        $module = $this->getSubmitted('module', $options);
+        $module = $this->getSubmitted('module');
 
         if (!is_array($module)) {
             // We have only module ID, so load the module
@@ -91,27 +91,26 @@ class Editor extends BaseValidator
         if (empty($module['type']) || $module['type'] !== 'theme') {
             $vars = array('@name' => $this->language->text('Module'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('module', $error, $options);
+            $this->setError('module', $error);
             return false;
         }
 
-        $this->setSubmitted('module', $module, $options);
+        $this->setSubmitted('module', $module);
         return true;
     }
 
     /**
      * Validates a template file
-     * @param array $options
      * @return boolean
      */
-    protected function validateFileEditor(array $options)
+    protected function validateFileEditor()
     {
-        if ($this->isError('module', $options)) {
+        if ($this->isError('module')) {
             return null;
         }
 
-        $path = $this->getSubmitted('path', $options);
-        $module = $this->getSubmitted('module', $options);
+        $path = $this->getSubmitted('path');
+        $module = $this->getSubmitted('module');
 
         // Make the path absolute if it's not
         if (strpos($path, $module['directory']) === false) {
@@ -119,35 +118,34 @@ class Editor extends BaseValidator
         }
 
         if (is_file($path) && is_writable($path)) {
-            $this->setSubmitted('path', $path, $options);
+            $this->setSubmitted('path', $path);
             return true;
         }
 
         $vars = array('@name' => $this->language->text('File'));
         $error = $this->language->text('@name is unavailable', $vars);
-        $this->setError('path', $error, $options);
+        $this->setError('path', $error);
         return false;
     }
 
     /**
      * Validates a Twig source code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTwigEditor(array $options)
+    protected function validateTwigEditor()
     {
-        if ($this->isError('path', $options)) {
+        if ($this->isError('path')) {
             return null;
         }
 
-        $path = $this->getSubmitted('path', $options);
+        $path = $this->getSubmitted('path');
 
         // Twig templates always have .twig extension
         if (pathinfo($path, PATHINFO_EXTENSION) !== 'twig') {
             return null;
         }
 
-        $content = $this->getSubmitted('content', $options);
+        $content = $this->getSubmitted('content');
 
         if (empty($content)) {
             return null;
@@ -159,7 +157,7 @@ class Editor extends BaseValidator
             return true;
         }
 
-        $this->setError('content', (string) $result, $options);
+        $this->setError('content', (string) $result);
         return false;
     }
 

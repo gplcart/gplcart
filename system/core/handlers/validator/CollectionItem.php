@@ -83,31 +83,31 @@ class CollectionItem extends BaseValidator
      */
     public function collectionItem(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
-        
-        $this->validateStatus($options);
-        $this->validateWeight($options);
-        $this->validateUrlCollectionItem($options);
-        $this->validateCollectionCollectionItem($options);
-        $this->validateValueCollectionItem($options);
-        $this->validateEntityCollectionItem($options);
+
+        $this->validateStatus();
+        $this->validateWeight();
+        $this->validateUrlCollectionItem();
+        $this->validateCollectionCollectionItem();
+        $this->validateValueCollectionItem();
+        $this->validateEntityCollectionItem();
 
         return $this->getResult();
     }
 
     /**
      * Validates collection item URL
-     * @param array $options
      * @return boolean
      */
-    protected function validateUrlCollectionItem(array $options)
+    protected function validateUrlCollectionItem()
     {
-        $url = $this->getSubmitted('data.url', $options);
+        $url = $this->getSubmitted('data.url');
 
         if (isset($url) && mb_strlen($url) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('Url'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('data.url', $error, $options);
+            $this->setError('data.url', $error);
             return false;
         }
 
@@ -116,24 +116,23 @@ class CollectionItem extends BaseValidator
 
     /**
      * Validates that collection data is provided
-     * @param array $options
      * @return boolean
      */
-    protected function validateCollectionCollectionItem(array $options)
+    protected function validateCollectionCollectionItem()
     {
-        $collection_id = $this->getSubmitted('collection_id', $options);
+        $collection_id = $this->getSubmitted('collection_id');
 
         if (empty($collection_id)) {
             $vars = array('@field' => $this->language->text('Collection ID'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('collection_id', $error, $options);
+            $this->setError('collection_id', $error);
             return false;
         }
 
         if (!is_numeric($collection_id)) {
             $vars = array('@field' => $this->language->text('Collection ID'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('collection_id', $error, $options);
+            $this->setError('collection_id', $error);
             return false;
         }
 
@@ -142,7 +141,7 @@ class CollectionItem extends BaseValidator
         if (empty($collection['collection_id'])) {
             $vars = array('@name' => $this->language->text('Collection ID'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('collection_id', $error, $options);
+            $this->setError('collection_id', $error);
             return false;
         }
 
@@ -152,10 +151,9 @@ class CollectionItem extends BaseValidator
 
     /**
      * Validates submitted value
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateValueCollectionItem(array $options)
+    protected function validateValueCollectionItem()
     {
         $collection = $this->getSubmitted('collection');
 
@@ -163,8 +161,8 @@ class CollectionItem extends BaseValidator
             return null;
         }
 
-        $input = $this->getSubmitted('input', $options);
-        $value = $this->getSubmitted('value', $options);
+        $input = $this->getSubmitted('input');
+        $value = $this->getSubmitted('value');
 
         if (isset($input) && is_numeric($input)) {
             $value = $input;
@@ -173,7 +171,7 @@ class CollectionItem extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Value'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('value', $error, $options);
+            $this->setError('value', $error);
             return false;
         }
 
@@ -187,20 +185,19 @@ class CollectionItem extends BaseValidator
         if (!empty($collection_item)) {
             $vars = array('@object' => $this->language->text('Value'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('value', $error, $options);
+            $this->setError('value', $error);
             return false;
         }
 
-        $this->setSubmitted('value', $value, $options);
+        $this->setSubmitted('value', $value);
         return true;
     }
 
     /**
      * Validates collection item entities
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateEntityCollectionItem(array $options)
+    protected function validateEntityCollectionItem()
     {
         $collection = $this->getSubmitted('collection');
 
@@ -208,7 +205,7 @@ class CollectionItem extends BaseValidator
             return null;
         }
 
-        $value = $this->getSubmitted('value', $options);
+        $value = $this->getSubmitted('value');
         $handlers = $this->collection->getHandlers();
         $result = Handler::call($handlers, $collection['type'], 'validate', array($value));
 
@@ -217,7 +214,7 @@ class CollectionItem extends BaseValidator
         }
 
         foreach ((array) $result as $key => $error) {
-            $this->setError($key, $error, $options);
+            $this->setError($key, $error);
         }
 
         return false;

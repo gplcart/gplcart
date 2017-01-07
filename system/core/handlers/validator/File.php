@@ -57,24 +57,24 @@ class File extends BaseValidator
      */
     public function file(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateFile($options);
-        $this->validateTitleFile($options);
-        $this->validateDescription($options);
-        $this->validateWeight($options);
-        $this->validateTranslation($options);
-        $this->validatePathFile($options);
+        $this->validateFile();
+        $this->validateTitleFile();
+        $this->validateDescription();
+        $this->validateWeight();
+        $this->validateTranslation();
+        $this->validatePathFile();
 
         return $this->getResult();
     }
 
     /**
      * Validates a file to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateFile(array $options)
+    protected function validateFile()
     {
         $id = $this->getUpdatingId();
 
@@ -97,17 +97,16 @@ class File extends BaseValidator
 
     /**
      * Validates a title field
-     * @param array $options
      * @return boolean
      */
-    protected function validateTitleFile(array $options)
+    protected function validateTitleFile()
     {
-        $title = $this->getSubmitted('title', $options);
+        $title = $this->getSubmitted('title');
 
         if (isset($title) && mb_strlen($title) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('Title'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('title', $error, $options);
+            $this->setError('title', $error);
             return false;
         }
 
@@ -116,10 +115,9 @@ class File extends BaseValidator
 
     /**
      * Validates a path of existing file or uploads a file
-     * @param array $options
      * @return boolean|null
      */
-    protected function validatePathFile(array $options)
+    protected function validatePathFile()
     {
         if ($this->isUpdating()) {
             return null; // Existing files cannot be changed
@@ -129,7 +127,7 @@ class File extends BaseValidator
             return null; // Do not if an error has occured before
         }
 
-        $path = $this->getSubmitted('path', $options);
+        $path = $this->getSubmitted('path');
 
         //Validate an existing file if the path is provided
         if (isset($path)) {
@@ -138,7 +136,7 @@ class File extends BaseValidator
             }
             $vars = array('@name' => $this->language->text('File'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('file', $error, $options);
+            $this->setError('file', $error);
             return false;
         }
 
@@ -147,14 +145,14 @@ class File extends BaseValidator
         if (empty($file)) {
             $vars = array('@field' => $this->language->text('File'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error, $options);
+            $this->setError('file', $error);
             return false;
         }
 
         $result = $this->file->setUploadPath(self::UPLOAD_PATH)->upload($file);
 
         if ($result !== true) {
-            $this->setError('file', (string) $result, $options);
+            $this->setError('file', (string) $result);
             return false;
         }
 

@@ -41,23 +41,23 @@ class Zone extends BaseValidator
      * @param array $options
      * @return array|boolean
      */
-    public function zone(array &$submitted, array $options)
+    public function zone(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateZone($options);
-        $this->validateStatus($options);
-        $this->validateTitle($options);
+        $this->validateZone();
+        $this->validateStatus();
+        $this->validateTitle();
 
         return $this->getResult();
     }
 
     /**
      * Validates a zone to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateZone(array $options)
+    protected function validateZone()
     {
         $id = $this->getUpdatingId();
 

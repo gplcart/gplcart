@@ -76,24 +76,24 @@ class Import extends BaseValidator
      */
     public function import(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateOperationImport($options);
-        $this->validateFilePathImport($options);
-        $this->validateFileUploadImport($options);
-        $this->validateCsvHeaderImport($options);
+        $this->validateOperationImport();
+        $this->validateFilePathImport();
+        $this->validateFileUploadImport();
+        $this->validateCsvHeaderImport();
 
         return $this->getResult();
     }
 
     /**
      * Validates an operation
-     * @param array $options
      * @return boolean
      */
-    protected function validateOperationImport(array $options)
+    protected function validateOperationImport()
     {
-        $operation_id = $this->getSubmitted('operation_id', $options);
+        $operation_id = $this->getSubmitted('operation_id');
 
         if (isset($operation_id)) {
             $operation = $this->import->getOperation($operation_id);
@@ -114,12 +114,11 @@ class Import extends BaseValidator
 
     /**
      * Validates a relative file path
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateFilePathImport(array $options)
+    protected function validateFilePathImport()
     {
-        $path = $this->getSubmitted('path', $options);
+        $path = $this->getSubmitted('path');
 
         if (!isset($path)) {
             return null; // The file probably will be uploaded via UI, stop here
@@ -128,25 +127,24 @@ class Import extends BaseValidator
         $filepath = GC_FILE_DIR . "/$path";
 
         if (is_readable($filepath)) {
-            $this->setSubmitted('filepath', $filepath, $options);
-            $this->setSubmitted('filesize', filesize($filepath), $options);
+            $this->setSubmitted('filepath', $filepath);
+            $this->setSubmitted('filesize', filesize($filepath));
             return true;
         }
 
         $vars = array('@name' => $this->language->text('File'));
         $error = $this->language->text('@name is unavailable', $vars);
-        $this->setError('file', $error, $options);
+        $this->setError('file', $error);
         return false;
     }
 
     /**
      * Validates a uploaded file
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateFileUploadImport(array $options)
+    protected function validateFileUploadImport()
     {
-        $filepath = $this->getSubmitted('filepath', $options);
+        $filepath = $this->getSubmitted('filepath');
 
         if (isset($filepath)) {
             return null; // Filepath already defined by a relative path, exit
@@ -157,7 +155,7 @@ class Import extends BaseValidator
         if (empty($file)) {
             $vars = array('@field' => $this->language->text('File'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error, $options);
+            $this->setError('file', $error);
             return false;
         }
 
@@ -166,22 +164,21 @@ class Import extends BaseValidator
                 ->upload($file);
 
         if ($result !== true) {
-            $this->setError('file', (string) $result, $options);
+            $this->setError('file', (string) $result);
             return false;
         }
 
         $uploaded = $this->file->getUploadedFile();
-        $this->setSubmitted('filepath', $uploaded, $options);
-        $this->setSubmitted('filesize', filesize($uploaded), $options);
+        $this->setSubmitted('filepath', $uploaded);
+        $this->setSubmitted('filesize', filesize($uploaded));
         return true;
     }
 
     /**
      * Validates CSV header
-     * @param array $options
      * @return boolean|null
      */
-    public function validateCsvHeaderImport(array $options)
+    public function validateCsvHeaderImport()
     {
         if ($this->isError()) {
             return null; // Abort on existing errors
@@ -190,7 +187,7 @@ class Import extends BaseValidator
         $operation = $this->getSubmitted('operation');
         $header = $operation['csv']['header'];
         $delimiter = $this->import->getCsvDelimiter();
-        $filepath = $this->getSubmitted('filepath', $options);
+        $filepath = $this->getSubmitted('filepath');
 
         $real_header = $this->csv->setFile($filepath)
                 ->setHeader($header)
@@ -203,7 +200,7 @@ class Import extends BaseValidator
         if ($header_id !== $real_header_id || array_diff($header, $real_header)) {
             $vars = array('@format' => implode(' | ', $header));
             $error = $this->language->text('Wrong header. Required columns: @format', $vars);
-            $this->setError('file', $error, $options);
+            $this->setError('file', $error);
             return false;
         }
 

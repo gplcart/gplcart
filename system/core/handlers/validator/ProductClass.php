@@ -43,21 +43,21 @@ class ProductClass extends BaseValidator
      */
     public function productClass(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateProductClass($options);
-        $this->validateStatus($options);
-        $this->validateTitle($options);
+        $this->validateProductClass();
+        $this->validateStatus();
+        $this->validateTitle();
 
         return $this->getResult();
     }
 
     /**
      * Validates a product class ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateProductClass(array $options)
+    protected function validateProductClass()
     {
         $id = $this->getUpdatingId();
 

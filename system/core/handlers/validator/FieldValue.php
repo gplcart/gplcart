@@ -76,22 +76,22 @@ class FieldValue extends BaseValidator
      */
     public function fieldValue(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateFieldValue($options);
-        $this->validateTitle($options);
-        $this->validateWeight($options);
-        $this->validateTranslation($options);
-        $this->validateFieldFieldValue($options);
-        $this->validateColorFieldValue($options);
-        $this->validateFileFieldValue($options);
+        $this->validateFieldValue();
+        $this->validateTitle();
+        $this->validateWeight();
+        $this->validateTranslation();
+        $this->validateFieldFieldValue();
+        $this->validateColorFieldValue();
+        $this->validateFileFieldValue();
 
         return $this->getResult();
     }
 
     /**
      * Validates a field value to be updated
-     * @param array $options
      * @return boolean|null
      */
     protected function validateFieldValue()
@@ -117,12 +117,11 @@ class FieldValue extends BaseValidator
 
     /**
      * Validates a field id
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateFieldFieldValue(array $options)
+    protected function validateFieldFieldValue()
     {
-        $field_id = $this->getSubmitted('field_id', $options);
+        $field_id = $this->getSubmitted('field_id');
 
         if ($this->isUpdating() && !isset($field_id)) {
             return null;
@@ -131,14 +130,14 @@ class FieldValue extends BaseValidator
         if (empty($field_id)) {
             $vars = array('@field' => $this->language->text('Field'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('field_id', $error, $options);
+            $this->setError('field_id', $error);
             return false;
         }
 
         if (!is_numeric($field_id)) {
             $vars = array('@field' => $this->language->text('Field'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('field_id', $error, $options);
+            $this->setError('field_id', $error);
             return false;
         }
 
@@ -147,7 +146,7 @@ class FieldValue extends BaseValidator
         if (empty($field['field_id'])) {
             $vars = array('@name' => $this->language->text('Field'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('field_id', $error, $options);
+            $this->setError('field_id', $error);
             return false;
         }
 
@@ -157,12 +156,11 @@ class FieldValue extends BaseValidator
 
     /**
      * Validates a color code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateColorFieldValue(array $options)
+    protected function validateColorFieldValue()
     {
-        $color = $this->getSubmitted('color', $options);
+        $color = $this->getSubmitted('color');
 
         if ($this->isUpdating() && !isset($color)) {
             return null;
@@ -171,21 +169,21 @@ class FieldValue extends BaseValidator
         $field = $this->getSubmitted('field');
 
         if (isset($field['widget']) && $field['widget'] != 'color') {
-            $this->setSubmitted('color', '', $options);
+            $this->setSubmitted('color', '');
             return true;
         }
 
         if (empty($color)) {
             $vars = array('@field' => $this->language->text('Color'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('color', $error, $options);
+            $this->setError('color', $error);
             return false;
         }
 
         if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {
             $vars = array('@field' => $this->language->text('Color'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('color', $error, $options);
+            $this->setError('color', $error);
             return false;
         }
 
@@ -194,10 +192,9 @@ class FieldValue extends BaseValidator
 
     /**
      * Validates uploaded image
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateFileFieldValue(array $options)
+    protected function validateFileFieldValue()
     {
         // Do not upload if an error has occurred before
         if ($this->isError()) {
@@ -205,7 +202,7 @@ class FieldValue extends BaseValidator
         }
 
         $file = $this->request->file('file');
-        $path = $this->getSubmitted('path', $options);
+        $path = $this->getSubmitted('path');
 
         if ($this->isUpdating() && (!isset($path) && empty($file))) {
             return null;
@@ -218,7 +215,7 @@ class FieldValue extends BaseValidator
             }
             $vars = array('@name' => $this->language->text('File'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('file', $error, $options);
+            $this->setError('file', $error);
             return false;
         }
 
@@ -231,7 +228,7 @@ class FieldValue extends BaseValidator
                 ->upload($file);
 
         if ($result !== true) {
-            $this->setError('file', (string) $result, $options);
+            $this->setError('file', (string) $result);
             return false;
         }
 

@@ -90,31 +90,31 @@ class Order extends BaseValidator
      */
     public function order(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateOrder($options);
-        $this->validateStoreId($options);
-        $this->validatePaymentOrder($options);
-        $this->validateShippingOrder($options);
-        $this->validateStatusOrder($options);
-        $this->validateAddressOrder($options);
-        $this->validateUserCartId($options);
-        $this->validateCreatorOrder($options);
-        $this->validateTotalOrder($options);
-        $this->validateCurrencyOrder($options);
-        $this->validateCommentOrder($options);
-        $this->validateTransactionOrder($options);
-        $this->validateLogOrder($options);
+        $this->validateOrder();
+        $this->validateStoreId();
+        $this->validatePaymentOrder();
+        $this->validateShippingOrder();
+        $this->validateStatusOrder();
+        $this->validateAddressOrder();
+        $this->validateUserCartId();
+        $this->validateCreatorOrder();
+        $this->validateTotalOrder();
+        $this->validateCurrencyOrder();
+        $this->validateCommentOrder();
+        $this->validateTransactionOrder();
+        $this->validateLogOrder();
 
         return $this->getResult();
     }
 
     /**
      * Validates an order to be updated
-     * @param array $options
      * @return boolean
      */
-    protected function validateOrder(array $options)
+    protected function validateOrder()
     {
         $id = $this->getUpdatingId();
 
@@ -137,12 +137,11 @@ class Order extends BaseValidator
 
     /**
      * Validates a payment method
-     * @param array $options
      * @return boolean|null
      */
-    protected function validatePaymentOrder(array $options)
+    protected function validatePaymentOrder()
     {
-        $module_id = $this->getSubmitted('payment', $options);
+        $module_id = $this->getSubmitted('payment');
 
         if (empty($module_id)) {
             return null;
@@ -153,7 +152,7 @@ class Order extends BaseValidator
         if (empty($method)) {
             $vars = array('@name' => $this->language->text('Payment'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('payment', $error, $options);
+            $this->setError('payment', $error);
             return false;
         }
 
@@ -162,12 +161,11 @@ class Order extends BaseValidator
 
     /**
      * Validates a shipping method
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateShippingOrder(array $options)
+    protected function validateShippingOrder()
     {
-        $module_id = $this->getSubmitted('shipping', $options);
+        $module_id = $this->getSubmitted('shipping');
 
         if (empty($module_id)) {
             return null;
@@ -178,7 +176,7 @@ class Order extends BaseValidator
         if (empty($method)) {
             $vars = array('@name' => $this->language->text('Shipping'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('shipping', $error, $options);
+            $this->setError('shipping', $error);
             return false;
         }
 
@@ -187,12 +185,11 @@ class Order extends BaseValidator
 
     /**
      * Validates a status
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateStatusOrder(array $options)
+    protected function validateStatusOrder()
     {
-        $status = $this->getSubmitted('status', $options);
+        $status = $this->getSubmitted('status');
 
         if (empty($status)) {
             return null;
@@ -203,7 +200,7 @@ class Order extends BaseValidator
         if (empty($statuses[$status])) {
             $vars = array('@name' => $this->language->text('Status'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('status', $error, $options);
+            $this->setError('status', $error);
             return false;
         }
 
@@ -212,15 +209,14 @@ class Order extends BaseValidator
 
     /**
      * Validates order addresses
-     * @param array $options
      * @return boolean
      */
-    protected function validateAddressOrder(array $options)
+    protected function validateAddressOrder()
     {
         foreach ($this->address->getTypes() as $type) {
 
             $field = $type . '_address';
-            $address_id = $this->getSubmitted($field, $options);
+            $address_id = $this->getSubmitted($field);
 
             if (!isset($address_id)) {
                 continue;
@@ -231,7 +227,7 @@ class Order extends BaseValidator
             if (!is_numeric($address_id)) {
                 $vars = array('@field' => $this->language->text($name));
                 $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
                 continue;
             }
 
@@ -244,7 +240,7 @@ class Order extends BaseValidator
             if (empty($address)) {
                 $vars = array('@name' => $this->language->text($name));
                 $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
             }
         }
 
@@ -253,12 +249,11 @@ class Order extends BaseValidator
 
     /**
      * Validates a creator user ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCreatorOrder(array $options)
+    protected function validateCreatorOrder()
     {
-        $creator = $this->getSubmitted('creator', $options);
+        $creator = $this->getSubmitted('creator');
 
         if ($this->isUpdating() && !isset($creator)) {
             return null;
@@ -267,14 +262,14 @@ class Order extends BaseValidator
         if (empty($creator)) {
             $vars = array('@field' => $this->language->text('Creator'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('creator', $error, $options);
+            $this->setError('creator', $error);
             return false;
         }
 
         if (!is_numeric($creator)) {
             $vars = array('@field' => $this->language->text('Creator'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('creator', $error, $options);
+            $this->setError('creator', $error);
             return false;
         }
 
@@ -283,7 +278,7 @@ class Order extends BaseValidator
         if (empty($user)) {
             $vars = array('@name' => $this->language->text('Creator'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('creator', $error, $options);
+            $this->setError('creator', $error);
             return false;
         }
 
@@ -292,12 +287,11 @@ class Order extends BaseValidator
 
     /**
      * Validates order total
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTotalOrder(array $options)
+    protected function validateTotalOrder()
     {
-        $total = $this->getSubmitted('total', $options);
+        $total = $this->getSubmitted('total');
 
         if (!isset($total)) {
             return null;
@@ -306,14 +300,14 @@ class Order extends BaseValidator
         if (!is_numeric($total)) {
             $vars = array('@field' => $this->language->text('Total'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('total', $error, $options);
+            $this->setError('total', $error);
             return false;
         }
 
         if (strlen($total) > 10) {
             $vars = array('@max' => 10, '@field' => $this->language->text('Total'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('total', $error, $options);
+            $this->setError('total', $error);
             return false;
         }
 
@@ -322,12 +316,11 @@ class Order extends BaseValidator
 
     /**
      * Validates a currency code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCurrencyOrder(array $options)
+    protected function validateCurrencyOrder()
     {
-        $code = $this->getSubmitted('currency', $options);
+        $code = $this->getSubmitted('currency');
 
         if (!isset($code)) {
             return null;
@@ -338,7 +331,7 @@ class Order extends BaseValidator
         if (empty($currency)) {
             $vars = array('@name' => $this->language->text('Currency'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('currency', $error, $options);
+            $this->setError('currency', $error);
             return false;
         }
 
@@ -347,17 +340,16 @@ class Order extends BaseValidator
 
     /**
      * Validates an order comment
-     * @param array $options
      * @return boolean
      */
-    protected function validateCommentOrder(array $options)
+    protected function validateCommentOrder()
     {
-        $comment = $this->getSubmitted('comment', $options);
+        $comment = $this->getSubmitted('comment');
 
         if (isset($comment) && mb_strlen($comment) > 65535) {
             $vars = array('@max' => 65535, '@field' => $this->language->text('Comment'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('comment', $error, $options);
+            $this->setError('comment', $error);
             return false;
         }
 
@@ -366,12 +358,11 @@ class Order extends BaseValidator
 
     /**
      * Validates a transaction ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTransactionOrder(array $options)
+    protected function validateTransactionOrder()
     {
-        $transaction_id = $this->getSubmitted('transaction_id', $options);
+        $transaction_id = $this->getSubmitted('transaction_id');
 
         if (!isset($transaction_id)) {
             return null;
@@ -380,7 +371,7 @@ class Order extends BaseValidator
         if (!is_numeric($transaction_id)) {
             $vars = array('@field' => $this->language->text('Transaction'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('transaction_id', $error, $options);
+            $this->setError('transaction_id', $error);
             return false;
         }
 
@@ -389,7 +380,7 @@ class Order extends BaseValidator
         if (empty($transaction)) {
             $vars = array('@name' => $this->language->text('Transaction'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('transaction_id', $error, $options);
+            $this->setError('transaction_id', $error);
             return false;
         }
 
@@ -398,21 +389,20 @@ class Order extends BaseValidator
 
     /**
      * Validates a log message
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateLogOrder(array $options)
+    protected function validateLogOrder()
     {
         if (!$this->isUpdating()) {
             return null;
         }
 
-        $log = $this->getSubmitted('log', $options);
+        $log = $this->getSubmitted('log');
 
         if (empty($log) || mb_strlen($log) > 255) {
             $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Log'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('log', $error, $options);
+            $this->setError('log', $error);
             return false;
         }
 

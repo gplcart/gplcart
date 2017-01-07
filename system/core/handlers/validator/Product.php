@@ -99,41 +99,41 @@ class Product extends BaseValidator
      */
     public function product(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateProduct($options);
-        $this->validateSubtractProduct($options);
-        $this->validateStatus($options);
-        $this->validateCurrencyProduct($options);
-        $this->validateCategoryProduct($options);
-        $this->validateUnitProduct($options);
-        $this->validatePriceProduct($options);
-        $this->validateStockProduct($options);
-        $this->validateTitle($options);
-        $this->validateDescription($options);
-        $this->validateMetaTitle($options);
-        $this->validateMetaDescription($options);
-        $this->validateTranslation($options);
-        $this->validateImages($options);
-        $this->validateStoreId($options);
-        $this->validateUserId($options);
-        $this->validateDimensionProduct($options);
-        $this->validateRelatedProduct($options);
-        $this->validateClassProduct($options);
-        $this->validateSkuProduct($options);
-        $this->validateAttributeProduct($options);
-        $this->validateCombinationProduct($options);
-        $this->validateAliasProduct($options);
+        $this->validateProduct();
+        $this->validateSubtractProduct();
+        $this->validateStatus();
+        $this->validateCurrencyProduct();
+        $this->validateCategoryProduct();
+        $this->validateUnitProduct();
+        $this->validatePriceProduct();
+        $this->validateStockProduct();
+        $this->validateTitle();
+        $this->validateDescription();
+        $this->validateMetaTitle();
+        $this->validateMetaDescription();
+        $this->validateTranslation();
+        $this->validateImages();
+        $this->validateStoreId();
+        $this->validateUserId();
+        $this->validateDimensionProduct();
+        $this->validateRelatedProduct();
+        $this->validateClassProduct();
+        $this->validateSkuProduct();
+        $this->validateAttributeProduct();
+        $this->validateCombinationProduct();
+        $this->validateAliasProduct();
 
         return $this->getResult();
     }
 
     /**
      * Validates a product data
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateProduct(array $options)
+    protected function validateProduct()
     {
         $id = $this->getUpdatingId();
 
@@ -156,16 +156,15 @@ class Product extends BaseValidator
 
     /**
      * Validates "Subtract" bool value
-     * @param array $options
      * @return boolean
      */
-    protected function validateSubtractProduct(array $options)
+    protected function validateSubtractProduct()
     {
-        $subtract = $this->getSubmitted('subtract', $options);
+        $subtract = $this->getSubmitted('subtract');
 
         if (isset($subtract)) {
             $subtract = gplcart_string_bool($subtract);
-            $this->setSubmitted('subtract', $subtract, $options);
+            $this->setSubmitted('subtract', $subtract);
         }
 
         return true;
@@ -173,12 +172,11 @@ class Product extends BaseValidator
 
     /**
      * Validates currency code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCurrencyProduct(array $options)
+    protected function validateCurrencyProduct()
     {
-        $value = $this->getSubmitted('currency', $options);
+        $value = $this->getSubmitted('currency');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -187,7 +185,7 @@ class Product extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Currency'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('currency', $error, $options);
+            $this->setError('currency', $error);
             return false;
         }
 
@@ -196,7 +194,7 @@ class Product extends BaseValidator
         if (empty($currency)) {
             $vars = array('@name' => $this->language->text('Currency'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('currency', $error, $options);
+            $this->setError('currency', $error);
             return false;
         }
 
@@ -205,10 +203,9 @@ class Product extends BaseValidator
 
     /**
      * Validates product categories
-     * @param array $options
      * @return boolean
      */
-    protected function validateCategoryProduct(array $options)
+    protected function validateCategoryProduct()
     {
         $fields = array(
             'category_id' => $this->language->text('Category'),
@@ -217,7 +214,7 @@ class Product extends BaseValidator
 
         foreach ($fields as $field => $name) {
 
-            $value = $this->getSubmitted($field, $options);
+            $value = $this->getSubmitted($field);
 
             if (!isset($value)) {
                 continue;
@@ -226,7 +223,7 @@ class Product extends BaseValidator
             if (!is_numeric($value)) {
                 $vars = array('@field' => $name);
                 $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
                 continue;
             }
 
@@ -239,7 +236,7 @@ class Product extends BaseValidator
             if (empty($category['category_id'])) {
                 $vars = array('@name' => $name);
                 $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
             }
         }
 
@@ -248,10 +245,9 @@ class Product extends BaseValidator
 
     /**
      * Validates measurement units
-     * @param array $options
      * @return boolean
      */
-    protected function validateUnitProduct(array $options)
+    protected function validateUnitProduct()
     {
         $allowed = array(
             'volume_unit' => array('mm', 'in', 'cm'),
@@ -265,7 +261,7 @@ class Product extends BaseValidator
 
         foreach ($fields as $field => $name) {
 
-            $value = $this->getSubmitted($field, $options);
+            $value = $this->getSubmitted($field);
 
             if (!isset($value)) {
                 continue;
@@ -274,7 +270,7 @@ class Product extends BaseValidator
             if (!in_array($value, $allowed[$field])) {
                 $vars = array('@name' => $name);
                 $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
             }
         }
 
@@ -283,12 +279,11 @@ class Product extends BaseValidator
 
     /**
      * Validates a product price
-     * @param array $options
      * @return boolean|null
      */
-    protected function validatePriceProduct(array $options)
+    protected function validatePriceProduct()
     {
-        $value = $this->getSubmitted('price', $options);
+        $value = $this->getSubmitted('price');
 
         if (!isset($value)) {
             return null;
@@ -297,14 +292,14 @@ class Product extends BaseValidator
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Price'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('price', $error, $options);
+            $this->setError('price', $error);
             return false;
         }
 
         if (strlen($value) > 8) { // Major units
             $vars = array('@max' => 8, '@field' => $this->language->text('Price'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('price', $error, $options);
+            $this->setError('price', $error);
             return false;
         }
 
@@ -313,12 +308,11 @@ class Product extends BaseValidator
 
     /**
      * Validates a product price
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateStockProduct(array $options)
+    protected function validateStockProduct()
     {
-        $value = $this->getSubmitted('stock', $options);
+        $value = $this->getSubmitted('stock');
 
         if (!isset($value)) {
             return null;
@@ -327,14 +321,14 @@ class Product extends BaseValidator
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Stock'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('stock', $error, $options);
+            $this->setError('stock', $error);
             return false;
         }
 
         if (strlen($value) > 10) {
             $vars = array('@max' => 10, '@field' => $this->language->text('Stock'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('stock', $error, $options);
+            $this->setError('stock', $error);
             return false;
         }
 
@@ -343,10 +337,9 @@ class Product extends BaseValidator
 
     /**
      * Validates product dimensions
-     * @param array $options
      * @return boolean
      */
-    protected function validateDimensionProduct(array $options)
+    protected function validateDimensionProduct()
     {
         $fields = array(
             'width' => $this->language->text('Width'),
@@ -357,7 +350,7 @@ class Product extends BaseValidator
 
         foreach ($fields as $field => $name) {
 
-            $value = $this->getSubmitted($field, $options);
+            $value = $this->getSubmitted($field);
 
             if (!isset($value)) {
                 continue;
@@ -366,13 +359,13 @@ class Product extends BaseValidator
             if (!is_numeric($value)) {
                 $vars = array('@field' => $name);
                 $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
             }
 
             if (strlen($value) > 10) {
                 $vars = array('@max' => 10, '@field' => $name);
                 $error = $this->language->text('@field must not be longer than @max characters', $vars);
-                $this->setError($field, $error, $options);
+                $this->setError($field, $error);
             }
         }
 
@@ -381,17 +374,16 @@ class Product extends BaseValidator
 
     /**
      * Validates/creates an alias
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateAliasProduct(array $options)
+    protected function validateAliasProduct()
     {
         if ($this->isError()) {
             return null;
         }
 
         $updating = $this->getUpdating();
-        $value = $this->getSubmitted('alias', $options);
+        $value = $this->getSubmitted('alias');
 
         if (isset($value)//
                 && isset($updating['alias'])//
@@ -402,24 +394,23 @@ class Product extends BaseValidator
         if (empty($value) && $this->isUpdating()) {
             $data = $this->getSubmitted();
             $value = $this->product->createAlias($data);
-            $this->setSubmitted('alias', $value, $options);
+            $this->setSubmitted('alias', $value);
             return true;
         }
 
-        return $this->validateAlias($options);
+        return $this->validateAlias();
     }
 
     /**
      * Validates related products
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateRelatedProduct(array $options)
+    protected function validateRelatedProduct()
     {
-        $value = $this->getSubmitted('related', $options);
+        $value = $this->getSubmitted('related');
 
         if (empty($value)) {
-            $this->setSubmitted('related', array(), $options);
+            $this->setSubmitted('related', array());
             return null;
         }
 
@@ -434,33 +425,32 @@ class Product extends BaseValidator
         }
 
         // Set filtered product IDs
-        $this->setSubmitted('related', array_flip($modified), $options);
+        $this->setSubmitted('related', array_flip($modified));
         return true;
     }
 
     /**
      * Validates a product SKU
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateSkuProduct(array $options)
+    protected function validateSkuProduct()
     {
         if ($this->isError()) {
             return null;
         }
 
-        $value = $this->getSubmitted('sku', $options);
+        $value = $this->getSubmitted('sku');
 
         if ($this->isUpdating() && empty($value)) {
             $data = $this->getSubmitted();
             $value = $this->product->createSku($data);
-            $this->setSubmitted('sku', $value, $options);
+            $this->setSubmitted('sku', $value);
         }
 
         if (isset($value) && mb_strlen($value) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('SKU'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('sku', $error, $options);
+            $this->setError('sku', $error);
             return false;
         }
 
@@ -479,7 +469,7 @@ class Product extends BaseValidator
             $product_id = $updating['product_id'];
         }
 
-        $store_id = $this->getSubmitted('store_id', $options);
+        $store_id = $this->getSubmitted('store_id');
 
         if (isset($updating['store_id'])) {
             $store_id = $updating['store_id'];
@@ -490,7 +480,7 @@ class Product extends BaseValidator
         if (!empty($existing)) {
             $vars = array('@object' => $this->language->text('SKU'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('sku', $error, $options);
+            $this->setError('sku', $error);
             return false;
         }
 
@@ -499,12 +489,11 @@ class Product extends BaseValidator
 
     /**
      * Validates a product class
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateClassProduct(array $options)
+    protected function validateClassProduct()
     {
-        $value = $this->getSubmitted('product_class_id', $options);
+        $value = $this->getSubmitted('product_class_id');
 
         if (!isset($value)) {
             return null;
@@ -513,7 +502,7 @@ class Product extends BaseValidator
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Product class'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_class_id', $error, $options);
+            $this->setError('product_class_id', $error);
             return false;
         }
 
@@ -522,7 +511,7 @@ class Product extends BaseValidator
         if (empty($product_class)) {
             $vars = array('@name' => $this->language->text('Product class'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_class_id', $error, $options);
+            $this->setError('product_class_id', $error);
             return false;
         }
 
@@ -533,10 +522,9 @@ class Product extends BaseValidator
 
     /**
      * Validates an array of product attributes
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateAttributeProduct(array $options)
+    protected function validateAttributeProduct()
     {
         $attributes = $this->getSubmitted('product_fields.attribute');
 
@@ -553,19 +541,18 @@ class Product extends BaseValidator
             if (!empty($field['required']) && empty($value)) {
                 $vars = array('@field' => $this->language->text('Field'));
                 $error = $this->language->text('@field is required', $vars);
-                $this->setError("attribute.$field_id", $error, $options);
+                $this->setError("attribute.$field_id", $error);
             }
         }
 
-        return $this->isError('attribute', $options);
+        return $this->isError('attribute');
     }
 
     /**
      * Validates an array of product combinations
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCombinationProduct(array $options)
+    protected function validateCombinationProduct()
     {
         $fields = $this->getSubmitted('product_fields');
 
@@ -573,7 +560,7 @@ class Product extends BaseValidator
             return null;
         }
 
-        $combinations = $this->getSubmitted('combination', $options);
+        $combinations = $this->getSubmitted('combination');
 
         if (empty($combinations)) {
             return null;
@@ -586,9 +573,9 @@ class Product extends BaseValidator
                 continue;
             }
 
-            $this->validateCombinationOptionsProduct($index, $combination, $options);
+            $this->validateCombinationOptionsProduct($index, $combination);
 
-            if ($this->isError("combination.$index", $options)) {
+            if ($this->isError("combination.$index")) {
                 continue;
             }
 
@@ -596,12 +583,12 @@ class Product extends BaseValidator
 
             if (isset($this->processed_combinations[$combination_id])) {
                 $error = $this->language->text('Option combination already defined');
-                $this->setError("combination.$index.exists", $error, $options);
+                $this->setError("combination.$index.exists", $error);
             }
 
-            $this->validateCombinationSkuProduct($index, $combination, $options);
-            $this->validateCombinationPriceProduct($index, $combination, $options);
-            $this->validateCombinationStockProduct($index, $combination, $options);
+            $this->validateCombinationSkuProduct($index, $combination);
+            $this->validateCombinationPriceProduct($index, $combination);
+            $this->validateCombinationStockProduct($index, $combination);
 
             foreach ($combination['fields'] as $field_value_id) {
                 if (!isset($this->stock_amount[$field_value_id])) {
@@ -616,8 +603,8 @@ class Product extends BaseValidator
             return false;
         }
 
-        $this->setSubmitted('combination', $combinations, $options);
-        $this->setSubmitted('stock', array_sum($this->stock_amount), $options);
+        $this->setSubmitted('combination', $combinations);
+        $this->setSubmitted('stock', array_sum($this->stock_amount));
         return true;
     }
 
@@ -625,11 +612,10 @@ class Product extends BaseValidator
      * Validates option combination fields
      * @param integer $index
      * @param array $combination
-     * @param array $options
      * @return boolean|null
      */
     protected function validateCombinationOptionsProduct($index,
-            array &$combination, array $options)
+            array &$combination)
     {
         $op = $this->getSubmitted('product_fields.option');
 
@@ -641,7 +627,7 @@ class Product extends BaseValidator
             if (!empty($field['required']) && !isset($combination['fields'][$field_id])) {
                 $vars = array('@field' => $this->language->text('Field'));
                 $error = $this->language->text('@field is required', $vars);
-                $this->setError("combination.$index.fields.$field_id", $error, $options);
+                $this->setError("combination.$index.fields.$field_id", $error);
             }
         }
 
@@ -652,11 +638,9 @@ class Product extends BaseValidator
      * Validates option combination SKUs
      * @param integer $index
      * @param array $combination
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCombinationSkuProduct($index,
-            array &$combination, array $options)
+    protected function validateCombinationSkuProduct($index, array &$combination)
     {
         if (!isset($combination['sku'])) {
             return null;
@@ -669,27 +653,27 @@ class Product extends BaseValidator
             $product_id = $updating['product_id'];
         }
 
-        $sku = $this->getSubmitted('sku', $options);
-        $store_id = $this->getSubmitted('store_id', $options);
+        $sku = $this->getSubmitted('sku');
+        $store_id = $this->getSubmitted('store_id');
 
         if ($combination['sku'] !== '') {
 
             if (mb_strlen($combination['sku']) > 255) {
-                $options = array('@max' => 255, '@field' => $this->language->text('SKU'));
-                $error = $this->language->text('@field must not be longer than @max characters', $options);
-                $this->setError("combination.$index.sku", $error, $options);
+                $vars = array('@max' => 255, '@field' => $this->language->text('SKU'));
+                $error = $this->language->text('@field must not be longer than @max characters', $vars);
+                $this->setError("combination.$index.sku", $error);
                 return false;
             }
 
             if (isset($this->processed_skus[$combination['sku']])) {
                 $error = $this->language->text('SKU must be unique per store');
-                $this->setError("combination.$index.sku", $error, $options);
+                $this->setError("combination.$index.sku", $error);
                 return false;
             }
 
             if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
                 $error = $this->language->text('SKU must be unique per store');
-                $this->setError("combination.$index.sku", $error, $options);
+                $this->setError("combination.$index.sku", $error);
                 return false;
             }
 
@@ -699,8 +683,7 @@ class Product extends BaseValidator
 
         if (!empty($product_id)) {
             $pattern = "$sku-" . crc32(uniqid('', true));
-            $options = array('store_id' => $store_id);
-            $combination['sku'] = $this->sku->generate($pattern, array(), $options);
+            $combination['sku'] = $this->sku->generate($pattern, array(), array('store_id' => $store_id));
             $this->processed_skus[$combination['sku']] = true;
         }
 
@@ -711,13 +694,12 @@ class Product extends BaseValidator
      * Validates combination stock price
      * @param integer $index
      * @param array $combination
-     * @param array $options
      * @return boolean
      */
     protected function validateCombinationPriceProduct($index,
-            array &$combination, array $options)
+            array &$combination)
     {
-        $price = $this->getSubmitted('price', $options);
+        $price = $this->getSubmitted('price');
 
         if (empty($combination['price'])) {
             $combination['price'] = $price;
@@ -725,7 +707,7 @@ class Product extends BaseValidator
 
         if (!is_numeric($combination['price']) || strlen($combination['price']) > 10) {
             $error = $this->language->text('Only numeric values and no longer than @num characters', array('@num' => 10));
-            $this->setError("combination.$index.price", $error, $options);
+            $this->setError("combination.$index.price", $error);
         }
 
         return !isset($error);
@@ -735,11 +717,10 @@ class Product extends BaseValidator
      * Validates combination stock level
      * @param integer $index
      * @param array $combination
-     * @param array $options
      * @return null|boolean
      */
     protected function validateCombinationStockProduct($index,
-            array &$combination, array $options)
+            array &$combination)
     {
         if (empty($combination['stock'])) {
             return null;
@@ -747,7 +728,7 @@ class Product extends BaseValidator
 
         if (!is_numeric($combination['stock']) || strlen($combination['stock']) > 10) {
             $error = $this->language->text('Only numeric values and no longer than %s chars', array('%s' => 10));
-            $this->setError("combination.$index.stock", $error, $options);
+            $this->setError("combination.$index.stock", $error);
         }
 
         return !isset($error);

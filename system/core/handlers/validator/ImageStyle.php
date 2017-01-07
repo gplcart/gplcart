@@ -43,22 +43,22 @@ class ImageStyle extends BaseValidator
      */
     public function imageStyle(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateImageStyle($options);
-        $this->validateName($options);
-        $this->validateStatus($options);
-        $this->validateActionsImageStyle($options);
+        $this->validateImageStyle();
+        $this->validateName();
+        $this->validateStatus();
+        $this->validateActionsImageStyle();
 
         return $this->getResult();
     }
 
     /**
      * Validates an image style to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateImageStyle(array $options)
+    protected function validateImageStyle()
     {
         $id = $this->getUpdatingId();
 
@@ -81,12 +81,11 @@ class ImageStyle extends BaseValidator
 
     /**
      * Validates image actions
-     * @param array $options
      * @return boolean|null
      */
-    public function validateActionsImageStyle(array $options)
+    public function validateActionsImageStyle()
     {
-        $actions = $this->getSubmitted('actions', $options);
+        $actions = $this->getSubmitted('actions');
 
         if ($this->isUpdating() && !isset($actions)) {
             return null;
@@ -95,7 +94,7 @@ class ImageStyle extends BaseValidator
         if (empty($actions)) {
             $vars = array('@field' => $this->language->text('Actions'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('actions', $error, $options);
+            $this->setError('actions', $error);
             return false;
         }
 
@@ -120,14 +119,14 @@ class ImageStyle extends BaseValidator
         if (!empty($errors)) {
             $vars = array('%num' => implode(',', $errors));
             $error = $this->language->text('Error on lines %num', $vars);
-            $this->setError('actions', $error, $options);
+            $this->setError('actions', $error);
         }
 
         if ($this->isError()) {
             return false;
         }
 
-        $this->setSubmitted('actions', $modified, $options);
+        $this->setSubmitted('actions', $modified);
         return true;
     }
 

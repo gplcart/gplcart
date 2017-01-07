@@ -52,24 +52,24 @@ class Trigger extends BaseValidator
      */
     public function trigger(array &$submitted, array $options)
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateTrigger($options);
-        $this->validateStatus($options);
-        $this->validateName($options);
-        $this->validateStoreId($options);
-        $this->validateWeight($options);
-        $this->validateConditionsTrigger($options);
+        $this->validateTrigger();
+        $this->validateStatus();
+        $this->validateName();
+        $this->validateStoreId();
+        $this->validateWeight();
+        $this->validateConditionsTrigger();
 
         return $this->getResult();
     }
 
     /**
      * Validates a trigger to be updated
-     * @param array $options
      * @return boolean
      */
-    protected function validateTrigger(array $options)
+    protected function validateTrigger()
     {
         $id = $this->getUpdatingId();
 
@@ -92,12 +92,11 @@ class Trigger extends BaseValidator
 
     /**
      * Validates and modifies trigger conditions
-     * @param array $options
      * @return boolean|null
      */
-    public function validateConditionsTrigger(array $options)
+    public function validateConditionsTrigger()
     {
-        $value = $this->getSubmitted('data.conditions', $options);
+        $value = $this->getSubmitted('data.conditions');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -106,7 +105,7 @@ class Trigger extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Conditions'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('data.conditions', $error, $options);
+            $this->setError('data.conditions', $error);
             return false;
         }
 
@@ -163,11 +162,11 @@ class Trigger extends BaseValidator
         }
 
         if (!empty($errors)) {
-            $this->setError('data.conditions', implode('<br>', $errors), $options);
+            $this->setError('data.conditions', implode('<br>', $errors));
         }
 
         if (!$this->isError()) {
-            $this->setSubmitted('data.conditions', $modified, $options);
+            $this->setSubmitted('data.conditions', $modified);
             return true;
         }
 

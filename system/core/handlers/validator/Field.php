@@ -43,14 +43,15 @@ class Field extends BaseValidator
      */
     public function field(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateField($options);
-        $this->validateTitle($options);
-        $this->validateWeight($options);
-        $this->validateTranslation($options);
-        $this->validateTypeField($options);
-        $this->validateWidgetTypeField($options);
+        $this->validateField();
+        $this->validateTitle();
+        $this->validateWeight();
+        $this->validateTranslation();
+        $this->validateTypeField();
+        $this->validateWidgetTypeField();
 
         return $this->getResult();
     }
@@ -82,21 +83,20 @@ class Field extends BaseValidator
 
     /**
      * Validates a field type
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTypeField(array $options)
+    protected function validateTypeField()
     {
         if ($this->isUpdating()) {
             return null; // Cannot change type of existing field
         }
 
-        $type = $this->getSubmitted('type', $options);
+        $type = $this->getSubmitted('type');
 
         if (empty($type)) {
             $vars = array('@field' => $this->language->text('Type'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('type', $error, $options);
+            $this->setError('type', $error);
             return false;
         }
 
@@ -105,7 +105,7 @@ class Field extends BaseValidator
         if (empty($types[$type])) {
             $vars = array('@name' => $this->language->text('Type'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error, $options);
+            $this->setError('type', $error);
             return false;
         }
 
@@ -114,12 +114,11 @@ class Field extends BaseValidator
 
     /**
      * Validates a field widget type
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateWidgetTypeField(array $options)
+    protected function validateWidgetTypeField()
     {
-        $type = $this->getSubmitted('widget', $options);
+        $type = $this->getSubmitted('widget');
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
@@ -128,7 +127,7 @@ class Field extends BaseValidator
         if (empty($type)) {
             $vars = array('@field' => $this->language->text('Widget'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('widget', $error, $options);
+            $this->setError('widget', $error);
             return false;
         }
 
@@ -137,7 +136,7 @@ class Field extends BaseValidator
         if (empty($types[$type])) {
             $vars = array('@name' => $this->language->text('Widget'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('widget', $error, $options);
+            $this->setError('widget', $error);
             return false;
         }
 

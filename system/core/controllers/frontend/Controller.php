@@ -192,7 +192,7 @@ class Controller extends BaseController
         $this->cart_quantity = (array) $this->cart->getQuantity($options);
 
         // Don't count, use the same arguments to avoid an extra query
-        // @see $this->setItemProductWishlist()
+        // see setItemProductWishlist method
         $this->wishlist_content = (array) $this->wishlist->getList($options);
 
         $this->data['cart_quantity'] = $this->cart_quantity;
@@ -541,9 +541,8 @@ class Controller extends BaseController
     /**
      * Sets item indentation using hierarchy depth
      * @param array $item
-     * @param array $options
      */
-    protected function setItemIndentation(array &$item, array $options)
+    protected function setItemIndentation(array &$item)
     {
         $depth = isset($item['depth']) ? $item['depth'] : 0;
         $item['indentation'] = str_repeat('<span class="indentation"></span>', $depth);

@@ -62,24 +62,24 @@ class State extends BaseValidator
      */
     public function state(array $submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateState($options);
-        $this->validateStatus($options);
-        $this->validateCodeState($options);
-        $this->validateName($options);
-        $this->validateCountryState($options);
-        $this->validateZoneState($options);
+        $this->validateState();
+        $this->validateStatus();
+        $this->validateCodeState();
+        $this->validateName();
+        $this->validateCountryState();
+        $this->validateZoneState();
 
         return $this->getResult();
     }
 
     /**
      * Validates a state to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateState(array $options)
+    protected function validateState()
     {
         $id = $this->getUpdatingId();
 
@@ -102,12 +102,11 @@ class State extends BaseValidator
 
     /**
      * Validates country code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCountryState(array $options)
+    protected function validateCountryState()
     {
-        $value = $this->getSubmitted('country', $options);
+        $value = $this->getSubmitted('country');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -116,7 +115,7 @@ class State extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Country'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('country', $error, $options);
+            $this->setError('country', $error);
             return false;
         }
 
@@ -125,7 +124,7 @@ class State extends BaseValidator
         if (empty($country)) {
             $vars = array('@name' => $this->language->text('Country'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('country', $error, $options);
+            $this->setError('country', $error);
             return false;
         }
 
@@ -134,13 +133,12 @@ class State extends BaseValidator
 
     /**
      * Validates a state code
-     * @param array $options
      * @return boolean
      */
-    public function validateCodeState(array $options)
+    public function validateCodeState()
     {
         $updating = $this->getUpdating();
-        $value = $this->getSubmitted('code', $options);
+        $value = $this->getSubmitted('code');
 
         if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
@@ -149,17 +147,17 @@ class State extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('Code'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
-        $country = $this->getSubmitted('country', $options);
+        $country = $this->getSubmitted('country');
         $existing = $this->state->getByCode($value, $country);
 
         if (!empty($existing)) {
             $vars = array('@object' => $this->language->text('Code'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('code', $error, $options);
+            $this->setError('code', $error);
             return false;
         }
 
@@ -168,12 +166,11 @@ class State extends BaseValidator
 
     /**
      * Validates a zone ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateZoneState(array $options)
+    protected function validateZoneState()
     {
-        $value = $this->getSubmitted('zone_id', $options);
+        $value = $this->getSubmitted('zone_id');
 
         if (empty($value)) {
             return null;
@@ -182,7 +179,7 @@ class State extends BaseValidator
         if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Zone'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('zone_id', $error, $options);
+            $this->setError('zone_id', $error);
             return false;
         }
 
@@ -191,7 +188,7 @@ class State extends BaseValidator
         if (empty($zone)) {
             $vars = array('@name' => $this->language->text('Zone'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('zone_id', $error, $options);
+            $this->setError('zone_id', $error);
             return false;
         }
 

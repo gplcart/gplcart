@@ -64,31 +64,31 @@ class Store extends BaseValidator
      */
     public function store(array &$submitted, array $options)
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateStore($options);
-        $this->validateStatus($options);
-        $this->validateDomainStore($options);
-        $this->validateBasepathStore($options);
-        $this->validateName($options);
-        $this->validateEmailStore($options);
-        $this->validateMapStore($options);
-        $this->validateTitleStore($options);
-        $this->validateMetaTitleStore($options);
-        $this->validateMetaDescriptionStore($options);
-        $this->validateTranslationStore($options);
-        $this->validateThemeStore($options);
-        $this->validateImagesStore($options);
+        $this->validateStore();
+        $this->validateStatus();
+        $this->validateDomainStore();
+        $this->validateBasepathStore();
+        $this->validateName();
+        $this->validateEmailStore();
+        $this->validateMapStore();
+        $this->validateTitleStore();
+        $this->validateMetaTitleStore();
+        $this->validateMetaDescriptionStore();
+        $this->validateTranslationStore();
+        $this->validateThemeStore();
+        $this->validateImagesStore();
 
         return $this->getResult();
     }
 
     /**
      * Validates a store to be updated
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateStore(array $options)
+    protected function validateStore()
     {
         $id = $this->getUpdatingId();
 
@@ -113,19 +113,18 @@ class Store extends BaseValidator
 
     /**
      * Validates a domain
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateDomainStore(array $options)
+    protected function validateDomainStore()
     {
-        $value = $this->getSubmitted('domain', $options);
+        $value = $this->getSubmitted('domain');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if ($this->getSubmitted('default')) {
-            $this->unsetSubmitted('domain', $options);
+            $this->unsetSubmitted('domain');
             return null; // Cannot update domain of default store
         }
 
@@ -138,7 +137,7 @@ class Store extends BaseValidator
         if (!gplcart_valid_domain($value)) {
             $vars = array('@field' => $this->language->text('Domain'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('domain', $error, $options);
+            $this->setError('domain', $error);
             return false;
         }
 
@@ -147,7 +146,7 @@ class Store extends BaseValidator
         if (!empty($existing)) {
             $vars = array('@object' => $this->language->text('Domain'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('domain', $error, $options);
+            $this->setError('domain', $error);
             return false;
         }
 
@@ -156,28 +155,27 @@ class Store extends BaseValidator
 
     /**
      * Validates a store base path
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateBasepathStore(array $options)
+    protected function validateBasepathStore()
     {
-        if ($this->isError('domain', $options)) {
+        if ($this->isError('domain')) {
             return null;
         }
 
-        $value = $this->getSubmitted('basepath', $options);
+        $value = $this->getSubmitted('basepath');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if ($this->getSubmitted('default')) {
-            $this->unsetSubmitted('basepath', $options);
+            $this->unsetSubmitted('basepath');
             return null; // Cannot update basepath of default store
         }
 
         $updating = $this->getUpdating();
-        $domain = $this->getSubmitted('domain', $options);
+        $domain = $this->getSubmitted('domain');
 
         if (isset($updating['basepath'])//
                 && $updating['basepath'] === $value//
@@ -188,7 +186,7 @@ class Store extends BaseValidator
         if (preg_match('/^[a-z0-9]{0,50}$/', $value) !== 1) {
             $vars = array('@field' => $this->language->text('Base path'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('basepath', $error, $options);
+            $this->setError('basepath', $error);
             return false;
         }
 
@@ -204,7 +202,7 @@ class Store extends BaseValidator
             if ($data['domain'] === $domain && $data['basepath'] === $value) {
                 $vars = array('@object' => $this->language->text('Base path'));
                 $error = $this->language->text('@object already exists', $vars);
-                $this->setError('basepath', $error, $options);
+                $this->setError('basepath', $error);
                 return false;
             }
         }
@@ -214,12 +212,11 @@ class Store extends BaseValidator
 
     /**
      * Validates E-mails
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateEmailStore(array $options)
+    protected function validateEmailStore()
     {
-        $value = $this->getSubmitted('data.email', $options);
+        $value = $this->getSubmitted('data.email');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -228,7 +225,7 @@ class Store extends BaseValidator
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('E-mail'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('data.email', $error, $options);
+            $this->setError('data.email', $error);
             return false;
         }
 
@@ -238,7 +235,7 @@ class Store extends BaseValidator
 
         if (count($value) != count($filtered)) {
             $error = $this->language->text('Invalid E-mail');
-            $this->setError('data.email', $error, $options);
+            $this->setError('data.email', $error);
             return false;
         }
 
@@ -247,12 +244,11 @@ class Store extends BaseValidator
 
     /**
      * Validates map coordinates
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateMapStore(array $options)
+    protected function validateMapStore()
     {
-        $value = $this->getSubmitted('data.map', $options);
+        $value = $this->getSubmitted('data.map');
 
         if (empty($value)) {
             return null;
@@ -261,7 +257,7 @@ class Store extends BaseValidator
         if (count($value) != 2) {
             $vars = array('@field' => $this->language->text('Map'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('data.map', $error, $options);
+            $this->setError('data.map', $error);
             return false;
         }
 
@@ -270,7 +266,7 @@ class Store extends BaseValidator
         if (count($value) != count($filtered)) {
             $vars = array('@field' => $this->language->text('Map'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('data.map', $error, $options);
+            $this->setError('data.map', $error);
             return false;
         }
 
@@ -279,54 +275,69 @@ class Store extends BaseValidator
 
     /**
      * Validates a store title
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTitleStore(array $options)
+    protected function validateTitleStore()
     {
-        $options += array('parents' => 'data');
-        return $this->validateTitle($options);
+        $options = $this->options;
+        $this->options += array('parents' => 'data');
+
+        $result = $this->validateTitle();
+
+        $this->options = $options;
+        return $result;
     }
 
     /**
      * Validates a store meta title
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateMetaTitleStore(array $options)
+    protected function validateMetaTitleStore()
     {
-        $options += array('parents' => 'data');
-        return $this->validateMetaTitle($options);
+        $options = $this->options;
+        $this->options += array('parents' => 'data');
+
+        $result = $this->validateMetaTitle();
+
+        $this->options = $options;
+        return $result;
     }
 
     /**
      * Validates a store meta description
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateMetaDescriptionStore(array $options)
+    protected function validateMetaDescriptionStore()
     {
-        $options += array('parents' => 'data');
-        return $this->validateMetaDescription($options);
+        $options = $this->options;
+        $this->options += array('parents' => 'data');
+
+        $result = $this->validateMetaDescription();
+
+        $this->options = $options;
+        return $result;
     }
 
     /**
      * Validates store translatable fields
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTranslationStore(array $options)
+    protected function validateTranslationStore()
     {
-        $options += array('parents' => 'data');
-        return $this->validateTranslation($options);
+        $options = $this->options;
+        $this->options += array('parents' => 'data');
+
+        $result = $this->validateTranslation();
+
+        $this->options = $options;
+        return $result;
     }
 
     /**
      * Validates uploaded favicon
-     * @param array $options
      * @return boolean
      */
-    protected function validateImagesStore(array $options)
+    protected function validateImagesStore()
     {
         if ($this->isError()) {
             return null;
@@ -335,8 +346,8 @@ class Store extends BaseValidator
         $error = false;
         foreach (array('logo', 'favicon') as $field) {
 
-            if ($this->getSubmitted("delete_$field", $options)) {
-                $this->setSubmitted("data.$field", '', $options);
+            if ($this->getSubmitted("delete_$field")) {
+                $this->setSubmitted("data.$field", '');
             }
 
             $file = $this->request->file($field);
@@ -354,12 +365,12 @@ class Store extends BaseValidator
 
             if ($result !== true) {
                 $error = true;
-                $this->setError($field, (string) $result, $options);
+                $this->setError($field, (string) $result);
                 continue;
             }
 
             $uploaded = $this->file->getUploadedFile(true);
-            $this->setSubmitted("data.$field", $uploaded, $options);
+            $this->setSubmitted("data.$field", $uploaded);
         }
 
         return empty($error);
@@ -367,10 +378,9 @@ class Store extends BaseValidator
 
     /**
      * Validates theme module IDs
-     * @param array $options
      * @return boolean
      */
-    protected function validateThemeStore(array $options)
+    protected function validateThemeStore()
     {
         $mapping = array(
             'theme' => $this->language->text('Theme'),
@@ -380,7 +390,7 @@ class Store extends BaseValidator
 
         foreach ($mapping as $field => $name) {
 
-            $value = $this->getSubmitted("data.$field", $options);
+            $value = $this->getSubmitted("data.$field");
 
             if ($this->isUpdating() && !isset($value)) {
                 continue;
@@ -388,7 +398,7 @@ class Store extends BaseValidator
 
             if (empty($value)) {
                 $error = $this->language->text('@field is required', array('@field' => $name));
-                $this->setError("data.$field", $error, $options);
+                $this->setError("data.$field", $error);
                 continue;
             }
 
@@ -399,7 +409,7 @@ class Store extends BaseValidator
             }
 
             $error = $this->language->text('@name is unavailable', array('@name' => $name));
-            $this->setError("data.$field", $error, $options);
+            $this->setError("data.$field", $error);
         }
 
         return !isset($error);
