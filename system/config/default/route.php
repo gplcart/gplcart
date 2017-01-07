@@ -894,4 +894,20 @@ $routes['admin/report/route'] = array(
     )
 );
 
+$routes['admin/report/payment'] = array(
+    'access' => 'report',
+    'menu' => array('admin' => 'Payment methods'),
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listPaymentMethodsReport')
+    )
+);
+
+$routes['admin/report/shipping'] = array(
+    'access' => 'report',
+    'menu' => array('admin' => 'Shipping methods'),
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listShippingMethodsReport')
+    )
+);
+
 return $routes;

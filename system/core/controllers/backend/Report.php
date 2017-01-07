@@ -10,6 +10,8 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Report as ReportModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -18,7 +20,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Report extends BackendController
 {
-
     /**
      * Report model instance
      * @var \gplcart\core\models\Report $report
@@ -32,16 +33,117 @@ class Report extends BackendController
     protected $role;
 
     /**
+     * Payment model instance
+     * @var \gplcart\core\models\Payment $payment
+     */
+    protected $payment;
+
+    /**
+     * Shipping model instance
+     * @var \gplcart\core\models\Shipping $shipping
+     */
+    protected $shipping;
+
+    /**
      * Constructor
      * @param ReportModel $report
      * @param UserRoleModel $role
+     * @param PaymentModel $payment
+     * @param ShippingModel $shipping
      */
-    public function __construct(ReportModel $report, UserRoleModel $role)
+    public function __construct(ReportModel $report, UserRoleModel $role,
+            PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
         $this->role = $role;
         $this->report = $report;
+        $this->payment = $payment;
+        $this->shipping = $shipping;
+    }
+
+    /**
+     * Displays the payment methods overview page
+     */
+    public function listPaymentMethodsReport()
+    {
+        $list = $this->payment->getList();
+        $this->setData('methods', $list);
+
+        $this->setTitleListPaymentMethodsReport();
+        $this->setBreadcrumbListPaymentMethodsReport();
+        $this->outputListPaymentMethodsReport();
+    }
+
+    /**
+     * Sets title on the payment methods overview page
+     */
+    protected function setTitleListPaymentMethodsReport()
+    {
+        $this->setTitle($this->text('Routes'));
+    }
+
+    /**
+     * Sets breadcrumbs on the payment methods overview page
+     */
+    protected function setBreadcrumbListPaymentMethodsReport()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Renders templates on the payment methods overview page
+     */
+    protected function outputListPaymentMethodsReport()
+    {
+        $this->output('report/payment_methods');
+    }
+
+    /**
+     * Displays the shipping methods overview page
+     */
+    public function listShippingMethodsReport()
+    {
+        $list = $this->shipping->getList();
+        $this->setData('methods', $list);
+
+        $this->setTitleListShippingMethodsReport();
+        $this->setBreadcrumbListShippingMethodsReport();
+        $this->outputListShippingMethodsReport();
+    }
+
+    /**
+     * Sets title on the shipping methods overview page
+     */
+    protected function setTitleListShippingMethodsReport()
+    {
+        $this->setTitle($this->text('Routes'));
+    }
+
+    /**
+     * Sets breadcrumbs on the shipping methods overview page
+     */
+    protected function setBreadcrumbListShippingMethodsReport()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Renders templates on the shipping methods overview page
+     */
+    protected function outputListShippingMethodsReport()
+    {
+        $this->output('report/shipping_methods');
     }
 
     /**

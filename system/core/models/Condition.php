@@ -283,7 +283,7 @@ class Condition extends Model
 
         $handlers['shipping'] = array(
             'title' => $this->language->text('Shipping method (checkout)'),
-            'description' => $this->language->text('Parameters: Shipping service ID'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of IDs</a>, separated by comma', array('@url' => $this->url->get('admin/report/shipping'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shipping'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shipping'),
@@ -292,7 +292,7 @@ class Condition extends Model
 
         $handlers['payment'] = array(
             'title' => $this->language->text('Payment method (checkout)'),
-            'description' => $this->language->text('Parameters: Payment service ID'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of IDs</a>, separated by comma', array('@url' => $this->url->get('admin/report/payment'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'payment'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'payment'),
@@ -325,7 +325,7 @@ class Condition extends Model
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'state'),
             ),
         );
-        
+
         $handlers['shipping_zone_id'] = array(
             'title' => $this->language->text('Shipping address zone ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
