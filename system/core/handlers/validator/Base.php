@@ -30,6 +30,12 @@ class Base
     protected $submitted = array();
 
     /**
+     * An array of options
+     * @var array
+     */
+    protected $options = array();
+
+    /**
      * Alias model instance
      * @var \gplcart\core\models\Alias $alias
      */
@@ -74,16 +80,15 @@ class Base
     /**
      * Returns a submitted value
      * @param null|string $key
-     * @param array $options
      * @return mixed
      */
-    protected function getSubmitted($key = null, $options = array())
+    protected function getSubmitted($key = null)
     {
         if (!isset($key)) {
             return $this->submitted;
         }
 
-        $parents = $this->getParents($key, $options);
+        $parents = $this->getParents($key);
 
         if (!isset($parents)) {
             return $this->submitted;
@@ -95,22 +100,20 @@ class Base
     /**
      * Sets a value to an array of submitted values
      * @param string $key
-     * @param array $options
      */
-    public function setSubmitted($key, $value, $options = array())
+    public function setSubmitted($key, $value)
     {
-        $parents = $this->getParents($key, $options);
+        $parents = $this->getParents($key);
         gplcart_array_set_value($this->submitted, $parents, $value);
     }
 
     /**
      * Removes a value from an array of submitted values
      * @param string $key
-     * @param array $options
      */
-    public function unsetSubmitted($key, $options = array())
+    public function unsetSubmitted($key)
     {
-        $parents = $this->getParents($key, $options);
+        $parents = $this->getParents($key);
         gplcart_array_unset_value($this->submitted, $parents);
     }
 
@@ -161,63 +164,59 @@ class Base
     /**
      * Returns an array that represents a path to the nested array value
      * @param string|array $key A base key
-     * @param array $options
      * @return array
      */
-    protected function getParents($key, array $options)
+    protected function getParents($key)
     {
-        if (empty($options['parents'])) {
+        if (empty($this->options['parents'])) {
             return $key;
         }
 
-        if (is_string($options['parents'])) {
-            $options['parents'] = explode('.', $options['parents']);
+        if (is_string($this->options['parents'])) {
+            $this->options['parents'] = explode('.', $this->options['parents']);
         }
 
-        return array_merge((array) $options['parents'], (array) $key);
+        return array_merge((array) $this->options['parents'], (array) $key);
     }
 
     /**
      * Sets a validation error
      * @param string $key
      * @param string $error
-     * @param array $options
      */
-    protected function setError($key, $error, array $options = array())
+    protected function setError($key, $error)
     {
-        $parents = $this->getParents($key, $options);
+        $parents = $this->getParents($key);
         gplcart_array_set_value($this->errors, $parents, $error);
     }
 
     /**
      * Whether an error(s) exist
      * @param string|null $key
-     * @param array $options
      * @return boolean
      */
-    protected function isError($key = null, $options = array())
+    protected function isError($key = null)
     {
         if (!isset($key)) {
             return !empty($this->errors);
         }
 
-        $result = $this->getError($key, $options);
+        $result = $this->getError($key);
         return !empty($result);
     }
 
     /**
      * Returns an error
      * @param string|null $key
-     * @param array $options
      * @return mixed
      */
-    protected function getError($key = null, array $options = array())
+    protected function getError($key = null)
     {
         if (!isset($key)) {
             return $this->errors;
         }
 
-        $parents = $this->getParents($key, $options);
+        $parents = $this->getParents($key);
         return gplcart_array_get_value($this->errors, $parents);
     }
 
@@ -234,12 +233,11 @@ class Base
 
     /**
      * Validates a title
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTitle(array $options = array())
+    protected function validateTitle()
     {
-        $title = $this->getSubmitted('title', $options);
+        $title = $this->getSubmitted('title');
 
         if ($this->isUpdating() && !isset($title)) {
             return null;
@@ -248,7 +246,7 @@ class Base
         if (empty($title) || mb_strlen($title) > 255) {
             $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Title'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('title', $error, $options);
+            $this->setError('title', $error);
             return false;
         }
 
@@ -257,12 +255,11 @@ class Base
 
     /**
      * Validates a name
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateName(array $options = array())
+    protected function validateName()
     {
-        $name = $this->getSubmitted('name', $options);
+        $name = $this->getSubmitted('name');
 
         if ($this->isUpdating() && !isset($name)) {
             return null;
@@ -271,7 +268,7 @@ class Base
         if (empty($name) || mb_strlen($name) > 255) {
             $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Name'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('name', $error, $options);
+            $this->setError('name', $error);
             return false;
         }
 
@@ -280,17 +277,16 @@ class Base
 
     /**
      * Validates a meta title
-     * @param array $options
      * @return boolean
      */
-    protected function validateMetaTitle(array $options = array())
+    protected function validateMetaTitle()
     {
-        $meta_title = $this->getSubmitted('meta_title', $options);
+        $meta_title = $this->getSubmitted('meta_title');
 
         if (isset($meta_title) && mb_strlen($meta_title) > 60) {
             $vars = array('@max' => 60, '@field' => $this->language->text('Meta title'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('meta_title', $error, $options);
+            $this->setError('meta_title', $error);
             return false;
         }
 
@@ -299,17 +295,16 @@ class Base
 
     /**
      * Validates a meta description
-     * @param array $options
      * @return boolean
      */
-    protected function validateMetaDescription(array $options = array())
+    protected function validateMetaDescription()
     {
-        $meta_description = $this->getSubmitted('meta_description', $options);
+        $meta_description = $this->getSubmitted('meta_description');
 
         if (isset($meta_description) && mb_strlen($meta_description) > 160) {
             $vars = array('@max' => 160, '@field' => $this->language->text('Meta description'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('meta_description', $error, $options);
+            $this->setError('meta_description', $error);
             return false;
         }
 
@@ -318,17 +313,16 @@ class Base
 
     /**
      * Validates a description field
-     * @param array $options
      * @return boolean
      */
-    protected function validateDescription(array $options = array())
+    protected function validateDescription()
     {
-        $description = $this->getSubmitted('description', $options);
+        $description = $this->getSubmitted('description');
 
         if (isset($description) && mb_strlen($description) > 65535) {
             $vars = array('@max' => 65535, '@field' => $this->language->text('Description'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('description', $error, $options);
+            $this->setError('description', $error);
             return false;
         }
 
@@ -337,17 +331,16 @@ class Base
 
     /**
      * Validates a weight field
-     * @param array $options
      * @return boolean
      */
-    protected function validateWeight(array $options = array())
+    protected function validateWeight()
     {
-        $weight = $this->getSubmitted('weight', $options);
+        $weight = $this->getSubmitted('weight');
 
         if (isset($weight) && !is_numeric($weight)) {
             $vars = array('@field' => $this->language->text('Weight'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('weight', $error, $options);
+            $this->setError('weight', $error);
             return false;
         }
 
@@ -356,16 +349,15 @@ class Base
 
     /**
      * Sets "Status" field to an integer value
-     * @param array $options
      * @return boolean
      */
-    protected function validateStatus(array $options = array())
+    protected function validateStatus()
     {
-        $status = $this->getSubmitted('status', $options);
+        $status = $this->getSubmitted('status');
 
         if (isset($status)) {
             $value = (int) gplcart_string_bool($status);
-            $this->setSubmitted('status', $value, $options);
+            $this->setSubmitted('status', $value);
         }
 
         return true;
@@ -373,16 +365,15 @@ class Base
 
     /**
      * Sets "Default" field to integer value
-     * @param array $options
      * @return boolean
      */
-    protected function validateDefault(array $options = array())
+    protected function validateDefault()
     {
-        $default = $this->getSubmitted('default', $options);
+        $default = $this->getSubmitted('default');
 
         if (isset($default)) {
             $value = (int) gplcart_string_bool($default);
-            $this->setSubmitted('default', $value, $options);
+            $this->setSubmitted('default', $value);
         }
 
         return true;
@@ -390,12 +381,11 @@ class Base
 
     /**
      * Validates category translations
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTranslation(array $options = array())
+    protected function validateTranslation()
     {
-        $translations = $this->getSubmitted('translation', $options);
+        $translations = $this->getSubmitted('translation');
 
         if (empty($translations)) {
             return null;
@@ -422,7 +412,7 @@ class Base
                 if (mb_strlen($value) > $max) {
                     $vars = array('@field' => ucfirst(str_replace('_', ' ', $field)), '@lang' => $lang, '@max' => $max);
                     $error = $this->language->text('@field in @lang must not be longer than @max characters', $vars);
-                    $this->setError("translation.$lang.$field", $error, $options);
+                    $this->setError("translation.$lang.$field", $error);
                 }
             }
 
@@ -433,24 +423,23 @@ class Base
         }
 
         // Set possible updates
-        $this->setSubmitted('translation', $translations, $options);
-        return !$this->isError('translation', $options);
+        $this->setSubmitted('translation', $translations);
+        return !$this->isError('translation');
     }
 
     /**
      * Validates / prepares an array of submitted images
-     * @param array $options
      * @return null|bool
      */
-    protected function validateImages(array $options = array())
+    protected function validateImages()
     {
-        $images = $this->getSubmitted('images', $options);
+        $images = $this->getSubmitted('images');
 
         if (empty($images) || !is_array($images)) {
             return null;
         }
 
-        $title = $this->getSubmitted('title', $options);
+        $title = $this->getSubmitted('title');
 
         foreach ($images as &$image) {
 
@@ -473,18 +462,17 @@ class Base
             }
         }
 
-        $this->setSubmitted('images', $images, $options);
+        $this->setSubmitted('images', $images);
         return true;
     }
 
     /**
      * Validates an alias
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateAlias(array $options = array())
+    protected function validateAlias()
     {
-        $alias = $this->getSubmitted('alias', $options);
+        $alias = $this->getSubmitted('alias');
 
         if (empty($alias)) {
             return null;
@@ -493,20 +481,20 @@ class Base
         if (mb_strlen($alias) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('Alias'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('alias', $error, $options);
+            $this->setError('alias', $error);
             return false;
         }
 
         if (preg_match('/^[A-Za-z0-9_.-]+$/', $alias) !== 1) {
             $error = $this->language->text('Alias must contain only alphanumeric characters, dashes, dots and underscores');
-            $this->setError('alias', $error, $options);
+            $this->setError('alias', $error);
             return false;
         }
 
         if ($this->alias->exists($alias)) {
             $vars = array('@object' => $this->language->text('Alias'));
             $error = $this->language->text('@object already exists', $vars);
-            $this->setError('alias', $error, $options);
+            $this->setError('alias', $error);
             return false;
         }
 
@@ -515,12 +503,11 @@ class Base
 
     /**
      * Validates store ID field
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateStoreId(array $options = array())
+    protected function validateStoreId()
     {
-        $store_id = $this->getSubmitted('store_id', $options);
+        $store_id = $this->getSubmitted('store_id');
 
         if ($this->isUpdating() && !isset($store_id)) {
             return null;
@@ -529,14 +516,14 @@ class Base
         if (empty($store_id)) {
             $vars = array('@field' => $this->language->text('Store'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('store_id', $error, $options);
+            $this->setError('store_id', $error);
             return false;
         }
 
         if (!is_numeric($store_id)) {
             $vars = array('@field' => $this->language->text('Store'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('store_id', $error, $options);
+            $this->setError('store_id', $error);
             return false;
         }
 
@@ -545,7 +532,7 @@ class Base
         if (empty($store)) {
             $vars = array('@name' => $this->language->text('Store'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('store_id', $error, $options);
+            $this->setError('store_id', $error);
             return false;
         }
 
@@ -554,12 +541,11 @@ class Base
 
     /**
      * Validates a user ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateUserId(array $options = array())
+    protected function validateUserId()
     {
-        $user_id = $this->getSubmitted('user_id', $options);
+        $user_id = $this->getSubmitted('user_id');
 
         if ($this->isUpdating() && !isset($user_id)) {
             return null;
@@ -568,14 +554,14 @@ class Base
         if (empty($user_id)) {
             $vars = array('@field' => $this->language->text('User'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('user_id', $error, $options);
+            $this->setError('user_id', $error);
             return false;
         }
 
         if (!is_numeric($user_id)) {
             $vars = array('@field' => $this->language->text('User'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('user_id', $error, $options);
+            $this->setError('user_id', $error);
             return false;
         }
 
@@ -584,7 +570,7 @@ class Base
         if (empty($user)) {
             $vars = array('@name' => $this->language->text('User'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('user_id', $error, $options);
+            $this->setError('user_id', $error);
             return false;
         }
 
@@ -593,12 +579,11 @@ class Base
 
     /**
      * Validates a user cart ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateUserCartId(array $options = array())
+    protected function validateUserCartId()
     {
-        $user_id = $this->getSubmitted('user_id', $options);
+        $user_id = $this->getSubmitted('user_id');
 
         if ($this->isUpdating() && !isset($user_id)) {
             return null;
@@ -607,14 +592,14 @@ class Base
         if (empty($user_id)) {
             $vars = array('@field' => $this->language->text('User'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('user_id', $error, $options);
+            $this->setError('user_id', $error);
             return false;
         }
 
         if (strlen($user_id) > 255) {
             $vars = array('@max' => 255, '@field' => $this->language->text('User'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('user_id', $error, $options);
+            $this->setError('user_id', $error);
             return false;
         }
 
@@ -627,7 +612,7 @@ class Base
         if (empty($user)) {
             $vars = array('@name' => $this->language->text('User'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('user_id', $error, $options);
+            $this->setError('user_id', $error);
             return false;
         }
 
@@ -636,12 +621,11 @@ class Base
 
     /**
      * Validates an E-mail
-     * @param array $options
      * @return boolean
      */
-    protected function validateEmail(array $options)
+    protected function validateEmail()
     {
-        $value = $this->getSubmitted('email', $options);
+        $value = $this->getSubmitted('email');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -650,13 +634,13 @@ class Base
         if (empty($value)) {
             $vars = array('@field' => $this->language->text('E-mail'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('email', $error, $options);
+            $this->setError('email', $error);
             return false;
         }
 
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             $error = $this->language->text('Invalid E-mail');
-            $this->setError('email', $error, $options);
+            $this->setError('email', $error);
             return false;
         }
 

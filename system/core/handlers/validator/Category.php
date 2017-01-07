@@ -54,21 +54,22 @@ class Category extends BaseValidator
      */
     public function category(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateCategory($options);
-        $this->validateWeight($options);
-        $this->validateStatus($options);
-        $this->validateTitle($options);
-        $this->validateMetaTitle($options);
-        $this->validateMetaDescription($options);
-        $this->validateDescriptionCategory($options);
-        $this->validateGroupCategory($options);
-        $this->validateParentCategory($options);
-        $this->validateTranslation($options);
-        $this->validateUserId($options);
-        $this->validateImages($options);
-        $this->validateAliasCategory($options);
+        $this->validateCategory();
+        $this->validateWeight();
+        $this->validateStatus();
+        $this->validateTitle();
+        $this->validateMetaTitle();
+        $this->validateMetaDescription();
+        $this->validateDescriptionCategory();
+        $this->validateGroupCategory();
+        $this->validateParentCategory();
+        $this->validateTranslation();
+        $this->validateUserId();
+        $this->validateImages();
+        $this->validateAliasCategory();
 
         return $this->getResult();
     }
@@ -100,12 +101,11 @@ class Category extends BaseValidator
 
     /**
      * Validates a category group ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateGroupCategory(array $options)
+    protected function validateGroupCategory()
     {
-        $category_group_id = $this->getSubmitted('category_group_id', $options);
+        $category_group_id = $this->getSubmitted('category_group_id');
 
         if ($this->isUpdating() && !isset($category_group_id)) {
             return null;
@@ -114,14 +114,14 @@ class Category extends BaseValidator
         if (empty($category_group_id)) {
             $vars = array('@field' => $this->language->text('Category group'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('category_group_id', $error, $options);
+            $this->setError('category_group_id', $error);
             return false;
         }
 
         if (!is_numeric($category_group_id)) {
             $vars = array('@field' => $this->language->text('Category group'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('category_group_id', $error, $options);
+            $this->setError('category_group_id', $error);
             return false;
         }
 
@@ -130,7 +130,7 @@ class Category extends BaseValidator
         if (empty($category_group)) {
             $vars = array('@name' => $this->language->text('Category group'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('category_group_id', $error, $options);
+            $this->setError('category_group_id', $error);
             return false;
         }
 
@@ -139,12 +139,11 @@ class Category extends BaseValidator
 
     /**
      * Validates parent category group ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateParentCategory(array $options)
+    protected function validateParentCategory()
     {
-        $parent_id = $this->getSubmitted('parent_id', $options);
+        $parent_id = $this->getSubmitted('parent_id');
 
         if (empty($parent_id)) {
             return null;
@@ -153,7 +152,7 @@ class Category extends BaseValidator
         if (!is_numeric($parent_id)) {
             $vars = array('@field' => $this->language->text('Parent category'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('parent_id', $error, $options);
+            $this->setError('parent_id', $error);
             return false;
         }
 
@@ -162,7 +161,7 @@ class Category extends BaseValidator
         if (isset($category['category_id']) && $category['category_id'] == $parent_id) {
             $vars = array('@field' => $this->language->text('Parent category'));
             $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('parent_id', $error, $options);
+            $this->setError('parent_id', $error);
             return false;
         }
 
@@ -171,7 +170,7 @@ class Category extends BaseValidator
         if (empty($parent_category['category_id'])) {
             $vars = array('@name' => $this->language->text('Parent category'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('parent_id', $error, $options);
+            $this->setError('parent_id', $error);
             return false;
         }
 
@@ -180,24 +179,23 @@ class Category extends BaseValidator
 
     /**
      * Validates first and second description
-     * @param array $options
      * @return boolean
      */
-    protected function validateDescriptionCategory(array $options)
+    protected function validateDescriptionCategory()
     {
-        $description_1 = $this->getSubmitted('description_1', $options);
-        $description_2 = $this->getSubmitted('description_2', $options);
+        $description_1 = $this->getSubmitted('description_1');
+        $description_2 = $this->getSubmitted('description_2');
 
         if (isset($description_1) && mb_strlen($description_1) > 65535) {
             $vars = array('@max' => 65535, '@field' => $this->language->text('First description'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('description_1', $error, $options);
+            $this->setError('description_1', $error);
         }
 
         if (isset($description_2) && mb_strlen($description_2) > 65535) {
             $vars = array('@max' => 65535, '@field' => $this->language->text('Second description'));
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('description_2', $error, $options);
+            $this->setError('description_2', $error);
         }
 
         return empty($error);
@@ -205,17 +203,16 @@ class Category extends BaseValidator
 
     /**
      * Validates/creates an alias
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateAliasCategory(array $options)
+    protected function validateAliasCategory()
     {
         if ($this->isError()) {
             return null;
         }
 
         $updating = $this->getUpdating();
-        $alias = $this->getSubmitted('alias', $options);
+        $alias = $this->getSubmitted('alias');
 
         if (isset($alias)//
                 && isset($updating['alias'])//
@@ -226,11 +223,11 @@ class Category extends BaseValidator
         if (empty($alias) && isset($updating['category_id'])) {
             $data = $this->getSubmitted();
             $alias = $this->category->createAlias($data);
-            $this->setSubmitted('alias', $alias, $options);
+            $this->setSubmitted('alias', $alias);
             return true;
         }
 
-        return $this->validateAlias($options);
+        return $this->validateAlias();
     }
 
 }

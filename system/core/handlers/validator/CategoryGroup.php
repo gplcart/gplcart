@@ -37,25 +37,24 @@ class CategoryGroup extends BaseValidator
     /**
      * Performs full category group data validation
      * @param array $submitted
-     * @param array $options
      * @return boolean|array
      */
     public function categoryGroup(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateCategoryGroup($options);
-        $this->validateTitle($options);
-        $this->validateTranslation($options);
-        $this->validateStoreId($options);
-        $this->validateTypeCategoryGroup($options);
+        $this->validateCategoryGroup();
+        $this->validateTitle();
+        $this->validateTranslation();
+        $this->validateStoreId();
+        $this->validateTypeCategoryGroup();
 
         return $this->getResult();
     }
 
     /**
      * Validates a category group to be updated
-     * @param array $options
      * @return boolean|null
      */
     protected function validateCategoryGroup()
@@ -81,17 +80,16 @@ class CategoryGroup extends BaseValidator
 
     /**
      * Validates category group type
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateTypeCategoryGroup(array $options)
+    protected function validateTypeCategoryGroup()
     {
-        if ($this->isError('store_id', $options)) {
+        if ($this->isError('store_id')) {
             return null;
         }
 
-        $type = $this->getSubmitted('type', $options);
-        $store_id = $this->getSubmitted('store_id', $options);
+        $type = $this->getSubmitted('type');
+        $store_id = $this->getSubmitted('store_id');
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
@@ -100,7 +98,7 @@ class CategoryGroup extends BaseValidator
         if (empty($type)) {
             $vars = array('@field' => $this->language->text('Type'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('type', $error, $options);
+            $this->setError('type', $error);
             return false;
         }
 
@@ -109,7 +107,7 @@ class CategoryGroup extends BaseValidator
         if (!isset($types[$type])) {
             $vars = array('@name' => $this->language->text('Type'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error, $options);
+            $this->setError('type', $error);
             return false;
         }
 
@@ -127,7 +125,7 @@ class CategoryGroup extends BaseValidator
         }
 
         $error = $this->language->text('Category group of this type already exists for this store');
-        $this->setError('type', $error, $options);
+        $this->setError('type', $error);
         return false;
     }
 

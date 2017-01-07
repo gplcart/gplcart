@@ -71,21 +71,21 @@ class City extends BaseValidator
      */
     public function city(array &$submitted, array $options = array())
     {
+        $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateCity($options);
-        $this->validateStatus($options);
-        $this->validateName($options);
-        $this->validateStateCity($options);
-        $this->validateZoneCity($options);
-        $this->validateCountryCity($options);
+        $this->validateCity();
+        $this->validateStatus();
+        $this->validateName();
+        $this->validateStateCity();
+        $this->validateZoneCity();
+        $this->validateCountryCity();
 
         return $this->getResult();
     }
 
     /**
      * Validates a city to be updated
-     * @param array $options
      * @return boolean|null
      */
     protected function validateCity()
@@ -111,12 +111,11 @@ class City extends BaseValidator
 
     /**
      * Validates a state ID
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateStateCity(array $options)
+    protected function validateStateCity()
     {
-        $state_id = $this->getSubmitted('state_id', $options);
+        $state_id = $this->getSubmitted('state_id');
 
         if ($this->isUpdating() && !isset($state_id)) {
             return null;
@@ -125,14 +124,14 @@ class City extends BaseValidator
         if (empty($state_id)) {
             $vars = array('@field' => $this->language->text('State'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('state_id', $error, $options);
+            $this->setError('state_id', $error);
             return false;
         }
 
         if (!is_numeric($state_id)) {
             $vars = array('@field' => $this->language->text('State'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('state_id', $error, $options);
+            $this->setError('state_id', $error);
             return false;
         }
 
@@ -141,7 +140,7 @@ class City extends BaseValidator
         if (empty($state['state_id'])) {
             $vars = array('@name' => $this->language->text('State'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('state_id', $error, $options);
+            $this->setError('state_id', $error);
             return false;
         }
 
@@ -150,12 +149,11 @@ class City extends BaseValidator
 
     /**
      * Validates a zone ID
-     * @param array $options
      * @return boolean
      */
-    protected function validateZoneCity(array $options)
+    protected function validateZoneCity()
     {
-        $zone_id = $this->getSubmitted('zone_id', $options);
+        $zone_id = $this->getSubmitted('zone_id');
 
         if (empty($zone_id)) {
             return true;
@@ -164,7 +162,7 @@ class City extends BaseValidator
         if (!is_numeric($zone_id)) {
             $vars = array('@field' => $this->language->text('Zone'));
             $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('zone_id', $error, $options);
+            $this->setError('zone_id', $error);
             return false;
         }
 
@@ -173,7 +171,7 @@ class City extends BaseValidator
         if (empty($zone['zone_id'])) {
             $vars = array('@name' => $this->language->text('Zone'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('zone_id', $error, $options);
+            $this->setError('zone_id', $error);
             return false;
         }
 
@@ -182,12 +180,11 @@ class City extends BaseValidator
 
     /**
      * Validates a country code
-     * @param array $options
      * @return boolean|null
      */
-    protected function validateCountryCity(array $options)
+    protected function validateCountryCity()
     {
-        $code = $this->getSubmitted('country', $options);
+        $code = $this->getSubmitted('country');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -196,7 +193,7 @@ class City extends BaseValidator
         if (empty($code)) {
             $vars = array('@field' => $this->language->text('Country'));
             $error = $this->language->text('@field is required', $vars);
-            $this->setError('country', $error, $options);
+            $this->setError('country', $error);
             return false;
         }
 
@@ -205,7 +202,7 @@ class City extends BaseValidator
         if (empty($country['code'])) {
             $vars = array('@name' => $this->language->text('Country'));
             $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('country', $error, $options);
+            $this->setError('country', $error);
             return false;
         }
 
