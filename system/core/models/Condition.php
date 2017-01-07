@@ -299,15 +299,6 @@ class Condition extends Model
             ),
         );
 
-        $handlers['shipping_address_id'] = array(
-            'title' => $this->language->text('Shipping address ID (checkout)'),
-            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
-            'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shippingAddressId'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shippingAddressId'),
-            ),
-        );
-
         $handlers['country'] = array(
             'title' => $this->language->text('Country code (checkout)'),
             'description' => $this->language->text('Parameters: <a href="@url">list of codes</a>, separated by comma', array('@url' => $this->url->get('admin/settings/country'))),
@@ -330,8 +321,8 @@ class Condition extends Model
             'title' => $this->language->text('Shipping address zone ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shippingZone'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shippingZone'),
+                'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'shippingZoneId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shippingZoneId'),
             ),
         );
 

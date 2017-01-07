@@ -160,7 +160,7 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function shippingZone($key, $operator, array &$values, array $data)
+    public function shippingZoneId($key, $operator, array &$values, array $data)
     {
         if (!in_array($operator, array('=', '!='))) {
             return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
@@ -481,36 +481,6 @@ class Condition
 
         if (count($values) != count($exists)) {
             $vars = array('@name' => $this->language->text('Payment'));
-            return $this->language->text('@name is unavailable', $vars);
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates the shipping address ID condition
-     * @param string $key
-     * @param string $operator
-     * @param array $values
-     * @param array $data
-     * @return boolean|string
-     */
-    public function shippingAddressId($key, $operator, &$values, $data)
-    {
-        $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
-
-        if ($count != count($ids)) {
-            return $this->language->text('Only numeric parameters allowed');
-        }
-
-        $exists = array_filter($values, function ($address_id) {
-            $address = $this->address->get($address_id);
-            return (isset($address['type']) && $address['type'] === 'shipping');
-        });
-
-        if ($count != count($exists)) {
-            $vars = array('@name' => $this->language->text('Address'));
             return $this->language->text('@name is unavailable', $vars);
         }
 

@@ -91,7 +91,7 @@ class Condition
      * @param array $data
      * @return boolean
      */
-    public function shippingZone(array $condition, array $data)
+    public function shippingZoneId(array $condition, array $data)
     {
         if (!isset($data['data']['shipping_address'])) {
             return false;
@@ -412,26 +412,6 @@ class Condition
         }
 
         return $this->condition->compareString($data['data']['order']['payment'], $value, $condition['operator']);
-    }
-
-    /**
-     * Returns true if a shipping address condition is met
-     * @param array $condition
-     * @param array $data
-     * @return boolean
-     */
-    public function shippingAddressId(array $condition, array $data)
-    {
-        if (empty($data['data']['shipping_address'])) {
-            return false;
-        }
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        return $this->condition->compareNumeric($data['data']['shipping_address'], $value, $condition['operator']);
     }
 
     /**
