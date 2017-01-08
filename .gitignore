@@ -8,8 +8,6 @@ nbproject
 system/modules/*
 !system/modules/frontend
 !system/modules/backend
-!system/modules/mobile
-!system/modules/twocheckout
 
 # Private file folder. Ignore all but system files
 files/private/*

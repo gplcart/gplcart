@@ -270,7 +270,7 @@ class Editor extends BackendController
      */
     protected function canSaveEditor(array $module)
     {
-        return ($this->access('editor_edit') && $this->theme !== $module['id']);
+        return ($this->access('editor_edit') && $this->current_theme['id'] !== $module['id']);
     }
 
     /**

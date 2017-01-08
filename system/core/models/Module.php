@@ -235,26 +235,11 @@ class Module extends Model
      */
     protected function checkModuleId($module_id)
     {
-        if (!$this->config->validModuleId($module_id)) {
-            return $this->language->text('Invalid module ID');
+        if ($this->config->validModuleId($module_id)) {
+            return true;
         }
 
-        $reserved = $this->getReservedModuleId();
-
-        if (in_array($module_id, $reserved)) {
-            return $this->language->text('Module ID %id is reserved and cannot be used');
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns an array of reserved module IDs
-     * @return array
-     */
-    public function getReservedModuleId()
-    {
-        return array('core', 'gplcart', 'backend', 'frontend', 'mobile');
+        return $this->language->text('Invalid module ID');
     }
 
     /**

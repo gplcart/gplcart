@@ -56,7 +56,7 @@ class Twig
     {
         if (!empty($options['cache'])) {
             $theme = $object->getTheme();
-            $options['cache'] = GC_MODULE_DIR . "/$theme/{$options['cache']}";
+            $options['cache'] = GC_MODULE_DIR . "/{$theme['id']}/{$options['cache']}";
         }
 
         $this->loader = new \Twig_Loader_Filesystem($path);

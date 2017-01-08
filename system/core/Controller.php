@@ -58,12 +58,6 @@ class Controller
     protected $backend;
 
     /**
-     * Name of the current theme
-     * @var string
-     */
-    protected $theme;
-
-    /**
      * Frontend theme module name
      * @var string
      */
@@ -445,7 +439,7 @@ class Controller
      */
     protected function getTemplateFile($file, $fullpath)
     {
-        $module = $this->theme;
+        $module = $this->current_theme['id'];
         $is_twig = $this->twig_enabled;
 
         if (strpos($file, '|') !== false) {
@@ -455,7 +449,7 @@ class Controller
 
             list($module, $file) = explode('|', $file, 2);
 
-            if ($module !== $this->theme) {
+            if ($module !== $this->current_theme['id']) {
                 // Check if another theme uses .twig template to avoid
                 // "Template not found"
                 $settings = $this->config->module($module, 'twig');
@@ -677,56 +671,29 @@ class Controller
      */
     protected function setInstanceProperties()
     {
-        /* @var $user \gplcart\core\models\User */
-        $this->user = Container::instance('gplcart\\core\\models\\User');
+        $map = array(
+            'user' => 'models\\User',
+            'store' => 'models\\Store',
+            'language' => 'models\\Language',
+            'validator' => 'models\\Validator',
+            'filter' => 'models\\Filter',
+            'url' => 'helpers\\Url',
+            'request' => 'helpers\\Request',
+            'response' => 'helpers\\Response',
+            'asset' => 'helpers\\Asset',
+            'session' => 'helpers\\Session',
+            'library' => 'Library',
+            'hook' => 'Hook',
+            'route' => 'Route',
+            'config' => 'Config',
+            'logger' => 'Logger',
+            'pager' => 'helpers\\Pager',
+            'compressor' => 'helpers\\Compressor'
+        );
 
-        /* @var $store \gplcart\core\models\Store */
-        $this->store = Container::instance('gplcart\\core\\models\\Store');
-
-        /* @var $language \gplcart\core\models\Language */
-        $this->language = Container::instance('gplcart\\core\\models\\Language');
-
-        /* @var $validator \gplcart\core\models\Validator */
-        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
-
-        /* @var $filter \gplcart\core\models\Filter */
-        $this->filter = Container::instance('gplcart\\core\\models\\Filter');
-
-        /* @var $url \gplcart\core\helpers\Url */
-        $this->url = Container::instance('gplcart\\core\\helpers\\Url');
-
-        /* @var $request \gplcart\core\helpers\Request */
-        $this->request = Container::instance('gplcart\\core\\helpers\\Request');
-
-        /* @var $response \gplcart\core\helpers\Response */
-        $this->response = Container::instance('gplcart\\core\\helpers\\Response');
-
-        /* @var $asset \gplcart\core\helpers\Asset */
-        $this->asset = Container::instance('gplcart\\core\\helpers\\Asset');
-
-        /* @var $session \gplcart\core\helpers\Session */
-        $this->session = Container::instance('gplcart\\core\\helpers\\Session');
-
-        /* @var $library \gplcart\core\Library */
-        $this->library = Container::instance('gplcart\\core\\Library');
-
-        /* @var $hook \gplcart\core\Hook */
-        $this->hook = Container::instance('gplcart\\core\\Hook');
-
-        /* @var $route \gplcart\core\Route */
-        $this->route = Container::instance('gplcart\\core\\Route');
-
-        /* @var $config \gplcart\core\Config */
-        $this->config = Container::instance('gplcart\\core\\Config');
-
-        /* @var $logger \gplcart\core\helpers\Logger */
-        $this->logger = Container::instance('gplcart\\core\\Logger');
-
-        /* @var $pager \gplcart\core\helpers\Pager */
-        $this->pager = Container::instance('gplcart\\core\\helpers\\Pager');
-
-        /* @var $compressor \gplcart\core\helpers\Compressor */
-        $this->compressor = Container::instance('gplcart\\core\\helpers\\Compressor');
+        foreach ($map as $property => $class) {
+            $this->{$property} = Container::instance("gplcart\\core\\$class");
+        }
     }
 
     /**
@@ -736,8 +703,6 @@ class Controller
     {
         $this->backend = $this->url->isBackend();
         $this->installing = $this->url->isInstall();
-
-        // Set access for the route
         $this->current_route = $this->route->getCurrent();
 
         if (isset($this->current_route['access'])) {
@@ -787,6 +752,7 @@ class Controller
     protected function setStoreProperties()
     {
         $this->current_store = $this->store->current();
+
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
         }
@@ -800,33 +766,35 @@ class Controller
         $this->theme_frontend = $this->config('theme', 'frontend');
         $this->theme_backend = $this->config('theme_backend', 'backend');
 
+        $theme = null;
+
         if ($this->backend) {
-            $this->theme = $this->theme_backend;
+            $theme = $this->theme_backend;
         } elseif ($this->installing) {
-            $this->theme = $this->theme_frontend;
+            $theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
-            $this->theme_frontend = $this->theme = $this->store->config('theme');
+            $this->theme_frontend = $theme = $this->store->config('theme');
 
             if ($this->current_device === 'mobile') {
-                $this->theme_frontend = $this->theme = $this->store->config('theme_mobile');
+                $this->theme_frontend = $theme = $this->store->config('theme_mobile');
             }
 
             if ($this->current_device === 'tablet') {
-                $this->theme_frontend = $this->theme = $this->store->config('theme_tablet');
+                $this->theme_frontend = $theme = $this->store->config('theme_tablet');
             }
         }
 
-        if (empty($this->theme)) {
+        if (empty($theme)) {
             $this->response->error404();
         }
 
-        $this->current_theme = $this->config->getModuleData($this->theme);
+        $this->current_theme = $this->config->getModuleData($theme);
 
         if (empty($this->current_theme['info'])) {
             $this->response->error404();
         }
 
-        $this->theme_settings = (array) $this->config->module($this->theme, null, array());
+        $this->theme_settings = (array) $this->config->module($theme, null, array());
         $this->twig_enabled = !empty($this->theme_settings['twig']['status']);
 
         if (empty($this->theme_settings['templates'])) {
@@ -837,28 +805,10 @@ class Controller
     }
 
     /**
-     * Sets the current working theme
-     * @param string $theme
-     */
-    public function setTheme($theme)
-    {
-        $this->theme = $theme;
-    }
-
-    /**
-     * Returns a module ID of the current theme
-     * @return string
-     */
-    public function getTheme()
-    {
-        return $this->theme;
-    }
-
-    /**
-     * Returns an array of the current theme data
+     * Returns the current theme
      * @return array
      */
-    public function theme()
+    public function getTheme()
     {
         return $this->current_theme;
     }
@@ -1289,7 +1239,7 @@ class Controller
         // in hook init.* which is called in the child controller class
         // and not available here, so we call the hook manually
         $hook = $this->backend ? 'init.backend' : 'init.frontend';
-        $this->hook->fireModule($hook, $this->theme, $this);
+        $this->hook->fireModule($hook, $this->current_theme['id'], $this);
 
         $this->output("common/error/$code", array('headers' => $code));
     }

@@ -284,12 +284,18 @@ class Config
         $class = $this->getModuleClass($name);
         $instance = Container::instance($class);
 
-        if (is_callable(array($instance, 'info'))) {
-            $info = $instance->info();
-            return array('class' => $class, 'info' => $info, 'instance' => $instance);
+        if (!is_callable(array($instance, 'info'))) {
+            return array();
         }
 
-        return array();
+        $info = $instance->info();
+
+        return array(
+            'class' => $class,
+            'info' => $info,
+            'instance' => $instance,
+            'id' => isset($info['id']) ? $info['id'] : $name
+        );
     }
 
     /**
