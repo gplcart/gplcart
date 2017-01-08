@@ -17,8 +17,6 @@ class Cli
 
     /**
      * Parses command line arguments
-     * Based on work by Patrick Fisher <patrick@pwfisher.com>
-     * 
      * @param array|string $argv
      * @return array
      */
@@ -92,16 +90,173 @@ class Cli
     }
 
     /**
-     * Displays the progress bar
-     * @param type $done
-     * @param type $total
+     * Outputs a message
+     * @param string $text
+     * @return \gplcart\core\helpers\Cli
      */
-    public function progress($done, $total)
+    public function out($text)
     {
-        $perc = floor(($done / $total) * 100);
-        $left = 100 - $perc;
-        $write = sprintf("\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total", "", "");
-        fwrite(STDERR, $write);
+        fwrite(STDOUT, $text);
+        return $this;
+    }
+
+    /**
+     * Outputs a single line with prepended new line
+     * @param string $text
+     * @return \gplcart\core\helpers\Cli
+     */
+    public function line($text = '')
+    {
+        $text .= "\n";
+        $this->out($text);
+        return $this;
+    }
+
+    /**
+     * Outputs an error message
+     * @param string $text
+     */
+    public function error($text)
+    {
+        fwrite(STDERR, $text);
+        return $this;
+    }
+
+    /**
+     * Reads a user input
+     * @param string $format
+     * @return string
+     */
+    public function in($format = '')
+    {
+        if (empty($format)) {
+            $line = fgets(STDIN);
+        } else {
+            $line = fscanf(STDIN, $format . "\n", $line);
+        }
+
+        return trim($line);
+    }
+
+    /**
+     * Displays an input prompt
+     * @param string $question
+     * @param string $default
+     * @param string $marker
+     * @return mixed
+     */
+    public function prompt($question, $default = '', $marker = ': ')
+    {
+        if ($default !== '' && strpos($question, '[') === false) {
+            $question .= ' [' . $default . ']';
+        }
+
+        $this->out($question . $marker);
+        $line = $this->in();
+
+        if (!empty($line)) {
+            return $line;
+        }
+
+        return $default;
+    }
+
+    /**
+     * Displays a menu where a user can enter a number to choose an option
+     * @param array $items
+     * @param mixed $default
+     * @param string $title
+     * @return integer|null
+     */
+    public function menu($items, $default = null, $title = 'Choose an item')
+    {
+        $map = array_values($items);
+
+        if (isset($items[$default]) && strpos($title, '[') === false) {
+            $title .= ' [' . $items[$default] . ']';
+        }
+
+        foreach ($map as $i => $item) {
+            $this->line('  %d. %s', $i + 1, $item);
+        }
+
+        $this->line(sprintf('%s: ', $title));
+
+        $selected = $this->in();
+
+        if (!is_numeric($selected)) {
+            return $default;
+        }
+
+        if (isset($map[$selected - 1])) {
+            return $map[$selected - 1];
+        }
+
+        $this->error('Invalid menu selection');
+        return null;
+    }
+
+    /**
+     * Presents a user with a multiple choice questions
+     * @param string $question
+     * @param string|array $choice
+     * @param string $default
+     * @return string
+     */
+    public function choose($question, $choice = 'yn', $default = 'n')
+    {
+        if (!is_string($choice)) {
+            $choice = implode('', $choice);
+        }
+
+        $lowercase = str_ireplace($default, strtoupper($default), strtolower($choice));
+        $choices = trim(implode('/', preg_split('//', $lowercase)), '/');
+
+        $line = $this->prompt(sprintf('%s? [%s]', $question, $choices), $default, '');
+
+        if (stripos($choice, $line) !== false) {
+            return strtolower($line);
+        }
+
+        return strtolower($default);
+    }
+
+    /**
+     * Abotr the current execution
+     * @param integer $code
+     */
+    public function abort($code = 0)
+    {
+        exit($code);
+    }
+
+    /**
+     * Executes a Shell command using php exec()
+     * @param string $command
+     * @param boolean $message
+     * @param boolean $output
+     * @return integer
+     */
+    public function exec($command, $message = true, $output = true)
+    {
+        $shell_output = array();
+        exec($command . ' 2>&1', $shell_output, $result);
+
+        if (empty($result)) {
+            if ($message) {
+                $this->out('OK');
+            }
+        } else {
+            if ($message) {
+                $this->error('Error');
+            }
+        }
+
+        if ($output) {
+            $this->out(implode("\n", $shell_output));
+        }
+
+        return $result;
     }
 
 }

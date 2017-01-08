@@ -369,7 +369,6 @@ class Controller
      */
     public function __construct()
     {
-
         $this->setInstanceProperties();
 
         $this->token = $this->config->token();
@@ -1451,30 +1450,25 @@ class Controller
             }
         }
 
-        // Finally build groups of aggregated files
         foreach ($groups as $group => $content) {
 
-            if (is_numeric($group)) {
-
-                switch ($type) {
-                    case 'js':
-                        $aggregated = $this->compressor->compressJs($content, $directory);
-                        break;
-                    case 'css':
-                        $aggregated = $this->compressor->compressCss($content, $directory);
-                        break;
-                }
-
-                if (!empty($aggregated)) {
-                    $asset = $this->asset->build(array('asset' => $aggregated, 'version' => false));
-                    $results[$asset['key']] = $asset;
-                }
-
+            if (!is_numeric($group)) {
+                $results[$group] = $content;
                 continue;
             }
 
-            // Text / excluded assets remain untouched
-            $results[$group] = $content;
+            if ($type == 'js') {
+                $aggregated = $this->compressor->compressJs($content, $directory);
+            } else if ($type == 'css') {
+                $aggregated = $this->compressor->compressCss($content, $directory);
+            }
+
+            if (empty($aggregated)) {
+                continue;
+            }
+
+            $asset = $this->asset->build(array('asset' => $aggregated, 'version' => false));
+            $results[$asset['key']] = $asset;
         }
 
         $assets = $results;
@@ -1536,9 +1530,9 @@ class Controller
         $this->twig->set($directory, $this, $options);
 
         // Make global $this->data available in every .twig template
-        $data = gplcart_array_merge($this->data, $data);
+        $merged = gplcart_array_merge($this->data, $data);
 
-        return $this->twig->render($file, $data);
+        return $this->twig->render($file, $merged);
     }
 
     /**
@@ -1731,18 +1725,14 @@ class Controller
      */
     public function addAssetLibrary($library_id, array $data = array())
     {
-        $files = $this->library->getFiles($library_id);
-
-        foreach ($files as $file) {
+        foreach ($this->library->getFiles($library_id) as $file) {
 
             $type = pathinfo($file, PATHINFO_EXTENSION);
 
-            switch ($type) {
-                case 'js':
-                    $this->setJs($file, $data);
-                    break;
-                case 'css':
-                    $this->setCss($file, $data);
+            if ($type == 'js') {
+                $this->setJs($file, $data);
+            } else if ($type == 'css') {
+                $this->setCss($file, $data);
             }
         }
     }
@@ -1854,7 +1844,7 @@ class Controller
     }
 
     /**
-     * Cleans up HTML string using HTML Purifier
+     * Clean up HTML string using HTML Purifier
      * @param string $string
      * @param mixed $filter
      * @return string
@@ -1957,6 +1947,7 @@ class Controller
     public function setMessage($messages, $severity = 'info', $once = false)
     {
         foreach ((array) $messages as $message) {
+
             if ($once) {
                 $this->session->setMessage($message, $severity);
                 continue;
@@ -1976,7 +1967,7 @@ class Controller
         $delimiter = $this->config('summary_delimiter', '<!--summary-->');
         return array_filter(array_map('trim', explode($delimiter, $text, 2)));
     }
-    
+
     /**
      * Returns a string from a text before the summary delimiter
      * @param string $text
@@ -2025,13 +2016,15 @@ class Controller
 
             $this->data["filter_$filter"] = (string) $current_filter;
 
-            $this->data["sort_$filter"] = $this->url('', array(
+            $sort = array(
                 'sort' => $filter,
-                'order' => ($order === 'desc') ? 'asc' : 'desc') + $query);
+                'order' => ($order == 'desc') ? 'asc' : 'desc');
+
+            $this->data["sort_$filter"] = $this->url('', $sort + $query);
         }
 
         if (isset($query['sort']) && isset($query['order'])) {
-            $this->data['sort'] = $query['sort'] . '-' . $query['order'];
+            $this->data['sort'] = "{$query['sort']}-{$query['order']}";
         }
     }
 
@@ -2079,17 +2072,15 @@ class Controller
             $query = $this->getFilterQuery();
         }
 
+        $query['p'] = '%num';
         $page = isset($query['p']) ? (int) $query['p'] : 1;
 
-        $query['p'] = '%num';
-
-        $this->pager->setPage($page);
-        $this->pager->setPerPage($limit);
-        $this->pager->setTotal($total);
-        $this->pager->setUrlPattern('?' . urldecode(http_build_query($query)));
-
-        $this->pager->setPreviousText($this->text('Back'));
-        $this->pager->setNextText($this->text('Next'));
+        $this->pager->setPage($page)
+                ->setPerPage($limit)
+                ->setTotal($total)
+                ->setUrlPattern('?' . urldecode(http_build_query($query)))
+                ->setPreviousText($this->text('Back'))
+                ->setNextText($this->text('Next'));
 
         $this->data['pager'] = $this->pager->render();
         return $this->pager->getLimit();
