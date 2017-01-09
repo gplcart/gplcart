@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model as Model;
-use gplcart\core\Logger as Logger;
+use gplcart\core\Model;
+use gplcart\core\Logger;
 use gplcart\core\models\Mail as MailModel;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\UserRole as UserRoleModel;
@@ -372,11 +372,21 @@ class User extends Model
 
         $this->logLogin($user);
 
+        $redirect = "account/{$user['user_id']}";
+
+        if (!empty($user['role_redirect'])) {
+            $redirect = $user['role_redirect'];
+        }
+
+        if ($this->isSuperadmin($user['user_id'])) {
+            $redirect = 'admin';
+        }
+
         $result = array(
             'user' => $user,
             'message' => '',
             'severity' => 'success',
-            'redirect' => $this->getLoginRedirect($user),
+            'redirect' => $redirect,
         );
 
         $this->hook->fire('login.after', $data, $result);
@@ -450,7 +460,11 @@ class User extends Model
      */
     public function getByEmail($email)
     {
-        $sql = 'SELECT * FROM user WHERE email=?';
+        $sql = 'SELECT u.*, r.redirect AS role_redirect, r.status AS role_status'
+                . ' FROM user u'
+                . ' LEFT JOIN role r ON(u.role_id=r.role_id)'
+                . ' WHERE u.email=?';
+
         return $this->db->fetch($sql, array($email), array('unserialize' => 'data'));
     }
 
@@ -502,7 +516,7 @@ class User extends Model
             'user' => $user,
             'message' => '',
             'severity' => 'success',
-            'redirect' => $this->getLogOutRedirect($user),
+            'redirect' => 'login',
         );
 
         $this->hook->fire('logout.after', $user_id, $result);
@@ -715,34 +729,6 @@ class User extends Model
         );
 
         $this->logger->log('register', $data);
-    }
-
-    /**
-     * Retuns a redirect path for logged in user
-     * @param array $user
-     * @return string
-     */
-    protected function getLoginRedirect(array $user)
-    {
-        if ($this->isSuperadmin($user['user_id'])) {
-            return $this->config->get('user_login_redirect_superadmin', 'admin');
-        }
-
-        return $this->config->get("user_login_redirect_{$user['role_id']}", "account/{$user['user_id']}");
-    }
-
-    /**
-     * Returns a redirect path for logged out users
-     * @param array $user
-     * @return string
-     */
-    protected function getLogOutRedirect(array $user)
-    {
-        if ($this->isSuperadmin($user['user_id'])) {
-            return $this->config->get('user_logout_redirect_superadmin', 'login');
-        }
-
-        return $this->config->get("user_logout_redirect_{$user['role_id']}", 'login');
     }
 
 }
