@@ -16,6 +16,12 @@ class CliController
 {
 
     /**
+     * User model instance
+     * @var \gplcart\core\models\User $user
+     */
+    protected $user;
+
+    /**
      * Validator model instance
      * @var \gplcart\core\models\Validator $validator
      */
@@ -117,23 +123,19 @@ class CliController
      */
     protected function setInstanceProperties()
     {
-        /* @var $validator \gplcart\core\models\Validator */
-        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
+        $map = array(
+            'user' => 'models\\User',
+            'validator' => 'models\\Validator',
+            'language' => 'models\\Language',
+            'request' => 'helpers\Request',
+            'config' => 'Config',
+            'logger' => 'Logger',
+            'route' => 'CliRoute'
+        );
 
-        /* @var $language \gplcart\core\models\Language */
-        $this->language = Container::instance('gplcart\\core\\models\\Language');
-
-        /* @var $request \gplcart\core\helpers\Request */
-        $this->request = Container::instance('gplcart\\core\\helpers\Request');
-
-        /* @var $config \gplcart\core\Config */
-        $this->config = Container::instance('gplcart\\core\\Config');
-
-        /* @var $logger \gplcart\core\Logger */
-        $this->logger = Container::instance('gplcart\\core\\Logger');
-
-        /* @var $route \gplcart\core\CliRoute */
-        $this->route = Container::instance('gplcart\\core\\CliRoute');
+        foreach ($map as $property => $class) {
+            $this->{$property} = Container::instance("gplcart\\core\\$class");
+        }
     }
 
     /**
@@ -152,9 +154,17 @@ class CliController
      */
     protected function controlAccess()
     {
-        if (GC_CLI_EMULATE && !$this->config->tokenValid($this->request->post('cli_token'))) {
-            $error = $this->text('Invalid CLI token');
-            $this->setError($error);
+        if (!GC_CLI_EMULATE) {
+            return null;
+        }
+
+        if (!$this->config->tokenValid($this->request->post('cli_token'))) {
+            $this->setError($this->text('Invalid CLI token'));
+            $this->output();
+        }
+
+        if (!$this->user->access('cli')) {
+            $this->setError($this->text('No access'));
             $this->output();
         }
     }
@@ -452,6 +462,7 @@ class CliController
         $list = $this->route->getList();
 
         $message = $this->text('List of available commands. To see command options use \'--help\' option:') . PHP_EOL;
+        
         foreach ($list as $command => $info) {
             $description = $this->text('No description available');
             if (!empty($info['help']['description'])) {

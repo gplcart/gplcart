@@ -16,7 +16,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <?php if ($this->access('dashboard') && !$this->url->isDashboard()) { ?>
+        <?php if (!$this->url->isDashboard()) { ?>
         <a class="navbar-brand" href="<?php echo $this->url('admin'); ?>" title="<?php echo $this->text('Dashboard'); ?>">
         GPL Cart
         </a>
@@ -27,9 +27,11 @@
       <div id="navbar" class="navbar-collapse collapse">
         <?php echo $admin_menu; ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
+          <?php if($this->access('cli')) { ?>
           <li>
             <a href="#" data-terminal="true"><i class="fa fa-terminal"></i></a>
           </li>
+          <?php } ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-globe"></i>

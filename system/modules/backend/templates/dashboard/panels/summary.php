@@ -6,6 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if ($this->access('report')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
     <?php echo $this->text('Summary'); ?>
@@ -47,3 +48,4 @@
     </ul>
   </div>
 </div>
+<?php } ?>

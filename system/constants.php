@@ -29,6 +29,7 @@ define('GC_CONFIG_DATABASE', GC_CONFIG_DIR . '/default/database.php');
 define('GC_CONFIG_LANGUAGE', GC_CONFIG_DIR . '/default/language.php');
 define('GC_CONFIG_COUNTRY', GC_CONFIG_DIR . '/default/country.php');
 define('GC_CONFIG_ROUTE', GC_CONFIG_DIR . '/default/route.php');
+define('GC_CONFIG_CLI_ROUTE', GC_CONFIG_DIR . '/default/cli_route.php');
 define('GC_CONFIG_PERMISSION', GC_CONFIG_DIR . '/default/permission.php');
 define('GC_CONFIG_COMMON_DEFAULT', GC_CONFIG_DIR . '/default/common.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');

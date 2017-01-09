@@ -11,6 +11,7 @@
  */
 return array(
     'admin' => 'Admin: access',
+    'cli' => 'Console emulator: access',
     'editor' => 'Theme editor: access',
     'editor_edit' => 'Theme editor: edit files',
     'backup' => 'Backup: access',
@@ -87,8 +88,6 @@ return array(
     'store_edit' => 'Store: edit',
     'store_add' => 'Store: add',
     'store_delete' => 'Store: delete',
-    'dashboard' => 'Dashboard: access',
-    'dashboard_edit' => 'Dashboard: edit',
     'image_style' => 'Image style: access',
     'image_style_edit' => 'Image style: edit',
     'image_style_add' => 'Image style: add',

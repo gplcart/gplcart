@@ -14,6 +14,7 @@ namespace gplcart\modules\backend;
  */
 class Backend
 {
+
     /**
      * Returns the module info
      * @return array
@@ -31,30 +32,30 @@ class Backend
     }
 
     /**
-     * Implements hook.backend
+     * Implements hook.theme
      * @param \gplcart\core\controllers\backend\Controller $controller
      */
-    public function hookInitBackend($controller)
+    public function hookTheme($controller)
     {
-        if(!$controller->isCurrentTheme('backend')){
+        if (!$controller->isCurrentTheme('backend')) {
             return null;
         }
-        
+
         // Add system JS
         $controller->setJs('system/modules/backend/js/common.js');
-        
+
         // Add asset libraries
         $libraries = array('bootstrap', 'font_awesome', 'summernote', 'primeui',
             'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker', 'codemirror', 'chart');
-        
+
         $controller->addAssetLibrary($libraries);
-        
+
         // Add theme JS depending on the current URL path
         $controller->setJsContext(GC_MODULE_DIR . '/backend/js', array('position' => 'bottom'));
-        
+
         // Add theme-specific CSS. Goes after all added CSS
         $controller->setCss('system/modules/backend/css/style.css');
-        
+
         // Set meta tags
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));

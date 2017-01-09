@@ -61,7 +61,7 @@ class Response
 
     /**
      * Returns an array of standard HTTP statuses
-     * @return array|boolean
+     * @return array|string
      */
     public function statuses($status = null)
     {
@@ -112,7 +112,7 @@ class Response
             return $statuses;
         }
 
-        return isset($statuses[$status]) ? $statuses[$status] : false;
+        return isset($statuses[$status]) ? $statuses[$status] : '';
     }
 
     /**

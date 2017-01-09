@@ -370,11 +370,14 @@ class Controller
         $this->setRouteProperties();
         $this->setDeviceProperties();
         $this->setStoreProperties();
+        
+        $this->setDefaultJs();
         $this->setThemeProperties();
+        
         $this->setLanguageProperties();
         $this->setCronProperties();
         $this->setDefaultData();
-        $this->setDefaultJs();
+        
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
@@ -794,6 +797,8 @@ class Controller
         } else {
             $this->templates = $this->theme_settings['templates'];
         }
+
+        $this->hook->fire('theme', $this);
     }
 
     /**
@@ -1054,16 +1059,12 @@ class Controller
             return null;
         }
 
-        if (empty($this->current_user['role_status'])) {
-            $this->outputError(403);
-        }
-
-        if (!$this->access('admin')) {
-            $this->redirect('/');
+        if (empty($this->current_user['role_status']) || !$this->access('admin')) {
+            $this->redirect('/', $this->text('No access'), 'warning');
         }
 
         // Check route specific access
-        if (!$this->access($this->access)) {
+        if (!empty($this->access) && !$this->access($this->access)) {
             $this->outputError(403);
         }
 
@@ -1239,29 +1240,9 @@ class Controller
      */
     final public function outputError($code)
     {
-        $this->setTitleError($code);
-
-        // TODO: rethink this.
-        // The problem: theme styles are added
-        // in hook init.* which is called in the child controller class
-        // and not available here, so we call the hook manually
-        $hook = $this->is_backend ? 'init.backend' : 'init.frontend';
-        $this->hook->fireModule($hook, $this->current_theme['id'], $this);
-
-        $this->output("common/error/$code", array('headers' => $code));
-    }
-
-    /**
-     * Sets HTTP error page title
-     * @param integer $code
-     */
-    protected function setTitleError($code)
-    {
         $title = (string) $this->response->statuses($code);
-
-        if ($title !== '') {
-            $this->setTitle($title, false);
-        }
+        $this->setTitle($title, false);
+        $this->output("common/error/$code", array('headers' => $code));
     }
 
     /**

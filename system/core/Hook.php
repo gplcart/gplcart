@@ -160,30 +160,4 @@ class Hook
         return 'hook' . strtolower(str_replace(".", "", $hook));
     }
 
-    /**
-     * Calls a particular module hook 
-     * @param string $hook
-     * @param string $module
-     * @param mixed $a
-     * @param mixed $b
-     * @param mixed $c
-     * @param mixed $d
-     * @param mixed $e
-     */
-    public function fireModule($hook, $module, &$a = null, &$b = null,
-            &$c = null, &$d = null, &$e = null)
-    {
-        $method = $this->getMethod($hook);
-
-        if (empty($this->hooks[$method])) {
-            return false;
-        }
-
-        foreach (array_keys($this->hooks[$method]) as $namespace) {
-            if (strpos($namespace, "modules\\$module\\") === 0) {
-                return $this->call($namespace, $method, $a, $b, $c, $d, $e);
-            }
-        }
-    }
-
 }

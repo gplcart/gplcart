@@ -176,7 +176,6 @@ $routes['search'] = array(
 );
 
 $routes['admin'] = array(
-    'access' => 'dashboard',
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'dashboard')
     )

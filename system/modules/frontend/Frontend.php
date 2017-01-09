@@ -47,10 +47,10 @@ class Frontend
     }
 
     /**
-     * Implements hook init.frontend
+     * Implements hook init.theme
      * @param \gplcart\core\controllers\frontend\Controller $controller
      */
-    public function hookInitFrontend($controller)
+    public function hookTheme($controller)
     {
         if (!$controller->isCurrentTheme('frontend')) {
             return null;
