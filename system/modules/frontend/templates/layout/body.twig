@@ -102,7 +102,7 @@
             </ul>
             <form class="navbar-form navbar-left search" action="{{ url('search') }}">
               <div class="input-group">
-                <input type="search" class="form-control" autocomplete="off" name="q" value="{{ query.q | default('') }}" placeholder="{{ text('Enter search keyword...') }}">
+                <input type="search" class="form-control" autocomplete="off" name="q" value="{{ query.q | default('') }}" placeholder="{{ text('Search') }}">
                 <i class="fa fa-spinner fa-spin hidden"></i>
                 <span class="input-group-btn">
                   <button class="btn btn-default">
@@ -133,13 +133,13 @@
       <ol class="breadcrumb">
         {% for item in breadcrumb %}
             {% if item.url is empty %}
-                <li>{{ item.text }}</li>
+                <li>{{ item.text|raw }}</li>
                 {% else %}
-                <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+                <li><a href="{{ item.url }}">{{ item.text|raw }}</a></li>
             {% endif %}
         {% endfor %}
         {% if page_title is not empty %}
-            <li><h1>{{ page_title|e('html') }}</h1></li>
+            <li><h1>{{ page_title|raw }}</h1></li>
         {% endif %}
       </ol>
     </div>
@@ -222,7 +222,7 @@
             <li><i class="fa fa-fax"></i> {{ store('data.fax')|join(', ') }}</li>
             {% endif %}
           </ul>
-          <p class="small text-muted">Powered by <a href="http://gplcart.com">GPL Cart</a></p>
+          <p>Powered by <a href="http://gplcart.com">GPL Cart</a></p>
         </div>
         <div class="col-md-4">
           <ul class="list-unstyled">

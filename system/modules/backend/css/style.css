@@ -12,7 +12,7 @@ html {
 body {
     padding-top: 50px;
     margin-bottom: 80px;
-    background-color: #edeff0;
+    background-color: #f7f7f7;
 }
 
 .navbar-fixed-top {
@@ -25,7 +25,7 @@ body {
 }
 
 .CodeMirror {
-  height: auto;
+    height: auto;
 }
 
 pre {

@@ -72,7 +72,7 @@ class Search extends FrontendController
         $title = $this->text('Search');
 
         if ($term !== '') {
-            $title = $this->text('Search for <small>%term</small>', array('%term' => $term));
+            $title = $this->text('Search for «@term»', array('@term' => $term));
         }
 
         $this->setTitle($title);

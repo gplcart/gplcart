@@ -177,7 +177,9 @@ class Install extends FrontendController
     {
         ini_set('max_execution_time', 0);
 
+        $this->session->delete('user');
         $this->session->delete('install');
+        
         $this->session->set('install.processing', true);
         $this->session->set('install.settings', $submitted);
     }
@@ -188,6 +190,7 @@ class Install extends FrontendController
     protected function processFinishInstall()
     {
         $this->session->delete('install');
+        $this->request->deleteCookie();
 
         $args = array('@url' => $this->url('/'));
         $message = $this->text('You <a href="@url">store</a> has been installed. Now you can log in as superadmin', $args);

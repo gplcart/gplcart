@@ -52,7 +52,7 @@ class Alias extends BackendController
         $this->setData('id_keys', $keys);
         $this->setData('aliases', $aliases);
 
-        $filters = array('id_value', 'id_key', 'alias');
+        $filters = array('id_value', 'id_key', 'alias', 'alias_id');
         $this->setFilter($filters, $query);
 
         $this->setTitleListAlias();
@@ -122,7 +122,14 @@ class Alias extends BackendController
     protected function getListAlias($limit, array $query)
     {
         $query['limit'] = $limit;
-        return $this->alias->getList($query);
+        $aliases = $this->alias->getList($query);
+
+        foreach ($aliases as &$alias) {
+            $entity = preg_replace('/_id$/', '', $alias['id_key']);
+            $alias['entity'] = $this->text(ucfirst($entity));
+        }
+
+        return $aliases;
     }
 
     /**

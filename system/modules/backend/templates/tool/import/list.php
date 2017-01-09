@@ -22,6 +22,11 @@
               <?php echo $this->xss($operation['description']); ?>
             </div>
             <?php } ?>
+            <?php if (!empty($operation['csv']['template'])) { ?>
+            <a href="<?php echo $this->url(false, array('download_template' => $id)); ?>">
+              <?php echo $this->text('Download template'); ?>
+            </a>
+            <?php } ?>
           </div>
         </div>
         <div class="col-md-4">
@@ -29,11 +34,6 @@
           <button class="btn btn-default import" name="import" value="<?php echo $id; ?>">
             <?php echo $this->text('Import'); ?>
           </button>
-          <?php if (!empty($operation['csv']['template'])) { ?>
-          <a class="btn btn-default" href="<?php echo $this->url(false, array('download_template' => $id)); ?>">
-            <?php echo $this->text('Download template'); ?>
-          </a>
-          <?php } ?>
           </div>
         </div>
       </div>

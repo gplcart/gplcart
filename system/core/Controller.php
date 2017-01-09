@@ -20,19 +20,19 @@ class Controller
      * @var boolean
      */
     protected $is_installing = false;
-    
+
     /**
      * Whether the site in maintenance mode
      * @var boolean
      */
     protected $is_maintenance = false;
-    
+
     /**
      * Whether the current view is backend
      * @var boolean
      */
     protected $is_backend;
-    
+
     /**
      * Whether the current theme supports TWIG templates
      * @var boolean
@@ -443,15 +443,10 @@ class Controller
         $is_twig = $this->is_twig;
 
         if (strpos($file, '|') !== false) {
-
-            // This template from another theme
             $fullpath = false;
-
             list($module, $file) = explode('|', $file, 2);
 
             if ($module !== $this->current_theme['id']) {
-                // Check if another theme uses .twig template to avoid
-                // "Template not found"
                 $settings = $this->config->module($module, 'twig');
                 $is_twig = !empty($settings['status']);
             }
@@ -462,9 +457,7 @@ class Controller
         $extensions = array('php');
 
         if ($is_twig) {
-
             if (!isset($this->twig)) {
-                // Load Twig helper only when needed to save a bit of resources
                 $this->twig = Container::instance('gplcart\\core\\helpers\\Twig');
             }
 
@@ -734,7 +727,6 @@ class Controller
         }
 
         $this->current_device = 'desktop';
-
         $this->library->load('mobile_detect');
         $this->device = Container::instance('Mobile_Detect');
 
@@ -986,12 +978,11 @@ class Controller
         $this->controlCsrf();
         $this->controlAccessUpload();
         $this->controlAccessRestrictedArea();
-
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
         return null;
     }
-    
+
     /**
      * Controls access to upload a file
      */
@@ -1002,7 +993,7 @@ class Controller
             $this->response->error403();
         }
     }
-    
+
     /**
      * Controls access to retricted areas
      */
@@ -1067,11 +1058,11 @@ class Controller
             $this->outputError(403);
         }
 
-        // Admin must have "admin" access plus route specific access
         if (!$this->access('admin')) {
             $this->redirect('/');
         }
 
+        // Check route specific access
         if (!$this->access($this->access)) {
             $this->outputError(403);
         }
@@ -1298,8 +1289,10 @@ class Controller
             $content = $item;
         }
 
-        $weight = isset($this->data[$region]) ? count($this->data[$region]) : 0;
-        $this->data[$region][] = array('content' => $content, 'weight' => $weight++);
+        if (trim($content) !== '') {
+            $weight = isset($this->data[$region]) ? count($this->data[$region]) : 0;
+            $this->data[$region][] = array('content' => $content, 'weight' => $weight++);
+        }
     }
 
     /**

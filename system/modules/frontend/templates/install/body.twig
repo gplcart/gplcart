@@ -181,27 +181,33 @@
             </div>
         {% endif %}
         <div class="{{ severity == 'danger' ? 'col-md-12' : 'col-md-4' }}">
-          <table class="table-condensed requirements">
-            <tbody>
-              {% for section,items in requirements %}
-                  {% for name,info in items %}
-                      <tr class="{{ info['status'] ? '' : ' bg-' ~ info['severity'] }}">
-                        <td>{{ text(info['message']) }}</td>
-                        <td> {{ info['status'] ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>' }}</td>
-                        <td>
-                          {% if not info['status'] %}
-                              {% if info['severity'] == 'warning' %}
-                                  {{ text('non-critical') }}
-                              {% elseif info['severity'] == 'danger' %}
-                                  {{ text('critical') }}
-                              {% endif %}
-                          {% endif %}
-                        </td>
-                      </tr>
-                  {% endfor %}
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="well">
+            <table class="table-condensed requirements">
+              <tbody>
+                {% for section,items in requirements %}
+                    {% for name,info in items %}
+                        <tr>
+                          <td>{{ text(info['message']) }}</td>
+                          <td>
+                            {% if info['status'] %}
+                                <i class="fa fa-check-square-o"></i> 
+                            {% else %}
+                                <i class="fa fa-square-o"></i> 
+                                {% if info['severity'] == 'warning' %}
+                                    <i class="fa fa-exclamation-triangle" title="{{ text('Non-critical issue') }}"></i>
+                                {% elseif info['severity'] == 'danger' %}
+                                    <i class="fa fa-exclamation-triangle" title="{{ text('Critical issue') }}"></i>
+                                {% else %}
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                {% endif %}
+                            {% endif %}
+                          </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
           {% if severity == 'danger' %}
               <p><b>{{ text('Please fix all critical errors in your environment before continue') }}</b></p>
           {% endif %}

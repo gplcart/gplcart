@@ -59,7 +59,6 @@ class Controller extends BaseController
      */
     protected function setJobProperties()
     {
-        /* @var $job \gplcart\core\models\Job */
         $this->job = Container::instance('gplcart\\core\\models\\Job');
 
         $job_id = (string) $this->request->get('job_id');
@@ -79,7 +78,7 @@ class Controller extends BaseController
             return null;
         }
 
-        $this->setJsSettings('job', $this->current_job, -60);
+        $this->setJsSettings('job', $this->current_job);
         $process_job_id = (string) $this->request->get('process_job');
 
         if ($this->request->isAjax() && $process_job_id == $this->current_job['id']) {

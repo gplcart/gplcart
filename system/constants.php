@@ -44,6 +44,5 @@ define('GC_IMAGE_DIR', GC_FILE_DIR . '/image/upload');
 define('GC_IMAGE_CACHE_DIR', GC_FILE_DIR . '/image/cache');
 define('GC_LOCALE_DIR', GC_SYSTEM_DIR . '/locale');
 define('GC_LOCALE_JS_DIR', GC_FILE_DIR . '/assets/system/js/locale');
-define('GC_COOKIE_PREFIX', 'gplcart_');
 define('GC_MARKETPLACE_API_URL', 'http://gplcart.com/feed/marketplace');
 define('GC_TIME', (int) $_SERVER['REQUEST_TIME']);

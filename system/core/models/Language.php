@@ -24,7 +24,7 @@ class Language extends Model
      * Array of processed translations
      * @var array
      */
-    protected static $processed = array();
+    protected $processed = array();
 
     /**
      * Route class instance
@@ -342,7 +342,7 @@ class Language extends Model
         $class_translations = $this->load($filename);
 
         if (isset($class_translations[$string])) {
-            static::$processed[$string] = true;
+            $this->processed[$string] = true;
             return $this->formatString($string, $arguments, $class_translations[$string]);
         }
 
@@ -350,12 +350,12 @@ class Language extends Model
 
         if (isset($all_translations[$string])) {
             $this->addString($string, $all_translations[$string], $filename);
-            static::$processed[$string] = true;
+            $this->processed[$string] = true;
             return $this->formatString($string, $arguments, $all_translations[$string]);
         }
 
         $this->addString($string);
-        static::$processed[$string] = true;
+        $this->processed[$string] = true;
         return $this->formatString($string, $arguments);
     }
 
@@ -432,7 +432,7 @@ class Language extends Model
      */
     protected function addString($string, $data = array(), $filename = '')
     {
-        if (isset(static::$processed[$string])) {
+        if (isset($this->processed[$string])) {
             return false;
         }
 
@@ -499,8 +499,8 @@ class Language extends Model
         if (empty($string)) {
             return '';
         }
-        
-        $this->library->load('translit');
+
+        $this->library->load('transliterator');
 
         $translit = \Translit::get($string, '?', $language);
         $this->hook->fire('translit.after', $string, $language, $translit);

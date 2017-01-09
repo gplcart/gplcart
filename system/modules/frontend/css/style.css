@@ -1,29 +1,30 @@
 body {
+    margin-bottom: 120px;
     background-color: #f7f7f7;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 160px;
+.navbar {
+    margin-bottom: 0;
+    border: none;
+    background-color: #364F6B;
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 160px;
- 
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 120px;
 }
 
 .footer .container {
-     background-color: #222;
-     height: 100%;
+    height: 100%;
+    padding-top: 20px;
+    background-color: #eee;
 }
 
 .main {
@@ -32,7 +33,7 @@ body {
 
 .container.wrapper {
     background-color: #fff;
-    min-height: calc(100vh - 160px);
+    min-height: calc(100vh - 120px);
 }
 
 code,
@@ -113,11 +114,6 @@ body.checkout .navbar .cart {
     display: inline;
 }
 
-.navbar {
-    margin-bottom: 0;
-    border: none;
-}
-
 .navbar.second {
     background-color: #444;
     z-index: 999;
@@ -129,9 +125,9 @@ body.checkout .navbar .cart {
 }
 
 a.disabled {
-  pointer-events: none;
-  text-decoration: none;
-  color: inherit;
+    pointer-events: none;
+    text-decoration: none;
+    color: inherit;
 }
 
 .navbar.category {
@@ -247,7 +243,7 @@ td.middle {
 }
 
 .table-auto {
-   width: auto !important;
+    width: auto !important;
 }
 
 .panel-title {

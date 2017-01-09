@@ -17,7 +17,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Import extends BackendController
 {
-
     /**
      * Import model instance
      * @var \gplcart\core\models\Import $import

@@ -32,23 +32,29 @@
               <input type="checkbox" id="select-all" value="1">
             </th>
             <th>
+              <a href="<?php echo $sort_alias_id; ?>">
+                <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+              </a>
+            </th>
+            <th>
               <a href="<?php echo $sort_alias; ?>">
                 <?php echo $this->text('Alias'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
             <th>
               <a href="<?php echo $sort_id_key; ?>">
-                <?php echo $this->text('Entity'); ?> <i class="fa fa-sort"></i>
+                <?php echo $this->text('Entity type'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
             <th>
               <a href="<?php echo $sort_id_value; ?>">
-                <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+                <?php echo $this->text('Entity ID'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
             <th></th>
           </tr>
           <tr class="filters active">
+            <th></th>
             <th></th>
             <th>
               <input class="form-control" name="alias" value="<?php echo $filter_alias; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -77,7 +83,7 @@
         <tbody>
           <?php if ($filtering && empty($aliases)) { ?>
           <tr>
-            <td colspan="5">
+            <td colspan="6">
               <?php echo $this->text('No results'); ?>
               <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
             </td>
@@ -89,10 +95,13 @@
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
             <td class="middle">
+              <?php echo $this->escape($id); ?>
+            </td>
+            <td class="middle">
               <?php echo $this->escape($alias['alias']); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($alias['id_key']); ?>
+              <?php echo $this->escape($alias['entity']); ?>
             </td>
             <td class="middle">
               <?php echo $this->escape($alias['id_value']); ?>

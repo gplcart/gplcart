@@ -128,7 +128,7 @@ function ddd($data)
  */
 function d($data)
 {
-    $file = GC_VENDOR_DIR . '/gplcart/libraries/kint/Kint.class.php';
+    $file = GC_VENDOR_DIR . '/gplcart/libraries/php/kint/Kint.class.php';
     require_once $file;
 
     if (Kint::enabled()) {

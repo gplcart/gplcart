@@ -15,4 +15,6 @@
     {% for item in region_content %}
         {{ item|raw }}
     {% endfor %}
+{% else %}
+    <div class="empty">{{ text('Content coming soon...') }}</div>
 {% endif %}

@@ -135,6 +135,11 @@ class Alias extends Model
 
         $where = array();
 
+        if (isset($data['alias_id'])) {
+            $sql .= ' AND alias_id = ?';
+            $where[] = $data['alias_id'];
+        }
+
         if (isset($data['id_key'])) {
             $sql .= ' AND id_key = ?';
             $where[] = $data['id_key'];
@@ -152,7 +157,7 @@ class Alias extends Model
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('id_value', 'id_key', 'alias');
+        $allowed_sort = array('id_value', 'id_key', 'alias', 'alias_id');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order'])//
