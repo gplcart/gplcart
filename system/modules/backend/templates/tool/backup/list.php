@@ -109,11 +109,6 @@
 <div class="row">
   <div class="col-md-12">
     <?php echo $this->text('You have no backups'); ?>
-    <?php if ($this->access('backup_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/tool/backup/add'); ?>">
-      <?php echo $this->text('Add'); ?>
-    </a>
-    <?php } ?>
   </div>
 </div>
 <?php } ?>
