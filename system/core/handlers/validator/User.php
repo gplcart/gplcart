@@ -246,7 +246,11 @@ class User extends BaseValidator
     {
         $value = $this->getSubmitted('password');
 
-        if ($this->isError('password') || !isset($value)) {
+        if ($this->isError('password')) {
+            return null;
+        }
+        
+        if ($this->isUpdating() && (!isset($value) || $value === '')) {
             return null;
         }
 

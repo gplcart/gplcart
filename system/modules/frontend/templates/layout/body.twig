@@ -210,7 +210,7 @@
         <div class="col-md-6">
           <p>
             {{ store('data.owner') }}
-            &copy; 2015 - {{ 'now'|date('Y') }} {{ text('All Rights Reserved') }}
+            &copy; 2015 - {{ 'now'|date('Y') }} <a href="http://gplcart.com">GPL Cart</a>
           <ul class="list-unstyled">
             {% if store('data.address') %}
             <li><i class="fa fa-map-marker"></i> {{ xss(store('data.address')) }}</li>
@@ -222,7 +222,6 @@
             <li><i class="fa fa-fax"></i> {{ store('data.fax')|join(', ') }}</li>
             {% endif %}
           </ul>
-          <p>Powered by <a href="http://gplcart.com">GPL Cart</a></p>
         </div>
         <div class="col-md-4">
           <ul class="list-unstyled">

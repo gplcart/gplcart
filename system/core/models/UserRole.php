@@ -88,7 +88,7 @@ class UserRole extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
-            $sql .= " ORDER BY name ASC";
+            $sql .= " ORDER BY role_id ASC";
         }
 
         if (!empty($data['limit'])) {

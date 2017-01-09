@@ -96,13 +96,15 @@ class Country extends Model
 
         $items['country'] = array(
             'name' => $this->language->text('Country'),
-            'required' => 0, 'weight' => 0,
+            'required' => 0,
+            'weight' => 0,
             'status' => 1
         );
 
         $items['state_id'] = array(
             'name' => $this->language->text('State'),
-            'required' => 0, 'weight' => 1,
+            'required' => 0,
+            'weight' => 1,
             'status' => 1
         );
 

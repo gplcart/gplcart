@@ -121,15 +121,15 @@ class Address extends BaseValidator
     {
         $code = $this->getSubmitted('country');
 
-        if ($this->isUpdating() && !isset($code)) {
-            return null;
-        }
-
         if (empty($code)) {
-            $vars = array('@field' => $this->language->text('Country'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('country', $error);
-            return false;
+
+            $countries = $this->country->getList();
+
+            if (empty($countries)) {
+                $format = $this->country->defaultFormat();
+                $this->setSubmitted('format', $format);
+                return null;
+            }
         }
 
         $country = $this->country->get($code);
@@ -220,7 +220,9 @@ class Address extends BaseValidator
         }
 
         if (is_numeric($city_id)) {
+
             $city = $this->city->get($city_id);
+
             if (empty($city)) {
                 $vars = array('@name' => $this->language->text('City'));
                 $error = $this->language->text('@name is unavailable', $vars);

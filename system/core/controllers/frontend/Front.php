@@ -43,13 +43,13 @@ class Front extends FrontendController
         $this->setDataCollectionBannersFront();
         $this->setDataCollectionProductsFront();
         $this->setDataCollectionPagesFront();
-        
+
         $this->setRegionContentFront();
 
         $this->setTitleIndexFront();
         $this->outputIndexFront();
     }
-    
+
     /**
      * Adds main content to content region
      */

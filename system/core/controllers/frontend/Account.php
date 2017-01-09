@@ -568,7 +568,6 @@ class Account extends FrontendController
     protected function getEditAddressFormAccount($address)
     {
         $country = isset($address['country']) ? $address['country'] : '';
-
         $format = $this->country->getFormat($country, true);
         $countries = $this->country->getNames(true);
 

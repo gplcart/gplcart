@@ -430,9 +430,9 @@ class Install extends Model
     {
         $roles = array();
 
-        $roles[] = array('name' => 'Director'); // Role ID 1
-        $roles[] = array('name' => 'Order manager'); // Role ID 2
-        $roles[] = array('name' => 'Content manager'); // Role ID 3
+        $roles[] = array('name' => 'Director', 'status' => 1); // Role ID 1
+        $roles[] = array('name' => 'Order manager', 'status' => 1); // Role ID 2
+        $roles[] = array('name' => 'Content manager', 'status' => 1); // Role ID 3
 
         foreach ($roles as $role) {
             $this->database->insert('role', $role);
