@@ -462,7 +462,7 @@ class CliController
         $list = $this->route->getList();
 
         $message = $this->text('List of available commands. To see command options use \'--help\' option:') . PHP_EOL;
-        
+
         foreach ($list as $command => $info) {
             $description = $this->text('No description available');
             if (!empty($info['help']['description'])) {

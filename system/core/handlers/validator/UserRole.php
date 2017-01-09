@@ -48,6 +48,7 @@ class UserRole extends BaseValidator
 
         $this->validateUserRole();
         $this->validatePermissionsUserRole();
+        $this->validateRedirectUserRole();
         $this->validateStatus();
         $this->validateName();
 
@@ -102,6 +103,24 @@ class UserRole extends BaseValidator
             $vars = array('@name' => implode(',', $difference));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('permissions', $error);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates a redirect path
+     * @return boolean
+     */
+    protected function validateRedirectUserRole()
+    {
+        $value = $this->getSubmitted('redirect');
+
+        if (isset($value) && mb_strlen($value) > 255) {
+            $vars = array('@max' => 255, '@field' => $this->language->text('Redirect'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
+            $this->setError('redirect', $error);
             return false;
         }
 

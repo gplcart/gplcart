@@ -462,6 +462,7 @@ $tables['role'] = array(
         'role_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
         'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
         'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'redirect' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'permissions' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

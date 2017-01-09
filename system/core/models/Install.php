@@ -398,11 +398,11 @@ class Install extends Model
         }
 
         $code = key($settings['store']['language']);
-        
-        if($code == 'en'){
+
+        if ($code == 'en') {
             return false;
         }
-        
+
         $this->config->set('language', $code);
 
         $native_name = $name = $settings['store']['language'][$code][0];
@@ -430,9 +430,29 @@ class Install extends Model
     {
         $roles = array();
 
-        $roles[] = array('name' => 'Director', 'status' => 1); // Role ID 1
-        $roles[] = array('name' => 'Order manager', 'status' => 1); // Role ID 2
-        $roles[] = array('name' => 'Content manager', 'status' => 1); // Role ID 3
+        // Role ID 1
+        $roles[] = array(
+            'name' => 'Director',
+            'status' => 0,
+            'redirect' => 'admin',
+            'permissions' => array('admin')
+        );
+
+        // Role ID 2
+        $roles[] = array(
+            'name' => 'Order manager',
+            'status' => 0,
+            'redirect' => 'admin',
+            'permissions' => array('admin')
+        );
+
+        // Role ID 3
+        $roles[] = array(
+            'name' => 'Content manager',
+            'status' => 0,
+            'redirect' => 'admin',
+            'permissions' => array('admin')
+        );
 
         foreach ($roles as $role) {
             $this->database->insert('role', $role);

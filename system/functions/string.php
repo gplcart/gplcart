@@ -45,6 +45,9 @@ function gplcart_string_random($size = 32)
  */
 function gplcart_string_equals($str1, $str2)
 {
+    settype($str1, 'string');
+    settype($str2, 'string');
+
     if (function_exists('hash_equals')) {
         return hash_equals($str1, $str2);
     }
