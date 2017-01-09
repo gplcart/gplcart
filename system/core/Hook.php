@@ -21,13 +21,13 @@ class Hook
      * Array of registered hooks
      * @var array
      */
-    protected static $hooks = array();
+    protected $hooks = array();
 
     /**
      * Array of invoked hooks
      * @var array
      */
-    protected static $called = array();
+    protected $called = array();
 
     /**
      * Registers modules hooks
@@ -54,8 +54,8 @@ class Hook
      */
     public function register($method, $class)
     {
-        static::$hooks[strtolower($method)][$class] = array($class, $method);
-        return static::$hooks;
+        $this->hooks[strtolower($method)][$class] = array($class, $method);
+        return $this->hooks;
     }
 
     /**
@@ -66,8 +66,8 @@ class Hook
      */
     public function unregister($method, $class)
     {
-        unset(static::$hooks[strtolower($method)][$class]);
-        return static::$hooks;
+        unset($this->hooks[strtolower($method)][$class]);
+        return $this->hooks;
     }
 
     /**
@@ -76,7 +76,7 @@ class Hook
      */
     public function getRegistered()
     {
-        return static::$hooks;
+        return $this->hooks;
     }
 
     /**
@@ -85,7 +85,7 @@ class Hook
      */
     public function getCalled()
     {
-        return static::$called;
+        return $this->called;
     }
 
     /**
@@ -95,7 +95,7 @@ class Hook
      */
     protected function setCalled($method, $namespace)
     {
-        static::$called[$method][$namespace] = array($namespace, $method);
+        $this->called[$method][$namespace] = array($namespace, $method);
     }
 
     /**
@@ -113,11 +113,11 @@ class Hook
     {
         $method = $this->getMethod($hook);
 
-        if (empty(static::$hooks[$method])) {
+        if (empty($this->hooks[$method])) {
             return false;
         }
 
-        foreach (array_keys(static::$hooks[$method]) as $namespace) {
+        foreach (array_keys($this->hooks[$method]) as $namespace) {
             $this->call($namespace, $method, $a, $b, $c, $d, $e);
         }
 
@@ -175,11 +175,11 @@ class Hook
     {
         $method = $this->getMethod($hook);
 
-        if (empty(static::$hooks[$method])) {
+        if (empty($this->hooks[$method])) {
             return false;
         }
 
-        foreach (array_keys(static::$hooks[$method]) as $namespace) {
+        foreach (array_keys($this->hooks[$method]) as $namespace) {
             if (strpos($namespace, "modules\\$module\\") === 0) {
                 return $this->call($namespace, $method, $a, $b, $c, $d, $e);
             }

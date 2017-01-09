@@ -52,8 +52,11 @@ class Frontend
      */
     public function hookInitFrontend($controller)
     {
+        if (!$controller->isCurrentTheme('frontend')) {
+            return null;
+        }
+
         if (!$controller->isInstalling()) {
-            // This one goes before libraries
             $controller->setJs('system/modules/frontend/js/script.js');
         }
 
@@ -65,18 +68,15 @@ class Frontend
 
         $controller->addAssetLibrary($libraries);
 
-        // Do not aggregate conditional scripts
         $condition_libraries = array('html5shiv', 'respond');
         $controller->addAssetLibrary($condition_libraries, array('aggregate' => false, 'condition' => 'if lt IE 9'));
 
         if ($controller->isInstalling()) {
-            // This one goes at the bottom to be able to rewrite styles added above
             $controller->setCss('system/modules/frontend/css/install.css');
         } else {
             $controller->setCss('system/modules/frontend/css/style.css');
         }
 
-        // Meta tags
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));

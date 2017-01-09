@@ -19,11 +19,29 @@ class Controller
      * Whether we're installing the system
      * @var boolean
      */
-    protected $installing = false;
+    protected $is_installing = false;
+    
+    /**
+     * Whether the site in maintenance mode
+     * @var boolean
+     */
+    protected $is_maintenance = false;
+    
+    /**
+     * Whether the current view is backend
+     * @var boolean
+     */
+    protected $is_backend;
+    
+    /**
+     * Whether the current theme supports TWIG templates
+     * @var boolean
+     */
+    protected $is_twig = false;
 
     /**
-     *
-     * @var type 
+     * Weight of JS settings
+     * @var integer
      */
     protected $js_settings_weight = 0;
 
@@ -50,12 +68,6 @@ class Controller
      * @var array
      */
     protected $breadcrumbs = array();
-
-    /**
-     * Whether the current view is backend
-     * @var boolean
-     */
-    protected $backend;
 
     /**
      * Frontend theme module name
@@ -128,12 +140,6 @@ class Controller
      * @var string
      */
     protected $access = '';
-
-    /**
-     * Whether the site in maintenance mode
-     * @var boolean
-     */
-    protected $maintenance = false;
 
     /**
      * Array of template variables
@@ -317,12 +323,6 @@ class Controller
     protected $twig;
 
     /**
-     * Whether the current theme supports TWIG templates
-     * @var boolean
-     */
-    protected $twig_enabled = false;
-
-    /**
      * Logger class instance
      * @var \gplcart\core\Logger $logger
      */
@@ -397,7 +397,7 @@ class Controller
      */
     public function isInstalling()
     {
-        return $this->installing;
+        return $this->is_installing;
     }
 
     /**
@@ -440,7 +440,7 @@ class Controller
     protected function getTemplateFile($file, $fullpath)
     {
         $module = $this->current_theme['id'];
-        $is_twig = $this->twig_enabled;
+        $is_twig = $this->is_twig;
 
         if (strpos($file, '|') !== false) {
 
@@ -701,8 +701,8 @@ class Controller
      */
     protected function setRouteProperties()
     {
-        $this->backend = $this->url->isBackend();
-        $this->installing = $this->url->isInstall();
+        $this->is_backend = $this->url->isBackend();
+        $this->is_installing = $this->url->isInstall();
         $this->current_route = $this->route->getCurrent();
 
         if (isset($this->current_route['access'])) {
@@ -768,9 +768,9 @@ class Controller
 
         $theme = null;
 
-        if ($this->backend) {
+        if ($this->is_backend) {
             $theme = $this->theme_backend;
-        } elseif ($this->installing) {
+        } elseif ($this->is_installing) {
             $theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
             $this->theme_frontend = $theme = $this->store->config('theme');
@@ -795,7 +795,7 @@ class Controller
         }
 
         $this->theme_settings = (array) $this->config->module($theme, null, array());
-        $this->twig_enabled = !empty($this->theme_settings['twig']['status']);
+        $this->is_twig = !empty($this->theme_settings['twig']['status']);
 
         if (empty($this->theme_settings['templates'])) {
             $this->templates = $this->getDefaultTemplates();
@@ -806,11 +806,22 @@ class Controller
 
     /**
      * Returns the current theme
-     * @return array
+     * @param string $key
+     * @return mixed
      */
     public function getTheme()
     {
         return $this->current_theme;
+    }
+
+    /**
+     * Whether a theme ID matches the current theme ID
+     * @param string $name
+     * @return boolean
+     */
+    public function isCurrentTheme($name)
+    {
+        return $this->current_theme['id'] === $name;
     }
 
     /**
@@ -954,7 +965,7 @@ class Controller
      */
     protected function setAccessProperties()
     {
-        if ($this->installing) {
+        if ($this->is_installing) {
             return null;
         }
 
@@ -973,26 +984,33 @@ class Controller
         }
 
         $this->controlCsrf();
-
-        // Check access to upload a file
-        $file = $this->request->file();
-        if (!empty($file) && !$this->access('file_upload')) {
-            $this->response->error403();
-        }
-
-        // Check access only on restricted areas
-        if (!$this->backend && $this->url->isAccount() === false) {
-            return true;
-        }
-
-        // Redirect anonymous to login form
-        if (empty($this->uid)) {
-            $this->url->redirect('login', array('target' => $this->path));
-        }
+        $this->controlAccessUpload();
+        $this->controlAccessRestrictedArea();
 
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
         return null;
+    }
+    
+    /**
+     * Controls access to upload a file
+     */
+    protected function controlAccessUpload()
+    {
+        $file = $this->request->file();
+        if (!empty($file) && !$this->access('file_upload')) {
+            $this->response->error403();
+        }
+    }
+    
+    /**
+     * Controls access to retricted areas
+     */
+    protected function controlAccessRestrictedArea()
+    {
+        if (($this->is_backend || $this->url->isAccount()) && empty($this->uid)) {
+            $this->url->redirect('login', array('target' => $this->path));
+        }
     }
 
     /**
@@ -1041,12 +1059,11 @@ class Controller
      */
     protected function controlAccessAdmin()
     {
-        // Check only admin pages
-        if (!$this->backend) {
+        if (!$this->is_backend || $this->isSuperadmin()) {
             return null;
         }
 
-        if (!$this->isSuperadmin() && empty($this->current_user['role_status'])) {
+        if (empty($this->current_user['role_status'])) {
             $this->outputError(403);
         }
 
@@ -1081,10 +1098,9 @@ class Controller
         $account_id = $this->url->isAccount();
 
         if (empty($account_id)) {
-            return null; // This is not an account, exit
+            return null;
         }
 
-        // Allow customers to see their accounts
         if ($this->uid === $account_id) {
             return null;
         }
@@ -1102,9 +1118,9 @@ class Controller
      */
     protected function controlMaintenanceMode()
     {
-        if (!$this->installing && !$this->backend//
+        if (!$this->is_installing && !$this->is_backend//
                 && empty($this->current_store['status'])) {
-            $this->maintenance = true;
+            $this->is_maintenance = true;
             $this->outputMaintenance();
         }
     }
@@ -1238,7 +1254,7 @@ class Controller
         // The problem: theme styles are added
         // in hook init.* which is called in the child controller class
         // and not available here, so we call the hook manually
-        $hook = $this->backend ? 'init.backend' : 'init.frontend';
+        $hook = $this->is_backend ? 'init.backend' : 'init.frontend';
         $this->hook->fireModule($hook, $this->current_theme['id'], $this);
 
         $this->output("common/error/$code", array('headers' => $code));
@@ -1504,7 +1520,7 @@ class Controller
      */
     protected function setCronProperties()
     {
-        if ($this->installing) {
+        if ($this->is_installing) {
             return null;
         }
 
@@ -1558,7 +1574,7 @@ class Controller
      */
     protected function setDefaultJsCron()
     {
-        $add = ($this->backend && !empty($this->cron_interval)//
+        $add = ($this->is_backend && !empty($this->cron_interval)//
                 && (GC_TIME - $this->cron_last_run) > $this->cron_interval);
 
         if ($add) {

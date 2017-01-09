@@ -36,6 +36,10 @@ class Backend
      */
     public function hookInitBackend($controller)
     {
+        if(!$controller->isCurrentTheme('backend')){
+            return null;
+        }
+        
         // Add system JS
         $controller->setJs('system/modules/backend/js/common.js');
         
