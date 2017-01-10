@@ -51,11 +51,15 @@ class Session
      */
     public function regenerate($delete_old_session)
     {
+        $success = true;
+
         if ($this->started()) {
-            return session_regenerate_id($delete_old_session);
+            $success = session_regenerate_id($delete_old_session);
         }
 
-        return true;
+        if (!$success) {
+            throw new UserAccessException('Failed to regenerate the current session');
+        }
     }
 
     /**
@@ -122,7 +126,11 @@ class Session
 
         if (!isset($key)) {
             session_unset();
-            return session_destroy();
+            if (!session_destroy()) {
+                throw new UserAccessException('Failed to delete the session');
+            }
+
+            return true;
         }
 
         gplcart_array_unset_value($_SESSION, $key);

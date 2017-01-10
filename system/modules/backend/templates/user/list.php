@@ -138,6 +138,9 @@
           <?php } ?>
           <?php foreach ($users as $id => $user) { ?>
           <tr>
+            <?php if($this->isSuperadmin($id) && !$this->isSuperadmin()) { ?>
+            <td colspan="9" class="bg-danger"><?php echo $this->text('No access'); ?></td>
+            <?php } else { ?>
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
@@ -189,6 +192,7 @@
                   <?php } ?>
                 </ul>
             </td>
+            <?php } ?>
           </tr>
           <?php } ?>
         </tbody>

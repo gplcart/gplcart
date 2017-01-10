@@ -165,7 +165,7 @@ class Order extends Model
                 . ' LEFT JOIN history h ON(h.user_id=? AND h.id_key=? AND h.id_value=o.order_id)'
                 . ' WHERE o.order_id IS NOT NULL';
 
-        $where = array($this->user->id(), 'order_id');
+        $where = array((int) $this->user->getSession('user_id'), 'order_id');
 
         if (isset($data['store_id'])) {
             $sql .= ' AND o.store_id = ?';
@@ -348,7 +348,7 @@ class Order extends Model
      */
     public function setViewed(array $order)
     {
-        $user_id = $this->user->id();
+        $user_id = (int) $this->user->getSession('user_id');
 
         if ($this->isViewed($order, $user_id)) {
             return true; // Record already exists

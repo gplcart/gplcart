@@ -145,6 +145,12 @@ class UserRole extends BackendController
      */
     protected function validateUserRole(array $role)
     {
+        $permissions = $this->getSubmitted('permissions');
+
+        if (empty($permissions)) {
+            $this->setSubmitted('permissions', array());
+        }
+
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $role);
         $this->validate('user_role');

@@ -347,7 +347,7 @@ class Condition
      */
     public function userId(array $condition)
     {
-        $user_id = $this->user->id();
+        $user_id = (int) $this->user->getSession('user_id');
 
         $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {
@@ -364,7 +364,7 @@ class Condition
      */
     public function userRole(array $condition)
     {
-        $role_id = $this->user->roleId();
+        $role_id = $this->user->getSession('role_id');
 
         $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {

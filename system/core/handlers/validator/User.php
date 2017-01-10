@@ -249,7 +249,7 @@ class User extends BaseValidator
         if ($this->isError('password')) {
             return null;
         }
-        
+
         if ($this->isUpdating() && (!isset($value) || $value === '')) {
             return null;
         }
@@ -273,7 +273,7 @@ class User extends BaseValidator
      */
     protected function validatePasswordOldUser()
     {
-        if (!$this->isUpdating()) {
+        if (!$this->isUpdating() || !empty($this->options['admin'])) {
             return null;
         }
 

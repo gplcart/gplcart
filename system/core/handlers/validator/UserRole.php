@@ -93,7 +93,8 @@ class UserRole extends BaseValidator
         }
 
         if (empty($value)) {
-            $value = array();
+            $this->setSubmitted('permissions', array());
+            return null;
         }
 
         $permissions = $this->role->getPermissions();
