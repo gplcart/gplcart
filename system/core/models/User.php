@@ -10,13 +10,12 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\Logger;
+use gplcart\core\Cache;
 use gplcart\core\models\Mail as MailModel;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Session as SessionHelper;
-use gplcart\core\exceptions\UserAccessException;
 
 /**
  * Manages basic behaviors and data related to users
@@ -55,29 +54,20 @@ class User extends Model
     protected $session;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Constructor
      * @param AddressModel $address
      * @param UserRoleModel $role
      * @param MailModel $mail
      * @param LanguageModel $language
      * @param SessionHelper $session
-     * @param Logger $logger
      */
     public function __construct(AddressModel $address, UserRoleModel $role,
-            MailModel $mail, LanguageModel $language, SessionHelper $session,
-            Logger $logger)
+            MailModel $mail, LanguageModel $language, SessionHelper $session)
     {
         parent::__construct();
 
         $this->mail = $mail;
         $this->role = $role;
-        $this->logger = $logger;
         $this->address = $address;
         $this->session = $session;
         $this->language = $language;
@@ -223,29 +213,13 @@ class User extends Model
      */
     public function isSuperadmin($user_id = null)
     {
+        $superadmin_id = (int) $this->config->get('user_superadmin', 1);
+
         if (isset($user_id)) {
-            return ($this->superadmin() === (int) $user_id);
+            return ($superadmin_id === (int) $user_id);
         }
 
-        return ($this->superadmin() === $this->id());
-    }
-
-    /**
-     * Returns superadmin user ID
-     * @return integer
-     */
-    public function superadmin()
-    {
-        return (int) $this->config->get('user_superadmin', 1);
-    }
-
-    /**
-     * Returns an ID of the current user
-     * @return integer
-     */
-    public function id()
-    {
-        return (int) $this->session->get('user.user_id');
+        return ($superadmin_id === (int) $this->getSession('user_id'));
     }
 
     /**
@@ -260,7 +234,7 @@ class User extends Model
             return true;
         }
 
-        $permissions = $this->permissions($user);
+        $permissions = $this->getPermissions($user);
         return in_array($permission, $permissions);
     }
 
@@ -269,39 +243,34 @@ class User extends Model
      * @param mixed $user
      * @return array
      */
-    public function permissions($user = null)
-    {
-        $role_id = $this->roleId($user);
-
-        if (empty($role_id)) {
-            return array();
-        }
-
-        $role = $this->role->get($role_id);
-
-        if (isset($role['permissions'])) {
-            return (array) $role['permissions'];
-        }
-
-        return array();
-    }
-
-    /**
-     * Returns a role ID
-     * @param mixed $user
-     * @return integer
-     */
-    public function roleId($user = null)
+    public function getPermissions($user = null)
     {
         if (!isset($user)) {
-            return (int) $this->session->get('user.role_id');
+            $user = $this->getSession('user_id');
         }
 
         if (is_numeric($user)) {
+            // User is already loaded and cached in memory
+            // so no additional database query needed
             $user = $this->get($user);
         }
 
-        return isset($user['role_id']) ? (int) $user['role_id'] : 0;
+        if (empty($user['role_id'])) {
+            return array();
+        }
+
+        $role = array();
+        if (isset($user['role_permissions'])) {
+            $role['permissions'] = $user['role_permissions'];
+        } else {
+            $role = $this->role->get($user['role_id']);
+        }
+
+        if (empty($role['permissions'])) {
+            return array();
+        }
+
+        return (array) $role['permissions'];
     }
 
     /**
@@ -312,9 +281,15 @@ class User extends Model
      */
     public function get($user_id, $store_id = null)
     {
+        $user = &Cache::memory("user.$user_id");
+
+        if (isset($user)) {
+            return $user;
+        }
+
         $this->hook->fire('get.user.before', $user_id, $store_id);
 
-        $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name'
+        $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name, r.permissions AS role_permissions'
                 . ' FROM user u'
                 . ' LEFT JOIN role r ON (u.role_id = r.role_id)'
                 . ' WHERE u.user_id=?';
@@ -326,7 +301,8 @@ class User extends Model
             $where[] = $store_id;
         }
 
-        $user = $this->db->fetch($sql, $where, array('unserialize' => 'data'));
+        $options = array('unserialize' => array('data', 'role_permissions'));
+        $user = $this->db->fetch($sql, $where, $options);
 
         $this->hook->fire('get.user.after', $user);
         return $user;
@@ -335,14 +311,13 @@ class User extends Model
     /**
      * Logs in a user
      * @param array $data
-     * @throws UserAccessException
      */
     public function login(array $data)
     {
         $result = array(
             'redirect' => null,
             'severity' => 'warning',
-            'message' => $this->language->text('Invalid E-mail and/or password')
+            'message' => $this->language->text('Failed to log in')
         );
 
         $this->hook->fire('login.before', $data, $result);
@@ -363,14 +338,8 @@ class User extends Model
             return $result;
         }
 
-        if (!$this->session->regenerate(true)) {
-            throw new UserAccessException('Failed to regenerate the current session');
-        }
-
-        unset($user['hash']);
+        $this->session->regenerate(true);
         $this->session->set('user', $user);
-
-        $this->logLogin($user);
 
         $redirect = "account/{$user['user_id']}";
 
@@ -400,7 +369,11 @@ class User extends Model
      */
     public function register(array $data)
     {
-        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+        $result = array(
+            'redirect' => null,
+            'severity' => '',
+            'message' => ''
+        );
 
         $this->hook->fire('register.user.before', $data, $result);
 
@@ -420,7 +393,6 @@ class User extends Model
             return $result;
         }
 
-        $this->logRegistration($data);
         $this->emailRegistration($data);
 
         $result = array(
@@ -442,12 +414,10 @@ class User extends Model
      */
     protected function emailRegistration(array $data)
     {
-        // Send an e-mail to the customer
         if ($this->config->get('user_registration_email_customer', true)) {
             $this->mail->set('user_registered_customer', array($data));
         }
 
-        // Send an e-mail to admin
         if ($this->config->get('user_registration_email_admin', true)) {
             $this->mail->set('user_registered_admin', array($data));
         }
@@ -480,22 +450,27 @@ class User extends Model
     }
 
     /**
-     * Returns the current user
+     * Returns the current user from the session
      * @return array
      */
-    public function current()
+    public function getSession($key = null)
     {
-        return (array) $this->session->get('user', array());
+        $user = $this->session->get('user', array());
+
+        if (!isset($key)) {
+            return $user;
+        }
+
+        return gplcart_array_get_value($user, $key);
     }
 
     /**
      * Logs out the current user
      * @return array
-     * @throws UserAccessException
      */
     public function logout()
     {
-        $user_id = $this->id();
+        $user_id = (int) $this->getSession('user_id');
         $result = array('message' => '', 'severity' => '', 'redirect' => '/');
 
         $this->hook->fire('logout.before', $user_id, $result);
@@ -504,13 +479,9 @@ class User extends Model
             return $result;
         }
 
-        if (!$this->session->delete()) {
-            throw new UserAccessException('Failed to delete the session on logout');
-        }
+        $this->session->delete();
 
         $user = $this->get($user_id);
-
-        $this->logLogout($user);
 
         $result = array(
             'user' => $user,
@@ -540,7 +511,11 @@ class User extends Model
      */
     public function resetPassword(array $data)
     {
-        $result = array('redirect' => null, 'message' => '', 'severity' => '');
+        $result = array(
+            'redirect' => null,
+            'message' => '',
+            'severity' => ''
+        );
 
         $this->hook->fire('reset.password.before', $data, $result);
 
@@ -593,6 +568,7 @@ class User extends Model
         $user['password'] = $password;
 
         unset($user['data']['reset_password']);
+
         $this->update($user['user_id'], $user);
         $this->mail->set('user_changed_password', array($user));
 
@@ -687,48 +663,6 @@ class User extends Model
 
         $this->hook->fire('users', $list);
         return $list;
-    }
-
-    /**
-     * Logs a login event
-     * @param array $user
-     */
-    protected function logLogin(array $user)
-    {
-        $data = array(
-            'message' => 'User %s has logged in',
-            'variables' => array('%s' => $user['email'])
-        );
-
-        $this->logger->log('login', $data);
-    }
-
-    /**
-     * Logs a logout event
-     * @param array $user
-     */
-    protected function logLogout(array $user)
-    {
-        $data = array(
-            'message' => 'User %email has logged out',
-            'variables' => array('%email' => $user['email'])
-        );
-
-        $this->logger->log('logout', $data);
-    }
-
-    /**
-     * Logs a registration event
-     * @param array $user
-     */
-    protected function logRegistration(array $user)
-    {
-        $data = array(
-            'message' => 'User %email has been registered',
-            'variables' => array('%email' => $user['email'])
-        );
-
-        $this->logger->log('register', $data);
     }
 
 }

@@ -370,14 +370,14 @@ class Controller
         $this->setRouteProperties();
         $this->setDeviceProperties();
         $this->setStoreProperties();
-        
+
         $this->setDefaultJs();
         $this->setThemeProperties();
-        
+
         $this->setLanguageProperties();
         $this->setCronProperties();
         $this->setDefaultData();
-        
+
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
@@ -968,16 +968,11 @@ class Controller
 
         $this->controlToken(false);
 
-        $this->uid = $this->user->id();
+        $this->uid = (int) $this->user->getSession('user_id');
 
         if (!empty($this->uid)) {
             $this->current_user = $this->user->get($this->uid);
-
-            if (empty($this->current_user['status'])//
-                    || $this->current_user['role_id'] != $this->user->roleId()) {
-                $this->session->delete();
-                $this->url->redirect('login');
-            }
+            $this->controlAccessCredentials();
         }
 
         $this->controlCsrf();
@@ -986,6 +981,31 @@ class Controller
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
         return null;
+    }
+
+    /**
+     * Controls the current user credentials, such as status, role, password hash...
+     */
+    protected function controlAccessCredentials()
+    {
+        $session_hash = $this->user->getSession('hash');
+
+        if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
+            $this->session->delete();
+            $this->url->redirect('login');
+        }
+
+        if (empty($this->current_user['status'])) {
+            $this->session->delete();
+            $this->url->redirect('login');
+        }
+
+        if ($this->current_user['role_id'] != $this->user->getSession('role_id')) {
+            $this->session->delete();
+            $this->url->redirect('login');
+        }
+
+        return true;
     }
 
     /**
@@ -1096,12 +1116,15 @@ class Controller
         if ($this->uid === $account_id) {
             return null;
         }
-
-        if ($this->access('user')) {
-            return null;
+        
+        if($this->isSuperadmin($account_id) && !$this->isSuperadmin()){
+            $this->outputError(403);
         }
 
-        $this->outputError(403);
+        if (!$this->access('user')) {
+            $this->outputError(403);
+        }
+        
         return null;
     }
 
