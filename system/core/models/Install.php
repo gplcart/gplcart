@@ -278,7 +278,6 @@ class Install extends Model
         $store_id = $this->createStore($settings);
         $user_id = $this->createSuperadmin($settings, $store_id);
 
-        $this->createRoles();
         $this->createLanguages($settings);
         $this->createCollections($store_id);
         $this->createCategoryGroups($store_id);
@@ -421,42 +420,6 @@ class Install extends Model
         );
 
         return $this->config->set('languages', $languages);
-    }
-
-    /**
-     * Create default roles
-     */
-    protected function createRoles()
-    {
-        $roles = array();
-
-        // Role ID 1
-        $roles[] = array(
-            'name' => 'Director',
-            'status' => 0,
-            'redirect' => 'admin',
-            'permissions' => array('admin')
-        );
-
-        // Role ID 2
-        $roles[] = array(
-            'name' => 'Order manager',
-            'status' => 0,
-            'redirect' => 'admin',
-            'permissions' => array('admin')
-        );
-
-        // Role ID 3
-        $roles[] = array(
-            'name' => 'Content manager',
-            'status' => 0,
-            'redirect' => 'admin',
-            'permissions' => array('admin')
-        );
-
-        foreach ($roles as $role) {
-            $this->database->insert('role', $role);
-        }
     }
 
     /**
