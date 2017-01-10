@@ -312,19 +312,15 @@ class User extends BaseValidator
     {
         $value = $this->getSubmitted('role_id');
 
-        if ($this->isUpdating() && !isset($value)) {
+        if (empty($value)) {
             return null;
         }
 
-        if (isset($value) && !is_numeric($value)) {
+        if (!is_numeric($value)) {
             $vars = array('@field' => $this->language->text('Role'));
             $error = $this->language->text('@field must be numeric', $vars);
             $this->setError('role_id', $error);
             return false;
-        }
-
-        if (empty($value)) {
-            return true;
         }
 
         $role = $this->role->get($value);
