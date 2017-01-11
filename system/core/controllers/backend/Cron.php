@@ -59,16 +59,8 @@ class Cron extends BackendController
     {
         $key = (string) $this->request->get('key', '');
 
-        if (strcmp($key, $this->cron_key) !== 0) {
-            $this->response->error403();
-        }
-
-        $has_access = $this->access('cron') //
-                || (!empty($this->cron_interval) //
-                && ((GC_TIME - $this->cron_last_run) > $this->cron_interval));
-
-        if (!$has_access) {
-            $this->response->error403();
+        if (strcmp($key, $this->config('cron_key', '')) !== 0) {
+            $this->response->error403(false);
         }
     }
 

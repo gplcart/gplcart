@@ -13,6 +13,9 @@
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_options = false; ?>
+      <?php if($this->access('country_edit') || $this->access('country_delete')) { ?>
+      <?php $access_options = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('country_edit')) { ?>
         <li>
@@ -34,6 +37,7 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('country_add')) { ?>
@@ -47,7 +51,7 @@
     <table class="table countries">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_options ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_native_name; ?>"><?php echo $this->text('Native name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
@@ -97,7 +101,7 @@
         <?php } ?>
         <?php foreach ($countries as $code => $country) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $code; ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $code; ?>"<?php echo $access_options ? '' : ' disabled'; ?>></td>
           <td class="middle">
             <input type="hidden" name="country[<?php echo $code; ?>][weight]" value="<?php echo $country['weight']; ?>">
             <?php echo $this->escape($country['name']); ?>

@@ -132,7 +132,6 @@ return array(
     'file_upload' => 'File: upload',
     'filter' => 'Filter: access',
     'filter_edit' => 'Filter: edit',
-    'cron' => 'Cron: access',
     'import' => 'Import: access',
     'export' => 'Export: access',
     'settings' => 'Settings: access',

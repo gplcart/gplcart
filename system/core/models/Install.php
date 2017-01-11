@@ -272,7 +272,7 @@ class Install extends Model
 
         $this->config->set('intro', 1);
         $this->config->set('installed', GC_TIME);
-        $this->config->set('installation_id', gplcart_string_random());
+        $this->config->set('cron_key', gplcart_string_random());
         $this->config->set('timezone', $settings['store']['timezone']);
 
         $store_id = $this->createStore($settings);

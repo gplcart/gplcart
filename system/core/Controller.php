@@ -215,24 +215,6 @@ class Controller
     protected $languages = array();
 
     /**
-     * Interval in seconds between cron calls
-     * @var integer
-     */
-    protected $cron_interval;
-
-    /**
-     * UNIX-timestamp when cron was lastly started
-     * @var integer
-     */
-    protected $cron_last_run;
-
-    /**
-     * Cron secret key to launch from outside
-     * @var string
-     */
-    protected $cron_key;
-
-    /**
      * Submitted form values
      * @var array
      */
@@ -381,10 +363,8 @@ class Controller
         $this->setThemeProperties();
 
         $this->setLanguageProperties();
-        $this->setCronProperties();
 
         $this->setDefaultData();
-
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
@@ -1613,8 +1593,9 @@ class Controller
      */
     protected function setPhpErrorsLive(&$data)
     {
-
-        if ($this->config('error_live_report', 0) && $this->access('report_events') && $this->path != 'admin/report/events') {
+        if ($this->config('error_live_report', 0)//
+                && $this->access('report_events')//
+                && $this->path != 'admin/report/events') {
 
             $count = $this->logger->countPhpErrors();
 
@@ -1662,27 +1643,6 @@ class Controller
     }
 
     /**
-     * Sets cron properties
-     */
-    protected function setCronProperties()
-    {
-        if ($this->is_installing) {
-            return null;
-        }
-
-        $this->cron_interval = (int) $this->config('cron_interval', 86400);
-        $this->cron_last_run = (int) $this->config('cron_last_run', 0);
-        $this->cron_key = $this->config('cron_key', '');
-
-        if (empty($this->cron_key)) {
-            $this->cron_key = gplcart_string_random();
-            $this->config->set('cron_key', $this->cron_key);
-        }
-
-        return null;
-    }
-
-    /**
      * Adds required javascripts
      */
     protected function setDefaultJs()
@@ -1719,11 +1679,16 @@ class Controller
      */
     protected function setDefaultJsCron()
     {
-        $add = ($this->is_backend && !empty($this->cron_interval)//
-                && (GC_TIME - $this->cron_last_run) > $this->cron_interval);
+        if (!$this->is_backend || $this->is_installing) {
+            return null;
+        }
 
-        if ($add) {
-            $url = $this->url('cron', array('key' => $this->cron_key));
+        $key = $this->config('cron_key', '');
+        $last_run = (int) $this->config('cron_last_run', 0);
+        $interval = (int) $this->config('cron_interval', 86400);
+
+        if (!empty($interval) && (GC_TIME - $last_run) > $interval) {
+            $url = $this->url('cron', array('key' => $key));
             $js = "\$(function(){\$.get('$url', function(data){});});";
             $this->setJs($js, array('position' => 'bottom'));
         }

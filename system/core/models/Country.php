@@ -257,7 +257,7 @@ class Country extends Model
         if ($this->isDefault($code)) {
             $data['status'] = 1;
         }
-        
+
         unset($data['code']); // Cannot update primary key
         $result = $this->db->update('country', $data, array('code' => $code));
         $this->hook->fire('update.country.after', $code, $data, $result);
@@ -284,7 +284,6 @@ class Country extends Model
         $result = (bool) $this->db->delete('country', array('code' => $code));
 
         if ($result) {
-            $this->db->delete('zone', array('country' => $code));
             $this->db->delete('city', array('country' => $code));
             $this->db->delete('state', array('country' => $code));
         }
@@ -300,10 +299,10 @@ class Country extends Model
      */
     public function canDelete($code)
     {
-        if($this->isDefault($code)){
+        if ($this->isDefault($code)) {
             return false;
         }
-        
+
         $sql = 'SELECT address_id FROM address WHERE country=?';
         $result = $this->db->fetchColumn($sql, array($code));
 
