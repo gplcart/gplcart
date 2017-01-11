@@ -216,7 +216,7 @@ class Review extends BackendController
         $review = $this->review->get($review_id);
 
         if (empty($review)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $review;

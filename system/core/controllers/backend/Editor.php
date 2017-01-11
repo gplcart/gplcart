@@ -71,11 +71,11 @@ class Editor extends BackendController
         $module = $this->module->get($module_id);
 
         if (empty($module)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         if ($module['type'] !== 'theme') {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         return $module;
@@ -280,7 +280,7 @@ class Editor extends BackendController
     protected function controlAccessSaveEditor(array $module)
     {
         if (!$this->canSaveEditor($module)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
     }
 
@@ -342,7 +342,7 @@ class Editor extends BackendController
         $file = "{$module['directory']}/$filepath";
 
         if (!is_file($file) || !is_readable($file)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $file;

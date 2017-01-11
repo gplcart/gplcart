@@ -164,7 +164,7 @@ class Filter extends BackendController
         $filter = $this->filter->get($filter_id);
 
         if (empty($filter)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         return $filter;

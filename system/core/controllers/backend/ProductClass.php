@@ -192,7 +192,7 @@ class ProductClass extends BackendController
         $product_class = $this->product_class->get($product_class_id);
 
         if (empty($product_class)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $product_class;

@@ -292,7 +292,7 @@ class User extends FrontendController
 
         // Invalid token
         if (!gplcart_string_equals($data['reset_password']['token'], $token)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         // Expired

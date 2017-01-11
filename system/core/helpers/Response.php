@@ -137,7 +137,8 @@ class Response
     {
         if (!empty($options['headers'])) {
             foreach ((array) $options['headers'] as $header) {
-                call_user_func_array(array($this, 'addHeader'), (array) $header);
+                list($name, $value) = array_pad((array) $header, 2, null);
+                $this->addHeader($name, $value);
             }
         }
     }

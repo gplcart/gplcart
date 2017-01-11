@@ -108,15 +108,15 @@ class Page extends FrontendController
         $page = $this->page->get($page_id, $this->langcode);
 
         if (empty($page)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         if (empty($page['status']) && !$this->access('page')) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         if ($page['store_id'] != $this->store_id) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $page;

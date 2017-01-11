@@ -187,7 +187,7 @@ class Zone extends BackendController
         $zone = $this->zone->get($zone_id);
 
         if (empty($zone)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $zone;

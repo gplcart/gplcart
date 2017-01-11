@@ -195,7 +195,7 @@ class Collection extends BackendController
         $collection = $this->collection->get($collection_id);
 
         if (empty($collection)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $collection;

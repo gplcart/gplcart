@@ -214,13 +214,13 @@ class Checkout extends FrontendController
     protected function setUserCheckout($user_id)
     {
         if (!is_numeric($user_id)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $user = $this->user->get($user_id);
 
         if (empty($user['status'])) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         $this->order_user_data = $user;
@@ -254,7 +254,7 @@ class Checkout extends FrontendController
         $order = $this->order->get($order_id);
 
         if (empty($order)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         $this->order_data = $order;
@@ -881,11 +881,11 @@ class Checkout extends FrontendController
     protected function controlAccessCompleteCheckout(array $order)
     {
         if (strcmp((string) $order['user_id'], $this->order_user_id) !== 0) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         if ($order['status'] !== $this->order->getInitialStatus()) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
     }
 
@@ -909,7 +909,7 @@ class Checkout extends FrontendController
         $order = $this->order->get($order_id);
 
         if (empty($order['order_id'])) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);

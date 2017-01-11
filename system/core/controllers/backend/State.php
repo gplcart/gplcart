@@ -91,7 +91,7 @@ class State extends BackendController
         $country = $this->country->get($code);
 
         if (empty($country)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $country;
@@ -271,7 +271,7 @@ class State extends BackendController
         $state = $this->state->get($state_id);
 
         if (empty($state)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $state;

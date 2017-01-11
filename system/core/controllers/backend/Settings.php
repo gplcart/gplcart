@@ -27,7 +27,7 @@ class Settings extends BackendController
      */
     public function editSettings()
     {
-        $this->controlAccessSuperAdmin();
+        $this->controlAccessEditSettings();
 
         $settings = $this->getSettings();
         $this->setData('settings', $settings);
@@ -38,6 +38,16 @@ class Settings extends BackendController
         $this->setTitleEditSettings();
         $this->setBreadcrumbEditSettings();
         $this->outputEditSettings();
+    }
+
+    /**
+     * Controls access to edit settings
+     */
+    protected function controlAccessEditSettings()
+    {
+        if (!$this->isSuperadmin()) {
+            $this->outputHttpStatus(403);
+        }
     }
 
     /**

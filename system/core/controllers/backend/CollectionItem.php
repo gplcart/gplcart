@@ -79,7 +79,7 @@ class CollectionItem extends BackendController
         $collection = $this->collection->get($collection_id);
 
         if (empty($collection)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $collection;
@@ -234,7 +234,7 @@ class CollectionItem extends BackendController
         $handlers = $this->collection->getHandlers();
 
         if (empty($handlers[$collection['type']])) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         return $handlers[$collection['type']];

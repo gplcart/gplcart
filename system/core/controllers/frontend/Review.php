@@ -297,11 +297,11 @@ class Review extends FrontendController
         $review = $this->review->get($review_id);
 
         if (empty($review)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         if ($review['user_id'] != $this->uid) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $rating = $this->rating->getByUser($product_id, $this->uid);
@@ -320,7 +320,7 @@ class Review extends FrontendController
         $product = $this->product->get($product_id);
 
         if (empty($product['status']) || $product['store_id'] != $this->store_id) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         $this->setItemPrice($product);
@@ -337,7 +337,7 @@ class Review extends FrontendController
         // We only accept logged in users and check if 
         // review editing is enabled
         if (empty($editable) || empty($this->uid)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
     }
 

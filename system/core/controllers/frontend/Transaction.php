@@ -42,7 +42,7 @@ class Transaction extends FrontendController
     public function successTransaction($order_id)
     {
         if (empty($order_id)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $request = $this->request->request();

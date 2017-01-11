@@ -41,8 +41,6 @@ class Import extends BackendController
         $job = $this->getJob();
         $this->setData('job', $job);
 
-        $this->controlAccess('file_upload');
-
         $this->downloadErrorsImport();
         $this->downloadTemplateImport();
 

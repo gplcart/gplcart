@@ -46,6 +46,12 @@ class Controller
     protected $js_settings_weight = 0;
 
     /**
+     * The current HTTP status code
+     * @var string
+     */
+    protected $http_status;
+
+    /**
      * Page meta title
      * @var string
      */
@@ -479,7 +485,7 @@ class Controller
     }
 
     /**
-     * 
+     * Returns the current path
      * @return string
      */
     public function path()
@@ -488,7 +494,7 @@ class Controller
     }
 
     /**
-     * Returns a string containing <title></title>
+     * Returns a string containing head meta title
      * @return string
      */
     public function title()
@@ -535,7 +541,7 @@ class Controller
     }
 
     /**
-     * Returns an array of attached Java scripts
+     * Returns an array of attached scripts
      * @param string $position
      * @return array
      */
@@ -570,7 +576,6 @@ class Controller
 
         return date($format, (int) $timestamp);
     }
-    
 
     /**
      * Converts special characters to HTML entities
@@ -667,7 +672,6 @@ class Controller
 
         return empty($attributes) ? '' : ' ' . implode(' ', $attributes);
     }
-    
 
     /**
      * Returns a string from a text before the summary delimiter
@@ -783,6 +787,17 @@ class Controller
     public function isSuperadmin($user_id = null)
     {
         return $this->user->isSuperadmin($user_id);
+    }
+
+    /**
+     * Sets the current HTTP status code
+     * @param string $code
+     * @return \gplcart\core\Controller
+     */
+    public function setHttpStatus($code)
+    {
+        $this->http_status = $code;
+        return $this;
     }
 
     /**
@@ -1147,11 +1162,11 @@ class Controller
         $this->controlAccessRestrictedArea();
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
-        return null;
     }
 
     /**
      * Controls the current user credentials, such as status, role, password hash...
+     * @return boolean
      */
     protected function controlAccessCredentials()
     {
@@ -1160,16 +1175,19 @@ class Controller
         if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
             $this->session->delete();
             $this->url->redirect('login');
+            return false;
         }
 
         if (empty($this->current_user['status'])) {
             $this->session->delete();
             $this->url->redirect('login');
+            return false;
         }
 
         if ($this->current_user['role_id'] != $this->user->getSession('role_id')) {
             $this->session->delete();
             $this->url->redirect('login');
+            return false;
         }
 
         return true;
@@ -1198,7 +1216,7 @@ class Controller
 
     /**
      * Prevent Cross-Site Request Forgery (CSRF)
-     * @return null
+     * @return null|boolean
      */
     protected function controlCsrf()
     {
@@ -1212,11 +1230,11 @@ class Controller
         }
 
         if (gplcart_string_equals($this->request->post('token'), $this->token)) {
-            return null;
+            return true;
         }
 
         $this->response->error403();
-        return null;
+        return false;
     }
 
     /**
@@ -1238,7 +1256,7 @@ class Controller
 
     /**
      * Controls access to admin pages
-     * @return null
+     * @return boolean|null
      */
     protected function controlAccessAdmin()
     {
@@ -1248,29 +1266,21 @@ class Controller
 
         if (empty($this->current_user['role_status']) || !$this->access('admin')) {
             $this->redirect('/', $this->text('No access'), 'warning');
+            return false;
         }
 
         // Check route specific access
-        if (!empty($this->access) && !$this->access($this->access)) {
-            $this->outputError(403);
+        if (empty($this->access) || $this->access($this->access)) {
+            return true;
         }
 
-        return null;
-    }
-
-    /**
-     * Displays 403 error when the current user is not superadmin
-     */
-    protected function controlAccessSuperAdmin()
-    {
-        if (!$this->isSuperadmin()) {
-            $this->outputError(403);
-        }
+        $this->setHttpStatus(403);
+        return false;
     }
 
     /**
      * Contols access to account pages
-     * @return null
+     * @return boolean|null
      */
     protected function controlAccessAccount()
     {
@@ -1281,18 +1291,19 @@ class Controller
         }
 
         if ($this->uid === $account_id) {
-            return null;
+            return true;
         }
 
         if ($this->isSuperadmin($account_id) && !$this->isSuperadmin()) {
-            $this->outputError(403);
+            $this->setHttpStatus(403);
+            return false;
         }
 
-        if (!$this->access('user')) {
-            $this->outputError(403);
+        if ($this->access('user')) {
+            return true;
         }
-
-        return null;
+        $this->setHttpStatus(403);
+        return false;
     }
 
     /**
@@ -1310,12 +1321,11 @@ class Controller
     /**
      * Displays 403 access denied to unwanted users
      * @param string $permission
-     * @param string $redirect
      */
-    public function controlAccess($permission, $redirect = '')
+    public function controlAccess($permission)
     {
         if (!$this->access($permission)) {
-            $this->redirect($redirect, $this->text('No access'), 'danger');
+            $this->outputHttpStatus(403);
         }
     }
 
@@ -1360,6 +1370,14 @@ class Controller
     {
         if (empty($templates)) {
             $templates = $this->templates;
+        }
+
+        if (!empty($this->http_status)) {
+
+            $title = (string) $this->response->statuses($this->http_status);
+            $this->setTitle($title, false);
+            $templates = "common/status/{$this->http_status}";
+            $options['headers'] = $this->http_status;
         }
 
         $html = $this->renderOutput($templates);
@@ -1428,11 +1446,9 @@ class Controller
      * Displays an error page
      * @param integer $code
      */
-    final public function outputError($code)
+    final public function outputHttpStatus($code)
     {
-        $title = (string) $this->response->statuses($code);
-        $this->setTitle($title, false);
-        $this->output("common/error/$code", array('headers' => $code));
+        $this->setHttpStatus($code)->output();
     }
 
     /**

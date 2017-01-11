@@ -160,7 +160,7 @@ class CategoryGroup extends BackendController
         $category_group = $this->category_group->get($category_group_id);
 
         if (empty($category_group)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $category_group;

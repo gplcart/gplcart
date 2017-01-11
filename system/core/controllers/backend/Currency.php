@@ -122,7 +122,7 @@ class Currency extends BackendController
         $currency = $this->currency->get($code);
 
         if (empty($currency)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return (array) $currency;

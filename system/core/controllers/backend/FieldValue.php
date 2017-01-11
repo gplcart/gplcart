@@ -105,7 +105,7 @@ class FieldValue extends BackendController
         $field = $this->field->get($field_id);
 
         if (empty($field)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $field;
@@ -282,7 +282,7 @@ class FieldValue extends BackendController
         $field_value = $this->field_value->get($field_value_id);
 
         if (empty($field_value)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $field_value;

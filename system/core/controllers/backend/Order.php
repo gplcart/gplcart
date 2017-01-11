@@ -215,7 +215,7 @@ class Order extends BackendController
         $log = $this->order->getLog($order_log_id);
 
         if (empty($log['data'])) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         $order = $log['data'];
@@ -363,7 +363,7 @@ class Order extends BackendController
         $order = $this->order->get($order_id);
 
         if (empty($order)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $this->prepareOrder($order);

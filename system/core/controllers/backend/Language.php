@@ -69,7 +69,7 @@ class Language extends BackendController
         $language = $this->language->get($code);
 
         if (empty($language)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $language;

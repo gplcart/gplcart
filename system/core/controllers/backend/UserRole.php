@@ -85,7 +85,7 @@ class UserRole extends BackendController
         $role = $this->role->get($role_id);
 
         if (empty($role)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $role;

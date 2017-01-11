@@ -374,15 +374,15 @@ class Product extends FrontendController
         $product = $this->product->get($product_id, $this->langcode);
 
         if (empty($product)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         if ($product['store_id'] != $this->store_id) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         if (empty($product['status']) && !$this->access('product')) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $product['fields'] = $this->getFieldsProduct($product);

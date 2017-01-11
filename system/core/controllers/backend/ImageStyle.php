@@ -132,7 +132,7 @@ class ImageStyle extends BackendController
         $imagestyle = $this->image->getStyle($style_id);
 
         if (empty($imagestyle)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $imagestyle;

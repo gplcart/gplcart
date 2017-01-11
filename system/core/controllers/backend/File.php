@@ -210,7 +210,7 @@ class File extends BackendController
         $file = $this->file->get($file_id);
 
         if (empty($file)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $file;

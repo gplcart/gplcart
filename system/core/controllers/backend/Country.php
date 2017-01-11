@@ -227,7 +227,7 @@ class Country extends BackendController
         $country = $this->country->get($country_code);
 
         if (empty($country)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $country;

@@ -225,7 +225,7 @@ class User extends BackendController
         $user = $this->user->get($user_id);
 
         if (empty($user)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $user;
@@ -235,7 +235,7 @@ class User extends BackendController
     {
         // Only superadmin can edit its own account
         if ($this->isSuperadmin($user_id) && !$this->isSuperadmin()) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
     }
 

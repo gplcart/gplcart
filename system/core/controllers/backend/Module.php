@@ -82,19 +82,19 @@ class Module extends BackendController
         $module_id = (string) $this->request->get('module_id');
 
         if (empty($module_id)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $module = $this->module->get($module_id);
 
         if (empty($module)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete', 'backup');
 
         if (!in_array($action, $allowed)) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         $this->controlAccess("module_$action");

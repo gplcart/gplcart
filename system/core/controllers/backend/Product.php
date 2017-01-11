@@ -333,7 +333,7 @@ class Product extends BackendController
         $product = $this->product->get($product_id);
 
         if (empty($product)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $this->prepareProduct($product);

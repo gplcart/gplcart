@@ -253,7 +253,7 @@ class PriceRule extends BackendController
         $rule = $this->rule->get($rule_id);
 
         if (empty($rule)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $this->preparePriceRule($rule);

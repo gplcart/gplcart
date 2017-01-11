@@ -229,7 +229,7 @@ class Trigger extends BackendController
         $trigger = $this->trigger->get($trigger_id);
 
         if (empty($trigger)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $trigger;

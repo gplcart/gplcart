@@ -234,7 +234,7 @@ class Store extends BackendController
         $store = $this->store->get((int) $store_id);
 
         if (empty($store)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $store;

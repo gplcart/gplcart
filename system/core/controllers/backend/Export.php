@@ -127,7 +127,7 @@ class Export extends BackendController
         $operation = $this->export->getOperation($operation_id);
 
         if (empty($operation)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $operation;

@@ -216,7 +216,7 @@ class Category extends FrontendController
         $category = $this->category->get($category_id, $this->langcode, $this->store_id);
 
         if (empty($category['status'])) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $category;

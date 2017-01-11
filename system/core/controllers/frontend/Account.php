@@ -133,11 +133,11 @@ class Account extends FrontendController
         $user = $this->user->get($user_id);
 
         if (empty($user)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         if (empty($user['status'])) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
 
         return $user;
@@ -355,7 +355,7 @@ class Account extends FrontendController
     protected function controlAccessEditAccount(array $user)
     {
         if ($this->isSuperadmin($user['user_id']) && !$this->isSuperadmin()) {
-            $this->outputError(403);
+            $this->outputHttpStatus(403);
         }
     }
 
@@ -627,7 +627,7 @@ class Account extends FrontendController
         $address = $this->address->get($address_id);
 
         if (empty($address)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $address;

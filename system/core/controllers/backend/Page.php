@@ -246,7 +246,7 @@ class Page extends BackendController
         $page = $this->page->get($page_id);
 
         if (empty($page)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $this->preparePage($page);

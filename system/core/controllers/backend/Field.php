@@ -175,7 +175,7 @@ class Field extends BackendController
         $field = $this->field->get($field_id);
 
         if (empty($field)) {
-            $this->outputError(404);
+            $this->outputHttpStatus(404);
         }
 
         return $field;
