@@ -1546,6 +1546,8 @@ class Controller
                 continue;
             }
 
+            $aggregated = '';
+
             if ($type == 'js') {
                 $aggregated = $this->compressor->compressJs($content, $directory);
             } else if ($type == 'css') {
@@ -1586,6 +1588,8 @@ class Controller
      */
     protected function setPhpErrors(array &$data)
     {
+        $this->setPhpErrorsLive($data);
+
         $errors = $this->logger->getErrors();
 
         if (empty($errors)) {
@@ -1601,6 +1605,25 @@ class Controller
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * @param type $data
+     */
+    protected function setPhpErrorsLive(&$data)
+    {
+
+        if ($this->config('error_live_report', 0) && $this->access('report_events') && $this->path != 'admin/report/events') {
+
+            $count = $this->logger->countPhpErrors();
+
+            if (!empty($count)) {
+                $options = array('@count' => $count, '@url' => $this->url('admin/report/events'));
+                $message = $this->text('Logged PHP errors: <a href="@url">@count</a>', $options);
+                $data['messages']['warning'][] = $message;
+            }
+        }
     }
 
     /**
@@ -1785,20 +1808,6 @@ class Controller
     }
 
     /**
-     * Sets a JS depending on the current URL path
-     * @param string $directory A directory to scan
-     * @param array $data
-     */
-    public function setJsContext($directory, array $data = array())
-    {
-        $file = gplcart_file_contex($directory, 'js', $this->path);
-
-        if (isset($file['filename'])) {
-            $this->setJs("system/modules/backend/js/{$file['filename']}.js", $data);
-        }
-    }
-
-    /**
      * Adds a CSS on the page
      * @param string $css
      * @param array $data
@@ -1816,13 +1825,13 @@ class Controller
     public function addAssetLibrary($library_id, array $data = array())
     {
         foreach ($this->library->getFiles($library_id) as $file) {
-
-            $type = pathinfo($file, PATHINFO_EXTENSION);
-
-            if ($type == 'js') {
-                $this->setJs($file, $data);
-            } else if ($type == 'css') {
-                $this->setCss($file, $data);
+            switch (pathinfo($file, PATHINFO_EXTENSION)) {
+                case 'js':
+                    $this->setJs($file, $data);
+                    break;
+                case 'css':
+                    $this->setCss($file, $data);
+                    break;
             }
         }
     }

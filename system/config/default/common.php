@@ -41,6 +41,7 @@ $config = array();
 # $config['date_prefix'] = 'd.m.Y'; // Default site-wide time format - hours
 # $config['date_suffix'] = ' H:i'; // Default site-wide time format - minutes
 # $config['error_level'] = 2; // Error reporting level
+# $config['error_live_report'] = 0; // Inform about PHP errors on every page
 # $config['export_lifespan'] = 86400; // Delete CSV export files after this amount of time (seconds)
 # $config['export_limit'] = 50; // Rows per one export iteration
 # $config['field_value_image_dirname'] = 'field_value'; // Field value image upload directory

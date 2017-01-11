@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use gplcart\core\Config;
+
 /**
  * Provides methods to log various errors and events
  */
@@ -19,7 +21,29 @@ class Logger
      * Collected PHP errors
      * @var array
      */
-    protected static $errors = array();
+    protected $errors = array();
+
+    /**
+     * Database instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Config instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     * @param Config $config
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+        $this->db = $this->config->getDb();
+    }
 
     /**
      * Writes a log message to the CSV file
@@ -52,10 +76,7 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
-        $config = Container::instance('gplcart\\core\\Config');
-        $database = $config->getDb();
-
-        if (empty($database)) {
+        if (empty($this->db)) {
             return false;
         }
 
@@ -77,7 +98,21 @@ class Logger
             'severity' => mb_substr($severity, 0, 255, 'UTF-8')
         );
 
-        return (bool) $database->insert('log', $values);
+        return (bool) $this->db->insert('log', $values);
+    }
+
+    /**
+     * Counts all PHP errors
+     * @return integer
+     */
+    public function countPhpErrors()
+    {
+        if (empty($this->db)) {
+            return 0;
+        }
+
+        $sql = "SELECT COUNT(*) FROM log WHERE type LIKE ?";
+        return (int) $this->db->fetchColumn($sql, array('php_%'));
     }
 
     /**
@@ -98,7 +133,7 @@ class Logger
 
         $this->log('php_error', $error, 'warning', false);
         $formatted = $this->getFormattedError($error);
-        static::$errors['warning'][] = $formatted;
+        $this->errors['warning'][] = $formatted;
     }
 
     /**
@@ -180,7 +215,7 @@ class Logger
      */
     public function getErrors()
     {
-        return static::$errors;
+        return $this->errors;
     }
 
 }
