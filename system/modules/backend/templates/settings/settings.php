@@ -185,6 +185,24 @@
           </div>
         </div>
       </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Live error reporting'); ?></label>
+        <div class="col-md-4">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default<?php echo empty($settings['error_live_report']) ? '' : ' active'; ?>">
+              <input name="settings[error_live_report]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['error_live_report']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
+            </label>
+            <label class="btn btn-default<?php echo empty($settings['error_live_report']) ? ' active' : ''; ?>">
+              <input name="settings[error_live_report]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['error_live_report']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <?php echo $this->text('Inform about current PHP errors on every page. Should be disabled on production'); ?>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
   <div class="panel panel-default">
