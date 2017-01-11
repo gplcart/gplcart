@@ -47,7 +47,6 @@ class Session
     /**
      * Regenerates the current session
      * @param boolean $delete_old_session
-     * @return boolean
      */
     public function regenerate($delete_old_session)
     {

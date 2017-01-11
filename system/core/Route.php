@@ -18,6 +18,7 @@ use gplcart\core\exceptions\RouteException;
  */
 class Route
 {
+
     /**
      * Url class instance
      * @var \gplcart\core\helpers\Url $url
@@ -131,7 +132,7 @@ class Route
     {
         return $this->route;
     }
-    
+
     /**
      * Sets the current language
      * @return null
@@ -163,13 +164,14 @@ class Route
         if ($this->langcode && ($this->langcode !== $default_langcode)) {
             $this->request->setBaseSuffix($this->langcode);
         }
-        
+
         return null;
     }
 
     /**
      * Finds an alias by the path
      * @return null
+     * @todo Do refactoring
      */
     protected function callControllerAlias()
     {
@@ -293,7 +295,7 @@ class Route
     protected function callControllerRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
-            
+
             $pattern = trim($pattern, '/');
 
             if (empty($route['arguments'])) {
@@ -319,15 +321,13 @@ class Route
      */
     protected function callControllerNotFound()
     {
-        if ($this->url->isBackend()) {
-            $class = 'gplcart\\core\\controllers\\backend\\Controller';
-        } else {
-            $class = 'gplcart\\core\\controllers\\frontend\\Controller';
-        }
+        $section = $this->url->isBackend() ? 'backend' : 'frontend';
 
         $route = array(
             'handlers' => array(
-                'controller' => array($class, 'outputError'))
+                'controller' => array(
+                    "gplcart\\core\\controllers\\$section\\Controller",
+                    'outputHttpStatus'))
         );
 
         Handler::call($route, null, 'controller', array(404));
