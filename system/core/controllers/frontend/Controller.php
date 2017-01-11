@@ -224,7 +224,7 @@ class Controller extends BaseController
     public function renderShareWidget(array $options = array())
     {
         $options += array(
-            'title' => $this->getPageTitle(),
+            'title' => $this->ptitle(),
             'url' => $this->url('', array(), true)
         );
 
@@ -333,7 +333,7 @@ class Controller extends BaseController
     protected function renderCollectionFile(array $options)
     {
         $options += array(
-            'imagestyle' => $this->setting('image_style_collection_banner', 7),
+            'imagestyle' => $this->settings('image_style_collection_banner', 7),
             'template_item' => 'collection/item/file'
         );
 
@@ -389,7 +389,7 @@ class Controller extends BaseController
             'id_key' => 'product_id',
             'ids' => array_keys($products),
             'template_item' => "product/item/{$options['view']}",
-            'imagestyle' => $this->setting("image_style_product_{$options['view']}", 3)
+            'imagestyle' => $this->settings("image_style_product_{$options['view']}", 3)
         );
 
         foreach ($products as &$product) {
@@ -442,7 +442,7 @@ class Controller extends BaseController
             'type' => 'catalog',
             'prepare' => true,
             'store_id' => $this->store_id,
-            'imagestyle' => $this->setting('image_style_category_child', 3)
+            'imagestyle' => $this->settings('image_style_category_child', 3)
         );
 
         $tree = $this->category->getTree($options);
@@ -590,7 +590,7 @@ class Controller extends BaseController
     {
         $options = array(
             'path' => '',
-            'imagestyle' => $this->setting('image_style_cart', 3)
+            'imagestyle' => $this->settings('image_style_cart', 3)
         );
 
         if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {

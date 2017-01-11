@@ -127,7 +127,7 @@ class Page extends FrontendController
      */
     protected function setDataImagesPage()
     {
-        $imagestyle = $this->setting('image_style_page', 5);
+        $imagestyle = $this->settings('image_style_page', 5);
         $this->setItemThumb($this->data_page, array('imagestyle' => $imagestyle));
 
         $html = $this->render('page/blocks/images', array('page' => $this->data_page));

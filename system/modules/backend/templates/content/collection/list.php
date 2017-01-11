@@ -13,6 +13,9 @@
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('collection_edit') || $this->access('collection_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('collection_edit')) { ?>
         <li>
@@ -34,6 +37,7 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <?php if ($this->access('collection_add')) { ?>
     <div class="btn-toolbar pull-right">
@@ -47,7 +51,7 @@
     <table class="table collections">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_collection_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
@@ -118,7 +122,7 @@
         <?php foreach ($collections as $id => $collection) { ?>
         <tr>
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
+            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $this->escape($id); ?></td>
           <td class="middle"><?php echo $this->escape($collection['title']); ?></td>

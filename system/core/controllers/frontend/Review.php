@@ -99,7 +99,7 @@ class Review extends FrontendController
      */
     protected function setDataImageReview(array $product)
     {
-        $options = array('imagestyle' => $this->setting('image_style_product', 5));
+        $options = array('imagestyle' => $this->settings('image_style_product', 5));
         $this->setItemThumb($product, $options);
 
         if (!empty($product['images'])) {

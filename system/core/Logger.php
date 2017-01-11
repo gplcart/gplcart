@@ -59,15 +59,12 @@ class Logger
             return false;
         }
 
+        $message = '';
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
             $message = $data['message'];
             unset($data['message']);
-        }
-
-        if (empty($message)) {
-            return false;
         }
 
         $values = array(

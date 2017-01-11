@@ -339,7 +339,7 @@ class Product extends FrontendController
      */
     protected function setImagesProduct(array $product)
     {
-        $imagestyle = $this->setting('image_style_product', 5);
+        $imagestyle = $this->settings('image_style_product', 5);
         $this->setItemThumb($product, array('imagestyle' => $imagestyle));
 
         $options = array('product' => $product);
@@ -443,7 +443,7 @@ class Product extends FrontendController
             return $data;
         }
 
-        $imagestyle = $this->setting('image_style_option', 1);
+        $imagestyle = $this->settings('image_style_option', 1);
 
         foreach ($product['field']['option'] as $field_id => $field_values) {
 

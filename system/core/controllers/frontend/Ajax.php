@@ -195,7 +195,7 @@ class Ajax extends FrontendController
 
         $options = array(
             'calculate' => false,
-            'imagestyle' => $this->setting('image_style_product', 5));
+            'imagestyle' => $this->settings('image_style_product', 5));
 
         $this->setItemThumb($response['combination'], $options);
         $this->setItemPrice($response['combination'], $options);
@@ -254,7 +254,7 @@ class Ajax extends FrontendController
 
         $options = array(
             'template_item' => 'search/suggestion',
-            'imagestyle' => $this->setting('image_style_product_list', 3)
+            'imagestyle' => $this->settings('image_style_product_list', 3)
         );
 
         return $this->prepareProducts($products, $options);

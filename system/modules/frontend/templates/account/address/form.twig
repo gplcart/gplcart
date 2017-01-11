@@ -73,7 +73,7 @@
           {% endfor %}
           <div class="row">
             <div class="col-md-2 text-right">
-              <a class="btn btn-default" href="{{ url('account/' ~ uid() ~ '/address') }}">
+              <a class="btn btn-default" href="{{ url('account/' ~ user('user_id') ~ '/address') }}">
                 {{ text('Cancel') }}
               </a>
             </div>

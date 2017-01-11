@@ -13,6 +13,9 @@
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; $access_action_edit = false; ?>
+      <?php if ($this->access('category_edit') || $this->access('category_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('category_edit')) { ?>
         <li>
@@ -34,6 +37,7 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('category_add')) { ?>
@@ -46,13 +50,13 @@
       </a>
       <?php } ?>
       <?php } ?>
-    </div>  
+    </div>
   </div>
-  <div class="panel-body table-responsive">  
+  <div class="panel-body table-responsive">
     <table class="table categories">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Title'); ?></th>
           <th><?php echo $this->text('Alias'); ?></th>
@@ -64,7 +68,7 @@
       <tbody>
         <?php foreach ($categories as $category) { ?>
         <tr data-category-id="<?php echo $category['category_id']; ?>">
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $category['category_id']; ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $category['category_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $category['category_id']; ?></td>
           <td class="middle"><?php echo $category['indentation']; ?><?php echo $this->truncate($this->escape($category['title'])); ?></td>
           <td class="middle">
@@ -78,7 +82,10 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($category['weight']); ?></span>
+            <?php if($this->access('category_edit')) { ?>
+            <i class="fa fa-arrows handle"></i>
+            <?php } ?>
+            <span class="weight"><?php echo $this->escape($category['weight']); ?></span>
           </td>
           <td class="middle">
               <ul class="list-inline">
@@ -106,8 +113,8 @@
         </tr>
         <?php } ?>
       </tbody>
-    </table>  
-  </div> 
+    </table>
+  </div>
 </div>
 <?php } else { ?>
 <div class="row">

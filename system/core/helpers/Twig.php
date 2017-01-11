@@ -76,7 +76,7 @@ class Twig
         $this->addFunctionSummary($object);
         $this->addFunctionAttributes($object);
         $this->addFunctionIsSuperadmin($object);
-        $this->addFunctionUid($object);
+        $this->addFunctionUser($object);
         $this->addFunctionStore($object);
         $this->addFunctionVarDump($object);
         $this->addFunctionXss($object);
@@ -251,13 +251,13 @@ class Twig
     }
 
     /**
-     * Adds function \gplcart\core\Controller::uid()
+     * Adds function \gplcart\core\Controller::user()
      * @param \gplcart\core\Controller $object
      */
-    protected function addFunctionUid($object)
+    protected function addFunctionUser($object)
     {
-        $function = new \Twig_SimpleFunction('uid', function () use ($object) {
-            return $object->uid();
+        $function = new \Twig_SimpleFunction('user', function ($item = null) use ($object) {
+            return $object->user($item);
         });
 
         $this->twig->addFunction($function);

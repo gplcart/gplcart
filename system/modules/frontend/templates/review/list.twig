@@ -49,7 +49,7 @@
                   </ul> 
                 </div>
               </li>
-              {% if editable and uid() > 0 %}
+              {% if editable and user('user_id') > 0 %}
                   <li>
                     <a rel="nofollow" href="{{ url('review/add/' ~ product['product_id']) }}">
                       {{ text('Add review') }}
@@ -73,7 +73,7 @@
                     </div>
                     <p class="text">{{ review['text'] }}</p>
                     <p class="actions">
-                      {% if review['user_id'] == uid() and editable %}
+                      {% if review['user_id'] == user('user_id') and editable %}
                           <a href="{{ url('review/edit/' ~ product['product_id'] ~ '/' ~ review['review_id']) }}">
                             {{ text('edit') }}
                           </a>

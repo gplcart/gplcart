@@ -9,11 +9,13 @@
 <?php if (!empty($roles) || $filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
-    <?php if ($this->access('user_role_edit') || $this->access('user_role_delete')) { ?>
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('user_role_edit') || $this->access('user_role_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('user_role_edit')) { ?>
         <li>
@@ -35,8 +37,8 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
-    <?php } ?>
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('user_role_add')) { ?>
       <a href="<?php echo $this->url('admin/user/role/add'); ?>" class="btn btn-default add">
@@ -49,7 +51,7 @@
     <table class="table roles">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_role_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
@@ -93,7 +95,7 @@
         <?php } ?>
         <?php foreach ($roles as $role_id => $role) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $role_id; ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $role_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $role_id; ?></td>
           <td class="middle"><?php echo $this->escape($role['name']); ?></td>
           <td class="middle">

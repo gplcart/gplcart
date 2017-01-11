@@ -12,7 +12,6 @@ namespace gplcart\core;
 use gplcart\core\Hook;
 use gplcart\core\Handler;
 use gplcart\core\helpers\Cli as CliHelper;
-use gplcart\core\exceptions\CliException;
 
 /**
  * Routes CLI commands
@@ -113,7 +112,7 @@ class CliRoute
         $command = array_shift($this->arguments);
 
         if (empty($routes[$command])) {
-            throw new CliException("Unknown command. Use 'help' command to see what you have");
+            exit("Unknown command. Use 'help' command to see what you have");
         }
 
         $routes[$command]['command'] = $command;
@@ -121,7 +120,7 @@ class CliRoute
         $this->route = $routes[$command];
 
         Handler::call($this->route, null, 'process', array($this->arguments));
-        throw new CliException('The command was not completed correctly');
+        exit('The command was not completed correctly');
     }
 
 }

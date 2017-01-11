@@ -67,6 +67,10 @@ class Backup extends BackendController
      */
     protected function downloadBackup()
     {
+        if (!$this->access('backup_download')) {
+            return null;
+        }
+
         $backup_id = $this->request->get('download');
 
         if (empty($backup_id)) {

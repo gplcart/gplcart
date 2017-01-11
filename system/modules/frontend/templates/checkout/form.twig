@@ -28,7 +28,7 @@
           {{ pane_admin|raw }}
           {% if login_form %}
               {{ pane_login|raw }}
-          {% elseif uid() is empty %}
+          {% elseif user('user_id') is empty %}
               <div class="panel panel-default">
                 <div class="panel-body">
                   <div class="form-group">

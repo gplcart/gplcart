@@ -8,22 +8,22 @@
 ?>
 <?php if (!empty($backups) || $filtering) { ?>
 <div class="panel panel-default">
+  <?php if ($this->access('backup_delete')) { ?>
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
-        <?php if ($this->access('backup_delete')) { ?>
         <li>
           <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
             <?php echo $this->text('Delete'); ?>
           </a>
         </li>
-        <?php } ?>
       </ul>
     </div>
   </div>
+  <?php } ?>
   <div class="panel-body table-responsive">
     <table class="table backups">
       <thead>
@@ -88,9 +88,11 @@
           </td>
           <td class="middle">
             <ul class="list-inline">
+              <?php if($this->access('backup_download')) { ?>
               <a href="<?php echo $this->url('', array('download' => $id)); ?>">
                 <?php echo mb_strtolower($this->text('Download')); ?>
               </a>
+              <?php } ?>
             </ul>
           </td>
         </tr>

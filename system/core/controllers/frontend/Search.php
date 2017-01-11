@@ -41,12 +41,12 @@ class Search extends FrontendController
     public function listSearch()
     {
         $term = (string) $this->request->get('q', '');
-        $max = $this->setting('catalog_limit', 20);
+        $max = $this->settings('catalog_limit', 20);
 
         $filter = array(
-            'view' => $this->setting('catalog_view', 'grid'),
-            'sort' => $this->setting('catalog_sort', 'price'),
-            'order' => $this->setting('catalog_order', 'asc')
+            'view' => $this->settings('catalog_view', 'grid'),
+            'sort' => $this->settings('catalog_sort', 'price'),
+            'order' => $this->settings('catalog_order', 'asc')
         );
 
         $query = $this->getFilterQuery($filter);

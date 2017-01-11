@@ -10,6 +10,7 @@
 <form method="post" id="aliases">
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
+    <?php if($this->access('alias_delete')) { ?>
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -24,6 +25,7 @@
         </ul>
       </div>
     </div>
+    <?php } ?>
     <div class="panel-body">
       <table class="table aliases">
         <thead>

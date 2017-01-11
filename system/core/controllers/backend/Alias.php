@@ -76,20 +76,7 @@ class Alias extends BackendController
 
         $deleted = 0;
         foreach ($selected as $id) {
-
-            $alias = $this->alias->get($id);
-
-            if (empty($alias)) {
-                continue;
-            }
-
-            $entityname = preg_replace('/_id$/', '', $alias['id_key']);
-
-            if (!$this->access("{$entityname}_edit")) {
-                continue;
-            }
-
-            if ($action === 'delete') {
+            if ($action === 'delete' && $this->access('alias_delete')) {
                 $deleted += (int) $this->alias->delete($id);
             }
         }

@@ -371,11 +371,12 @@ class Controller
         $this->setDeviceProperties();
         $this->setStoreProperties();
 
-        $this->setDefaultJs();
+        $this->setDefaultJsAssets();
         $this->setThemeProperties();
 
         $this->setLanguageProperties();
         $this->setCronProperties();
+
         $this->setDefaultData();
 
         $this->setAccessProperties();
@@ -392,6 +393,303 @@ class Controller
     public function access($permission)
     {
         return $this->user->access($permission);
+    }
+
+    /**
+     * Returns a formatted URL
+     * @param string $path
+     * @param array $query
+     * @param boolean $absolute
+     * @return string
+     */
+    public function url($path = '', array $query = array(), $absolute = false)
+    {
+        return $this->url->get($path, $query, $absolute);
+    }
+
+    /**
+     * Translates a text
+     * @param string $string
+     * @param array $arguments
+     * @return string
+     */
+    public function text($string = null, array $arguments = array())
+    {
+        $class = $this->current_route['handlers']['controller'][0];
+        return $this->language->text($string, $arguments, $class);
+    }
+
+    /**
+     * Returns a value on a error
+     * @param string|array $key
+     * @param mixed $has_error A value to be returned when error(s) found
+     * @param mixed $no_error A value to be returned when no error(s) found
+     * @return mixed
+     */
+    public function error($key = null, $has_error = null, $no_error = '')
+    {
+        if (isset($key)) {
+            $result = gplcart_array_get_value($this->errors, $key);
+        } else {
+            $result = empty($this->errors) ? null : $this->errors;
+        }
+
+        if (isset($result)) {
+            return isset($has_error) ? $has_error : $result;
+        }
+
+        return $no_error;
+    }
+
+    /**
+     * Returns a data of the current store
+     * @param mixed $item
+     * @return mixed
+     */
+    public function store($item = null)
+    {
+        if (isset($item)) {
+            return gplcart_array_get_value($this->current_store, $item);
+        }
+
+        return $this->current_store;
+    }
+
+    /**
+     * Returns a data of the current user
+     * @param mixed $item
+     * @return mixed
+     */
+    public function user($item = null)
+    {
+        if (isset($item)) {
+            return gplcart_array_get_value($this->current_user, $item);
+        }
+
+        return $this->current_user;
+    }
+
+    /**
+     * Returns a token
+     * @return string
+     */
+    public function token()
+    {
+        return $this->token;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function path()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Returns a string containing <title></title>
+     * @return string
+     */
+    public function title()
+    {
+        return $this->title;
+    }
+
+    /**
+     * Returns a string containing H title
+     * @return string
+     */
+    public function ptitle()
+    {
+        return $this->ptitle;
+    }
+
+    /**
+     * Returns an array with page breadcrumbs
+     * @return array
+     */
+    public function breadcrumbs()
+    {
+        return $this->breadcrumbs;
+    }
+
+    /**
+     * Returns an array of meta data
+     * @return array
+     */
+    public function meta()
+    {
+        return $this->meta;
+    }
+
+    /**
+     * Returns an array of attached styles
+     * @return array
+     */
+    public function css()
+    {
+        $stylesheets = $this->asset->getCss();
+        $this->compressAssets($stylesheets, 'css');
+        return $stylesheets;
+    }
+
+    /**
+     * Returns an array of attached Java scripts
+     * @param string $position
+     * @return array
+     */
+    public function js($position)
+    {
+        $scripts = $this->asset->getJs($position);
+        $this->compressAssets($scripts, 'js');
+        return $scripts;
+    }
+
+    /**
+     * Formats a local time/date
+     * @param null|integer $timestamp
+     * @param bool $full
+     * @return string
+     */
+    public function date($timestamp = null, $full = true)
+    {
+        if (!isset($timestamp)) {
+            $timestamp = GC_TIME;
+        }
+
+        if (empty($timestamp)) {
+            return '';
+        }
+
+        $format = $this->config('date_prefix', 'd.m.y');
+
+        if ($full) {
+            $format .= $this->config('date_suffix', ' H:i');
+        }
+
+        return date($format, (int) $timestamp);
+    }
+    
+
+    /**
+     * Converts special characters to HTML entities
+     * @param string $string
+     * @return string
+     */
+    public function escape($string)
+    {
+        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * Strips or encodes unwanted characters
+     * @param string $string
+     * @return string
+     */
+    public function filter($string)
+    {
+        return filter_var($string, FILTER_SANITIZE_STRING);
+    }
+
+    /**
+     * Returns truncated string with specified width
+     * @param string $string
+     * @param integer $length
+     * @param string $trimmarker
+     * @return string
+     */
+    public function truncate($string, $length = 100, $trimmarker = '...')
+    {
+        return mb_strimwidth($string, 0, $length, $trimmarker, 'UTF-8');
+    }
+
+    /**
+     * Returns a config item
+     * @param string|null $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function config($key = null, $default = null)
+    {
+        return $this->config->get($key, $default);
+    }
+
+    /**
+     * Returns a setting from the current theme settings
+     * @param mixed $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function settings($key = null, $default = null)
+    {
+        if (!isset($key)) {
+            return $this->theme_settings;
+        }
+
+        if (array_key_exists($key, $this->theme_settings)) {
+            return $this->theme_settings[$key];
+        }
+
+        return $default;
+    }
+
+    /**
+     * Clean up HTML string using HTML Purifier
+     * @param string $string
+     * @param mixed $filter
+     * @return string
+     */
+    public function xss($string, $filter = null)
+    {
+        if (!isset($filter)) {
+            $filter = $this->current_filter;
+        }
+
+        if ($filter === false) {
+            return $string; // Superadmin output
+        }
+
+        return $this->filter->filter($string, $filter);
+    }
+
+    /**
+     * Formats tag attributes
+     * @param array $attributes
+     * @return string
+     */
+    public function attributes(array $attributes)
+    {
+        foreach ($attributes as $attribute => &$data) {
+            $data = implode(' ', (array) $data);
+            $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
+        }
+
+        return empty($attributes) ? '' : ' ' . implode(' ', $attributes);
+    }
+    
+
+    /**
+     * Returns a string from a text before the summary delimiter
+     * @param string $text
+     * @param boolean $xss
+     * @param mixed $filter
+     * @return string
+     */
+    public function summary($text, $xss = true, $filter = null)
+    {
+        $summary = '';
+
+        if ($text !== '') {
+            $parts = $this->explodeText($text);
+            $summary = trim(reset($parts));
+        }
+
+        if ($summary !== '' && $xss) {
+            $summary = $this->xss($summary, $filter);
+        }
+
+        return $summary;
     }
 
     /**
@@ -478,30 +776,6 @@ class Controller
     }
 
     /**
-     * Returns a formatted URL
-     * @param string $path
-     * @param array $query
-     * @param boolean $absolute
-     * @return string
-     */
-    public function url($path = '', array $query = array(), $absolute = false)
-    {
-        return $this->url->get($path, $query, $absolute);
-    }
-
-    /**
-     * Translates a text
-     * @param string $string
-     * @param array $arguments
-     * @return string
-     */
-    public function text($string = null, array $arguments = array())
-    {
-        $class = $this->current_route['handlers']['controller'][0];
-        return $this->language->text($string, $arguments, $class);
-    }
-
-    /**
      * Whether the user is superadmin
      * @param null|integer $user_id
      * @return boolean
@@ -509,69 +783,6 @@ class Controller
     public function isSuperadmin($user_id = null)
     {
         return $this->user->isSuperadmin($user_id);
-    }
-
-    /**
-     * Returns a value on a error
-     * @param string|array $key
-     * @param mixed $has_error A value to be returned when error(s) found
-     * @param mixed $no_error A value to be returned when no error(s) found
-     * @return mixed
-     */
-    public function error($key = null, $has_error = null, $no_error = '')
-    {
-        if (isset($key)) {
-            $result = gplcart_array_get_value($this->errors, $key);
-        } else {
-            $result = empty($this->errors) ? null : $this->errors;
-        }
-
-        if (isset($result)) {
-            return isset($has_error) ? $has_error : $result;
-        }
-
-        return $no_error;
-    }
-
-    /**
-     * Returns a data of the current store
-     * @param mixed $item
-     * @return mixed
-     */
-    public function store($item = null)
-    {
-        if (isset($item)) {
-            return gplcart_array_get_value($this->current_store, $item);
-        }
-
-        return $this->current_store;
-    }
-
-    /**
-     * Returns a token
-     * @return string
-     */
-    public function token()
-    {
-        return $this->token;
-    }
-
-    /**
-     * Returns the current user ID
-     * @return integer
-     */
-    public function uid()
-    {
-        return $this->uid;
-    }
-
-    /**
-     * 
-     * @return string
-     */
-    public function path()
-    {
-        return $this->path;
     }
 
     /**
@@ -623,73 +834,29 @@ class Controller
     }
 
     /**
-     * Formats a local time/date
-     * @param null|integer $timestamp
-     * @param bool $full
-     * @return string
-     */
-    public function date($timestamp = null, $full = true)
-    {
-        if (!isset($timestamp)) {
-            $timestamp = GC_TIME;
-        }
-
-        if (empty($timestamp)) {
-            return '';
-        }
-
-        $format = $this->config('date_prefix', 'd.m.y');
-
-        if ($full) {
-            $format .= $this->config('date_suffix', ' H:i');
-        }
-
-        return date($format, (int) $timestamp);
-    }
-
-    /**
-     * Formats tag attributes
-     * @param array $attributes
-     * @return string
-     */
-    public function attributes(array $attributes)
-    {
-        foreach ($attributes as $attribute => &$data) {
-            $data = implode(' ', (array) $data);
-            $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
-        }
-
-        return empty($attributes) ? '' : ' ' . implode(' ', $attributes);
-    }
-
-    /**
      * Sets instance properties
      */
     protected function setInstanceProperties()
     {
-        $map = array(
-            'user' => 'models\\User',
-            'store' => 'models\\Store',
-            'language' => 'models\\Language',
-            'validator' => 'models\\Validator',
-            'filter' => 'models\\Filter',
-            'url' => 'helpers\\Url',
-            'request' => 'helpers\\Request',
-            'response' => 'helpers\\Response',
-            'asset' => 'helpers\\Asset',
-            'session' => 'helpers\\Session',
-            'library' => 'Library',
-            'hook' => 'Hook',
-            'route' => 'Route',
-            'config' => 'Config',
-            'logger' => 'Logger',
-            'pager' => 'helpers\\Pager',
-            'compressor' => 'helpers\\Compressor'
-        );
+        $this->user = Container::instance('gplcart\\core\\models\\User');
+        $this->store = Container::instance('gplcart\\core\\models\\Store');
+        $this->language = Container::instance('gplcart\\core\\models\\Language');
+        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
+        $this->filter = Container::instance('gplcart\\core\\models\\Filter');
 
-        foreach ($map as $property => $class) {
-            $this->{$property} = Container::instance("gplcart\\core\\$class");
-        }
+        $this->url = Container::instance('gplcart\\core\\helpers\\Url');
+        $this->request = Container::instance('gplcart\\core\\helpers\\Request');
+        $this->response = Container::instance('gplcart\\core\\helpers\\Response');
+        $this->asset = Container::instance('gplcart\\core\\helpers\\Asset');
+        $this->session = Container::instance('gplcart\\core\\helpers\\Session');
+        $this->pager = Container::instance('gplcart\\core\\helpers\\Pager');
+        $this->compressor = Container::instance('gplcart\\core\\helpers\\Compressor');
+
+        $this->hook = Container::instance('gplcart\\core\\Hook');
+        $this->route = Container::instance('gplcart\\core\\Route');
+        $this->config = Container::instance('gplcart\\core\\Config');
+        $this->logger = Container::instance('gplcart\\core\\Logger');
+        $this->library = Container::instance('gplcart\\core\\Library');
     }
 
     /**
@@ -1116,15 +1283,15 @@ class Controller
         if ($this->uid === $account_id) {
             return null;
         }
-        
-        if($this->isSuperadmin($account_id) && !$this->isSuperadmin()){
+
+        if ($this->isSuperadmin($account_id) && !$this->isSuperadmin()) {
             $this->outputError(403);
         }
 
         if (!$this->access('user')) {
             $this->outputError(403);
         }
-        
+
         return null;
     }
 
@@ -1318,65 +1485,6 @@ class Controller
     }
 
     /**
-     * Returns a string containing <title></title>
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * Returns a string containing H title
-     * @return string
-     */
-    public function getPageTitle()
-    {
-        return $this->ptitle;
-    }
-
-    /**
-     * Returns an array with page breadcrumbs
-     * @return array
-     */
-    public function getBreadcrumbs()
-    {
-        return $this->breadcrumbs;
-    }
-
-    /**
-     * Returns an array of meta data
-     * @return array
-     */
-    public function getMeta()
-    {
-        return $this->meta;
-    }
-
-    /**
-     * Returns an array of attached styles
-     * @return array
-     */
-    public function getCss()
-    {
-        $stylesheets = $this->asset->getCss();
-        $this->compressAssets($stylesheets, 'css');
-        return $stylesheets;
-    }
-
-    /**
-     * Returns an array of attached Java scripts
-     * @param string $position
-     * @return array
-     */
-    public function getJs($position)
-    {
-        $scripts = $this->asset->getJs($position);
-        $this->compressAssets($scripts, 'js');
-        return $scripts;
-    }
-
-    /**
      * Compresses and aggregates assets
      * @param array $assets
      * @param string $type
@@ -1443,14 +1551,14 @@ class Controller
      */
     protected function prepareOutput()
     {
-        $this->data['meta'] = $this->getMeta();
-        $this->data['head_title'] = $this->getTitle();
-        $this->data['page_title'] = $this->getPageTitle();
-        $this->data['breadcrumb'] = $this->getBreadcrumbs();
+        $this->data['meta'] = $this->meta();
+        $this->data['head_title'] = $this->title();
+        $this->data['page_title'] = $this->ptitle();
+        $this->data['breadcrumb'] = $this->breadcrumbs();
 
-        $this->data['css'] = $this->getCss();
-        $this->data['js_top'] = $this->getJs('top');
-        $this->data['js_bottom'] = $this->getJs('bottom');
+        $this->data['css'] = $this->css();
+        $this->data['js_top'] = $this->js('top');
+        $this->data['js_bottom'] = $this->js('bottom');
     }
 
     /**
@@ -1538,7 +1646,6 @@ class Controller
      */
     protected function setDefaultJs()
     {
-        $this->setDefaultJsAssets();
         $this->setDefaultJsSettings();
         $this->setDefaultJsCron();
         $this->setDefaultJsTranslation();
@@ -1640,11 +1747,13 @@ class Controller
         }
 
         $this->data['languages'] = $this->languages;
-        $this->data['current_store'] = $this->current_store;
+        //$this->data['current_store'] = $this->current_store;
         $this->data['messages'] = $this->session->getMessage();
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
+
+        $this->setDefaultJs();
     }
 
     /**
@@ -1742,87 +1851,6 @@ class Controller
     {
         $this->ptitle = $title;
         return $this->ptitle;
-    }
-
-    /**
-     * Converts special characters to HTML entities
-     * @param string $string
-     * @return string
-     */
-    public function escape($string)
-    {
-        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
-    }
-
-    /**
-     * Strips or encodes unwanted characters
-     * @param string $string
-     * @return string
-     */
-    public function filter($string)
-    {
-        return filter_var($string, FILTER_SANITIZE_STRING);
-    }
-
-    /**
-     * Returns truncated string with specified width
-     * @param string $string
-     * @param integer $length
-     * @param string $trimmarker
-     * @return string
-     */
-    public function truncate($string, $length = 100, $trimmarker = '...')
-    {
-        return mb_strimwidth($string, 0, $length, $trimmarker, 'UTF-8');
-    }
-
-    /**
-     * Returns a config item
-     * @param string|null $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public function config($key = null, $default = null)
-    {
-        return $this->config->get($key, $default);
-    }
-
-    /**
-     * Returns a setting from the current theme settings
-     * @param mixed $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public function setting($key = null, $default = null)
-    {
-        if (!isset($key)) {
-            return $this->theme_settings;
-        }
-
-        if (array_key_exists($key, $this->theme_settings)) {
-            return $this->theme_settings[$key];
-        }
-
-        return $default;
-    }
-
-    /**
-     * Clean up HTML string using HTML Purifier
-     * @param string $string
-     * @param mixed $filter
-     * @return string
-     */
-    public function xss($string, $filter = null)
-    {
-        if (!isset($filter)) {
-            $filter = $this->current_filter;
-        }
-
-        if ($filter === false) {
-            return $string; // Superadmin output
-        }
-
-        return $this->filter->filter($string, $filter);
     }
 
     /**
@@ -1929,29 +1957,6 @@ class Controller
     {
         $delimiter = $this->config('summary_delimiter', '<!--summary-->');
         return array_filter(array_map('trim', explode($delimiter, $text, 2)));
-    }
-
-    /**
-     * Returns a string from a text before the summary delimiter
-     * @param string $text
-     * @param boolean $xss
-     * @param mixed $filter
-     * @return string
-     */
-    public function summary($text, $xss = true, $filter = null)
-    {
-        $summary = '';
-
-        if ($text !== '') {
-            $parts = $this->explodeText($text);
-            $summary = trim(reset($parts));
-        }
-
-        if ($summary !== '' && $xss) {
-            $summary = $this->xss($summary, $filter);
-        }
-
-        return $summary;
     }
 
     /**
