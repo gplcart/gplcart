@@ -1,43 +1,46 @@
-/* global GplCart, Backend */
+/* global GplCart, Backend  */
 (function (GplCart, $) {
 
-    Backend.include.category = {attach: {}};
+    Backend.include.field = {attach: {}};
 
     /**
-     * Makes categories sortable
+     * Makes field values sortable
      * @returns {undefined}
      */
-    Backend.include.category.attach.sortable = function () {
+    Backend.include.field.attach.sortable = function () {
 
         var id,
                 weight = {},
-                params = {
+                data = {
                     action: 'weight',
                     selected: weight,
                     token: GplCart.settings.token
-                };
+                },
+        selector = $('.field-values tbody');
 
-        $('table.categories tbody').sortable({
+        if (selector.length === 0) {
+            return;
+        }
+
+        selector.sortable({
             cursor: 'n-resize',
             handle: '.handle',
             stop: function () {
 
-                $('table.categories tbody tr').each(function (i) {
-                    id = $(this).attr('data-category-id');
+                $('.field-values tbody tr').each(function (i) {
+                    id = $(this).attr('data-field-value-id');
                     weight[id] = i;
                 });
 
                 $.ajax({
-                    data: params,
+                    data: data,
                     type: 'POST',
                     url: GplCart.settings.urn,
                     success: function (data) {
-
                         if ('success' in data) {
                             Backend.ui.alert(data.success, 'success');
-                            // update visible weight values
                             $.each(weight, function (i, v) {
-                                $('tr[data-category-id=' + i + ']').find('td .weight').text(v);
+                                $('tr[data-field-value-id=' + i + ']').find('td .weight').text(v);
                             });
                         }
                     },
@@ -53,11 +56,20 @@
     };
 
     /**
+     * Adds colorpicker to the field
+     * @returns {undefined}
+     */
+    Backend.include.field.attach.colorpicker = function () {
+        $('.input-group.color').colorpicker();
+    };
+
+    /**
      * Call attached above methods when DOM is ready
      * @returns {undefined}
      */
     $(function () {
-        GplCart.attach(Backend.include.category);
+        GplCart.attach(Backend.include.field);
     });
+
 
 })(GplCart, jQuery);

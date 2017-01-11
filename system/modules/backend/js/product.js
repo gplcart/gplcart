@@ -358,9 +358,13 @@
      */
     Backend.include.product.attach.autocompleteRelated = function () {
 
-        var params, html;
+        var params, html, input = $('.related-product');
+        
+        if(input.length === 0){
+            return;
+        }
 
-        $('.related-product').autocomplete({
+        input.autocomplete({
             minLength: 2,
             source: function (request, response) {
 

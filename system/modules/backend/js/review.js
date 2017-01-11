@@ -18,10 +18,14 @@
     Backend.include.review.attach.autocompleteUser = function () {
 
         var params,
-                inputName = $('#edit-review input[name$="[email]"], #reviews input[name="email"]'),
+                input = $('#edit-review input[name$="[email]"], #reviews input[name="email"]'),
                 inputId = $('#edit-review input[name$="[user_id]"], #reviews input[name="user_id"]');
 
-        inputName.autocomplete({
+        if (input.length === 0) {
+            return;
+        }
+
+        input.autocomplete({
             minLength: 2,
             source: function (request, response) {
 
@@ -43,7 +47,7 @@
                 });
             },
             select: function (event, ui) {
-                inputName.val(ui.item.label);
+                input.val(ui.item.label);
                 inputId.val(ui.item.value);
                 return false;
             }
@@ -59,10 +63,14 @@
     Backend.include.review.attach.autocompleteProduct = function () {
 
         var params,
-                inputName = $('#edit-review [name$="[product]"], #reviews input.product'),
+                input = $('#edit-review [name$="[product]"], #reviews input.product'),
                 inputId = $('#edit-review [name$="[product_id]"], #reviews [name="product_id"]');
 
-        inputName.autocomplete({
+        if (input.length === 0) {
+            return;
+        }
+
+        input.autocomplete({
             minLength: 2,
             source: function (request, response) {
 
@@ -84,7 +92,7 @@
                 });
             },
             select: function (event, ui) {
-                inputName.val(ui.item.label);
+                input.val(ui.item.label);
                 inputId.val(ui.item.value);
                 return false;
             },

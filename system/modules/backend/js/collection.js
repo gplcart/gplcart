@@ -9,6 +9,10 @@
                 input = $('form#edit-collection-item input[name$="[input]"]'),
                 value = $('form#edit-collection-item input[name$="[value]"]');
 
+        if (input.length === 0) {
+            return;
+        }
+
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
@@ -55,9 +59,14 @@
                     action: 'weight',
                     selected: weight,
                     token: GplCart.settings.token
-                };
+                },
+        selector = $('.collection-items tbody');
 
-        $('.collection-items tbody').sortable({
+        if (selector.length === 0) {
+            return;
+        }
+
+        selector.sortable({
             cursor: 'n-resize',
             handle: '.handle',
             stop: function () {

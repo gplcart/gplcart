@@ -41,22 +41,24 @@ class Backend
             return null;
         }
 
-        // Add system JS
         $controller->setJs('system/modules/backend/js/common.js');
 
-        // Add asset libraries
         $libraries = array('bootstrap', 'font_awesome', 'summernote', 'primeui',
-            'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker', 'codemirror', 'chart');
+            'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker',
+            'codemirror', 'chart');
 
         $controller->addAssetLibrary($libraries);
 
-        // Add theme JS depending on the current URL path
-        $controller->setJsContext(GC_MODULE_DIR . '/backend/js', array('position' => 'bottom'));
+        $includes = array('category', 'collection', 'country', 'editor',
+            'field', 'page', 'product', 'review');
+
+        foreach ($includes as $name) {
+            $controller->setJs("system/modules/backend/js/$name.js");
+        }
 
         // Add theme-specific CSS. Goes after all added CSS
         $controller->setCss('system/modules/backend/css/style.css');
 
-        // Set meta tags
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
