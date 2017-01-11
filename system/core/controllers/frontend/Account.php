@@ -136,7 +136,7 @@ class Account extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        if (empty($user['status'])) {
+        if (empty($user['status']) && !$this->access('user')) {
             $this->outputHttpStatus(403);
         }
 
@@ -354,7 +354,7 @@ class Account extends FrontendController
      */
     protected function controlAccessEditAccount(array $user)
     {
-        if ($this->isSuperadmin($user['user_id']) && !$this->isSuperadmin()) {
+        if ($user['user_id'] != $this->uid && !$this->access('user_edit')) {
             $this->outputHttpStatus(403);
         }
     }
@@ -366,7 +366,7 @@ class Account extends FrontendController
     protected function submitEditAccount(array $user)
     {
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('user', null, 'raw');
@@ -395,6 +395,8 @@ class Account extends FrontendController
      */
     protected function updateAccount(array $user)
     {
+        $this->controlAccessEditAccount($user);
+
         $values = $this->getSubmitted();
         $this->user->update($user['user_id'], $values);
 
@@ -448,7 +450,7 @@ class Account extends FrontendController
         $user = $this->getUserAccount($user_id);
         $addresses = $this->getListAddressAccount($user_id);
 
-        $this->deleteAddressAccount();
+        $this->deleteAddressAccount($user);
 
         $this->setData('user', $user);
         $this->setData('addresses', $addresses);
@@ -470,14 +472,18 @@ class Account extends FrontendController
 
     /**
      * Deletes an address
+     * @param array $user
+     * @return array
      */
-    protected function deleteAddressAccount()
+    protected function deleteAddressAccount(array $user)
     {
         $address_id = (int) $this->request->get('delete');
 
         if (empty($address_id)) {
             return null;
         }
+
+        $this->controlAccessEditAccount($user);
 
         $deleted = $this->address->delete($address_id);
 
@@ -536,9 +542,11 @@ class Account extends FrontendController
     public function editAddressAccount($user_id, $address_id = null)
     {
         $user = $this->getUserAccount($user_id);
-        $address = $this->getAddressAccount($address_id);
+        $this->controlAccessEditAccount($user);
 
         $this->outputEditAddressFormAccount();
+
+        $address = $this->getAddressAccount($address_id);
 
         $this->setData('user', $user);
         $this->setData('address', $address);
@@ -669,6 +677,8 @@ class Account extends FrontendController
      */
     protected function addAddressAccount(array $user)
     {
+        $this->controlAccessEditAccount($user);
+
         $address = $this->getSubmitted();
 
         $result = $this->address->add($address);

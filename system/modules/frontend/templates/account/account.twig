@@ -22,16 +22,25 @@
         <h4 class="list-group-item-heading h5">{{ text('Addresses') }}</h4>
         <p class="list-group-item-text">{{ text('View and manage addressbook') }}</p>
       </a>
-      <a class="list-group-item" href="{{ url('account/' ~ user.user_id ~ '/edit') }}">
-        <h4 class="list-group-item-heading h5">{{ text('Settings') }}</h4>
-        <p class="list-group-item-text">{{ text('Edit account details') }}</p>
-      </a>
+      {% if user('user_id') == user['user_id'] or access('user_edit') %}
+          <a class="list-group-item" href="{{ url('account/' ~ user.user_id ~ '/edit') }}">
+            <h4 class="list-group-item-heading h5">{{ text('Settings') }}</h4>
+            <p class="list-group-item-text">{{ text('Edit account details') }}</p>
+          </a>
+      {% endif %}
     </div>
-    <a class="btn btn-default" href="{{ url('logout') }}">
-      <span class="fa fa-sign-out"></span> {{ text('Log out') }}
-    </a>
+    {% if user('user_id') == user['user_id'] %}
+        <a class="btn btn-default" href="{{ url('logout') }}">
+          <span class="fa fa-sign-out"></span> {{ text('Log out') }}
+        </a>
+    {% endif %}
   </div>
   <div class="col-md-9">
+    {% if user['status'] == 0 and access('user') %}
+        <div class="alert alert-warning" role="alert">
+          {{ text('This account is inactive') }}
+        </div>
+    {% endif %}
     {% if orders is not empty %}
         <div class="panel-group" id="orders">
           {% for order_id,order in orders %}
@@ -62,7 +71,9 @@
         </div>
         {{ pager|default('') }}
     {% else %}
-        {{ text('You have no orders yet. <a href="!href">Shop now</a>', {'!href': url('/')})|raw }}
+        {% if user('user_id') == user['user_id'] %}
+            {{ text('You have no orders yet. <a href="!href">Shop now</a>', {'!href': url('/')})|raw }}
+        {% endif %}
     {% endif %}
   </div>
-</div>   
+</div>

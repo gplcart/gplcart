@@ -69,7 +69,7 @@ class User extends BackendController
     {
         $action = (string) $this->request->post('action');
 
-        if ($action) {
+        if (empty($action)) {
             return null;
         }
 
@@ -208,6 +208,7 @@ class User extends BackendController
     protected function canDeleteUser(array $user)
     {
         return (isset($user['user_id'])//
+                && $this->access('user_delete')//
                 && $this->user->canDelete($user['user_id']));
     }
 
@@ -323,6 +324,7 @@ class User extends BackendController
         $this->controlAccess('user_add');
 
         $values = $this->getSubmitted();
+
         $this->user->add($values);
 
         $message = $this->text('User has been added');
@@ -335,10 +337,10 @@ class User extends BackendController
      */
     protected function setTitleEditUser(array $user)
     {
+        $title = $this->text('Add user');
+
         if (isset($user['name'])) {
             $title = $this->text('Edit %user', array('%user' => $user['name']));
-        } else {
-            $title = $this->text('Add user');
         }
 
         $this->setTitle($title);

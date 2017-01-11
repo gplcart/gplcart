@@ -10,11 +10,13 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <?php if ($this->access('user_edit') || $this->access('user_delete')) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('user_edit') || $this->access('user_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <?php if ($this->access('user_edit')) { ?>
           <li>
@@ -36,8 +38,8 @@
           </li>
           <?php } ?>
         </ul>
+        <?php } ?>
       </div>
-      <?php } ?>
       <?php if ($this->access('user_add') || $this->access('import')) { ?>
       <div class="btn-toolbar pull-right">
         <?php if ($this->access('user_add')) { ?>
@@ -52,7 +54,7 @@
       <table class="table users">
         <thead>
           <tr>
-            <th><input type="checkbox" id="select-all" value="1"></th>
+            <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th>
               <a href="<?php echo $sort_user_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a>
             </th>
@@ -142,7 +144,7 @@
             <td colspan="9" class="bg-danger"><?php echo $this->text('No access'); ?></td>
             <?php } else { ?>
             <td class="middle">
-              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
+              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle"><?php echo $this->escape($user['name']); ?></td>

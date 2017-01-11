@@ -1170,7 +1170,14 @@ class Controller
      */
     protected function controlAccessCredentials()
     {
+        if (!isset($this->current_user['hash']) || empty($this->current_user['status'])) {
+            $this->session->delete();
+            $this->url->redirect('login');
+            return false;
+        }
+
         $session_hash = $this->user->getSession('hash');
+        $session_role_id = $this->user->getSession('role_id');
 
         if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
             $this->session->delete();
@@ -1178,13 +1185,7 @@ class Controller
             return false;
         }
 
-        if (empty($this->current_user['status'])) {
-            $this->session->delete();
-            $this->url->redirect('login');
-            return false;
-        }
-
-        if ($this->current_user['role_id'] != $this->user->getSession('role_id')) {
+        if ($this->current_user['role_id'] != $session_role_id) {
             $this->session->delete();
             $this->url->redirect('login');
             return false;
@@ -1302,6 +1303,7 @@ class Controller
         if ($this->access('user')) {
             return true;
         }
+
         $this->setHttpStatus(403);
         return false;
     }

@@ -53,8 +53,6 @@ return array(
     'collection_item_add' => 'Collection item: add',
     'collection_item_edit' => 'Collection item: edit',
     'collection_item_delete' => 'Collection item: delete',
-    'wishlist_add' => 'Wishlist: add',
-    'wishlist_delete' => 'Wishlist: delete',
     'user' => 'User: access',
     'user_add' => 'User: add',
     'user_edit' => 'User: edit',

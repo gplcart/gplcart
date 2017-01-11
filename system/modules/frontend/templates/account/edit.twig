@@ -22,14 +22,18 @@
         <h4 class="list-group-item-heading h5">{{ text('Addresses') }}</h4>
         <p class="list-group-item-text">{{ text('View and manage addressbook') }}</p>
       </a>
-      <a class="list-group-item active disabled" href="{{ url('account/' ~ user.user_id ~ '/edit') }}">
-        <h4 class="list-group-item-heading h5">{{ text('Settings') }}</h4>
-        <p class="list-group-item-text">{{ text('Edit account details') }}</p>
-      </a>
+      {% if user('user_id') == user['user_id'] or access('user_edit') %}
+          <a class="list-group-item active disabled" href="{{ url('account/' ~ user.user_id ~ '/edit') }}">
+            <h4 class="list-group-item-heading h5">{{ text('Settings') }}</h4>
+            <p class="list-group-item-text">{{ text('Edit account details') }}</p>
+          </a>
+      {% endif %}
     </div>
-    <a class="btn btn-default" href="{{ url('logout') }}">
-      <span class="fa fa-sign-out"></span> {{ text('Log out') }}
-    </a>
+    {% if user('user_id') == user['user_id'] %}
+        <a class="btn btn-default" href="{{ url('logout') }}">
+          <span class="fa fa-sign-out"></span> {{ text('Log out') }}
+        </a>
+    {% endif %}
   </div>
   <div class="col-md-9">
     <form method="post" id="edit-account" class="form-horizontal edit-account">

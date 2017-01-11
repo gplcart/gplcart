@@ -24,14 +24,18 @@
             <h4 class="list-group-item-heading h5">{{ text('Addresses') }}</h4>
             <p class="list-group-item-text">{{ text('View and manage addressbook') }}</p>
           </a>
-          <a class="list-group-item" href="{{ url('account/' ~ user.user_id ~ '/edit') }}">
-            <h4 class="list-group-item-heading h5">{{ text('Settings') }}</h4>
-            <p class="list-group-item-text">{{ text('Edit account details') }}</p>
-          </a>
+          {% if user('user_id') == user['user_id'] or access('user_edit') %}
+              <a class="list-group-item" href="{{ url('account/' ~ user.user_id ~ '/edit') }}">
+                <h4 class="list-group-item-heading h5">{{ text('Settings') }}</h4>
+                <p class="list-group-item-text">{{ text('Edit account details') }}</p>
+              </a>
+          {% endif %}
         </div>
-        <a class="btn btn-default" href="{{ url('logout') }}">
-          <span class="fa fa-sign-out"></span> {{ text('Log out') }}
-        </a>
+        {% if user('user_id') == user['user_id'] %}
+            <a class="btn btn-default" href="{{ url('logout') }}">
+              <span class="fa fa-sign-out"></span> {{ text('Log out') }}
+            </a>
+        {% endif %}
       </div>
       <div class="col-md-9">
         {% if addresses is not empty %}
@@ -40,17 +44,19 @@
                   <div class="col-md-4">
                     <div class="panel panel-default address">
                       <div class="panel-heading clearfix">
-                        <a class="btn btn-default btn-sm pull-right" title="{{ text('Delete') }}" href="{{ url(false, {'delete': address_id}) }}">
-                          <i class="fa fa-trash"></i>
-                        </a>
+                        {% if user('user_id') == user['user_id'] or access('user_edit') %}
+                            <a class="btn btn-default btn-sm pull-right" title="{{ text('Delete') }}" href="{{ url(false, {'delete': address_id}) }}">
+                              <i class="fa fa-trash"></i>
+                            </a>
+                        {% endif %}
                       </div>
                       <div class="panel-body">
                         <table class="table table-condensed address">
                           {% for label,value in address %}
-                            <tr>
-                              <td>{{ label matches '/\\D/' ? label}}</td>
-                              <td>{{ value }}</td>
-                            </tr>
+                              <tr>
+                                <td>{{ label matches '/\\D/' ? label}}</td>
+                                <td>{{ value }}</td>
+                              </tr>
                           {% endfor %}
                         </table>
                       </div>
@@ -62,11 +68,15 @@
         <div class="row">
           <div class="col-md-12">
             {% if addresses is empty %}
-                <p>{{ text('You have no saved addresses yet') }}</p>
+                {% if user('user_id') == user['user_id'] %}
+                    <p>{{ text('You have no saved addresses yet') }}</p>
+                {% endif %}
             {% endif %}
-            <a class="btn btn-default" href="{{ url('account/' ~ user.user_id ~ '/address/add') }}">
-              {{ text('Add new address') }}
-            </a>
+            {% if user('user_id') == user['user_id'] or access('user_edit') %}
+                <a class="btn btn-default" href="{{ url('account/' ~ user.user_id ~ '/address/add') }}">
+                  {{ text('Add new address') }}
+                </a>
+            {% endif %}
           </div>
         </div>
       </div>
