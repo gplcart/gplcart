@@ -39,7 +39,6 @@
         }
 
         mode = map[ext] || map.php;
-
         default_settings = {mode: mode, lineNumbers: true};
         settings = element.data('codemirror-settings') || default_settings;
 

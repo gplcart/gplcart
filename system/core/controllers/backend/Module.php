@@ -51,18 +51,18 @@ class Module extends BackendController
     {
         $this->actionModule();
 
+        $this->setTitleListModule();
+        $this->setBreadcrumbListModule();
+
         $query = $this->getFilterQuery();
+        $allowed = array('type', 'name', 'version', 'id');
+        $this->setFilter($allowed, $query);
+
         $total = $this->getTotalModule($query);
         $limit = $this->setPager($total, $query);
         $modules = $this->getListModule($query, $limit);
 
-        $allowed = array('type', 'name', 'version', 'id');
-        $this->setFilter($allowed, $query);
-
         $this->setData('modules', $modules);
-
-        $this->setTitleListModule();
-        $this->setBreadcrumbListModule();
         $this->outputListModule();
     }
 
@@ -369,6 +369,9 @@ class Module extends BackendController
      */
     public function marketplaceModule()
     {
+        $this->setTitleMarketplaceModule();
+        $this->setBreadcrumbMarketplaceModule();
+
         $default = array(
             'sort' => $this->config('marketplace_sort', 'views'),
             'order' => $this->config('marketplace_order', 'desc')
@@ -386,8 +389,6 @@ class Module extends BackendController
         $this->setFilter($fields);
         $this->setData('marketplace', $results);
 
-        $this->setTitleMarketplaceModule();
-        $this->setBreadcrumbMarketplaceModule();
         $this->outputMarketplaceModule();
     }
 

@@ -32,6 +32,12 @@ class ImageStyle extends BackendController
     protected $file;
 
     /**
+     * The current array of imagestyle data to be updated
+     * @var array
+     */
+    protected $data_imagestyle = array();
+
+    /**
      * Constructor
      * @param ImageModel $image
      * @param FileModel $file
@@ -51,11 +57,11 @@ class ImageStyle extends BackendController
     {
         $this->clearCacheImageStyle();
 
-        $imagestyles = $this->image->getStyleList();
-        $this->setData('styles', $imagestyles);
-
         $this->setTitleListImageStyle();
         $this->setBreadcrumbListImageStyle();
+
+        $this->setData('styles', $this->image->getStyleList());
+
         $this->outputListImageStyle();
     }
 
@@ -106,15 +112,15 @@ class ImageStyle extends BackendController
      */
     public function editImageStyle($style_id = null)
     {
-        $imagestyle = $this->getImageStyle($style_id);
-        $this->setData('imagestyle', $imagestyle);
+        $this->setImageStyle($style_id);
 
-        $this->submitImageStyle($imagestyle);
-
-        $this->setDataEditImageStyle();
-        
-        $this->setTitleEditImageStyle($imagestyle);
+        $this->setTitleEditImageStyle();
         $this->setBreadcrumbEditImageStyle();
+
+        $this->setData('imagestyle', $this->data_imagestyle);
+
+        $this->submitImageStyle();
+        $this->setDataEditImageStyle();
         $this->outputEditImageStyle();
     }
 
@@ -123,10 +129,11 @@ class ImageStyle extends BackendController
      * @param integer $style_id
      * @return array
      */
-    protected function getImageStyle($style_id)
+    protected function setImageStyle($style_id)
     {
         if (!is_numeric($style_id)) {
-            return array('actions' => array());
+            $this->data_imagestyle = array('actions' => array());
+            return $this->data_imagestyle;
         }
 
         $imagestyle = $this->image->getStyle($style_id);
@@ -135,18 +142,19 @@ class ImageStyle extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_imagestyle = $imagestyle;
         return $imagestyle;
     }
 
     /**
      * Saves an image style
-     * @param array $imagestyle
-     * @return bool|null|void
+     * @return null
      */
-    protected function submitImageStyle(array $imagestyle)
+    protected function submitImageStyle()
     {
-        if ($this->isPosted('delete') && isset($imagestyle['imagestyle_id'])) {
-            return $this->deleteImageStyle($imagestyle);
+        if ($this->isPosted('delete')) {
+            $this->deleteImageStyle();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -154,34 +162,34 @@ class ImageStyle extends BackendController
         }
 
         $this->setSubmitted('imagestyle');
-        $this->validateImageStyle($imagestyle);
+        $this->validateImageStyle();
 
         if ($this->hasErrors('imagestyle')) {
             return null;
         }
 
-        if (isset($imagestyle['imagestyle_id'])) {
-            return $this->updateImageStyle($imagestyle);
+        if (isset($this->data_imagestyle['imagestyle_id'])) {
+            $this->updateImageStyle();
+            return null;
         }
 
-        return $this->addImageStyle();
+        $this->addImageStyle();
+        return null;
     }
 
     /**
      * Deletes an image style
-     * @param array $imagestyle
-     * @return void
      */
-    protected function deleteImageStyle(array $imagestyle)
+    protected function deleteImageStyle()
     {
         $this->controlAccess('image_style_delete');
 
-        $this->image->deleteStyle($imagestyle['imagestyle_id']);
-        $this->image->clearCache($imagestyle['imagestyle_id']);
+        $this->image->deleteStyle($this->data_imagestyle['imagestyle_id']);
+        $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
 
         $message = $this->text('Image style has been reverted to default settings');
 
-        if (empty($imagestyle['default'])) {
+        if (empty($this->data_imagestyle['default'])) {
             $message = $this->text('Image style has been deleted');
         }
 
@@ -190,27 +198,25 @@ class ImageStyle extends BackendController
 
     /**
      * Validates an image style
-     * @param array $imagestyle
      */
-    protected function validateImageStyle(array $imagestyle)
+    protected function validateImageStyle()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $imagestyle);
+        $this->setSubmitted('update', $this->data_imagestyle);
         $this->setSubmittedArray('actions');
         $this->validate('image_style');
     }
 
     /**
      * Updates an image styles using an array of submitted values
-     * @param array $imagestyle
      */
-    protected function updateImageStyle(array $imagestyle)
+    protected function updateImageStyle()
     {
         $this->controlAccess('image_style_edit');
 
         $submitted = $this->getSubmitted();
-        $this->image->updateStyle($imagestyle['imagestyle_id'], $submitted);
-        $this->image->clearCache($imagestyle['imagestyle_id']);
+        $this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $submitted);
+        $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
 
         $message = $this->text('Image style has been updated');
         $this->redirect('admin/settings/imagestyle', $message, 'success');
@@ -266,14 +272,13 @@ class ImageStyle extends BackendController
 
     /**
      * Sets titles on the edit image style page
-     * @param array $imagestyle
      */
-    protected function setTitleEditImageStyle(array $imagestyle)
+    protected function setTitleEditImageStyle()
     {
         $title = $this->text('Add image style');
 
-        if (isset($imagestyle['imagestyle_id'])) {
-            $vars = array('%name' => $imagestyle['name']);
+        if (isset($this->data_imagestyle['imagestyle_id'])) {
+            $vars = array('%name' => $this->data_imagestyle['name']);
             $title = $this->text('Edit image style %name', $vars);
         }
 

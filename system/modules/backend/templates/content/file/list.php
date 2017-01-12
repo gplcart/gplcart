@@ -11,11 +11,13 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <?php if ($this->access('file_delete') && !empty($files)) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('file_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <li>
             <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
@@ -23,8 +25,8 @@
             </a>
           </li>
         </ul>
+        <?php } ?>
       </div>
-      <?php } ?>
       <?php if ($this->access('file_add') && $this->access('file_upload')) { ?>
       <a class="btn btn-default pull-right" href="<?php echo $this->url('admin/content/file/add'); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
@@ -35,7 +37,7 @@
       <table class="table files">
         <thead>
           <tr>
-            <th><input type="checkbox" id="select-all" value="1"></th>
+            <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th>
               <a href="<?php echo $sort_file_id; ?>">
                 <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
@@ -91,7 +93,7 @@
           <?php } else { ?>
           <?php foreach ($files as $id => $file) { ?>
           <tr>
-            <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"></td>
+            <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle"><?php echo $this->escape($this->truncate($file['title'], 30)); ?></td>
             <td class="middle"><?php echo $this->escape($this->truncate($file['mime_type'])); ?></td>

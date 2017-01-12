@@ -42,6 +42,8 @@ class Controller extends BaseController
         $this->setDataFrontend();
 
         $this->hook->fire('init.backend', $this);
+
+        $this->controlHttpStatus();
     }
 
     /**

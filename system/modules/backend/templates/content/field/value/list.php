@@ -13,15 +13,17 @@
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('field_value_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
-        <?php if ($this->access('field_value_delete')) { ?>
         <li>
           <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
             <?php echo $this->text('Delete'); ?>
           </a>
         </li>
-        <?php } ?>
       </ul>
+      <?php } ?>
     </div> 
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('field_value_add')) { ?>
@@ -35,7 +37,7 @@
     <table class="table field-values">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_field_value_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_image; ?>"><?php echo $this->text('Image'); ?> <i class="fa fa-sort"></i></a></th>
@@ -50,7 +52,7 @@
         <?php foreach ($values as $value) { ?>
         <tr data-field-value-id="<?php echo $value['field_value_id']; ?>">
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $value['field_value_id']; ?>">
+            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $value['field_value_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle field-value-id"><?php echo $value['field_value_id']; ?></td>
           <td class="middle title"><?php echo $this->truncate($this->escape($value['title'])); ?></td>
@@ -67,11 +69,14 @@
             <?php } ?>
           </td>
           <td class="middle weight">
-            <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($value['weight']); ?></span>
+            <?php if ($this->access('field_value_edit')) { ?>
+            <i class="fa fa-arrows handle"></i>
+            <?php } ?>
+            <span class="weight"><?php echo $this->escape($value['weight']); ?></span>
           </td>
           <?php if ($this->access('field_value_edit')) { ?>
           <td class="middle">
-            <a href="<?php echo $this->url->get("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}"); ?>" class="edit">
+            <a href="<?php echo $this->url->get("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}/edit"); ?>" class="edit">
               <?php echo mb_strtolower($this->text('Edit')); ?>
             </a>
           </td>

@@ -37,7 +37,7 @@
                     type: 'POST',
                     url: GplCart.settings.urn,
                     success: function (data) {
-                        if ('success' in data) {
+                        if (!$.isEmptyObject() && 'success' in data) {
                             Backend.ui.alert(data.success, 'success');
                             $.each(weight, function (i, v) {
                                 $('tr[data-field-value-id=' + i + ']').find('td .weight').text(v);

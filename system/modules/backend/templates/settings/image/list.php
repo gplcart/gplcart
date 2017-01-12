@@ -7,15 +7,15 @@
  */
 ?>
 <div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-toolbar pull-right">
-      <?php if ($this->access('image_style_add')) { ?>
-      <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-default add">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
-      <?php } ?>
-    </div>
-  </div>
+    <?php if ($this->access('image_style_add')) { ?>
+      <div class="panel-heading clearfix">
+        <div class="btn-toolbar pull-right">
+          <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-default add">
+            <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
+          </a>
+        </div>
+      </div>
+  <?php } ?>
   <div class="panel-body table-responsive">
     <table class="table image-styles">
       <thead>
@@ -33,14 +33,14 @@
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->escape($style['name']); ?></td>
           <td class="middle">
-            <?php if(empty($style['default'])) { ?>
+            <?php if (empty($style['default'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if(empty($style['status'])) { ?>
+            <?php if (empty($style['status'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
@@ -48,6 +48,11 @@
           </td>
           <td class="col-md-2 middle">
             <ul class="list-inline">
+              <li>
+                <a href="<?php echo $this->url('', array('clear' => $id)); ?>" class="clear">
+                  <?php echo $this->text('clear cache'); ?>
+                </a>
+              </li>
               <?php if ($this->access('image_style_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/imagestyle/edit/$id"); ?>" class="edit">
@@ -55,11 +60,6 @@
                 </a>
               </li>
               <?php } ?>
-              <li>
-                <a href="<?php echo $this->url('', array('clear' => $id)); ?>" class="clear">
-                  <?php echo $this->text('clear cache'); ?>
-                </a>
-              </li>
             </ul>
           </td>
         </tr>

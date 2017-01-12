@@ -264,8 +264,8 @@ class Config
             }
 
             if ($module_info['type'] === 'installer') {
-                // Enable installers only when needed
-                $module_info['status'] = $installation;
+                // Enable installers only when needed. Null means "uninstalled"
+                $module_info['status'] = $installation ? true : null;
             }
 
             $modules[$module_info['id']] = $module_info;

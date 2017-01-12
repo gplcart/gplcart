@@ -20,6 +20,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class FieldValue extends BackendController
 {
+
     /**
      * Field model instance
      * @var \gplcart\core\models\Field $field
@@ -57,8 +58,8 @@ class FieldValue extends BackendController
      * @param ImageModel $image
      * @param FileModel $file
      */
-    public function __construct(FieldModel $field,
-            FieldValueModel $field_value, ImageModel $image, FileModel $file
+    public function __construct(FieldModel $field, FieldValueModel $field_value,
+            ImageModel $image, FileModel $file
     )
     {
         parent::__construct();
@@ -75,7 +76,7 @@ class FieldValue extends BackendController
      */
     public function listFieldValue($field_id)
     {
-        $field = $this->getField($field_id);
+        $field = $this->getFieldFieldValue($field_id);
 
         $this->actionFieldValue();
 
@@ -100,7 +101,7 @@ class FieldValue extends BackendController
      * @param integer $field_id
      * @return array
      */
-    protected function getField($field_id)
+    protected function getFieldFieldValue($field_id)
     {
         $field = $this->field->get($field_id);
 
@@ -153,7 +154,7 @@ class FieldValue extends BackendController
         foreach ($items as $field_value_id => $weight) {
             $this->field_value->update($field_value_id, array('weight' => $weight));
         }
-        
+
         $response = array(
             'success' => $this->text('Field values have been reordered'));
 
@@ -252,7 +253,7 @@ class FieldValue extends BackendController
      */
     public function editFieldValue($field_id, $field_value_id = null)
     {
-        $field = $this->getField($field_id);
+        $field = $this->getFieldFieldValue($field_id);
         $field_value = $this->getFieldValue($field_value_id);
         $widget_types = $this->field->getWidgetTypes();
 
@@ -260,11 +261,12 @@ class FieldValue extends BackendController
         $this->setData('field_value', $field_value);
         $this->setData('widget_types', $widget_types);
 
-        $this->submitFieldValue($field_value, $field);
-
-        $this->setDataEditFieldValue();
         $this->setTitleEditFieldValue($field_value, $field);
         $this->setBreadcrumbEditFieldValue($field);
+
+        $this->submitFieldValue($field_value, $field);
+        $this->setDataEditFieldValue();
+
         $this->outputEditFieldValue();
     }
 
@@ -383,11 +385,11 @@ class FieldValue extends BackendController
 
         $submitted = $this->getSubmitted();
         $this->field_value->update($field_value['field_value_id'], $submitted);
-        
+
         $options = array('@name' => $field_value['title']);
         $url = "admin/content/field/value/{$field['field_id']}";
         $message = $this->text('Field value @name has been updated', $options);
-        
+
         $this->redirect($url, $message, 'success');
     }
 

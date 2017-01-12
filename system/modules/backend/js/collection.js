@@ -16,7 +16,6 @@
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
-
                 params = {
                     term: request.term,
                     token: GplCart.settings.token,
@@ -26,7 +25,6 @@
 
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
-
                         return {
                             value: key,
                             label: value.title ? value.title + ' (' + key + ')' : '--'

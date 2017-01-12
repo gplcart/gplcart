@@ -25,6 +25,12 @@ class File extends BackendController
     protected $file;
 
     /**
+     * The current file to be updated
+     * @var array
+     */
+    protected $data_file = array();
+
+    /**
      * Constructor
      * @param FileModel $file
      */
@@ -43,18 +49,18 @@ class File extends BackendController
         $this->downloadFile();
         $this->actionFile();
 
+        $this->setTitleListFile();
+        $this->setBreadcrumbListFile();
+
         $query = $this->getFilterQuery();
+        $allowed = array('title', 'mime_type', 'file_id', 'created', 'path');
+        $this->setFilter($allowed, $query);
+
         $total = $this->getTotalFile($query);
         $limit = $this->setPager($total, $query);
         $files = $this->getListFile($limit, $query);
 
         $this->setData('files', $files);
-
-        $allowed = array('title', 'mime_type', 'file_id', 'created', 'path');
-        $this->setFilter($allowed, $query);
-
-        $this->setTitleListFile();
-        $this->setBreadcrumbListFile();
         $this->outputListFile();
     }
 
@@ -178,22 +184,40 @@ class File extends BackendController
     public function editFile($file_id = null)
     {
         $this->downloadFile();
-        $file = $this->getFile($file_id);
-        $this->submitFile($file);
+        $this->setFile($file_id);
 
-        $extensions = $this->file->supportedExtensions(true);
-
-        $can_delete = (isset($file['file_id'])//
-                && $this->access('file_delete')//
-                && $this->file->canDelete($file_id));
-
-        $this->setData('file', $file);
-        $this->setData('can_delete', $can_delete);
-        $this->setData('extensions', $extensions);
-
-        $this->setTitleEditFile($file);
+        $this->setTitleEditFile();
         $this->setBreadcrumbEditFile();
+
+        $this->controlAccessEditFile();
+
+        $this->setData('file', $this->data_file);
+        $this->setData('can_delete', $this->canDeleteFile());
+        $this->setData('extensions', $this->file->supportedExtensions(true));
+
+        $this->submitFile();
         $this->outputEditFile();
+    }
+
+    /**
+     * Controls access to edit the file
+     */
+    protected function controlAccessEditFile()
+    {
+        if (empty($this->data_file['file_id'])) {
+            $this->controlAccess('file_upload');
+        }
+    }
+
+    /**
+     * Whether the file can be deleted
+     * @return bool
+     */
+    protected function canDeleteFile()
+    {
+        return (isset($this->data_file['file_id'])//
+                && $this->access('file_delete')//
+                && $this->file->canDelete($this->data_file['file_id']));
     }
 
     /**
@@ -201,7 +225,7 @@ class File extends BackendController
      * @param integer $file_id
      * @return array
      */
-    protected function getFile($file_id)
+    protected function setFile($file_id)
     {
         if (!is_numeric($file_id)) {
             return array();
@@ -213,18 +237,18 @@ class File extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_file = $file;
         return $file;
     }
 
     /**
      * Saves an array of submitted values
-     * @param array $file
      * @return null|void
      */
-    protected function submitFile(array $file)
+    protected function submitFile()
     {
-        if ($this->isPosted('delete') && isset($file['file_id'])) {
-            return $this->deleteFile($file);
+        if ($this->isPosted('delete') && isset($this->data_file['file_id'])) {
+            return $this->deleteFile();
         }
 
         if (!$this->isPosted('save')) {
@@ -232,14 +256,14 @@ class File extends BackendController
         }
 
         $this->setSubmitted('file');
-        $this->validateFile($file);
+        $this->validateFile();
 
         if ($this->hasErrors('file')) {
             return null;
         }
 
-        if (isset($file['file_id'])) {
-            return $this->updateFile($file);
+        if (isset($this->data_file['file_id'])) {
+            return $this->updateFile();
         }
 
         return $this->addFile();
@@ -247,12 +271,11 @@ class File extends BackendController
 
     /**
      * Completely deletes a file from the database an disk
-     * @param array $file
      */
-    protected function deleteFile(array $file)
+    protected function deleteFile()
     {
         $this->controlAccess('file_delete');
-        $result = $this->file->deleteAll($file['file_id']);
+        $result = $this->file->deleteAll($this->data_file['file_id']);
 
         if (array_sum($result) === 2) {
             $message = $this->text('File has been deleted from database and disk');
@@ -265,24 +288,22 @@ class File extends BackendController
 
     /**
      * Validates a submitted data
-     * @param array $file
      */
-    protected function validateFile(array $file)
+    protected function validateFile()
     {
-        $this->setSubmitted('update', $file);
+        $this->setSubmitted('update', $this->data_file);
         $this->validate('file');
     }
 
     /**
      * Updates a file with submitted values
-     * @param array $file
      */
-    protected function updateFile(array $file)
+    protected function updateFile()
     {
         $this->controlAccess('file_edit');
 
         $submitted = $this->getSubmitted();
-        $updated = $this->file->update($file['file_id'], $submitted);
+        $updated = $this->file->update($this->data_file['file_id'], $submitted);
 
         if ($updated) {
             $message = $this->text('File has been updated');
@@ -314,12 +335,11 @@ class File extends BackendController
 
     /**
      * Sets titles on the edit file page
-     * @param array $file
      */
-    protected function setTitleEditFile(array $file)
+    protected function setTitleEditFile()
     {
-        if (isset($file['file_id'])) {
-            $title = $this->text('Edit file %title', array('%title' => $file['title']));
+        if (isset($this->data_file['file_id'])) {
+            $title = $this->text('Edit file %title', array('%title' => $this->data_file['title']));
         } else {
             $title = $this->text('Add file');
         }

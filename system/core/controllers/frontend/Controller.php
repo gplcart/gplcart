@@ -133,6 +133,8 @@ class Controller extends BaseController
         $this->setFrontendMenu();
 
         $this->hook->fire('init.frontend', $this);
+
+        $this->controlHttpStatus();
     }
 
     /**
@@ -140,31 +142,14 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        /* @var $price \gplcart\core\models\Price */
         $this->price = Container::instance('gplcart\\core\\models\\Price');
-
-        /* @var $image \gplcart\core\models\Image */
         $this->image = Container::instance('gplcart\\core\\models\\Image');
-
-        /* @var $cart \gplcart\core\models\Cart */
         $this->cart = Container::instance('gplcart\\core\\models\\Cart');
-
-        /* @var $product \gplcart\core\models\Product */
         $this->product = Container::instance('gplcart\\core\\models\\Product');
-
-        /* @var $compare \gplcart\core\models\Compare */
         $this->compare = Container::instance('gplcart\\core\\models\\Compare');
-
-        /* @var $wishlist \gplcart\core\models\Wishlist */
         $this->wishlist = Container::instance('gplcart\\core\\models\\Wishlist');
-
-        /* @var $category \gplcart\core\models\Category */
         $this->category = Container::instance('gplcart\\core\\models\\Category');
-
-        /* @var $trigger \gplcart\core\models\Trigger */
         $this->trigger = Container::instance('gplcart\\core\\models\\Trigger');
-
-        /* @var $collection_item \gplcart\core\models\CollectionItem */
         $this->collection_item = Container::instance('gplcart\\core\\models\\CollectionItem');
     }
 

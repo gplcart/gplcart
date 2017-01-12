@@ -361,7 +361,6 @@ class Controller
 
         $this->setDefaultJsAssets();
         $this->setThemeProperties();
-
         $this->setLanguageProperties();
 
         $this->setDefaultData();
@@ -369,6 +368,16 @@ class Controller
         $this->controlMaintenanceMode();
 
         $this->hook->fire('init', $this);
+    }
+
+    /**
+     * 
+     */
+    protected function controlHttpStatus()
+    {
+        if (isset($this->http_status)) {
+            $this->outputHttpStatus($this->http_status);
+        }
     }
 
     /**

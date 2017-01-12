@@ -48,7 +48,6 @@
                 },
                 success: function (response) {
                     if (typeof response === 'object') {
-
                         for (g in response) {
                             options += '<optgroup label="' + g + '">';
                             cats = response[g];
@@ -62,10 +61,8 @@
                     }
                 },
                 complete: function () {
-
                     store = store.prop('disabled', false);
                     category = category.prop('disabled', false);
-
                     Backend.include.page.helper.selectpickerRefresh(store);
                     Backend.include.page.helper.selectpickerRefresh(category);
                 }

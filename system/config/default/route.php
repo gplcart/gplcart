@@ -568,8 +568,15 @@ $routes['admin/content/field/value/(\d+)'] = array(
     )
 );
 
-$routes['admin/content/field/value/(\d+)/(\w+)'] = array(
-    'access' => 'field_value',
+$routes['admin/content/field/value/(\d+)/add'] = array(
+    'access' => 'field_value_add',
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\backend\\FieldValue', 'editFieldValue')
+    )
+);
+
+$routes['admin/content/field/value/(\d+)/(\d+)/edit'] = array(
+    'access' => 'field_value_edit',
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\FieldValue', 'editFieldValue')
     )

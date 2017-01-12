@@ -36,9 +36,7 @@
                 };
 
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
-
                     response($.map(data, function (value, key) {
-
                         return {
                             value: value.email,
                             label: value.email
@@ -83,7 +81,6 @@
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
 
                     response($.map(data, function (value, key) {
-
                         return {
                             value: value.product_id,
                             label: value.title ? value.title + ' (' + value.product_id + ')' : '--'

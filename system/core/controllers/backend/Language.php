@@ -18,6 +18,12 @@ class Language extends BackendController
 {
 
     /**
+     * The current updating language
+     * @var array
+     */
+    protected $data_language = array();
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -31,28 +37,25 @@ class Language extends BackendController
      */
     public function editLanguage($code = null)
     {
-        $language = $this->getLanguage($code);
-        $default = $this->language->getDefault();
-        $can_delete = $this->canDeleteLanguage($language);
+        $this->setLanguage($code);
 
-        $this->setData('language', $language);
-        $this->setData('can_delete', $can_delete);
-        $this->setData('default_language', $default);
-
-        $this->submitLanguage($language);
-
-        $this->setTitleEditLanguage($language);
+        $this->setTitleEditLanguage();
         $this->setBreadcrumbEditLanguage();
+
+        $this->setData('language', $this->data_language);
+        $this->setData('can_delete', $this->canDeleteLanguage());
+        $this->setData('default_language', $this->language->getDefault());
+
+        $this->submitLanguage();
         $this->outputEditLanguage();
     }
 
     /**
      * Whether the language can be deleted
-     * @return type
      */
-    protected function canDeleteLanguage(array $language)
+    protected function canDeleteLanguage()
     {
-        return (isset($language['code']) && $this->access('language_delete'));
+        return (isset($this->data_language['code']) && $this->access('language_delete'));
     }
 
     /**
@@ -60,7 +63,7 @@ class Language extends BackendController
      * @param string $code
      * @return array
      */
-    protected function getLanguage($code)
+    protected function setLanguage($code)
     {
         if (empty($code)) {
             return array();
@@ -72,18 +75,18 @@ class Language extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_language = $language;
         return $language;
     }
 
     /**
      * Saves a submitted language
-     * @param array $language
-     * @return null|void
+     * @return null
      */
-    protected function submitLanguage(array $language)
+    protected function submitLanguage()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteLanguage($language);
+            return $this->deleteLanguage();
         }
 
         if (!$this->isPosted('save')) {
@@ -91,29 +94,29 @@ class Language extends BackendController
         }
 
         $this->setSubmitted('language');
-        $this->validateLanguage($language);
+        $this->validateLanguage();
 
         if ($this->hasErrors('language')) {
             return null;
         }
 
-        if (isset($language['code'])) {
-            return $this->updateLanguage($language);
+        if (isset($this->data_language['code'])) {
+            return $this->updateLanguage();
         }
 
-        return $this->addLanguage();
+        $this->addLanguage();
+        return null;
     }
 
     /**
      * Deletes a language
-     * @param array $language
      * @return null
      */
-    protected function deleteLanguage(array $language)
+    protected function deleteLanguage()
     {
         $this->controlAccess('language_delete');
 
-        $deleted = $this->language->delete($language['code']);
+        $deleted = $this->language->delete($this->data_language['code']);
 
         if ($deleted) {
             $message = $this->text('Language has been deleted');
@@ -126,26 +129,24 @@ class Language extends BackendController
 
     /**
      * Validates a language
-     * @param array $language
      */
-    protected function validateLanguage(array $language)
+    protected function validateLanguage()
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
-        $this->setSubmitted('update', $language);
+        $this->setSubmitted('update', $this->data_language);
         $this->validate('language');
     }
 
     /**
      * Updates a language
-     * @param array $language
      */
-    protected function updateLanguage(array $language)
+    protected function updateLanguage()
     {
         $this->controlAccess('language_edit');
 
         $submitted = $this->getSubmitted();
-        $this->language->update($language['code'], $submitted);
+        $this->language->update($this->data_language['code'], $submitted);
 
         $message = $this->text('Language has been updated');
         $this->redirect('admin/settings/language', $message, 'success');
@@ -167,14 +168,13 @@ class Language extends BackendController
 
     /**
      * Sets titles on the edit language page
-     * @param array $language
      */
-    protected function setTitleEditLanguage(array $language)
+    protected function setTitleEditLanguage()
     {
         $title = $this->text('Add language');
-        
-        if (isset($language['code'])) {
-            $vars = array('%name' => $language['native_name']);
+
+        if (isset($this->data_language['code'])) {
+            $vars = array('%name' => $this->data_language['native_name']);
             $title = $this->text('Edit language %name', $vars);
         }
 
@@ -214,13 +214,12 @@ class Language extends BackendController
      */
     public function listLanguage()
     {
-        $this->refreshLanguage();
-
-        $languages = $this->language->getList();
-        $this->setData('languages', $languages);
-
         $this->setTitleListLanguage();
         $this->setBreadcrumbListLanguage();
+
+        $this->refreshLanguage();
+
+        $this->setData('languages', $this->language->getList());
         $this->outputListLanguage();
     }
 
@@ -236,12 +235,12 @@ class Language extends BackendController
             return null;
         }
 
+        $this->controlAccess('language_edit');
+
         $this->language->refresh($code);
 
-        $message = $this->text('Cache for language @code has been deleted', array(
-            '@code' => $code
-        ));
-
+        $vars = array('@code' => $code);
+        $message = $this->text('Cache for language @code has been deleted', $vars);
         $this->redirect('', $message, 'success');
     }
 

@@ -359,8 +359,8 @@
     Backend.include.product.attach.autocompleteRelated = function () {
 
         var params, html, input = $('.related-product');
-        
-        if(input.length === 0){
+
+        if (input.length === 0) {
             return;
         }
 

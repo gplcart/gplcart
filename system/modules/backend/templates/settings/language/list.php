@@ -7,15 +7,15 @@
  */
 ?>
 <div class="panel panel-default">
+  <?php if ($this->access('language_add')) { ?>
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
-      <?php if ($this->access('language_add')) { ?>
       <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/language/add"); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
-      <?php } ?>
     </div>
   </div>
+  <?php } ?>
   <div class="panel-body table-responsive">
     <table class="table languages">
       <thead>

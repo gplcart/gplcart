@@ -32,6 +32,12 @@ class Filter extends BackendController
     protected $role;
 
     /**
+     * The current filter data to be edited
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
      * Controller
      * @param FilterModel $filter
      * @param UserRoleModel $role
@@ -50,78 +56,74 @@ class Filter extends BackendController
      */
     public function editFilter($filter_id)
     {
-        $roles = $this->getUserRoleFilter();
-        $filter = $this->getFilterFilter($filter_id);
+        $this->setFilterFilter($filter_id);
 
-        $this->setData('roles', $roles);
-        $this->setData('filter', $filter);
-
-        $this->submitFilter($filter);
-
-        $this->setTitleEditFilter($filter);
+        $this->setTitleEditFilter();
         $this->setBreadcrumbEditFilter();
+
+        $this->setData('filter', $this->data_filter);
+        $this->setData('roles', $this->getUserRoleFilter());
+
+        $this->submitFilter();
         $this->outputEditFilter();
     }
 
     /**
      * Handles a submitted filter data
-     * @param array $filter
      * @return null
      */
-    protected function submitFilter(array $filter)
+    protected function submitFilter()
     {
         if (!$this->isPosted('save')) {
             return null;
         }
 
         $this->setSubmitted('filter');
-        $this->validateFilter($filter);
+        $this->validateFilter();
 
         if ($this->hasErrors('filter')) {
             return null;
         }
 
-        $this->updateFilter($filter);
+        $this->updateFilter();
         return null;
     }
 
     /**
      * Validates a filter
-     * @param array $filter
      */
-    protected function validateFilter(array $filter)
+    protected function validateFilter()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $filter);
+        $this->setSubmitted('update', $this->data_filter);
         $this->validate('filter');
     }
 
     /**
      * Updates a filter
-     * @param array $filter
-     * @return void
      */
-    protected function updateFilter(array $filter)
+    protected function updateFilter()
     {
+        $this->controlAccess('filter_edit');
+
         $submitted = $this->getSubmitted();
-        $result = $this->filter->update($filter['filter_id'], $submitted);
+        $result = $this->filter->update($this->data_filter['filter_id'], $submitted);
 
         if (empty($result)) {
             $message = $this->text('An error occurred');
-            return $this->redirect('', $message, 'warning');
+            $this->redirect('', $message, 'warning');
         }
 
         $message = $this->text('Filter has been updated');
-        return $this->redirect('admin/settings/filter', $message, 'success');
+        $this->redirect('admin/settings/filter', $message, 'success');
     }
 
     /**
      * Sets title on the edit filter page
-     * @param array $filter
      */
-    protected function setTitleEditFilter(array $filter)
+    protected function setTitleEditFilter()
     {
-        $vars = array('%name' => $filter['name']);
+        $vars = array('%name' => $this->data_filter['name']);
         $text = $this->text('Edit filter %name', $vars);
         $this->setTitle($text);
     }
@@ -159,7 +161,7 @@ class Filter extends BackendController
      * @param integer $filter_id
      * @return array
      */
-    protected function getFilterFilter($filter_id)
+    protected function setFilterFilter($filter_id)
     {
         $filter = $this->filter->get($filter_id);
 
@@ -167,6 +169,7 @@ class Filter extends BackendController
             $this->outputHttpStatus(403);
         }
 
+        $this->data_filter = $filter;
         return $filter;
     }
 
@@ -191,12 +194,10 @@ class Filter extends BackendController
      */
     public function listFilter()
     {
-        $filters = $this->getListFilter();
-
-        $this->setData('filters', $filters);
-
         $this->setTitleListFilter();
         $this->setBreadcrumbListFilter();
+
+        $this->setData('filters', $this->getListFilter());
         $this->outputListFilter();
     }
 

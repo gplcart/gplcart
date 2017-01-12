@@ -147,18 +147,28 @@ class Field extends BackendController
     {
         $field = $this->getField($field_id);
 
-        $types = $this->field->getTypes();
-        $widget_types = $this->field->getWidgetTypes();
-
         $this->setData('field', $field);
-        $this->setData('types', $types);
-        $this->setData('widget_types', $widget_types);
+        $this->setData('types', $this->field->getTypes());
+        $this->setData('can_delete', $this->canDeleteField($field));
+        $this->setData('widget_types', $this->field->getWidgetTypes());
 
         $this->submitField($field);
 
         $this->setTitleEditField($field);
         $this->setBreadcrumbEditField();
         $this->outputEditField();
+    }
+
+    /**
+     * Whether the field can be deleted
+     * @param array $field
+     * @return bool
+     */
+    protected function canDeleteField(array $field)
+    {
+        return (isset($field['field_id'])//
+                && $this->field->canDelete($field['field_id'])//
+                && $this->access('field_delete'));
     }
 
     /**

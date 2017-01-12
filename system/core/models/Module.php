@@ -225,6 +225,10 @@ class Module extends Model
             return $result_module_id;
         }
 
+        if ($modules[$module_id]['type'] === 'installer') {
+            return $this->language->text('Cannot install/enable installer modules on runtime');
+        }
+
         return true;
     }
 

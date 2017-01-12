@@ -37,8 +37,7 @@
                     type: 'POST',
                     url: GplCart.settings.urn,
                     success: function (data) {
-
-                        if ('success' in data) {
+                        if (!$.isEmptyObject() && 'success' in data) {
                             Backend.ui.alert(data.success, 'success');
                             // update visible weight values
                             $.each(weight, function (i, v) {
