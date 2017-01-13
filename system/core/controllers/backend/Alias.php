@@ -42,21 +42,19 @@ class Alias extends BackendController
     {
         $this->actionAlias();
 
+        $this->setTitleListAlias();
+        $this->setBreadcrumbListAlias();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalAlias($query);
-        $limit = $this->setPager($total, $query);
-
-        $keys = $this->alias->getIdKeys();
-        $aliases = $this->getListAlias($limit, $query);
-
-        $this->setData('id_keys', $keys);
-        $this->setData('aliases', $aliases);
 
         $filters = array('id_value', 'id_key', 'alias', 'alias_id');
         $this->setFilter($filters, $query);
 
-        $this->setTitleListAlias();
-        $this->setBreadcrumbListAlias();
+        $total = $this->getTotalAlias($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('id_keys', $this->alias->getIdKeys());
+        $this->setData('aliases', $this->getListAlias($limit, $query));
         $this->outputListAlias();
     }
 
@@ -85,8 +83,6 @@ class Alias extends BackendController
             $message = $this->text('Deleted %num aliases', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**

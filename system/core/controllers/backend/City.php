@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\City as CityModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\State as StateModel;
 use gplcart\core\models\Zone as ZoneModel;
+use gplcart\core\models\City as CityModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Country as CountryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -46,6 +46,24 @@ class City extends BackendController
     protected $zone;
 
     /**
+     * The current country state
+     * @var array
+     */
+    protected $data_state = array();
+
+    /**
+     * The current city
+     * @var array
+     */
+    protected $data_city = array();
+
+    /**
+     * The current country
+     * @var array
+     */
+    protected $data_country = array();
+
+    /**
      * Constructor
      * @param CountryModel $country
      * @param StateModel $state
@@ -70,25 +88,25 @@ class City extends BackendController
      */
     public function listCity($country_code, $state_id)
     {
-        $state = $this->getStateCity($state_id);
-        $country = $this->getCountryCity($country_code);
+        $this->setStateCity($state_id);
+        $this->setCountryCity($country_code);
 
         $this->actionCity();
 
+        $this->setTitleListCity();
+        $this->setBreadcrumbListCity();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalCity($state_id, $query);
-        $limit = $this->setPager($total, $query);
-        $cities = $this->getListCity($limit, $query, $state_id);
-
-        $this->setData('state', $state);
-        $this->setData('cities', $cities);
-        $this->setData('country', $country);
-
         $allowed = array('city_id', 'name', 'status');
         $this->setFilter($allowed, $query);
 
-        $this->setTitleListCity($state);
-        $this->setBreadcrumbListCity($country);
+        $total = $this->getTotalCity($state_id, $query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('state', $this->data_state);
+        $this->setData('country', $this->data_country);
+        $this->setData('cities', $this->getListCity($limit, $query, $state_id));
+
         $this->outputListCity();
     }
 
@@ -97,7 +115,7 @@ class City extends BackendController
      * @param integer $state_id
      * @return array
      */
-    protected function getStateCity($state_id)
+    protected function setStateCity($state_id)
     {
         $state = $this->state->get($state_id);
 
@@ -105,6 +123,7 @@ class City extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_state = $state;
         return $state;
     }
 
@@ -113,7 +132,7 @@ class City extends BackendController
      * @param string $country_code
      * @return array
      */
-    protected function getCountryCity($country_code)
+    protected function setCountryCity($country_code)
     {
         $country = $this->country->get($country_code);
 
@@ -121,6 +140,7 @@ class City extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_country = $country;
         return $country;
     }
 
@@ -140,7 +160,6 @@ class City extends BackendController
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
-
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('city_edit')) {
@@ -161,8 +180,6 @@ class City extends BackendController
             $message = $this->text('Cities have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -173,7 +190,9 @@ class City extends BackendController
      */
     protected function getTotalCity($state_id, array $query)
     {
-        $options = array('count' => true, 'state_id' => $state_id);
+        $options = array(
+            'count' => true, 'state_id' => $state_id);
+
         $options += $query;
         return (int) $this->city->getList($options);
     }
@@ -187,27 +206,27 @@ class City extends BackendController
      */
     protected function getListCity(array $limit, array $query, $state_id)
     {
-        $options = array('limit' => $limit, 'state_id' => $state_id);
+        $options = array(
+            'limit' => $limit, 'state_id' => $state_id);
+
         $options += $query;
         return $this->city->getList($options);
     }
 
     /**
      * Sets title on the city overview page
-     * @param array $state
      */
-    protected function setTitleListCity(array $state)
+    protected function setTitleListCity()
     {
-        $vars = array('%state' => $state['name']);
+        $vars = array('%state' => $this->data_state['name']);
         $text = $this->text('Cities of state %state', $vars);
         $this->setTitle($text);
     }
 
     /**
      * Sets breadcrumbs on the city overview page
-     * @param array $country
      */
-    protected function setBreadcrumbListCity(array $country)
+    protected function setBreadcrumbListCity()
     {
         $breadcrumbs = array();
 
@@ -222,10 +241,8 @@ class City extends BackendController
         );
 
         $breadcrumbs[] = array(
-            'url' => $this->url("admin/settings/states/{$country['code']}"),
-            'text' => $this->text('States of %country', array(
-                '%country' => $country['name']
-            ))
+            'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
+            'text' => $this->text('States of %country', array('%country' => $this->data_country['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -247,21 +264,29 @@ class City extends BackendController
      */
     public function editCity($country_code, $state_id, $city_id = null)
     {
-        $city = $this->getCity($city_id);
-        $state = $this->getStateCity($state_id);
-        $country = $this->getCountryCity($country_code);
-        $zones = $this->zone->getList(array('status' => 1));
+        $this->setCity($city_id);
+        $this->setStateCity($state_id);
+        $this->setCountryCity($country_code);
 
-        $this->setData('city', $city);
-        $this->setData('state', $state);
-        $this->setData('zones', $zones);
-        $this->setData('country', $country);
-
-        $this->submitCity($country, $state, $city);
-
-        $this->setTitleEditCity($city);
+        $this->setTitleEditCity();
         $this->setBreadcrumbEditCity();
+
+        $this->setData('city', $this->data_city);
+        $this->setData('state', $this->data_state);
+        $this->setData('country', $this->data_country);
+        $this->setData('zones', $this->getZonesCity());
+
+        $this->submitCity();
         $this->outputEditCity();
+    }
+
+    /**
+     * Returns an array of enabled zones
+     * @return array
+     */
+    protected function getZonesCity()
+    {
+        return $this->zone->getList(array('status' => 1));
     }
 
     /**
@@ -269,7 +294,7 @@ class City extends BackendController
      * @param integer $city_id
      * @return array
      */
-    protected function getCity($city_id)
+    protected function setCity($city_id)
     {
         if (!is_numeric($city_id)) {
             return array();
@@ -281,20 +306,19 @@ class City extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_city = $city;
         return $city;
     }
 
     /**
      * Saves an array of submitted city
-     * @param array $country
-     * @param array $state
-     * @param array $city
-     * @return mixed
+     * @return null
      */
-    protected function submitCity(array $country, array $state, array $city)
+    protected function submitCity()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteCity($country, $state, $city);
+            $this->deleteCity();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -302,98 +326,83 @@ class City extends BackendController
         }
 
         $this->setSubmitted('city');
-        $this->validateCity($country, $state, $city);
+        $this->validateCity();
 
         if ($this->hasErrors('city')) {
             return null;
         }
 
-        if (isset($city['city_id'])) {
-            return $this->updateCity($country, $state, $city);
+        if (isset($this->data_city['city_id'])) {
+            $this->updateCity();
+            return null;
         }
 
-        return $this->addCity($country, $state);
+        $this->addCity();
     }
 
     /**
      * Deletes a city
-     * @param array $country
-     * @param array $state
-     * @param array $city
      */
-    protected function deleteCity(array $country, array $state, array $city)
+    protected function deleteCity()
     {
         $this->controlAccess('city_delete');
 
-        $deleted = $this->city->delete($city['city_id']);
+        $deleted = $this->city->delete($this->data_city['city_id']);
 
         if ($deleted) {
 
-            $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
-            $message = $this->text('City %name has been deleted', array(
-                '%name' => $city['name']
-            ));
+            $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
+            $vars = array('%name' => $this->data_city['name']);
+            $message = $this->text('City %name has been deleted', $vars);
 
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Cannot delete city %name.', array(
-            '%name' => $city['name']
-        ));
+        $vars = array('%name' => $city['name']);
+        $message = $this->text('Cannot delete city %name.', $vars);
 
         $this->redirect('', $message, 'warning');
     }
 
     /**
      * Validates an array of submitted city data
-     * @param array $country
-     * @param array $state
-     * @param array $city
      */
-    protected function validateCity(array $country, array $state, array $city)
+    protected function validateCity()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $city);
-        $this->setSubmitted('country', $country['code']);
-        $this->setSubmitted('state_id', $state['state_id']);
+        $this->setSubmitted('update', $this->data_city);
+        $this->setSubmitted('country', $this->data_country['code']);
+        $this->setSubmitted('state_id', $this->data_state['state_id']);
 
         $this->validate('city');
     }
 
     /**
      * Updates a city
-     * @param array $country
-     * @param array $state
-     * @param array $city
      */
-    protected function updateCity(array $country, array $state, array $city)
+    protected function updateCity()
     {
         $this->controlAccess('city_edit');
 
-        $submitted = $this->getSubmitted();
-        $this->city->update($city['city_id'], $submitted);
+        $this->city->update($this->data_city['city_id'], $this->getSubmitted());
 
-        $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
-        $message = $this->text('City %name has been updated', array(
-            '%name' => $city['name']
-        ));
+        $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
+        $vars = array('%name' => $this->data_city['name']);
+        $message = $this->text('City %name has been updated', $vars);
 
         $this->redirect($url, $message, 'success');
     }
 
     /**
      * Adds a new city
-     * @param array $country
-     * @param array $state
      */
-    protected function addCity(array $country, array $state)
+    protected function addCity()
     {
         $this->controlAccess('city_add');
 
-        $submitted = $this->getSubmitted();
-        $this->city->add($submitted);
+        $this->city->add($this->getSubmitted());
 
-        $url = "admin/settings/cities/{$country['code']}/{$state['state_id']}";
+        $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
         $message = $this->text('City has been added');
 
         $this->redirect($url, $message, 'success');
@@ -401,14 +410,14 @@ class City extends BackendController
 
     /**
      * Sets titles on the city edit page
-     * @param array $city
      */
-    protected function setTitleEditCity(array $city)
+    protected function setTitleEditCity()
     {
-        if (isset($city['city_id'])) {
-            $title = $this->text('Edit city %name', array('%name' => $city['name']));
-        } else {
-            $title = $this->text('Add city');
+        $title = $this->text('Add city');
+
+        if (isset($this->data_city['city_id'])) {
+            $vars = array('%name' => $this->data_city['name']);
+            $title = $this->text('Edit city %name', $vars);
         }
 
         $this->setTitle($title);

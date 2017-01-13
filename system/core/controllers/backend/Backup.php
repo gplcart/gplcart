@@ -43,21 +43,21 @@ class Backup extends BackendController
         $this->downloadBackup();
         $this->actionBackup();
 
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalBackup($query);
-        $limit = $this->setPager($total, $query);
-        $backups = $this->getListBackup($limit, $query);
-
-        $handlers = $this->getHandlersBackup();
-
-        $this->setData('backups', $backups);
-        $this->setData('handlers', $handlers);
-
-        $filters = $this->getAllowedFiltersBackup();
-        $this->setFilter($filters, $query);
-
         $this->setTitleListBackup();
         $this->setBreadcrumbListBackup();
+
+        $query = $this->getFilterQuery();
+
+        $filters = array('created', 'name', 'user_id', 'type',
+            'version', 'module_id', 'backup_id');
+
+        $this->setFilter($filters, $query);
+
+        $total = $this->getTotalBackup($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('handlers', $this->getHandlersBackup());
+        $this->setData('backups', $this->getListBackup($limit, $query));
         $this->outputListBackup();
     }
 
@@ -67,24 +67,18 @@ class Backup extends BackendController
      */
     protected function downloadBackup()
     {
-        if (!$this->access('backup_download')) {
-            return null;
-        }
-
         $backup_id = $this->request->get('download');
 
         if (empty($backup_id)) {
             return null;
         }
 
+        $this->controlAccess('backup_download');
         $backup = $this->backup->get($backup_id);
 
-        if (empty($backup['path'])) {
-            return null;
+        if (!empty($backup['path'])) {
+            $this->response->download(GC_FILE_DIR . "/{$backup['path']}");
         }
-
-        $this->response->download(GC_FILE_DIR . "/{$backup['path']}");
-        return null;
     }
 
     /**
@@ -103,7 +97,6 @@ class Backup extends BackendController
 
         $deleted = 0;
         foreach ($selected as $id) {
-
             if ($action === 'delete' && $this->access('backup_delete')) {
                 $deleted += (int) $this->backup->delete($id);
             }
@@ -113,8 +106,6 @@ class Backup extends BackendController
             $message = $this->text('Backups have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -146,16 +137,6 @@ class Backup extends BackendController
     protected function outputListBackup()
     {
         $this->output('tool/backup/list');
-    }
-
-    /**
-     * Returns an array of allowed filters for list of theme backups
-     * @return array
-     */
-    protected function getAllowedFiltersBackup()
-    {
-        return array('created', 'name', 'user_id', 'type',
-            'version', 'module_id', 'backup_id');
     }
 
     /**
