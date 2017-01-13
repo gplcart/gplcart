@@ -32,6 +32,12 @@ class ProductClass extends BackendController
     protected $field;
 
     /**
+     * The current product class
+     * @var array
+     */
+    protected $data_product_class = array();
+
+    /**
      * Constructor
      * @param ProductClassModel $product_class
      * @param FieldModel $field
@@ -52,18 +58,18 @@ class ProductClass extends BackendController
     {
         $this->actionProductClass();
 
+        $this->setTitleListProductClass();
+        $this->setBreadcrumbListProductClass();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalProductClass($query);
-        $limit = $this->setPager($total, $query);
-        $classes = $this->getListProductClass($limit, $query);
 
         $allowed = array('title', 'status', 'product_class_id');
         $this->setFilter($allowed, $query);
 
-        $this->setData('classes', $classes);
+        $total = $this->getTotalProductClass($query);
+        $limit = $this->setPager($total, $query);
 
-        $this->setTitleListProductClass();
-        $this->setBreadcrumbListProductClass();
+        $this->setData('classes', $this->getListProductClass($limit, $query));
         $this->outputListProductClass();
     }
 
@@ -94,16 +100,14 @@ class ProductClass extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Updated %num product classes', array(
-                '%num' => $updated
-            ));
+            $vars = array('%num' => $updated);
+            $message = $this->text('Updated %num product classes', $vars);
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num product classes', array(
-                '%num' => $deleted
-            ));
+            $vars = array('%num' => $deleted);
+            $message = $this->text('Deleted %num product classes', $vars);
             $this->setMessage($message, 'success', true);
         }
 
@@ -168,13 +172,14 @@ class ProductClass extends BackendController
      */
     public function editProductClass($product_class_id = null)
     {
-        $product_class = $this->getProductClass($product_class_id);
-        $this->setData('product_class', $product_class);
+        $this->setProductClass($product_class_id);
 
-        $this->submitProductClass($product_class);
-
-        $this->setTitleEditProductClass($product_class);
+        $this->setTitleEditProductClass();
         $this->setBreadcrumbEditProductClass();
+
+        $this->setData('product_class', $this->data_product_class);
+
+        $this->submitProductClass();
         $this->outputEditProductClass();
     }
 
@@ -183,7 +188,7 @@ class ProductClass extends BackendController
      * @param integer $product_class_id
      * @return array
      */
-    protected function getProductClass($product_class_id)
+    protected function setProductClass($product_class_id)
     {
         if (!is_numeric($product_class_id)) {
             return array();
@@ -195,18 +200,19 @@ class ProductClass extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_product_class = $product_class;
         return $product_class;
     }
 
     /**
      * Saves a submitted product class
-     * @param array $product_class
-     * @return null|void
+     * @return null
      */
-    protected function submitProductClass(array $product_class)
+    protected function submitProductClass()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteProductClass($product_class);
+            $this->deleteProductClass();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -214,28 +220,28 @@ class ProductClass extends BackendController
         }
 
         $this->setSubmitted('product_class');
-        $this->validateProductClass($product_class);
+        $this->validateProductClass();
 
         if ($this->hasErrors('product_class')) {
             return null;
         }
 
-        if (isset($product_class['product_class_id'])) {
-            return $this->updateProductClass($product_class);
+        if (isset($this->data_product_class['product_class_id'])) {
+            $this->updateProductClass();
+            return null;
         }
 
-        return $this->addProductClass();
+        $this->addProductClass();
     }
 
     /**
      * Deletes a product class
-     * @param array $product_class
      */
-    protected function deleteProductClass(array $product_class)
+    protected function deleteProductClass()
     {
         $this->controlAccess('product_class_delete');
 
-        $deleted = $this->product_class->delete($product_class['product_class_id']);
+        $deleted = $this->product_class->delete($this->data_product_class['product_class_id']);
 
         if ($deleted) {
             $message = $this->text('Product class has been deleted');
@@ -248,25 +254,23 @@ class ProductClass extends BackendController
 
     /**
      * Validates a products class
-     * @param array $product_class
      */
-    protected function validateProductClass(array $product_class)
+    protected function validateProductClass()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $product_class);
+        $this->setSubmitted('update', $this->data_product_class);
         $this->validate('product_class');
     }
 
     /**
      * Updates a product class with submitted values
-     * @param array $product_class
      */
-    protected function updateProductClass(array $product_class)
+    protected function updateProductClass()
     {
         $this->controlAccess('product_class_edit');
 
         $values = $this->getSubmitted();
-        $this->product_class->update($product_class['product_class_id'], $values);
+        $this->product_class->update($this->data_product_class['product_class_id'], $values);
 
         $message = $this->text('Product class has been updated');
         $this->redirect('admin/content/product-class', $message, 'success');
@@ -279,8 +283,7 @@ class ProductClass extends BackendController
     {
         $this->controlAccess('product_class_add');
 
-        $values = $this->getSubmitted();
-        $this->product_class->add($values);
+        $this->product_class->add($this->getSubmitted());
 
         $message = $this->text('Product class has been added');
         $this->redirect('admin/content/product-class', $message, 'success');
@@ -288,16 +291,14 @@ class ProductClass extends BackendController
 
     /**
      * Sets titles on the edit product class page
-     * @param array $product_class
      */
-    protected function setTitleEditProductClass(array $product_class)
+    protected function setTitleEditProductClass()
     {
         $title = $this->text('Add product class');
 
-        if (isset($product_class['product_class_id'])) {
-            $title = $this->text('Edit product class %name', array(
-                '%name' => $product_class['title']
-            ));
+        if (isset($this->data_product_class['product_class_id'])) {
+            $vars = array('%name' => $this->data_product_class['title']);
+            $title = $this->text('Edit product class %name', $vars);
         }
 
         $this->setTitle($title);
@@ -337,16 +338,17 @@ class ProductClass extends BackendController
      */
     public function fieldsProductClass($product_class_id)
     {
-        $product_class = $this->getProductClass($product_class_id);
+        $this->setProductClass($product_class_id);
+
+        $this->setTitleFieldsProductClass();
+        $this->setBreadcrumbFieldsProductClass();
+
         $fields = $this->getFieldsProductClass($product_class_id);
 
         $this->setData('fields', $fields);
-        $this->setData('product_class', $product_class);
+        $this->setData('product_class', $this->data_product_class);
 
-        $this->submitFieldsProductClass($product_class);
-
-        $this->setTitleFieldsProductClass($product_class);
-        $this->setBreadcrumbFieldsProductClass();
+        $this->submitFieldsProductClass();
         $this->outputFieldsProductClass();
     }
 
@@ -381,55 +383,50 @@ class ProductClass extends BackendController
      * Saves the product class fields
      * @param array $product_class
      */
-    protected function submitFieldsProductClass(array $product_class)
+    protected function submitFieldsProductClass()
     {
         if ($this->isPosted('save')) {
-            $this->updateFieldsProductClass($product_class);
+            $this->updateFieldsProductClass();
         }
     }
 
     /**
      * Updates fields for a product class
-     * @param array $product_class
      */
-    protected function updateFieldsProductClass(array $product_class)
+    protected function updateFieldsProductClass()
     {
         $this->controlAccess('product_class_edit');
 
         $fields = $this->setSubmitted('fields');
-        $product_class_id = $product_class['product_class_id'];
+        $id = $this->data_product_class['product_class_id'];
 
-        $this->product_class->deleteField($product_class_id);
+        $this->product_class->deleteField($id);
 
         foreach ($fields as $field_id => $field) {
 
-            if (!empty($field['remove'])) {
-                continue;
+            if (empty($field['remove'])) {
+
+                $field['field_id'] = $field_id;
+                $field['product_class_id'] = $id;
+                $field['required'] = !empty($field['required']);
+                $field['multiple'] = !empty($field['multiple']);
+
+                $this->product_class->addField($field);
             }
-
-            $field['field_id'] = $field_id;
-            $field['product_class_id'] = $product_class_id;
-            $field['required'] = !empty($field['required']);
-            $field['multiple'] = !empty($field['multiple']);
-
-            $this->product_class->addField($field);
         }
 
-        $options = array('%name' => $product_class['title']);
+        $options = array('%name' => $this->data_product_class['title']);
         $message = $this->text('Product class %name has been updated', $options);
         $this->redirect('', $message, 'success');
     }
 
     /**
      * Sets titles on the product class fields page
-     * @param array $product_class
      */
-    protected function setTitleFieldsProductClass(array $product_class)
+    protected function setTitleFieldsProductClass()
     {
-        $text = $this->text('Fields of %class', array(
-            '%class' => $product_class['title']
-        ));
-
+        $vars = array('%class' => $this->data_product_class['title']);
+        $text = $this->text('Fields of %class', $vars);
         $this->setTitle($text);
     }
 
@@ -467,73 +464,69 @@ class ProductClass extends BackendController
      */
     public function editFieldProductClass($product_class_id)
     {
-        $product_class = $this->getProductClass($product_class_id);
+        $this->setProductClass($product_class_id);
+
+        $this->setTitleEditFieldProductClass();
+        $this->setBreadcrumbEditFieldProductClass();
+
         $fields = $this->getFieldsProductClass($product_class_id, true);
 
         $this->setData('fields', $fields);
-        $this->setData('product_class', $product_class);
+        $this->setData('product_class', $this->data_product_class);
 
-        $this->submitEditFieldProductClass($product_class);
-
-        $this->setTitleEditFieldProductClass($product_class);
-        $this->setBreadcrumbEditFieldProductClass($product_class);
+        $this->submitEditFieldProductClass();
         $this->outputEditFieldProductClass();
     }
 
     /**
      * Adds fields to the given product class
-     * @param array $product_class
      */
-    protected function submitEditFieldProductClass(array $product_class)
+    protected function submitEditFieldProductClass()
     {
         if ($this->isPosted('save')) {
-            $this->addFieldProductClass($product_class);
+            $this->addFieldProductClass();
         }
     }
 
     /**
      * Adds fields to the product class
-     * @param array $product_class
      */
-    protected function addFieldProductClass(array $product_class)
+    protected function addFieldProductClass()
     {
         $this->controlAccess('product_class_edit');
 
         $fields = $this->setSubmitted('fields');
+        $id = $this->data_product_class['product_class_id'];
 
         foreach (array_values($fields) as $field_id) {
 
             $field = array(
                 'field_id' => $field_id,
-                'product_class_id' => $product_class['product_class_id']
+                'product_class_id' => $id
             );
 
             $this->product_class->addField($field);
         }
 
         $message = $this->text('Product class has been updated');
-        $path = "admin/content/product-class/field/{$product_class['product_class_id']}";
+        $path = "admin/content/product-class/field/$id";
         $this->redirect($path, $message, 'success');
     }
 
     /**
      * Sets titles on the add product class field page
-     * @param array $product_class
      */
-    protected function setTitleEditFieldProductClass(array $product_class)
+    protected function setTitleEditFieldProductClass()
     {
-        $text = $this->text('Add field to %class', array(
-            '%class' => $product_class['title']
-        ));
-
+        $vars = array('%class' => $this->data_product_class['title']);
+        $text = $this->text('Add field to %class', $vars);
         $this->setTitle($text);
     }
 
     /**
      * Sets breadcrumbs on the add product class field page
-     * @param array $product_class
      */
-    protected function setBreadcrumbEditFieldProductClass(array $product_class)
+    protected function setBreadcrumbEditFieldProductClass()
     {
         $breadcrumbs = array();
 
@@ -548,8 +541,8 @@ class ProductClass extends BackendController
         );
 
         $breadcrumbs[] = array(
-            'text' => $this->text('Fields of %s', array('%s' => $product_class['title'])),
-            'url' => $this->url("admin/content/product-class/field/{$product_class['product_class_id']}")
+            'text' => $this->text('Fields of %s', array('%s' => $this->data_product_class['title'])),
+            'url' => $this->url("admin/content/product-class/field/{$this->data_product_class['product_class_id']}")
         );
 
         $this->setBreadcrumbs($breadcrumbs);

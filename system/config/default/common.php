@@ -14,7 +14,7 @@ $config = array();
 
 # $config['account_order_limit'] = 5;
 # $config['admin_autocomplete_limit'] = 10; // Number of autocomplete suggestions for an admin
-# $config['admin_image_style'] = 2; // Image style for admin UI
+# $config['image_style_admin'] = 2; // Image style for admin UI
 # $config['admin_list_limit'] = 20; // Max number of items to be shown for an admin
 # $config['autocomplete_limit'] = 10; // Max number of items to be shown for customers
 # $config['dashboard_limit'] = 10; // Max number of items in to be shown on dashboard
@@ -70,7 +70,6 @@ $config = array();
 # $config['product_comparison_limit'] = 10; // Max products to compare
 # $config['product_height'] = 0;
 # $config['product_image_dirname'] = 'product';
-# $config['product_image_preset'] = 6;
 # $config['product_length'] = 0;
 # $config['product_recent_cookie_lifespan'] = 31536000;
 # $config['product_recent_limit'] = 12;
@@ -78,7 +77,6 @@ $config = array();
 # $config['product_sku_pattern'] = 'PRODUCT-%i';
 # $config['product_sku_placeholder'] = array('%i' => 'product_id');
 # $config['product_subtract'] = 0; // Default state of "Subtract" option when editing a product
-# $config['product_thumb_preset'] = 2;
 # $config['product_volume_unit'] = 'mm';
 # $config['product_weight'] = 0;
 # $config['product_weight_unit'] = 'g';
@@ -133,6 +131,7 @@ $config = array();
 
 # $config['compress_js'] = 0; // Aggregate JS files
 # $config['compress_css'] = 0; // Aggregate and compress CSS files
+# $config['gapi_browser_key'] = ''; // Google API browser key
 
 /**
  * End of configurable settings

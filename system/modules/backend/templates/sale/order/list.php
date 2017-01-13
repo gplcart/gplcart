@@ -197,7 +197,7 @@
 <div class="row">
   <div class="col-md-12">
     <?php echo $this->text('You have no orders.'); ?>
-    <?php if ($this->access('order_add')) { ?>
+    <?php if ($this->access('order_add') && $this->access('user')) { ?>
     <?php echo $this->text('You can add an order for an <a href="@url">existing user</a>', array('@url' => $this->url('admin/user/list'))); ?>
     <?php } ?>
   </div>

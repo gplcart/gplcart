@@ -9,11 +9,13 @@
 <?php if (!empty($classes)) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
-    <?php if ($this->access('product_class_edit') || $this->access('product_class_delete')) { ?>
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('product_class_edit') || $this->access('product_class_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('product_class_edit')) { ?>
         <li>
@@ -35,8 +37,8 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
-    <?php } ?>
     <?php if ($this->access('product_class_add')) { ?>    
     <div class="btn-group pull-right">
       <a class="btn btn-default" href="<?php echo $this->url('admin/content/product-class/add'); ?>">
@@ -49,20 +51,20 @@
     <table class="table product-classes">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_product_class_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
-          <th><?php echo $this->text('Actions'); ?></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($classes as $class) { ?>
+        <?php foreach ($classes as $id => $class) { ?>
         <tr>
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $class['product_class_id']; ?>">
+            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
-          <td class="middle"><?php echo $this->escape($class['product_class_id']); ?></td>
+          <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->escape($class['title']); ?></td>
           <td class="middle">
             <?php if (empty($class['status'])) { ?>

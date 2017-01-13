@@ -65,7 +65,8 @@ class Settings extends BackendController
             'smtp_host' => array('smtp.gmail.com'),
             'smtp_username' => '',
             'smtp_password' => '',
-            'smtp_port' => 587
+            'smtp_port' => 587,
+            'gapi_browser_key' => ''
         );
     }
 

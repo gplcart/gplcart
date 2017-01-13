@@ -24,6 +24,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Product extends BackendController
 {
+
     /**
      * Product model instance
      * @var \gplcart\core\models\Product $product
@@ -73,6 +74,12 @@ class Product extends BackendController
     protected $alias;
 
     /**
+     * The current updating product
+     * @var array
+     */
+    protected $data_product = array();
+
+    /**
      * Constructor
      * @param ProductModel $product
      * @param ProductClassModel $product_class
@@ -107,34 +114,24 @@ class Product extends BackendController
     {
         $this->actionProduct();
 
+        $this->setTitleListProduct();
+        $this->setBreadcrumbListProduct();
+
         $query = $this->getFilterQuery();
+
+        $filters = array('title', 'sku', 'price', 'stock', 'status',
+            'store_id', 'product_id', 'currency');
+
+        $this->setFilter($filters, $query);
+
         $total = $this->getTotalProduct($query);
         $limit = $this->setPager($total, $query);
 
-        $products = $this->getListProduct($limit, $query);
-        $stores = $this->store->getNames();
-        $currencies = $this->currency->getList();
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('products', $this->getListProduct($limit, $query));
+        $this->setData('currencies', $this->currency->getList());
 
-        $this->setData('stores', $stores);
-        $this->setData('products', $products);
-        $this->setData('currencies', $currencies);
-
-        $filters = $this->getAllowedFiltersProduct();
-
-        $this->setFilter($filters, $query);
-        $this->setTitleListProduct();
-        $this->setBreadcrumbListProduct();
         $this->outputListProduct();
-    }
-
-    /**
-     * Returns an array of allowed filters for product list
-     * @return array
-     */
-    protected function getAllowedFiltersProduct()
-    {
-        return array('title', 'sku', 'price', 'stock', 'status',
-            'store_id', 'product_id', 'currency');
     }
 
     /**
@@ -172,8 +169,6 @@ class Product extends BackendController
             $message = $this->text('Deleted %num products', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -207,9 +202,8 @@ class Product extends BackendController
         foreach ($products as &$product) {
             $product['view_url'] = '';
             if (isset($stores[$product['store_id']])) {
-                $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/product/{$product['product_id']}";
+                $url = $this->store->url($stores[$product['store_id']]);
+                $product['view_url'] = "$url/product/{$product['product_id']}";
             }
 
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
@@ -254,28 +248,28 @@ class Product extends BackendController
     public function editProduct($product_id = null)
     {
         $this->outputCategoriesProduct();
-        $product = $this->getProduct($product_id);
 
-        $stores = $this->store->getNames();
-        $currency = $this->currency->getDefault();
-        $subtract_default = $this->config->get('product_subtract', 0);
+        $this->setProduct($product_id);
 
-        $related = $this->getRelatedProduct($product);
-        $classes = $this->getClassesProduct();
-
-        $this->setData('stores', $stores);
-        $this->setData('product', $product);
-        $this->setData('related', $related);
-        $this->setData('classes', $classes);
-        $this->setData('default_currency', $currency);
-        $this->setData('subtract_default', $subtract_default);
-
-        $this->submitProduct($product);
-
-        $this->setDataEditProduct();
-        $this->setJsEditProduct($product);
-        $this->setTitleEditProduct($product);
+        $this->setTitleEditProduct();
         $this->setBreadcrumbEditProduct();
+
+        $this->setData('product', $this->data_product);
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('related', $this->getRelatedProduct());
+        $this->setData('classes', $this->getClassesProduct());
+        $this->setData('default_currency', $this->currency->getDefault());
+        $this->setData('subtract_default', $this->config->get('product_subtract', 0));
+
+        $this->submitProduct();
+
+        $this->setDataFieldsProduct();
+        $this->setDataAuthorProduct();
+        $this->setDataRelatedProduct();
+        $this->setDataCategoriesProduct();
+        $this->setDataImagesProduct();
+
+        $this->setJsEditProduct();
         $this->outputEditProduct();
     }
 
@@ -324,7 +318,7 @@ class Product extends BackendController
      * @param integer $product_id
      * @return array
      */
-    protected function getProduct($product_id)
+    protected function setProduct($product_id)
     {
         if (!is_numeric($product_id)) {
             return array();
@@ -336,7 +330,8 @@ class Product extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->prepareProduct($product);
+        $this->data_product = $this->prepareProduct($product);
+        return $this->data_product;
     }
 
     /**
@@ -346,51 +341,46 @@ class Product extends BackendController
      */
     protected function prepareProduct(array $product)
     {
-        if (!empty($product['combination'])) {
-
-            $preset = $this->config('admin_image_preset', 2);
-
-            foreach ($product['combination'] as &$combination) {
-
-                $combination['path'] = '';
-                $combination['thumb'] = '';
-
-                if (!empty($product['images'][$combination['file_id']])) {
-                    $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                    $combination['thumb'] = $this->image->url($preset, $combination['path']);
-                }
-
-                $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
-            }
-        }
-
         $product['alias'] = $this->alias->get('product_id', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
+
+        if (empty($product['combination'])) {
+            return $product;
+        }
+
+        $imagestyle = $this->config('image_style_admin', 2);
+
+        foreach ($product['combination'] as &$combination) {
+            $combination['path'] = $combination['thumb'] = '';
+            if (!empty($product['images'][$combination['file_id']])) {
+                $combination['path'] = $product['images'][$combination['file_id']]['path'];
+                $combination['thumb'] = $this->image->url($imagestyle, $combination['path']);
+            }
+
+            $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
+        }
         return $product;
     }
 
     /**
      * Returns an array of related products
-     * @param array $product
      * @return array
      */
-    protected function getRelatedProduct(array $product)
+    protected function getRelatedProduct()
     {
-        if (empty($product['product_id'])) {
+        if (empty($this->data_product['product_id'])) {
             return array();
         }
 
         $stores = $this->store->getList();
-        $products = $this->product->getRelated($product['product_id'], true, array(
-            'store_id' => $product['store_id']
-        ));
+        $options = array('store_id' => $this->data_product['store_id']);
+        $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
 
         foreach ($products as &$product) {
             $product['view_url'] = '';
             if (isset($stores[$product['store_id']])) {
-                $store = $stores[$product['store_id']];
-                $product['view_url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/product/{$product['product_id']}";
+                $url = $this->store->url($stores[$product['store_id']]);
+                $product['view_url'] = "$url/product/{$product['product_id']}";
             }
         }
 
@@ -399,13 +389,12 @@ class Product extends BackendController
 
     /**
      * Saves a product
-     * @param array $product
      * @return null|void
      */
-    protected function submitProduct(array $product)
+    protected function submitProduct()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteProduct($product);
+            return $this->deleteProduct();
         }
 
         if (!$this->isPosted('save')) {
@@ -414,14 +403,14 @@ class Product extends BackendController
 
         $this->setSubmitted('product', null, 'raw');
 
-        $this->validateProduct($product);
+        $this->validateProduct();
 
         if ($this->hasErrors('product')) {
             return null;
         }
 
-        if (isset($product['product_id'])) {
-            return $this->updateProduct($product);
+        if (isset($this->data_product['product_id'])) {
+            return $this->updateProduct();
         }
 
         return $this->addProduct();
@@ -429,14 +418,12 @@ class Product extends BackendController
 
     /**
      * Deletes a product
-     * @param array $product
-     * @return null
      */
-    protected function deleteProduct(array $product)
+    protected function deleteProduct()
     {
         $this->controlAccess('product_delete');
 
-        $deleted = $this->product->delete($product['product_id']);
+        $deleted = $this->product->delete($this->data_product['product_id']);
 
         if ($deleted) {
             $message = $this->text('Product has been deleted');
@@ -449,20 +436,19 @@ class Product extends BackendController
 
     /**
      * Validates an array of submitted product data
-     * @param array $product
      */
-    protected function validateProduct(array $product)
+    protected function validateProduct()
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('subtract');
-        $this->setSubmitted('update', $product);
+        $this->setSubmitted('update', $this->data_product);
 
-        if (isset($product['product_id'])) {
-            $this->setSubmitted('user_id', $product['user_id']);
-            $this->setSubmitted('created', $product['created']);
-            $this->setSubmitted('modified', $product['modified']);
-            $this->setSubmitted('product_id', $product['product_id']);
-            $this->setSubmitted('currency', $product['currency']);
+        if (isset($this->data_product['product_id'])) {
+            $this->setSubmitted('user_id', $this->data_product['user_id']);
+            $this->setSubmitted('created', $this->data_product['created']);
+            $this->setSubmitted('modified', $this->data_product['modified']);
+            $this->setSubmitted('currency', $this->data_product['currency']);
+            $this->setSubmitted('product_id', $this->data_product['product_id']);
         } else {
             $this->setSubmitted('user_id', $this->uid);
             $this->setSubmitted('currency', $this->currency->getDefault());
@@ -473,14 +459,13 @@ class Product extends BackendController
 
     /**
      * Updates a product with submitted values
-     * @param array $product
      */
-    protected function updateProduct(array $product)
+    protected function updateProduct()
     {
         $this->controlAccess('product_edit');
 
         $submitted = $this->getSubmitted();
-        $this->product->update($product['product_id'], $submitted);
+        $this->product->update($this->data_product['product_id'], $submitted);
 
         $this->deleteImagesProduct();
 
@@ -493,17 +478,9 @@ class Product extends BackendController
      */
     protected function deleteImagesProduct()
     {
-        $images = (array) $this->request->post('delete_image', array());
-
-        if (empty($images)) {
-            return null;
-        }
-
-        foreach (array_values($images) as $file_id) {
+        foreach ((array) $this->request->post('delete_image', array()) as $file_id) {
             $this->image->delete($file_id);
         }
-
-        return null;
     }
 
     /**
@@ -527,9 +504,9 @@ class Product extends BackendController
     }
 
     /**
-     * Renders the product field forms
+     * Sets product author data
      */
-    protected function setDataEditProduct()
+    protected function setDataAuthorProduct()
     {
         $user_id = $this->getData('product.user_id');
 
@@ -537,10 +514,26 @@ class Product extends BackendController
             $user = $this->user->get($user_id);
             $this->setData('product.author', $user['email']);
         }
+    }
 
+    /**
+     * Sets products categories data
+     */
+    protected function setDataCategoriesProduct()
+    {
+        $store_id = $this->getData('store_id');
+        $categories = $this->getListCategoryProduct($store_id);
+        $this->setData('categories', $categories);
+    }
+
+    /**
+     * Sets attributes/options product data
+     */
+    protected function setDataFieldsProduct()
+    {
         $output_field_form = false;
-        $product_class_id = $this->getData('product.product_class_id', 0);
         $get_product_class_id = $this->request->get('product_class_id');
+        $product_class_id = $this->getData('product.product_class_id', 0);
 
         if (isset($get_product_class_id)) {
             $output_field_form = true;
@@ -561,60 +554,68 @@ class Product extends BackendController
         if ($output_field_form) {
             $this->response->html($attributes . $options);
         }
+    }
 
+    /**
+     * Sets related product data
+     */
+    protected function setDataRelatedProduct()
+    {
         $related = $this->getData('product.related');
 
         if (!empty($related)) {
             $products = $this->product->getList(array('product_id' => $related));
             $this->setData('related', $products);
         }
+    }
 
+    /**
+     * Sets product attached data
+     * @return null
+     */
+    protected function setDataImagesProduct()
+    {
         $images = $this->getData('product.images');
 
-        if (!empty($images)) {
-
-            $preset = $this->config('admin_image_preset', 2);
-
-            foreach ($images as &$image) {
-                $image['thumb'] = $this->image->url($preset, $image['path']);
-                $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
-            }
-
-            $data = array(
-                'images' => $images,
-                'name_prefix' => 'product',
-                'languages' => $this->languages
-            );
-
-            $attached = $this->render('common/image/attache', $data);
-            $this->setData('attached_images', $attached);
+        if (empty($images)) {
+            return null;
         }
 
-        $store_id = $this->getData('store_id');
-        $categories = $this->getListCategoryProduct($store_id);
+        $imagestyle = $this->config('image_style_admin', 2);
 
-        $this->setData('categories', $categories);
+        foreach ($images as &$image) {
+            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
+            $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
+        }
+
+        $data = array(
+            'images' => $images,
+            'name_prefix' => 'product',
+            'languages' => $this->languages
+        );
+
+        $attached = $this->render('common/image/attache', $data);
+        $this->setData('attached_images', $attached);
     }
 
     /**
      * Sets Java scripts on the edit product page
-     * @param array $product
      */
-    protected function setJsEditProduct(array $product)
+    protected function setJsEditProduct()
     {
-        $this->setJsSettings('product', $product);
+        $this->setJsSettings('product', $this->data_product);
     }
 
     /**
      * Sets titles on the product edit form
-     * @param array $product
      */
-    protected function setTitleEditProduct(array $product)
+    protected function setTitleEditProduct()
     {
         $title = $this->text('Add product');
 
-        if (isset($product['product_id'])) {
-            $title = $this->text('Edit %title', array('%title' => $product['title']));
+        if (isset($this->data_product['product_id'])) {
+            $vars = array('%title' => $this->data_product['title']);
+            $title = $this->text('Edit %title', $vars);
         }
 
         $this->setTitle($title);

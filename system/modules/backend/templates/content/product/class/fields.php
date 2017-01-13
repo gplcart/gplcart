@@ -6,19 +6,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if (!empty($fields)) { ?>
 <form method="post" id="product-class-fields" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <div class="btn-toolbar pull-right">
-        <?php if (!empty($fields)) { ?>
         <button class="btn btn-default" name="save" value="1">
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
         </button>
-        <?php } ?>
-        <a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
-          <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-        </a>
       </div>
     </div>
     <div class="panel-body table-responsive">
@@ -33,13 +29,6 @@
           </tr>
         </thead>
         <tbody>
-          <?php if (empty($fields)) { ?>
-          <tr>
-            <td colspan="5">
-              <?php echo $this->text('This product class has no fields'); ?>
-            <td>
-          <tr>
-          <?php } else { ?>
           <?php foreach ($fields as $field_id => $field) { ?>
           <tr>
             <td class="middle">
@@ -67,9 +56,14 @@
             </td>
           </tr>
           <?php } ?>
-          <?php } ?>
         </tbody>
       </table>
     </div>
   </div>
 </form>
+<?php } else { ?>
+<?php echo $this->text('This product class has no fields'); ?>
+<a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
+  <?php echo $this->text('Add'); ?>
+</a>
+<?php } ?>

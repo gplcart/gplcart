@@ -67,21 +67,20 @@ class Image extends FrontendController
             $this->response->error404(false);
         }
 
-        $preset_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id";
-
+        $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id";
         $image_directory = pathinfo($image, PATHINFO_DIRNAME);
 
         if (!empty($image_directory)) {
-            $preset_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/$image_directory";
+            $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/$image_directory";
         }
 
-        $cached_image = $preset_directory . '/' . basename($image);
+        $cached_image = "$imagestyle_directory/" . basename($image);
 
         if (file_exists($cached_image)) {
             $this->response->file($cached_image, array('headers' => $this->headers($cached_image)));
         }
 
-        if (!file_exists($preset_directory) && !mkdir($preset_directory, 0755, true)) {
+        if (!file_exists($imagestyle_directory) && !mkdir($imagestyle_directory, 0755, true)) {
             $this->response->error404(false);
         }
 
@@ -105,7 +104,7 @@ class Image extends FrontendController
     {
         $timestamp = filemtime($file);
         $expires = (int) $this->config('image_cache_lifetime', 31536000); // 1 year
-        
+
         $headers = array(
             array('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp)),
             array('Cache-Control', "public, max-age=$expires")

@@ -46,6 +46,12 @@ class Page extends BackendController
     protected $image;
 
     /**
+     * The current page
+     * @var array
+     */
+    protected $data_page = array();
+
+    /**
      * Constructor
      * @param PageModel $page
      * @param CategoryModel $category
@@ -70,23 +76,22 @@ class Page extends BackendController
     {
         $this->actionPage();
 
+        $this->setTitleListPage();
+        $this->setBreadcrumbListPage();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalPage($query);
-
-        $limit = $this->setPager($total, $query);
-        $pages = $this->getListPage($limit, $query);
-        $stores = $this->store->getNames();
-
-        $this->setData('pages', $pages);
-        $this->setData('stores', $stores);
 
         $filters = array('title', 'store_id', 'page_id',
             'status', 'created', 'email');
 
         $this->setFilter($filters, $query);
 
-        $this->setTitleListPage();
-        $this->setBreadcrumbListPage();
+        $total = $this->getTotalPage($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('pages', $this->getListPage($limit, $query));
+        $this->setData('stores', $this->store->getNames());
+
         $this->outputListPage();
     }
 
@@ -168,12 +173,8 @@ class Page extends BackendController
         $pages = (array) $this->page->getList($query);
 
         foreach ($pages as &$page) {
-
-            $page['url'] = '';
             if (isset($stores[$page['store_id']])) {
-                $store = $stores[$page['store_id']];
-                $page['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/page/{$page['page_id']}";
+                $page['url'] = $this->store->url($stores[$page['store_id']]);
             }
         }
 
@@ -215,20 +216,19 @@ class Page extends BackendController
      */
     public function editPage($page_id = null)
     {
-        $page = $this->getPage($page_id);
+        $this->setPage($page_id);
 
         $this->actionPage();
 
-        $stores = $this->store->getNames();
+        $this->setTitleEditPage();
+        $this->setBreadcrumbEditPage();
 
-        $this->setData('page', $page);
-        $this->setData('stores', $stores);
+        $this->setData('page', $this->data_page);
+        $this->setData('stores', $this->store->getNames());
 
-        $this->submitPage($page);
+        $this->submitPage();
         $this->setDataEditPage();
 
-        $this->setTitleEditPage($page);
-        $this->setBreadcrumbEditPage();
         $this->outputEditPage();
     }
 
@@ -237,7 +237,7 @@ class Page extends BackendController
      * @param integer $page_id
      * @return array
      */
-    protected function getPage($page_id)
+    protected function setPage($page_id)
     {
         if (!is_numeric($page_id)) {
             return array();
@@ -249,7 +249,8 @@ class Page extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->preparePage($page);
+        $this->data_page = $this->preparePage($page);
+        return $this->data_page;
     }
 
     /**
@@ -277,13 +278,12 @@ class Page extends BackendController
 
     /**
      * Saves a submitted page
-     * @param array $page
-     * @return null|void
+     * @return null
      */
-    protected function submitPage(array $page = array())
+    protected function submitPage()
     {
         if ($this->isPosted('delete')) {
-            return $this->deletePage($page);
+            return $this->deletePage();
         }
 
         if (!$this->isPosted('save')) {
@@ -291,29 +291,28 @@ class Page extends BackendController
         }
 
         $this->setSubmitted('page', null, false);
-        $this->validatePage($page);
+        $this->validatePage();
 
         if ($this->hasErrors('page')) {
             return null;
         }
 
-        $this->deleteImagesPage();
-
-        if (isset($page['page_id'])) {
-            return $this->updatePage($page);
+        if (isset($this->data_page['page_id'])) {
+            $this->updatePage();
+            return null;
         }
 
-        return $this->addPage();
+        $this->addPage();
     }
 
     /**
      * Deletes a page
-     * @param array $page
      */
-    protected function deletePage(array $page)
+    protected function deletePage()
     {
         $this->controlAccess('page_delete');
-        $this->page->delete($page['page_id']);
+
+        $this->page->delete($this->data_page['page_id']);
 
         $message = $this->text('Page has been deleted');
         $this->redirect('admin/content/page', $message, 'success');
@@ -321,14 +320,13 @@ class Page extends BackendController
 
     /**
      * Validates a single page
-     * @param array $page
      */
-    protected function validatePage(array $page = array())
+    protected function validatePage()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $page);
+        $this->setSubmitted('update', $this->data_page);
 
-        if (empty($page['page_id'])) {
+        if (empty($this->data_page['page_id'])) {
             $this->setSubmitted('user_id', $this->uid);
         }
 
@@ -340,28 +338,22 @@ class Page extends BackendController
      */
     protected function deleteImagesPage()
     {
-        $images = (array) $this->request->post('delete_image');
-        $has_access = ($this->access('page_add') || $this->access('page_edit'));
-
-        if (!$has_access || empty($images)) {
-            return;
-        }
-
-        foreach ($images as $file_id) {
+        foreach ((array) $this->request->post('delete_image') as $file_id) {
             $this->image->delete($file_id);
         }
     }
 
     /**
      * Updates a page with submitted values
-     * @param array $page
      */
-    protected function updatePage(array $page)
+    protected function updatePage()
     {
         $this->controlAccess('page_edit');
 
         $submitted = $this->getSubmitted();
-        $this->page->update($page['page_id'], $submitted);
+        $this->page->update($this->data_page['page_id'], $submitted);
+
+        $this->deleteImagesPage();
 
         $message = $this->text('Page has been updated');
         $this->redirect('admin/content/page', $message, 'success');
@@ -383,6 +375,7 @@ class Page extends BackendController
 
     /**
      * Modifies page data before sending to templates
+     * @return null
      */
     protected function setDataEditPage()
     {
@@ -394,40 +387,39 @@ class Page extends BackendController
 
         $images = $this->getData('page.images');
 
-        if (!empty($images)) {
-
-            $preset = $this->config('admin_image_preset', 2);
-
-            foreach ($images as &$image) {
-                $image['thumb'] = $this->image->url($preset, $image['path']);
-                $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
-            }
-
-            $this->setData('page.images', $images);
-
-            $options = array(
-                'images' => $images,
-                'name_prefix' => 'page',
-                'languages' => $this->languages
-            );
-
-            $attached = $this->render('common/image/attache', $options);
-            $this->setData('attached_images', $attached);
+        if (empty($images)) {
+            return null;
         }
+
+        $imagestyle = $this->config('image_style_admin', 2);
+
+        foreach ($images as &$image) {
+            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
+            $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
+        }
+
+        $this->setData('page.images', $images);
+
+        $options = array(
+            'images' => $images,
+            'name_prefix' => 'page',
+            'languages' => $this->languages
+        );
+
+        $attached = $this->render('common/image/attache', $options);
+        $this->setData('attached_images', $attached);
     }
 
     /**
      * Sets titles on the page edit page
-     * @param $page
      */
-    protected function setTitleEditPage($page)
+    protected function setTitleEditPage()
     {
-        if (isset($page['page_id'])) {
-            $title = $this->text('Edit page %title', array(
-                '%title' => $page['title']
-            ));
-        } else {
-            $title = $this->text('Add page');
+        $title = $this->text('Add page');
+
+        if (isset($this->data_page['page_id'])) {
+            $vars = array('%title' => $this->data_page['title']);
+            $title = $this->text('Edit page %title', $vars);
         }
 
         $this->setTitle($title);

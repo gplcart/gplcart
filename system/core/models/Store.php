@@ -414,7 +414,6 @@ class Store extends Model
     public function url($store)
     {
         $scheme = $this->request->scheme();
-
         return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');
     }
 

@@ -11,7 +11,7 @@
   <?php if ($this->access('module_upload') || $this->access('marketplace')) { ?>
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
-      <?php if ($this->access('module_upload') && $this->access('file_upload')) { ?>
+      <?php if ($this->access('module_upload') && $this->access('file_upload') && $this->access('module_install')) { ?>
       <a class="btn btn-default" href="<?php echo $this->url('admin/module/upload'); ?>">
         <?php echo $this->text('Upload'); ?>
       </a>

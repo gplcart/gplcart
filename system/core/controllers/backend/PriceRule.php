@@ -46,6 +46,12 @@ class PriceRule extends BackendController
     protected $price;
 
     /**
+     * The current price rule
+     * @var array
+     */
+    protected $data_rule = array();
+
+    /**
      * Constructor
      * @param PriceRuleModel $rule
      * @param CurrencyModel $currency
@@ -68,33 +74,24 @@ class PriceRule extends BackendController
      */
     public function listPriceRule()
     {
+        $this->setTitleListPriceRule();
+        $this->setBreadcrumbListPriceRule();
+
         $this->actionPriceRule();
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalPriceRule($query);
-        $limit = $this->setPager($total, $query);
-        $rules = $this->getListPriceRule($limit, $query);
-        $stores = $this->store->getNames();
 
-        $this->setData('price_rules', $rules);
-        $this->setData('stores', $stores);
-
-        $filters = $this->getAllowedFiltersPriceRule();
+        $filters = array('name', 'code', 'value',
+            'value_type', 'weight', 'status');
 
         $this->setFilter($filters, $query);
-        $this->setTitleListPriceRule();
-        $this->setBreadcrumbListPriceRule();
-        $this->outputListPriceRule();
-    }
 
-    /**
-     * Returns an array of allowed filters for price rule listing
-     * @return array
-     */
-    protected function getAllowedFiltersPriceRule()
-    {
-        return array('name', 'code', 'value',
-            'value_type', 'weight', 'status');
+        $total = $this->getTotalPriceRule($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('price_rules', $this->getListPriceRule($limit, $query));
+        $this->outputListPriceRule();
     }
 
     /**
@@ -203,21 +200,18 @@ class PriceRule extends BackendController
      */
     public function editPriceRule($rule_id = null)
     {
-        $rule = $this->getPriceRule($rule_id);
+        $this->setPriceRule($rule_id);
 
-        $stores = $this->store->getList();
-        $triggers = $this->getTriggersPriceRule();
-        $currencies = $this->getCurrenciesPriceRule();
-
-        $this->setData('stores', $stores);
-        $this->setData('price_rule', $rule);
-        $this->setData('triggers', $triggers);
-        $this->setData('currencies', $currencies);
-
-        $this->submitPriceRule($rule);
-
-        $this->setTitleEditPriceRule($rule);
+        $this->setTitleEditPriceRule();
         $this->setBreadcrumbEditPriceRule();
+
+        $this->setData('price_rule', $this->data_rule);
+        $this->setData('stores', $this->store->getList());
+        $this->setData('triggers', $this->getTriggersPriceRule());
+        $this->setData('currencies', $this->getCurrenciesPriceRule());
+
+        $this->submitPriceRule();
+
         $this->outputEditPriceRule();
     }
 
@@ -244,7 +238,7 @@ class PriceRule extends BackendController
      * @param mixed $rule_id
      * @return array
      */
-    protected function getPriceRule($rule_id)
+    protected function setPriceRule($rule_id)
     {
         if (!is_numeric($rule_id)) {
             return array();
@@ -256,7 +250,8 @@ class PriceRule extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->preparePriceRule($rule);
+        $this->data_rule = $this->preparePriceRule($rule);
+        return $this->data_rule;
     }
 
     /**
@@ -275,13 +270,13 @@ class PriceRule extends BackendController
 
     /**
      * Saves a submitted rule
-     * @param array $rule
-     * @return null|void
+     * @return null
      */
-    protected function submitPriceRule(array $rule = array())
+    protected function submitPriceRule()
     {
         if ($this->isPosted('delete')) {
-            return $this->deletePriceRule($rule);
+            $this->deletePriceRule();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -289,27 +284,28 @@ class PriceRule extends BackendController
         }
 
         $this->setSubmitted('price_rule', null, false);
-        $this->validatePriceRule($rule);
+        $this->validatePriceRule();
 
         if ($this->hasErrors('price_rule')) {
             return null;
         }
 
-        if (isset($rule['price_rule_id'])) {
-            return $this->updatePriceRule($rule);
+        if (isset($this->data_rule['price_rule_id'])) {
+            $this->updatePriceRule();
+            return null;
         }
 
-        return $this->addPriceRule();
+        $this->addPriceRule();
     }
 
     /**
      * Deletes a rule
-     * @param array $rule
      */
-    protected function deletePriceRule(array $rule)
+    protected function deletePriceRule()
     {
         $this->controlAccess('price_rule_delete');
-        $this->rule->delete($rule['price_rule_id']);
+
+        $this->rule->delete($this->data_rule['price_rule_id']);
 
         $message = $this->text('Price rule has been deleted');
         $this->redirect('admin/sale/price', $message, 'success');
@@ -317,25 +313,23 @@ class PriceRule extends BackendController
 
     /**
      * Validates a submitted rule
-     * @param array $rule
      */
-    protected function validatePriceRule(array $rule = array())
+    protected function validatePriceRule()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $rule);
+        $this->setSubmitted('update', $this->data_rule);
         $this->validate('price_rule');
     }
 
     /**
      * Updates a price rule with submitted values
-     * @param array $rule
      */
-    protected function updatePriceRule(array $rule)
+    protected function updatePriceRule()
     {
         $this->controlAccess('price_rule_edit');
 
         $submitted = $this->getSubmitted();
-        $this->rule->update($rule['price_rule_id'], $submitted);
+        $this->rule->update($this->data_rule['price_rule_id'], $submitted);
 
         $message = $this->text('Price rule has been updated');
         $this->redirect('admin/sale/price', $message, 'success');
@@ -357,14 +351,14 @@ class PriceRule extends BackendController
 
     /**
      * Sets titles on the edit rules page
-     * @param array $rule
      */
-    protected function setTitleEditPriceRule($rule)
+    protected function setTitleEditPriceRule()
     {
         $title = $this->text('Add price rule');
 
-        if (isset($rule['price_rule_id'])) {
-            $title = $this->text('Edit price rule %name', array('%name' => $rule['name']));
+        if (isset($this->data_rule['price_rule_id'])) {
+            $vars = array('%name' => $this->data_rule['name']);
+            $title = $this->text('Edit price rule %name', $vars);
         }
 
         $this->setTitle($title);

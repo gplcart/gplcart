@@ -15,6 +15,9 @@
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('page_edit') || $this->access('page_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <?php if ($this->access('page_edit')) { ?>
           <li>
@@ -36,6 +39,7 @@
           </li>
           <?php } ?>
         </ul>
+        <?php } ?>
       </div>
       <div class="btn-toolbar pull-right">
         <?php if ($this->access('page_add')) { ?>
@@ -49,7 +53,7 @@
       <table class="table pages-list">
         <thead>
           <tr>
-            <th><input type="checkbox" id="select-all" value="1"></th>
+            <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th>
               <a href="<?php echo $sort_page_id; ?>">
                 <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
@@ -137,7 +141,7 @@
           <?php foreach ($pages as $id => $page) { ?>
           <tr>
             <td class="middle">
-              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
+              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
             <td class="middle"><?php echo $this->escape($id); ?></td>
             <td class="middle"><?php echo $this->truncate($this->escape($page['title']), 30); ?></td>

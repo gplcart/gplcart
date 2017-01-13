@@ -165,17 +165,16 @@ class Category extends BackendController
     protected function getListCategory(array $category_group)
     {
         $store = $this->store->get($category_group['store_id']);
+        $url = $this->store->url($store);
 
-        $categories = $this->category->getTree(array(
-            'category_group_id' => $category_group['category_group_id']
-        ));
+        $options = array('category_group_id' => $category_group['category_group_id']);
+        $categories = $this->category->getTree($options);
 
         $category_ids = array();
-        foreach ($categories as &$category) {
-            $category_ids[] = $category['category_id'];
+        foreach ($categories as $id => &$category) {
+            $category_ids[] = $id;
+            $category['url'] = "$url/category/$id";
             $category['indentation'] = str_repeat('— ', $category['depth']);
-            $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                    . "/category/{$category['category_id']}";
         }
 
         $aliases = $this->alias->getMultiple('category_id', $category_ids);
@@ -184,16 +183,11 @@ class Category extends BackendController
             return $categories;
         }
 
-        foreach ($categories as &$category) {
-
-            if (empty($aliases[$category['category_id']])) {
-                continue;
+        foreach ($categories as $id => &$category) {
+            if (!empty($aliases[$id])) {
+                $category['alias'] = $aliases[$id];
+                $category['url'] = "$url/{$category['alias']}";
             }
-
-            $category['alias'] = '';
-            $category['alias'] = $aliases[$category['category_id']];
-            $category['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                    . "/{$category['alias']}";
         }
 
         return $categories;
@@ -225,10 +219,8 @@ class Category extends BackendController
      */
     protected function setTitleListCategory(array $category_group)
     {
-        $text = $this->text('Categories of group %name', array(
-            '%name' => $category_group['title']
-        ));
-
+        $vars = array('%name' => $category_group['title']);
+        $text = $this->text('Categories of group %name', $vars);
         $this->setTitle($text);
     }
 
@@ -251,6 +243,9 @@ class Category extends BackendController
         $category_group = $this->getCategoryGroup($category_group_id);
         $categories = $this->getOptionsCategory($category_group_id);
 
+        $this->setTitleEditCategory($category_group, $category);
+        $this->setBreadcrumbEditCategory($category_group);
+
         $parent_category = (int) $this->request->get('parent_id');
         $can_delete = $this->canDeleteCategory($category);
 
@@ -263,9 +258,6 @@ class Category extends BackendController
         $this->submitCategory($category_group, $category);
 
         $this->setDataEditCategory();
-
-        $this->setTitleEditCategory($category_group, $category);
-        $this->setBreadcrumbEditCategory($category_group);
         $this->outputEditCategory();
     }
 
@@ -372,11 +364,11 @@ class Category extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $category);
-        
+
         if (empty($category['category_id'])) {
             $this->setSubmitted('user_id', $this->uid);
         }
-        
+
         $this->validate('category');
     }
 
@@ -390,7 +382,7 @@ class Category extends BackendController
         $this->controlAccess('category_edit');
 
         $submitted = $this->getSubmitted();
-        
+
         $this->category->update($category['category_id'], $submitted);
 
         $message = $this->text('Category has been updated');
@@ -462,10 +454,10 @@ class Category extends BackendController
             return null;
         }
 
-        $preset = $this->config('admin_image_preset', 2);
+        $imagestyle = $this->config('image_style_admin', 2);
 
         foreach ($images as &$image) {
-            $image['thumb'] = $this->image->url($preset, $image['path']);
+            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
             $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
         }
 

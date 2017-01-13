@@ -313,8 +313,8 @@ class Ajax extends FrontendController
         $response = array();
 
         $uploaded = $this->file->getUploadedFile(true);
-        $preset = $this->config('admin_image_preset', 2);
-        $thumb = $this->image->url($preset, $uploaded, true);
+        $imagestyle = $this->config('image_style_admin', 2);
+        $thumb = $this->image->url($imagestyle, $uploaded, true);
 
         $key = uniqid(); // Random array key to prevent merging items in the array
         $timestamp = filemtime(GC_FILE_DIR . "/$uploaded");

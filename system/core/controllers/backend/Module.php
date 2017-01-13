@@ -272,32 +272,38 @@ class Module extends BackendController
      */
     public function uploadModule()
     {
-        $this->controlAccess('module_install');
-
-        $this->submitUploadModule();
         $this->setBreadcrumbUploadModule();
         $this->setTitleUploadModule();
+        $this->controlAccessUploadModule();
+        $this->submitUploadModule();
         $this->outputUploadModule();
     }
 
     /**
+     * Controls access to module upload form
+     */
+    protected function controlAccessUploadModule()
+    {
+        $access = $this->access('module_install')//
+                && $this->access('file_upload')//
+                && $this->access('module_upload');
+
+        if (!$access) {
+            $this->outputHttpStatus(403);
+        }
+    }
+
+    /**
      * Installs a uploaded module
-     * @return null
      */
     protected function submitUploadModule()
     {
-        if (!$this->isPosted('install')) {
-            return null;
+        if ($this->isPosted('install')) {
+            $this->validateUploadModule();
+            if (!$this->hasErrors()) {
+                $this->installUploadedModule();
+            }
         }
-
-        $this->validateUploadModule();
-
-        if ($this->hasErrors()) {
-            return null;
-        }
-
-        $this->installUploadedModule();
-        return null;
     }
 
     /**
@@ -305,6 +311,8 @@ class Module extends BackendController
      */
     protected function installUploadedModule()
     {
+        $this->controlAccessUploadModule();
+
         $uploaded = $this->getSubmitted('destination');
         $result = $this->module->installFromZip($uploaded);
 
@@ -388,7 +396,6 @@ class Module extends BackendController
 
         $this->setFilter($fields);
         $this->setData('marketplace', $results);
-
         $this->outputMarketplaceModule();
     }
 
@@ -401,7 +408,6 @@ class Module extends BackendController
     {
         $options['count'] = true;
         $result = $this->getListMarketplaceModule($options);
-
         return empty($result['total']) ? 0 : (int) $result['total'];
     }
 
@@ -413,7 +419,6 @@ class Module extends BackendController
     protected function getListMarketplaceModule(array $options = array())
     {
         $options += array('core' => strtok(GC_VERSION, '.'));
-
         $response = $this->curl->post(GC_MARKETPLACE_API_URL, array('fields' => $options));
         $info = $this->curl->getInfo();
 
@@ -430,7 +435,6 @@ class Module extends BackendController
         foreach ($results['items'] as &$item) {
             $item['price'] = floatval($item['price']);
         }
-
         return $results;
     }
 
