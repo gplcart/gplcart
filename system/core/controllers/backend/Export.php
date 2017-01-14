@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Export as ExportModel;
-use gplcart\core\models\Product as ProductModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,22 +25,20 @@ class Export extends BackendController
     protected $export;
 
     /**
-     * Product model instance
-     * @var \gplcart\core\models\Product $product
+     * The current export operation
+     * @var array
      */
-    protected $product;
+    protected $data_operation = array();
 
     /**
      * Constructor
      * @param ExportModel $export
-     * @param ProductModel $product
      */
-    public function __construct(ExportModel $export, ProductModel $product)
+    public function __construct(ExportModel $export)
     {
         parent::__construct();
 
         $this->export = $export;
-        $this->product = $product;
     }
 
     /**
@@ -49,11 +46,11 @@ class Export extends BackendController
      */
     public function listExport()
     {
-        $operations = $this->getOperationsExport();
-        $this->setData('operations', $operations);
-
         $this->setTitleListExport();
         $this->setBreadcrumbListExport();
+
+        $this->setData('operations', $this->getOperationsExport());
+
         $this->outputListExport();
     }
 
@@ -101,19 +98,16 @@ class Export extends BackendController
      */
     public function editExport($operation_id)
     {
-        $operation = $this->getExport($operation_id);
+        $this->setExport($operation_id);
+        $this->downloadExport();
 
-        $this->downloadExport($operation);
-        $this->submitExport($operation);
-
-        $job = $this->getJob();
-        $stores = $this->store->getNames();
-
-        $this->setData('job', $job);
-        $this->setData('stores', $stores);
-
-        $this->setTitleEditExport($operation);
+        $this->setTitleEditExport();
         $this->setBreadcrumbEditExport();
+
+        $this->submitExport();
+
+        $this->setData('job', $this->getJob());
+        $this->setData('stores', $this->store->getNames());
         $this->outputEditExport();
     }
 
@@ -122,7 +116,7 @@ class Export extends BackendController
      * @param string $operation_id
      * @return array
      */
-    protected function getExport($operation_id)
+    protected function setExport($operation_id)
     {
         $operation = $this->export->getOperation($operation_id);
 
@@ -130,100 +124,60 @@ class Export extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_operation = $operation;
         return $operation;
     }
 
     /**
      * Outputs export file to download
-     * @param array $operation
      */
-    protected function downloadExport(array $operation)
+    protected function downloadExport()
     {
         $download = $this->isQuery('download')//
-                && !empty($operation['file'])//
-                && file_exists($operation['file']);
+                && !empty($this->data_operation['file'])//
+                && file_exists($this->data_operation['file']);
 
         if ($download) {
-            $this->response->download($operation['file']);
+            $this->response->download($this->data_operation['file']);
         }
     }
 
     /**
      * Starts export
-     * @param array $operation
      * @return null
      */
-    protected function submitExport(array $operation)
+    protected function submitExport()
     {
         if (!$this->isPosted('export')) {
             return null;
         }
 
         $this->setSubmitted('settings');
-        $this->validateExport($operation);
+        $this->validateExport();
 
-        if ($this->hasErrors('settings')) {
-            return null;
+        if (!$this->hasErrors('settings')) {
+            $this->setJobExport();
         }
-
-        $this->setJobExport($operation);
-        return null;
     }
 
     /**
      * Validates an array of csv export data
-     * @param array $operation
      * @return null
      */
-    protected function validateExport(array $operation)
+    protected function validateExport()
     {
-        $options = $this->getSubmitted('options');
+        $this->setSubmitted('limit', $this->export->getLimit());
+        $this->setSubmitted('operation', $this->data_operation['id']);
+        $this->setSubmitted('delimiter', $this->export->getCsvDelimiter());
+        $this->setSubmitted('multiple_delimiter', $this->export->getCsvDelimiterMultiple());
 
-        $limit = $this->export->getLimit();
-        $delimiter = $this->export->getCsvDelimiter();
-        $multiple_delimiter = $this->export->getCsvDelimiterMultiple();
-
-        $total = $this->job->getTotal($operation['job_id'], $options);
-
-        if (empty($total)) {
-            $this->setError('error', $this->text('Nothing to export'));
-            return null;
-        }
-
-        $this->setSubmitted('total', $total);
-        $this->setSubmitted('limit', $limit);
-        $this->setSubmitted('delimiter', $delimiter);
-        $this->setSubmitted('multiple_delimiter', $multiple_delimiter);
-
-        $this->validateFileExport($operation);
-        return null;
-    }
-
-    /**
-     * Creates an export file and writes there header
-     * @param array $operation
-     * @return boolean
-     */
-    protected function validateFileExport(array $operation)
-    {
-        if (file_put_contents($operation['file'], '') === false) {
-            $vars = array('%path' => $operation['file']);
-            $message = $this->text('Failed to create file %path', $vars);
-            $this->setError('error', $message);
-            return false;
-        }
-
-        $delimiter = $this->getSubmitted('delimiter');
-        gplcart_file_csv($operation['file'], $operation['csv']['header'], $delimiter);
-        $this->setSubmitted('operation', $operation);
-        return true;
+        $this->validate('export');
     }
 
     /**
      * Sets and performs export job
-     * @param array $operation
      */
-    protected function setJobExport(array $operation)
+    protected function setJobExport()
     {
         $submitted = $this->getSubmitted();
 
@@ -235,12 +189,12 @@ class Export extends BackendController
 
         $job = array(
             'data' => $submitted,
-            'id' => $operation['job_id'],
+            'id' => $this->data_operation['job_id'],
             'total' => $submitted['total'],
             'redirect_message' => array('finish' => $finish)
         );
 
-        if (!empty($operation['log']['errors'])) {
+        if (!empty($this->data_operation['log']['errors'])) {
             $job['redirect_message']['errors'] = $redirect;
         }
 
@@ -249,11 +203,10 @@ class Export extends BackendController
 
     /**
      * Sets titles on the export page
-     * @param array $operation
      */
-    protected function setTitleEditExport(array $operation)
+    protected function setTitleEditExport()
     {
-        $vars = array('%operation' => $operation['name']);
+        $vars = array('%operation' => $this->data_operation['name']);
         $text = $this->text('Export %operation', $vars);
         $this->setTitle($text);
     }

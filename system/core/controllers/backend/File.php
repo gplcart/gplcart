@@ -103,13 +103,9 @@ class File extends BackendController
             }
         }
 
-        $message = $this->text('Deleted from database: %db, disk: %disk', array(
-            '%db' => $deleted_database,
-            '%disk' => $deleted_disk
-        ));
-
+        $vars = array('%db' => $deleted_database, '%disk' => $deleted_disk);
+        $message = $this->text('Deleted from database: %db, disk: %disk', $vars);
         $this->setMessage($message, 'success', true);
-        return null;
     }
 
     /**
@@ -243,12 +239,13 @@ class File extends BackendController
 
     /**
      * Saves an array of submitted values
-     * @return null|void
+     * @return null
      */
     protected function submitFile()
     {
         if ($this->isPosted('delete') && isset($this->data_file['file_id'])) {
-            return $this->deleteFile();
+            $this->deleteFile();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -263,10 +260,11 @@ class File extends BackendController
         }
 
         if (isset($this->data_file['file_id'])) {
-            return $this->updateFile();
+            $this->updateFile();
+            return null;
         }
 
-        return $this->addFile();
+        $this->addFile();
     }
 
     /**
@@ -338,10 +336,10 @@ class File extends BackendController
      */
     protected function setTitleEditFile()
     {
+        $title = $this->text('Add file');
+
         if (isset($this->data_file['file_id'])) {
             $title = $this->text('Edit file %title', array('%title' => $this->data_file['title']));
-        } else {
-            $title = $this->text('Add file');
         }
 
         $this->setTitle($title);

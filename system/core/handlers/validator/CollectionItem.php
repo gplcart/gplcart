@@ -155,6 +155,7 @@ class CollectionItem extends BaseValidator
      */
     protected function validateValueCollectionItem()
     {
+
         $collection = $this->getSubmitted('collection');
 
         if (empty($collection)) {

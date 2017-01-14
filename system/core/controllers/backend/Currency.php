@@ -25,6 +25,12 @@ class Currency extends BackendController
     protected $currency;
 
     /**
+     * The current currency
+     * @var array
+     */
+    protected $data_currency = array();
+
+    /**
      * Constructor
      * Currency constructor.
      * @param CurrencyModel $currency
@@ -41,14 +47,12 @@ class Currency extends BackendController
      */
     public function listCurrency()
     {
-        $currencies = $this->currency->getList();
-        $default = $this->currency->getDefault();
-
-        $this->setData('currencies', $currencies);
-        $this->setData('default_currency', $default);
-
         $this->setTitleListCurrency();
         $this->setBreadcrumbListCurrency();
+
+        $this->setData('currencies', $this->currency->getList());
+        $this->setData('default_currency', $this->currency->getDefault());
+
         $this->outputListCurrency();
     }
 
@@ -87,24 +91,29 @@ class Currency extends BackendController
      */
     public function editCurrency($code = null)
     {
-        $currency = $this->getCurrency($code);
-        $default_currency = $this->currency->getDefault();
+        $this->setCurrency($code);
 
-        $this->setData('currency', $currency);
-        $this->setData('default_currency', $default_currency);
-
-        $can_delete = (isset($currency['code'])//
-                && $this->access('currency_delete')//
-                && ($default_currency != $currency['code'])//
-                && !$this->isPosted());
-
-        $this->setData('can_delete', $can_delete);
-
-        $this->submitCurrency($currency);
-
-        $this->setTitleEditCurrency($currency);
+        $this->setTitleEditCurrency();
         $this->setBreadcrumbEditCurrency();
+
+        $this->setData('currency', $this->data_currency);
+        $this->setData('can_delete', $this->canDeleteCurrency());
+        $this->setData('default_currency', $this->currency->getDefault());
+
+        $this->submitCurrency();
         $this->outputEditCurrency();
+    }
+
+    /**
+     * Whether the currency can be deleted
+     * @return bool
+     */
+    protected function canDeleteCurrency()
+    {
+        return (isset($this->data_currency['code'])//
+                && $this->access('currency_delete')//
+                && ($this->currency->getDefault() != $this->data_currency['code'])//
+                && !$this->isPosted());
     }
 
     /**
@@ -113,7 +122,7 @@ class Currency extends BackendController
      * @param string $code
      * @return array
      */
-    protected function getCurrency($code)
+    protected function setCurrency($code)
     {
         if (empty($code)) {
             return array();
@@ -125,18 +134,19 @@ class Currency extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        return (array) $currency;
+        $this->data_currency = (array) $currency;
+        return $this->data_currency;
     }
 
     /**
      * Saves a currency
-     * @param array $currency
      * @return null
      */
-    protected function submitCurrency(array $currency)
+    protected function submitCurrency()
     {
-        if ($this->isPosted('delete') && isset($currency['code'])) {
-            return $this->deleteCurrency($currency);
+        if ($this->isPosted('delete')) {
+            $this->deleteCurrency();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -144,34 +154,32 @@ class Currency extends BackendController
         }
 
         $this->setSubmitted('currency', null, 'raw');
-        $this->validateCurrency($currency);
+        $this->validateCurrency();
 
         if ($this->hasErrors('currency')) {
             return null;
         }
 
-        if (isset($currency['code'])) {
-            return $this->updateCurrency($currency);
+        if (isset($this->data_currency['code'])) {
+            $this->updateCurrency();
+            return null;
         }
 
-        return $this->addCurrency();
+        $this->addCurrency();
     }
 
     /**
      * Deletes a currency
-     * @param array $currency
-     * @return array
      */
-    protected function deleteCurrency(array $currency)
+    protected function deleteCurrency()
     {
         $this->controlAccess('currency_delete');
 
-        $deleted = $this->currency->delete($currency['code']);
+        $deleted = $this->currency->delete($this->data_currency['code']);
 
         if ($deleted) {
-            $message = $this->text('Currency %code has been deleted', array(
-                '%code' => $currency['code']
-            ));
+            $vars = array('%code' => $this->data_currency['code']);
+            $message = $this->text('Currency %code has been deleted', $vars);
             $this->redirect('admin/settings/currency', $message, 'success');
         }
 
@@ -181,30 +189,27 @@ class Currency extends BackendController
 
     /**
      * Validates a currency data
-     * @param array $currency
      */
-    protected function validateCurrency(array $currency)
+    protected function validateCurrency()
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
-        $this->setSubmitted('update', $currency);
+        $this->setSubmitted('update', $this->data_currency);
         $this->validate('currency');
     }
 
     /**
      * Updates a currency
-     * @param array $currency
      */
-    protected function updateCurrency(array $currency)
+    protected function updateCurrency()
     {
         $this->controlAccess('currency_edit');
 
         $values = $this->getSubmitted();
-        $this->currency->update($currency['code'], $values);
+        $this->currency->update($this->data_currency['code'], $values);
 
-        $message = $this->text('Currency %code has been updated', array(
-            '%code' => $currency['code']
-        ));
+        $vars = array('%code' => $this->data_currency['code']);
+        $message = $this->text('Currency %code has been updated', $vars);
 
         $this->redirect('admin/settings/currency', $message, 'success');
     }
@@ -215,9 +220,7 @@ class Currency extends BackendController
     protected function addCurrency()
     {
         $this->controlAccess('currency_add');
-
-        $values = $this->getSubmitted();
-        $this->currency->add($values);
+        $this->currency->add($this->getSubmitted());
 
         $message = $this->text('Currency has been added');
         $this->redirect('admin/settings/currency', $message, 'success');
@@ -225,16 +228,14 @@ class Currency extends BackendController
 
     /**
      * Sets titles on the currency edit page
-     * @param array $currency
      */
-    protected function setTitleEditCurrency(array $currency)
+    protected function setTitleEditCurrency()
     {
-        if (isset($currency['code'])) {
-            $title = $this->text('Edit currency %name', array(
-                '%name' => $currency['name']
-            ));
-        } else {
-            $title = $this->text('Add currency');
+        $title = $this->text('Add currency');
+
+        if (isset($this->data_currency['code'])) {
+            $vars = array('%name' => $this->data_currency['name']);
+            $title = $this->text('Edit currency %name', $vars);
         }
 
         $this->setTitle($title);

@@ -100,7 +100,6 @@ class Controller extends BaseController
         $this->job->delete($job['id']);
 
         if (!empty($job['data']['operation']['log']['errors'])) {
-            // create an empty error log file
             file_put_contents($job['data']['operation']['log']['errors'], '');
         }
 
@@ -124,22 +123,13 @@ class Controller extends BaseController
      */
     protected function getAdminMenuArray()
     {
-        $routes = $this->route->getList();
-
         $array = array();
-        foreach ($routes as $path => $route) {
+        foreach ($this->route->getList() as $path => $route) {
 
-            // Exclude non-admin routes
-            if (0 !== strpos($path, 'admin/')) {
+            if (strpos($path, 'admin/') !== 0 || empty($route['menu']['admin'])) {
                 continue;
             }
 
-            // Exclude hidden items
-            if (empty($route['menu']['admin'])) {
-                continue;
-            }
-
-            // Check access
             if (isset($route['access']) && !$this->access($route['access'])) {
                 continue;
             }

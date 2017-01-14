@@ -157,6 +157,12 @@ class Validator extends Model
                 'validate' => array('gplcart\\core\\handlers\\validator\\Editor', 'editor')
             ),
         );
+        
+        $handlers['export'] = array(
+            'handlers' => array(
+                'validate' => array('gplcart\\core\\handlers\\validator\\Export', 'export')
+            ),
+        );
 
         $handlers['address'] = array(
             'handlers' => array(

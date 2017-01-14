@@ -86,7 +86,6 @@ class Filter extends BackendController
         }
 
         $this->updateFilter();
-        return null;
     }
 
     /**

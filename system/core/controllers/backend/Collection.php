@@ -25,6 +25,12 @@ class Collection extends BackendController
     protected $collection;
 
     /**
+     * The current collection
+     * @var array
+     */
+    protected $data_collection = array();
+
+    /**
      * Constructor
      * @param CollectionModel $collection
      */
@@ -42,23 +48,21 @@ class Collection extends BackendController
     {
         $this->actionCollection();
 
+        $this->setTitleListCollection();
+        $this->setBreadcrumbListCollection();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalCollection($query);
-        $limit = $this->setPager($total, $query);
-
-        $stores = $this->store->getNames();
-        $handlers = $this->collection->getHandlers();
-        $collections = $this->getListCollection($limit, $query);
-
-        $this->setData('stores', $stores);
-        $this->setData('handlers', $handlers);
-        $this->setData('collections', $collections);
 
         $allowed = array('type', 'store_id', 'status', 'title', 'collection_id');
         $this->setFilter($allowed, $query);
 
-        $this->setTitleListCollection();
-        $this->setBreadcrumbListCollection();
+        $total = $this->getTotalCollection($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('handlers', $this->collection->getHandlers());
+        $this->setData('collections', $this->getListCollection($limit, $query));
+
         $this->outputListCollection();
     }
 
@@ -98,8 +102,6 @@ class Collection extends BackendController
             $message = $this->text('Collections have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -160,25 +162,29 @@ class Collection extends BackendController
      */
     public function editCollection($collection_id = null)
     {
-        $collection = $this->getCollection($collection_id);
+        $this->setCollection($collection_id);
 
-        $stores = $this->store->getNames();
-        $types = $this->collection->getTypes();
-
-        $can_delete = (isset($collection['collection_id'])//
-                && $this->access('collection_delete')//
-                && $this->collection->canDelete($collection['collection_id']));
-
-        $this->setData('stores', $stores);
-        $this->setData('types', $types);
-        $this->setData('collection', $collection);
-        $this->setData('can_delete', $can_delete);
-
-        $this->submitCollection($collection);
-
-        $this->setTitleEditCollection($collection);
+        $this->setTitleEditCollection();
         $this->setBreadcrumbEditCollection();
+
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('types', $this->collection->getTypes());
+        $this->setData('collection', $this->data_collection);
+        $this->setData('can_delete', $this->canDeleteCollection());
+
+        $this->submitCollection();
         $this->outputEditCollection();
+    }
+
+    /**
+     * Whether the current collection can be deleted
+     * @return bool
+     */
+    protected function canDeleteCollection()
+    {
+        return (isset($this->data_collection['collection_id'])//
+                && $this->access('collection_delete')//
+                && $this->collection->canDelete($this->data_collection['collection_id']));
     }
 
     /**
@@ -186,7 +192,7 @@ class Collection extends BackendController
      * @param integer $collection_id
      * @return array
      */
-    protected function getCollection($collection_id)
+    protected function setCollection($collection_id)
     {
         if (!is_numeric($collection_id)) {
             return array();
@@ -198,18 +204,19 @@ class Collection extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_collection = $collection;
         return $collection;
     }
 
     /**
      * Saves an array of submitted collection data
-     * @param array $collection
-     * @return mixed
+     * @return null
      */
-    protected function submitCollection(array $collection)
+    protected function submitCollection()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteCollection($collection);
+            $this->deleteCollection();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -217,28 +224,28 @@ class Collection extends BackendController
         }
 
         $this->setSubmitted('collection');
-        $this->validateCollection($collection);
+        $this->validateCollection();
 
         if ($this->hasErrors('collection')) {
             return null;
         }
 
-        if (isset($collection['collection_id'])) {
-            return $this->updateCollection($collection);
+        if (isset($this->data_collection['collection_id'])) {
+            $this->updateCollection();
+            return null;
         }
 
-        return $this->addCollection();
+        $this->addCollection();
     }
 
     /**
      * Deletes a collection
-     * @param array $collection
      */
-    protected function deleteCollection(array $collection)
+    protected function deleteCollection()
     {
         $this->controlAccess('collection_delete');
 
-        $result = $this->collection->delete($collection['collection_id']);
+        $result = $this->collection->delete($this->data_collection['collection_id']);
 
         if (empty($result)) {
             $message = $this->text('Failed to delete this collection. Is it empty?');
@@ -251,25 +258,23 @@ class Collection extends BackendController
 
     /**
      * Validates a submitted collection
-     * @param array $collection
      */
-    protected function validateCollection(array $collection)
+    protected function validateCollection()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $collection);
+        $this->setSubmitted('update', $this->data_collection);
         $this->validate('collection');
     }
 
     /**
      * Updates a collection with submitted values
-     * @param array $collection
      */
-    protected function updateCollection(array $collection)
+    protected function updateCollection()
     {
         $this->controlAccess('collection_edit');
-        $submitted = $this->getSubmitted();
 
-        $result = $this->collection->update($collection['collection_id'], $submitted);
+        $submitted = $this->getSubmitted();
+        $result = $this->collection->update($this->data_collection['collection_id'], $submitted);
 
         if (empty($result)) {
             $message = $this->text('Collection has not been updated');
@@ -286,8 +291,8 @@ class Collection extends BackendController
     protected function addCollection()
     {
         $this->controlAccess('collection_add');
-        $submitted = $this->getSubmitted();
 
+        $submitted = $this->getSubmitted();
         $result = $this->collection->add($submitted);
 
         if (empty($result)) {
@@ -301,15 +306,14 @@ class Collection extends BackendController
 
     /**
      * Sets title on the edit collection page
-     * @param array $collection
      */
-    protected function setTitleEditCollection(array $collection)
+    protected function setTitleEditCollection()
     {
         $title = $this->text('Add collection');
 
-        if (isset($collection['title'])) {
-            $title = $this->text('Edit collection %name', array(
-                '%name' => $collection['title']));
+        if (isset($this->data_collection['title'])) {
+            $vars = array('%name' => $this->data_collection['title']);
+            $title = $this->text('Edit collection %name', $vars);
         }
 
         $this->setTitle($title);
@@ -328,8 +332,8 @@ class Collection extends BackendController
         );
 
         $breadcrumbs[] = array(
+            'text' => $this->text('Collections'),
             'url' => $this->url('admin/content/collection'),
-            'text' => $this->text('Collections')
         );
 
         $this->setBreadcrumbs($breadcrumbs);

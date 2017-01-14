@@ -25,6 +25,12 @@ class Field extends BackendController
     protected $field;
 
     /**
+     * The current field
+     * @var array
+     */
+    protected $data_field = array();
+
+    /**
      * Constructor
      * @param FieldModel $field
      */
@@ -42,20 +48,20 @@ class Field extends BackendController
     {
         $this->actionField();
 
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalField($query);
-        $limit = $this->setPager($total, $query);
-        $fields = $this->getListField($limit, $query);
-        $widget_types = $this->field->getWidgetTypes();
+        $this->setTitleListField();
+        $this->setBreadcrumbListField();
 
-        $this->setData('fields', $fields);
-        $this->setData('widget_types', $widget_types);
+        $query = $this->getFilterQuery();
 
         $allowed = array('title', 'type', 'widget', 'field_id');
         $this->setFilter($allowed, $query);
 
-        $this->setTitleListField();
-        $this->setBreadcrumbListField();
+        $total = $this->getTotalField($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('fields', $this->getListField($limit, $query));
+        $this->setData('widget_types', $this->field->getWidgetTypes());
+
         $this->outputListField();
     }
 
@@ -83,8 +89,6 @@ class Field extends BackendController
             $message = $this->text('Fields have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -145,29 +149,28 @@ class Field extends BackendController
      */
     public function editField($field_id = null)
     {
-        $field = $this->getField($field_id);
+        $this->setField($field_id);
 
-        $this->setData('field', $field);
+        $this->setTitleEditField();
+        $this->setBreadcrumbEditField();
+
+        $this->setData('field', $this->data_field);
         $this->setData('types', $this->field->getTypes());
-        $this->setData('can_delete', $this->canDeleteField($field));
+        $this->setData('can_delete', $this->canDeleteField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
 
-        $this->submitField($field);
-
-        $this->setTitleEditField($field);
-        $this->setBreadcrumbEditField();
+        $this->submitField();
         $this->outputEditField();
     }
 
     /**
      * Whether the field can be deleted
-     * @param array $field
      * @return bool
      */
-    protected function canDeleteField(array $field)
+    protected function canDeleteField()
     {
-        return (isset($field['field_id'])//
-                && $this->field->canDelete($field['field_id'])//
+        return (isset($this->data_field['field_id'])//
+                && $this->field->canDelete($this->data_field['field_id'])//
                 && $this->access('field_delete'));
     }
 
@@ -176,7 +179,7 @@ class Field extends BackendController
      * @param integer $field_id
      * @return array
      */
-    protected function getField($field_id)
+    protected function setField($field_id)
     {
         if (!is_numeric($field_id)) {
             return array();
@@ -188,18 +191,19 @@ class Field extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_field = $field;
         return $field;
     }
 
     /**
      * Saves a submitted field values
-     * @param array $field
-     * @return null|void
+     * @return null
      */
-    protected function submitField(array $field)
+    protected function submitField()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteField($field);
+            $this->deleteField();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -207,28 +211,28 @@ class Field extends BackendController
         }
 
         $this->setSubmitted('field');
-        $this->validateField($field);
+        $this->validateField();
 
         if ($this->hasErrors('field')) {
             return null;
         }
 
-        if (isset($field['field_id'])) {
-            return $this->updateField($field);
+        if (isset($this->data_field['field_id'])) {
+            $this->updateField();
+            return null;
         }
 
-        return $this->addField();
+        $this->addField();
     }
 
     /**
      * Deletes a field
-     * @param array $field
      */
-    protected function deleteField(array $field)
+    protected function deleteField()
     {
         $this->controlAccess('field_delete');
 
-        $deleted = $this->field->delete($field['field_id']);
+        $deleted = $this->field->delete($this->data_field['field_id']);
 
         if ($deleted) {
             $message = $this->text('Field has been deleted');
@@ -241,24 +245,22 @@ class Field extends BackendController
 
     /**
      * Performs validation checks on the given field
-     * @param array $field
      */
-    protected function validateField(array $field)
+    protected function validateField()
     {
-        $this->setSubmitted('update', $field);
+        $this->setSubmitted('update', $this->data_field);
         $this->validate('field');
     }
 
     /**
      * Updates a field
-     * @param array $field
      */
-    protected function updateField(array $field)
+    protected function updateField()
     {
         $this->controlAccess('field_edit');
 
         $values = $this->getSubmitted();
-        $this->field->update($field['field_id'], $values);
+        $this->field->update($this->data_field['field_id'], $values);
 
         $message = $this->text('Field has been updated');
         $this->redirect('admin/content/field', $message, 'success');
@@ -271,8 +273,7 @@ class Field extends BackendController
     {
         $this->controlAccess('field_add');
 
-        $values = $this->getSubmitted();
-        $this->field->add($values);
+        $this->field->add($this->getSubmitted());
 
         $message = $this->text('Field has been added');
         $this->redirect('admin/content/field', $message, 'success');
@@ -280,14 +281,14 @@ class Field extends BackendController
 
     /**
      * Sets titles on the field edit form
-     * @param array $field
      */
-    protected function setTitleEditField(array $field)
+    protected function setTitleEditField()
     {
-        if (isset($field['field_id'])) {
-            $title = $this->text('Edit field %name', array('%name' => $field['title']));
-        } else {
-            $title = $this->text('Add field');
+        $title = $this->text('Add field');
+
+        if (isset($this->data_field['field_id'])) {
+            $vars = array('%name' => $this->data_field['title']);
+            $title = $this->text('Edit field %name', $vars);
         }
 
         $this->setTitle($title);

@@ -99,8 +99,8 @@ function gplcart_array_set_value(array &$array, $parents, $value, $glue = '.')
 {
     $ref = &$array;
 
-    if (is_string($parents)) {
-        $parents = explode($glue, $parents);
+    if (!is_array($parents)) {
+        $parents = explode($glue, (string) $parents);
     }
 
     foreach ($parents as $parent) {

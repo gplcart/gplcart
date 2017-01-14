@@ -32,6 +32,18 @@ class Editor extends BackendController
     protected $module;
 
     /**
+     * The current module
+     * @var array
+     */
+    protected $data_module = array();
+
+    /**
+     * The current module file
+     * @var string
+     */
+    protected $data_file;
+
+    /**
      * Constructor
      * @param EditorModel $editor
      * @param ModuleModel $module
@@ -50,14 +62,14 @@ class Editor extends BackendController
      */
     public function listEditor($module_id)
     {
-        $module = $this->getModuleEditor($module_id);
-        $files = $this->getFilesEditor($module);
+        $this->setModuleEditor($module_id);
 
-        $this->setData('files', $files);
-        $this->setData('module', $module);
-
-        $this->setTitleListEditor($module);
+        $this->setTitleListEditor();
         $this->setBreadcrumbListEditor();
+
+        $this->setData('module', $this->data_module);
+        $this->setData('files', $this->getFilesEditor());
+
         $this->outputListEditor();
     }
 
@@ -66,7 +78,7 @@ class Editor extends BackendController
      * @param string $module_id
      * @return array
      */
-    protected function getModuleEditor($module_id)
+    protected function setModuleEditor($module_id)
     {
         $module = $this->module->get($module_id);
 
@@ -78,6 +90,7 @@ class Editor extends BackendController
             $this->outputHttpStatus(403);
         }
 
+        $this->data_module = $module;
         return $module;
     }
 
@@ -86,25 +99,24 @@ class Editor extends BackendController
      * @param array $module
      * @return array
      */
-    protected function getFilesEditor(array $module)
+    protected function getFilesEditor()
     {
-        $files = $this->editor->getList($module);
-        return $this->prepareFilesEditor($files, $module);
+        $data = $this->editor->getList($this->data_module);
+        return $this->prepareFilesEditor($data);
     }
 
     /**
      * Prepares an array of files to be edited
      * @param array $data
-     * @param array $module
      * @return array
      */
-    protected function prepareFilesEditor(array $data, array $module)
+    protected function prepareFilesEditor(array $data)
     {
         $prepared = array();
         foreach ($data as $folder => $files) {
             foreach ($files as $file) {
 
-                $path = trim(str_replace($module['directory'], '', $file), '/');
+                $path = trim(str_replace($this->data_module['directory'], '', $file), '/');
                 $depth = substr_count($path, '/');
 
                 $pathinfo = pathinfo($path);
@@ -130,11 +142,10 @@ class Editor extends BackendController
 
     /**
      * Sets title on theme files overview page
-     * @param array $module
      */
-    protected function setTitleListEditor(array $module)
+    protected function setTitleListEditor()
     {
-        $vars = array('%name' => $module['name']);
+        $vars = array('%name' => $this->data_module['name']);
         $text = $this->text('Edit theme %name', $vars);
         $this->setTitle($text);
     }
@@ -174,72 +185,62 @@ class Editor extends BackendController
      */
     public function editEditor($module_id, $file_id)
     {
-        $module = $this->getModuleEditor($module_id);
+        $this->setModuleEditor($module_id);
+        $this->setFilePathEditor($file_id);
 
-        $file = $this->getFilePathEditor($module, $file_id);
-        $content = $this->getFileContentEditor($file);
-        $lines = $this->getFileTotalLinesEditor($file);
+        $this->setTitleEditEditor();
+        $this->setBreadcrumbEditEditor();
 
-        $can_save = $this->canSaveEditor($module);
+        $this->setData('module', $this->data_module);
+        $this->setData('can_save', $this->canSaveEditor());
+        $this->setData('lines', $this->getFileTotalLinesEditor());
+        $this->setData('editor.content', $this->getFileContentEditor());
 
-        $this->setData('lines', $lines);
-        $this->setData('module', $module);
-        $this->setData('can_save', $can_save);
-        $this->setData('editor.content', $content);
+        $this->submitEditor();
 
-        $this->submitEditor($module, $file);
-
-        $this->setTitleEditEditor($file);
-        $this->setBreadcrumbEditEditor($module);
-        $this->setJsSettingsEditor($file);
+        $this->setJsSettingsEditor();
         $this->outputEditEditor();
     }
 
     /**
      * Sets JavaScript settings on the file edit page
-     * @param string $file
      */
-    protected function setJsSettingsEditor($file)
+    protected function setJsSettingsEditor()
     {
         $settings = array(
-            'file_extension' => pathinfo($file, PATHINFO_EXTENSION));
+            'file_extension' => pathinfo($this->data_file, PATHINFO_EXTENSION));
 
         $this->setJsSettings('editor', $settings);
     }
 
     /**
      * Saves an array of submitted data
-     * @param array $module
-     * @param string $file
      * @return null
      */
-    protected function submitEditor(array $module, $file)
+    protected function submitEditor()
     {
         if (!$this->isPosted('save')) {
             return null;
         }
 
         $this->setSubmitted('editor', null, false);
-        $this->validateEditor($module, $file);
+        $this->validateEditor();
 
         if ($this->hasErrors('editor')) {
             return null;
         }
 
         $this->saveEditor();
-        return null;
     }
 
     /**
      * Validates a submitted data when editing a theme file
-     * @param array $module
-     * @param string $file
      */
-    protected function validateEditor(array $module, $file)
+    protected function validateEditor()
     {
-        $this->setSubmitted('path', $file);
-        $this->setSubmitted('module', $module);
         $this->setSubmitted('user_id', $this->uid);
+        $this->setSubmitted('path', $this->data_file);
+        $this->setSubmitted('module', $this->data_module);
 
         $this->validate('editor');
     }
@@ -249,10 +250,9 @@ class Editor extends BackendController
      */
     protected function saveEditor()
     {
+        $this->controlAccessSaveEditor();
+
         $submitted = $this->getSubmitted();
-
-        $this->controlAccessSaveEditor($submitted['module']);
-
         $result = $this->editor->save($submitted);
 
         if ($result === true) {
@@ -266,40 +266,36 @@ class Editor extends BackendController
 
     /**
      * Whether the current user can save the file
-     * @param array $module
      */
-    protected function canSaveEditor(array $module)
+    protected function canSaveEditor()
     {
-        return ($this->access('editor_edit') && $this->current_theme['id'] !== $module['id']);
+        return ($this->access('editor_edit') && $this->current_theme['id'] !== $this->data_module['id']);
     }
 
     /**
      * Controls permissions to save a theme file for the current user
-     * @param array $module
      */
-    protected function controlAccessSaveEditor(array $module)
+    protected function controlAccessSaveEditor()
     {
-        if (!$this->canSaveEditor($module)) {
+        if (!$this->canSaveEditor()) {
             $this->outputHttpStatus(403);
         }
     }
 
     /**
      * Sets titles on the file edit page
-     * @param string $filepath
      */
-    protected function setTitleEditEditor($filepath)
+    protected function setTitleEditEditor()
     {
-        $vars = array('%path' => $filepath);
+        $vars = array('%path' => $this->data_file);
         $text = $this->text('Edit file %path', $vars);
         $this->setTitle($text);
     }
 
     /**
      * Sets breadcrumbs on the file edit page
-     * @param array $module
      */
-    protected function setBreadcrumbEditEditor(array $module)
+    protected function setBreadcrumbEditEditor()
     {
         $breadcrumbs = array();
 
@@ -314,8 +310,8 @@ class Editor extends BackendController
         );
 
         $breadcrumbs[] = array(
-            'url' => $this->url("admin/tool/editor/{$module['id']}"),
-            'text' => $this->text('Edit theme %name', array('%name' => $module['name']))
+            'url' => $this->url("admin/tool/editor/{$this->data_module['id']}"),
+            'text' => $this->text('Edit theme %name', array('%name' => $this->data_module['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -331,41 +327,38 @@ class Editor extends BackendController
 
     /**
      * Returns a path to the file to be edited
-     * @param array $module
      * @param string $encoded_filename URL encoded base64 hash
      * @return string
      */
-    protected function getFilePathEditor(array $module, $encoded_filename)
+    protected function setFilePathEditor($encoded_filename)
     {
         $filepath = base64_decode(urldecode($encoded_filename));
-
-        $file = "{$module['directory']}/$filepath";
+        $file = "{$this->data_module['directory']}/$filepath";
 
         if (!is_file($file) || !is_readable($file)) {
             $this->outputHttpStatus(404);
         }
 
+        $this->data_file = $file;
         return $file;
     }
 
     /**
      * Returns a content of the file
-     * @param string $file
      * @return string
      */
-    protected function getFileContentEditor($file)
+    protected function getFileContentEditor()
     {
-        return file_get_contents($file);
+        return file_get_contents($this->data_file);
     }
 
     /**
      * Returns the total number of lines in the file
-     * @param string $file
      * @return integer
      */
-    protected function getFileTotalLinesEditor($file)
+    protected function getFileTotalLinesEditor()
     {
-        return count(file($file));
+        return count(file($this->data_file));
     }
 
 }

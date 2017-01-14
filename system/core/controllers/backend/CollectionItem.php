@@ -32,6 +32,12 @@ class CollectionItem extends BackendController
     protected $collection_item;
 
     /**
+     * The current collection
+     * @var array
+     */
+    protected $data_collection = array();
+
+    /**
      * Constructor
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
@@ -51,17 +57,16 @@ class CollectionItem extends BackendController
      */
     public function listCollectionItem($collection_id)
     {
-        $collection = $this->getCollection($collection_id);
+        $this->setCollectionCollectionItem($collection_id);
 
         $this->actionCollectionItem();
 
-        $items = $this->getListCollectionItem($collection);
-
-        $this->setData('items', $items);
-        $this->setData('collection', $collection);
-
-        $this->setTitleListCollectionItem($collection);
+        $this->setTitleListCollectionItem();
         $this->setBreadcrumbListCollectionItem();
+
+        $this->setData('collection', $this->data_collection);
+        $this->setData('items', $this->getListCollectionItem());
+
         $this->outputListCollectionItem();
     }
 
@@ -70,7 +75,7 @@ class CollectionItem extends BackendController
      * @param integer $collection_id
      * @return array
      */
-    protected function getCollection($collection_id)
+    protected function setCollectionCollectionItem($collection_id)
     {
         if (!is_numeric($collection_id)) {
             return array();
@@ -82,6 +87,7 @@ class CollectionItem extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_collection = $collection;
         return $collection;
     }
 
@@ -100,9 +106,9 @@ class CollectionItem extends BackendController
         $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
-        // Update weight and returm JSON responce
         if ($action === 'weight' && $this->access('collection_item_edit')) {
-            return $this->updateWeight($selected);
+            $this->updateWeightCollectionItem($selected);
+            return null;
         }
 
         $deleted = $updated = 0;
@@ -126,15 +132,13 @@ class CollectionItem extends BackendController
             $message = $this->text('Collection items have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
      * Updates weight of collection items
      * @param array $items
      */
-    protected function updateWeight(array $items)
+    protected function updateWeightCollectionItem(array $items)
     {
         foreach ($items as $id => $weight) {
             $this->collection_item->update($id, array('weight' => $weight));
@@ -151,11 +155,11 @@ class CollectionItem extends BackendController
      * @param array $collection
      * @return array
      */
-    protected function getListCollectionItem(array $collection)
+    protected function getListCollectionItem()
     {
         $conditions = array(
-            'type' => $collection['type'],
-            'collection_id' => $collection['collection_id']
+            'type' => $this->data_collection['type'],
+            'collection_id' => $this->data_collection['collection_id']
         );
 
         return $this->collection_item->getItems($conditions);
@@ -163,14 +167,11 @@ class CollectionItem extends BackendController
 
     /**
      * Sets title on the collection items page
-     * @param array $collection
      */
-    protected function setTitleListCollectionItem(array $collection)
+    protected function setTitleListCollectionItem()
     {
-        $title = $this->text('Items of collection %name', array(
-            '%name' => $collection['title']
-        ));
-
+        $vars = array('%name' => $this->data_collection['title']);
+        $title = $this->text('Items of collection %name', $vars);
         $this->setTitle($title);
     }
 
@@ -187,8 +188,8 @@ class CollectionItem extends BackendController
         );
 
         $breadcrumbs[] = array(
-            'url' => $this->url('admin/content/collection'),
-            'text' => $this->text('Collections')
+            'text' => $this->text('Collections'),
+            'url' => $this->url('admin/content/collection')
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -208,118 +209,106 @@ class CollectionItem extends BackendController
      */
     public function editCollectionItem($collection_id)
     {
-        $collection = $this->getCollection($collection_id);
-        $handler = $this->getHandlerCollectionItem($collection);
-        $weight = $this->collection_item->getNextWeight($collection_id);
+        $this->setCollectionCollectionItem($collection_id);
 
-        $this->setData('weight', $weight);
-        $this->setData('handler', $handler);
-        $this->setData('collection', $collection);
+        $this->setTitleEditCollectionItem();
+        $this->setBreadcrumbEditCollectionItem();
 
-        $this->submitCollectionItem($collection);
+        $this->setData('collection', $this->data_collection);
+        $this->setData('handler', $this->getHandlerCollectionItem());
+        $this->setData('weight', $this->collection_item->getNextWeight($collection_id));
 
-        $this->setJsEditCollectionItem($collection);
-        $this->setTitleEditCollectionItem($collection);
-        $this->setBreadcrumbEditCollectionItem($collection);
+        $this->submitCollectionItem();
+
+        $this->setJsEditCollectionItem();
         $this->outputEditCollectionItem();
     }
 
     /**
      * Returns an array of handler data for the collection type
-     * @param array $collection
      * @return array
      */
-    protected function getHandlerCollectionItem(array $collection)
+    protected function getHandlerCollectionItem()
     {
         $handlers = $this->collection->getHandlers();
+        $type = $this->data_collection['type'];
 
-        if (empty($handlers[$collection['type']])) {
+        if (empty($handlers[$type])) {
             $this->outputHttpStatus(403);
         }
 
-        return $handlers[$collection['type']];
+        return $handlers[$type];
     }
 
     /**
      * Saves a submitted collection item
-     * @param array $collection
      * @return null
      */
-    protected function submitCollectionItem(array $collection)
+    protected function submitCollectionItem()
     {
         if (!$this->isPosted('save')) {
             return null;
         }
 
         $this->setSubmitted('collection_item');
-        $this->validateCollectionItem($collection);
+        $this->validateCollectionItem();
 
         if (!$this->hasErrors('collection_item')) {
-            $this->addCollectionItem($collection);
+            $this->addCollectionItem();
         }
-
-        return null;
     }
 
     /**
      * Validates a submitted collection item
-     * @param array $collection
      */
-    protected function validateCollectionItem(array $collection)
+    protected function validateCollectionItem()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('collection_id', $collection['collection_id']);
+        $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
         $this->validate('collection_item');
     }
 
     /**
      * Adds a new item to the collection
-     * @param array $collection
      */
-    protected function addCollectionItem(array $collection)
+    protected function addCollectionItem()
     {
         $this->controlAccess('collection_item_add');
 
-        $submitted = $this->getSubmitted();
-        $added = $this->collection_item->add($submitted);
+        $added = $this->collection_item->add($this->getSubmitted());
 
         if (empty($added)) {
             $message = $this->text('Collection item has not been added');
             $this->redirect('', $message, 'warning');
         }
 
-        $url = "admin/content/collection-item/{$collection['collection_id']}";
+        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
         $message = $this->text('Collection item has been added');
         $this->redirect($url, $message, 'success');
     }
 
     /**
      * Sets JS on the edit collection item page
-     * @param array $collection
      */
-    protected function setJsEditCollectionItem(array $collection)
+    protected function setJsEditCollectionItem()
     {
-        $this->setJsSettings('collection', $collection);
+        $this->setJsSettings('collection', $this->data_collection);
     }
 
     /**
      * Sets title on the collection items page
-     * @param array $collection
      */
-    protected function setTitleEditCollectionItem(array $collection)
+    protected function setTitleEditCollectionItem()
     {
-        $title = $this->text('Add item to collection %name', array(
-            '%name' => $collection['title']
-        ));
-
+        $vars = array('%name' => $this->data_collection['title']);
+        $title = $this->text('Add item to collection %name', $vars);
         $this->setTitle($title);
     }
 
     /**
      * Sets breadcrumbs on the collection items page
-     * @param array $collection
      */
-    protected function setBreadcrumbEditCollectionItem(array $collection)
+    protected function setBreadcrumbEditCollectionItem()
     {
         $breadcrumbs = array();
 
@@ -334,8 +323,8 @@ class CollectionItem extends BackendController
         );
 
         $breadcrumbs[] = array(
-            'url' => $this->url("admin/content/collection-item/{$collection['collection_id']}"),
-            'text' => $this->text('Items of collection %name', array('%name' => $collection['title']))
+            'url' => $this->url("admin/content/collection-item/{$this->data_collection['collection_id']}"),
+            'text' => $this->text('Items of collection %name', array('%name' => $this->data_collection['title']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

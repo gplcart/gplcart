@@ -88,12 +88,13 @@ class Dashboard extends BackendController
     {
         $this->toggleIntroDashboard();
 
+        $this->setTitleDashboard();
+
         $this->setDataUsersDashboard();
         $this->setDataOrdersDashboard();
         $this->setDataEventsDashboard();
         $this->setDataSummaryDashboard();
 
-        $this->setTitleDashboard();
         $this->outputDashboard();
     }
 
@@ -213,11 +214,13 @@ class Dashboard extends BackendController
      */
     protected function setDataSummaryDashboard()
     {
+        $options = array('count' => true);
+
         $data = array(
-            'user_total' => $this->user->getList(array('count' => true)),
-            'order_total' => $this->order->getList(array('count' => true)),
-            'review_total' => $this->review->getList(array('count' => true)),
-            'product_total' => $this->product->getList(array('count' => true))
+            'user_total' => $this->user->getList($options),
+            'order_total' => $this->order->getList($options),
+            'review_total' => $this->review->getList($options),
+            'product_total' => $this->product->getList($options)
         );
 
         $html = $this->render('dashboard/panels/summary', $data);

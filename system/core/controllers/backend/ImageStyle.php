@@ -174,7 +174,6 @@ class ImageStyle extends BackendController
         }
 
         $this->addImageStyle();
-        return null;
     }
 
     /**
@@ -267,7 +266,6 @@ class ImageStyle extends BackendController
         }
 
         $this->setData('imagestyle.actions', implode("\n", $modified));
-        return null;
     }
 
     /**
