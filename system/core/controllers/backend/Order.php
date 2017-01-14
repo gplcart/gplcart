@@ -583,7 +583,6 @@ class Order extends BackendController
 
         $html = $this->render('sale/order/panes/components/rule', $data);
         $components["rule_$rule_id"] = $html;
-        return null;
     }
 
     /**

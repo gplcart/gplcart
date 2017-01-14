@@ -39,6 +39,12 @@ class Store extends BackendController
     protected $collection;
 
     /**
+     * The current store
+     * @var array
+     */
+    protected $data_store = array();
+
+    /**
      * Constructor
      * @param ImageModel $image
      * @param ModuleModel $module
@@ -61,18 +67,18 @@ class Store extends BackendController
     {
         $this->actionStore();
 
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalStore($query);
-        $limit = $this->setPager($total, $query);
-        $stores = $this->getListStore($limit, $query);
+        $this->setTitleListStore();
+        $this->setBreadcrumbListStore();
 
-        $this->setData('stores', $stores);
+        $query = $this->getFilterQuery();
 
         $filters = array('name', 'domain', 'basepath', 'status');
         $this->setFilter($filters, $query);
 
-        $this->setTitleListStore();
-        $this->setBreadcrumbListStore();
+        $total = $this->getTotalStore($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('stores', $this->getListStore($limit, $query));
         $this->outputListStore();
     }
 
@@ -112,8 +118,6 @@ class Store extends BackendController
             $message = $this->text('Stores have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -174,50 +178,44 @@ class Store extends BackendController
      */
     public function editStore($store_id = null)
     {
-        $store = $this->getStore($store_id);
-        $themes = $this->getListThemeStore();
-        $collections = $this->getListCollectionStore($store_id);
+        $this->setStore($store_id);
 
-        $is_default = $this->isDefaultStore($store);
-        $can_delete = $this->canDeleteStore($store);
+        $this->seTitleEditStore();
+        $this->setBreadcrumbEditStore();
 
-        $this->setData('store', $store);
-        $this->setData('themes', $themes);
-        $this->setData('is_default', $is_default);
-        $this->setData('can_delete', $can_delete);
-        $this->setData('collections', $collections);
+        $this->setData('store', $this->data_store);
+        $this->setData('themes', $this->getListThemeStore());
+        $this->setData('is_default', $this->isDefaultStore());
+        $this->setData('can_delete', $this->canDeleteStore());
+        $this->setData('collections', $this->getListCollectionStore());
 
-        $this->submitStore($store);
+        $this->submitStore();
         $this->setDataEditStore();
 
-        $this->setJsEditStore($store);
-        $this->seTitleEditStore($store);
-        $this->setBreadcrumbEditStore();
+        $this->setJsEditStore();
         $this->outputEditStore();
     }
 
     /**
      * Whether the store can be deleted
-     * @param array $store
      * @return boolean
      */
-    protected function canDeleteStore(array $store)
+    protected function canDeleteStore()
     {
-        return (isset($store['store_id'])//
-                && $this->store->canDelete($store['store_id'])//
+        return isset($this->data_store['store_id'])//
+                && $this->store->canDelete($this->data_store['store_id'])//
                 && $this->access('store_delete')//
-                && !$this->isDefaultStore($store));
+                && !$this->isDefaultStore();
     }
 
     /**
      * Whether the store is default
-     * @param array $store
      * @return boolean
      */
-    protected function isDefaultStore(array $store)
+    protected function isDefaultStore()
     {
-        return (isset($store['store_id'])//
-                && $this->store->isDefault($store['store_id']));
+        return isset($this->data_store['store_id'])//
+                && $this->store->isDefault($this->data_store['store_id']);
     }
 
     /**
@@ -225,10 +223,11 @@ class Store extends BackendController
      * @param integer $store_id
      * @return array
      */
-    protected function getStore($store_id)
+    protected function setStore($store_id)
     {
         if (!is_numeric($store_id)) {
-            return array('data' => $this->store->defaultConfig());
+            $this->data_store = array('data' => $this->store->defaultConfig());
+            return $this->data_store;
         }
 
         $store = $this->store->get((int) $store_id);
@@ -237,6 +236,7 @@ class Store extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_store = $store;
         return $store;
     }
 
@@ -252,14 +252,20 @@ class Store extends BackendController
     }
 
     /**
-     * Returns an array of enabled collection for the current store
-     * keyed by entity name
-     * @param integer $store_id
+     * Returns an array of enabled collection for the current store keyed by entity name
      * @return array
      */
-    protected function getListCollectionStore($store_id)
+    protected function getListCollectionStore()
     {
-        $conditions = array('status' => 1, 'store_id' => $store_id);
+        if (empty($this->data_store['store_id'])) {
+            return array();
+        }
+
+        $conditions = array(
+            'status' => 1,
+            'store_id' => $this->data_store['store_id']
+        );
+
         $collections = (array) $this->collection->getList($conditions);
 
         $list = array();
@@ -272,13 +278,13 @@ class Store extends BackendController
 
     /**
      * Saves a submitted store data
-     * @param array $store
-     * @return null|void
+     * @return null
      */
-    protected function submitStore(array $store)
+    protected function submitStore()
     {
         if ($this->isPosted('delete')) {
-            $this->deleteStore($store);
+            $this->deleteStore();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -286,46 +292,46 @@ class Store extends BackendController
         }
 
         $this->setSubmitted('store');
-        $this->validateStore($store);
+        $this->validateStore();
 
         if ($this->hasErrors('store')) {
             return null;
         }
 
-        if (isset($store['store_id'])) {
-            return $this->updateStore($store);
+        if (isset($this->data_store['store_id'])) {
+            $this->updateStore();
+            return null;
         }
 
-        return $this->addStore();
+        $this->addStore();
     }
 
     /**
      * Deletes a store
-     * @param array $store
-     * @return null
      */
-    protected function deleteStore(array $store)
+    protected function deleteStore()
     {
         $this->controlAccess('store_delete');
-        $deleted = (isset($store['store_id']) && $this->store->delete($store['store_id']));
+
+        $deleted = $this->store->delete($this->data_store['store_id']);
+        $vars = array('%name' => $this->data_store['name']);
 
         if ($deleted) {
-            $message = $this->text('Store %s has been deleted', array('%s' => $store['name']));
+            $message = $this->text('Store %name has been deleted', $vars);
             $this->redirect('admin/settings/store', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete store %name', array('%name' => $store['name']));
+        $message = $this->text('Unable to delete store %name', $vars);
         $this->redirect('', $message, 'danger');
     }
 
     /**
      * Validates a store
-     * @param array $store
      */
-    protected function validateStore(array $store)
+    protected function validateStore()
     {
-        $this->setSubmitted('update', $store);
         $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_store);
         $this->setSubmittedBool('data.anonymous_checkout');
 
         foreach (array('email', 'phone', 'fax', 'map') as $field) {
@@ -337,24 +343,17 @@ class Store extends BackendController
 
     /**
      * Updates a store
-     * @param array $store
      */
-    protected function updateStore(array $store)
+    protected function updateStore()
     {
         $this->controlAccess('store_edit');
 
         $submitted = $this->getSubmitted();
+        $this->store->update($this->data_store['store_id'], $submitted);
 
-        // Prevent editing domain and basepath for default store
-        if ($this->store->isDefault($store['store_id'])) {
-            unset($submitted['domain'], $submitted['basepath']);
-        }
+        $vars = array('%name' => $this->data_store['name']);
+        $message = $this->text('Store %name has been updated', $vars);
 
-        $this->store->update($store['store_id'], $submitted);
-
-        $message = $this->text('Store %name has been updated', array(
-            '%name' => $store['name']
-        ));
         $this->redirect('admin/settings/store', $message, 'success');
     }
 
@@ -364,9 +363,7 @@ class Store extends BackendController
     protected function addStore()
     {
         $this->controlAccess('store_add');
-
-        $submitted = $this->getSubmitted();
-        $this->store->add($submitted);
+        $this->store->add($this->getSubmitted());
 
         $message = $this->text('Store has been added');
         $this->redirect('admin/settings/store', $message, 'success');
@@ -385,9 +382,7 @@ class Store extends BackendController
         }
 
         // Convert arrays to multiline strings
-        $multiline_fields = array('email', 'phone', 'fax', 'map');
-
-        foreach ($multiline_fields as $field) {
+        foreach (array('email', 'phone', 'fax', 'map') as $field) {
             $value = $this->getData("store.data.$field");
             if (!empty($value)) {
                 $this->setData("store.data.$field", implode("\n", (array) $value));
@@ -397,25 +392,24 @@ class Store extends BackendController
 
     /**
      * Sets JS on the store edit page
-     * @param array $store
      */
-    protected function setJsEditStore(array $store)
+    protected function setJsEditStore()
     {
-        if (!empty($store['data']['map'])) {
-            $this->setJsSettings('map', $store['data']['map']);
+        if (!empty($this->data_store['data']['map'])) {
+            $this->setJsSettings('map', $this->data_store['data']['map']);
         }
     }
 
     /**
      * Sets titles on the store edit page
-     * @param array $store
      */
-    protected function seTitleEditStore(array $store)
+    protected function seTitleEditStore()
     {
         $title = $this->text('Add store');
 
-        if (isset($store['store_id'])) {
-            $title = $this->text('Edit store %name', array('%name' => $store['name']));
+        if (isset($this->data_store['store_id'])) {
+            $vars = array('%name' => $this->data_store['name']);
+            $title = $this->text('Edit store %name', $vars);
         }
 
         $this->setTitle($title);

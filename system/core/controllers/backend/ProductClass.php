@@ -110,8 +110,6 @@ class ProductClass extends BackendController
             $message = $this->text('Deleted %num product classes', $vars);
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**

@@ -130,8 +130,6 @@ class PriceRule extends BackendController
             $message = $this->text('Deleted %num price rules', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**

@@ -32,6 +32,12 @@ class Trigger extends BackendController
     protected $trigger;
 
     /**
+     * The current trigger
+     * @var array
+     */
+    protected $data_trigger = array();
+
+    /**
      * Constructor
      * @param TriggerModel $trigger
      * @param ConditionModel $condition
@@ -51,21 +57,20 @@ class Trigger extends BackendController
     {
         $this->actionTrigger();
 
+        $this->setTitleListTrigger();
+        $this->setBreadcrumbListTrigger();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalTrigger($query);
-        $limit = $this->setPager($total, $query);
-
-        $stores = $this->store->getNames();
-        $triggers = $this->getListTrigger($limit, $query);
-
-        $this->setData('stores', $stores);
-        $this->setData('triggers', $triggers);
 
         $allowed = array('store_id', 'status', 'name');
         $this->setFilter($allowed, $query);
 
-        $this->setTitleListTrigger();
-        $this->setBreadcrumbListTrigger();
+        $total = $this->getTotalTrigger($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('triggers', $this->getListTrigger($limit, $query));
+
         $this->outputListTrigger();
     }
 
@@ -105,8 +110,6 @@ class Trigger extends BackendController
             $message = $this->text('Triggers have been deleted');
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -167,23 +170,20 @@ class Trigger extends BackendController
      */
     public function editTrigger($trigger_id = null)
     {
-        $trigger = $this->getTrigger($trigger_id);
-        $stores = $this->store->getNames();
-        $conditions = $this->getConditionsTrigger();
-        $operators = $this->getConditionOperatorsTrigger();
-        $can_delete = $this->canDeleteTrigger($trigger);
+        $this->setTrigger($trigger_id);
 
-        $this->setData('stores', $stores);
-        $this->setData('trigger', $trigger);
-        $this->setData('operators', $operators);
-        $this->setData('conditions', $conditions);
-        $this->setData('can_delete', $can_delete);
+        $this->setTitleEditTrigger();
+        $this->setBreadcrumbEditTrigger();
 
-        $this->submitTrigger($trigger);
+        $this->setData('trigger', $this->data_trigger);
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('can_delete', $this->canDeleteTrigger());
+        $this->setData('conditions', $this->getConditionsTrigger());
+        $this->setData('operators', $this->getConditionOperatorsTrigger());
+
+        $this->submitTrigger();
 
         $this->setDataEditTrigger();
-        $this->setTitleEditTrigger($trigger);
-        $this->setBreadcrumbEditTrigger();
         $this->outputEditTrigger();
     }
 
@@ -207,12 +207,11 @@ class Trigger extends BackendController
 
     /**
      * Whether the trigger can be deleted
-     * @param array $trigger
      * @return boolean
      */
-    protected function canDeleteTrigger(array $trigger)
+    protected function canDeleteTrigger()
     {
-        return (isset($trigger['trigger_id']) && $this->access('trigger_delete'));
+        return isset($this->data_trigger['trigger_id']) && $this->access('trigger_delete');
     }
 
     /**
@@ -220,7 +219,7 @@ class Trigger extends BackendController
      * @param integer $trigger_id
      * @return array
      */
-    protected function getTrigger($trigger_id)
+    protected function setTrigger($trigger_id)
     {
         if (!is_numeric($trigger_id)) {
             return array();
@@ -232,18 +231,19 @@ class Trigger extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_trigger = $trigger;
         return $trigger;
     }
 
     /**
      * Saves an array of submitted trigger data
-     * @param array $trigger
-     * @return null|void
+     * @return null
      */
-    protected function submitTrigger(array $trigger)
+    protected function submitTrigger()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteTrigger($trigger);
+            $this->deleteTrigger();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -251,27 +251,27 @@ class Trigger extends BackendController
         }
 
         $this->setSubmitted('trigger');
-        $this->validateTrigger($trigger);
+        $this->validateTrigger();
 
         if ($this->hasErrors('trigger')) {
             return null;
         }
 
-        if (isset($trigger['trigger_id'])) {
-            return $this->updateTrigger($trigger);
+        if (isset($this->data_trigger['trigger_id'])) {
+            $this->updateTrigger();
+            return null;
         }
 
-        return $this->addTrigger();
+        $this->addTrigger();
     }
 
     /**
      * Deletes a trigger
-     * @param array $trigger
      */
-    protected function deleteTrigger(array $trigger)
+    protected function deleteTrigger()
     {
         $this->controlAccess('trigger_delete');
-        $deleted = $this->trigger->delete($trigger['trigger_id']);
+        $deleted = $this->trigger->delete($this->data_trigger['trigger_id']);
 
         if (empty($deleted)) {
             $message = $this->text('Trigger has not been deleted');
@@ -284,26 +284,25 @@ class Trigger extends BackendController
 
     /**
      * Validates a submitted trigger
-     * @param array $trigger
      */
-    protected function validateTrigger(array $trigger)
+    protected function validateTrigger()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $trigger);
         $this->setSubmittedArray('data.conditions');
+        $this->setSubmitted('update', $this->data_trigger);
+
         $this->validate('trigger');
     }
 
     /**
      * Updates a trigger with the submitted values
-     * @param array $trigger
      */
-    protected function updateTrigger(array $trigger)
+    protected function updateTrigger()
     {
         $this->controlAccess('trigger_edit');
         $submitted = $this->getSubmitted();
 
-        $this->trigger->update($trigger['trigger_id'], $submitted);
+        $this->trigger->update($this->data_trigger['trigger_id'], $submitted);
 
         $message = $this->text('Trigger has been updated');
         $this->redirect('admin/settings/trigger', $message, 'success');
@@ -315,9 +314,8 @@ class Trigger extends BackendController
     protected function addTrigger()
     {
         $this->controlAccess('trigger_add');
-        $submitted = $this->getSubmitted();
 
-        $result = $this->trigger->add($submitted);
+        $result = $this->trigger->add($this->getSubmitted());
 
         if (empty($result)) {
             $message = $this->text('Trigger has not been added');
@@ -351,19 +349,17 @@ class Trigger extends BackendController
         }
 
         $this->setData('trigger.data.conditions', implode("\n", $modified));
-        return null;
     }
 
     /**
      * Sets title on the edit trigger page
-     * @param array $trigger
      */
-    protected function setTitleEditTrigger(array $trigger)
+    protected function setTitleEditTrigger()
     {
         $title = $this->text('Add trigger');
 
-        if (isset($trigger['name'])) {
-            $vars = array('%name' => $trigger['name']);
+        if (isset($this->data_trigger['name'])) {
+            $vars = array('%name' => $this->data_trigger['name']);
             $title = $this->text('Edit trigger %name', $vars);
         }
 

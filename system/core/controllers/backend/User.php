@@ -25,6 +25,12 @@ class User extends BackendController
     protected $role;
 
     /**
+     * The current user
+     * @var array
+     */
+    protected $data_user = array();
+
+    /**
      * Constructor
      * @param UserRoleModel $role
      */
@@ -41,24 +47,23 @@ class User extends BackendController
     {
         $this->actionUser();
 
+        $this->setTitleListUser();
+        $this->setBreadcrumbListUser();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalUser($query);
-        $limit = $this->setPager($total, $query);
-
-        $roles = $this->role->getList();
-        $stores = $this->store->getNames();
-        $users = $this->getListUser($limit, $query);
-
-        $this->setData('users', $users);
-        $this->setData('roles', $roles);
-        $this->setData('stores', $stores);
 
         $filters = array('name', 'email', 'role_id', 'store_id',
             'status', 'created', 'user_id');
 
         $this->setFilter($filters, $query);
-        $this->setTitleListUser();
-        $this->setBreadcrumbListUser();
+
+        $total = $this->getTotalUser($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('roles', $this->role->getList());
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('users', $this->getListUser($limit, $query));
+
         $this->outputListUser();
     }
 
@@ -101,8 +106,6 @@ class User extends BackendController
             $text = $this->text('Deleted %num users', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -125,15 +128,14 @@ class User extends BackendController
     protected function getListUser(array $limit, array $query)
     {
         $query['limit'] = $limit;
-        $users = (array) $this->user->getList($query);
+
         $stores = $this->store->getList();
+        $users = (array) $this->user->getList($query);
 
         foreach ($users as &$user) {
             $user['url'] = '';
             if (isset($stores[$user['store_id']])) {
-                $store = $stores[$user['store_id']];
-                $user['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/account/{$user['user_id']}";
+                $user['url'] = $this->store->url($stores[$user['store_id']]) . "/account/{$user['user_id']}";
             }
         }
 
@@ -175,25 +177,17 @@ class User extends BackendController
      */
     public function editUser($user_id = null)
     {
-        $user = $this->getUser($user_id);
+        $this->setUser($user_id);
 
         $this->controlAccessEditUser($user_id);
 
-        $roles = $this->role->getList();
-        $stores = $this->store->getNames();
+        $this->setData('user', $this->data_user);
+        $this->setData('roles', $this->role->getList());
+        $this->setData('stores', $this->store->getNames());
+        $this->setData('can_delete', $this->canDeleteUser());
+        $this->setData('is_superadmin', $this->isSuperadminUser());
 
-        $is_superadmin = (isset($user['user_id'])//
-                && $this->isSuperadmin($user['user_id']));
-
-        $can_delete = $this->canDeleteUser($user);
-
-        $this->setData('user', $user);
-        $this->setData('roles', $roles);
-        $this->setData('stores', $stores);
-        $this->setData('can_delete', $can_delete);
-        $this->setData('is_superadmin', $is_superadmin);
-
-        $this->submitUser($user);
+        $this->submitUser();
 
         $this->setTitleEditUser($user);
         $this->setBreadcrumbEditUser();
@@ -202,14 +196,20 @@ class User extends BackendController
 
     /**
      * Whether the user can be deleted
-     * @param array $user
      * @return boolean
      */
-    protected function canDeleteUser(array $user)
+    protected function canDeleteUser()
     {
-        return (isset($user['user_id'])//
-                && $this->access('user_delete')//
-                && $this->user->canDelete($user['user_id']));
+        return isset($this->data_user['user_id']) && $this->access('user_delete') && $this->user->canDelete($this->data_user['user_id']);
+    }
+
+    /**
+     * Whether the user is superadmin
+     * @return bool
+     */
+    protected function isSuperadminUser()
+    {
+        return isset($this->data_user['user_id']) && $this->isSuperadmin($this->data_user['user_id']);
     }
 
     /**
@@ -217,7 +217,7 @@ class User extends BackendController
      * @param integer $user_id
      * @return array
      */
-    protected function getUser($user_id)
+    protected function setUser($user_id)
     {
         if (!is_numeric($user_id)) {
             return array();
@@ -229,12 +229,16 @@ class User extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_user = $user;
         return $user;
     }
 
+    /**
+     * 
+     * @param type $user_id
+     */
     protected function controlAccessEditUser($user_id)
     {
-        // Only superadmin can edit its own account
         if ($this->isSuperadmin($user_id) && !$this->isSuperadmin()) {
             $this->outputHttpStatus(403);
         }
@@ -245,10 +249,11 @@ class User extends BackendController
      * @param array $user
      * @return null|void
      */
-    protected function submitUser(array $user)
+    protected function submitUser()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteUser($user);
+            $this->deleteUser();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -256,28 +261,28 @@ class User extends BackendController
         }
 
         $this->setSubmitted('user');
-        $this->validateUser($user);
+        $this->validateUser();
 
         if ($this->hasErrors('user')) {
             return null;
         }
 
-        if (isset($user['user_id'])) {
-            return $this->updateUser($user);
+        if (isset($this->data_user['user_id'])) {
+            $this->updateUser();
+            return null;
         }
 
-        return $this->addUser();
+        $this->addUser();
     }
 
     /**
      * Deletes a user
-     * @param array $user
      */
-    protected function deleteUser(array $user)
+    protected function deleteUser()
     {
         $this->controlAccess('user_delete');
 
-        $deleted = $this->user->delete($user['user_id']);
+        $deleted = $this->user->delete($this->data_user['user_id']);
 
         if ($deleted) {
             $message = $this->text('User has been deleted');
@@ -292,25 +297,24 @@ class User extends BackendController
      * Validates submitted user data
      * @param array $user
      */
-    protected function validateUser(array $user)
+    protected function validateUser()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $user);
+        $this->setSubmitted('update', $this->data_user);
         $this->validate('user', array('admin' => $this->access('user_edit')));
     }
 
     /**
      * Updates a user with submitted values
-     * @param array $user
      */
-    protected function updateUser(array $user)
+    protected function updateUser()
     {
         $this->controlAccess('user_edit');
 
         $values = $this->getSubmitted();
-        $this->user->update($user['user_id'], $values);
+        $this->user->update($this->data_user['user_id'], $values);
 
-        $vars = array('%name' => $user['name']);
+        $vars = array('%name' => $this->data_user['name']);
         $message = $this->text('User %name has been updated', $vars);
 
         $this->redirect('admin/user/list', $message, 'success');
@@ -322,10 +326,7 @@ class User extends BackendController
     protected function addUser()
     {
         $this->controlAccess('user_add');
-
-        $values = $this->getSubmitted();
-
-        $this->user->add($values);
+        $this->user->add($this->getSubmitted());
 
         $message = $this->text('User has been added');
         $this->redirect('admin/user/list', $message, 'success');

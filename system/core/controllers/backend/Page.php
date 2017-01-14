@@ -132,8 +132,6 @@ class Page extends BackendController
         if ($deleted > 0) {
             $this->setMessage($this->text('Pages have been deleted'), 'success', true);
         }
-
-        return null;
     }
 
     /**

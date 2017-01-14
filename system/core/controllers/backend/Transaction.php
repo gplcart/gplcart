@@ -52,23 +52,22 @@ class Transaction extends BackendController
     {
         $this->actionTransaction();
 
+        $this->setTitleListTransaction();
+        $this->setBreadcrumbListTransaction();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalTransaction($query);
-        $limit = $this->setPager($total, $query);
-
-        $transactions = $this->getListTransaction($limit, $query);
-        $payment_methods = $this->payment->getList(false);
-
-        $this->setData('transactions', $transactions);
-        $this->setData('payment_methods', $payment_methods);
 
         $filters = array('created', 'order_id', 'payment_service',
             'service_transaction_id');
-
+        
         $this->setFilter($filters, $query);
 
-        $this->setTitleListTransaction();
-        $this->setBreadcrumbListTransaction();
+        $total = $this->getTotalTransaction($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('payment_methods', $this->payment->getList(false));
+        $this->setData('transactions', $this->getListTransaction($limit, $query));
+
         $this->outputListTransaction();
     }
 
@@ -108,8 +107,6 @@ class Transaction extends BackendController
             $message = $this->text('Updated %num transactions', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**

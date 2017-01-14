@@ -80,6 +80,7 @@ class Store extends BaseValidator
         $this->validateTranslationStore();
         $this->validateThemeStore();
         $this->validateImagesStore();
+        $this->validateDefaultStore();
 
         return $this->getResult();
     }
@@ -413,6 +414,19 @@ class Store extends BaseValidator
         }
 
         return !isset($error);
+    }
+
+    /**
+     * Validates default store
+     */
+    protected function validateDefaultStore()
+    {
+        $id = $this->getUpdatingId();
+
+        if (!empty($id) && $this->store->isDefault($id)) {
+            $this->unsetSubmitted('domain');
+            $this->unsetSubmitted('basepath');
+        }
     }
 
 }

@@ -27,6 +27,9 @@ class Settings extends BackendController
      */
     public function editSettings()
     {
+        $this->setTitleEditSettings();
+        $this->setBreadcrumbEditSettings();
+
         $this->controlAccessEditSettings();
 
         $settings = $this->getSettings();
@@ -35,8 +38,6 @@ class Settings extends BackendController
         $this->submitSettings();
         $this->setDataEditSettings();
 
-        $this->setTitleEditSettings();
-        $this->setBreadcrumbEditSettings();
         $this->outputEditSettings();
     }
 
@@ -93,17 +94,15 @@ class Settings extends BackendController
         }
 
         if (!$this->isPosted('save')) {
-            return;
+            return null;
         }
 
         $this->setSubmitted('settings');
         $this->validateSettings();
 
-        if ($this->hasErrors('settings')) {
-            return;
+        if (!$this->hasErrors('settings')) {
+            $this->updateSettings();
         }
-
-        $this->updateSettings();
     }
 
     /**
@@ -113,11 +112,11 @@ class Settings extends BackendController
     {
         $result = gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR);
 
-        if ($result) {
-            $this->redirect('', $this->text('Cache has been cleared'), 'success');
+        if (!$result) {
+            $this->redirect('');
         }
 
-        $this->redirect('');
+        $this->redirect('', $this->text('Cache has been cleared'), 'success');
     }
 
     /**

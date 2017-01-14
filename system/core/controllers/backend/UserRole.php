@@ -25,6 +25,12 @@ class UserRole extends BackendController
     protected $role;
 
     /**
+     * The current user role
+     * @var array
+     */
+    protected $data_role = array();
+
+    /**
      * Constructor
      * @param UserRoleModel $role
      */
@@ -41,16 +47,15 @@ class UserRole extends BackendController
      */
     public function editUserRole($role_id = null)
     {
-        $role = $this->getUserRole($role_id);
-        $permissions = $this->getPermissionsUserRole(true);
+        $this->setUserRole($role_id);
 
-        $this->setData('role', $role);
-        $this->setData('permissions', $permissions);
-
-        $this->submitUserRole($role);
-
-        $this->setTitleEditUserRole($role);
+        $this->setTitleEditUserRole();
         $this->setBreadcrumbEditUserRole();
+
+        $this->setData('role', $this->data_role);
+        $this->setData('permissions', $this->getPermissionsUserRole(true));
+
+        $this->submitUserRole();
         $this->outputEditUserRole();
     }
 
@@ -76,7 +81,7 @@ class UserRole extends BackendController
      * @param integer $role_id
      * @return array
      */
-    protected function getUserRole($role_id)
+    protected function setUserRole($role_id)
     {
         if (!is_numeric($role_id)) {
             return array();
@@ -88,18 +93,19 @@ class UserRole extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_role = $role;
         return $role;
     }
 
     /**
      * Saves a submitted user role
-     * @param array $role
-     * @return null|void
+     * @return null
      */
-    protected function submitUserRole(array $role)
+    protected function submitUserRole()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteUserRole($role);
+            $this->deleteUserRole();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -107,28 +113,28 @@ class UserRole extends BackendController
         }
 
         $this->setSubmitted('role');
-        $this->validateUserRole($role);
+        $this->validateUserRole();
 
         if ($this->hasErrors('role')) {
             return null;
         }
 
-        if (isset($role['role_id'])) {
-            return $this->updateUserRole($role);
+        if (isset($this->data_role['role_id'])) {
+            $this->updateUserRole();
+            return null;
         }
 
-        return $this->addUserRole();
+        $this->addUserRole();
     }
 
     /**
      * Deletes a role
-     * @param array $role
      */
-    protected function deleteUserRole(array $role)
+    protected function deleteUserRole()
     {
         $this->controlAccess('user_role_delete');
 
-        $deleted = $this->role->delete($role['role_id']);
+        $deleted = $this->role->delete($this->data_role['role_id']);
 
         if ($deleted) {
             $message = $this->text('Role has been deleted');
@@ -141,9 +147,8 @@ class UserRole extends BackendController
 
     /**
      * Validates a submitted user role
-     * @param array $role
      */
-    protected function validateUserRole(array $role)
+    protected function validateUserRole()
     {
         $permissions = $this->getSubmitted('permissions');
 
@@ -152,20 +157,20 @@ class UserRole extends BackendController
         }
 
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $role);
+        $this->setSubmitted('update', $this->data_role);
+
         $this->validate('user_role');
     }
 
     /**
      * Updates a user role with submitted values
-     * @param array $role
      */
-    protected function updateUserRole(array $role)
+    protected function updateUserRole()
     {
         $this->controlAccess('user_role_edit');
 
         $values = $this->getSubmitted();
-        $this->role->update($role['role_id'], $values);
+        $this->role->update($this->data_role['role_id'], $values);
 
         $message = $this->text('Role has been updated');
         $this->redirect('admin/user/role', $message, 'success');
@@ -178,8 +183,7 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_add');
 
-        $submitted = $this->getSubmitted();
-        $this->role->add($submitted);
+        $this->role->add($this->getSubmitted());
 
         $message = $this->text('Role has been added');
         $this->redirect('admin/user/role', $message, 'success');
@@ -187,14 +191,14 @@ class UserRole extends BackendController
 
     /**
      * Sets titles on the role edit form
-     * @param array $role
      */
-    protected function setTitleEditUserRole(array $role)
+    protected function setTitleEditUserRole()
     {
         $title = $this->text('Add role');
 
-        if (isset($role['role_id'])) {
-            $title = $this->text('Edit role %name', array('%name' => $role['name']));
+        if (isset($this->data_role['role_id'])) {
+            $vars = array('%name' => $this->data_role['name']);
+            $title = $this->text('Edit role %name', $vars);
         }
 
         $this->setTitle($title);
@@ -235,18 +239,18 @@ class UserRole extends BackendController
     {
         $this->actionUserRole();
 
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalUserRole($query);
-        $limit = $this->setPager($total, $query);
-        $roles = $this->getListUserRole($limit, $query);
+        $this->setTitleListUserRole();
+        $this->setBreadcrumbListUserRole();
 
-        $this->setData('roles', $roles);
+        $query = $this->getFilterQuery();
 
         $filters = array('name', 'role_id', 'status', 'created');
         $this->setFilter($filters, $query);
 
-        $this->setTitleListUserRole();
-        $this->setBreadcrumbListUserRole();
+        $total = $this->getTotalUserRole($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('roles', $this->getListUserRole($limit, $query));
         $this->outputListUserRole();
     }
 
@@ -286,8 +290,6 @@ class UserRole extends BackendController
             $text = $this->text('Deleted %num user roles', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
-
-        return null;
     }
 
     /**

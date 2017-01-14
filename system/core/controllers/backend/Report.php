@@ -20,6 +20,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Report extends BackendController
 {
+
     /**
      * Report model instance
      * @var \gplcart\core\models\Report $report
@@ -67,11 +68,10 @@ class Report extends BackendController
      */
     public function listPaymentMethodsReport()
     {
-        $list = $this->payment->getList();
-        $this->setData('methods', $list);
-
         $this->setTitleListPaymentMethodsReport();
         $this->setBreadcrumbListPaymentMethodsReport();
+
+        $this->setData('methods', $this->payment->getList());
         $this->outputListPaymentMethodsReport();
     }
 
@@ -109,11 +109,11 @@ class Report extends BackendController
      */
     public function listShippingMethodsReport()
     {
-        $list = $this->shipping->getList();
-        $this->setData('methods', $list);
-
         $this->setTitleListShippingMethodsReport();
         $this->setBreadcrumbListShippingMethodsReport();
+
+        $this->setData('methods', $this->shipping->getList());
+
         $this->outputListShippingMethodsReport();
     }
 
@@ -151,11 +151,10 @@ class Report extends BackendController
      */
     public function listRoutesReport()
     {
-        $routes = $this->getRoutesReport();
-        $this->setData('routes', $routes);
-
         $this->setTitleListRoutesReport();
         $this->setBreadcrumbListRoutesReport();
+
+        $this->setData('routes', $this->getRoutesReport());
         $this->outputListRoutesReport();
     }
 
@@ -237,23 +236,21 @@ class Report extends BackendController
     {
         $this->clearEventReport();
 
+        $this->setTitleListEventReport();
+        $this->setBreadcrumbListEventReport();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalEventReport($query);
-        $limit = $this->setPager($total, $query);
 
         $filters = array('severity', 'type', 'time', 'text');
         $this->setFilter($filters, $query);
 
-        $types = $this->report->getTypes();
-        $events = $this->getListEventReport($limit, $query);
-        $severities = $this->report->getSeverities();
+        $total = $this->getTotalEventReport($query);
+        $limit = $this->setPager($total, $query);
 
-        $this->setData('types', $types);
-        $this->setData('records', $events);
-        $this->setData('severities', $severities);
+        $this->setData('types', $this->report->getTypes());
+        $this->setData('severities', $this->report->getSeverities());
+        $this->setData('records', $this->getListEventReport($limit, $query));
 
-        $this->setTitleListEventReport();
-        $this->setBreadcrumbListEventReport();
         $this->outputListEventReport();
     }
 
@@ -289,6 +286,7 @@ class Report extends BackendController
     {
         $query['limit'] = $limit;
         $records = (array) $this->report->getList($query);
+
         return $this->prepareListEventReport($records);
     }
 
@@ -354,13 +352,12 @@ class Report extends BackendController
      */
     public function listStatusReport()
     {
-        $statuses = $this->report->getStatus();
-        $this->setData('statuses', $statuses);
-
-        $this->setDataStatusReport();
-
         $this->setTitleListStatusReport();
         $this->setBreadcrumbListStatusReport();
+
+        $this->setData('statuses', $this->report->getStatus());
+
+        $this->setDataStatusReport();
         $this->outputListStatusReport();
     }
 
@@ -370,8 +367,7 @@ class Report extends BackendController
     protected function setDataStatusReport()
     {
         if ($this->isQuery('phpinfo')) {
-            $phpinfo = gplcart_phpinfo();
-            $this->setData('phpinfo', $phpinfo);
+            $this->setData('phpinfo', gplcart_phpinfo());
         }
     }
 

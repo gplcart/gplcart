@@ -25,6 +25,12 @@ class Zone extends BackendController
     protected $zone;
 
     /**
+     * The current zone
+     * @var array
+     */
+    protected $data_zone = array();
+
+    /**
      * Constructor
      * @param ZoneModel $zone
      */
@@ -42,18 +48,18 @@ class Zone extends BackendController
     {
         $this->actionZone();
 
+        $this->setTitleListZone();
+        $this->setBreadcrumbListZone();
+
         $query = $this->getFilterQuery();
-        $total = $this->getTotalZone($query);
-        $limit = $this->setPager($total, $query);
-        $zones = $this->getListZone($limit, $query);
 
         $allowed = array('title', 'status');
         $this->setFilter($allowed, $query);
 
-        $this->setData('zones', $zones);
+        $total = $this->getTotalZone($query);
+        $limit = $this->setPager($total, $query);
 
-        $this->setTitleListZone();
-        $this->setBreadcrumbListZone();
+        $this->setData('zones', $this->getListZone($limit, $query));
         $this->outputListZone();
     }
 
@@ -95,8 +101,6 @@ class Zone extends BackendController
             $message = $this->text('Deleted %num zones', $vars);
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -157,20 +161,27 @@ class Zone extends BackendController
      */
     public function editZone($zone_id = null)
     {
-        $zone = $this->getZone($zone_id);
+        $this->setZone($zone_id);
 
-        $can_delete = (!empty($zone)//
-                && $this->zone->canDelete($zone_id)//
-                && $this->access('zone_delete'));
-
-        $this->setData('zone', $zone);
-        $this->setData('can_delete', $can_delete);
-
-        $this->submitZone($zone);
-
-        $this->setTitleEditZone($zone);
+        $this->setTitleEditZone();
         $this->setBreadcrumbEditZone();
+
+        $this->setData('zone', $this->data_zone);
+        $this->setData('can_delete', $this->canDeleteZone());
+
+        $this->submitZone();
         $this->outputEditZone();
+    }
+
+    /**
+     * Wheter the current zone can be deleted
+     * @return bool
+     */
+    protected function canDeleteZone()
+    {
+        return isset($this->data_zone['zone_id'])//
+                && $this->zone->canDelete($this->data_zone['zone_id'])//
+                && $this->access('zone_delete');
     }
 
     /**
@@ -178,7 +189,7 @@ class Zone extends BackendController
      * @param integer $zone_id
      * @return array
      */
-    protected function getZone($zone_id)
+    protected function setZone($zone_id)
     {
         if (!is_numeric($zone_id)) {
             return array();
@@ -190,18 +201,19 @@ class Zone extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_zone = $zone;
         return $zone;
     }
 
     /**
      * Saves a submitted zone
-     * @param array $zone
-     * @return null|void
+     * @return null
      */
-    protected function submitZone(array $zone)
+    protected function submitZone()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteZone($zone);
+            $this->deleteZone();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -209,28 +221,28 @@ class Zone extends BackendController
         }
 
         $this->setSubmitted('zone');
-        $this->validateZone($zone);
+        $this->validateZone();
 
         if ($this->hasErrors('zone')) {
             return null;
         }
 
-        if (isset($zone['zone_id'])) {
-            return $this->updateZone($zone);
+        if (isset($this->data_zone['zone_id'])) {
+            $this->updateZone();
+            return null;
         }
 
-        return $this->addZone();
+        $this->addZone();
     }
 
     /**
      * Deletes a zone
-     * @param array $zone
      */
-    protected function deleteZone(array $zone)
+    protected function deleteZone()
     {
         $this->controlAccess('zone_delete');
 
-        $deleted = $this->zone->delete($zone['zone_id']);
+        $deleted = $this->zone->delete($this->data_zone['zone_id']);
 
         if ($deleted) {
             $message = $this->text('Zone has been deleted');
@@ -243,25 +255,23 @@ class Zone extends BackendController
 
     /**
      * Validates a zone
-     * @param array $zone
      */
-    protected function validateZone(array $zone)
+    protected function validateZone()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $zone);
+        $this->setSubmitted('update', $this->data_zone);
         $this->validate('zone');
     }
 
     /**
      * Updates a zone with submitted values
-     * @param array $zone
      */
-    protected function updateZone(array $zone)
+    protected function updateZone()
     {
         $this->controlAccess('zone_edit');
 
         $values = $this->getSubmitted();
-        $this->zone->update($zone['zone_id'], $values);
+        $this->zone->update($this->data_zone['zone_id'], $values);
 
         $message = $this->text('Zone has been updated');
         $this->redirect('admin/settings/zone', $message, 'success');
@@ -273,9 +283,7 @@ class Zone extends BackendController
     protected function addZone()
     {
         $this->controlAccess('zone_add');
-
-        $values = $this->getSubmitted();
-        $this->zone->add($values);
+        $this->zone->add($this->getSubmitted());
 
         $message = $this->text('Zone has been added');
         $this->redirect('admin/settings/zone', $message, 'success');
@@ -283,16 +291,14 @@ class Zone extends BackendController
 
     /**
      * Sets titles on the edit zone page
-     * @param array $zone
      */
-    protected function setTitleEditZone(array $zone)
+    protected function setTitleEditZone()
     {
         $title = $this->text('Add zone');
 
-        if (isset($zone['zone_id'])) {
-            $title = $this->text('Edit zone %name', array(
-                '%name' => $zone['title']
-            ));
+        if (isset($this->data_zone['zone_id'])) {
+            $vars = array('%name' => $this->data_zone['title']);
+            $title = $this->text('Edit zone %name', $vars);
         }
 
         $this->setTitle($title);

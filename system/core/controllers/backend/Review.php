@@ -32,6 +32,12 @@ class Review extends BackendController
     protected $product;
 
     /**
+     * The current review
+     * @var array
+     */
+    protected $data_review = array();
+
+    /**
      * Constructor
      * @param ReviewModel $review
      * @param ProductModel $product
@@ -51,21 +57,21 @@ class Review extends BackendController
     {
         $this->actionReview();
 
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalReview($query);
-        $limit = $this->setPager($total, $query);
-        $reviews = $this->getListReview($limit, $query);
+        $this->setTitleListReview();
+        $this->setBreadcrumbListReview();
 
-        $this->setData('reviews', $reviews);
+        $query = $this->getFilterQuery();
 
         $filters = array('product_id', 'email',
             'status', 'created', 'text', 'review_id');
-
         $this->setFilter($filters, $query);
+
+        $total = $this->getTotalReview($query);
+        $limit = $this->setPager($total, $query);
+
+        $this->setData('reviews', $this->getListReview($limit, $query));
         $this->setDataListReview($query);
 
-        $this->setTitleListReview();
-        $this->setBreadcrumbListReview();
         $this->outputListReview();
     }
 
@@ -104,8 +110,6 @@ class Review extends BackendController
             $message = $this->text('Deleted %num reviews', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
-
-        return null;
     }
 
     /**
@@ -191,14 +195,16 @@ class Review extends BackendController
      */
     public function editReview($review_id = null)
     {
-        $review = $this->getReview($review_id);
-        $this->setData('review', $review);
+        $this->setReview($review_id);
 
-        $this->submitReview($review);
+        $this->setTitleEditReview();
+        $this->setBreadcrumbEditReview();
+
+        $this->setData('review', $this->data_review);
+
+        $this->submitReview();
         $this->setDataEditReview();
 
-        $this->setTitleEditReview($review);
-        $this->setBreadcrumbEditReview();
         $this->outputEditReview();
     }
 
@@ -207,7 +213,7 @@ class Review extends BackendController
      * @param integer $review_id
      * @return array
      */
-    protected function getReview($review_id)
+    protected function setReview($review_id)
     {
         if (!is_numeric($review_id)) {
             return array();
@@ -219,18 +225,19 @@ class Review extends BackendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_review = $review;
         return $review;
     }
 
     /**
      * Saves a review
-     * @param array $review
      * @return null|void
      */
-    protected function submitReview(array $review)
+    protected function submitReview()
     {
-        if ($this->isPosted('delete') && isset($review['review_id'])) {
-            return $this->deleteReview($review);
+        if ($this->isPosted('delete')) {
+            $this->deleteReview();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
@@ -238,28 +245,27 @@ class Review extends BackendController
         }
 
         $this->setSubmitted('review');
-        $this->validateReview($review);
+        $this->validateReview();
 
         if ($this->hasErrors('review')) {
             return null;
         }
 
-        if (isset($review['review_id'])) {
-            return $this->updateReview($review);
+        if (isset($this->data_review['review_id'])) {
+            $this->updateReview();
+            return null;
         }
 
-        return $this->addReview();
+        $this->addReview();
     }
 
     /**
      * Deletes a review
-     * @param array $review
-     * @return null
      */
-    protected function deleteReview(array $review)
+    protected function deleteReview()
     {
         $this->controlAccess('review_delete');
-        $this->review->delete($review['review_id']);
+        $this->review->delete($this->data_review['review_id']);
 
         $message = $this->text('Review has been deleted');
         $this->redirect('admin/content/review', $message, 'success');
@@ -267,25 +273,23 @@ class Review extends BackendController
 
     /**
      * Validates a submitted review
-     * @param array $review
      */
-    protected function validateReview(array $review)
+    protected function validateReview()
     {
         $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $review);
+        $this->setSubmitted('update', $this->data_review);
         $this->validate('review');
     }
 
     /**
      * Updates a review with submitted data
-     * @param array $review
      */
-    protected function updateReview(array $review)
+    protected function updateReview()
     {
         $this->controlAccess('review_edit');
 
         $values = $this->getSubmitted();
-        $this->review->update($review['review_id'], $values);
+        $this->review->update($this->data_review['review_id'], $values);
 
         $message = $this->text('Review has been updated');
         $this->redirect('admin/content/review', $message, 'success');
@@ -298,8 +302,7 @@ class Review extends BackendController
     {
         $this->controlAccess('review_add');
 
-        $values = $this->getSubmitted();
-        $this->review->add($values);
+        $this->review->add($this->getSubmitted());
 
         $message = $this->text('Review has been added');
         $this->redirect('admin/content/review', $message, 'success');
@@ -324,13 +327,12 @@ class Review extends BackendController
 
     /**
      * Sets titles on the review edit page
-     * @param array $review
      */
-    protected function setTitleEditReview(array $review)
+    protected function setTitleEditReview()
     {
         $title = $this->text('Add review');
 
-        if (isset($review['review_id'])) {
+        if (isset($this->data_review['review_id'])) {
             $title = $this->text('Edit rewiew');
         }
 
