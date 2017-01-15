@@ -227,7 +227,7 @@ class Editor extends BackendController
     {
         $settings = array(
             'file_extension' => pathinfo($this->data_file, PATHINFO_EXTENSION),
-            'readonly' => !$this->access('editor_edit')
+            'readonly' => !$this->canSaveEditor()
         );
 
         $this->setJsSettings('editor', $settings);
@@ -290,7 +290,7 @@ class Editor extends BackendController
     protected function canSaveEditor()
     {
         return $this->access('editor_edit')//
-                && $this->current_theme['id'] !== $this->data_module['id'];
+                && $this->current_theme['id'] != $this->data_module['id'];
     }
 
     /**
