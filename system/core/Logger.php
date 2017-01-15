@@ -91,7 +91,7 @@ class Logger
         $values = array(
             'time' => GC_TIME,
             'text' => $message,
-            'log_id' => gplcart_string_random(6),
+            'log_id' => crc32(uniqid('', true)),
             'data' => serialize((array) $data),
             'translatable' => (int) $translatable,
             'type' => mb_substr($type, 0, 255, 'UTF-8'),
