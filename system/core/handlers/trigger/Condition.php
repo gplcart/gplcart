@@ -364,7 +364,7 @@ class Condition
      */
     public function userRole(array $condition)
     {
-        $role_id = $this->user->getSession('role_id');
+        $role_id = (string) $this->user->getSession('role_id');
 
         $value = (array) $condition['value'];
         if (!in_array($condition['operator'], array('=', '!='))) {

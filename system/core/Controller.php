@@ -1780,7 +1780,6 @@ class Controller
         }
 
         $this->data['languages'] = $this->languages;
-        //$this->data['current_store'] = $this->current_store;
         $this->data['messages'] = $this->session->getMessage();
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));

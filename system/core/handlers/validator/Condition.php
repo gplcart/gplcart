@@ -157,10 +157,9 @@ class Condition
      * @param string $key
      * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function shippingZoneId($key, $operator, array &$values, array $data)
+    public function shippingZoneId($key, $operator, array &$values)
     {
         if (!in_array($operator, array('=', '!='))) {
             return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));

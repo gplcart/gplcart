@@ -487,7 +487,7 @@ class Controller extends BaseController
             $this->setItemThumb($item, $options);
             $this->setItemUrl($item, $options);
             $this->setItemActive($item, $options);
-            $this->setItemIndentation($item, $options);
+            $this->setItemIndentation($item);
         }
 
         return $tree;

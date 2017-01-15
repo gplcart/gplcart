@@ -177,7 +177,7 @@ class Cli
         }
 
         foreach ($map as $i => $item) {
-            $this->line('  %d. %s', $i + 1, $item);
+            $this->line(sprintf('  %d. %s', $i + 1, $item));
         }
 
         $this->line(sprintf('%s: ', $title));

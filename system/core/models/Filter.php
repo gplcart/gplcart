@@ -81,7 +81,7 @@ class Filter extends Model
             $this->htmlpurifier = $this->htmlpurifiers[$key];
             return $this->htmlpurifier->purify($text);
         }
-        
+
         $this->library->load('htmlpurifier');
 
         if (empty($config)) {

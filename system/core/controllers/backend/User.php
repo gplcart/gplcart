@@ -173,7 +173,7 @@ class User extends BackendController
 
     /**
      * Displays the user edit page
-     * @param integer $user_id
+     * @param integer|null $user_id
      */
     public function editUser($user_id = null)
     {
@@ -234,8 +234,8 @@ class User extends BackendController
     }
 
     /**
-     * 
-     * @param type $user_id
+     * Controls access for the given user ID
+     * @param integer $user_id
      */
     protected function controlAccessEditUser($user_id)
     {

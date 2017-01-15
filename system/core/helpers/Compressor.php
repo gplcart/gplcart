@@ -271,7 +271,7 @@ class Compressor
 
     /**
      * Prefixes all paths within a CSS file
-     * @param array $matches
+     * @param array|null $matches
      * @param null|string $basepath
      * @return string
      */

@@ -281,7 +281,7 @@ class Report extends Model
             'title' => $this->language->text('Server software'),
             'description' => '',
             'severity' => 'info',
-            'status' => $_SERVER['SERVER_SOFTWARE'],
+            'status' => filter_input(INPUT_SERVER, 'SERVER_SOFTWARE', FILTER_SANITIZE_STRING),
             'weight' => 6
         );
 

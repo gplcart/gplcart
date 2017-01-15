@@ -17,6 +17,9 @@ class Request
 
     const COOKIE_PREFIX = 'gplcart_';
 
+    /**
+     * 
+     */
     public function __construct()
     {
         // Empty
@@ -51,7 +54,8 @@ class Request
      */
     protected function server($var, $default = '')
     {
-        return isset($_SERVER[$var]) ? trim($_SERVER[$var]) : $default;
+        $data = filter_input_array(INPUT_SERVER, FILTER_SANITIZE_STRING);
+        return isset($data[$var]) ? trim($data[$var]) : $default;
     }
 
     /**
@@ -108,14 +112,17 @@ class Request
      */
     public function method()
     {
-        $method = $this->server('REQUEST_METHOD', 'GET');
-        if (isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
-            $method = $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'];
-        } elseif (isset($_REQUEST['_method'])) {
-            $method = $_REQUEST['_method'];
+        $method = $this->server('HTTP_X_HTTP_METHOD_OVERRIDE', null);
+
+        if (!isset($method)) {
+            $method = (string) $this->request('_method');
         }
 
-        return strtoupper($method);
+        if (!isset($method)) {
+            $method = $this->server('REQUEST_METHOD', 'GET');
+        }
+
+        return filter_var(strtoupper($method), FILTER_SANITIZE_STRING);
     }
 
     /**
@@ -199,10 +206,14 @@ class Request
      */
     public function post($name = null, $default = null, $filter = true)
     {
-        $post = empty($_POST) ? array() : $_POST;
+        $post = filter_input_array(INPUT_POST);
 
-        if ($filter !== 'raw') {
-            $this->sanitize($post, (bool) $filter);
+        if (!is_array($post)) {
+            $post = array();
+        }
+
+        if ($filter != 'raw') {
+            gplcart_array_trim($post, (bool) $filter);
         }
 
         if (isset($name)) {
@@ -210,16 +221,6 @@ class Request
         }
 
         return $post;
-    }
-
-    /**
-     * Cleans up an array of values
-     * @param array $array
-     * @param bool $filter
-     */
-    protected function sanitize(array &$array, $filter = true)
-    {
-        gplcart_array_trim($array, $filter);
     }
 
     /**
@@ -233,8 +234,8 @@ class Request
     {
         $request = empty($_REQUEST) ? array() : $_REQUEST;
 
-        if ($filter !== 'raw') {
-            $this->sanitize($request, $filter);
+        if ($filter != 'raw') {
+            gplcart_array_trim($request, $filter);
         }
 
         if (isset($name)) {
@@ -253,9 +254,13 @@ class Request
      */
     public function cookie($name = null, $default = null, $filter = true)
     {
-        $cookie = empty($_COOKIE) ? array() : $_COOKIE;
+        $cookie = filter_input_array(INPUT_COOKIE);
 
-        gplcart_array_trim($cookie, $filter);
+        if (is_array($cookie)) {
+            gplcart_array_trim($cookie, $filter);
+        } else {
+            $cookie = array();
+        }
 
         if (isset($name)) {
             return isset($cookie[self::COOKIE_PREFIX . $name]) ? $cookie[self::COOKIE_PREFIX . $name] : $default;
@@ -314,9 +319,13 @@ class Request
      */
     public function get($name = null, $default = null, $filter = true)
     {
-        $get = empty($_GET) ? array() : $_GET;
+        $get = filter_input_array(INPUT_GET);
 
-        $this->sanitize($get, $filter);
+        if (is_array($get)) {
+            gplcart_array_trim($get, $filter);
+        } else {
+            $get = array();
+        }
 
         if (isset($name)) {
             return isset($get[$name]) ? urldecode($get[$name]) : $default;

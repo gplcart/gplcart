@@ -48,7 +48,7 @@ class Condition extends Model
 
     /**
      * Compares numeric values
-     * @param integer $value1
+     * @param string $value1
      * @param mixed $value2
      * @param string $operator
      * @return boolean

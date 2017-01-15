@@ -451,7 +451,7 @@ class User extends Model
 
     /**
      * Returns the current user from the session
-     * @return array
+     * @return mixed
      */
     public function getSession($key = null)
     {

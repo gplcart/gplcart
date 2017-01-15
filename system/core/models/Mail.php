@@ -196,7 +196,7 @@ class Mail extends Model
 
         if (isset($options['debug'])) {
             $this->mailer->SMTPDebug = (int) $options['debug'];
-            $this->mailer->Debugoutput = function ($str, $level) {
+            $this->mailer->Debugoutput = function ($str) {
                 $this->debug = $str;
             };
         }

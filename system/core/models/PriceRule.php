@@ -304,7 +304,7 @@ class PriceRule extends Model
             $results[$id] = $rule;
         }
 
-        uasort($results, function ($a, $b) {
+        uasort($results, function ($a) {
             return empty($a['code']) ? -1 : 1; // Coupons always bottom
         });
 

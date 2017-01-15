@@ -315,7 +315,6 @@ class Category extends Model
 
                 $category['depth'] = $depth;
                 $category['parents'] = $parents_tree[$category['category_id']];
-                //$tree[] = $category;
 
                 $tree[$category['category_id']] = $category;
 

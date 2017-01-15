@@ -295,8 +295,8 @@ class Twig
      */
     protected function addFunctionXss($object)
     {
-        $function = new \Twig_SimpleFunction('xss', function ($text, $tags = null, $protocols = null) use ($object) {
-            return $object->xss($text, $tags, $protocols);
+        $function = new \Twig_SimpleFunction('xss', function ($text, $filter = null) use ($object) {
+            return $object->xss($text, $filter);
         }, array('is_safe' => array('all')));
 
         $this->twig->addFunction($function);

@@ -260,9 +260,8 @@ class Job extends Model
 
     /**
      * Shutdown handler
-     * @param array $job
      */
-    public function shutdownHandler(array $job)
+    public function shutdownHandler()
     {
         $error = error_get_last();
 
