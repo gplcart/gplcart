@@ -228,6 +228,9 @@ class State extends BackendController
     {
         $this->setState($state_id);
         $this->setCountry($country_code);
+        
+        $this->setTitleEditState();
+        $this->setBreadcrumbEditState();
 
         $this->setData('state', $this->data_state);
         $this->setData('country', $this->data_country);
@@ -236,8 +239,6 @@ class State extends BackendController
 
         $this->submitState();
 
-        $this->setTitleEditState();
-        $this->setBreadcrumbEditState();
         $this->outputEditState();
     }
 
@@ -256,9 +257,9 @@ class State extends BackendController
      */
     protected function canDeleteState()
     {
-        return (isset($this->data_state['state_id'])//
+        return isset($this->data_state['state_id'])//
                 && $this->state->canDelete($this->data_state['state_id'])//
-                && $this->access('state_delete'));
+                && $this->access('state_delete');
     }
 
     /**

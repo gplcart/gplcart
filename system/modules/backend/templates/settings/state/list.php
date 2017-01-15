@@ -13,6 +13,9 @@
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('state_edit') || $this->access('state_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('state_edit')) { ?>
         <li>
@@ -34,6 +37,7 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('state_add')) { ?>
@@ -47,7 +51,7 @@
     <table class="table country-states">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_state_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
@@ -90,7 +94,7 @@
         <?php } ?>
         <?php foreach ($states as $state_id => $state) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $state_id; ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $state_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $state_id; ?></td>
           <td class="middle"><?php echo $this->escape($state['name']); ?></td>
           <td class="middle"><?php echo $this->escape($state['code']); ?></td>

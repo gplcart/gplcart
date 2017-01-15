@@ -695,6 +695,16 @@ class Controller
     }
 
     /**
+     * Whether the current path matches the given path
+     * @param string $path
+     * @return bool
+     */
+    public function isCurrentPath($path)
+    {
+        return $this->path == trim($path, '/');
+    }
+
+    /**
      * Renders a template
      * @param string $file
      * @param array $data
@@ -1597,22 +1607,31 @@ class Controller
     }
 
     /**
-     * 
-     * @param type $data
+     * Set up live error reporting
+     * @param array $data
      */
-    protected function setPhpErrorsLive(&$data)
+    protected function setPhpErrorsLive(array &$data)
     {
-        if ($this->config('error_live_report', 0)//
-                && $this->access('report_events')//
-                && $this->path != 'admin/report/events') {
+        if ($this->isCurrentPath('admin/report/events')) {
+            return null; // Don't display on the event reporting page
+        }
 
-            $count = $this->logger->countPhpErrors();
+        $access = $this->config('error_live_report', 0);
 
-            if (!empty($count)) {
-                $options = array('@count' => $count, '@url' => $this->url('admin/report/events'));
-                $message = $this->text('Logged PHP errors: <a href="@url">@count</a>', $options);
-                $data['messages']['warning'][] = $message;
-            }
+        if (!$access) {
+            return null; // Disabled
+        }
+
+        if ($access == 1 && !$this->access('report_events')) {
+            return null; // No  access to see the report
+        }
+
+        $count = $this->logger->countPhpErrors();
+
+        if (!empty($count)) {
+            $options = array('@count' => $count, '@url' => $this->url('admin/report/events'));
+            $message = $this->text('Logged PHP errors: <a href="@url">@count</a>', $options);
+            $data['messages']['warning'][] = $message;
         }
     }
 

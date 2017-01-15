@@ -149,3 +149,27 @@ function gplcart_array_flatten(array $array)
 
     return $return;
 }
+
+/**
+ * Split the given array into n number of pieces
+ * @param array $list
+ * @param integer $p
+ * @return array
+ */
+function gplcart_array_split(array $list, $p)
+{
+    $listlen = count($list);
+    $partlen = floor($listlen / $p);
+    $partrem = $listlen % $p;
+
+    $mark = 0;
+    $partition = array();
+
+    for ($px = 0; $px < $p; $px ++) {
+        $incr = ($px < $partrem) ? $partlen + 1 : $partlen;
+        $partition[$px] = array_slice($list, $mark, $incr);
+        $mark += $incr;
+    }
+
+    return $partition;
+}

@@ -70,7 +70,7 @@ class UserRole extends BackendController
         $translated = array_map(array($this, 'text'), $permissions);
 
         if ($chunked) {
-            return array_chunk($translated, 30, true);
+            return gplcart_array_split($translated, 4);
         }
 
         return $translated;

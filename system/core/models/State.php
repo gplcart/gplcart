@@ -107,7 +107,7 @@ class State extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('country', 'name', 'code', 'status', 'state_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
@@ -124,7 +124,6 @@ class State extends Model
 
         $states = $this->db->fetchAll($sql, $where, array('index' => 'state_id'));
         $this->hook->fire('state.list', $states);
-
         return $states;
     }
 
@@ -146,11 +145,9 @@ class State extends Model
         }
 
         $conditions = array('state_id' => (int) $state_id);
-
         $deleted = (bool) $this->db->delete('state', $conditions);
 
         if ($deleted) {
-            $this->db->delete('zone', $conditions);
             $this->db->delete('city', $conditions);
         }
 

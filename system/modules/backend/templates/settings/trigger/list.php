@@ -11,11 +11,13 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <?php if ($this->access('trigger_edit') || $this->access('trigger_delete')) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('trigger_edit') || $this->access('trigger_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <?php if ($this->access('trigger_edit')) { ?>
           <li>
@@ -37,8 +39,8 @@
           </li>
           <?php } ?>
         </ul>
+        <?php } ?>
       </div>
-      <?php } ?>
       <?php if ($this->access('trigger_add')) { ?>
       <div class="btn-toolbar pull-right">
         <a class="btn btn-default" href="<?php echo $this->url('admin/settings/trigger/add'); ?>">
@@ -51,7 +53,7 @@
       <table class="table triggers">
         <thead>
           <tr>
-            <th><input type="checkbox" id="select-all" value="1"></th>
+            <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th>
               <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>
             </th>
@@ -111,7 +113,7 @@
           <?php foreach ($triggers as $id => $trigger) { ?>
           <tr>
             <td class="middle">
-              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
+              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
             <td class="middle"><?php echo $this->escape($trigger['name']); ?></td>
             <td class="middle">

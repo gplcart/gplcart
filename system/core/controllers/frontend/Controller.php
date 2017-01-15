@@ -520,7 +520,7 @@ class Controller extends BaseController
      */
     protected function setItemActive(array &$item, array $options)
     {
-        $item['active'] = (isset($item['url']) && ($this->base . $this->path === $item['url']));
+        $item['active'] = (isset($item['url']) && ($this->base . $this->isCurrentPath($item['url'])));
     }
 
     /**
