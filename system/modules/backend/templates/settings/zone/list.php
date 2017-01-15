@@ -9,11 +9,13 @@
 <?php if (!empty($zones)) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
-    <?php if ($this->access('zone_edit') || $this->access('zone_delete')) { ?>
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+         <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('zone_edit') || $this->access('zone_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('zone_edit')) { ?>
         <li>
@@ -35,8 +37,8 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
-    <?php } ?>
     <?php if ($this->access('zone_add')) { ?>
     <div class="btn-group pull-right">
       <a class="btn btn-default" href="<?php echo $this->url('admin/settings/zone/add'); ?>">
@@ -49,7 +51,7 @@
     <table class="table zones">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
@@ -60,7 +62,7 @@
         <?php foreach ($zones as $zone) { ?>
         <tr>
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $zone['zone_id']; ?>">
+            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $zone['zone_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $this->escape($zone['zone_id']); ?></td>
           <td class="middle"><?php echo $this->escape($zone['title']); ?></td>

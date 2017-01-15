@@ -11,8 +11,11 @@
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+         <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('collection_item_edit') || $this->access('collection_item_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('collection_item_edit')) { ?>
         <li>
@@ -34,6 +37,7 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('collection_item_add')) { ?>
@@ -41,13 +45,13 @@
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
       <?php } ?>
-    </div>  
+    </div>
   </div>
-  <div class="panel-body table-responsive">  
+  <div class="panel-body table-responsive">
     <table class="table collection-items">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Title'); ?></th>
           <th><?php echo $this->text('Status'); ?></th>
@@ -58,7 +62,7 @@
       <tbody>
         <?php foreach ($items as $item) { ?>
         <tr data-collection-item-id="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>">
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $this->truncate($this->escape($item['collection_item']['collection_item_id'])); ?></td>
           <td class="middle"><?php echo $this->truncate($this->escape($item['title'])); ?></td>
           <td class="middle">
@@ -78,13 +82,16 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $item['collection_item']['weight']; ?></span>
+            <?php if($access_actions) {?>
+            <i class="fa fa-arrows handle"></i>
+            <?php } ?>
+            <span class="weight"><?php echo $item['collection_item']['weight']; ?></span>
           </td>
         </tr>
         <?php } ?>
       </tbody>
-    </table>  
-  </div> 
+    </table>
+  </div>
 </div>
 <?php } else { ?>
 <div class="row">

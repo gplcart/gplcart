@@ -11,8 +11,11 @@
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+         <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('city_edit') || $this->access('city_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('city_edit')) { ?>
         <li>
@@ -29,11 +32,12 @@
         <?php if ($this->access('city_delete')) { ?>
         <li>
           <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-              <?php echo $this->text('Delete'); ?>
+            <?php echo $this->text('Delete'); ?>
           </a>
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <div class="btn-toolbar pull-right">
       <?php if ($this->access('city_add')) { ?>
@@ -47,7 +51,7 @@
     <table class="table cities">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_city_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
@@ -63,10 +67,10 @@
             <select class="form-control" name="status">
               <option value="any"><?php echo $this->text('Any'); ?></option>
               <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Enabled'); ?>
+                <?php echo $this->text('Enabled'); ?>
               </option>
               <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
-                  <?php echo $this->text('Disabled'); ?>
+                <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
           </th>
@@ -91,7 +95,7 @@
         <?php } ?>
         <?php foreach ($cities as $city_id => $city) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $city_id; ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $city_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $city_id; ?></td>
           <td class="middle"><?php echo $this->escape($city['name']); ?></td>
           <td class="middle">

@@ -358,7 +358,7 @@ class City extends BackendController
             $this->redirect($url, $message, 'success');
         }
 
-        $vars = array('%name' => $city['name']);
+        $vars = array('%name' => $this->data_city['name']);
         $message = $this->text('Cannot delete city %name.', $vars);
 
         $this->redirect('', $message, 'warning');
@@ -438,6 +438,16 @@ class City extends BackendController
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
+            'text' => $this->text('States of %country', array('%country' => $this->data_country['name']))
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url("admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}"),
+            'text' => $this->text('Cities of state %state', array('%state' => $this->data_state['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

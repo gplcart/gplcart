@@ -228,7 +228,7 @@ class State extends BackendController
     {
         $this->setState($state_id);
         $this->setCountry($country_code);
-        
+
         $this->setTitleEditState();
         $this->setBreadcrumbEditState();
 

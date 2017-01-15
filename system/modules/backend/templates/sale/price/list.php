@@ -13,8 +13,11 @@
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+           <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('price_rule_edit') || $this->access('price_rule_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <?php if ($this->access('price_rule_edit')) { ?>
           <li>
@@ -36,6 +39,7 @@
           </li>
           <?php } ?>
         </ul>
+        <?php } ?>
       </div>
       <?php if ($this->access('price_rule_add')) { ?>
       <div class="btn-toolbar pull-right">
@@ -49,7 +53,7 @@
       <table class="table price-rules">
         <thead>
           <tr>
-            <th><input type="checkbox" id="select-all" value="1"></th>
+            <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th>
               <a href="<?php echo $sort_name; ?>">
                 <?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i>
@@ -134,7 +138,7 @@
           <?php foreach ($price_rules as $rule_id => $rule) { ?>
           <tr>
             <td class="middle">
-              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $rule_id; ?>">
+              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $rule_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
               <input type="hidden" value="<?php echo $rule_id; ?>" name="price_rule[price_rule_id]">
               <input type="hidden" value="<?php echo $this->escape($rule['currency']); ?>" name="price_rule[currency]">
             </td>

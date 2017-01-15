@@ -11,7 +11,7 @@
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+         <span class="caret"></span>
       </button>
       <?php $access_actions = false; $access_action_edit = false; ?>
       <?php if ($this->access('category_edit') || $this->access('category_delete')) { ?>

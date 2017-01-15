@@ -14,7 +14,7 @@
       <?php if ($this->access('transaction_edit') || $this->access('transaction_delete')) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
           <?php if ($this->access('transaction_edit')) { ?>
