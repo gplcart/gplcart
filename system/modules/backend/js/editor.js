@@ -19,6 +19,7 @@
                 mode,
                 settings,
                 default_settings,
+                readonly = false,
                 element = $('*[data-codemirror="true"]');
 
         textarea = element.get(0);
@@ -34,13 +35,29 @@
             php: {name: 'htmlmixed'}
         };
 
-        if (GplCart.settings.editor && GplCart.settings.editor.file_extension) {
-            ext = GplCart.settings.editor.file_extension;
+        if (GplCart.settings.editor) {
+
+            if (GplCart.settings.editor.file_extension) {
+                ext = GplCart.settings.editor.file_extension;
+            }
+
+            if (GplCart.settings.editor.readonly) {
+                readonly = true;
+            }
         }
 
         mode = map[ext] || map.php;
-        default_settings = {mode: mode, lineNumbers: true};
-        settings = element.data('codemirror-settings') || default_settings;
+
+        default_settings = {
+            mode: mode,
+            lineNumbers: true, theme: 'dracula', readOnly: readonly};
+
+        // Allow to rewrite default setting with inline data-codemirror-settings attribute
+        settings = element.data('codemirror-settings') || {};
+
+        if (typeof settings === 'object') {
+            settings = $.extend(default_settings, settings);
+        }
 
         CodeMirror.fromTextArea(textarea, settings);
     };

@@ -190,10 +190,10 @@
               </div>
             </div>
           </div>
-          <div class="form-group<?php echo $this->error('data.email', ' has-error'); ?>">
+          <div class="form-group required<?php echo $this->error('data.email', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('E-mail'); ?></label>
             <div class="col-md-8">
-              <textarea name="store[data][email]" class="form-control"><?php echo!empty($store['data']['email']) ? $this->escape($store['data']['email']) : ''; ?></textarea>
+              <textarea name="store[data][email]" class="form-control"><?php echo empty($store['data']['email']) ? '' : $this->escape($store['data']['email']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.map'); ?>
                 <div class="text-muted">

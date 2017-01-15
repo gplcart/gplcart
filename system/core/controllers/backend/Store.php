@@ -90,7 +90,7 @@ class Store extends BackendController
     {
         $action = (string) $this->request->post('action');
 
-        if ($action) {
+        if (empty($action)) {
             return null;
         }
 

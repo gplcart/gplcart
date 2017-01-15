@@ -10,13 +10,6 @@
   <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="alert alert-warning">
-      <?php if ($can_save) { ?>
-      <?php echo $this->text('Before saving changes make sure you have a <a href="@url">backup</a> of the current version', array('@url' => $this->url('admin/tool/backup'))); ?> 
-      <?php } else { ?>
-      <?php echo $this->text('You cannot edit the current theme'); ?>
-      <?php } ?>
-      </div>
       <div class="form-group<?php echo $this->error('content', ' has-error'); ?>">
         <div class="col-md-12">
           <textarea name="editor[content]" data-codemirror="true" rows="<?php echo $lines; ?>" class="form-control"><?php echo isset($editor['content']) ? $this->escape($editor['content']) : ''; ?></textarea>

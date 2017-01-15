@@ -115,6 +115,16 @@
                   </p>
                 </div>
             <?php } ?>
+            <?php if (!empty($library['files'])) { ?>
+            <div class="description">
+              <b><?php echo $this->text('Files'); ?>:</b>
+              <ul class="list-unstyled">
+                <?php foreach($library['files'] as $file) { ?>
+                <li><?php echo $this->escape($file); ?></li>
+                <?php } ?>
+              </ul>
+            </div>
+            <?php } ?>
             <?php if (!empty($errors[$library_id])) { ?>
             <div class="errors">
               <b><?php echo $this->text('Error'); ?>:</b>

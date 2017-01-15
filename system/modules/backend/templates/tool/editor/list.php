@@ -8,6 +8,7 @@
 ?>
 <div class="panel panel-default">
   <div class="panel-body">
+    <?php $access_content = $this->access('editor_content'); ?>
     <?php foreach ($files as $folder => $sections) { ?>
     <ul class="list-unstyled">
       <li><?php echo $folder; ?> <i class="fa fa-folder-open-o"></i></li>
@@ -16,9 +17,13 @@
       <?php if (empty($file['directory'])) { ?>
       <li>
         <?php echo $file['indentation']; ?>
+        <?php if($access_content) { ?>
         <a title="<?php echo $file['path']; ?>" href="<?php echo $this->url("admin/tool/editor/{$module['id']}/{$file['id']}"); ?>">
           <?php echo $this->escape($file['name']); ?>
         </a>
+        <?php } else { ?>
+        <?php echo $this->escape($file['name']); ?>
+        <?php } ?>
       </li>
       <?php } else { ?>
       <li title="<?php echo $file['path']; ?>">

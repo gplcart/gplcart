@@ -12,6 +12,9 @@
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
         <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
+      <?php $access_actions = false; ?>
+      <?php if ($this->access('store_edit') || $this->access('store_delete')) { ?>
+      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('store_edit')) { ?>
         <li>
@@ -33,6 +36,7 @@
         </li>
         <?php } ?>
       </ul>
+      <?php } ?>
     </div>
     <?php if ($this->access('store_add')) { ?>
     <div class="btn-toolbar pull-right">
@@ -46,7 +50,7 @@
     <table class="table stores">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"></th>
+          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th class="middle">
             <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>
@@ -108,7 +112,7 @@
         <?php } ?>
         <?php foreach ($stores as $store_id => $store) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $store_id; ?>"></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $store_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $store_id; ?></td>
           <td class="middle"><?php echo $this->escape($store['name']); ?></td>
           <td class="middle"><?php echo $this->escape($store['domain']); ?></td>
@@ -122,7 +126,7 @@
           </td>
           <td class="middle">
             <?php if ($this->access('store_edit')) { ?>
-            <a href="<?php echo $this->url("admin/settings/store/$store_id"); ?>">
+            <a href="<?php echo $this->url("admin/settings/store/$store_id/edit"); ?>">
               <?php echo mb_strtolower($this->text('Edit')); ?>
             </a>
             <?php } ?>

@@ -11,11 +11,13 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <?php if ($this->access('review_edit') || $this->access('review_delete')) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('review_edit') || $this->access('review_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <?php if ($this->access('review_edit')) { ?>
           <li>
@@ -36,8 +38,8 @@
           </li>
           <?php } ?>
         </ul>
+        <?php } ?> 
       </div>
-      <?php } ?> 
       <?php if ($this->access('review_add')) { ?>
       <div class="btn-toolbar pull-right">
         <a class="btn btn-default" href="<?php echo $this->url('admin/content/review/add'); ?>">
@@ -50,7 +52,7 @@
       <table class="table reviews">
         <thead>
           <tr>
-            <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
+            <th class="middle"><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th class="middle"><a href="<?php echo $sort_review_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
             <th class="middle"><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i></a></th>
             <th class="middle"><a href="<?php echo $sort_product_id; ?>"><?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i></a></th>
@@ -107,7 +109,7 @@
           <?php } ?>
           <?php foreach ($reviews as $id => $review) { ?>
           <tr data-review-id="<?php echo $id; ?>">
-            <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"></td>
+            <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
               <a href="#review-id-<?php echo $id; ?>" data-toggle="collapse"><?php echo $this->truncate($this->escape($review['text']), 30); ?></a>

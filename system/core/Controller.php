@@ -1448,7 +1448,7 @@ class Controller
     public function outputMaintenance()
     {
         $this->setTitle('Site maintenance', false);
-        $this->output(array('layout' => 'common/maintenance'), array('headers' => 503));
+        $this->output(array('layout' => 'layout/maintenance'), array('headers' => 503));
     }
 
     /**

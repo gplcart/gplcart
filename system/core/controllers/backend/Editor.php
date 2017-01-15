@@ -191,6 +191,8 @@ class Editor extends BackendController
         $this->setTitleEditEditor();
         $this->setBreadcrumbEditEditor();
 
+        $this->setMessageEditEditor();
+
         $this->setData('module', $this->data_module);
         $this->setData('can_save', $this->canSaveEditor());
         $this->setData('lines', $this->getFileTotalLinesEditor());
@@ -203,12 +205,30 @@ class Editor extends BackendController
     }
 
     /**
+     * Sets messages on the file edit page
+     */
+    protected function setMessageEditEditor()
+    {
+        if ($this->canSaveEditor()) {
+            $message = $this->text('Before saving changes make sure you have a <a href="@url">backup</a> of the current version', array('@url' => $this->url('admin/tool/backup')));
+            $this->setMessage($message, 'warning');
+        }
+
+        if ($this->current_theme['id'] == $this->data_module['id']) {
+            $message = $this->text('You cannot edit the current theme');
+            $this->setMessage($message, 'warning');
+        }
+    }
+
+    /**
      * Sets JavaScript settings on the file edit page
      */
     protected function setJsSettingsEditor()
     {
         $settings = array(
-            'file_extension' => pathinfo($this->data_file, PATHINFO_EXTENSION));
+            'file_extension' => pathinfo($this->data_file, PATHINFO_EXTENSION),
+            'readonly' => !$this->access('editor_edit')
+        );
 
         $this->setJsSettings('editor', $settings);
     }
@@ -269,7 +289,8 @@ class Editor extends BackendController
      */
     protected function canSaveEditor()
     {
-        return ($this->access('editor_edit') && $this->current_theme['id'] !== $this->data_module['id']);
+        return $this->access('editor_edit')//
+                && $this->current_theme['id'] !== $this->data_module['id'];
     }
 
     /**
@@ -287,7 +308,7 @@ class Editor extends BackendController
      */
     protected function setTitleEditEditor()
     {
-        $vars = array('%path' => $this->data_file);
+        $vars = array('%path' => substr($this->data_file, strlen(GC_MODULE_DIR . '/')));
         $text = $this->text('Edit file %path', $vars);
         $this->setTitle($text);
     }

@@ -328,7 +328,7 @@ $routes['admin/tool/editor/(\w+)'] = array(
 );
 
 $routes['admin/tool/editor/(\w+)/([^/]+)'] = array(
-    'access' => 'editor_edit',
+    'access' => 'editor_content',
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Editor', 'editEditor')
     )
@@ -816,7 +816,14 @@ $routes['admin/settings/store'] = array(
     )
 );
 
-$routes['admin/settings/store/(\w+)'] = array(
+$routes['admin/settings/store/add'] = array(
+    'access' => 'store_add',
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\backend\\Store', 'editStore')
+    )
+);
+
+$routes['admin/settings/store/(\d+)/edit'] = array(
     'access' => 'store_edit',
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Store', 'editStore')

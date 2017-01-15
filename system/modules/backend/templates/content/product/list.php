@@ -11,11 +11,13 @@
   <input type="hidden" name="token" value="<?php echo $token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <?php if ($this->access('product_edit') || $this->access('product_delete')) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <?php echo $this->text('With selected'); ?> <span class="caret"></span>
         </button>
+        <?php $access_actions = false; ?>
+        <?php if ($this->access('product_edit') || $this->access('product_delete')) { ?>
+        <?php $access_actions = true; ?>
         <ul class="dropdown-menu">
           <?php if ($this->access('product_edit')) { ?>
           <li>
@@ -37,8 +39,8 @@
           </li>
           <?php } ?>
         </ul>
+        <?php } ?>
       </div>
-      <?php } ?>
       <div class="btn-toolbar pull-right">
         <?php if ($this->access('product_add')) { ?>
         <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/add'); ?>">
@@ -56,7 +58,7 @@
       <table class="table products">
         <thead>
           <tr>
-            <th class="middle"><input type="checkbox" id="select-all" value="1"></th>
+            <th class="middle"><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
             <th class="middle">
               <a href="<?php echo $sort_product_id; ?>">
                 <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
@@ -165,7 +167,7 @@
           <?php foreach ($products as $id => $product) { ?>
           <tr data-product-id="<?php echo $id; ?>">
             <td class="middle">
-              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
+              <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
