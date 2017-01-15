@@ -18,7 +18,6 @@ class FileType
     /**
      * Whether the file is an image
      * @param string $file
-     * @param array $options
      * @return boolean
      */
     public function image($file)

@@ -105,7 +105,7 @@ class Alias extends BackendController
     protected function getListAlias($limit, array $query)
     {
         $query['limit'] = $limit;
-        $aliases = $this->alias->getList($query);
+        $aliases = (array) $this->alias->getList($query);
 
         foreach ($aliases as &$alias) {
             $entity = preg_replace('/_id$/', '', $alias['id_key']);

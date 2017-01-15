@@ -189,7 +189,7 @@ class User extends BackendController
 
         $this->submitUser();
 
-        $this->setTitleEditUser($user);
+        $this->setTitleEditUser();
         $this->setBreadcrumbEditUser();
         $this->outputEditUser();
     }
@@ -246,8 +246,7 @@ class User extends BackendController
 
     /**
      * Saves submitted user data
-     * @param array $user
-     * @return null|void
+     * @return null
      */
     protected function submitUser()
     {
@@ -295,7 +294,6 @@ class User extends BackendController
 
     /**
      * Validates submitted user data
-     * @param array $user
      */
     protected function validateUser()
     {
@@ -334,14 +332,13 @@ class User extends BackendController
 
     /**
      * Sets titles on the edit account page
-     * @param array $user
      */
-    protected function setTitleEditUser(array $user)
+    protected function setTitleEditUser()
     {
         $title = $this->text('Add user');
 
-        if (isset($user['name'])) {
-            $title = $this->text('Edit %user', array('%user' => $user['name']));
+        if (isset($this->data_user['name'])) {
+            $title = $this->text('Edit %user', array('%user' => $this->data_user['name']));
         }
 
         $this->setTitle($title);

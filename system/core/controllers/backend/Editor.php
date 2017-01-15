@@ -96,7 +96,6 @@ class Editor extends BackendController
 
     /**
      * Returns an array of files to edit
-     * @param array $module
      * @return array
      */
     protected function getFilesEditor()

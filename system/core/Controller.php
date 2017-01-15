@@ -984,7 +984,6 @@ class Controller
 
     /**
      * Returns the current theme
-     * @param string $key
      * @return mixed
      */
     public function getTheme()
@@ -1209,7 +1208,7 @@ class Controller
      */
     protected function controlAccessRestrictedArea()
     {
-        if (($this->is_backend || $this->url->isAccount()) && empty($this->uid)) {
+        if (($this->is_backend || (bool) $this->url->isAccount()) && empty($this->uid)) {
             $this->url->redirect('login', array('target' => $this->path));
         }
     }

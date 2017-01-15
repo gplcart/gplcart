@@ -390,7 +390,6 @@ class State extends BackendController
 
     /**
      * Set breadcrumbs on the state edit page
-     * @param array $country
      */
     protected function setBreadcrumbEditState()
     {

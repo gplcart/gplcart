@@ -152,7 +152,6 @@ class CollectionItem extends BackendController
 
     /**
      * Returns an array of collection items
-     * @param array $collection
      * @return array
      */
     protected function getListCollectionItem()

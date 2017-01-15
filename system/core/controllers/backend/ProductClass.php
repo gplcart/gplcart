@@ -379,7 +379,6 @@ class ProductClass extends BackendController
 
     /**
      * Saves the product class fields
-     * @param array $product_class
      */
     protected function submitFieldsProductClass()
     {

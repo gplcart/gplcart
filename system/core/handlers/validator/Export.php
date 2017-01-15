@@ -150,7 +150,7 @@ class Export extends BaseValidator
         $total = $this->job->getTotal($operation['job_id'], $options);
 
         if (empty($total)) {
-            $this->setError('operation', $this->text('Nothing to export'));
+            $this->setError('operation', $this->language->text('Nothing to export'));
             return false;
         }
 
