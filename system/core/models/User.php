@@ -370,9 +370,9 @@ class User extends Model
     public function register(array $data)
     {
         $result = array(
-            'redirect' => null,
+            'message' => '',
             'severity' => '',
-            'message' => ''
+            'redirect' => null
         );
 
         $this->hook->fire('register.user.before', $data, $result);
@@ -385,6 +385,7 @@ class User extends Model
         $status = $this->config->get('user_registration_status', true);
 
         $data += array('status' => $status, 'login' => $login);
+
         $data['user_id'] = $this->add($data);
 
         if (empty($data['user_id'])) {
@@ -439,17 +440,6 @@ class User extends Model
     }
 
     /**
-     * Loads a user by a name
-     * @param string $name
-     * @return array
-     */
-    public function getByName($name)
-    {
-        $sql = 'SELECT * FROM user WHERE name=?';
-        return $this->db->fetch($sql, array($name), array('unserialize' => 'data'));
-    }
-
-    /**
      * Returns the current user from the session
      * @return mixed
      */
@@ -471,7 +461,12 @@ class User extends Model
     public function logout()
     {
         $user_id = (int) $this->getSession('user_id');
-        $result = array('message' => '', 'severity' => '', 'redirect' => '/');
+
+        $result = array(
+            'message' => '',
+            'severity' => '',
+            'redirect' => '/'
+        );
 
         $this->hook->fire('logout.before', $user_id, $result);
 
@@ -486,22 +481,12 @@ class User extends Model
         $result = array(
             'user' => $user,
             'message' => '',
-            'severity' => 'success',
             'redirect' => 'login',
+            'severity' => 'success'
         );
 
         $this->hook->fire('logout.after', $user_id, $result);
         return $result;
-    }
-
-    /**
-     * Generates a random password
-     * @return string
-     */
-    public function generatePassword()
-    {
-        $hash = crypt(gplcart_string_random(), gplcart_string_random());
-        return str_replace(array('+', '/', '='), '', base64_encode($hash));
     }
 
     /**
@@ -512,9 +497,9 @@ class User extends Model
     public function resetPassword(array $data)
     {
         $result = array(
-            'redirect' => null,
             'message' => '',
-            'severity' => ''
+            'severity' => '',
+            'redirect' => null
         );
 
         $this->hook->fire('reset.password.before', $data, $result);
@@ -566,7 +551,6 @@ class User extends Model
     protected function setNewPassword(array $user, $password)
     {
         $user['password'] = $password;
-
         unset($user['data']['reset_password']);
 
         $this->update($user['user_id'], $user);
@@ -579,20 +563,6 @@ class User extends Model
         );
 
         return $result;
-    }
-
-    /**
-     * Returns allowed min and max password length
-     * @return array
-     */
-    public function getPasswordLength()
-    {
-        $data = array(
-            'min' => $this->config->get('user_password_min_length', 8),
-            'max' => $this->config->get('user_password_max_length', 255)
-        );
-
-        return $data;
     }
 
     /**
@@ -663,6 +633,30 @@ class User extends Model
 
         $this->hook->fire('users', $list);
         return $list;
+    }
+
+    /**
+     * Returns allowed min and max password length
+     * @return array
+     */
+    public function getPasswordLength()
+    {
+        $data = array(
+            'min' => $this->config->get('user_password_min_length', 8),
+            'max' => $this->config->get('user_password_max_length', 255)
+        );
+
+        return $data;
+    }
+
+    /**
+     * Generates a random password
+     * @return string
+     */
+    public function generatePassword()
+    {
+        $hash = crypt(gplcart_string_random(), gplcart_string_random());
+        return str_replace(array('+', '/', '='), '', base64_encode($hash));
     }
 
 }

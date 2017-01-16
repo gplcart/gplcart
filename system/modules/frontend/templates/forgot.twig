@@ -16,7 +16,7 @@
     <form method="post" class="forgot form-horizontal">
       {{ honeypot|raw }}
       <input type="hidden" name="token" value="{{ token() }}">
-      {% if forgetful_user is not empty %}
+      {% if forgetful_user is empty %}
           <div class="form-group{{ error('email', ' has-error') }}">
             <label class="control-label col-md-2">{{ text('E-mail') }}</label>
             <div class="col-md-4">
@@ -25,11 +25,8 @@
             </div>
           </div>
       {% else %}
-          <div class="form-group">
-            {{ text('Hello %name. Please type your new password', {'%name': forgetful_user['name']}) }}
-          </div>
           <div class="form-group{{ error('password', ' has-error') }}">
-            <label class="control-label col-md-2">{{ text('Password') }}</label>
+            <label class="control-label col-md-2">{{ text('New password') }}</label>
             <div class="col-md-4">
               <input class="form-control" type="password" name="user[password]" autocomplete="new-password" autofocus>
               <div class="help-block">{{ error('password') }}</div>
@@ -37,7 +34,7 @@
           </div>
           {% endif %}
           <div class="form-group">
-            <div class="col-md-4 col-md-offset-2 text-right">
+            <div class="col-md-2 col-md-offset-2">
               <button class="btn btn-default" name="reset" value="1">
                 {% if forgetful_user is not empty %}
                     {{ text('Change password') }}
@@ -46,12 +43,10 @@
                 {% endif %}
               </button>
             </div>
-          </div>
-          <div class="form-group">
-            <div class="col-md-4 col-md-offset-2">
+            <div class="col-md-2 text-right">
               <ul class="list-inline">
                 <li><a href="{{ url('login') }}">{{ text('Login') }}</a></li>
-                <li><a href="{{ url('register') }}">{{ text('Register account') }}</a></li>
+                <li><a href="{{ url('register') }}">{{ text('Register') }}</a></li>
               </ul>
             </div>
           </div>

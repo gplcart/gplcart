@@ -147,7 +147,15 @@
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
             <td class="middle"><?php echo $id; ?></td>
-            <td class="middle"><?php echo $this->escape($user['name']); ?></td>
+            <td class="middle">
+              <?php if(empty($user['data'])) { ?>
+              <?php echo $this->escape($user['name']); ?>
+              <?php } else { ?>
+              <a href="#" onclick="return false;" data-toggle="collapse" data-target="#user-<?php echo $id; ?>">
+                <?php echo $this->escape($user['name']); ?>
+              </a>
+              <?php } ?>
+            </td>
             <td class="middle"><?php echo $this->escape($user['email']); ?></td>
             <td class="middle">
               <?php if (isset($roles[$user['role_id']]['name'])) { ?>
@@ -196,6 +204,25 @@
             </td>
             <?php } ?>
           </tr>
+          <?php if(!empty($user['data'])) { ?>
+          <tr class="collapse active" id="user-<?php echo $id; ?>">
+              <td colspan="9">
+                <?php if(!empty($user['data']['reset_password'])) { ?>
+                <?php echo $this->text('Reset password'); ?>:<br>
+                <?php if(!empty($user['data']['reset_password']['token']) && $this->access('user_edit')) { ?>
+                <b><?php echo $this->text('Key'); ?>:</b>
+                <a href="<?php echo $this->url('forgot', array('key' => $user['data']['reset_password']['token'], 'user_id' => $id)); ?>">
+                  <?php echo $this->escape($user['data']['reset_password']['token']); ?>
+                </a>
+                <br>
+                <?php } ?>
+                <?php if(!empty($user['data']['reset_password']['expires'])) { ?>
+                <b><?php echo $this->text('Expires'); ?>:</b> <?php echo $this->date($user['data']['reset_password']['expires']); ?>
+                <?php } ?>
+                <?php } ?>
+            </td>
+          </tr>
+          <?php } ?>
           <?php } ?>
         </tbody>
       </table>

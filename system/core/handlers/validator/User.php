@@ -48,7 +48,7 @@ class User extends BaseValidator
 
         $this->validateUser();
         $this->validateStatus();
-        $this->validateNameUser();
+        $this->validateName();
         $this->validateEmail();
         $this->validateEmailUniqueUser();
         $this->validatePasswordUser();
@@ -90,6 +90,7 @@ class User extends BaseValidator
         $password = $this->getSubmitted('password');
 
         if (isset($password)) {
+            $this->validateStatusUser();
             $this->validatePasswordLengthUser();
         } else if (isset($email)) {
             $this->validateEmail();
@@ -97,6 +98,30 @@ class User extends BaseValidator
         }
 
         return $this->getResult();
+    }
+
+    /**
+     * Validates user status
+     * @return boolean
+     */
+    protected function validateStatusUser()
+    {
+
+        $user = $this->getSubmitted('user');
+
+        if (is_numeric($user)) {
+            $user = $this->user->get($user);
+        }
+
+        if (empty($user['status']) || empty($user['user_id'])) {
+            $vars = array('@name' => $this->language->text('User'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('user', $error);
+            return false;
+        }
+
+        $this->setSubmitted('user', $user);
+        return true;
     }
 
     /**
@@ -122,43 +147,6 @@ class User extends BaseValidator
 
         $this->setUpdating($data);
         return true;
-    }
-
-    /**
-     * Validates a user name
-     * @return boolean|null
-     */
-    protected function validateNameUser()
-    {
-        $value = $this->getSubmitted('name');
-
-        if ($this->isUpdating() && !isset($value)) {
-            return null;
-        }
-
-        if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Name'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('name', $error);
-            return false;
-        }
-
-        $updating = $this->getUpdating();
-
-        if (isset($updating['name']) && ($updating['name'] === $value)) {
-            return true;
-        }
-
-        $user = $this->user->getByName($value);
-
-        if (empty($user['user_id'])) {
-            return true;
-        }
-
-        $vars = array('@object' => $this->language->text('Name'));
-        $error = $this->language->text('@object already exists', $vars);
-        $this->setError('name', $error);
-        return false;
     }
 
     /**

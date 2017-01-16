@@ -18,7 +18,7 @@ class User extends FrontendController
 {
 
     /**
-     * The current user data
+     * The current user
      * @var array
      */
     protected $data_user = array();
@@ -38,13 +38,12 @@ class User extends FrontendController
     {
         $this->controlAccessLoginUser();
 
-        $this->submitLoginUser();
-
-        $honeypot = $this->renderHoneyPotField();
-        $this->setData('honeypot', $honeypot);
-
         $this->setTitleEditLoginUser();
         $this->setBreadcrumbEditLoginUser();
+
+        $this->submitLoginUser();
+        $this->setData('honeypot', $this->renderHoneyPotField());
+
         $this->outputEditLoginUser();
     }
 
@@ -75,12 +74,10 @@ class User extends FrontendController
         if (!$this->hasErrors('user', false)) {
             $this->loginUser();
         }
-
-        return null;
     }
 
     /**
-     * Logs in a user
+     * Log in a user
      * @return null
      */
     protected function loginUser()
@@ -94,7 +91,6 @@ class User extends FrontendController
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
-        return null;
     }
 
     /**
@@ -140,16 +136,14 @@ class User extends FrontendController
     {
         $this->controlAccessRegisterUser();
 
-        $this->submitRegisterUser();
-
-        $honeypot = $this->renderHoneyPotField();
-        $limit = $this->user->getPasswordLength();
-
-        $this->setData('honeypot', $honeypot);
-        $this->setData('password_limit', $limit);
-
         $this->setTitleEditRegisterUser();
         $this->setBreadcrumbEditRegisterUser();
+
+        $this->submitRegisterUser();
+
+        $this->setData('honeypot', $this->renderHoneyPotField());
+        $this->setData('password_limit', $this->user->getPasswordLength());
+
         $this->outputEditRegisterUser();
     }
 
@@ -180,8 +174,6 @@ class User extends FrontendController
         if (!$this->hasErrors('user')) {
             $this->registerUser();
         }
-
-        return null;
     }
 
     /**
@@ -217,8 +209,9 @@ class User extends FrontendController
     protected function setBreadcrumbEditRegisterUser()
     {
         $breadcrumb = array(
-            'text' => $this->text('Home'),
-            'url' => $this->url('/'));
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
 
         $this->setBreadcrumb($breadcrumb);
     }
@@ -234,22 +227,19 @@ class User extends FrontendController
     /**
      * Displays the password reset page
      */
-    public function EditResetPasswordUser()
+    public function editResetPasswordUser()
     {
         $this->controlAccessResetPasswordUser();
 
-        $honeypot = $this->renderHoneyPotField();
-        $this->data_user = $this->getForgetfulUser();
-        $limit = $this->user->getPasswordLength();
-
-        $this->setData('honeypot', $honeypot);
-        $this->setData('forgetful_user', $this->data_user);
-        $this->setData('password_limit', $limit);
-
-        $this->submitResetPasswordUser();
-
+        $this->setForgetfulUser();
         $this->setTitleEditResetPasswordUser();
         $this->setBreadcrumbEditResetPasswordUser();
+
+        $this->setData('forgetful_user', $this->data_user);
+        $this->setData('honeypot', $this->renderHoneyPotField());
+        $this->setData('password_limit', $this->user->getPasswordLength());
+
+        $this->submitResetPasswordUser();
         $this->outputEditResetPasswordUser();
     }
 
@@ -267,39 +257,37 @@ class User extends FrontendController
      * Returns a user from the current reset password URL
      * @return array
      */
-    protected function getForgetfulUser()
+    protected function setForgetfulUser()
     {
         $token = (string) $this->request->get('key', '');
         $user_id = (string) $this->request->get('user_id', '');
 
-        if (empty($token) || empty($user_id)) {
+        if (empty($token) || !is_numeric($user_id)) {
             return array();
         }
 
         $user = $this->user->get($user_id);
 
-        // User blocked or not found
         if (empty($user['status'])) {
             return array();
         }
 
         $data = $user['data'];
 
-        // No recovery data is set
-        if (empty($data['reset_password'])) {
+        if (empty($data['reset_password']['token'])) {
             $this->redirect('forgot');
         }
 
-        // Invalid token
         if (!gplcart_string_equals($data['reset_password']['token'], $token)) {
             $this->outputHttpStatus(403);
         }
 
-        // Expired
-        if ((int) $data['reset_password']['expires'] < GC_TIME) {
+        if (empty($data['reset_password']['expires'])//
+                || $data['reset_password']['expires'] < GC_TIME) {
             $this->redirect('forgot');
         }
 
+        $this->data_user = $user;
         return $user;
     }
 
@@ -315,13 +303,12 @@ class User extends FrontendController
 
         $this->controlSpam('reset_password');
         $this->setSubmitted('user', null, 'raw');
+
         $this->validateResetPasswordUser();
 
         if (!$this->hasErrors('user')) {
             $this->resetPasswordUser();
         }
-
-        return null;
     }
 
     /**
@@ -340,6 +327,7 @@ class User extends FrontendController
      */
     protected function validateResetPasswordUser()
     {
+        $this->setSubmitted('user', $this->data_user);
         $this->validate('user_reset_password');
     }
 

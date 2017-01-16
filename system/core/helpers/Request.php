@@ -208,7 +208,7 @@ class Request
     {
         $post = filter_input_array(INPUT_POST);
 
-        if (!is_array($post)) {
+        if (empty($post)) {
             $post = array();
         }
 
@@ -256,11 +256,11 @@ class Request
     {
         $cookie = filter_input_array(INPUT_COOKIE);
 
-        if (is_array($cookie)) {
-            gplcart_array_trim($cookie, $filter);
-        } else {
+        if (empty($cookie)) {
             $cookie = array();
         }
+
+        gplcart_array_trim($cookie, $filter);
 
         if (isset($name)) {
             return isset($cookie[self::COOKIE_PREFIX . $name]) ? $cookie[self::COOKIE_PREFIX . $name] : $default;
@@ -321,11 +321,11 @@ class Request
     {
         $get = filter_input_array(INPUT_GET);
 
-        if (is_array($get)) {
-            gplcart_array_trim($get, $filter);
-        } else {
+        if (empty($get)) {
             $get = array();
         }
+
+        gplcart_array_trim($get, $filter);
 
         if (isset($name)) {
             return isset($get[$name]) ? urldecode($get[$name]) : $default;
