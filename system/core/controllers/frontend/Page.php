@@ -25,7 +25,7 @@ class Page extends FrontendController
     protected $page;
 
     /**
-     * The current page data
+     * The current page
      * @var array
      */
     protected $data_page = array();
@@ -47,17 +47,27 @@ class Page extends FrontendController
      */
     public function indexPage($page_id)
     {
-        $this->data_page = $this->getPage($page_id);
-
-        $this->setHtmlFilter($this->data_page);
-        $this->setDataImagesPage();
-        $this->setData('page', $this->data_page);
-        $this->setRegionContentPage();
+        $this->setPage($page_id);
 
         $this->setTitlePage();
-        $this->setMetaEntity($this->data_page);
         $this->setBreadcrumbPage();
+        $this->setMetaPage();
+
+        $this->setHtmlFilter($this->data_page);
+        $this->setData('page', $this->data_page);
+
+        $this->setDataImagesPage();
+        $this->setRegionContentPage();
+
         $this->outputPage();
+    }
+
+    /**
+     * Set meta tags
+     */
+    protected function setMetaPage()
+    {
+        $this->setMetaEntity($this->data_page);
     }
 
     /**
@@ -103,7 +113,7 @@ class Page extends FrontendController
      * @param integer $page_id
      * @return array
      */
-    protected function getPage($page_id)
+    protected function setPage($page_id)
     {
         $page = $this->page->get($page_id, $this->langcode);
 
@@ -119,6 +129,7 @@ class Page extends FrontendController
             $this->outputHttpStatus(404);
         }
 
+        $this->data_page = $page;
         return $page;
     }
 

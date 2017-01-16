@@ -151,9 +151,7 @@ class Ajax extends FrontendController
 
             $product['url'] = '';
             if (isset($stores[$product['store_id']])) {
-                $store = $stores[$product['store_id']];
-                $product['url'] = rtrim("{$this->scheme}{$store['domain']}/{$store['basepath']}", "/")
-                        . "/product/{$product['product_id']}";
+                $product['url'] = $this->store->url($stores[$product['store_id']]) . "/product/{$product['product_id']}";
             }
 
             $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);

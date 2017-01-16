@@ -757,7 +757,6 @@ class Controller extends BaseController
 
         $result = $this->cart->addProduct($submitted['product'], $submitted);
         $this->completeSubmit($result);
-        return null;
     }
 
     /**
@@ -786,7 +785,6 @@ class Controller extends BaseController
         $result = $this->wishlist->addProduct($submitted);
 
         $this->completeSubmit($result);
-        return null;
     }
 
     /**
@@ -824,7 +822,6 @@ class Controller extends BaseController
      */
     protected function getErrorSubmitResult()
     {
-
         // Get validation errors
         $errors = $this->error();
 
@@ -941,7 +938,6 @@ class Controller extends BaseController
 
         $this->logger->log($type, $message, 'warning');
         $this->response->error403(false);
-        return null;
     }
 
 }

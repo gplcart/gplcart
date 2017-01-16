@@ -74,6 +74,12 @@ class Account extends FrontendController
     protected $shipping;
 
     /**
+     * The current user
+     * @var array
+     */
+    protected $data_user = array();
+
+    /**
      * Constructor
      * @param AddressModel $address
      * @param CountryModel $country
@@ -96,9 +102,9 @@ class Account extends FrontendController
         $this->order = $order;
         $this->country = $country;
         $this->address = $address;
-        $this->pricerule = $pricerule;
         $this->payment = $payment;
         $this->shipping = $shipping;
+        $this->pricerule = $pricerule;
     }
 
     /**
@@ -107,19 +113,20 @@ class Account extends FrontendController
      */
     public function indexAccount($user_id)
     {
-        $user = $this->getUserAccount($user_id);
-        $default_limit = $this->config('account_order_limit', 5);
+        $this->setUserAccount($user_id);
+
+        $this->setTitleIndexAccount();
+        $this->setBreadcrumbIndexAccount();
 
         $query = $this->getFilterQuery();
-        $total = $this->getTotalOrderAccount($user_id);
+        $total = $this->getTotalOrderAccount();
+
+        $default_limit = $this->config('account_order_limit', 5);
         $limit = $this->setPager($total, $query, $default_limit);
-        $orders = $this->getListOrderAccount($user_id, $limit, $query);
 
-        $this->setData('user', $user);
-        $this->setData('orders', $orders);
+        $this->setData('user', $this->data_user);
+        $this->setData('orders', $this->getListOrderAccount($limit, $query));
 
-        $this->setBreadcrumbIndexAccount();
-        $this->setTitleIndexAccount();
         $this->outputIndexAccount();
     }
 
@@ -128,7 +135,7 @@ class Account extends FrontendController
      * @param integer $user_id
      * @return array
      */
-    protected function getUserAccount($user_id)
+    protected function setUserAccount($user_id)
     {
         $user = $this->user->get($user_id);
 
@@ -140,19 +147,19 @@ class Account extends FrontendController
             $this->outputHttpStatus(403);
         }
 
+        $this->data_user = $user;
         return $user;
     }
 
     /**
      * Returns a number of total orders for the customer
-     * @param integer $user_id
      * @return integer
      */
-    protected function getTotalOrderAccount($user_id)
+    protected function getTotalOrderAccount()
     {
         $options = array(
             'count' => true,
-            'user_id' => $user_id
+            'user_id' => $this->data_user['user_id']
         );
 
         return (int) $this->order->getList($options);
@@ -160,12 +167,11 @@ class Account extends FrontendController
 
     /**
      * Returns an array of orders for the customer
-     * @param mixed $user_id
      * @param array $limit
      * @param array $query
      * @return array
      */
-    protected function getListOrderAccount($user_id, array $limit, array $query)
+    protected function getListOrderAccount(array $limit, array $query)
     {
         $query += array(
             'order' => 'desc',
@@ -173,7 +179,7 @@ class Account extends FrontendController
             'sort' => 'created'
         );
 
-        $query['user_id'] = $user_id;
+        $query['user_id'] = $this->data_user['user_id'];
         $orders = (array) $this->order->getList($query);
 
         foreach ($orders as $order_id => &$order) {
@@ -330,75 +336,68 @@ class Account extends FrontendController
      */
     public function editAccount($user_id)
     {
-        $user = $this->getUserAccount($user_id);
+        $this->setUserAccount($user_id);
+        $this->controlAccessEditAccount();
 
-        $this->controlAccessEditAccount($user);
-
-        $roles = $this->role->getList();
-        $stores = $this->store->getNames();
-
-        $this->setData('user', $user);
-        $this->setData('roles', $roles);
-        $this->setData('stores', $stores);
-
-        $this->submitEditAccount($user);
-
-        $this->setBreadcrumbEditAccount($user);
         $this->setTitleEditAccount();
+        $this->setBreadcrumbEditAccount();
+
+        $this->setData('user', $this->data_user);
+        $this->setData('roles', $this->role->getList());
+        $this->setData('stores', $this->store->getNames());
+
+        $this->submitEditAccount();
         $this->outputEditAccount();
     }
 
     /**
      * Controls user access to the edit account page
-     * @param array $user
      */
-    protected function controlAccessEditAccount(array $user)
+    protected function controlAccessEditAccount()
     {
-        if ($user['user_id'] != $this->uid && !$this->access('user_edit')) {
+        if ($this->data_user['user_id'] != $this->uid && !$this->access('user_edit')) {
             $this->outputHttpStatus(403);
         }
     }
 
     /**
      * Saves submitted user account settings
-     * @param array $user
      */
-    protected function submitEditAccount(array $user)
+    protected function submitEditAccount()
     {
         if (!$this->isPosted('save')) {
             return null;
         }
 
         $this->setSubmitted('user', null, 'raw');
-        $this->validateAccount($user);
+        $this->validateAccount();
 
         if (!$this->hasErrors('user')) {
-            $this->updateAccount($user);
+            $this->updateAccount();
         }
     }
 
     /**
      * Validates a user
-     * @param array $user
      * @return boolean
      */
-    protected function validateAccount(array $user)
+    protected function validateAccount()
     {
-        $this->setSubmitted('update', $user);
-        $this->setSubmitted('user_id', $user['user_id']);
+        $this->setSubmitted('update', $this->data_user);
+        $this->setSubmitted('user_id', $this->data_user['user_id']);
+
         $this->validate('user');
     }
 
     /**
      * Updates a user with submitted values
-     * @param array $user
      */
-    protected function updateAccount(array $user)
+    protected function updateAccount()
     {
-        $this->controlAccessEditAccount($user);
+        $this->controlAccessEditAccount();
 
         $values = $this->getSubmitted();
-        $this->user->update($user['user_id'], $values);
+        $this->user->update($this->data_user['user_id'], $values);
 
         $message = $this->text('Account has been updated');
         $this->redirect('', $message, 'success');
@@ -406,9 +405,8 @@ class Account extends FrontendController
 
     /**
      * Sets breadcrumbs on the account edit form
-     * @param array $user
      */
-    protected function setBreadcrumbEditAccount(array $user)
+    protected function setBreadcrumbEditAccount()
     {
         $breadcrumbs = array();
 
@@ -419,7 +417,7 @@ class Account extends FrontendController
 
         $breadcrumbs[] = array(
             'text' => $this->text('Account'),
-            'url' => $this->url("account/{$user['user_id']}")
+            'url' => $this->url("account/{$this->data_user['user_id']}")
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -447,35 +445,33 @@ class Account extends FrontendController
      */
     public function listAddressAccount($user_id)
     {
-        $user = $this->getUserAccount($user_id);
-        $addresses = $this->getListAddressAccount($user_id);
+        $this->setUserAccount($user_id);
 
-        $this->deleteAddressAccount($user);
-
-        $this->setData('user', $user);
-        $this->setData('addresses', $addresses);
-
-        $this->setBreadcrumbListAddressAccount($user);
         $this->setTitleListAddressAccount();
+        $this->setBreadcrumbListAddressAccount();
+
+        $this->deleteAddressAccount();
+
+        $this->setData('user', $this->data_user);
+        $this->setData('addresses', $this->getListAddressAccount());
+
         $this->outputListAddressAccount();
     }
 
     /**
      * Returns an array of addresses
-     * @param integer $user_id
      * @return array
      */
-    protected function getListAddressAccount($user_id)
+    protected function getListAddressAccount()
     {
-        return $this->address->getTranslatedList($user_id);
+        return $this->address->getTranslatedList($this->data_user['user_id']);
     }
 
     /**
      * Deletes an address
-     * @param array $user
      * @return array
      */
-    protected function deleteAddressAccount(array $user)
+    protected function deleteAddressAccount()
     {
         $address_id = (int) $this->request->get('delete');
 
@@ -483,7 +479,7 @@ class Account extends FrontendController
             return null;
         }
 
-        $this->controlAccessEditAccount($user);
+        $this->controlAccessEditAccount();
 
         $deleted = $this->address->delete($address_id);
 
@@ -494,14 +490,12 @@ class Account extends FrontendController
 
         $message = $this->text('Address cannot be deleted');
         $this->redirect('', $message, 'warning');
-        return null;
     }
 
     /**
      * Sets breadcrumbs on the address list page
-     * @param array $user
      */
-    protected function setBreadcrumbListAddressAccount(array $user)
+    protected function setBreadcrumbListAddressAccount()
     {
         $breadcrumbs = array();
 
@@ -512,7 +506,7 @@ class Account extends FrontendController
 
         $breadcrumbs[] = array(
             'text' => $this->text('Account'),
-            'url' => $this->url("account/{$user['user_id']}")
+            'url' => $this->url("account/{$this->data_user['user_id']}")
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -537,24 +531,22 @@ class Account extends FrontendController
     /**
      * Displays edit address form
      * @param integer $user_id
-     * @param integer $address_id
+     * @param integer|null $address_id
      */
     public function editAddressAccount($user_id, $address_id = null)
     {
-        $user = $this->getUserAccount($user_id);
-        $this->controlAccessEditAccount($user);
+        $this->setUserAccount($user_id);
+        $this->controlAccessEditAccount();
 
         $this->outputEditAddressFormAccount();
 
-        $address = $this->getAddressAccount($address_id);
-
-        $this->setData('user', $user);
-        $this->setData('address', $address);
-
-        $this->submitAddressAccount($user);
-
         $this->setDataEditAddressAccount();
         $this->setTitleEditAddressAccount();
+
+        $this->setData('user', $this->data_user);
+        $this->setData('address', $this->getAddressAccount($address_id));
+
+        $this->submitAddressAccount();
         $this->outputEditAddressAccount();
     }
 
@@ -618,7 +610,6 @@ class Account extends FrontendController
 
         $form = $this->getEditAddressFormAccount(array('country' => $code));
         $this->response->html($form);
-        return null;
     }
 
     /**
@@ -643,46 +634,39 @@ class Account extends FrontendController
 
     /**
      * Saves a user address
-     * @param array $user
      * @return null
      */
-    protected function submitAddressAccount(array $user)
+    protected function submitAddressAccount()
     {
         if (!$this->isPosted('save')) {
             return null;
         }
 
         $this->setSubmitted('address');
-        $this->validateAddressAccount($user);
+        $this->validateAddressAccount();
 
         if (!$this->hasErrors('address')) {
-            $this->addAddressAccount($user);
+            $this->addAddressAccount();
         }
-
-        return null;
     }
 
     /**
      * Validates a submitted address
      */
-    protected function validateAddressAccount(array $user)
+    protected function validateAddressAccount()
     {
-        $this->setSubmitted('user_id', $user['user_id']);
+        $this->setSubmitted('user_id', $this->data_user['user_id']);
         $this->validate('address');
     }
 
     /**
      * Adds an address
-     * @param array $user
      */
-    protected function addAddressAccount(array $user)
+    protected function addAddressAccount()
     {
-        $this->controlAccessEditAccount($user);
-
-        $address = $this->getSubmitted();
-
-        $result = $this->address->add($address);
-        $this->address->controlLimit($user['user_id']);
+        $this->controlAccessEditAccount();
+        $result = $this->address->add($this->getSubmitted());
+        $this->address->controlLimit($this->data_user['user_id']);
 
         if (empty($result)) {
             $message = $this->text('Address has not been added');
@@ -690,7 +674,7 @@ class Account extends FrontendController
         }
 
         $message = $this->text('New address has been added');
-        $this->redirect("account/{$user['user_id']}/address", $message, 'success');
+        $this->redirect("account/{$this->data_user['user_id']}/address", $message, 'success');
     }
 
     /**

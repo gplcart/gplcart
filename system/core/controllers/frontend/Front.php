@@ -40,13 +40,13 @@ class Front extends FrontendController
      */
     public function indexFront()
     {
+        $this->setTitleIndexFront();
+
         $this->setDataCollectionBannersFront();
         $this->setDataCollectionProductsFront();
         $this->setDataCollectionPagesFront();
-
         $this->setRegionContentFront();
 
-        $this->setTitleIndexFront();
         $this->outputIndexFront();
     }
 

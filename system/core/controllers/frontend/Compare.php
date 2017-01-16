@@ -69,9 +69,10 @@ class Compare extends FrontendController
      */
     public function selectCompare()
     {
-        $this->setDataSelectCompare();
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
+
+        $this->setDataSelectCompare();
         $this->outputSelectCompare();
     }
 
@@ -80,7 +81,8 @@ class Compare extends FrontendController
      */
     protected function setDataSelectCompare()
     {
-        $data = array('product_id' => $this->compare_content);
+        $data = array(
+            'product_id' => $this->compare_content);
 
         $options = array(
             'view' => $this->settings('compare_view', 'grid'),
@@ -88,9 +90,9 @@ class Compare extends FrontendController
         );
 
         $products = $this->getProducts($data, $options);
-        $reindexed = $this->prepareProductsCompare($products);
+        $prepared = $this->prepareProductsCompare($products);
 
-        $this->setData('products', $reindexed);
+        $this->setData('products', $prepared);
     }
 
     /**
@@ -143,12 +145,12 @@ class Compare extends FrontendController
      */
     public function compare($ids)
     {
+        $this->setTitleCompare();
+        $this->setBreadcrumbCompare();
+
         $this->controlAccessCompare();
 
         $this->setDataCompare();
-
-        $this->setTitleCompare();
-        $this->setBreadcrumbCompare();
         $this->outputCompare();
     }
 
@@ -207,7 +209,6 @@ class Compare extends FrontendController
         $this->setData('products', $products);
         $this->setData('option_fields', $fields['option']);
         $this->setData('attribute_fields', $fields['attribute']);
-        return null;
     }
 
     /**

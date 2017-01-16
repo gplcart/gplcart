@@ -48,23 +48,21 @@ class Install extends FrontendController
     public function install()
     {
         $this->controlAccessInstall();
-        $this->submitInstall();
-
-        $timezones = gplcart_timezones();
-        $languages = $this->getLanguagesInstall();
-        $requirements = $this->getRequirementsInstall();
-        $issues = $this->getRequirementErrorsInstall($requirements);
-        $severity = $this->getSeverityInstall($issues);
-
-        $this->setData('issues', $issues);
-        $this->setData('severity', $severity);
-        $this->setData('timezones', $timezones);
-        $this->setData('language', $this->install_language);
-        $this->setData('languages', $languages);
-        $this->setData('requirements', $requirements);
-        $this->setData('settings.store.language', $this->install_language);
 
         $this->setTitleInstall();
+        $this->submitInstall();
+
+        $requirements = $this->getRequirementsInstall();
+        $issues = $this->getRequirementErrorsInstall($requirements);
+
+        $this->setData('issues', $issues);
+        $this->setData('requirements', $requirements);
+        $this->setData('timezones', gplcart_timezones());
+        $this->setData('language', $this->install_language);
+        $this->setData('languages', $this->getLanguagesInstall());
+        $this->setData('severity', $this->getSeverityInstall($issues));
+        $this->setData('settings.store.language', $this->install_language);
+
         $this->outputInstall();
     }
 
@@ -179,7 +177,7 @@ class Install extends FrontendController
 
         $this->session->delete('user');
         $this->session->delete('install');
-        
+
         $this->session->set('install.processing', true);
         $this->session->set('install.settings', $submitted);
     }

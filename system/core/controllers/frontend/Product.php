@@ -46,6 +46,12 @@ class Product extends FrontendController
     protected $rating;
 
     /**
+     * The current product
+     * @var array
+     */
+    protected $data_product = array();
+
+    /**
      * Constructor
      * @param ProductClassModel $product_class
      * @param OrderModel $order
@@ -69,77 +75,74 @@ class Product extends FrontendController
      */
     public function indexProduct($product_id)
     {
-        $product = $this->getProduct($product_id);
-        
-        $this->setHtmlFilter($product);
-        
-        $share = $this->renderShareWidget();
+        $this->setProduct($product_id);
 
-        $this->setData('share', $share);
-        $this->setData('product', $product);
+        $this->setMetaProduct();
+        $this->setTitleIndexProduct();
+        $this->setBreadcrumbIndexProduct();
 
-        $this->setReviewsProduct($product);
-        $this->setRatingWidgetProduct($product);
-        $this->setCartFormProduct($product);
-        $this->setImagesProduct($product);
-        $this->setRelatedProduct($product);
-        $this->setRecentProduct($product);
+        $this->setImagesProduct();
+        $this->setRecentProduct();
+        $this->setReviewsProduct();
+        $this->setRelatedProduct();
+        $this->setCartFormProduct();
+        $this->setRatingWidgetProduct();
 
-        $this->setJsIndexProduct($product);
-        $this->setTitleIndexProduct($product);
-        $this->setBreadcrumbIndexProduct($product);
+        $this->setHtmlFilter($this->data_product);
 
-        $this->setMetaEntity($product);
+        $this->setData('product', $this->data_product);
+        $this->setData('share', $this->renderShareWidget());
+
+        $this->setJsIndexProduct();
         $this->outputIndexProduct();
     }
 
     /**
+     * Set meta tags on the product page
+     */
+    protected function setMetaProduct()
+    {
+        $this->setMetaEntity($this->data_product);
+    }
+
+    /**
      * Sets list of reviews related to the product
-     * @param array $product
      * @return null
      */
-    protected function setReviewsProduct(array $product)
+    protected function setReviewsProduct()
     {
-        $per_page = (int) $this->config('review_limit', 5);
-        $enabled = (bool) $this->config('review_enabled', 1);
-        $editable = (bool) $this->config('review_editable', 1);
-
-        if (!$enabled) {
+        if (!$this->config('review_enabled', 1)) {
             return null;
         }
 
-        $total = $this->getTotalReviewsProduct($product['product_id']);
+        $total = $this->getTotalReviewsProduct();
 
         if (empty($total)) {
             return null;
         }
 
         $query = $this->getFilterQuery();
+        $per_page = (int) $this->config('review_limit', 5);
         $limit = $this->setPager($total, $query, $per_page);
-        $pager = $this->getPager();
-
-        $reviews = $this->getReviewsProduct($limit, $product);
 
         $options = array(
-            'pager' => $pager,
-            'product' => $product,
-            'reviews' => $reviews,
             'query' => $this->query,
-            'editable' => $editable
+            'pager' => $this->getPager(),
+            'product' => $this->data_product,
+            'reviews' => $this->getReviewsProduct($limit),
+            'editable' => (bool) $this->config('review_editable', 1)
         );
 
         $html = $this->render('review/list', $options);
         $this->setData('reviews', $html);
-        return null;
     }
 
     /**
      * Modifies an array of reviews
      * @param array $reviews
-     * @param array $product
      * @return array
      */
-    protected function prepareReviewsProduct(array $reviews, array $product)
+    protected function prepareReviewsProduct(array $reviews)
     {
         if (empty($reviews)) {
             return array();
@@ -151,7 +154,7 @@ class Product extends FrontendController
         }
 
         if (!empty($users)) {
-            $ratings = $this->rating->getByUser($product['product_id'], $users);
+            $ratings = $this->rating->getByUser($this->data_product['product_id'], $users);
         }
 
         foreach ($reviews as &$review) {
@@ -171,34 +174,32 @@ class Product extends FrontendController
     /**
      * Returns an array of reviews for the product
      * @param array $limit
-     * @param array $product
      * @return array
      */
-    protected function getReviewsProduct(array $limit, array $product)
+    protected function getReviewsProduct(array $limit)
     {
         $options = array(
             'status' => 1,
             'limit' => $limit,
             'user_status' => 1,
-            'product_id' => $product['product_id']
+            'product_id' => $this->data_product['product_id']
         );
 
         $options += $this->query;
         $reviews = (array) $this->review->getList($options);
 
-        return $this->prepareReviewsProduct($reviews, $product);
+        return $this->prepareReviewsProduct($reviews);
     }
 
     /**
      * Sets rendered rating widget
-     * @param array $product
      */
-    protected function setRatingWidgetProduct(array $product)
+    protected function setRatingWidgetProduct()
     {
-        $rating = $this->rating->getByProduct($product['product_id'], true);
+        $rating = $this->rating->getByProduct($this->data_product['product_id'], true);
 
         $options = array(
-            'product' => $product,
+            'product' => $this->data_product,
             'votes' => isset($rating['votes']) ? $rating['votes'] : 0,
             'rating' => isset($rating['rating']) ? $rating['rating'] : 0
         );
@@ -209,17 +210,16 @@ class Product extends FrontendController
 
     /**
      * Sets rendered "Add to cart form"
-     * @param array $product
      */
-    protected function setCartFormProduct(array $product)
+    protected function setCartFormProduct()
     {
-        $access = ($product['stock'] || empty($product['subtract']));
+        $access = ($this->data_product['stock'] || empty($this->data_product['subtract']));
 
         $cart = array(
-            'product' => $product,
             'token' => $this->token,
             'cart_access' => $access,
-            'field_data' => $product['fields']
+            'product' => $this->data_product,
+            'field_data' => $this->data_product['fields']
         );
 
         $html = $this->render('cart/add', $cart);
@@ -236,18 +236,16 @@ class Product extends FrontendController
 
     /**
      * Sets title on the product page
-     * @param array $product
      */
-    protected function setTitleIndexProduct(array $product)
+    protected function setTitleIndexProduct()
     {
-        $this->setTitle($product['title'], false);
+        $this->setTitle($this->data_product['title'], false);
     }
 
     /**
      * Sets breadcrumbs on the product page
-     * @param array $product
      */
-    protected function setBreadcrumbIndexProduct(array $product)
+    protected function setBreadcrumbIndexProduct()
     {
         $breadcrumbs = array();
 
@@ -256,7 +254,7 @@ class Product extends FrontendController
             'text' => $this->text('Home')
         );
 
-        $categories = $this->geCategorytBreadcrumbsIndexProduct($product['category_id']);
+        $categories = $this->geCategorytBreadcrumbsIndexProduct($this->data_product['category_id']);
         $this->setBreadcrumbs(array_merge($breadcrumbs, $categories));
     }
 
@@ -299,20 +297,18 @@ class Product extends FrontendController
 
     /**
      * Sets Javascripts on the product page
-     * @param array $product
      */
-    protected function setJsIndexProduct(array $product)
+    protected function setJsIndexProduct()
     {
-        $this->setJsSettings('product', $product);
+        $this->setJsSettings('product', $this->data_product);
     }
 
     /**
      * Sets block with recent products on the product page
-     * @param array $product
      */
-    protected function setRecentProduct(array $product)
+    protected function setRecentProduct()
     {
-        $products = $this->getRecentProduct($product['product_id']);
+        $products = $this->getRecentProduct();
 
         $options = array('products' => $products);
         $html = $this->render('product/blocks/recent', $options);
@@ -322,43 +318,38 @@ class Product extends FrontendController
 
     /**
      * Sets block with related products on the product page
-     * @param array $product
      */
-    protected function setRelatedProduct(array $product)
+    protected function setRelatedProduct()
     {
-        $products = $this->getRelatedProduct($product['product_id']);
-
-        $options = array('products' => $products);
+        $options = array('products' => $this->getRelatedProduct());
         $html = $this->render('product/blocks/related', $options);
         $this->setData('related', $html);
     }
 
     /**
      * Sets rendered product images
-     * @param array $product
      */
-    protected function setImagesProduct(array $product)
+    protected function setImagesProduct()
     {
         $imagestyle = $this->settings('image_style_product', 5);
-        $this->setItemThumb($product, array('imagestyle' => $imagestyle));
+        $this->setItemThumb($this->data_product, array('imagestyle' => $imagestyle));
 
-        $options = array('product' => $product);
+        $options = array('product' => $this->data_product);
         $html = $this->render('product/images', $options);
         $this->setData('images', $html);
     }
 
     /**
      * Returns a total number of reviews for this product
-     * @param integer $product_id
      * @return integer
      */
-    protected function getTotalReviewsProduct($product_id)
+    protected function getTotalReviewsProduct()
     {
         $options = array(
             'status' => 1,
             'count' => true,
             'user_status' => 1,
-            'product_id' => $product_id
+            'product_id' => $this->data_product['product_id']
         );
 
         return (int) $this->review->getList($options);
@@ -369,7 +360,7 @@ class Product extends FrontendController
      * @param integer $product_id
      * @return array
      */
-    protected function getProduct($product_id)
+    protected function setProduct($product_id)
     {
         $product = $this->product->get($product_id, $this->langcode);
 
@@ -387,15 +378,16 @@ class Product extends FrontendController
 
         $product['fields'] = $this->getFieldsProduct($product);
         $this->setItemPrice($product);
+
+        $this->data_product = $product;
         return $product;
     }
 
     /**
      * Returns an array of loaded related products
-     * @param integer $product_id
      * @return array
      */
-    protected function getRelatedProduct($product_id)
+    protected function getRelatedProduct()
     {
         $limit = $this->config('product_related_limit', 12);
 
@@ -405,22 +397,21 @@ class Product extends FrontendController
             'store_id' => $this->store_id
         );
 
-        $products = (array) $this->product->getRelated($product_id, true, $options);
+        $products = (array) $this->product->getRelated($this->data_product['product_id'], true, $options);
         return $this->prepareProducts($products, $options);
     }
 
     /**
      * Returns an array of loaded recent products
-     * @param integer $product_id
      * @return array
      */
-    protected function getRecentProduct($product_id)
+    protected function getRecentProduct()
     {
         $limit = $this->config('product_recent_limit', 12);
         $lifespan = $this->config('product_recent_cookie_lifespan', 31536000);
-        $product_ids = $this->product->setViewed($product_id, $limit, $lifespan);
+        $product_ids = $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
 
-        $current = array_search($product_id, $product_ids);
+        $current = array_search($this->data_product['product_id'], $product_ids);
         unset($product_ids[$current]); // Exclude the current product iD
 
         if (empty($product_ids)) {
