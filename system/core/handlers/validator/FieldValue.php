@@ -208,14 +208,16 @@ class FieldValue extends BaseValidator
             return null;
         }
 
-        //Validate an existing file if the path is provided
         if (isset($path)) {
+            
             if (is_readable(GC_FILE_DIR . "/$path")) {
                 return true;
             }
+            
             $vars = array('@name' => $this->language->text('File'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('file', $error);
+            
             return false;
         }
 

@@ -205,7 +205,6 @@ class Install extends Model
     {
         try {
             $this->database = new Database($settings);
-            return true;
         } catch (DatabaseException $e) {
             $this->database = null;
             return $this->language->text($e->getMessage());
@@ -213,11 +212,11 @@ class Install extends Model
 
         $existing = $this->database->query('SHOW TABLES')->fetchColumn();
 
-        if (!empty($existing)) {
-            return $this->language->text('The database you specified already has tables');
+        if (empty($existing)) {
+            return true;
         }
 
-        return false;
+        return $this->language->text('The database you specified already has tables');
     }
 
     /**

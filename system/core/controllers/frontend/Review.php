@@ -239,7 +239,6 @@ class Review extends FrontendController
 
     /**
      * Validates an array of submitted review data
-     * @param array $review
      * @return null
      */
     protected function validateReview()

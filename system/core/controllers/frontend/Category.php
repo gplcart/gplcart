@@ -87,7 +87,6 @@ class Category extends FrontendController
 
     /**
      * Returns an array of sorting query
-     * @param array $default
      * @return array
      */
     protected function getFilterQueryIndexCategory()
