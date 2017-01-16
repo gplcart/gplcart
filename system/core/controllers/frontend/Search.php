@@ -25,6 +25,12 @@ class Search extends FrontendController
     protected $search;
 
     /**
+     * The current search term
+     * @var string
+     */
+    protected $data_search = '';
+
+    /**
      * Constructor
      * @param SearchModel $search
      */
@@ -40,39 +46,60 @@ class Search extends FrontendController
      */
     public function listSearch()
     {
-        $term = (string) $this->request->get('q', '');
-        $max = $this->settings('catalog_limit', 20);
+        $this->setSearch();
 
+        $this->setTitleListSearch();
+        $this->setBreadcrumbListSearch();
+
+        $total = $this->getTotalSearch();
+        $max = $this->settings('catalog_limit', 20);
+        $query = $this->getFilterQueryListSearch();
+        $limit = $this->setPager($total, $query, $max);
+
+        $products = $this->getResultsSearch($limit, $query);
+
+        $this->setDataResultSearch($products);
+        $this->setDataNavbarSearch($products, $total, $query);
+
+        $this->outputListSearch();
+    }
+
+    /**
+     * Returns the current search term
+     * @return string
+     */
+    protected function setSearch()
+    {
+        $term = (string) $this->request->get('q', '');
+
+        $this->data_search = $term;
+        return $term;
+    }
+
+    /**
+     * Returns an array of parameters used for sorting and filtering
+     * @return array
+     */
+    protected function getFilterQueryListSearch()
+    {
         $filter = array(
             'view' => $this->settings('catalog_view', 'grid'),
             'sort' => $this->settings('catalog_sort', 'price'),
             'order' => $this->settings('catalog_order', 'asc')
         );
 
-        $query = $this->getFilterQuery($filter);
-        $total = $this->getTotalSearch($term);
-        $limit = $this->setPager($total, $query, $max);
-
-        $products = $this->getResultsSearch($term, $limit, $query);
-
-        $this->setDataResultSearch($products);
-        $this->setDataNavbarSearch($products, $total, $query);
-
-        $this->setTitleListSearch($term);
-        $this->setBreadcrumbListSearch();
-        $this->outputListSearch();
+        return $this->getFilterQuery($filter);
     }
 
     /**
      * Sets titles on the search page
-     * @param string $term
      */
-    protected function setTitleListSearch($term)
+    protected function setTitleListSearch()
     {
         $title = $this->text('Search');
 
-        if ($term !== '') {
-            $title = $this->text('Search for «@term»', array('@term' => $term));
+        if ($this->data_search !== '') {
+            $title = $this->text('Search for «@term»', array('@term' => $this->data_search));
         }
 
         $this->setTitle($title);
@@ -100,10 +127,9 @@ class Search extends FrontendController
 
     /**
      * Returns a total number of results found
-     * @param string $term
      * @return integer
      */
-    protected function getTotalSearch($term)
+    protected function getTotalSearch()
     {
         $options = array(
             'status' => 1,
@@ -112,32 +138,32 @@ class Search extends FrontendController
             'language' => $this->langcode
         );
 
-        $total = $this->search->search('product', $term, $options);
+        $total = $this->search->search('product', $this->data_search, $options);
         return (int) $total;
     }
 
     /**
      * Returns an array of search results
-     * @param string $term
      * @param array $limit
      * @param array $query
      * @return array
      */
-    protected function getResultsSearch($term, array $limit,
-            array $query = array())
+    protected function getResultsSearch(array $limit, array $query = array())
     {
         $options = array(
             'status' => 1,
+            'limit' => $limit,
             'language' => $this->langcode,
-            'store_id' => $this->store_id,
-            'limit' => $limit) + $query;
+            'store_id' => $this->store_id
+        );
 
-        $results = $this->search->search('product', $term, $options);
+        $options += $query;
+        $results = $this->search->search('product', $this->data_search, $options);
 
         if (empty($results)) {
             return array();
         }
-        
+
         $query['placeholder'] = true;
         return $this->prepareProducts($results, $query);
     }

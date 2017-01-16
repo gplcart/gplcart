@@ -27,10 +27,10 @@ class Wishlist extends FrontendController
      */
     public function indexWishlist()
     {
-        $this->setDataWishlist();
-
         $this->setTitleIndexWishlist();
         $this->setBreadcrumbIndexWishlist();
+
+        $this->setDataWishlist();
         $this->outputIndexWishlist();
     }
 
