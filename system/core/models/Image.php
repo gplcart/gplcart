@@ -55,45 +55,6 @@ class Image extends Model
     }
 
     /**
-     * Deletes an image
-     * @param integer $file_id
-     * @return boolean
-     */
-    public function delete($file_id)
-    {
-        return $this->file->delete($file_id);
-    }
-
-    /**
-     * Returns an array of images
-     * @param string $id_key
-     * @param integer $id_value
-     * @return array
-     */
-    public function getList($id_key, $id_value)
-    {
-        $options = array(
-            'order' => 'asc',
-            'sort' => 'weight',
-            'id_key' => $id_key,
-            'file_type' => 'image',
-            'id_value' => $id_value
-        );
-
-        return $this->file->getList($options);
-    }
-
-    /**
-     * Returns translations for a given image file
-     * @param integer $file_id
-     * @return array
-     */
-    public function getTranslation($file_id)
-    {
-        return $this->file->getTranslation($file_id);
-    }
-
-    /**
      * Returns a string containing an image url
      * @param array $data
      * @param array $options
@@ -105,64 +66,21 @@ class Image extends Model
             return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
         }
 
-        // memory cached list
-        $images = (array) $this->getList($options['id_key'], $options['ids']);
+        $conditions = array(
+            'order' => 'asc',
+            'sort' => 'weight',
+            'file_type' => 'image',
+            'id_value' => $options['ids'],
+            'id_key' => $options['id_key']
+        );
 
-        foreach ($images as $file) {
+        foreach ($this->file->getList($conditions) as $file) {
             if ($file['id_value'] == $data[$options['id_key']]) {
                 return $this->url($options['imagestyle'], $file['path']);
             }
         }
 
         return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
-    }
-
-    /**
-     * Adds/updates multiple images
-     * @param string $id_key
-     * @param integer $id_value
-     * @param array $images
-     * @return array
-     */
-    public function setMultiple($id_key, $id_value, array $images)
-    {
-        $result = array();
-        foreach ((array) $images as $image) {
-            if (empty($image['file_id'])) {
-                $image['id_key'] = $id_key;
-                $image['id_value'] = (int) $id_value;
-                $file_id = $this->add($image);
-            } else {
-                $file_id = (int) $image['file_id'];
-                $this->update($file_id, $image);
-            }
-
-            $result[$image['path']] = $file_id;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Adds an image to the database
-     * @param array $data
-     * @return integer|boolean
-     */
-    public function add(array $data)
-    {
-        $data['file_type'] = 'image';
-        return $this->file->add($data);
-    }
-
-    /**
-     * Updates an image
-     * @param integer $file_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($file_id, array $data)
-    {
-        return $this->file->update($file_id, $data);
     }
 
     /**
@@ -173,7 +91,7 @@ class Image extends Model
     public function modify($file, array $actions = array())
     {
         $this->library->load('simpleimage');
-        
+
         $applied = 0;
 
         try {

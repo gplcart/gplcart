@@ -12,7 +12,6 @@ namespace gplcart\core\models;
 use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -21,17 +20,13 @@ use gplcart\core\models\Language as LanguageModel;
 class Page extends Model
 {
 
+    use \gplcart\core\traits\EntityImage;
+
     /**
      * Cache instance
      * @var \gplcart\core\Cache $cache
      */
     protected $cache;
-
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
 
     /**
      * Url model instance
@@ -47,19 +42,17 @@ class Page extends Model
 
     /**
      * Constructor
-     * @param ImageModel $image
      * @param AliasModel $alias
      * @param LanguageModel $language
      * @param Cache $cache
      */
-    public function __construct(ImageModel $image, AliasModel $alias,
-            LanguageModel $language, Cache $cache)
+    public function __construct(AliasModel $alias, LanguageModel $language,
+            Cache $cache)
     {
         parent::__construct();
 
         $this->cache = $cache;
         $this->alias = $alias;
-        $this->image = $image;
         $this->language = $language;
     }
 
@@ -81,8 +74,8 @@ class Page extends Model
 
         $page = $this->db->fetch($sql, array($page_id));
 
+        $this->attachImages($page, 'page_id', $language);
         $this->attachTranslation($page, $language);
-        $this->attachImage($page);
 
         $this->hook->fire('get.page.after', $page_id, $page);
         return $page;
@@ -101,7 +94,6 @@ class Page extends Model
         }
 
         $page['language'] = 'und';
-
         $translations = $this->getTranslation($page['page_id']);
 
         foreach ($translations as $translation) {
@@ -116,56 +108,47 @@ class Page extends Model
     }
 
     /**
-     * Adds images to the page
-     * @param array $page
-     * @return null
-     */
-    protected function attachImage(array &$page)
-    {
-        if (empty($page)) {
-            return null;
-        }
-
-        $images = (array) $this->image->getList('page_id', $page['page_id']);
-
-        foreach ($images as &$image) {
-            $translations = $this->image->getTranslation($image['file_id']);
-            foreach ($translations as $translation) {
-                $image['translation'][$translation['language']] = $translation;
-            }
-        }
-
-        $page['images'] = $images;
-        return null;
-    }
-
-    /**
-     * Adds a page
+     * Deletes and/or adds page translations
      * @param array $data
-     * @return integer|boolean
+     * @param boolean $delete
+     * @return boolean
      */
-    public function add(array $data)
+    protected function setTranslation(array $data, $delete = true)
     {
-        $this->hook->fire('add.page.before', $data);
-
-        if (empty($data)) {
+        if (empty($data['form']) && empty($data['translation'])) {
             return false;
         }
 
-        $data['created'] = GC_TIME;
-        $data['page_id'] = $this->db->insert('page', $data);
-
-        $this->setTranslation($data, false);
-        $this->setImages($data);
-
-        if (empty($data['alias'])) {
-            $data['alias'] = $this->createAlias($data);
+        if ($delete) {
+            $this->deleteTranslation($data['page_id']);
         }
 
-        $this->setAlias($data, false);
+        if (empty($data['translation'])) {
+            return false;
+        }
 
-        $this->hook->fire('add.page.after', $data);
-        return $data['page_id'];
+        foreach ($data['translation'] as $language => $translation) {
+            $this->addTranslation($data['page_id'], $language, $translation);
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes page translation(s)
+     * @param integer $page_id
+     * @param null|string $language
+     * @return boolean
+     */
+    public function deleteTranslation($page_id, $language = null)
+    {
+        $where = array('page_id' => (int) $page_id);
+
+        if (isset($language)) {
+            $where['language'] = $language;
+        }
+
+        return (bool) $this->db->delete('page_translation', $where);
     }
 
     /**
@@ -194,6 +177,35 @@ class Page extends Model
     {
         $sql = 'SELECT * FROM page_translation WHERE page_id=?';
         return $this->db->fetchAll($sql, array($page_id));
+    }
+
+    /**
+     * Adds a page
+     * @param array $data
+     * @return integer|boolean
+     */
+    public function add(array $data)
+    {
+        $this->hook->fire('add.page.before', $data);
+
+        if (empty($data)) {
+            return false;
+        }
+
+        $data['created'] = GC_TIME;
+        $data['page_id'] = $this->db->insert('page', $data);
+
+        $this->setTranslation($data, false);
+        $this->setImages($data, 'page_id');
+
+        if (empty($data['alias'])) {
+            $data['alias'] = $this->createAlias($data);
+        }
+
+        $this->setAlias($data, false);
+
+        $this->hook->fire('add.page.after', $data);
+        return $data['page_id'];
     }
 
     /**
@@ -231,7 +243,7 @@ class Page extends Model
         $data['page_id'] = $page_id;
 
         $updated += (int) $this->setAlias($data);
-        $updated += (int) $this->setImages($data);
+        $updated += (int) $this->setImages($data, 'page_id');
         $updated += (int) $this->setTranslation($data);
 
         $this->cache->clear("page.$page_id");
@@ -363,20 +375,6 @@ class Page extends Model
     }
 
     /**
-     * Adds/updates page images
-     * @param array $data
-     * @return boolean
-     */
-    protected function setImages(array $data)
-    {
-        if (empty($data['images'])) {
-            return false;
-        }
-
-        return (bool) $this->image->setMultiple('page_id', $data['page_id'], $data['images']);
-    }
-
-    /**
      * Deletes and/or adds an alias
      * @param array $data
      * @param boolean $delete
@@ -384,7 +382,7 @@ class Page extends Model
      */
     protected function setAlias(array $data, $delete = true)
     {
-        if (empty($data['alias'])) {
+        if (empty($data['form']) && empty($data['alias'])) {
             return false;
         }
 
@@ -393,46 +391,6 @@ class Page extends Model
         }
 
         return (bool) $this->alias->add('page_id', $data['page_id'], $data['alias']);
-    }
-
-    /**
-     * Deletes and/or adds page translations
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($data['page_id']);
-        }
-
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['page_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes page translation(s)
-     * @param integer $page_id
-     * @param null|string $language
-     * @return boolean
-     */
-    public function deleteTranslation($page_id, $language = null)
-    {
-        $where = array('page_id' => (int) $page_id);
-
-        if (isset($language)) {
-            $where['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('page_translation', $where);
     }
 
 }

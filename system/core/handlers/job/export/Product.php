@@ -60,7 +60,7 @@ class Product extends BaseHandler
     {
         $options = $this->job['data']['options'];
         $options += array('limit' => array($this->offset, $this->limit));
-        
+
         $this->items = (array) $this->product->getList($options);
 
         foreach ($this->items as $item) {
@@ -102,10 +102,10 @@ class Product extends BaseHandler
      */
     protected function attachImages(array &$data, array $item)
     {
-        $images = $this->image->getList('product_id', $item['product_id']);
-        if (!empty($images)) {
-            $data['images'] = $images;
-        }
+        $options = array('order' => 'asc', 'sort' => 'weight', 'file_type' => 'image',
+            'id_key' => 'product_id', 'id_value' => $item['product_id']);
+
+        $data['images'] = $this->file->getList($options);
     }
 
     /**

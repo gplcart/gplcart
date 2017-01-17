@@ -331,11 +331,19 @@ class Product extends FrontendController
      */
     protected function setImagesProduct()
     {
-        $imagestyle = $this->settings('image_style_product', 5);
-        $this->setItemThumb($this->data_product, array('imagestyle' => $imagestyle));
+        $options = array(
+            'imagestyle' => $this->settings('image_style_product', 5)
+        );
+        
+        if(empty($this->data_product['images'])){
+            $this->data_product['images'][] = array(
+                'thumb' => $this->image->placeholder($options['imagestyle']));
+        } else {
+           $this->setItemThumb($this->data_product, $options); 
+        }
 
-        $options = array('product' => $this->data_product);
-        $html = $this->render('product/images', $options);
+        $data = array('product' => $this->data_product);
+        $html = $this->render('product/images', $data);
         $this->setData('images', $html);
     }
 

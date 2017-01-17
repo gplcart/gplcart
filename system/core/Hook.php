@@ -16,7 +16,6 @@ use gplcart\core\exceptions\ModuleException;
  */
 class Hook
 {
-
     /**
      * Array of registered hooks
      * @var array
@@ -138,7 +137,7 @@ class Hook
     protected function call($namespace, $method, &$a = null, &$b = null,
             &$c = null, &$d = null, &$e = null)
     {
-        $instance = Container::instance(array($namespace, $method));
+        $instance = Container::getInstance(array($namespace, $method));
 
         try {
             $instance->{$method}($a, $b, $c, $d, $e);

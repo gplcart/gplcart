@@ -13,9 +13,8 @@ use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Search as SearchModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\PriceRule as PriceRuleModel;
@@ -26,18 +25,14 @@ use gplcart\core\models\ProductField as ProductFieldModel;
  */
 class Product extends Model
 {
+    
+    use \gplcart\core\traits\EntityImage;
 
     /**
      * Cache instance
      * @var \gplcart\core\Cache $cache
      */
     protected $cache;
-
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
 
     /**
      * Url model instance
@@ -91,7 +86,6 @@ class Product extends Model
      * Constructor
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
-     * @param ImageModel $image
      * @param AliasModel $alias
      * @param LanguageModel $language
      * @param SkuModel $sku
@@ -101,9 +95,8 @@ class Product extends Model
      * @param RequestHelper $request
      */
     public function __construct(PriceModel $price, PriceRuleModel $pricerule,
-            ImageModel $image, AliasModel $alias, LanguageModel $language,
-            SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, Cache $cache,
+            AliasModel $alias, LanguageModel $language, SkuModel $sku,
+            SearchModel $search, ProductFieldModel $product_field, Cache $cache,
             RequestHelper $request)
     {
         parent::__construct();
@@ -111,7 +104,6 @@ class Product extends Model
         $this->sku = $sku;
         $this->cache = $cache;
         $this->price = $price;
-        $this->image = $image;
         $this->alias = $alias;
         $this->search = $search;
         $this->request = $request;
@@ -136,10 +128,11 @@ class Product extends Model
 
         $data['created'] = GC_TIME;
         $data += array('currency' => $this->config->get('currency', 'USD'));
+
         $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslation($data, false);
-        $this->setImages($data);
+        $this->setImages($data, 'product_id', false);
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
         $this->setOptions($data, false);
@@ -189,11 +182,11 @@ class Product extends Model
         }
 
         $conditions = array('product_id' => $product_id);
-
         $updated = $this->db->update('product', $data, $conditions);
+
         $updated += (int) $this->setSku($data);
         $updated += (int) $this->setTranslation($data);
-        $updated += (int) $this->setImages($data);
+        $updated += (int) $this->setImages($data, 'product_id');
         $updated += (int) $this->setAlias($data);
         $updated += (int) $this->setSkuCombinations($data);
         $updated += (int) $this->setOptions($data);
@@ -215,20 +208,24 @@ class Product extends Model
     /**
      * Deletes and/or adds related products
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    public function setRelated(array $data, $delete = true)
+    public function setRelated(array $data, $update = true)
     {
-        if (empty($data['related'])) {
+        if (empty($data['form']) && empty($data['related'])) {
             return false;
         }
 
         $product_id = $data['product_id'];
 
-        if ($delete) {
+        if ($update) {
             $this->db->delete('product_related', array('product_id' => $product_id));
             $this->db->delete('product_related', array('related_product_id' => $product_id));
+        }
+
+        if (empty($data['related'])) {
+            return false;
         }
 
         foreach ((array) $data['related'] as $id) {
@@ -264,6 +261,10 @@ class Product extends Model
      */
     protected function setTranslation(array $data, $update = true)
     {
+        if (empty($data['form']) && empty($data['translation'])) {
+            return false;
+        }
+
         if ($update) {
             $this->deleteTranslation($data['product_id']);
         }
@@ -329,7 +330,7 @@ class Product extends Model
 
         $this->attachFields($product);
         $this->attachSku($product);
-        $this->attachImage($product, $language);
+        $this->attachImages($product, 'product_id', $language);
         $this->attachTranslation($product, $language);
 
         $this->hook->fire('get.product.after', $product_id, $product);
@@ -374,34 +375,14 @@ class Product extends Model
     }
 
     /**
-     * Adds images to the product
-     * @param array $product
-     * @param null|string $language
-     * @return null
+     * Deletes product translation(s)
+     * @param integer $product_id
+     * @return boolean
      */
-    protected function attachImage(array &$product, $language = null)
+    protected function deleteTranslation($product_id)
     {
-        if (empty($product)) {
-            return null;
-        }
-
-        $images = (array) $this->image->getList('product_id', $product['product_id']);
-
-        foreach ($images as &$image) {
-
-            $translations = $this->image->getTranslation($image['file_id']);
-
-            foreach ($translations as $translation) {
-                $image['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($image['translation'][$language])) {
-                $image = $image['translation'][$language] + $image;
-            }
-        }
-
-        $product['images'] = $images;
-        return null;
+        $conditions = array('product_id' => $product_id);
+        return (bool) $this->db->delete('product_translation', $conditions);
     }
 
     /**
@@ -571,7 +552,7 @@ class Product extends Model
         $currency_code = $product['currency'];
 
         foreach ($rules as $rule) {
-            
+
             //$this->pricerule->calculate($total, $cart, $data, $components);
         }
 
@@ -807,6 +788,10 @@ class Product extends Model
      */
     protected function setSku(array &$data, $update = true)
     {
+        if (empty($data['form']) && empty($data['sku'])) {
+            return false;
+        }
+
         if ($update) {
             $this->sku->delete($data['product_id'], array('base' => true));
             return (bool) $this->sku->add($data);
@@ -823,21 +808,6 @@ class Product extends Model
     }
 
     /**
-     * Adds product images
-     * @param array $data
-     * @return boolean
-     */
-    protected function setImages(array &$data)
-    {
-        if (empty($data['images'])) {
-            return false;
-        }
-
-        $data['images'] = $this->image->setMultiple('product_id', $data['product_id'], $data['images']);
-        return !empty($data['images']);
-    }
-
-    /**
      * Deletes and/or adds an alias
      * @param array $data
      * @param boolean $update
@@ -845,7 +815,7 @@ class Product extends Model
      */
     protected function setAlias(array $data, $update = true)
     {
-        if (empty($data['alias'])) {
+        if (empty($data['form']) && empty($data['alias'])) {
             return false;
         }
 
@@ -864,12 +834,16 @@ class Product extends Model
      */
     protected function setSkuCombinations(array $data, $update = true)
     {
-        if (empty($data['combination'])) {
+        if (empty($data['form']) && empty($data['combination'])) {
             return false;
         }
 
-        if (isset($update)) {
+        if ($update) {
             $this->sku->delete($data['product_id'], array('combinations' => true));
+        }
+
+        if (empty($data['combination'])) {
+            return false;
         }
 
         foreach ($data['combination'] as $combination) {
@@ -918,12 +892,16 @@ class Product extends Model
      */
     protected function setOptions(array $data, $update = true)
     {
-        if (empty($data['combination'])) {
+        if (empty($data['form']) && empty($data['combination'])) {
             return false;
         }
 
         if ($update) {
             $this->product_field->delete('option', $data['product_id']);
+        }
+
+        if (empty($data['combination'])) {
+            return false;
         }
 
         $this->addOptions($data);
@@ -964,12 +942,16 @@ class Product extends Model
      */
     protected function setAttributes(array $data, $update = true)
     {
-        if (empty($data['field']['attribute'])) {
+        if (empty($data['form']) && empty($data['field']['attribute'])) {
             return false;
         }
 
         if ($update) {
             $this->product_field->delete('attribute', $data['product_id']);
+        }
+
+        if (empty($data['field']['attribute'])) {
+            return false;
         }
 
         $this->addAttributes($data);
@@ -994,17 +976,6 @@ class Product extends Model
                 $this->product_field->add($options);
             }
         }
-    }
-
-    /**
-     * Deletes product translation(s)
-     * @param integer $product_id
-     * @return boolean
-     */
-    protected function deleteTranslation($product_id)
-    {
-        $conditions = array('product_id' => $product_id);
-        return (bool) $this->db->delete('product_translation', $conditions);
     }
 
 }

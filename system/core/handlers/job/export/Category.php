@@ -92,10 +92,10 @@ class Category extends BaseHandler
      */
     protected function attachImages(array &$data, array $item)
     {
-        $images = $this->image->getList('category_id', $item['category_id']);
-        if (!empty($images)) {
-            $data['images'] = $images;
-        }
+        $options = array('order' => 'asc', 'sort' => 'weight', 'file_type' => 'image',
+            'id_key' => 'category_id', 'id_value' => $item['category_id']);
+
+        $data['images'] = $this->file->getList($options);
     }
 
 }

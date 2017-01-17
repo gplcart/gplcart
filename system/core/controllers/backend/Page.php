@@ -10,6 +10,7 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\File as FileModel;
 use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
@@ -40,6 +41,12 @@ class Page extends BackendController
     protected $alias;
 
     /**
+     * File model instance
+     * @var \gplcart\core\models\File $file
+     */
+    protected $file;
+
+    /**
      * Image model instance
      * @var \gplcart\core\models\Image $image
      */
@@ -56,13 +63,15 @@ class Page extends BackendController
      * @param PageModel $page
      * @param CategoryModel $category
      * @param AliasModel $alias
+     * @param FileModel $file
      * @param ImageModel $image
      */
     public function __construct(PageModel $page, CategoryModel $category,
-            AliasModel $alias, ImageModel $image)
+            AliasModel $alias, FileModel $file, ImageModel $image)
     {
         parent::__construct();
 
+        $this->file = $file;
         $this->page = $page;
         $this->alias = $alias;
         $this->image = $image;
@@ -169,10 +178,9 @@ class Page extends BackendController
 
         $query['limit'] = $limit;
         $pages = (array) $this->page->getList($query);
-
-        foreach ($pages as &$page) {
+        foreach ($pages as $page_id => &$page) {
             if (isset($stores[$page['store_id']])) {
-                $page['url'] = $this->store->url($stores[$page['store_id']]);
+                $page['url'] = $this->store->url($stores[$page['store_id']]) . "/page/$page_id";
             }
         }
 
@@ -268,7 +276,7 @@ class Page extends BackendController
         }
 
         foreach ($page['images'] as &$image) {
-            $image['translation'] = $this->image->getTranslation($image['file_id']);
+            $image['translation'] = $this->file->getTranslation($image['file_id']);
         }
 
         return $page;
@@ -322,6 +330,7 @@ class Page extends BackendController
     protected function validatePage()
     {
         $this->setSubmittedBool('status');
+        $this->setSubmittedBool('form', true);
         $this->setSubmitted('update', $this->data_page);
 
         if (empty($this->data_page['page_id'])) {
@@ -336,8 +345,10 @@ class Page extends BackendController
      */
     protected function deleteImagesPage()
     {
-        foreach ((array) $this->request->post('delete_image') as $file_id) {
-            $this->image->delete($file_id);
+        $images = $this->request->post('delete_image');
+
+        if (!empty($images)) {
+            $this->file->deleteMultiple(array('file_id' => (array) $images));
         }
     }
 

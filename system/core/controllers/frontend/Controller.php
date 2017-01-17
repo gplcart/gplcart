@@ -142,15 +142,15 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        $this->price = Container::instance('gplcart\\core\\models\\Price');
-        $this->image = Container::instance('gplcart\\core\\models\\Image');
-        $this->cart = Container::instance('gplcart\\core\\models\\Cart');
-        $this->product = Container::instance('gplcart\\core\\models\\Product');
-        $this->compare = Container::instance('gplcart\\core\\models\\Compare');
-        $this->wishlist = Container::instance('gplcart\\core\\models\\Wishlist');
-        $this->category = Container::instance('gplcart\\core\\models\\Category');
-        $this->trigger = Container::instance('gplcart\\core\\models\\Trigger');
-        $this->collection_item = Container::instance('gplcart\\core\\models\\CollectionItem');
+        $this->price = Container::getInstance('gplcart\\core\\models\\Price');
+        $this->image = Container::getInstance('gplcart\\core\\models\\Image');
+        $this->cart = Container::getInstance('gplcart\\core\\models\\Cart');
+        $this->product = Container::getInstance('gplcart\\core\\models\\Product');
+        $this->compare = Container::getInstance('gplcart\\core\\models\\Compare');
+        $this->wishlist = Container::getInstance('gplcart\\core\\models\\Wishlist');
+        $this->category = Container::getInstance('gplcart\\core\\models\\Category');
+        $this->trigger = Container::getInstance('gplcart\\core\\models\\Trigger');
+        $this->collection_item = Container::getInstance('gplcart\\core\\models\\CollectionItem');
     }
 
     /**
@@ -550,13 +550,9 @@ class Controller extends BaseController
             return $data;
         }
 
-        if (empty($data['images']) && isset($options['ids'])) {
-            $data['thumb'] = $this->image->getThumb($data, $options);
-            return $data; // Processing single item, exit
-        }
-
         if (empty($data['images'])) {
-            return $data;
+            $data['thumb'] = $this->image->getThumb($data, $options);
+            return $data; // Processing single item, exit 
         }
 
         foreach ($data['images'] as &$image) {

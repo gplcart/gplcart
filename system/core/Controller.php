@@ -762,7 +762,7 @@ class Controller
 
         if ($is_twig) {
             if (!isset($this->twig)) {
-                $this->twig = Container::instance('gplcart\\core\\helpers\\Twig');
+                $this->twig = Container::getInstance('gplcart\\core\\helpers\\Twig');
             }
 
             array_unshift($extensions, 'twig');
@@ -852,25 +852,25 @@ class Controller
      */
     protected function setInstanceProperties()
     {
-        $this->user = Container::instance('gplcart\\core\\models\\User');
-        $this->store = Container::instance('gplcart\\core\\models\\Store');
-        $this->language = Container::instance('gplcart\\core\\models\\Language');
-        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
-        $this->filter = Container::instance('gplcart\\core\\models\\Filter');
+        $this->user = Container::getInstance('gplcart\\core\\models\\User');
+        $this->store = Container::getInstance('gplcart\\core\\models\\Store');
+        $this->language = Container::getInstance('gplcart\\core\\models\\Language');
+        $this->validator = Container::getInstance('gplcart\\core\\models\\Validator');
+        $this->filter = Container::getInstance('gplcart\\core\\models\\Filter');
 
-        $this->url = Container::instance('gplcart\\core\\helpers\\Url');
-        $this->request = Container::instance('gplcart\\core\\helpers\\Request');
-        $this->response = Container::instance('gplcart\\core\\helpers\\Response');
-        $this->asset = Container::instance('gplcart\\core\\helpers\\Asset');
-        $this->session = Container::instance('gplcart\\core\\helpers\\Session');
-        $this->pager = Container::instance('gplcart\\core\\helpers\\Pager');
-        $this->compressor = Container::instance('gplcart\\core\\helpers\\Compressor');
+        $this->url = Container::getInstance('gplcart\\core\\helpers\\Url');
+        $this->request = Container::getInstance('gplcart\\core\\helpers\\Request');
+        $this->response = Container::getInstance('gplcart\\core\\helpers\\Response');
+        $this->asset = Container::getInstance('gplcart\\core\\helpers\\Asset');
+        $this->session = Container::getInstance('gplcart\\core\\helpers\\Session');
+        $this->pager = Container::getInstance('gplcart\\core\\helpers\\Pager');
+        $this->compressor = Container::getInstance('gplcart\\core\\helpers\\Compressor');
 
-        $this->hook = Container::instance('gplcart\\core\\Hook');
-        $this->route = Container::instance('gplcart\\core\\Route');
-        $this->config = Container::instance('gplcart\\core\\Config');
-        $this->logger = Container::instance('gplcart\\core\\Logger');
-        $this->library = Container::instance('gplcart\\core\\Library');
+        $this->hook = Container::getInstance('gplcart\\core\\Hook');
+        $this->route = Container::getInstance('gplcart\\core\\Route');
+        $this->config = Container::getInstance('gplcart\\core\\Config');
+        $this->logger = Container::getInstance('gplcart\\core\\Logger');
+        $this->library = Container::getInstance('gplcart\\core\\Library');
     }
 
     /**
@@ -912,7 +912,7 @@ class Controller
 
         $this->current_device = 'desktop';
         $this->library->load('mobile_detect');
-        $this->device = Container::instance('Mobile_Detect');
+        $this->device = Container::getInstance('Mobile_Detect');
 
         if ($this->device->isMobile()) {
             $this->current_device = $this->device->isTablet() ? 'tablet' : 'mobile';

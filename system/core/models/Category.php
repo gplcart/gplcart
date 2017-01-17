@@ -12,7 +12,6 @@ namespace gplcart\core\models;
 use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
@@ -22,11 +21,7 @@ use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 class Category extends Model
 {
 
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
+    use \gplcart\core\traits\EntityImage;
 
     /**
      * Url model instance
@@ -48,19 +43,17 @@ class Category extends Model
 
     /**
      * Constructor
-     * @param ImageModel $image
+     * @param FileModel $file
      * @param AliasModel $alias
      * @param LanguageModel $language
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(
-    ImageModel $image, AliasModel $alias, LanguageModel $language,
+    public function __construct(AliasModel $alias, LanguageModel $language,
             CategoryGroupModel $category_group
     )
     {
         parent::__construct();
 
-        $this->image = $image;
         $this->alias = $alias;
         $this->language = $language;
         $this->category_group = $category_group;
@@ -93,7 +86,7 @@ class Category extends Model
         $category = $this->db->fetch($sql, $conditions);
 
         $this->attachTranslation($category, $language);
-        $this->attachImage($category, $language);
+        $this->attachImages($category, 'category_id', $language);
 
         $this->hook->fire('get.category.after', $category);
         return $category;
@@ -132,35 +125,6 @@ class Category extends Model
     {
         $sql = 'SELECT * FROM category_translation WHERE category_id=?';
         return $this->db->fetchAll($sql, array($category_id));
-    }
-
-    /**
-     * Adds images to the category
-     * @param array $category
-     * @param null|string $language
-     */
-    protected function attachImage(array &$category, $language)
-    {
-        if (empty($category)) {
-            return;
-        }
-
-        $images = (array) $this->image->getList('category_id', $category['category_id']);
-
-        foreach ($images as &$image) {
-
-            $translations = $this->image->getTranslation($image['file_id']);
-
-            foreach ($translations as $translation) {
-                $image['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($image['translation'][$language])) {
-                $image = $image['translation'][$language] + $image;
-            }
-        }
-
-        $category['images'] = $images;
     }
 
     /**
@@ -444,7 +408,7 @@ class Category extends Model
         $data['category_id'] = $this->db->insert('category', $data);
 
         $this->setTranslation($data, false);
-        $this->setImages($data);
+        $this->setImages($data, 'category_id');
 
         if (empty($data['alias'])) {
             $data['alias'] = $this->createAlias($data);
@@ -459,12 +423,16 @@ class Category extends Model
     /**
      * Deletes and/or adds category translations
      * @param array $data
-     * @param boolean $delete
+     * @param boolean $update
      * @return boolean
      */
-    protected function setTranslation(array $data, $delete = true)
+    protected function setTranslation(array $data, $update = true)
     {
-        if ($delete) {
+        if (empty($data['form']) && empty($data['translation'])) {
+            return false;
+        }
+
+        if ($update) {
             $this->deleteTranslation($data['category_id']);
         }
 
@@ -512,20 +480,6 @@ class Category extends Model
     }
 
     /**
-     * Adds category images
-     * @param array $data
-     * @return boolean
-     */
-    protected function setImages(array $data)
-    {
-        if (empty($data['images'])) {
-            return false;
-        }
-
-        return (bool) $this->image->setMultiple('category_id', $data['category_id'], $data['images']);
-    }
-
-    /**
      * Returns a string containing a generated URL alias
      * @param array $data
      * @return string
@@ -546,7 +500,7 @@ class Category extends Model
      */
     protected function setAlias(array $data, $delete = true)
     {
-        if (empty($data['alias'])) {
+        if (empty($data['form']) && empty($data['alias'])) {
             return false;
         }
 
@@ -577,7 +531,7 @@ class Category extends Model
         $data['category_id'] = $category_id;
 
         $updated += (int) $this->setTranslation($data);
-        $updated += (int) $this->setImages($data);
+        $updated += (int) $this->setImages($data, 'category_id');
         $updated += (int) $this->setAlias($data);
 
         $result = ($updated > 0);

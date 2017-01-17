@@ -495,7 +495,7 @@ class Product extends BaseValidator
     {
         $value = $this->getSubmitted('product_class_id');
 
-        if (!isset($value)) {
+        if (empty($value)) {
             return null;
         }
 
@@ -582,7 +582,7 @@ class Product extends BaseValidator
             $combination_id = $this->sku->getCombinationId($combination['fields']);
 
             if (isset($this->processed_combinations[$combination_id])) {
-                $error = $this->language->text('Option combination already defined');
+                $error = $this->language->text('Combination already exists');
                 $this->setError("combination.$index.exists", $error);
             }
 

@@ -276,6 +276,20 @@ class File extends Model
     }
 
     /**
+     * Deletes multiple files
+     * @param array $options
+     */
+    public function deleteMultiple($options)
+    {
+        $deleted = 0;
+        foreach ($this->getList($options) as $file) {
+            $deleted += (int) $this->delete($file['file_id']);
+        }
+
+        return $deleted > 0;
+    }
+
+    /**
      * Wheter a file can be deleted
      * @param integer $file_id
      * @return boolean

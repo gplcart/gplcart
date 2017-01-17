@@ -363,6 +363,7 @@ class Category extends BackendController
      */
     protected function validateCategory()
     {
+        $this->setSubmitted('form', true);
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_category);
 

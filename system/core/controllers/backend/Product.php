@@ -441,6 +441,7 @@ class Product extends BackendController
     {
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('subtract');
+        $this->setSubmitted('form', true);
         $this->setSubmitted('update', $this->data_product);
 
         if (isset($this->data_product['product_id'])) {

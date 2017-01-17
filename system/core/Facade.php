@@ -83,8 +83,7 @@ class Facade
         $this->setErrorHandlers();
 
         // Register hooks
-        $modules = $this->config->getEnabledModules();
-        $this->hook->modules($modules);
+        $this->hook->modules($this->config->getEnabledModules());
     }
 
     /**
@@ -113,7 +112,7 @@ class Facade
             exit(1);
         }
 
-        Container::instance('gplcart\\core\\CliRoute')->process();
+        Container::getInstance('gplcart\\core\\CliRoute')->process();
     }
 
     /**

@@ -16,11 +16,12 @@ use gplcart\core\Container;
  */
 class Base
 {
+
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
+     * File model instance
+     * @var \gplcart\core\models\File $file
      */
-    protected $image;
+    protected $file;
 
     /**
      * Store model instance
@@ -44,7 +45,7 @@ class Base
      * Full path to working CSV file
      * @var string
      */
-    protected $file;
+    protected $path;
 
     /**
      * An array of header mapping
@@ -69,11 +70,8 @@ class Base
      */
     public function __construct()
     {
-        /* @var $image \gplcart\core\models\Image */
-        $this->image = Container::instance('gplcart\\core\\models\\Image');
-
-        /* @var $store \gplcart\core\models\Store */
-        $this->store = Container::instance('gplcart\\core\\models\\Store');
+        $this->file = Container::getInstance('gplcart\\core\\models\\File');
+        $this->store = Container::getInstance('gplcart\\core\\models\\Store');
     }
 
     /**
@@ -86,7 +84,7 @@ class Base
         $this->job = &$job;
 
         $this->limit = $this->job['data']['limit'];
-        $this->file = $this->job['data']['operation']['file'];
+        $this->path = $this->job['data']['operation']['file'];
         $this->header = $this->job['data']['operation']['csv']['header'];
         $this->offset = isset($this->job['context']['offset']) ? $this->job['context']['offset'] : 0;
 
@@ -140,7 +138,7 @@ class Base
         $paths = array();
         foreach ((array) $data['images'] as $image) {
             if (isset($store['domain'])) {
-                $path = trim("http://{$store['domain']}/{$store['basepath']}", '/');
+                $path = $this->store->url($store);
                 $paths[] = "$path/files/{$image['path']}";
                 continue;
             }
@@ -158,7 +156,7 @@ class Base
      */
     protected function write(array $data)
     {
-        gplcart_file_csv($this->file, $data, $this->job['data']['delimiter']);
+        gplcart_file_csv($this->path, $data, $this->job['data']['delimiter']);
     }
 
     /**

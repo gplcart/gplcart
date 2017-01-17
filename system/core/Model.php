@@ -41,10 +41,10 @@ class Model
     public function __construct()
     {
         /* @var $hook \gplcart\core\Hook */
-        $this->hook = Container::instance('gplcart\\core\\Hook');
+        $this->hook = Container::getInstance('gplcart\\core\\Hook');
 
         /* @var $config \gplcart\core\Config */
-        $this->config = Container::instance('gplcart\\core\\Config');
+        $this->config = Container::getInstance('gplcart\\core\\Config');
 
         /* @var $db \gplcart\core\Database */
         $this->db = $this->config->getDb();

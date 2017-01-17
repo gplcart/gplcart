@@ -83,22 +83,22 @@ class Base
     public function __construct()
     {
         /* @var $config \gplcart\core\Config */
-        $this->config = Container::instance('gplcart\\core\\Config');
+        $this->config = Container::getInstance('gplcart\\core\\Config');
 
         /* @var $csv \gplcart\core\helpers\Csv */
-        $this->csv = Container::instance('gplcart\\core\\helpers\\Csv');
+        $this->csv = Container::getInstance('gplcart\\core\\helpers\\Csv');
 
         /* @var $file \gplcart\core\models\File */
-        $this->file = Container::instance('gplcart\\core\\models\\File');
+        $this->file = Container::getInstance('gplcart\\core\\models\\File');
 
         /* @var $user \gplcart\core\models\User */
-        $this->user = Container::instance('gplcart\\core\\models\\User');
+        $this->user = Container::getInstance('gplcart\\core\\models\\User');
 
         /* @var $language \gplcart\core\models\Language */
-        $this->language = Container::instance('gplcart\\core\\models\\Language');
+        $this->language = Container::getInstance('gplcart\\core\\models\\Language');
 
         /* @var $validator \gplcart\core\models\Validator */
-        $this->validator = Container::instance('gplcart\\core\\models\\Validator');
+        $this->validator = Container::getInstance('gplcart\\core\\models\\Validator');
     }
 
     /**

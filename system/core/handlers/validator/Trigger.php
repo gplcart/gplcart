@@ -127,19 +127,19 @@ class Trigger extends BaseValidator
             });
 
             if (empty($parameters)) {
-                $errors[] = $this->language->text('Error on line %num: no parameters', array('%num' => $line));
+                $errors[] = $this->language->text('Error on line @num: @error', array('@num' => $line, '@error' => $this->language->text('No parameters')));
                 continue;
             }
 
             if (!in_array(htmlspecialchars($operator), $prepared_operators)) {
-                $errors[] = $this->language->text('Error on line %num: invalid operator', array('%num' => $line));
+                $errors[] = $this->language->text('Error on line @num: @error', array('@num' => $line, '@error' => $this->language->text('Invalid operator')));
                 continue;
             }
 
             $validator = $this->condition->getHandler($condition_id, 'validate');
 
             if (empty($validator)) {
-                $errors[] = $this->language->text('Error on line %num: validator not found', array('%num' => $line));
+                $errors[] = $this->language->text('Error on line @num: @error', array('@num' => $line, '@error' => $this->language->text('Failed validation')));
                 continue;
             }
 
@@ -147,8 +147,8 @@ class Trigger extends BaseValidator
             $result = call_user_func_array($validator, array($condition_id, $operator, &$parameters, $data));
 
             if ($result !== true) {
-                $error = empty($result) ? $this->language->text('did not pass validation') : (string) $result;
-                $errors[] = $this->language->text('Error on line %num: !error', array('%num' => $line, '!error' => $error));
+                $error = empty($result) ? $this->language->text('Failed validation') : (string) $result;
+                $errors[] = $this->language->text('Error on line @num: @error', array('@num' => $line, '@error' => $error));
                 continue;
             }
 

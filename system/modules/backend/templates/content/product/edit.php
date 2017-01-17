@@ -76,13 +76,13 @@
     <div class="panel-heading"><?php echo $this->text('Data'); ?></div>
     <div class="panel-body">
       <?php if (!empty($classes)) { ?>
-      <div class="form-group">
+      <div class="form-group<?php echo $this->error('product_class_id', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Product class'); ?>
         </label>
         <div class="col-md-4">
           <select class="form-control" name="product[product_class_id]">
-            <option value="0"><?php echo $this->text('None'); ?></option>
+            <option value=""><?php echo $this->text('None'); ?></option>
             <?php foreach ($classes as $class) { ?>
             <?php if (isset($product['product_class_id']) && $product['product_class_id'] == $class['product_class_id']) { ?>
             <option value="<?php echo $class['product_class_id']; ?>" selected> <?php echo $this->escape($class['title']); ?></option>
@@ -92,7 +92,10 @@
             <?php } ?>
           </select>
           <div class="help-block">
-          <?php echo $this->text('Product class is a set of attributes and options that defines the type of the product'); ?>
+            <?php echo $this->error('product_class_id'); ?>
+            <div class="text-muted">
+            <?php echo $this->text('Product class is a set of attributes and options that defines the type of the product'); ?>
+            </div>
           </div>
         </div>
       </div>

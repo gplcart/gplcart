@@ -168,7 +168,7 @@
 
         html += '<tr>';
         $('#option-form-wrapper tfoot select').each(function () {
-            html += '<td class="active">';
+            html += '<td class="field-title">';
             html += '<select data-live-search="true" class="form-control selectpicker" name="product[combination][' + index + '][fields][' + $(this).attr('data-field-id') + ']">';
             html += $(this).html();
             html += '</select>';
@@ -191,7 +191,7 @@
         html += '<input type="hidden" name="product[combination][' + index + '][thumb]" value="">';
         html += '</td>';
         html += '<td>';
-        html += '<a href="#" onclick="return false;" class="btn btn-danger btn-default remove-option-combination"><i class="fa fa-trash"></i></a>';
+        html += '<a href="#" onclick="return false;" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a>';
         html += '</td>';
         html += '</tr>';
 

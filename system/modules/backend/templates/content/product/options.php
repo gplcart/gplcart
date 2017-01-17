@@ -15,12 +15,23 @@
           <?php echo $this->text('Options'); ?>
         </h4>
       </div>
-      <div class="panel-body table-responsive">
+      <div class="panel-body table-responsive option">
+        <?php if($this->error('combination', true)) { ?>
+        <div class="alert alert-warning">
+          <ul class="list-unstyled">
+            <?php foreach($this->error('combination') as $row => $errors) { ?>
+            <?php foreach($errors as $error) { ?>
+            <li><?php echo $this->text('Error on line @num: @error', array('@num' => $row, '@error' => $error)); ?></li>
+            <?php } ?>
+            <?php } ?>
+          </ul>
+        </div>
+        <?php } ?>
         <table class="table table-condensed option">
           <thead>
-            <tr>
+            <tr class="active">
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
-              <th class="active">
+              <th class="field-title">
                 <span<?php echo $option['required'] ? ' class="required"' : ''; ?>><?php echo $option['title']; ?></span>
                 <div class="btn-group btn-group-sm pull-right">
                   <?php if ($this->access('field_add')) { ?>
@@ -32,19 +43,19 @@
                 </div>
               </th>
               <?php } ?>
-              <th><?php echo $this->text('SKU'); ?></th>
-              <th><?php echo $this->text('Price'); ?></th>
-              <th><?php echo $this->text('Stock'); ?></th>
-              <th><?php echo $this->text('Image'); ?></th>
-              <th><?php echo $this->text('Action'); ?></th>
+              <th class="middle"><?php echo $this->text('SKU'); ?></th>
+              <th class="middle"><?php echo $this->text('Price'); ?></th>
+              <th class="middle"><?php echo $this->text('Stock'); ?></th>
+              <th class="middle"><?php echo $this->text('Image'); ?></th>
+              <th class="middle"><?php echo $this->text('Action'); ?></th>
             </tr>
           </thead>
           <tbody>
             <?php if (!empty($product['combination'])) { ?>
             <?php foreach ($product['combination'] as $row => $combination) { ?>
-            <tr class="<?php echo $this->error("combination.$row", 'bg-danger'); ?>">
+            <tr class="<?php echo $this->error("combination.$row", 'combination-error'); ?>">
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
-              <td class="<?php echo $this->error("combination.$row", 'active'); ?>">
+              <td class="field-title">
                 <div class="<?php echo $this->error("combination.$row.fields.$field_id", 'has-error'); ?>">
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
                     <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
@@ -91,15 +102,8 @@
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][file_id]" value="<?php echo $combination['file_id']; ?>">
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][path]" value="<?php echo $this->escape($combination['path']); ?>">
               </td>
-              <td><a href="#" class="btn btn-danger remove-option-combination"><i class="fa fa-trash"></i></a></td>
+              <td><a href="#" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a></td>
             </tr>
-            <?php if($this->error("combination.$row.exists", true)) { ?>
-            <tr class="bg-danger">
-              <td colspan="<?php echo (count($fields['option']) + 5); ?>">
-              <?php echo $this->escape($this->error("combination.$row.exists")); ?>
-              </td>
-            </tr>
-            <?php } ?>
             <?php } ?>
             <?php } ?>
           </tbody>

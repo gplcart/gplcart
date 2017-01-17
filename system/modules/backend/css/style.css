@@ -3,6 +3,42 @@ html {
     min-height: 100%;
 }
 
+code,
+kbd,
+pre,
+.list-group-item,
+.img-rounded,
+.img-thumbnail,
+.img-circle,
+.form-control,
+.btn,
+.btn-link,
+.dropdown-menu,
+.input-group-addon,
+.input-group-btn,
+.nav-tabs a,
+.nav-pills a,
+.navbar,
+.navbar-toggle,
+.icon-bar,
+.breadcrumb,
+.pagination,
+.pager *,
+.label,
+.jumbotron,
+.thumbnail,
+.alert,
+.progress,
+.panel,
+.well,
+.modal-content,
+.tooltip-inner,
+.popover,
+.popover-title,
+.carousel-indicators li {
+    border-radius:0 !important;
+}
+
 .content-header {
     background-color: #fff;
     padding-top: 20px;
@@ -12,7 +48,7 @@ html {
 body {
     padding-top: 50px;
     margin-bottom: 80px;
-    background-color: #f7f7f7;
+    background-color: #f4f4f4;
 }
 
 .navbar-fixed-top {
@@ -26,6 +62,10 @@ body {
 
 .CodeMirror {
     height: auto;
+}
+
+.note-editable {
+    border: 1px solid #ccc;
 }
 
 pre {
@@ -77,12 +117,6 @@ h1 {
     background-color: #fff;
 }
 
-.header-wrapper .help {
-    padding-top: 4px;
-    padding-left: 4px;
-    display: inline-block;
-}
-
 .footer p:first-of-type{
     padding-top: 20px;
 }
@@ -107,9 +141,6 @@ h1 {
     background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnPgogIDxyZWN0IHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9J3doaXRlJy8+CiAgPHBhdGggZD0nTTAgNUw1IDBaTTYgNEw0IDZaTS0xIDFMMSAtMVonIHN0cm9rZT0nIzg4OCcgc3Ryb2tlLXdpZHRoPScxJy8+Cjwvc3ZnPg==");
 }
 
-.hint {
-    border-bottom: 1px dashed;
-}
 
 .image-container .thumb {
     margin-bottom: 20px;
@@ -148,18 +179,6 @@ h1 {
 
 .note-group-select-from-files {
     display: none;
-}
-
-.margin-top-20 {
-    margin-top:20px !important;
-}
-
-.margin-bottom-20 {
-    margin-bottom:20px !important;
-}
-
-.margin-top-40 {
-    margin-top:40px !important;
 }
 
 td .list-inline {
@@ -274,9 +293,17 @@ td .list-inline {
         color-stop(100%, rgba(255, 0, 0, 1)));
 }
 
-td.middle,
-th.middle {
+.middle {
     vertical-align:middle !important;
+}
+
+.field-title {
+    background-color: #ddd !important;
+}
+
+.combination-error .field-title input,
+.combination-error .field-title .bootstrap-select .dropdown-toggle {
+    border-color: #a94442;
 }
 
 tr.ui-sortable-helper {
@@ -485,6 +512,18 @@ input[name="price"] {
 
 .navbar-nav.goto {
     margin: 0 !important;
+}
+
+/* Fix dropdown overflow in responsive tables */
+@media (max-width: 767px) {
+    .table-responsive .dropdown-menu {
+        position: static !important;
+    }
+}
+@media (min-width: 768px) {
+    .table-responsive {
+        overflow: visible;
+    }
 }
 
 @media (max-width: 991px) {
