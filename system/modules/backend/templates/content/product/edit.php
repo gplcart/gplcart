@@ -280,7 +280,7 @@
             <span class="related-product-item tag">
               <input type="hidden" name="product[related][]" value="<?php echo $related_product_id; ?>">
               <span class="btn btn-default">
-                <a target="_blank" href="<?php echo $related_product['view_url']; ?>">
+                <a target="_blank" href="<?php echo $related_product['url']; ?>">
                 <?php echo $this->escape($related_product['title']); ?>
                 </a>
                 <span class="badge"><i class="fa fa-times remove"></i></span>

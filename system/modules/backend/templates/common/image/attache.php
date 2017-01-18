@@ -8,15 +8,13 @@
 ?>
 <?php if (!empty($images)) { ?>
 <?php foreach ($images as $index => $image) { ?>
-<?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>
 <div class="col-md-4">
   <div class="panel thumb panel-default">
-    <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][file_id]" value="<?php echo $file_id; ?>">
     <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][path]" value="<?php echo $this->escape($image['path']); ?>">
     <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][weight]" value="<?php echo $image['weight']; ?>">
     <div class="panel-heading clearfix">
       <span class="handle pull-left"><i class="fa fa-arrows-alt"></i></span>
-      <span data-file-id="<?php echo $file_id; ?>" class="delete-image pull-right" title="<?php echo $this->text('Delete'); ?>">
+      <span class="delete-image pull-right" title="<?php echo $this->text('Delete'); ?>">
         <i class="fa fa-trash"></i>
       </span>
     </div>
@@ -26,10 +24,10 @@
           <img src="<?php echo $this->escape($image['thumb']); ?>" class="img-responsive">
         </div>
         <div class="col-md-8 small image-info">
-        <?php echo $this->text('Path: %s', array('%s' => $image['path'])); ?><br>
-        <?php echo $this->text('Uploaded: %s', array('%s' => $this->date($image['uploaded']))); ?>
+        <?php echo $this->text('Path: %s', array('%s' => $image['path'])); ?>
         </div>
       </div>
+      <?php $languages = $this->languages(); ?>
       <?php if (!empty($languages)) { ?>
       <ul class="nav nav-tabs">
         <li class="active">

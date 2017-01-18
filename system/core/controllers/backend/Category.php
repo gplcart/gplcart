@@ -21,6 +21,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Category extends BackendController
 {
 
+    use \gplcart\core\traits\BackendController;
+
     /**
      * Category model instance
      * @var  \gplcart\core\models\Category $category
@@ -83,13 +85,14 @@ class Category extends BackendController
     {
         $this->setCategoryGroup($category_group_id);
 
+        $this->actionCategory();
+
         $this->setTitleListCategory();
         $this->setBreadcrumbListCategory();
 
-        $this->actionCategory();
-
         $this->setData('categories', $this->getListCategory());
         $this->setData('category_group_id', $category_group_id);
+
         $this->outputListCategory();
     }
 
@@ -126,7 +129,7 @@ class Category extends BackendController
         $categories = (array) $this->request->post('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
-            return $this->updateWeight($categories);
+            return $this->updateWeightCategory($categories);
         }
 
         $updated = $deleted = 0;
@@ -157,7 +160,7 @@ class Category extends BackendController
      * Updates weigth for an array of categories
      * @param array $categories
      */
-    protected function updateWeight(array $categories)
+    protected function updateWeightCategory(array $categories)
     {
         foreach ($categories as $category_id => $weight) {
             $this->category->update($category_id, array('weight' => $weight));
@@ -173,32 +176,25 @@ class Category extends BackendController
      */
     protected function getListCategory()
     {
-        $store = $this->store->get($this->data_category_group['store_id']);
-        $url = $this->store->url($store);
+        $options = array(
+            'category_group_id' => $this->data_category_group['category_group_id']);
 
-        $options = array('category_group_id' => $this->data_category_group['category_group_id']);
         $categories = $this->category->getTree($options);
+        return $this->prepareListCategory($categories);
+    }
 
-        $category_ids = array();
-        foreach ($categories as $id => &$category) {
-            $category_ids[] = $id;
-            $category['url'] = "$url/category/$id";
+    /**
+     * Adds extra data to an array of categories
+     * @param array $categories
+     * @return array
+     */
+    protected function prepareListCategory(array $categories)
+    {
+        $this->attachEntityUrlTrait($this->store, $categories, 'category');
+
+        foreach ($categories as &$category) {
             $category['indentation'] = str_repeat('— ', $category['depth']);
         }
-
-        $aliases = $this->alias->getMultiple('category_id', $category_ids);
-
-        if (empty($aliases)) {
-            return $categories;
-        }
-
-        foreach ($categories as $id => &$category) {
-            if (!empty($aliases[$id])) {
-                $category['alias'] = $aliases[$id];
-                $category['url'] = "$url/{$category['alias']}";
-            }
-        }
-
         return $categories;
     }
 
@@ -261,7 +257,8 @@ class Category extends BackendController
 
         $this->submitCategory();
 
-        $this->setDataEditCategory();
+        $this->setDataImagesCategory();
+        $this->setDataCategoriesCategory();
         $this->outputEditCategory();
     }
 
@@ -281,9 +278,9 @@ class Category extends BackendController
      */
     protected function canDeleteCategory()
     {
-        return (isset($this->data_category['category_id'])//
+        return isset($this->data_category['category_id'])//
                 && $this->category->canDelete($this->data_category['category_id'])//
-                && $this->access('category_delete'));
+                && $this->access('category_delete');
     }
 
     /**
@@ -303,9 +300,17 @@ class Category extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $category['alias'] = $this->alias->get('category_id', $category_id);
+        $this->data_category = $this->prepareCategory($category);
+        return $category;
+    }
 
-        $this->data_category = $category;
+    /**
+     * Prepares a category data
+     * @param array $category
+     */
+    protected function prepareCategory(array $category)
+    {
+        $category['alias'] = $this->alias->get('category_id', $category['category_id']);
         return $category;
     }
 
@@ -324,19 +329,35 @@ class Category extends BackendController
             return null;
         }
 
-        $this->setSubmitted('category', null, false);
-        $this->validateCategory();
-
-        if ($this->hasErrors('category')) {
+        if (!$this->validateCategory()) {
             return null;
         }
 
         if (isset($this->data_category['category_id'])) {
             $this->updateCategory();
-            return null;
+        } else {
+            $this->addCategory();
+        }
+    }
+
+    /**
+     * Validates a submitted category
+     * @return bool
+     */
+    protected function validateCategory()
+    {
+        $this->setSubmitted('category', null, false);
+
+        $this->setSubmitted('form', true);
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_category);
+
+        if (empty($this->data_category['category_id'])) {
+            $this->setSubmitted('user_id', $this->uid);
         }
 
-        $this->addCategory();
+        $this->validate('category');
+        return !$this->hasErrors('category');
     }
 
     /**
@@ -359,22 +380,6 @@ class Category extends BackendController
     }
 
     /**
-     * Performs validation checks on the given category
-     */
-    protected function validateCategory()
-    {
-        $this->setSubmitted('form', true);
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_category);
-
-        if (empty($this->data_category['category_id'])) {
-            $this->setSubmitted('user_id', $this->uid);
-        }
-
-        $this->validate('category');
-    }
-
-    /**
      * Updates a category
      */
     protected function updateCategory()
@@ -382,6 +387,7 @@ class Category extends BackendController
         $this->controlAccess('category_edit');
 
         $submitted = $this->getSubmitted();
+
         $this->category->update($this->data_category['category_id'], $submitted);
 
         $message = $this->text('Category has been updated');
@@ -406,10 +412,10 @@ class Category extends BackendController
     }
 
     /**
-     * Modifies categories
+     * Adds list of categories on the edit category page
      * @return null
      */
-    protected function setDataEditCategory()
+    protected function setDataCategoriesCategory()
     {
         $category_id = $this->getData('category.category_id');
 
@@ -417,7 +423,6 @@ class Category extends BackendController
             return null;
         }
 
-        $categories = $this->getData('categories');
         $category_group_id = $this->getData('category_group.category_group_id');
 
         $options = array(
@@ -432,38 +437,19 @@ class Category extends BackendController
             $exclude[] = $child['category_id'];
         }
 
+        $categories = $this->getData('categories');
         $modified = array_diff_key($categories, array_flip($exclude));
         $this->setData('categories', $modified);
-
-        $this->setDataImagesCategory();
     }
 
     /**
-     * Sets data with attached images
-     * @return null
+     * Adds images on the edit category page
      */
     protected function setDataImagesCategory()
     {
-        $images = $this->getData('category.images');
-
-        if (empty($images)) {
-            return null;
-        }
-
-        $imagestyle = $this->config('image_style_admin', 2);
-
-        foreach ($images as &$image) {
-            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
-            $image['uploaded'] = filemtime(GC_FILE_DIR . '/' . $image['path']);
-        }
-
-        $attached = $this->render('common/image/attache', array(
-            'images' => $images,
-            'name_prefix' => 'category',
-            'languages' => $this->languages,
-        ));
-
-        $this->setData('attached_images', $attached);
+        $images = $this->getData('category.images', array());
+        $this->attachThumbsTrait($this->image, $this->config, $images);
+        $this->setImagesTrait($this, $images, 'category');
     }
 
     /**

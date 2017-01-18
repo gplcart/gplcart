@@ -393,7 +393,7 @@ class Product extends BaseValidator
 
         if (empty($value) && $this->isUpdating()) {
             $data = $this->getSubmitted();
-            $value = $this->product->createAlias($data, 'product');
+            $value = $this->product->createAlias($this->alias, $data, 'product');
             $this->setSubmitted('alias', $value);
             return true;
         }

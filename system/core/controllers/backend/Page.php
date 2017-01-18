@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Page as PageModel;
-use gplcart\core\models\File as FileModel;
 use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
@@ -21,6 +20,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Page extends BackendController
 {
+
+    use \gplcart\core\traits\BackendController;
 
     /**
      * Page model instance
@@ -41,12 +42,6 @@ class Page extends BackendController
     protected $alias;
 
     /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Image model instance
      * @var \gplcart\core\models\Image $image
      */
@@ -63,15 +58,13 @@ class Page extends BackendController
      * @param PageModel $page
      * @param CategoryModel $category
      * @param AliasModel $alias
-     * @param FileModel $file
      * @param ImageModel $image
      */
     public function __construct(PageModel $page, CategoryModel $category,
-            AliasModel $alias, FileModel $file, ImageModel $image)
+            AliasModel $alias, ImageModel $image)
     {
         parent::__construct();
 
-        $this->file = $file;
         $this->page = $page;
         $this->alias = $alias;
         $this->image = $image;
@@ -98,8 +91,8 @@ class Page extends BackendController
         $total = $this->getTotalPage($query);
         $limit = $this->setPager($total, $query);
 
-        $this->setData('pages', $this->getListPage($limit, $query));
         $this->setData('stores', $this->store->getNames());
+        $this->setData('pages', $this->getListPage($limit, $query));
 
         $this->outputListPage();
     }
@@ -174,16 +167,10 @@ class Page extends BackendController
      */
     protected function getListPage(array $limit, array $query)
     {
-        $stores = $this->store->getList();
-
         $query['limit'] = $limit;
         $pages = (array) $this->page->getList($query);
-        foreach ($pages as $page_id => &$page) {
-            if (isset($stores[$page['store_id']])) {
-                $page['url'] = $this->store->url($stores[$page['store_id']]) . "/page/$page_id";
-            }
-        }
 
+        $this->attachEntityUrlTrait($this->store, $pages, 'page');
         return $pages;
     }
 
@@ -233,7 +220,9 @@ class Page extends BackendController
         $this->setData('stores', $this->store->getNames());
 
         $this->submitPage();
-        $this->setDataEditPage();
+
+        $this->setDataImagesPage();
+        $this->setDataCategoriesPage();
 
         $this->outputEditPage();
     }
@@ -267,18 +256,8 @@ class Page extends BackendController
     protected function preparePage(array $page)
     {
         $user = $this->user->get($page['user_id']);
-
-        $page['author'] = $user['email'];
+        $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
         $page['alias'] = $this->alias->get('page_id', $page['page_id']);
-
-        if (empty($page['images'])) {
-            return $page;
-        }
-
-        foreach ($page['images'] as &$image) {
-            $image['translation'] = $this->file->getTranslation($image['file_id']);
-        }
-
         return $page;
     }
 
@@ -289,26 +268,44 @@ class Page extends BackendController
     protected function submitPage()
     {
         if ($this->isPosted('delete')) {
-            return $this->deletePage();
+            $this->deletePage();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
             return null;
         }
 
-        $this->setSubmitted('page', null, false);
-        $this->validatePage();
-
-        if ($this->hasErrors('page')) {
+        if (!$this->validatePage()) {
             return null;
         }
 
         if (isset($this->data_page['page_id'])) {
             $this->updatePage();
-            return null;
+        } else {
+            $this->addPage();
+        }
+    }
+
+    /**
+     * Validates a single page
+     * @return bool
+     */
+    protected function validatePage()
+    {
+        $this->setSubmitted('page', null, false);
+
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('form', true);
+        $this->setSubmitted('update', $this->data_page);
+
+        if (empty($this->data_page['page_id'])) {
+            $this->setSubmitted('user_id', $this->uid);
         }
 
-        $this->addPage();
+        $this->validate('page');
+
+        return !$this->hasErrors('page');
     }
 
     /**
@@ -325,34 +322,6 @@ class Page extends BackendController
     }
 
     /**
-     * Validates a single page
-     */
-    protected function validatePage()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmittedBool('form', true);
-        $this->setSubmitted('update', $this->data_page);
-
-        if (empty($this->data_page['page_id'])) {
-            $this->setSubmitted('user_id', $this->uid);
-        }
-
-        $this->validate('page');
-    }
-
-    /**
-     * Deletes an array of submitted images
-     */
-    protected function deleteImagesPage()
-    {
-        $images = $this->request->post('delete_image');
-
-        if (!empty($images)) {
-            $this->file->deleteMultiple(array('file_id' => (array) $images));
-        }
-    }
-
-    /**
      * Updates a page with submitted values
      */
     protected function updatePage()
@@ -361,8 +330,6 @@ class Page extends BackendController
 
         $submitted = $this->getSubmitted();
         $this->page->update($this->data_page['page_id'], $submitted);
-
-        $this->deleteImagesPage();
 
         $message = $this->text('Page has been updated');
         $this->redirect('admin/content/page', $message, 'success');
@@ -375,48 +342,32 @@ class Page extends BackendController
     {
         $this->controlAccess('page_add');
 
-        $submitted = $this->getSubmitted();
-        $this->page->add($submitted);
+        $this->page->add($this->getSubmitted());
 
         $message = $this->text('Page has been added');
         $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
-     * Modifies page data before sending to templates
-     * @return null
+     * Adds images on the page edit form
      */
-    protected function setDataEditPage()
+    protected function setDataImagesPage()
+    {
+        $images = $this->getData('page.images', array());
+        $this->attachThumbsTrait($this->image, $this->config, $images);
+        $this->setImagesTrait($this, $images, 'page');
+    }
+
+    /**
+     * Adds list of categories on the page edit form
+     */
+    protected function setDataCategoriesPage()
     {
         $default = $this->store->getDefault();
         $store_id = $this->getData('page.store_id', $default);
-
         $categories = $this->category->getOptionListByStore($store_id);
+
         $this->setData('categories', $categories);
-
-        $images = $this->getData('page.images');
-
-        if (empty($images)) {
-            return null;
-        }
-
-        $imagestyle = $this->config('image_style_admin', 2);
-
-        foreach ($images as &$image) {
-            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
-            $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
-        }
-
-        $this->setData('page.images', $images);
-
-        $options = array(
-            'images' => $images,
-            'name_prefix' => 'page',
-            'languages' => $this->languages
-        );
-
-        $attached = $this->render('common/image/attache', $options);
-        $this->setData('attached_images', $attached);
     }
 
     /**

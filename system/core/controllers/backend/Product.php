@@ -25,6 +25,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Product extends BackendController
 {
 
+    use \gplcart\core\traits\BackendController;
+
     /**
      * Product model instance
      * @var \gplcart\core\models\Product $product
@@ -197,15 +199,9 @@ class Product extends BackendController
             return array();
         }
 
-        $stores = $this->store->getList();
+        $this->attachEntityUrlTrait($this->store, $products, 'product');
 
         foreach ($products as &$product) {
-            $product['view_url'] = '';
-            if (isset($stores[$product['store_id']])) {
-                $url = $this->store->url($stores[$product['store_id']]);
-                $product['view_url'] = "$url/product/{$product['product_id']}";
-            }
-
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
         }
 
@@ -344,21 +340,30 @@ class Product extends BackendController
         $product['alias'] = $this->alias->get('product_id', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
+        return $this->prepareCombinationsProduct($product);
+    }
+
+    /**
+     * Adds an additional data to product combinations
+     * @param array $product
+     * @return array
+     */
+    protected function prepareCombinationsProduct(array $product)
+    {
         if (empty($product['combination'])) {
             return $product;
         }
-
-        $imagestyle = $this->config('image_style_admin', 2);
 
         foreach ($product['combination'] as &$combination) {
             $combination['path'] = $combination['thumb'] = '';
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                $combination['thumb'] = $this->image->url($imagestyle, $combination['path']);
+                $this->attachThumbTrait($this->image, $this->config, $combination);
             }
 
             $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
         }
+
         return $product;
     }
 
@@ -372,18 +377,10 @@ class Product extends BackendController
             return array();
         }
 
-        $stores = $this->store->getList();
         $options = array('store_id' => $this->data_product['store_id']);
         $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
 
-        foreach ($products as &$product) {
-            $product['view_url'] = '';
-            if (isset($stores[$product['store_id']])) {
-                $url = $this->store->url($stores[$product['store_id']]);
-                $product['view_url'] = "$url/product/{$product['product_id']}";
-            }
-        }
-
+        $this->attachEntityUrlTrait($this->store, $products, 'product');
         return $products;
     }
 
@@ -394,26 +391,23 @@ class Product extends BackendController
     protected function submitProduct()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteProduct();
+            $this->deleteProduct();
+            return null;
         }
 
         if (!$this->isPosted('save')) {
             return null;
         }
 
-        $this->setSubmitted('product', null, 'raw');
-
-        $this->validateProduct();
-
-        if ($this->hasErrors('product')) {
+        if (!$this->validateProduct()) {
             return null;
         }
 
         if (isset($this->data_product['product_id'])) {
-            return $this->updateProduct();
+            $this->updateProduct();
+        } else {
+            $this->addProduct();
         }
-
-        return $this->addProduct();
     }
 
     /**
@@ -436,9 +430,12 @@ class Product extends BackendController
 
     /**
      * Validates an array of submitted product data
+     * @return bool
      */
     protected function validateProduct()
     {
+        $this->setSubmitted('product', null, 'raw');
+
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('subtract');
         $this->setSubmitted('form', true);
@@ -456,6 +453,8 @@ class Product extends BackendController
         }
 
         $this->validate('product');
+
+        return !$this->hasErrors('product');
     }
 
     /**
@@ -468,20 +467,8 @@ class Product extends BackendController
         $submitted = $this->getSubmitted();
         $this->product->update($this->data_product['product_id'], $submitted);
 
-        $this->deleteImagesProduct();
-
         $message = $this->text('Product has been updated');
         $this->redirect('admin/content/product', $message, 'success');
-    }
-
-    /**
-     * Deletes product images
-     */
-    protected function deleteImagesProduct()
-    {
-        foreach ((array) $this->request->post('delete_image', array()) as $file_id) {
-            $this->image->delete($file_id);
-        }
     }
 
     /**
@@ -490,15 +477,7 @@ class Product extends BackendController
     protected function addProduct()
     {
         $this->controlAccess('product_add');
-
-        $submitted = $this->getSubmitted();
-
-        $submitted += array(
-            'user_id' => $this->uid,
-            'currency' => $this->currency->getDefault()
-        );
-
-        $this->product->add($submitted);
+        $this->product->add($this->getSubmitted());
 
         $message = $this->text('Product has been added');
         $this->redirect('admin/content/product', $message, 'success');
@@ -558,7 +537,7 @@ class Product extends BackendController
     }
 
     /**
-     * Sets related product data
+     * Sets related products
      */
     protected function setDataRelatedProduct()
     {
@@ -566,6 +545,7 @@ class Product extends BackendController
 
         if (!empty($related)) {
             $products = $this->product->getList(array('product_id' => $related));
+            $this->attachEntityUrlTrait($this->store, $products, 'product');
             $this->setData('related', $products);
         }
     }
@@ -576,27 +556,9 @@ class Product extends BackendController
      */
     protected function setDataImagesProduct()
     {
-        $images = $this->getData('product.images');
-
-        if (empty($images)) {
-            return null;
-        }
-
-        $imagestyle = $this->config('image_style_admin', 2);
-
-        foreach ($images as &$image) {
-            $image['thumb'] = $this->image->url($imagestyle, $image['path']);
-            $image['uploaded'] = filemtime(GC_FILE_DIR . "/{$image['path']}");
-        }
-
-        $data = array(
-            'images' => $images,
-            'name_prefix' => 'product',
-            'languages' => $this->languages
-        );
-
-        $attached = $this->render('common/image/attache', $data);
-        $this->setData('attached_images', $attached);
+        $images = $this->getData('product.images', array());
+        $this->attachThumbsTrait($this->image, $this->config, $images);
+        $this->setImagesTrait($this, $images, 'product');
     }
 
     /**

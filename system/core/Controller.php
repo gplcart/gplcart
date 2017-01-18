@@ -508,6 +508,15 @@ class Controller
     {
         return $this->breadcrumbs;
     }
+    
+    /**
+     * Returns an array of enabled languages
+     * @return array
+     */
+    public function languages()
+    {
+        return $this->languages;
+    }
 
     /**
      * Returns an array of meta data

@@ -9,8 +9,6 @@
 
 namespace gplcart\core\traits;
 
-use gplcart\core\Container;
-
 /**
  * CRUD methods for entity images
  */
@@ -18,41 +16,31 @@ trait EntityImage
 {
 
     /**
-     * Returns File model instance
-     * @return \gplcart\core\models\File
-     */
-    protected function getFileModel()
-    {
-        return Container::get('gplcart\\core\\models\\File');
-    }
-
-    /**
      * Adds images to an entity
+     * @param gplcart\core\models\File $file
      * @param array $data
      * @param string $entity
      * @param null|string $language
      * @return null
      */
-    protected function attachImages(array &$data, $entity, $language = null)
+    protected function attachImages($file, array &$data, $entity,
+            $language = null)
     {
-        if (empty($data)) {
-            return null;
+        if (!empty($data)) {
+            $images = $this->getImages($file, $data, "{$entity}_id");
+            $this->attachImageTranslation($file, $images, $language);
+            $data['images'] = $images;
         }
-
-        $images = $this->getImages($data, "{$entity}_id");
-        $this->attachImageTranslation($images, $language);
-        $data['images'] = $images;
     }
 
     /**
-     * Adds translations for images
+     * Adds translations to images
+     * @param gplcart\core\models\File $file
      * @param array $images
      * @param null|string $language
      */
-    protected function attachImageTranslation(array &$images, $language)
+    protected function attachImageTranslation($file, array &$images, $language)
     {
-        $file = $this->getFileModel();
-
         foreach ($images as &$image) {
             foreach ($file->getTranslation($image['file_id']) as $translation) {
                 $image['translation'][$translation['language']] = $translation;
@@ -66,11 +54,12 @@ trait EntityImage
 
     /**
      * Returns an array of images for the given entity
+     * @param gplcart\core\models\File $file
      * @param array $data
      * @param string $key
      * @return array
      */
-    protected function getImages(array $data, $key)
+    protected function getImages($file, array $data, $key)
     {
         $options = array(
             'order' => 'asc',
@@ -80,17 +69,18 @@ trait EntityImage
             'id_value' => $data[$key]
         );
 
-        return (array) $this->getFileModel()->getList($options);
+        return (array) $file->getList($options);
     }
 
     /**
      * Set entity images
+     * @param gplcart\core\models\File $file
      * @param array $data
      * @param string $entity
      * @param boolean $update
      * @return boolean
      */
-    protected function setImages(array &$data, $entity, $update = true)
+    protected function setImages($file, array &$data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['images'])) {
             return false;
@@ -99,30 +89,28 @@ trait EntityImage
         $key = "{$entity}_id";
 
         if ($update) {
-            $this->deleteImages($data[$key], $key);
+            $this->deleteImages($file, $data[$key], $key);
         }
 
         if (empty($data['images'])) {
             return false;
         }
 
-        return $this->addImages($data, $key);
+        return $this->addImages($file, $data, $key);
     }
 
     /**
      * Add an array of images
+     * @param gplcart\core\models\File $file
      * @param array $data
      * @param string $key
      * @return bool
      */
-    protected function addImages(array $data, $key)
+    protected function addImages($file, array $data, $key)
     {
-        $file = $this->getFileModel();
-
         $added = 0;
         foreach ($data['images'] as $image) {
             $image += array('id_key' => $key, 'id_value' => $data[$key]);
-            unset($image['file_id']);
             $added += (int) $file->add($image);
         }
 
@@ -131,11 +119,12 @@ trait EntityImage
 
     /**
      * Deletes entity images
+     * @param gplcart\core\models\File $file
      * @param string $id
      * @param string $key
      * @return bool
      */
-    protected function deleteImages($id, $key)
+    protected function deleteImages($file, $id, $key)
     {
         $options = array(
             'id_key' => $key,
@@ -143,7 +132,7 @@ trait EntityImage
             'file_type' => 'image'
         );
 
-        return $this->getFileModel()->deleteMultiple($options);
+        return $file->deleteMultiple($options);
     }
 
 }

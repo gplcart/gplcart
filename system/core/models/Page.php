@@ -11,6 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\Cache;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -36,14 +38,31 @@ class Page extends Model
     protected $language;
 
     /**
+     * Alias model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
+    
+    /**
+     * File model instance
+     * @var \gplcart\core\models\File $file
+     */
+    protected $file;
+    
+    /**
      * Constructor
+     * @param AliasModel $alias
+     * @param FileModel $file
      * @param LanguageModel $language
      * @param Cache $cache
      */
-    public function __construct(LanguageModel $language, Cache $cache)
+    public function __construct(AliasModel $alias, FileModel $file,
+            LanguageModel $language, Cache $cache)
     {
         parent::__construct();
 
+        $this->file = $file;
+        $this->alias = $alias;
         $this->cache = $cache;
         $this->language = $language;
     }
@@ -66,8 +85,8 @@ class Page extends Model
 
         $page = $this->db->fetch($sql, array($page_id));
 
-        $this->attachImages($page, 'page', $language);
-        $this->attachTranslation($page, 'page', $language);
+        $this->attachImages($this->file, $page, 'page', $language);
+        $this->attachTranslation($this->db, $page, 'page', $language);
 
         $this->hook->fire('get.page.after', $page_id, $page);
         return $page;
@@ -89,14 +108,14 @@ class Page extends Model
         $data['created'] = GC_TIME;
         $data['page_id'] = $this->db->insert('page', $data);
 
-        $this->setTranslation($data, 'page', false);
-        $this->setImages($data, 'page', false);
+        $this->setTranslation($this->db, $data, 'page', false);
+        $this->setImages($this->file, $data, 'page', false);
 
         if (empty($data['alias'])) {
-            $data['alias'] = $this->createAlias($data, 'page');
+            $data['alias'] = $this->createAlias($this->alias, $data, 'page');
         }
 
-        $this->setAlias($data, 'page', false);
+        $this->setAlias($this->alias, $data, 'page', false);
 
         $this->hook->fire('add.page.after', $data);
         return $data['page_id'];
@@ -123,9 +142,9 @@ class Page extends Model
 
         $data['page_id'] = $page_id;
 
-        $updated += (int) $this->setAlias($data, 'page');
-        $updated += (int) $this->setImages($data, 'page');
-        $updated += (int) $this->setTranslation($data, 'page');
+        $updated += (int) $this->setAlias($this->alias, $data, 'page');
+        $updated += (int) $this->setImages($this->file, $data, 'page');
+        $updated += (int) $this->setTranslation($this->db, $data, 'page');
 
         $this->cache->clear("page.$page_id");
 

@@ -324,15 +324,11 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
      */
     Backend.attach.deleteImages = function () {
 
-        var input,
-                item = 'div.thumb',
-                selector = '.image-container .delete-image',
-                container = Backend.settings.imageContainer;
+        var item = 'div.thumb',
+                selector = '.image-container .delete-image';
 
         $(document).on('click', selector, function () {
             $(this).closest(item).remove();
-            input = '<input name="delete_image[]" value="' + $(this).attr('data-file-id') + '" type="hidden">';
-            $(container).append(input);
             return false;
         });
     };

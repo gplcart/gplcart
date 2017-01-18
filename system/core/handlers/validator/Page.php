@@ -170,7 +170,7 @@ class Page extends BaseValidator
 
         if (empty($alias) && $this->isUpdating()) {
             $data = $this->getSubmitted();
-            $alias = $this->page->createAlias($data, 'page');
+            $alias = $this->page->createAlias($this->alias, $data, 'page');
             $this->setSubmitted('alias', $alias);
             return true;
         }

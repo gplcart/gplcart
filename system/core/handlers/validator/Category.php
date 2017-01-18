@@ -222,7 +222,7 @@ class Category extends BaseValidator
 
         if (empty($alias) && isset($updating['category_id'])) {
             $data = $this->getSubmitted();
-            $alias = $this->category->createAlias($data, 'category');
+            $alias = $this->category->createAlias($this->alias, $data, 'category');
             $this->setSubmitted('alias', $alias);
             return true;
         }

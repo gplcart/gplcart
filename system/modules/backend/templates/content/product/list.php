@@ -202,7 +202,7 @@
             <td class="middle">
                 <ul class="list-inline">
                   <li>
-                    <a href="<?php echo $product['view_url']; ?>">
+                    <a href="<?php echo $product['url']; ?>">
                       <?php echo mb_strtolower($this->text('View')); ?>
                     </a>
                   </li>

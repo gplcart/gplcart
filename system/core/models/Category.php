@@ -11,6 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\Cache;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
@@ -37,15 +39,31 @@ class Category extends Model
     protected $language;
 
     /**
+     * Alias model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
+
+    /**
+     * File model instance
+     * @var \gplcart\core\models\File $file
+     */
+    protected $file;
+
+    /**
      * Constructor
+     * @param AliasModel $alias
+     * @param FileModel $file
      * @param LanguageModel $language
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(LanguageModel $language,
-            CategoryGroupModel $category_group)
+    public function __construct(AliasModel $alias, FileModel $file,
+            LanguageModel $language, CategoryGroupModel $category_group)
     {
         parent::__construct();
 
+        $this->file = $file;
+        $this->alias = $alias;
         $this->language = $language;
         $this->category_group = $category_group;
     }
@@ -76,8 +94,8 @@ class Category extends Model
 
         $category = $this->db->fetch($sql, $conditions);
 
-        $this->attachTranslation($category, 'category', $language);
-        $this->attachImages($category, 'category', $language);
+        $this->attachTranslation($this->db, $category, 'category', $language);
+        $this->attachImages($this->file, $category, 'category', $language);
 
         $this->hook->fire('get.category.after', $category);
         return $category;
@@ -158,7 +176,7 @@ class Category extends Model
 
         $parent = isset($data['parent_id']) ? (int) $data['parent_id'] : 0;
 
-        $sql = 'SELECT c.*, a.alias, COALESCE(NULLIF(ct.title, ""), c.title) AS title'
+        $sql = 'SELECT c.*, a.alias, COALESCE(NULLIF(ct.title, ""), c.title) AS title, cg.store_id'
                 . ' FROM category c'
                 . ' LEFT JOIN category_group cg ON(c.category_group_id = cg.category_group_id)'
                 . ' LEFT JOIN category_translation ct ON(c.category_id=ct.category_id AND ct.language=?)'
@@ -363,14 +381,14 @@ class Category extends Model
 
         $data['category_id'] = $this->db->insert('category', $data);
 
-        $this->setTranslation($data, 'category', false);
-        $this->setImages($data, 'category', false);
+        $this->setTranslation($this->db, $data, 'category', false);
+        $this->setImages($this->file, $data, 'category', false);
 
         if (empty($data['alias'])) {
-            $data['alias'] = $this->createAlias($data, 'category');
+            $data['alias'] = $this->createAlias($this->alias, $data, 'category');
         }
 
-        $this->setAlias($data, 'category', false);
+        $this->setAlias($this->alias, $data, 'category', false);
 
         $this->hook->fire('add.category.after', $data);
         return $data['category_id'];
@@ -395,9 +413,9 @@ class Category extends Model
 
         $data['category_id'] = $category_id;
 
-        $updated += (int) $this->setTranslation($data, 'category');
-        $updated += (int) $this->setImages($data, 'category');
-        $updated += (int) $this->setAlias($data, 'category');
+        $updated += (int) $this->setTranslation($this->db, $data, 'category');
+        $updated += (int) $this->setImages($this->file, $data, 'category');
+        $updated += (int) $this->setAlias($this->alias, $data, 'category');
 
         $result = ($updated > 0);
 

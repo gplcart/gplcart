@@ -17,19 +17,22 @@ trait EntityTranslation
 
     /**
      * Adds translations
+     * @param \gplcart\core\Database $db
      * @param array $data
      * @param string $entity
      * @param string $language
      * @return null
      */
-    protected function attachTranslation(array &$data, $entity, $language)
+    protected function attachTranslation($db, array &$data, $entity, $language)
     {
         if (empty($data)) {
             return null;
         }
 
         $data['language'] = 'und';
-        foreach ($this->getTranslation($data["{$entity}_id"], $entity) as $translation) {
+        $translations = $this->getTranslation($db, $data["{$entity}_id"], $entity);
+
+        foreach ($translations as $translation) {
             $data['translation'][$translation['language']] = $translation;
         }
 
@@ -40,31 +43,33 @@ trait EntityTranslation
 
     /**
      * Returns an array of translations
+     * @param \gplcart\core\Database $db
      * @param integer $id
      * @param string $entity
      * @return array
      */
-    public function getTranslation($id, $entity)
+    public function getTranslation($db, $id, $entity)
     {
         $sql = "SELECT * FROM {$entity}_translation WHERE {$entity}_id=?";
-        return $this->db->fetchAll($sql, array($id));
+        return $db->fetchAll($sql, array($id));
     }
 
     /**
      * Deletes and/or adds translations
+     * @param \gplcart\core\Database $db
      * @param array $data
      * @param string $entity
      * @param boolean $update
      * @return null
      */
-    protected function setTranslation(array $data, $entity, $update = true)
+    protected function setTranslation($db, array $data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['translation'])) {
             return null;
         }
 
         if ($update) {
-            $this->deleteTranslation($data["{$entity}_id"], $entity);
+            $this->deleteTranslation($db, $data["{$entity}_id"], $entity);
         }
 
         if (empty($data['translation'])) {
@@ -72,17 +77,18 @@ trait EntityTranslation
         }
 
         foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data["{$entity}_id"], $entity, $language, $translation);
+            $this->addTranslation($db, $data["{$entity}_id"], $entity, $language, $translation);
         }
     }
 
     /**
      * Deletes translation(s)
+     * @param \gplcart\core\Database $db
      * @param integer $id
      * @param string $entity
      * @param null|string $language
      */
-    public function deleteTranslation($id, $entity, $language = null)
+    public function deleteTranslation($db, $id, $entity, $language = null)
     {
         $conditions = array("{$entity}_id" => $id);
 
@@ -90,22 +96,24 @@ trait EntityTranslation
             $conditions['language'] = $language;
         }
 
-        $this->db->delete("{$entity}_translation", $conditions);
+        $db->delete("{$entity}_translation", $conditions);
     }
 
     /**
      * Adds translation
+     * @param \gplcart\core\Database $db
      * @param integer $id
      * @param string $entity
      * @param string $language
      * @param array $translation
      */
-    public function addTranslation($id, $entity, $language, array $translation)
+    public function addTranslation($db, $id, $entity, $language,
+            array $translation)
     {
         $translation['language'] = $language;
         $translation["{$entity}_id"] = $id;
 
-        $this->db->insert("{$entity}_translation", $translation);
+        $db->insert("{$entity}_translation", $translation);
     }
 
 }

@@ -40,13 +40,8 @@ class Model
      */
     public function __construct()
     {
-        /* @var $hook \gplcart\core\Hook */
         $this->hook = Container::get('gplcart\\core\\Hook');
-
-        /* @var $config \gplcart\core\Config */
         $this->config = Container::get('gplcart\\core\\Config');
-
-        /* @var $db \gplcart\core\Database */
         $this->db = $this->config->getDb();
     }
 

@@ -13,6 +13,8 @@ use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Search as SearchModel;
 use gplcart\core\models\Language as LanguageModel;
@@ -72,13 +74,27 @@ class Product extends Model
     protected $search;
 
     /**
+     * Alias model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
+    
+    /**
+     * File model instance
+     * @var \gplcart\core\models\File $file
+     */
+    protected $file;
+
+    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
-
+    
     /**
      * Constructor
+     * @param AliasModel $alias
+     * @param FileModel $file
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
      * @param LanguageModel $language
@@ -88,15 +104,17 @@ class Product extends Model
      * @param Cache $cache
      * @param RequestHelper $request
      */
-    public function __construct(PriceModel $price, PriceRuleModel $pricerule,
-            LanguageModel $language, SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, Cache $cache,
+    public function __construct(AliasModel $alias, FileModel $file, PriceModel $price,
+            PriceRuleModel $pricerule, LanguageModel $language, SkuModel $sku,
+            SearchModel $search, ProductFieldModel $product_field, Cache $cache,
             RequestHelper $request)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->cache = $cache;
+        $this->file = $file;
+        $this->alias = $alias;
         $this->price = $price;
         $this->search = $search;
         $this->request = $request;
@@ -124,8 +142,8 @@ class Product extends Model
 
         $data['product_id'] = $this->db->insert('product', $data);
 
-        $this->setTranslation($data, 'product', false);
-        $this->setImages($data, 'product', false);
+        $this->setTranslation($this->db, $data, 'product', false);
+        $this->setImages($this->file, $data, 'product', false);
 
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
@@ -142,10 +160,10 @@ class Product extends Model
         }
 
         if (empty($data['alias']) && $generate_alias) {
-            $data['alias'] = $this->createAlias($data, 'product', $translit_alias);
+            $data['alias'] = $this->createAlias($this->alias, $data, 'product', $translit_alias);
         }
 
-        $this->setAlias($data, 'product', false);
+        $this->setAlias($this->alias, $data, 'product', false);
         $this->setRelated($data, false);
 
         $this->search->index('product', $data);
@@ -179,9 +197,9 @@ class Product extends Model
         $updated = $this->db->update('product', $data, $conditions);
 
         $updated += (int) $this->setSku($data);
-        $updated += (int) $this->setTranslation($data, 'product');
-        $updated += (int) $this->setImages($data, 'product');
-        $updated += (int) $this->setAlias($data, 'product');
+        $updated += (int) $this->setTranslation($this->db, $data, 'product');
+        $updated += (int) $this->setImages($this->file, $data, 'product');
+        $updated += (int) $this->setAlias($this->alias, $data, 'product');
         $updated += (int) $this->setSkuCombinations($data);
         $updated += (int) $this->setOptions($data);
         $updated += (int) $this->setAttributes($data);
@@ -266,8 +284,8 @@ class Product extends Model
 
         $this->attachFields($product);
         $this->attachSku($product);
-        $this->attachImages($product, 'product', $language);
-        $this->attachTranslation($product, 'product', $language);
+        $this->attachImages($this->file, $product, 'product', $language);
+        $this->attachTranslation($this->db, $product, 'product', $language);
 
         $this->hook->fire('get.product.after', $product_id, $product);
         return $product;
