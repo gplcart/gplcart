@@ -36,10 +36,10 @@ class Base
         ini_set('max_execution_time', 0);
 
         /* @var $zip \gplcart\core\helpers\Zip */
-        $this->zip = Container::getInstance('gplcart\\core\\helpers\\Zip');
+        $this->zip = Container::get('gplcart\\core\\helpers\\Zip');
 
         /* @var $backup \gplcart\core\models\Backup */
-        $this->backup = Container::getInstance('gplcart\\core\\models\\Backup');
+        $this->backup = Container::get('gplcart\\core\\models\\Backup');
     }
 
     /**

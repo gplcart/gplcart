@@ -161,7 +161,7 @@ class Module extends Model
         }
 
         try {
-            $module_class = Container::getInstance($module['class']);
+            $module_class = Container::get($module['class']);
             $result = $module_class->{$method}();
         } catch (ModuleException $e) {
             trigger_error($e->getMessage());

@@ -282,7 +282,7 @@ class Config
     public function getModuleData($name)
     {
         $class = $this->getModuleClass($name);
-        $instance = Container::getInstance($class);
+        $instance = Container::get($class);
 
         if (!is_callable(array($instance, 'info'))) {
             return array();
@@ -358,7 +358,7 @@ class Config
             return true;
         }
 
-        $this->db = Container::getInstance('gplcart\\core\\Database', array($this->config['database']));
+        $this->db = Container::get('gplcart\\core\\Database', array($this->config['database']));
         $this->config = array_merge($this->config, $this->select());
         $this->key = $this->get('private_key', '');
 

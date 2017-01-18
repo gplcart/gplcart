@@ -65,16 +65,16 @@ class Base
     public function __construct()
     {
         /* @var $user \gplcart\core\models\User */
-        $this->user = Container::getInstance('gplcart\\core\\models\\User');
+        $this->user = Container::get('gplcart\\core\\models\\User');
 
         /* @var $store \gplcart\core\models\Store */
-        $this->store = Container::getInstance('gplcart\\core\\models\\Store');
+        $this->store = Container::get('gplcart\\core\\models\\Store');
 
         /* @var $alias \gplcart\core\models\Alias */
-        $this->alias = Container::getInstance('gplcart\\core\\models\\Alias');
+        $this->alias = Container::get('gplcart\\core\\models\\Alias');
 
         /* @var $language \gplcart\core\models\Language */
-        $this->language = Container::getInstance('gplcart\\core\\models\\Language');
+        $this->language = Container::get('gplcart\\core\\models\\Language');
     }
 
     /**

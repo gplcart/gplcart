@@ -53,7 +53,7 @@ class Validator extends Model
 
         if (!empty($handlers[$handler_id]['handlers']['validate'])) {
             $class = $handlers[$handler_id]['handlers']['validate'];
-            $instance = Container::getInstance($class);
+            $instance = Container::get($class);
             $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
         }
 

@@ -59,7 +59,7 @@ class Handler
             $handler = $handlers['handlers'][$name];
         }
 
-        $handler[0] = Container::getInstance($handler);
+        $handler[0] = Container::get($handler);
         return $handler;
     }
 

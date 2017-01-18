@@ -112,7 +112,7 @@ class Facade
             exit(1);
         }
 
-        Container::getInstance('gplcart\\core\\CliRoute')->process();
+        Container::get('gplcart\\core\\CliRoute')->process();
     }
 
     /**

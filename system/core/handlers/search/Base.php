@@ -40,10 +40,10 @@ class Base
     public function __construct()
     {
         /* @var $search \gplcart\core\models\Search */
-        $this->search = Container::getInstance('gplcart\\core\\models\\Search');
+        $this->search = Container::get('gplcart\\core\\models\\Search');
 
         /* @var $config \gplcart\core\Config */
-        $this->config = Container::getInstance('gplcart\\core\\Config');
+        $this->config = Container::get('gplcart\\core\\Config');
 
         $this->db = $this->config->getDb();
     }

@@ -142,15 +142,15 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        $this->price = Container::getInstance('gplcart\\core\\models\\Price');
-        $this->image = Container::getInstance('gplcart\\core\\models\\Image');
-        $this->cart = Container::getInstance('gplcart\\core\\models\\Cart');
-        $this->product = Container::getInstance('gplcart\\core\\models\\Product');
-        $this->compare = Container::getInstance('gplcart\\core\\models\\Compare');
-        $this->wishlist = Container::getInstance('gplcart\\core\\models\\Wishlist');
-        $this->category = Container::getInstance('gplcart\\core\\models\\Category');
-        $this->trigger = Container::getInstance('gplcart\\core\\models\\Trigger');
-        $this->collection_item = Container::getInstance('gplcart\\core\\models\\CollectionItem');
+        $this->price = Container::get('gplcart\\core\\models\\Price');
+        $this->image = Container::get('gplcart\\core\\models\\Image');
+        $this->cart = Container::get('gplcart\\core\\models\\Cart');
+        $this->product = Container::get('gplcart\\core\\models\\Product');
+        $this->compare = Container::get('gplcart\\core\\models\\Compare');
+        $this->wishlist = Container::get('gplcart\\core\\models\\Wishlist');
+        $this->category = Container::get('gplcart\\core\\models\\Category');
+        $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
+        $this->collection_item = Container::get('gplcart\\core\\models\\CollectionItem');
     }
 
     /**

@@ -61,7 +61,7 @@ class Controller extends BaseController
      */
     protected function setJobProperties()
     {
-        $this->job = Container::getInstance('gplcart\\core\\models\\Job');
+        $this->job = Container::get('gplcart\\core\\models\\Job');
 
         $job_id = (string) $this->request->get('job_id');
 

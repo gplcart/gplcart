@@ -434,7 +434,7 @@ class File extends Model
     {
         $handlers = $this->getHandlers();
 
-        if (0 !== strpos($name, '.')) {
+        if (strpos($name, '.') !== 0) {
             return isset($handlers[$name]) ? $handlers[$name] : array();
         }
 

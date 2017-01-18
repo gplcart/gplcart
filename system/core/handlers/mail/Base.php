@@ -47,16 +47,16 @@ class Base
     public function __construct()
     {
         /* @var $config \gplcart\core\Config */
-        $this->config = Container::getInstance('gplcart\\core\\Config');
+        $this->config = Container::get('gplcart\\core\\Config');
 
         /* @var $mail \gplcart\core\models\Mail */
-        $this->mail = Container::getInstance('gplcart\\core\\models\\Mail');
+        $this->mail = Container::get('gplcart\\core\\models\\Mail');
 
         /* @var $store \gplcart\core\models\Store */
-        $this->store = Container::getInstance('gplcart\\core\\models\\Store');
+        $this->store = Container::get('gplcart\\core\\models\\Store');
 
         /* @var $language \gplcart\core\models\Language */
-        $this->language = Container::getInstance('gplcart\\core\\models\\Language');
+        $this->language = Container::get('gplcart\\core\\models\\Language');
     }
 
     /**

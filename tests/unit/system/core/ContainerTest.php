@@ -25,11 +25,11 @@ class ContainerTest extends UnitTest
     public function testInstance()
     {
         $passed = 0;
-        $instance = Container::getInstance('gplcart\\core\\Facade');
+        $instance = Container::get('gplcart\\core\\Facade');
         $passed += (int) is_object($instance);
 
         try {
-            Container::getInstance('fake\\Class');
+            Container::get('fake\\Class');
         } catch (ReflectionException $e) {
             $passed ++;
         }
@@ -44,7 +44,7 @@ class ContainerTest extends UnitTest
      */
     public function testRegistered()
     {
-        Container::getInstance('gplcart\\core\\Facade');
+        Container::get('gplcart\\core\\Facade');
         $instance = Container::registered('gplcart\\core\\Facade');
         $this->assertTrue(is_object($instance));
     }

@@ -134,7 +134,7 @@ class CliController
         );
 
         foreach ($map as $property => $class) {
-            $this->{$property} = Container::getInstance("gplcart\\core\\$class");
+            $this->{$property} = Container::get("gplcart\\core\\$class");
         }
     }
 

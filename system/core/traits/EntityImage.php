@@ -12,10 +12,19 @@ namespace gplcart\core\traits;
 use gplcart\core\Container;
 
 /**
- * Adds images to entities
+ * Methods to work with entity images
  */
 trait EntityImage
 {
+
+    /**
+     * Returns File model instance
+     * @return \gplcart\core\models\File
+     */
+    protected function getFileModel()
+    {
+        return Container::get('gplcart\\core\\models\\File');
+    }
 
     /**
      * Adds images to an entity
@@ -42,8 +51,7 @@ trait EntityImage
      */
     protected function attachImageTranslation(array &$images, $language)
     {
-        /* @var $model \gplcart\core\models\File */
-        $model = Container::getInstance('gplcart\\core\\models\\File');
+        $model = $this->getFileModel();
 
         foreach ($images as &$image) {
             foreach ($model->getTranslation($image['file_id']) as $translation) {
@@ -67,9 +75,7 @@ trait EntityImage
         $options = array('order' => 'asc', 'sort' => 'weight', 'file_type' => 'image',
             'id_key' => $id_key, 'id_value' => $entity[$id_key]);
 
-        /* @var $model \gplcart\core\models\File */
-        $model = Container::getInstance('gplcart\\core\\models\\File');
-        return (array) $model->getList($options);
+        return (array) $this->getFileModel()->getList($options);
     }
 
     /**
@@ -104,8 +110,7 @@ trait EntityImage
      */
     protected function addImages(array $data, $id_key)
     {
-        /* @var $model \gplcart\core\models\File */
-        $model = Container::getInstance('gplcart\\core\\models\\File');
+        $model = $this->getFileModel();
 
         $added = 0;
         foreach ($data['images'] as $image) {
@@ -130,10 +135,7 @@ trait EntityImage
             'id_value' => $id
         );
 
-        /* @var $model \gplcart\core\models\File */
-        $model = Container::getInstance('gplcart\\core\\models\\File');
-
-        return $model->deleteMultiple($options);
+        return $this->getFileModel()->deleteMultiple($options);
     }
 
 }

@@ -262,7 +262,7 @@ class Install extends Model
     {
         Container::unregister(); // Remove old instances to prevent conflicts
 
-        $this->config = Container::getInstance('gplcart\\core\\Config');
+        $this->config = Container::get('gplcart\\core\\Config');
         $this->database = $this->config->getDb();
 
         if (empty($this->database)) {

@@ -38,7 +38,7 @@ class Container
      * @return object
      * @throws ReflectionException
      */
-    public static function getInstance($class, array $arguments = array(),
+    public static function get($class, array $arguments = array(),
             $share = true)
     {
         if (is_array($class)) {
@@ -95,7 +95,7 @@ class Container
             $parameter_class = $parameter->getClass();
 
             if (!empty($parameter_class)) {
-                $dependencies[] = static::getInstance($parameter_class->getName());
+                $dependencies[] = static::get($parameter_class->getName());
             }
         }
 

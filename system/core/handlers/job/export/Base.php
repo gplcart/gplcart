@@ -70,8 +70,8 @@ class Base
      */
     public function __construct()
     {
-        $this->file = Container::getInstance('gplcart\\core\\models\\File');
-        $this->store = Container::getInstance('gplcart\\core\\models\\Store');
+        $this->file = Container::get('gplcart\\core\\models\\File');
+        $this->store = Container::get('gplcart\\core\\models\\Store');
     }
 
     /**

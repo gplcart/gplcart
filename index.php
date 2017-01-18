@@ -11,4 +11,4 @@
 require 'system/bootstrap.php';
 
 // Process the request
-\gplcart\core\Container::getInstance('gplcart\\core\\Facade')->route();
+\gplcart\core\Container::get('gplcart\\core\\Facade')->route();
