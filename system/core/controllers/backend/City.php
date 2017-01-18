@@ -325,19 +325,33 @@ class City extends BackendController
             return null;
         }
 
-        $this->setSubmitted('city');
-        $this->validateCity();
-
-        if ($this->hasErrors('city')) {
+        if (!$this->validateCity()) {
             return null;
         }
 
         if (isset($this->data_city['city_id'])) {
             $this->updateCity();
-            return null;
+        } else {
+            $this->addCity();
         }
+    }
 
-        $this->addCity();
+    /**
+     * Validates an array of submitted city data
+     * @return bool
+     */
+    protected function validateCity()
+    {
+        $this->setSubmitted('city');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_city);
+        $this->setSubmitted('country', $this->data_country['code']);
+        $this->setSubmitted('state_id', $this->data_state['state_id']);
+
+        $this->validate('city');
+
+        return !$this->hasErrors('city');
     }
 
     /**
@@ -362,19 +376,6 @@ class City extends BackendController
         $message = $this->text('Cannot delete city %name.', $vars);
 
         $this->redirect('', $message, 'warning');
-    }
-
-    /**
-     * Validates an array of submitted city data
-     */
-    protected function validateCity()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_city);
-        $this->setSubmitted('country', $this->data_country['code']);
-        $this->setSubmitted('state_id', $this->data_state['state_id']);
-
-        $this->validate('city');
     }
 
     /**

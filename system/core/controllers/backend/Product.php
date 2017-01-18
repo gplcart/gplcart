@@ -544,7 +544,7 @@ class Product extends BackendController
         $related = $this->getData('product.related');
 
         if (!empty($related)) {
-            $products = $this->product->getList(array('product_id' => $related));
+            $products = (array) $this->product->getList(array('product_id' => $related));
             $this->attachEntityUrlTrait($this->store, $products, 'product');
             $this->setData('related', $products);
         }

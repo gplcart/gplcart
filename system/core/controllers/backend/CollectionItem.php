@@ -224,6 +224,16 @@ class CollectionItem extends BackendController
     }
 
     /**
+     * Saves a submitted collection item
+     */
+    protected function submitCollectionItem()
+    {
+        if ($this->isPosted('save') && $this->validateCollectionItem()) {
+            $this->addCollectionItem();
+        }
+    }
+
+    /**
      * Returns an array of handler data for the collection type
      * @return array
      */
@@ -240,31 +250,18 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Saves a submitted collection item
-     * @return null
-     */
-    protected function submitCollectionItem()
-    {
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('collection_item');
-        $this->validateCollectionItem();
-
-        if (!$this->hasErrors('collection_item')) {
-            $this->addCollectionItem();
-        }
-    }
-
-    /**
      * Validates a submitted collection item
+     * @return bool
      */
     protected function validateCollectionItem()
     {
+        $this->setSubmitted('collection_item');
+
         $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
         $this->validate('collection_item');
+
+        return !$this->hasErrors('collection_item');
     }
 
     /**

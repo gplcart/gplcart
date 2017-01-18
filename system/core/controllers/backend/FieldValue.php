@@ -274,27 +274,6 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Returns a field value
-     * @param integer $field_value_id
-     * @return array
-     */
-    protected function setFieldValue($field_value_id)
-    {
-        if (!is_numeric($field_value_id)) {
-            return array();
-        }
-
-        $field_value = $this->field_value->get($field_value_id);
-
-        if (empty($field_value)) {
-            $this->outputHttpStatus(404);
-        }
-
-        $this->data_field_value = $field_value;
-        return $field_value;
-    }
-
-    /**
      * Saves a field value
      * @return null
      */
@@ -313,19 +292,51 @@ class FieldValue extends BackendController
             $this->deleteImageFieldValue();
         }
 
-        $this->setSubmitted('field_value');
-        $this->validateFieldValue();
-
-        if ($this->hasErrors('field_value')) {
+        if (!$this->validateFieldValue()) {
             return null;
         }
 
         if (isset($this->data_field_value['field_value_id'])) {
             $this->updateFieldValue();
-            return null;
+        } else {
+            $this->addFieldValue();
+        }
+    }
+
+    /**
+     * Performs validation checks on the given field value
+     * @return bool
+     */
+    protected function validateFieldValue()
+    {
+        $this->setSubmitted('field_value');
+
+        $this->setSubmitted('update', $this->data_field_value);
+        $this->setSubmitted('field_id', $this->data_field['field_id']);
+        $this->validate('field_value');
+
+        return !$this->hasErrors('field_value');
+    }
+
+    /**
+     * Returns a field value
+     * @param integer $field_value_id
+     * @return array
+     */
+    protected function setFieldValue($field_value_id)
+    {
+        if (!is_numeric($field_value_id)) {
+            return array();
         }
 
-        $this->addFieldValue();
+        $field_value = $this->field_value->get($field_value_id);
+
+        if (empty($field_value)) {
+            $this->outputHttpStatus(404);
+        }
+
+        $this->data_field_value = $field_value;
+        return $field_value;
     }
 
     /**
@@ -361,16 +372,6 @@ class FieldValue extends BackendController
 
         $this->file->delete($this->data_field_value['file_id']);
         $this->file->deleteFromDisk($file);
-    }
-
-    /**
-     * Performs validation checks on the given field value
-     */
-    protected function validateFieldValue()
-    {
-        $this->setSubmitted('update', $this->data_field_value);
-        $this->setSubmitted('field_id', $this->data_field['field_id']);
-        $this->validate('field_value');
     }
 
     /**

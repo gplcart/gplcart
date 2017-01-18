@@ -177,14 +177,55 @@ class Collection extends BackendController
     }
 
     /**
+     * Saves an array of submitted collection data
+     * @return null
+     */
+    protected function submitCollection()
+    {
+        if ($this->isPosted('delete')) {
+            $this->deleteCollection();
+            return null;
+        }
+
+        if (!$this->isPosted('save')) {
+            return null;
+        }
+
+        if (!$this->validateCollection()) {
+            return null;
+        }
+
+        if (isset($this->data_collection['collection_id'])) {
+            $this->updateCollection();
+        } else {
+            $this->addCollection();
+        }
+    }
+
+    /**
+     * Validates a submitted collection
+     * @return bool
+     */
+    protected function validateCollection()
+    {
+        $this->setSubmitted('collection');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_collection);
+        $this->validate('collection');
+
+        return !$this->hasErrors('collection');
+    }
+
+    /**
      * Whether the current collection can be deleted
      * @return bool
      */
     protected function canDeleteCollection()
     {
-        return (isset($this->data_collection['collection_id'])//
+        return isset($this->data_collection['collection_id'])//
                 && $this->access('collection_delete')//
-                && $this->collection->canDelete($this->data_collection['collection_id']));
+                && $this->collection->canDelete($this->data_collection['collection_id']);
     }
 
     /**
@@ -209,36 +250,6 @@ class Collection extends BackendController
     }
 
     /**
-     * Saves an array of submitted collection data
-     * @return null
-     */
-    protected function submitCollection()
-    {
-        if ($this->isPosted('delete')) {
-            $this->deleteCollection();
-            return null;
-        }
-
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('collection');
-        $this->validateCollection();
-
-        if ($this->hasErrors('collection')) {
-            return null;
-        }
-
-        if (isset($this->data_collection['collection_id'])) {
-            $this->updateCollection();
-            return null;
-        }
-
-        $this->addCollection();
-    }
-
-    /**
      * Deletes a collection
      */
     protected function deleteCollection()
@@ -254,16 +265,6 @@ class Collection extends BackendController
 
         $message = $this->text('Collection has been deleted');
         $this->redirect('admin/content/collection', $message, 'success');
-    }
-
-    /**
-     * Validates a submitted collection
-     */
-    protected function validateCollection()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_collection);
-        $this->validate('collection');
     }
 
     /**

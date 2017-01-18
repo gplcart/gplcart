@@ -225,8 +225,8 @@ class Editor extends BackendController
     protected function setJsSettingsEditor()
     {
         $settings = array(
-            'file_extension' => pathinfo($this->data_file, PATHINFO_EXTENSION),
-            'readonly' => !$this->canSaveEditor()
+            'readonly' => !$this->canSaveEditor(),
+            'file_extension' => pathinfo($this->data_file, PATHINFO_EXTENSION)
         );
 
         $this->setJsSettings('editor', $settings);
@@ -234,34 +234,29 @@ class Editor extends BackendController
 
     /**
      * Saves an array of submitted data
-     * @return null
      */
     protected function submitEditor()
     {
-        if (!$this->isPosted('save')) {
-            return null;
+        if ($this->isPosted('save') && $this->validateEditor()) {
+            $this->saveEditor();
         }
-
-        $this->setSubmitted('editor', null, false);
-        $this->validateEditor();
-
-        if ($this->hasErrors('editor')) {
-            return null;
-        }
-
-        $this->saveEditor();
     }
 
     /**
      * Validates a submitted data when editing a theme file
+     * @return bool
      */
     protected function validateEditor()
     {
+        $this->setSubmitted('editor', null, false);
+
         $this->setSubmitted('user_id', $this->uid);
         $this->setSubmitted('path', $this->data_file);
         $this->setSubmitted('module', $this->data_module);
 
         $this->validate('editor');
+
+        return !$this->hasErrors('editor');
     }
 
     /**

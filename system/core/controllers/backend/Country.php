@@ -18,6 +18,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Country extends BackendController
 {
+
     /**
      * Country model instance
      * @var \gplcart\core\models\Country $country
@@ -208,9 +209,9 @@ class Country extends BackendController
      */
     protected function canDeleteCountry()
     {
-        return (isset($this->data_country['code'])//
+        return isset($this->data_country['code'])//
                 && $this->access('country_delete')//
-                && $this->country->canDelete($this->data_country['code']));
+                && $this->country->canDelete($this->data_country['code']);
     }
 
     /**
@@ -254,23 +255,31 @@ class Country extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('country');
-        $this->validateCountry();
-
-        if ($this->hasErrors('country')) {
+        if (!$this->isPosted('save') || !$this->validateCountry()) {
             return null;
         }
 
         if (isset($this->data_country['code'])) {
             $this->updateCountry();
-            return null;
+        } else {
+            $this->addCountry();
         }
+    }
 
-        $this->addCountry();
+    /**
+     * Validates a country data
+     * @return bool
+     */
+    protected function validateCountry()
+    {
+        $this->setSubmitted('country');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('default');
+        $this->setSubmitted('update', $this->data_country);
+        $this->validate('country');
+
+        return !$this->hasErrors('country');
     }
 
     /**
@@ -289,17 +298,6 @@ class Country extends BackendController
 
         $message = $this->text('Cannot delete this country');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Validates a country data
-     */
-    protected function validateCountry()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmittedBool('default');
-        $this->setSubmitted('update', $this->data_country);
-        $this->validate('country');
     }
 
     /**

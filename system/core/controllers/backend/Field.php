@@ -164,14 +164,50 @@ class Field extends BackendController
     }
 
     /**
+     * Saves a submitted field values
+     * @return null
+     */
+    protected function submitField()
+    {
+        if ($this->isPosted('delete')) {
+            $this->deleteField();
+            return null;
+        }
+
+        if (!$this->isPosted('save') || !$this->validateField()) {
+            return null;
+        }
+
+        if (isset($this->data_field['field_id'])) {
+            $this->updateField();
+        } else {
+            $this->addField();
+        }
+    }
+
+    /**
+     * Performs validation checks on the given field
+     * @return bool
+     */
+    protected function validateField()
+    {
+        $this->setSubmitted('field');
+
+        $this->setSubmitted('update', $this->data_field);
+        $this->validate('field');
+
+        return !$this->hasErrors('field');
+    }
+
+    /**
      * Whether the field can be deleted
      * @return bool
      */
     protected function canDeleteField()
     {
-        return (isset($this->data_field['field_id'])//
+        return isset($this->data_field['field_id'])//
                 && $this->field->canDelete($this->data_field['field_id'])//
-                && $this->access('field_delete'));
+                && $this->access('field_delete');
     }
 
     /**
@@ -196,36 +232,6 @@ class Field extends BackendController
     }
 
     /**
-     * Saves a submitted field values
-     * @return null
-     */
-    protected function submitField()
-    {
-        if ($this->isPosted('delete')) {
-            $this->deleteField();
-            return null;
-        }
-
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('field');
-        $this->validateField();
-
-        if ($this->hasErrors('field')) {
-            return null;
-        }
-
-        if (isset($this->data_field['field_id'])) {
-            $this->updateField();
-            return null;
-        }
-
-        $this->addField();
-    }
-
-    /**
      * Deletes a field
      */
     protected function deleteField()
@@ -241,15 +247,6 @@ class Field extends BackendController
 
         $message = $this->text('Unable to delete this field');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Performs validation checks on the given field
-     */
-    protected function validateField()
-    {
-        $this->setSubmitted('update', $this->data_field);
-        $this->validate('field');
     }
 
     /**

@@ -112,6 +112,34 @@ class Export extends BackendController
     }
 
     /**
+     * Starts export
+     */
+    protected function submitExport()
+    {
+        if ($this->isPosted('export') && $this->validateExport()) {
+            $this->setJobExport();
+        }
+    }
+
+    /**
+     * Validates an array of csv export data
+     * @return bool
+     */
+    protected function validateExport()
+    {
+        $this->setSubmitted('settings');
+
+        $this->setSubmitted('limit', $this->export->getLimit());
+        $this->setSubmitted('operation', $this->data_operation['id']);
+        $this->setSubmitted('delimiter', $this->export->getCsvDelimiter());
+        $this->setSubmitted('multiple_delimiter', $this->export->getCsvDelimiterMultiple());
+
+        $this->validate('export');
+
+        return !$this->hasErrors('settings');
+    }
+
+    /**
      * Returns an array of operation data
      * @param string $operation_id
      * @return array
@@ -140,38 +168,6 @@ class Export extends BackendController
         if ($download) {
             $this->response->download($this->data_operation['file']);
         }
-    }
-
-    /**
-     * Starts export
-     * @return null
-     */
-    protected function submitExport()
-    {
-        if (!$this->isPosted('export')) {
-            return null;
-        }
-
-        $this->setSubmitted('settings');
-        $this->validateExport();
-
-        if (!$this->hasErrors('settings')) {
-            $this->setJobExport();
-        }
-    }
-
-    /**
-     * Validates an array of csv export data
-     * @return null
-     */
-    protected function validateExport()
-    {
-        $this->setSubmitted('limit', $this->export->getLimit());
-        $this->setSubmitted('operation', $this->data_operation['id']);
-        $this->setSubmitted('delimiter', $this->export->getCsvDelimiter());
-        $this->setSubmitted('multiple_delimiter', $this->export->getCsvDelimiterMultiple());
-
-        $this->validate('export');
     }
 
     /**

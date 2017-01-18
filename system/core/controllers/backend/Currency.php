@@ -105,15 +105,53 @@ class Currency extends BackendController
     }
 
     /**
+     * Saves a currency
+     * @return null
+     */
+    protected function submitCurrency()
+    {
+        if ($this->isPosted('delete')) {
+            $this->deleteCurrency();
+            return null;
+        }
+
+        if (!$this->isPosted('save') || !$this->validateCurrency()) {
+            return null;
+        }
+
+        if (isset($this->data_currency['code'])) {
+            $this->updateCurrency();
+        } else {
+            $this->addCurrency();
+        }
+    }
+
+    /**
+     * Validates a currency data
+     * @return bool
+     */
+    protected function validateCurrency()
+    {
+        $this->setSubmitted('currency', null, 'raw');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmittedBool('default');
+        $this->setSubmitted('update', $this->data_currency);
+        $this->validate('currency');
+
+        return !$this->hasErrors('currency');
+    }
+
+    /**
      * Whether the currency can be deleted
      * @return bool
      */
     protected function canDeleteCurrency()
     {
-        return (isset($this->data_currency['code'])//
+        return isset($this->data_currency['code'])//
                 && $this->access('currency_delete')//
                 && ($this->currency->getDefault() != $this->data_currency['code'])//
-                && !$this->isPosted());
+                && !$this->isPosted();
     }
 
     /**
@@ -139,36 +177,6 @@ class Currency extends BackendController
     }
 
     /**
-     * Saves a currency
-     * @return null
-     */
-    protected function submitCurrency()
-    {
-        if ($this->isPosted('delete')) {
-            $this->deleteCurrency();
-            return null;
-        }
-
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('currency', null, 'raw');
-        $this->validateCurrency();
-
-        if ($this->hasErrors('currency')) {
-            return null;
-        }
-
-        if (isset($this->data_currency['code'])) {
-            $this->updateCurrency();
-            return null;
-        }
-
-        $this->addCurrency();
-    }
-
-    /**
      * Deletes a currency
      */
     protected function deleteCurrency()
@@ -185,17 +193,6 @@ class Currency extends BackendController
 
         $message = $this->text('Cannot delete this currency');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Validates a currency data
-     */
-    protected function validateCurrency()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmittedBool('default');
-        $this->setSubmitted('update', $this->data_currency);
-        $this->validate('currency');
     }
 
     /**

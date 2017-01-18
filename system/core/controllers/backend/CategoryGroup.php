@@ -17,6 +17,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class CategoryGroup extends BackendController
 {
+
     /**
      * Category group model instance
      * @var \gplcart\core\models\CategoryGroup $category_group
@@ -140,9 +141,9 @@ class CategoryGroup extends BackendController
      */
     protected function canDeleteCategoryGroup()
     {
-        return (isset($this->data_category_group['category_group_id'])//
+        return isset($this->data_category_group['category_group_id'])//
                 && $this->category_group->canDelete($this->data_category_group['category_group_id'])//
-                && $this->access('category_group_delete'));
+                && $this->access('category_group_delete');
     }
 
     /**
@@ -180,19 +181,28 @@ class CategoryGroup extends BackendController
             return null;
         }
 
-        $this->setSubmitted('category_group');
-        $this->validateCategoryGroup();
-
-        if ($this->hasErrors('category_group')) {
+        if (!$this->validateCategoryGroup()) {
             return null;
         }
 
         if (isset($this->data_category_group['category_group_id'])) {
             $this->updateCategoryGroup();
-            return null;
+        } else {
+            $this->addCategoryGroup();
         }
+    }
 
-        $this->addCategoryGroup();
+    /**
+     * Performs validation checks on the given category group
+     */
+    protected function validateCategoryGroup()
+    {
+        $this->setSubmitted('category_group');
+
+        $this->setSubmitted('update', $this->data_category_group);
+        $this->validate('category_group');
+
+        return !$this->hasErrors('category_group');
     }
 
     /**
@@ -211,15 +221,6 @@ class CategoryGroup extends BackendController
 
         $message = $this->text('Unable to delete this category group');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Performs validation checks on the given category group
-     */
-    protected function validateCategoryGroup()
-    {
-        $this->setSubmitted('update', $this->data_category_group);
-        $this->validate('category_group');
     }
 
     /**

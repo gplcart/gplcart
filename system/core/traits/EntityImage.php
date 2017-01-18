@@ -17,7 +17,7 @@ trait EntityImage
 
     /**
      * Adds images to an entity
-     * @param gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file
      * @param array $data
      * @param string $entity
      * @param null|string $language
@@ -35,7 +35,7 @@ trait EntityImage
 
     /**
      * Adds translations to images
-     * @param gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file
      * @param array $images
      * @param null|string $language
      */
@@ -54,7 +54,7 @@ trait EntityImage
 
     /**
      * Returns an array of images for the given entity
-     * @param gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file
      * @param array $data
      * @param string $key
      * @return array
@@ -74,7 +74,7 @@ trait EntityImage
 
     /**
      * Set entity images
-     * @param gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file
      * @param array $data
      * @param string $entity
      * @param boolean $update
@@ -101,7 +101,7 @@ trait EntityImage
 
     /**
      * Add an array of images
-     * @param gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file
      * @param array $data
      * @param string $key
      * @return bool
@@ -119,7 +119,7 @@ trait EntityImage
 
     /**
      * Deletes entity images
-     * @param gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file
      * @param string $id
      * @param string $key
      * @return bool
