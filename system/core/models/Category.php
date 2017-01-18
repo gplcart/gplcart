@@ -11,7 +11,6 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\Cache;
-use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
@@ -21,13 +20,9 @@ use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 class Category extends Model
 {
 
-    use \gplcart\core\traits\EntityImage;
-
-    /**
-     * Url model instance
-     * @var \gplcart\core\models\Alias $alias
-     */
-    protected $alias;
+    use \gplcart\core\traits\EntityImage,
+        \gplcart\core\traits\EntityAlias,
+        \gplcart\core\traits\EntityTranslation;
 
     /**
      * Category group model instance
@@ -43,18 +38,14 @@ class Category extends Model
 
     /**
      * Constructor
-     * @param FileModel $file
-     * @param AliasModel $alias
      * @param LanguageModel $language
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(AliasModel $alias, LanguageModel $language,
-            CategoryGroupModel $category_group
-    )
+    public function __construct(LanguageModel $language,
+            CategoryGroupModel $category_group)
     {
         parent::__construct();
 
-        $this->alias = $alias;
         $this->language = $language;
         $this->category_group = $category_group;
     }
@@ -85,46 +76,11 @@ class Category extends Model
 
         $category = $this->db->fetch($sql, $conditions);
 
-        $this->attachTranslation($category, $language);
-        $this->attachImages($category, 'category_id', $language);
+        $this->attachTranslation($category, 'category', $language);
+        $this->attachImages($category, 'category', $language);
 
         $this->hook->fire('get.category.after', $category);
         return $category;
-    }
-
-    /**
-     * Adds translations to the category
-     * @param array $category
-     * @param null|string $language
-     */
-    protected function attachTranslation(array &$category, $language)
-    {
-        if (empty($category)) {
-            return null;
-        }
-
-        $category['language'] = 'und';
-
-        foreach ($this->getTranslation($category['category_id']) as $translation) {
-            $category['translation'][$translation['language']] = $translation;
-        }
-
-        if (isset($language) && isset($category['translation'][$language])) {
-            $category = $category['translation'][$language] + $category;
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns an array of category translations
-     * @param integer $category_id
-     * @return array
-     */
-    public function getTranslation($category_id)
-    {
-        $sql = 'SELECT * FROM category_translation WHERE category_id=?';
-        return $this->db->fetchAll($sql, array($category_id));
     }
 
     /**
@@ -407,108 +363,17 @@ class Category extends Model
 
         $data['category_id'] = $this->db->insert('category', $data);
 
-        $this->setTranslation($data, false);
-        $this->setImages($data, 'category_id');
+        $this->setTranslation($data, 'category', false);
+        $this->setImages($data, 'category', false);
 
         if (empty($data['alias'])) {
-            $data['alias'] = $this->createAlias($data);
+            $data['alias'] = $this->createAlias($data, 'category');
         }
 
-        $this->setAlias($data, false);
+        $this->setAlias($data, 'category', false);
 
         $this->hook->fire('add.category.after', $data);
         return $data['category_id'];
-    }
-
-    /**
-     * Deletes and/or adds category translations
-     * @param array $data
-     * @param boolean $update
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $update = true)
-    {
-        if (empty($data['form']) && empty($data['translation'])) {
-            return false;
-        }
-
-        if ($update) {
-            $this->deleteTranslation($data['category_id']);
-        }
-
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['category_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes category translation(s)
-     * @param integer $category_id
-     * @param null|string $language
-     * @return boolean
-     */
-    public function deleteTranslation($category_id, $language = null)
-    {
-        $conditions = array('category_id' => (int) $category_id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('category_translation', $conditions);
-    }
-
-    /**
-     * Adds a category translation
-     * @param integer $category_id
-     * @param string $language
-     * @param array $translation
-     * @return integer
-     */
-    public function addTranslation($category_id, $language, array $translation)
-    {
-        $translation['language'] = $language;
-        $translation['category_id'] = $category_id;
-
-        return $this->db->insert('category_translation', $translation);
-    }
-
-    /**
-     * Returns a string containing a generated URL alias
-     * @param array $data
-     * @return string
-     */
-    public function createAlias(array $data)
-    {
-        $pattern = $this->config->get('category_alias_pattern', '%t.html');
-        $placeholders = $this->config->get('category_alias_placeholder', array('%t' => 'title'));
-
-        return $this->alias->generate($pattern, $placeholders, $data);
-    }
-
-    /**
-     * Deletes and/or adds an alias
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setAlias(array $data, $delete = true)
-    {
-        if (empty($data['form']) && empty($data['alias'])) {
-            return false;
-        }
-
-        if ($delete) {
-            $this->alias->delete('category_id', $data['category_id']);
-        }
-
-        return (bool) $this->alias->add('category_id', $data['category_id'], $data['alias']);
     }
 
     /**
@@ -530,9 +395,9 @@ class Category extends Model
 
         $data['category_id'] = $category_id;
 
-        $updated += (int) $this->setTranslation($data);
-        $updated += (int) $this->setImages($data, 'category_id');
-        $updated += (int) $this->setAlias($data);
+        $updated += (int) $this->setTranslation($data, 'category');
+        $updated += (int) $this->setImages($data, 'category');
+        $updated += (int) $this->setAlias($data, 'category');
 
         $result = ($updated > 0);
 

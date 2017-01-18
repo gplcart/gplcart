@@ -13,7 +13,6 @@ use gplcart\core\Model;
 use gplcart\core\Cache;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Search as SearchModel;
 use gplcart\core\models\Language as LanguageModel;
@@ -25,20 +24,16 @@ use gplcart\core\models\ProductField as ProductFieldModel;
  */
 class Product extends Model
 {
-    
-    use \gplcart\core\traits\EntityImage;
+
+    use \gplcart\core\traits\EntityImage,
+        \gplcart\core\traits\EntityAlias,
+        \gplcart\core\traits\EntityTranslation;
 
     /**
      * Cache instance
      * @var \gplcart\core\Cache $cache
      */
     protected $cache;
-
-    /**
-     * Url model instance
-     * @var \gplcart\core\models\Alias $alias
-     */
-    protected $alias;
 
     /**
      * Product field model instance
@@ -86,7 +81,6 @@ class Product extends Model
      * Constructor
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
-     * @param AliasModel $alias
      * @param LanguageModel $language
      * @param SkuModel $sku
      * @param SearchModel $search
@@ -95,8 +89,8 @@ class Product extends Model
      * @param RequestHelper $request
      */
     public function __construct(PriceModel $price, PriceRuleModel $pricerule,
-            AliasModel $alias, LanguageModel $language, SkuModel $sku,
-            SearchModel $search, ProductFieldModel $product_field, Cache $cache,
+            LanguageModel $language, SkuModel $sku, SearchModel $search,
+            ProductFieldModel $product_field, Cache $cache,
             RequestHelper $request)
     {
         parent::__construct();
@@ -104,7 +98,6 @@ class Product extends Model
         $this->sku = $sku;
         $this->cache = $cache;
         $this->price = $price;
-        $this->alias = $alias;
         $this->search = $search;
         $this->request = $request;
         $this->language = $language;
@@ -131,8 +124,9 @@ class Product extends Model
 
         $data['product_id'] = $this->db->insert('product', $data);
 
-        $this->setTranslation($data, false);
-        $this->setImages($data, 'product_id', false);
+        $this->setTranslation($data, 'product', false);
+        $this->setImages($data, 'product', false);
+
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
         $this->setOptions($data, false);
@@ -148,10 +142,10 @@ class Product extends Model
         }
 
         if (empty($data['alias']) && $generate_alias) {
-            $data['alias'] = $this->createAlias($data, $translit_alias);
+            $data['alias'] = $this->createAlias($data, 'product', $translit_alias);
         }
 
-        $this->setAlias($data, false);
+        $this->setAlias($data, 'product', false);
         $this->setRelated($data, false);
 
         $this->search->index('product', $data);
@@ -185,9 +179,9 @@ class Product extends Model
         $updated = $this->db->update('product', $data, $conditions);
 
         $updated += (int) $this->setSku($data);
-        $updated += (int) $this->setTranslation($data);
-        $updated += (int) $this->setImages($data, 'product_id');
-        $updated += (int) $this->setAlias($data);
+        $updated += (int) $this->setTranslation($data, 'product');
+        $updated += (int) $this->setImages($data, 'product');
+        $updated += (int) $this->setAlias($data, 'product');
         $updated += (int) $this->setSkuCombinations($data);
         $updated += (int) $this->setOptions($data);
         $updated += (int) $this->setAttributes($data);
@@ -237,50 +231,6 @@ class Product extends Model
     }
 
     /**
-     * Adds a translation
-     * @param integer $product_id
-     * @param string $language
-     * @param string $translation
-     * @return boolean
-     */
-    public function addTranslation($product_id, $language, array $translation)
-    {
-        $translation += array(
-            'language' => $language,
-            'product_id' => $product_id
-        );
-
-        return (bool) $this->db->insert('product_translation', $translation);
-    }
-
-    /**
-     * Deletes and/or adds product translations
-     * @param array $data
-     * @param boolean $update
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $update = true)
-    {
-        if (empty($data['form']) && empty($data['translation'])) {
-            return false;
-        }
-
-        if ($update) {
-            $this->deleteTranslation($data['product_id']);
-        }
-
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['product_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
      * Creates a SKU
      * @param array $data
      * @return string
@@ -291,20 +241,6 @@ class Product extends Model
         $placeholders = $this->config->get('product_sku_placeholder', array('%i' => 'product_id'));
 
         return $this->sku->generate($pattern, $placeholders, $data);
-    }
-
-    /**
-     * Creates a URL alis
-     * @param array $data
-     * @param boolean $translit_alias
-     * @return string
-     */
-    public function createAlias(array $data, $translit_alias = true)
-    {
-        $pattern = $this->config->get('product_alias_pattern', '%t.html');
-        $placeholders = $this->config->get('product_alias_placeholder', array('%t' => 'title'));
-
-        return $this->alias->generate($pattern, $placeholders, $data, $translit_alias);
     }
 
     /**
@@ -330,59 +266,11 @@ class Product extends Model
 
         $this->attachFields($product);
         $this->attachSku($product);
-        $this->attachImages($product, 'product_id', $language);
-        $this->attachTranslation($product, $language);
+        $this->attachImages($product, 'product', $language);
+        $this->attachTranslation($product, 'product', $language);
 
         $this->hook->fire('get.product.after', $product_id, $product);
         return $product;
-    }
-
-    /**
-     * Adds translations to the product
-     * @param array $product
-     * @param string|null $language
-     * @return null
-     */
-    protected function attachTranslation(array &$product, $language)
-    {
-        if (empty($product)) {
-            return null;
-        }
-
-        $product['language'] = 'und';
-        $translations = $this->getTranslation($product['product_id']);
-
-        foreach ($translations as $translation) {
-            $product['translation'][$translation['language']] = $translation;
-        }
-
-        if (isset($language) && isset($product['translation'][$language])) {
-            $product = $product['translation'][$language] + $product;
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns an array of product translations
-     * @param integer $product_id
-     * @return array
-     */
-    public function getTranslation($product_id)
-    {
-        $sql = 'SELECT * FROM product_translation WHERE product_id=?';
-        return $this->db->fetchAll($sql, array($product_id));
-    }
-
-    /**
-     * Deletes product translation(s)
-     * @param integer $product_id
-     * @return boolean
-     */
-    protected function deleteTranslation($product_id)
-    {
-        $conditions = array('product_id' => $product_id);
-        return (bool) $this->db->delete('product_translation', $conditions);
     }
 
     /**
@@ -805,25 +693,6 @@ class Product extends Model
         }
 
         return (bool) $this->sku->add($data);
-    }
-
-    /**
-     * Deletes and/or adds an alias
-     * @param array $data
-     * @param boolean $update
-     * @return boolean
-     */
-    protected function setAlias(array $data, $update = true)
-    {
-        if (empty($data['form']) && empty($data['alias'])) {
-            return false;
-        }
-
-        if ($update) {
-            $this->alias->delete('product_id', $data['product_id']);
-        }
-
-        return (bool) $this->alias->add('product_id', $data['product_id'], $data['alias']);
     }
 
     /**
