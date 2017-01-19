@@ -30,22 +30,14 @@ class Library extends BackendController
      */
     public function listLibrary()
     {
-        $this->library->clearCache();
-        
-        $this->getListLibrary();
-        $this->getListLibrary();
-        $this->getListLibrary();
-        $this->getListLibrary();
-
-        $libraries = $this->getListLibrary();
-        $errors = $this->library->getErrors();
-
-        $this->setData('errors', $errors);
-        $this->setData('libraries', $libraries);
+        $this->clearCacheLibrary();
 
         $this->setTitleListLibrary();
         $this->setBreadcrumbListLibrary();
-        
+
+        $this->setData('errors', $this->library->getErrors());
+        $this->setData('libraries', $this->getListLibrary());
+
         $this->outputListLibrary();
     }
 
@@ -56,10 +48,23 @@ class Library extends BackendController
     protected function getListLibrary()
     {
         $libraries = $this->library->getList();
+
         uasort($libraries, function($a, $b) {
             return strcmp($a['type'], $b['type']);
         });
+
         return $libraries;
+    }
+    
+    /**
+     * Clear library cache
+     */
+    protected function clearCacheLibrary()
+    {
+        if ($this->isQuery('refresh')) {
+            $this->library->clearCache();
+            $this->redirect('', $this->text('Cache has been cleared'), 'success');
+        }
     }
 
     /**

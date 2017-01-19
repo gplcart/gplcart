@@ -93,8 +93,7 @@ class UserRole extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_role = $role;
-        return $role;
+        return $this->data_role = $role;
     }
 
     /**
@@ -108,23 +107,37 @@ class UserRole extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('role');
-        $this->validateUserRole();
-
-        if ($this->hasErrors('role')) {
+        if (!$this->isPosted('save') || !$this->validateUserRole()) {
             return null;
         }
 
         if (isset($this->data_role['role_id'])) {
             $this->updateUserRole();
-            return null;
+        } else {
+            $this->addUserRole();
+        }
+    }
+
+    /**
+     * Validates a submitted user role
+     * @return bool
+     */
+    protected function validateUserRole()
+    {
+        $this->setSubmitted('role');
+        
+        $permissions = $this->getSubmitted('permissions');
+
+        if (empty($permissions)) {
+            $this->setSubmitted('permissions', array());
         }
 
-        $this->addUserRole();
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_role);
+
+        $this->validate('user_role');
+        
+        return !$this->hasErrors('role');
     }
 
     /**
@@ -143,23 +156,6 @@ class UserRole extends BackendController
 
         $message = $this->text('Unable to delete this role');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Validates a submitted user role
-     */
-    protected function validateUserRole()
-    {
-        $permissions = $this->getSubmitted('permissions');
-
-        if (empty($permissions)) {
-            $this->setSubmitted('permissions', array());
-        }
-
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_role);
-
-        $this->validate('user_role');
     }
 
     /**

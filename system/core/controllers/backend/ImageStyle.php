@@ -157,23 +157,15 @@ class ImageStyle extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('imagestyle');
-        $this->validateImageStyle();
-
-        if ($this->hasErrors('imagestyle')) {
+        if (!$this->isPosted('save') || !$this->validateImageStyle()) {
             return null;
         }
 
         if (isset($this->data_imagestyle['imagestyle_id'])) {
             $this->updateImageStyle();
-            return null;
+        } else {
+            $this->addImageStyle();
         }
-
-        $this->addImageStyle();
     }
 
     /**
@@ -197,13 +189,18 @@ class ImageStyle extends BackendController
 
     /**
      * Validates an image style
+     * @return bool
      */
     protected function validateImageStyle()
     {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_imagestyle);
-        $this->setSubmittedArray('actions');
+        $this->setSubmitted('imagestyle');
+
         $this->validate('image_style');
+        $this->setSubmittedBool('status');
+        $this->setSubmittedArray('actions');
+        $this->setSubmitted('update', $this->data_imagestyle);
+
+        return !$this->hasErrors('imagestyle');
     }
 
     /**

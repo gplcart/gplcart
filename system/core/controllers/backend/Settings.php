@@ -89,43 +89,41 @@ class Settings extends BackendController
     protected function submitSettings()
     {
         if ($this->isPosted('delete_cached_assets')) {
-            $this->deleteCachedAssets();
+            $this->clearCacheAssetsSettings();
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('settings');
-        $this->validateSettings();
-
-        if (!$this->hasErrors('settings')) {
+        if ($this->isPosted('save') && $this->validateSettings()) {
             $this->updateSettings();
         }
     }
 
     /**
-     * Deletes all aggregated assets
-     */
-    protected function deleteCachedAssets()
-    {
-        $result = gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR);
-
-        if (!$result) {
-            $this->redirect('');
-        }
-
-        $this->redirect('', $this->text('Cache has been cleared'), 'success');
-    }
-
-    /**
      * Validates submitted settings
+     * @return bool
      */
     protected function validateSettings()
     {
+        $this->setSubmitted('settings');
+
         $this->setSubmittedBool('smtp_auth');
         $this->validate('settings');
+
+        return !$this->hasErrors('settings');
+    }
+
+    /**
+     * Deletes all aggregated assets
+     */
+    protected function clearCacheAssetsSettings()
+    {
+        $deleted = gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR);
+
+        if ($deleted) {
+            $this->redirect('', $this->text('Cache has been cleared'), 'success');
+        }
+
+        $this->redirect('');
     }
 
     /**

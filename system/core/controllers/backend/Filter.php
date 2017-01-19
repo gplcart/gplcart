@@ -70,32 +70,27 @@ class Filter extends BackendController
 
     /**
      * Handles a submitted filter data
-     * @return null
      */
     protected function submitFilter()
     {
-        if (!$this->isPosted('save')) {
-            return null;
+        if ($this->isPosted('save') && $this->validateFilter()) {
+            $this->updateFilter();
         }
-
-        $this->setSubmitted('filter');
-        $this->validateFilter();
-
-        if ($this->hasErrors('filter')) {
-            return null;
-        }
-
-        $this->updateFilter();
     }
 
     /**
      * Validates a filter
+     * @return bool
      */
     protected function validateFilter()
     {
+        $this->setSubmitted('filter');
+
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_filter);
         $this->validate('filter');
+
+        return !$this->hasErrors('filter');
     }
 
     /**

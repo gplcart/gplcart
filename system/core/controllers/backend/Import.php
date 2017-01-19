@@ -17,6 +17,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Import extends BackendController
 {
+
     /**
      * Import model instance
      * @var \gplcart\core\models\Import $import
@@ -44,8 +45,7 @@ class Import extends BackendController
         $this->downloadErrorsImport();
         $this->downloadTemplateImport();
 
-        $operations = $this->getOperationsImport();
-        $this->setData('operations', $operations);
+        $this->setData('operations', $this->getOperationsImport());
 
         $this->submitImport();
 
@@ -136,15 +136,11 @@ class Import extends BackendController
             return null;
         }
 
-        $this->validateImport($operation);
-        $errors = $this->error();
-
-        if (empty($errors)) {
-            return $this->setJobImport($operation);
+        if ($this->validateImport($operation)) {
+            $this->setJobImport($operation);
+        } else {
+            $this->setError($operation_id, $this->error());
         }
-
-        $this->setError($operation_id, $errors);
-        return null;
     }
 
     /**
@@ -154,10 +150,12 @@ class Import extends BackendController
      */
     protected function validateImport(array $operation)
     {
+        $this->setSubmitted('operation', $operation);
         $this->setSubmitted('limit', $this->import->getLimit());
         $this->setSubmitted('delimiter', $this->import->getCsvDelimiter());
-        $this->setSubmitted('operation', $operation);
-        $this->validate('import');
+
+        $errors = $this->validate('import');
+        return empty($errors);
     }
 
     /**

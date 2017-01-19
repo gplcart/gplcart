@@ -32,6 +32,12 @@ class Module extends BackendController
     protected $curl;
 
     /**
+     * The current module
+     * @var array
+     */
+    protected $data_module = array();
+
+    /**
      * Constructor
      * @param ModuleModel $module
      * @param CurlHelper $curl
@@ -72,35 +78,40 @@ class Module extends BackendController
     protected function actionModule()
     {
         $action = (string) $this->request->get('action');
+        $module_id = (string) $this->request->get('module_id');
 
-        if (empty($action)) {
+        if (empty($action) || empty($module_id)) {
             return null;
         }
 
-        $this->controlToken();
+        $this->setModule($module_id);
 
-        $module_id = (string) $this->request->get('module_id');
+        $result = $this->startActionModule($action);
+        $this->finishActionModule($action, $result);
+    }
 
-        if (empty($module_id)) {
-            $this->outputHttpStatus(403);
-        }
-
+    /**
+     * Set module data
+     * @param string $module_id
+     */
+    protected function setModule($module_id)
+    {
         $module = $this->module->get($module_id);
 
         if (empty($module)) {
             $this->outputHttpStatus(403);
         }
 
-        $allowed = array('enable', 'disable', 'install', 'uninstall', 'delete', 'backup');
+        $this->data_module = $module;
+    }
 
-        if (!in_array($action, $allowed)) {
-            $this->outputHttpStatus(403);
-        }
-
-        $this->controlAccess("module_$action");
-
-        $result = $this->module->{$action}($module_id);
-
+    /**
+     * Finishes module action
+     * @param string $action
+     * @param mixed $result
+     */
+    protected function finishActionModule($action, $result)
+    {
         if ($result === true) {
 
             $message = $this->text('Module has been updated');
@@ -123,6 +134,37 @@ class Module extends BackendController
         }
 
         $this->redirect();
+    }
+
+    /**
+     * Performs an action against a module
+     * @param string $action
+     * @return mixed
+     */
+    protected function startActionModule($action)
+    {
+        $this->controlAccess("module_$action");
+
+        $id = $this->data_module['id'];
+
+        // Don't call methods like $this->module->{$action}
+        // to make them visible in IDE
+        switch ($action) {
+            case 'enable':
+                return $this->module->enable($id);
+            case 'disable':
+                return $this->module->disable($id);
+            case 'install':
+                return $this->module->install($id);
+            case 'uninstall':
+                return $this->module->uninstall($id);
+            case 'delete':
+                return $this->module->delete($id);
+            case 'backup':
+                return $this->module->backup($id);
+        }
+
+        $this->outputHttpStatus(403);
     }
 
     /**
@@ -298,11 +340,8 @@ class Module extends BackendController
      */
     protected function submitUploadModule()
     {
-        if ($this->isPosted('install')) {
-            $this->validateUploadModule();
-            if (!$this->hasErrors()) {
-                $this->installUploadedModule();
-            }
+        if ($this->isPosted('install') && $this->validateUploadModule()) {
+            $this->installUploadedModule();
         }
     }
 
@@ -334,6 +373,7 @@ class Module extends BackendController
     protected function validateUploadModule()
     {
         $this->validate('module_upload');
+        return !$this->hasErrors();
     }
 
     /**
@@ -408,6 +448,7 @@ class Module extends BackendController
     {
         $options['count'] = true;
         $result = $this->getListMarketplaceModule($options);
+
         return empty($result['total']) ? 0 : (int) $result['total'];
     }
 

@@ -213,23 +213,30 @@ class ProductClass extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('product_class');
-        $this->validateProductClass();
-
-        if ($this->hasErrors('product_class')) {
+        if (!$this->isPosted('save') || !$this->validateProductClass()) {
             return null;
         }
 
         if (isset($this->data_product_class['product_class_id'])) {
             $this->updateProductClass();
-            return null;
+        } else {
+            $this->addProductClass();
         }
+    }
 
-        $this->addProductClass();
+    /**
+     * Validates a products class
+     * @return bool
+     */
+    protected function validateProductClass()
+    {
+        $this->setSubmitted('product_class');
+        
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_product_class);
+        $this->validate('product_class');
+        
+        return !$this->hasErrors('product_class');
     }
 
     /**
@@ -248,16 +255,6 @@ class ProductClass extends BackendController
 
         $message = $this->text('Unable to delete this product class');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Validates a products class
-     */
-    protected function validateProductClass()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_product_class);
-        $this->validate('product_class');
     }
 
     /**

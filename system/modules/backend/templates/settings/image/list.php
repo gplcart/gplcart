@@ -50,7 +50,7 @@
             <ul class="list-inline">
               <li>
                 <a href="<?php echo $this->url('', array('clear' => $id)); ?>" class="clear">
-                  <?php echo $this->text('clear cache'); ?>
+                  <?php echo mb_strtolower($this->text('Clear cache')); ?>
                 </a>
               </li>
               <?php if ($this->access('image_style_edit')) { ?>

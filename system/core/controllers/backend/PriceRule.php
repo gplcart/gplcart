@@ -277,23 +277,30 @@ class PriceRule extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('price_rule', null, false);
-        $this->validatePriceRule();
-
-        if ($this->hasErrors('price_rule')) {
+        if (!$this->isPosted('save') || !$this->validatePriceRule()) {
             return null;
         }
 
         if (isset($this->data_rule['price_rule_id'])) {
             $this->updatePriceRule();
-            return null;
+        } else {
+            $this->addPriceRule();
         }
+    }
 
-        $this->addPriceRule();
+    /**
+     * Validates a submitted rule
+     * @return bool
+     */
+    protected function validatePriceRule()
+    {
+        $this->setSubmitted('price_rule', null, false);
+
+        $this->validate('price_rule');
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_rule);
+
+        return !$this->hasErrors('price_rule');
     }
 
     /**
@@ -307,16 +314,6 @@ class PriceRule extends BackendController
 
         $message = $this->text('Price rule has been deleted');
         $this->redirect('admin/sale/price', $message, 'success');
-    }
-
-    /**
-     * Validates a submitted rule
-     */
-    protected function validatePriceRule()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_rule);
-        $this->validate('price_rule');
     }
 
     /**

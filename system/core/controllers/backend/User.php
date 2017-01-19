@@ -18,6 +18,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class User extends BackendController
 {
 
+    use \gplcart\core\traits\BackendController;
+
     /**
      * User role model instance
      * @var \gplcart\core\models\UserRole $role
@@ -129,16 +131,9 @@ class User extends BackendController
     {
         $query['limit'] = $limit;
 
-        $stores = $this->store->getList();
         $users = (array) $this->user->getList($query);
 
-        foreach ($users as &$user) {
-            $user['url'] = '';
-            if (isset($stores[$user['store_id']])) {
-                $user['url'] = $this->store->url($stores[$user['store_id']]) . "/account/{$user['user_id']}";
-            }
-        }
-
+        $this->attachEntityUrlTrait($this->store, $users, 'user');
         return $users;
     }
 
@@ -200,7 +195,9 @@ class User extends BackendController
      */
     protected function canDeleteUser()
     {
-        return isset($this->data_user['user_id']) && $this->access('user_delete') && $this->user->canDelete($this->data_user['user_id']);
+        return isset($this->data_user['user_id'])//
+                && $this->access('user_delete')//
+                && $this->user->canDelete($this->data_user['user_id']);
     }
 
     /**
@@ -209,7 +206,8 @@ class User extends BackendController
      */
     protected function isSuperadminUser()
     {
-        return isset($this->data_user['user_id']) && $this->isSuperadmin($this->data_user['user_id']);
+        return isset($this->data_user['user_id'])//
+                && $this->isSuperadmin($this->data_user['user_id']);
     }
 
     /**
@@ -229,8 +227,7 @@ class User extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_user = $user;
-        return $user;
+        return $this->data_user = $user;
     }
 
     /**
@@ -255,23 +252,30 @@ class User extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('user');
-        $this->validateUser();
-
-        if ($this->hasErrors('user')) {
+        if (!$this->isPosted('save') || !$this->validateUser()) {
             return null;
         }
 
         if (isset($this->data_user['user_id'])) {
             $this->updateUser();
-            return null;
+        } else {
+            $this->addUser();
         }
+    }
 
-        $this->addUser();
+    /**
+     * Validates submitted user data
+     * @return bool
+     */
+    protected function validateUser()
+    {
+        $this->setSubmitted('user');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_user);
+        $this->validate('user', array('admin' => $this->access('user_edit')));
+
+        return !$this->hasErrors('user');
     }
 
     /**
@@ -290,16 +294,6 @@ class User extends BackendController
 
         $message = $this->text('Unable to delete this user');
         $this->redirect('admin/user/list', $message, 'danger');
-    }
-
-    /**
-     * Validates submitted user data
-     */
-    protected function validateUser()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_user);
-        $this->validate('user', array('admin' => $this->access('user_edit')));
     }
 
     /**

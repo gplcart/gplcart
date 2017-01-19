@@ -106,8 +106,7 @@ class State extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_country = $country;
-        return $country;
+        return $this->data_country = $country;
     }
 
     /**
@@ -157,13 +156,8 @@ class State extends BackendController
      */
     protected function getTotalState($code, array $query)
     {
-        $options = array(
-            'count' => true,
-            'country' => $code
-        );
-
-        $options += $query;
-        return (int) $this->state->getList($options);
+        $options = array('count' => true, 'country' => $code);
+        return (int) $this->state->getList($options + $query);
     }
 
     /**
@@ -176,9 +170,7 @@ class State extends BackendController
     protected function getListState(array $limit, array $query, $country)
     {
         $options = array('limit' => $limit, 'country' => $country);
-        $options += $query;
-
-        return (array) $this->state->getList($options);
+        return (array) $this->state->getList($options + $query);
     }
 
     /**
@@ -279,13 +271,12 @@ class State extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_state = $state;
-        return $state;
+        return $this->data_state = $state;
     }
 
     /**
      * Saves a state
-     * @return null|void
+     * @return null
      */
     protected function submitState()
     {
@@ -294,23 +285,31 @@ class State extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('state');
-        $this->validateState();
-
-        if ($this->hasErrors('state')) {
+        if (!$this->isPosted('save') || !$this->validateState()) {
             return null;
         }
 
         if (isset($this->data_state['state_id'])) {
             $this->updateState();
-            return null;
+        } else {
+            $this->addState();
         }
+    }
 
-        $this->addState();
+    /**
+     * Validates a state
+     * @return bool
+     */
+    protected function validateState()
+    {
+        $this->setSubmitted('state');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_state);
+        $this->setSubmitted('country', $this->data_country['code']);
+        $this->validate('state');
+
+        return !$this->hasErrors('state');
     }
 
     /**
@@ -331,17 +330,6 @@ class State extends BackendController
 
         $message = $this->text('Unable to delete this country state');
         $this->redirect($url, $message, 'danger');
-    }
-
-    /**
-     * Validates a state
-     */
-    protected function validateState()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_state);
-        $this->setSubmitted('country', $this->data_country['code']);
-        $this->validate('state');
     }
 
     /**

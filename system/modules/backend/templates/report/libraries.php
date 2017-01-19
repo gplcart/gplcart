@@ -7,10 +7,12 @@
  */
 ?>
 <div class="panel panel-default">
+  <div class="panel-heading text-right">
+    <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));" class="refresh">
+      <?php echo $this->text('Clear cache'); ?>
+    </a>
+  </div>
   <div class="panel-body table-responsive">
-    <div class="alert alert-warning">
-      <?php echo $this->text('WARNING! Each time you add/update a library you must clear its cache to prevent unexpected behaviour. Cache clears automatically whenever you visit this page'); ?>
-    </div>
     <table class="table">
       <thead>
         <tr>
@@ -32,7 +34,7 @@
               <?php echo $this->text($library['name']); ?>
             </a>
           </td>
-          <td><?php echo $this->escape(mb_strtoupper($library['type'])); ?></td>
+          <td><?php echo $this->escape($library['type']); ?></td>
           <td>
             <?php echo $this->escape($library['version']['number']); ?>
           </td>

@@ -201,8 +201,7 @@ class Zone extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_zone = $zone;
-        return $zone;
+        return $this->data_zone = $zone;
     }
 
     /**
@@ -216,23 +215,30 @@ class Zone extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('zone');
-        $this->validateZone();
-
-        if ($this->hasErrors('zone')) {
+        if (!$this->isPosted('save') || !$this->validateZone()) {
             return null;
         }
 
         if (isset($this->data_zone['zone_id'])) {
             $this->updateZone();
-            return null;
+        } else {
+            $this->addZone();
         }
+    }
 
-        $this->addZone();
+    /**
+     * Validates a zone
+     * @return bool
+     */
+    protected function validateZone()
+    {
+        $this->setSubmitted('zone');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_zone);
+        $this->validate('zone');
+
+        return !$this->hasErrors('zone');
     }
 
     /**
@@ -251,16 +257,6 @@ class Zone extends BackendController
 
         $message = $this->text('Unable to delete this zone');
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Validates a zone
-     */
-    protected function validateZone()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_zone);
-        $this->validate('zone');
     }
 
     /**

@@ -231,8 +231,7 @@ class Trigger extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_trigger = $trigger;
-        return $trigger;
+        return $this->data_trigger = $trigger;
     }
 
     /**
@@ -246,23 +245,32 @@ class Trigger extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('trigger');
-        $this->validateTrigger();
-
-        if ($this->hasErrors('trigger')) {
+        if (!$this->isPosted('save') || !$this->validateTrigger()) {
             return null;
         }
 
         if (isset($this->data_trigger['trigger_id'])) {
             $this->updateTrigger();
-            return null;
+        } else {
+            $this->addTrigger();
         }
+    }
 
-        $this->addTrigger();
+    /**
+     * Validates a submitted trigger
+     * @return bool
+     */
+    protected function validateTrigger()
+    {
+        $this->setSubmitted('trigger');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmittedArray('data.conditions');
+        $this->setSubmitted('update', $this->data_trigger);
+
+        $this->validate('trigger');
+
+        return !$this->hasErrors('trigger');
     }
 
     /**
@@ -280,18 +288,6 @@ class Trigger extends BackendController
 
         $message = $this->text('Trigger has been deleted');
         $this->redirect('admin/settings/trigger', $message, 'success');
-    }
-
-    /**
-     * Validates a submitted trigger
-     */
-    protected function validateTrigger()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmittedArray('data.conditions');
-        $this->setSubmitted('update', $this->data_trigger);
-
-        $this->validate('trigger');
     }
 
     /**

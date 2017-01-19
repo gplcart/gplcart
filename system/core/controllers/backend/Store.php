@@ -236,8 +236,7 @@ class Store extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_store = $store;
-        return $store;
+        return $this->data_store = $store;
     }
 
     /**
@@ -287,23 +286,36 @@ class Store extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('store');
-        $this->validateStore();
-
-        if ($this->hasErrors('store')) {
+        if (!$this->isPosted('save') || !$this->validateStore()) {
             return null;
         }
 
         if (isset($this->data_store['store_id'])) {
             $this->updateStore();
-            return null;
+        } else {
+            $this->addStore();
+        }
+    }
+
+    /**
+     * Validates a store
+     * @return array
+     */
+    protected function validateStore()
+    {
+        $this->setSubmitted('store');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_store);
+        $this->setSubmittedBool('data.anonymous_checkout');
+
+        foreach (array('email', 'phone', 'fax', 'map') as $field) {
+            $this->setSubmittedArray("data.$field");
         }
 
-        $this->addStore();
+        $this->validate('store');
+
+        return !$this->hasErrors('store');
     }
 
     /**
@@ -323,22 +335,6 @@ class Store extends BackendController
 
         $message = $this->text('Unable to delete store %name', $vars);
         $this->redirect('', $message, 'danger');
-    }
-
-    /**
-     * Validates a store
-     */
-    protected function validateStore()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_store);
-        $this->setSubmittedBool('data.anonymous_checkout');
-
-        foreach (array('email', 'phone', 'fax', 'map') as $field) {
-            $this->setSubmittedArray("data.$field");
-        }
-
-        $this->validate('store');
     }
 
     /**

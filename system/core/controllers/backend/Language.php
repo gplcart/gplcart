@@ -18,7 +18,7 @@ class Language extends BackendController
 {
 
     /**
-     * The current updating language
+     * The current language
      * @var array
      */
     protected $data_language = array();
@@ -52,10 +52,11 @@ class Language extends BackendController
 
     /**
      * Whether the language can be deleted
+     * @return bool
      */
     protected function canDeleteLanguage()
     {
-        return (isset($this->data_language['code']) && $this->access('language_delete'));
+        return isset($this->data_language['code']) && $this->access('language_delete');
     }
 
     /**
@@ -75,8 +76,7 @@ class Language extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_language = $language;
-        return $language;
+        return $this->data_language = $language;
     }
 
     /**
@@ -86,26 +86,19 @@ class Language extends BackendController
     protected function submitLanguage()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteLanguage();
-        }
-
-        if (!$this->isPosted('save')) {
+            $this->deleteLanguage();
             return null;
         }
 
-        $this->setSubmitted('language');
-        $this->validateLanguage();
-
-        if ($this->hasErrors('language')) {
+        if (!$this->isPosted('save') || !$this->validateLanguage()) {
             return null;
         }
 
         if (isset($this->data_language['code'])) {
-            return $this->updateLanguage();
+            $this->updateLanguage();
+        } else {
+            $this->addLanguage();
         }
-
-        $this->addLanguage();
-        return null;
     }
 
     /**
@@ -129,13 +122,19 @@ class Language extends BackendController
 
     /**
      * Validates a language
+     * @return bool
      */
     protected function validateLanguage()
     {
+        $this->setSubmitted('language');
+
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_language);
+
         $this->validate('language');
+
+        return !$this->hasErrors('language');
     }
 
     /**
@@ -214,10 +213,10 @@ class Language extends BackendController
      */
     public function listLanguage()
     {
+        $this->refreshLanguage();
+
         $this->setTitleListLanguage();
         $this->setBreadcrumbListLanguage();
-
-        $this->refreshLanguage();
 
         $this->setData('languages', $this->language->getList());
         $this->outputListLanguage();

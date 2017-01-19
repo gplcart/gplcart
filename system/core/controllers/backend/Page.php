@@ -272,11 +272,7 @@ class Page extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        if (!$this->validatePage()) {
+        if (!$this->isPosted('save') || !$this->validatePage()) {
             return null;
         }
 

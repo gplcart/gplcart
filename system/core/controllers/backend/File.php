@@ -211,9 +211,9 @@ class File extends BackendController
      */
     protected function canDeleteFile()
     {
-        return (isset($this->data_file['file_id'])//
+        return isset($this->data_file['file_id'])//
                 && $this->access('file_delete')//
-                && $this->file->canDelete($this->data_file['file_id']));
+                && $this->file->canDelete($this->data_file['file_id']);
     }
 
     /**
@@ -248,23 +248,15 @@ class File extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('file');
-        $this->validateFile();
-
-        if ($this->hasErrors('file')) {
+        if (!$this->isPosted('save') || !$this->validateFile()) {
             return null;
         }
 
         if (isset($this->data_file['file_id'])) {
             $this->updateFile();
-            return null;
+        } else {
+            $this->addFile();
         }
-
-        $this->addFile();
     }
 
     /**
@@ -289,8 +281,12 @@ class File extends BackendController
      */
     protected function validateFile()
     {
+        $this->setSubmitted('file');
+
         $this->setSubmitted('update', $this->data_file);
         $this->validate('file');
+
+        return !$this->hasErrors('file');
     }
 
     /**

@@ -240,23 +240,30 @@ class Review extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('review');
-        $this->validateReview();
-
-        if ($this->hasErrors('review')) {
+        if (!$this->isPosted('save') || !$this->validateReview()) {
             return null;
         }
 
         if (isset($this->data_review['review_id'])) {
             $this->updateReview();
-            return null;
+        } else {
+            $this->addReview();
         }
+    }
 
-        $this->addReview();
+    /**
+     * Validates a submitted review
+     * @return bool
+     */
+    protected function validateReview()
+    {
+        $this->setSubmitted('review');
+
+        $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_review);
+        $this->validate('review');
+
+        return !$this->hasErrors('review');
     }
 
     /**
@@ -269,16 +276,6 @@ class Review extends BackendController
 
         $message = $this->text('Review has been deleted');
         $this->redirect('admin/content/review', $message, 'success');
-    }
-
-    /**
-     * Validates a submitted review
-     */
-    protected function validateReview()
-    {
-        $this->setSubmittedBool('status');
-        $this->setSubmitted('update', $this->data_review);
-        $this->validate('review');
     }
 
     /**

@@ -84,7 +84,7 @@
               <?php if ($info['status']) { ?>
               <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $token)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Disable')); ?>
                 </a>
               </li>
@@ -92,14 +92,14 @@
               <?php } else { ?>
               <?php if ($this->access('module_enable')) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $token)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Enable')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('module_uninstall') && empty($info['always_enabled'])) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $token)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Uninstall')); ?>
                 </a>
               </li>
@@ -108,14 +108,14 @@
               <?php } else { ?>
               <?php if ($this->access('module_install')) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $token)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Install and enable')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if($this->access('module_delete')) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id, 'token' => $token)); ?>" onclick="return confirm(GplCart.text('Are you sure you want to remove this module from disk? It cannot be undone!'));">
+                <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id)); ?>" onclick="return confirm(GplCart.text('Are you sure you want to remove this module from disk? It cannot be undone!'));">
                   <?php echo mb_strtolower($this->text('Delete')); ?>
                 </a>
               </li>
@@ -123,7 +123,7 @@
               <?php } ?>
               <?php if ($this->access('module_backup')) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'backup', 'module_id' => $module_id, 'token' => $token)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'backup', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Backup')); ?>
                 </a>
               </li>

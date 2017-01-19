@@ -386,7 +386,7 @@ class Product extends BackendController
 
     /**
      * Saves a product
-     * @return null|void
+     * @return null
      */
     protected function submitProduct()
     {
@@ -395,11 +395,7 @@ class Product extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        if (!$this->validateProduct()) {
+        if (!$this->isPosted('save') || !$this->validateProduct()) {
             return null;
         }
 
