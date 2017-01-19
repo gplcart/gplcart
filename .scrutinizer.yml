@@ -2,13 +2,8 @@ filter:
     excluded_paths:
         - files/*
         - cache/*
-        - system/libraries/*
         - system/locale/*
         - system/config/*
         - system/modules/backend/templates/*
         - system/modules/frontend/templates/*
         - system/modules/mobile/templates/*
-
-checks:
-    php:
-        duplication: false
