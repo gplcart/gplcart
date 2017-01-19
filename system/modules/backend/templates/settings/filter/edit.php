@@ -32,7 +32,7 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Role'); ?></label>
         <div class="col-md-4">
           <select class="form-control" name="filter[role_id]">
-            <option value="0"><?php echo $this->text('Anonymous'); ?></option>
+            <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($roles as $role_id => $role) { ?>
             <option value="<?php echo $role_id; ?>"<?php echo (isset($filter['role_id']) && $filter['role_id'] == $role_id) ? ' selected' : ''; ?>>
               <?php echo $this->escape($role['name']); ?>

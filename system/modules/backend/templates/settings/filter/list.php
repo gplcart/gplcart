@@ -31,7 +31,7 @@
           <td class="middle"><?php echo empty($filter['description']) ? '' : $this->escape($filter['description']); ?></td>
           <td class="middle">
             <?php if (empty($filter['role_name'])) { ?>
-            <b><?php echo $this->text('Anonymous'); ?></b>
+            <b><?php echo $this->text('None'); ?></b>
             <?php } else { ?>
             <?php echo $this->escape($filter['role_name']); ?>
             <?php } ?>

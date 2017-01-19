@@ -163,8 +163,7 @@ class Filter extends BackendController
             $this->outputHttpStatus(403);
         }
 
-        $this->data_filter = $filter;
-        return $filter;
+        return $this->data_filter = $filter;
     }
 
     /**
