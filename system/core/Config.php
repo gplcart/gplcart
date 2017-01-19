@@ -228,10 +228,6 @@ class Config
             $module_info = $module_data['info'];
             $module_instance = $module_data['instance'];
 
-            if (!empty($module_info['dependencies'])) {
-                $module_info['dependencies'] = $this->validModuleId((array) $module_info['dependencies']);
-            }
-
             if (isset($module_info['id']) && !$this->validModuleId($module_info['id'])) {
                 continue;
             }
@@ -253,6 +249,8 @@ class Config
                 'id' => $module_name,
                 'dependencies' => array()
             );
+            
+            
 
             if (isset($saved_modules[$module_info['id']])) {
                 $module_info['installed'] = true;
@@ -409,18 +407,12 @@ class Config
 
     /**
      * Validates / filters module id(s)
-     * @param string|array $id
-     * @return boolean|array
+     * @param string $id
+     * @return boolean
      */
     public function validModuleId($id)
     {
-        if (is_string($id)) {
-            return (bool) preg_match('/^[a-z_]+$/', $id);
-        }
-
-        return array_filter((array) $id, function ($string) {
-            return $this->validModuleId($string);
-        });
+        return (bool) preg_match('/^[a-z_]+$/', $id);
     }
 
 }

@@ -36,13 +36,14 @@
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_version; ?>"><?php echo $this->text('Version'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><?php echo $this->text('Dependencies'); ?></th>
           <th><?php echo $this->text('Status'); ?></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($modules as $module_id => $info) { ?>
-        <tr>
+        <tr class="module-<?php echo $module_id; ?><?php echo empty($info['errors']) ? '' : ' bg-danger'; ?>">
           <td class="middle">
             <?php echo $this->escape($info['id']); ?>
           </td>
@@ -59,6 +60,15 @@
           <td class="middle">
             <?php echo $this->escape($info['type_name']); ?>
           </td>
+          <td>
+            <?php if(empty($info['requires']) && empty($info['required_by'])) { ?>
+            <?php echo $this->text('No'); ?>
+            <?php } else { ?>
+            <a data-toggle="collapse" href="#module-details-<?php echo $module_id; ?>">
+              <?php echo $this->text('Yes'); ?>
+            </a>
+            <?php } ?>
+          </td>
           <td class="middle">
             <?php if (isset($info['status'])) { ?>
             <?php if ($info['status']) { ?>
@@ -68,6 +78,11 @@
             <?php } ?>
             <?php } else { ?>
             <span class="text-warning"><?php echo $this->text('Not installed'); ?></span>
+            <?php } ?>
+            <?php if(!empty($info['errors'])) { ?>
+            <a data-toggle="collapse" href="#module-details-<?php echo $module_id; ?>">
+              <?php echo $this->text('Error'); ?>
+            </a>
             <?php } ?>
           </td>
           <td class="middle">
@@ -142,19 +157,62 @@
         <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">
           <td colspan="7">
             <?php if ($info['author']) { ?>
-            <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->escape($info['author']); ?><br>
+            <div class="author">
+              <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->escape($info['author']); ?>
+            </div>
             <?php } ?>
             <?php if ($info['description']) { ?>
-            <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->xss($info['description']); ?><br>
-            <?php } ?>
-            <?php if ($info['dependencies']) { ?>
-            <b><?php echo $this->text('Dependencies'); ?></b>: <?php echo $this->escape(implode(',', $info['dependencies'])); ?><br>
+            <div class="description">
+              <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->xss($info['description']); ?>
+            </div>
             <?php } ?>
             <?php if (isset($info['weight'])) { ?>
-            <b><?php echo $this->text('Weight'); ?></b>: <?php echo $this->escape($info['weight']); ?><br>
+            <div class="weight">
+              <b><?php echo $this->text('Weight'); ?></b>: <?php echo $this->escape($info['weight']); ?>
+            </div>
             <?php } ?>
             <?php if (!empty($info['hooks'])) { ?>
-            <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->escape(implode(',', $info['hooks'])); ?>
+            <div class="hooks">
+              <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->escape(implode(',', $info['hooks'])); ?>
+            </div>
+            <?php } ?>
+            <?php if (!empty($info['requires'])) { ?>
+            <div class="requires">
+              <b><?php echo $this->text('Requires'); ?>:</b>
+              <p>
+                <?php foreach ($info['requires'] as $requires_id => $version) { ?>
+                <?php if (isset($modules[$requires_id]['name'])) { ?>
+                <span class="label label-default"><?php echo $this->text($modules[$requires_id]['name']); ?><?php echo $this->escape($version); ?></span>
+                <?php } else { ?>
+                <span class="label label-danger"><?php echo $this->escape($requires_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <?php } ?>
+                <?php } ?>
+              </p>
+            </div>
+            <?php } ?>
+            <?php if (!empty($info['required_by'])) { ?>
+            <div class="required-by">
+              <b><?php echo $this->text('Required by'); ?>:</b>
+              <p>
+                <?php foreach ($info['required_by'] as $required_by_id => $version) { ?>
+                <?php if (isset($modules[$required_by_id]['name'])) { ?>
+                <span class="label label-default"><?php echo $this->text($modules[$required_by_id]['name']); ?></span>
+                <?php } else { ?>
+                <span class="label label-danger"><?php echo $this->escape($required_by_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <?php } ?>
+                <?php } ?>
+              </p>
+            </div>
+            <?php } ?>
+            <?php if (!empty($info['errors'])) { ?>
+            <div class="errors">
+              <b><?php echo $this->text('Error'); ?></b>:
+              <ul class="list-unstyled">
+              <?php foreach($info['errors'] as $error){ ?>
+                <li><?php echo $this->text($error[0], $error[1]); ?></li>
+              <?php } ?>
+              </ul>
+            </div>
             <?php } ?>
           </td>
         </tr>

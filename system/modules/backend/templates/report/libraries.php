@@ -20,14 +20,14 @@
           <th><?php echo $this->text('Name'); ?></th>
           <th><?php echo $this->text('Type'); ?></th>
           <th><?php echo $this->text('Version'); ?></th>
-          <th><?php echo $this->text('Requires'); ?> / <?php echo $this->text('Required by'); ?></th>
+          <th><?php echo $this->text('Dependencies'); ?></th>
           <th><?php echo $this->text('Status'); ?></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($libraries as $library_id => $library) { ?>
-        <tr class="library<?php echo empty($errors[$library_id]) ? '' : ' bg-danger'; ?>">
+        <tr class="library<?php echo empty($library['errors']) ? '' : ' bg-danger'; ?>">
           <td><?php echo $this->escape($library_id); ?></td>
           <td>
             <a data-toggle="collapse" href="#details-<?php echo $this->escape($library_id); ?>">
@@ -36,7 +36,7 @@
           </td>
           <td><?php echo $this->escape($library['type']); ?></td>
           <td>
-            <?php echo $this->escape($library['version']['number']); ?>
+            <?php echo $this->escape($library['version']); ?>
           </td>
           <td>
             <?php if(empty($library['requires']) && empty($library['required_by'])) { ?>
@@ -48,7 +48,7 @@
             <?php } ?>
           </td>
             <td>
-            <?php if(empty($errors[$library_id])) { ?>
+            <?php if(empty($library['errors'])) { ?>
             <?php echo $this->text('OK'); ?>
             <?php } else { ?>
             <a data-toggle="collapse" href="#details-<?php echo $this->escape($library_id); ?>">
@@ -97,28 +97,28 @@
                 <?php if (isset($libraries[$requires_library_id]['name'])) { ?>
                 <span class="label label-default"><?php echo $this->text($libraries[$requires_library_id]['name']); ?><?php echo $this->escape($version); ?></span>
                 <?php } else { ?>
-                <span class="label label-danger"><?php echo $this->escape($requires_library_id); ?> <?php echo $this->text('invalid'); ?></span>
+                <span class="label label-danger"><?php echo $this->escape($requires_library_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>
                 <?php } ?>
               </p>
             </div>
             <?php } ?>
             <?php if (!empty($library['required_by'])) { ?>
-                <div class="required-by">
-                  <b><?php echo $this->text('Required by'); ?>:</b>
-                  <p>
-                    <?php foreach ($library['required_by'] as $required_by_library_id => $version) { ?>
-                    <?php if (isset($libraries[$required_by_library_id]['name'])) { ?>
-                    <span class="label label-default"><?php echo $this->text($libraries[$required_by_library_id]['name']); ?></span>
-                    <?php } else { ?>
-                    <span class="label label-danger"><?php echo $this->escape($required_by_library_id); ?> <?php echo $this->text('invalid'); ?></span>
-                    <?php } ?>
-                    <?php } ?>
-                  </p>
-                </div>
+            <div class="required-by">
+              <b><?php echo $this->text('Required by'); ?>:</b>
+              <p>
+                <?php foreach ($library['required_by'] as $required_by_library_id => $version) { ?>
+                <?php if (isset($libraries[$required_by_library_id]['name'])) { ?>
+                <span class="label label-default"><?php echo $this->text($libraries[$required_by_library_id]['name']); ?></span>
+                <?php } else { ?>
+                <span class="label label-danger"><?php echo $this->escape($required_by_library_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <?php } ?>
+                <?php } ?>
+              </p>
+            </div>
             <?php } ?>
             <?php if (!empty($library['files'])) { ?>
-            <div class="description">
+            <div class="files">
               <b><?php echo $this->text('Files'); ?>:</b>
               <ul class="list-unstyled">
                 <?php foreach($library['files'] as $file) { ?>
@@ -127,12 +127,14 @@
               </ul>
             </div>
             <?php } ?>
-            <?php if (!empty($errors[$library_id])) { ?>
+            <?php if (!empty($library['errors'])) { ?>
             <div class="errors">
               <b><?php echo $this->text('Error'); ?>:</b>
-            <div class="text-danger">
-            <?php echo implode('<br>', $errors[$library_id]); ?>
-            </div>
+              <ul class="list-unstyled">
+              <?php foreach($library['errors'] as $error){ ?>
+                <li><?php echo $this->text($error[0], $error[1]); ?></li>
+              <?php } ?>
+              </ul>
             </div>
             <?php } ?>
           </td>

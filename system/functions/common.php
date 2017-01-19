@@ -147,26 +147,6 @@ function gplcart_absolute_path($file)
 }
 
 /**
- * Extracts an array of components from strings like ">= 1.0.0"
- * @param string $data
- * @return array
- */
-function gplcart_version_components($data)
-{
-    $string = str_replace(' ', '', $data);
-
-    $matches = array();
-    preg_match_all('/(^(==|=|!=|<>|>|<|>=|<=)?(?=\d))(.*)/', $string, $matches);
-
-    if (empty($matches[3][0])) {
-        return array();
-    }
-
-    $operator = empty($matches[2][0]) ? '=' : $matches[2][0];
-    return array($operator, $matches[3][0]);
-}
-
-/**
  * Returns PHP info as a string
  * @return string
  */

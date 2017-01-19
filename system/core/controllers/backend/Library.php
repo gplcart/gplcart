@@ -35,7 +35,6 @@ class Library extends BackendController
         $this->setTitleListLibrary();
         $this->setBreadcrumbListLibrary();
 
-        $this->setData('errors', $this->library->getErrors());
         $this->setData('libraries', $this->getListLibrary());
 
         $this->outputListLibrary();

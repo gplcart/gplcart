@@ -18,6 +18,8 @@ use gplcart\core\helpers\Graph as GraphHelper;
 class Library
 {
 
+    use \gplcart\core\traits\Dependency;
+
     /**
      * Cache instance
      * @var \gplcart\core\Cache $cache
@@ -29,12 +31,6 @@ class Library
      * @var \gplcart\core\helpers\Graph $graph
      */
     protected $graph;
-
-    /**
-     * An array of validation errors
-     * @var array
-     */
-    protected $errors = array();
 
     /**
      * Array of loaded libraries
@@ -92,6 +88,7 @@ class Library
             $prepared = $this->prepareList($configs);
 
             $libraries = $prepared;
+
             $this->cache->set('libraries', $libraries);
         }
 
@@ -149,30 +146,24 @@ class Library
                 $version = $this->getVersion($library);
 
                 if (!isset($version)) {
-                    $this->errors[$library_id][] = 'unknown_version';
+                    $library['errors'][] = array('Unknown version', array());
                 }
 
-                $library['version']['number'] = $version;
-
-                if (empty($library['files'])) {
-                    $this->errors[$library_id][] = 'missing_files';
-                    continue;
-                }
+                $library['version'] = $version;
 
                 if (!$this->validateFiles($library)) {
-                    $this->errors[$library_id][] = 'missing_files';
+                    $library['errors'][] = array('Missing files', array());
                 }
 
                 $libraries[$library_id] = $library;
             }
         }
 
-        foreach ($libraries as $library_id => $library) {
-            $this->validateDependencies($libraries, $library);
-        }
+        $this->validateDependenciesTrait($libraries);
 
         $prepared = $this->graph->build($libraries);
         gplcart_array_sort($prepared);
+        
         return $prepared;
     }
 
@@ -183,6 +174,10 @@ class Library
      */
     protected function validateFiles(array $library)
     {
+        if (empty($library['files'])) {
+            return false;
+        }
+
         $readable = 0;
         foreach ($library['files'] as $file) {
             $readable += (int) is_readable(gplcart_absolute_path("{$library['basepath']}/$file"));
@@ -192,60 +187,24 @@ class Library
     }
 
     /**
-     * Validates library dependencies
-     * @param array $libraries
-     * @param array $library
-     */
-    protected function validateDependencies(array $libraries, array $library)
-    {
-        if (empty($library['dependencies'])) {
-            return true;
-        }
-
-        foreach ($library['dependencies'] as $library_id => $version) {
-
-            if (!isset($libraries[$library_id])) {
-                $this->errors[$library_id][] = 'missing_required';
-                continue;
-            }
-
-            $components = gplcart_version_components($version);
-
-            if (empty($components)) {
-                $this->errors[$library_id][] = 'unknown_version_required';
-                continue;
-            }
-
-            list($operator, $number) = $components;
-
-            if (!version_compare($libraries[$library_id]['version']['number'], $number, $operator)) {
-                $this->errors[$library['id']][] = 'incompatible_version_required';
-            }
-        }
-    }
-
-    /**
      * Parses either .json file or source code
      * and returns a version number for the library
      * @param array $library
      * @return null|string
      */
-    public function getVersion(array &$library)
+    public function getVersion(array $library)
     {
-        if (isset($library['version']['number'])) {
-            // Some libraries have no version number.
-            // In this case the version can be provided in the library definition
-            return $library['version']['number'];
+        if (isset($library['version'])) {
+            return $library['version'];
         }
 
-        if (empty($library['version']['file'])) {
+        if (empty($library['version_source']['file'])) {
             return null;
         }
 
-        $file = gplcart_absolute_path("{$library['basepath']}/{$library['version']['file']}");
+        $file = gplcart_absolute_path("{$library['basepath']}/{$library['version_source']['file']}");
 
         if (!is_readable($file)) {
-            $this->errors[$library['id']][] = 'failed_load_file';
             return null;
         }
 
@@ -285,7 +244,7 @@ class Library
      */
     protected function getVersionSource($file, array $library)
     {
-        $library['version'] += array(
+        $library['version_source'] += array(
             'pattern' => '',
             'lines' => 20,
             'cols' => 200,
@@ -293,14 +252,13 @@ class Library
 
         $handle = fopen($file, 'r');
 
-        while ($library['version']['lines'] && $line = fgets($handle, $library['version']['cols'])) {
-            if (preg_match($library['version']['pattern'], $line, $version)) {
+        while ($library['version_source']['lines'] && $line = fgets($handle, $library['version_source']['cols'])) {
+            if (preg_match($library['version_source']['pattern'], $line, $version)) {
                 fclose($handle);
-                // Clean up
                 return preg_replace('/^[\D\\s]+/', '', $version[1]);
             }
 
-            $library['version']['lines'] --;
+            $library['version_source']['lines'] --;
         }
 
         fclose($handle);
@@ -325,7 +283,6 @@ class Library
         }
 
         if (isset($data['version'])) {
-            // Clean up
             return preg_replace('/^[\D\\s]+/', '', $data['version']);
         }
 
@@ -448,15 +405,6 @@ class Library
         }
 
         return $prepared;
-    }
-
-    /**
-     * Returns library validation errors
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
     }
 
 }

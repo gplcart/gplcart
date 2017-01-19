@@ -18,8 +18,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class User extends BackendController
 {
 
-    use \gplcart\core\traits\BackendController;
-
     /**
      * User role model instance
      * @var \gplcart\core\models\UserRole $role
@@ -131,9 +129,16 @@ class User extends BackendController
     {
         $query['limit'] = $limit;
 
+        $stores = $this->store->getList();
         $users = (array) $this->user->getList($query);
 
-        $this->attachEntityUrlTrait($this->store, $users, 'user');
+        foreach ($users as &$user) {
+            $user['url'] = '';
+            if (isset($stores[$user['store_id']])) {
+                $user['url'] = $this->store->url($stores[$user['store_id']]) . "/account/{$user['user_id']}";
+            }
+        }
+
         return $users;
     }
 

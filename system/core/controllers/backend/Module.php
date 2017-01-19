@@ -10,6 +10,7 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\helpers\Curl as CurlHelper;
+use gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -19,11 +20,19 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Module extends BackendController
 {
 
+    use \gplcart\core\traits\Dependency;
+
     /**
      * Module model instance
      * @var \gplcart\core\models\Module $module
      */
     protected $module;
+
+    /**
+     * Graph class instance
+     * @var \gplcart\core\helpers\Graph $graph
+     */
+    protected $graph;
 
     /**
      * Curl class instance
@@ -41,12 +50,15 @@ class Module extends BackendController
      * Constructor
      * @param ModuleModel $module
      * @param CurlHelper $curl
+     * @param GraphHelper $graph
      */
-    public function __construct(ModuleModel $module, CurlHelper $curl)
+    public function __construct(ModuleModel $module, CurlHelper $curl,
+            GraphHelper $graph)
     {
         parent::__construct();
 
         $this->curl = $curl;
+        $this->graph = $graph;
         $this->module = $module;
     }
 
@@ -177,15 +189,38 @@ class Module extends BackendController
     {
         $modules = $this->module->getList();
 
+        $this->sortListModule($modules, $query);
+        $this->filterListModule($modules, $query);
+        $this->limitListModule($modules, $limit);
+        $this->checkDependenciesListModule($modules);
+
+        $this->prepareListModule($modules);
+        return $modules;
+    }
+
+    /**
+     * Validates dependencies and append requires/required by info
+     * to every module in the array
+     * @param array $modules
+     */
+    protected function checkDependenciesListModule(array &$modules)
+    {
+
+        $this->validateDependenciesTrait($modules);
+        $modules = $this->graph->build($modules);
+    }
+
+    /**
+     * Adds axtra data to every module in the array
+     * @param array $modules
+     */
+    protected function prepareListModule(array &$modules)
+    {
+
         foreach ($modules as &$module) {
             $module['always_enabled'] = $this->module->isActiveTheme($module['id']);
             $module['type_name'] = $this->text(ucfirst($module['type']));
         }
-
-        $this->sortListModule($modules, $query);
-        $this->filterListModule($modules, $query);
-        $this->limitListModule($modules, $limit);
-        return $modules;
     }
 
     /**

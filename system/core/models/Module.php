@@ -23,6 +23,8 @@ use gplcart\core\exceptions\ModuleException;
 class Module extends Model
 {
 
+    use \gplcart\core\traits\Dependency;
+
     /**
      * Zip helper instance
      * @var \gplcart\core\helpers\Zip $zip
@@ -213,12 +215,6 @@ class Module extends Model
             return $result_core;
         }
 
-        $result_required = $this->checkRequiredModules($module_id, $modules);
-
-        if ($result_required !== true) {
-            return $result_required;
-        }
-
         $result_module_id = $this->checkModuleId($module_id);
 
         if ($result_module_id !== true) {
@@ -229,7 +225,30 @@ class Module extends Model
             return $this->language->text('Cannot install/enable installer modules on runtime');
         }
 
-        return true;
+        return $this->checkDependenciesModule($module_id, $modules);
+    }
+
+    /**
+     * Checks module dependencies
+     * @param string $module_id
+     * @param array $modules
+     * @return boolean|array
+     */
+    protected function checkDependenciesModule($module_id, array $modules)
+    {
+        $validated = $this->validateDependenciesTrait($modules);
+
+        if (empty($validated[$module_id]['errors'])) {
+            return true;
+        }
+
+        $translated = array();
+        foreach ($validated[$module_id]['errors'] as $error) {
+            list($text, $arguments) = $error;
+            $translated[] = $this->language->text($text, $arguments);
+        }
+
+        return $translated;
     }
 
     /**
@@ -263,38 +282,6 @@ class Module extends Model
         }
 
         return true;
-    }
-
-    /**
-     * Checks required modules for a given module
-     * @param string $module_id
-     * @param array $modules
-     * @return boolean|array
-     */
-    public function checkRequiredModules($module_id, array $modules)
-    {
-        if (empty($modules[$module_id]['dependencies'])) {
-            return true;
-        }
-
-        $errors = array();
-        foreach ((array) $modules[$module_id]['dependencies'] as $required) {
-
-            if (empty($modules[$required])) {
-                $errors[] = $this->language->text('Required module %name is missing', array('%name' => $required));
-                continue;
-            }
-
-            if (empty($modules[$required]['status'])) {
-                $errors[] = $this->language->text('Required module %name is disabled', array('%name' => $required));
-            }
-        }
-
-        if (empty($errors)) {
-            return true;
-        }
-
-        return $errors;
     }
 
     /**
