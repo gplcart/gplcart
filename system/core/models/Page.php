@@ -110,12 +110,7 @@ class Page extends Model
 
         $this->setTranslation($this->db, $data, 'page', false);
         $this->setImages($this->file, $data, 'page', false);
-
-        if (empty($data['alias'])) {
-            $data['alias'] = $this->createAlias($this->alias, $data, 'page');
-        }
-
-        $this->setAlias($this->alias, $data, 'page', false);
+        $this->setAliasTrait($this->alias, $data, 'page', false);
 
         $this->hook->fire('add.page.after', $data);
         return $data['page_id'];
@@ -142,9 +137,9 @@ class Page extends Model
 
         $data['page_id'] = $page_id;
 
-        $updated += (int) $this->setAlias($this->alias, $data, 'page');
         $updated += (int) $this->setImages($this->file, $data, 'page');
         $updated += (int) $this->setTranslation($this->db, $data, 'page');
+        $updated += (int) $this->setAliasTrait($this->alias, $data, 'page');
 
         $this->cache->clear("page.$page_id");
 

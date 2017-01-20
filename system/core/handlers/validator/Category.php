@@ -69,7 +69,7 @@ class Category extends BaseValidator
         $this->validateTranslation();
         $this->validateUserId();
         $this->validateImages();
-        $this->validateAliasCategory();
+        $this->validateAlias();
 
         return $this->getResult();
     }
@@ -199,35 +199,6 @@ class Category extends BaseValidator
         }
 
         return empty($error);
-    }
-
-    /**
-     * Validates/creates an alias
-     * @return boolean|null
-     */
-    protected function validateAliasCategory()
-    {
-        if ($this->isError()) {
-            return null;
-        }
-
-        $updating = $this->getUpdating();
-        $alias = $this->getSubmitted('alias');
-
-        if (isset($alias)//
-                && isset($updating['alias'])//
-                && ($updating['alias'] === $alias)) {
-            return true; // Do not check own alias on update
-        }
-
-        if (empty($alias) && isset($updating['category_id'])) {
-            $data = $this->getSubmitted();
-            $alias = $this->category->createAlias($this->alias, $data, 'category');
-            $this->setSubmitted('alias', $alias);
-            return true;
-        }
-
-        return $this->validateAlias();
     }
 
 }

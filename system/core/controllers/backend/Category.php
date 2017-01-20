@@ -299,9 +299,9 @@ class Category extends BackendController
         if (empty($category)) {
             $this->outputHttpStatus(404);
         }
-
-        $this->data_category = $this->prepareCategory($category);
-        return $category;
+        
+        $prepared = $this->prepareCategory($category);
+        return $this->data_category = $prepared;
     }
 
     /**
@@ -487,7 +487,7 @@ class Category extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/content/category/{$this->data_category_group['category_group_id']}"),
-            'text' => $this->text('Categories')
+            'text' => $this->text('Categories of group %name', array('%name' => $this->data_category_group['title']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

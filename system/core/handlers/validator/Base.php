@@ -432,26 +432,34 @@ class Base
             return null;
         }
 
-        $title = $this->getSubmitted('title');
-
         foreach ($images as &$image) {
 
-            if (empty($image['title']) && !empty($title)) {
-                $image['title'] = $title;
+            if (isset($image['title'])) {
+                $image['title'] = mb_strimwidth($image['title'], 0, 255, '');
             }
 
-            if (empty($image['description']) && !empty($title)) {
-                $image['description'] = $title;
+            if (isset($image['description'])) {
+                $image['description'] = mb_strimwidth($image['description'], 0, 255, '');
             }
-
-            $image['title'] = mb_strimwidth($image['title'], 0, 255, '');
 
             if (empty($image['translation'])) {
                 continue;
             }
 
-            foreach ($image['translation'] as &$translation) {
-                $translation['title'] = mb_strimwidth($translation['title'], 0, 255, '');
+            foreach ($image['translation'] as $lang => &$translation) {
+                foreach ($translation as $field => &$value) {
+                    if ($value === '') {
+                        unset($image['translation'][$lang][$field]);
+                        continue;
+                    }
+
+                    $value = mb_strimwidth($value, 0, 255, '');
+                }
+
+                if (empty($image['translation'][$lang])) {
+                    unset($image['translation'][$lang]);
+                    continue;
+                }
             }
         }
 
@@ -482,6 +490,14 @@ class Base
             $error = $this->language->text('Alias must contain only alphanumeric characters, dashes, dots and underscores');
             $this->setError('alias', $error);
             return false;
+        }
+
+        $updating = $this->getUpdating();
+
+        if (isset($alias)//
+                && isset($updating['alias'])//
+                && ($updating['alias'] === $alias)) {
+            return true; // Do not check own alias on update
         }
 
         if ($this->alias->exists($alias)) {

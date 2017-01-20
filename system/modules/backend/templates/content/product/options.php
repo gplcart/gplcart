@@ -21,7 +21,7 @@
           <ul class="list-unstyled">
             <?php foreach($this->error('combination') as $row => $errors) { ?>
             <?php foreach($errors as $error) { ?>
-            <li><?php echo $this->text('Error on line @num: @error', array('@num' => $row, '@error' => $error)); ?></li>
+            <li><?php echo $this->text('Error on line @num: !error', array('@num' => $row, '!error' => is_array($error) ? reset($error) : $error)); ?></li>
             <?php } ?>
             <?php } ?>
           </ul>
@@ -52,43 +52,34 @@
           </thead>
           <tbody>
             <?php if (!empty($product['combination'])) { ?>
-            <?php foreach ($product['combination'] as $row => $combination) { ?>
+            <?php $row = 1; ?>
+            <?php foreach ($product['combination'] as $combination) { ?>
             <tr class="<?php echo $this->error("combination.$row", 'combination-error'); ?>">
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
               <td class="field-title">
-                <div class="<?php echo $this->error("combination.$row.fields.$field_id", 'has-error'); ?>">
+                <div class="field<?php echo $this->error("combination.$row.fields.$field_id", ' has-error'); ?>">
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
                     <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
                     <?php foreach ($option['values'] as $value) { ?>
                     <option value="<?php echo $value['field_value_id']; ?>"<?php echo (!empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields'])) ? ' selected' : ''; ?>><?php echo $this->escape($value['title']); ?></option>
                     <?php } ?>
                   </select>
-                  <div class="help-block">
-                    <?php echo $this->error("combination.$row.fields.$field_id"); ?>
-                  </div>
                 </div>
               </td>
               <?php } ?>
               <td>
-                <div class="<?php echo $this->error("combination.$row.sku", 'has-error'); ?>">
+                <div class="sku<?php echo $this->error("combination.$row.sku", ' has-error'); ?>">
                   <input maxlength="255" class="form-control" name="product[combination][<?php echo $row; ?>][sku]" value="<?php echo isset($combination['sku']) ? $this->escape($combination['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
-                  <div class="help-block">
-                    <?php echo $this->error("combination.$row.sku"); ?>
-                  </div>
                 </div>
               </td>
               <td>
-                <div class="<?php echo $this->error("combination.$row.price", 'has-error'); ?>">
+                <div class="price<?php echo $this->error("combination.$row.price", ' has-error'); ?>">
                   <input class="form-control" name="product[combination][<?php echo $row; ?>][price]" value="<?php echo isset($combination['price']) ? $this->escape($combination['price']) : 0; ?>">
-                  <div class="help-block"><?php echo $this->error("combination.$row.price"); ?></div>
                 </div>
               </td>
               <td>
-                <div class="<?php echo $this->error("combination.$row.stock", 'has-error'); ?>">
+                <div class="stock<?php echo $this->error("combination.$row.stock", ' has-error'); ?>">
                   <input class="form-control" name="product[combination][<?php echo $row; ?>][stock]" value="<?php echo $combination['stock']; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error("combination.$row.stock"); ?>
-                  </div>
                 </div>
               </td>
               <td>
@@ -104,6 +95,7 @@
               </td>
               <td><a href="#" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a></td>
             </tr>
+            <?php $row++; ?>
             <?php } ?>
             <?php } ?>
           </tbody>

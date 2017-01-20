@@ -20,37 +20,24 @@ trait EntityAlias
      * @param \gplcart\core\models\Alias $model
      * @param array $data
      * @param string $entity
-     * @param boolean $delete
+     * @param boolean $update
      * @return null
      */
-    protected function setAlias($model, array $data, $entity, $delete = true)
+    protected function setAliasTrait($model, array $data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['alias'])) {
             return null;
         }
 
-        if ($delete) {
+        if ($update) {
             $model->delete("{$entity}_id", $data["{$entity}_id"]);
+        }
+        
+        if (empty($data['alias'])) {
+            $data['alias'] = $model->generateEntity($data, $entity);
         }
 
         $model->add("{$entity}_id", $data["{$entity}_id"], $data['alias']);
-    }
-
-    /**
-     * Creates an alias
-     * @param \gplcart\core\models\Alias $model
-     * @param array $data
-     * @param string $entity
-     * @param bool $translit
-     * @return string
-     */
-    public function createAlias($model, array $data, $entity, $translit = true)
-    {
-        $config = $model->getConfig();
-        $pattern = $config->get("{$entity}_alias_pattern", '%t.html');
-        $placeholders = $config->get("{$entity}_alias_placeholder", array('%t' => 'title'));
-
-        return $model->generate($pattern, $placeholders, $data, $translit);
     }
 
 }

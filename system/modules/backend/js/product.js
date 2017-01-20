@@ -101,8 +101,18 @@
      * @returns {undefined}
      */
     Backend.include.product.attach.updateFieldsProductClass = function () {
-        $('[name$="[product_class_id]"]').change(function () {
-            Backend.include.product.helper.loadFields($(this).val());
+
+        var val,
+                wrapper = '#option-form-wrapper',
+                selector = $('[name$="[product_class_id]"]');
+
+        selector.change(function () {
+            val = $(this).val();
+            Backend.include.product.helper.loadFields(val);
+
+            if (val) {
+                $('body,html').animate({scrollTop: $(wrapper).offset().top - 60});
+            }
         });
     };
 
@@ -167,6 +177,7 @@
                 index = $('#option-form-wrapper tbody tr').length + 1;
 
         html += '<tr>';
+        
         $('#option-form-wrapper tfoot select').each(function () {
             html += '<td class="field-title">';
             html += '<select data-live-search="true" class="form-control selectpicker" name="product[combination][' + index + '][fields][' + $(this).attr('data-field-id') + ']">';
@@ -266,11 +277,12 @@
      */
     Backend.include.product.attach.addCombination = function () {
 
-        var row = Backend.include.product.html.combinationRow(),
+        var row,
                 tbody = '#option-form-wrapper table tbody',
                 button = '#option-form-wrapper .add-option-combination';
 
         $(document).on('click', button, function () {
+            row = Backend.include.product.html.combinationRow();
             $(tbody).append(row);
             $('.selectpicker').selectpicker();
             return false;

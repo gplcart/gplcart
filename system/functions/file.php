@@ -112,7 +112,8 @@ function gplcart_file_unique($file)
     $counter = 1;
 
     do {
-        $filename = $info['filename'] . '-' . $counter++ . $extension;
+        $counter++;
+        $filename = $info['filename'] . '-' . $counter . $extension;
         $file = "{$info['dirname']}/$filename";
     } while (file_exists($file));
 

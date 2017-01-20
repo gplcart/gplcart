@@ -117,8 +117,8 @@ class ImageStyle extends BaseValidator
         }
 
         if (!empty($errors)) {
-            $vars = array('%num' => implode(',', $errors));
-            $error = $this->language->text('Error on lines %num', $vars);
+            $vars = array('@num' => implode(',', $errors));
+            $error = $this->language->text('Error on lines @num', $vars);
             $this->setError('actions', $error);
         }
 

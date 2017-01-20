@@ -383,12 +383,7 @@ class Category extends Model
 
         $this->setTranslation($this->db, $data, 'category', false);
         $this->setImages($this->file, $data, 'category', false);
-
-        if (empty($data['alias'])) {
-            $data['alias'] = $this->createAlias($this->alias, $data, 'category');
-        }
-
-        $this->setAlias($this->alias, $data, 'category', false);
+        $this->setAliasTrait($this->alias, $data, 'category', false);
 
         $this->hook->fire('add.category.after', $data);
         return $data['category_id'];
@@ -415,7 +410,7 @@ class Category extends Model
 
         $updated += (int) $this->setTranslation($this->db, $data, 'category');
         $updated += (int) $this->setImages($this->file, $data, 'category');
-        $updated += (int) $this->setAlias($this->alias, $data, 'category');
+        $updated += (int) $this->setAliasTrait($this->alias, $data, 'category');
 
         $result = ($updated > 0);
 

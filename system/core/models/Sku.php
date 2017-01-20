@@ -175,12 +175,16 @@ class Sku extends Model
         $store_id = isset($data['store_id']) ? $data['store_id'] : null;
         $existing = $this->get($sku, $store_id);
 
-        if (!empty($existing)) {
-            $counter = 0;
-            do {
-                $sku = $sku . '-' . $counter++;
-            } while ($this->get($sku, $store_id));
+        if (empty($existing)) {
+            return $sku;
         }
+
+        $counter = 1;
+
+        do {
+            $counter++;
+            $sku = $sku . '-' . $counter;
+        } while ($this->get($sku, $store_id));
 
         return $sku;
     }

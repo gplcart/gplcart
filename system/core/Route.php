@@ -82,9 +82,9 @@ class Route
         $this->config = $config;
         $this->request = $request;
         $this->db = $config->getDb();
-        $this->path = $this->url->path();
 
         $this->setLangcode();
+        $this->path = $this->url->path();
     }
 
     /**
@@ -157,15 +157,9 @@ class Route
             $this->langcode = $segments[0];
         }
 
-        if ($this->langcode && ($this->langcode === $default_langcode)) {
-            // TODO: redirect to url without language code
-        }
-
         if ($this->langcode && ($this->langcode !== $default_langcode)) {
             $this->request->setBaseSuffix($this->langcode);
         }
-
-        return null;
     }
 
     /**

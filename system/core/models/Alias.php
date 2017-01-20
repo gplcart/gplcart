@@ -216,17 +216,35 @@ class Alias extends Model
 
         $alias = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '', 'UTF-8');
 
-        if ($this->exists($alias)) {
-            $info = pathinfo($alias);
-            $ext = isset($info['extension']) ? '.' . $info['extension'] : '';
-
-            $counter = 0;
-            do {
-                $alias = $info['filename'] . '-' . $counter++ . $ext;
-            } while ($this->exists($alias));
+        if (!$this->exists($alias)) {
+            return $alias;
         }
 
+        $info = pathinfo($alias);
+        $ext = isset($info['extension']) ? '.' . $info['extension'] : '';
+
+        $counter = 1;
+
+        do {
+            $counter++;
+            $alias = $info['filename'] . '-' . $counter . $ext;
+        } while ($this->exists($alias));
+
         return $alias;
+    }
+
+    /**
+     * Generates alias for an entity data
+     * @param array $data
+     * @param string $entity
+     * @return string
+     */
+    public function generateEntity(array $data, $entity)
+    {
+        $pattern = $this->config->get("{$entity}_alias_pattern", '%t.html');
+        $placeholders = $this->config->get("{$entity}_alias_placeholder", array('%t' => 'title'));
+
+        return $this->generate($pattern, $placeholders, $data, true);
     }
 
     /**

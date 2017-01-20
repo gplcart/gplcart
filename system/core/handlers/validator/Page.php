@@ -66,7 +66,7 @@ class Page extends BaseValidator
         $this->validateCategoryPage();
         $this->validateUserId();
         $this->validateImages();
-        $this->validateAliasPage();
+        $this->validateAlias();
 
         return $this->getResult();
     }
@@ -147,35 +147,6 @@ class Page extends BaseValidator
         }
 
         return true;
-    }
-
-    /**
-     * Validates/creates an alias
-     * @return boolean|null
-     */
-    protected function validateAliasPage()
-    {
-        if ($this->isError()) {
-            return null; // Stop if a error has occured before
-        }
-
-        $updating = $this->getUpdating();
-        $alias = $this->getSubmitted('alias');
-
-        if (isset($alias)//
-                && isset($updating['alias'])//
-                && ($updating['alias'] === $alias)) {
-            return true; // Do not check own alias on update
-        }
-
-        if (empty($alias) && $this->isUpdating()) {
-            $data = $this->getSubmitted();
-            $alias = $this->page->createAlias($this->alias, $data, 'page');
-            $this->setSubmitted('alias', $alias);
-            return true;
-        }
-
-        return $this->validateAlias();
     }
 
 }

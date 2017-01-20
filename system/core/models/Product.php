@@ -78,7 +78,7 @@ class Product extends Model
      * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
-    
+
     /**
      * File model instance
      * @var \gplcart\core\models\File $file
@@ -90,7 +90,7 @@ class Product extends Model
      * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
-    
+
     /**
      * Constructor
      * @param AliasModel $alias
@@ -104,9 +104,10 @@ class Product extends Model
      * @param Cache $cache
      * @param RequestHelper $request
      */
-    public function __construct(AliasModel $alias, FileModel $file, PriceModel $price,
-            PriceRuleModel $pricerule, LanguageModel $language, SkuModel $sku,
-            SearchModel $search, ProductFieldModel $product_field, Cache $cache,
+    public function __construct(AliasModel $alias, FileModel $file,
+            PriceModel $price, PriceRuleModel $pricerule,
+            LanguageModel $language, SkuModel $sku, SearchModel $search,
+            ProductFieldModel $product_field, Cache $cache,
             RequestHelper $request)
     {
         parent::__construct();
@@ -126,10 +127,9 @@ class Product extends Model
     /**
      * Adds a product to the database
      * @param array $data
-     * @param array $options
      * @return boolean|integer
      */
-    public function add(array $data, array $options = array())
+    public function add(array $data)
     {
         $this->hook->fire('add.product.before', $data);
 
@@ -140,6 +140,8 @@ class Product extends Model
         $data['created'] = GC_TIME;
         $data += array('currency' => $this->config->get('currency', 'USD'));
 
+        $this->setPrice($data);
+
         $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslation($this->db, $data, 'product', false);
@@ -149,21 +151,7 @@ class Product extends Model
         $this->setSkuCombinations($data, false);
         $this->setOptions($data, false);
         $this->setAttributes($data, false);
-
-        $translit_alias = $generate_alias = true;
-        if (isset($options['translit_alias']) && !$options['translit_alias']) {
-            $translit_alias = false;
-        }
-
-        if (isset($options['generate_alias']) && !$options['generate_alias']) {
-            $generate_alias = false;
-        }
-
-        if (empty($data['alias']) && $generate_alias) {
-            $data['alias'] = $this->createAlias($this->alias, $data, 'product', $translit_alias);
-        }
-
-        $this->setAlias($this->alias, $data, 'product', false);
+        $this->setAliasTrait($this->alias, $data, 'product', false);
         $this->setRelated($data, false);
 
         $this->search->index('product', $data);
@@ -189,9 +177,7 @@ class Product extends Model
         $data['modified'] = GC_TIME;
         $data['product_id'] = $product_id;
 
-        if (isset($data['price'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
-        }
+        $this->setPrice($data);
 
         $conditions = array('product_id' => $product_id);
         $updated = $this->db->update('product', $data, $conditions);
@@ -199,7 +185,7 @@ class Product extends Model
         $updated += (int) $this->setSku($data);
         $updated += (int) $this->setTranslation($this->db, $data, 'product');
         $updated += (int) $this->setImages($this->file, $data, 'product');
-        $updated += (int) $this->setAlias($this->alias, $data, 'product');
+        $updated += (int) $this->setAliasTrait($this->alias, $data, 'product');
         $updated += (int) $this->setSkuCombinations($data);
         $updated += (int) $this->setOptions($data);
         $updated += (int) $this->setAttributes($data);
@@ -215,6 +201,17 @@ class Product extends Model
 
         $this->hook->fire('update.product.after', $product_id, $data, $result);
         return (bool) $result;
+    }
+
+    /**
+     * Converts a price to minor units
+     * @param array $data
+     */
+    protected function setPrice(array &$data)
+    {
+        if (!empty($data['price']) && !empty($data['currency'])) {
+            $data['price'] = $this->price->amount($data['price'], $data['currency']);
+        }
     }
 
     /**
@@ -704,9 +701,6 @@ class Product extends Model
         }
 
         if (empty($data['sku'])) {
-            if (!empty($data['price'])) {
-                $data['price'] = $this->price->amount($data['price'], $data['currency']);
-            }
             $data['sku'] = $this->createSku($data);
         }
 
@@ -739,11 +733,13 @@ class Product extends Model
                 continue;
             }
 
-            if (empty($update) && !empty($combination['price'])) {
+            if (!empty($combination['price'])) {
                 $combination['price'] = $this->price->amount($combination['price'], $data['currency']);
             }
 
             $sku = array(
+                'sku' => $combination['sku'],
+                'store_id' => $data['store_id'],
                 'price' => $combination['price'],
                 'stock' => $combination['stock'],
                 'product_id' => $data['product_id'],
@@ -755,17 +751,11 @@ class Product extends Model
                 $sku['file_id'] = $data['images'][$combination['path']];
             }
 
-            if (empty($combination['sku'])) {
-                $pattern = $data['sku'] . '-' . crc32(uniqid('', true));
-                $sku['sku'] = $this->sku->generate($pattern, array(), array('store_id' => $data['store_id']));
-            } else {
-                $sku['sku'] = $combination['sku'];
+            if (empty($sku['sku'])) {
+                $sku['sku'] = $this->sku->generate($data['sku'], array(), array('store_id' => $data['store_id']));
             }
 
-            if (isset($data['store_id'])) {
-                $sku['store_id'] = $data['store_id'];
-                $this->sku->add($sku);
-            }
+            $this->sku->add($sku);
         }
 
         return true;

@@ -125,7 +125,7 @@
         <div class="col-md-3<?php echo $this->error('stock', ' has-error'); ?>">
           <label><?php echo $this->text('Stock'); ?></label>
           <div class="input-group">
-            <input name="product[stock]" class="form-control" type="number" min="0" step="1" pattern="\d*" maxlength="6" value="<?php echo isset($product['stock']) ? $product['stock'] : 0; ?>">
+            <input name="product[stock]" class="form-control" value="<?php echo isset($product['stock']) ? $product['stock'] : 0; ?>">
             <div class="input-group-btn">
               <div class="btn-group" data-toggle="buttons">
                 <?php $subtract = isset($product['subtract']) ? $product['subtract'] : $subtract_default; ?>
@@ -281,7 +281,7 @@
               <input type="hidden" name="product[related][]" value="<?php echo $related_product_id; ?>">
               <span class="btn btn-default">
                 <a target="_blank" href="<?php echo $related_product['url']; ?>">
-                <?php echo $this->escape($related_product['title']); ?>
+                <?php echo $this->escape($related_product['title']); ?> (<?php echo $this->escape($related_product_id); ?>)
                 </a>
                 <span class="badge"><i class="fa fa-times remove"></i></span>
               </span>

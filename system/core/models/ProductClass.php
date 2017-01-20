@@ -84,7 +84,7 @@ class ProductClass extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'product_class_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
@@ -157,7 +157,11 @@ class ProductClass extends Model
         }
 
         $conditions = array('product_class_id' => $product_class_id);
-        $result = $this->db->delete('product_class', $conditions);
+        $result = (bool) $this->db->delete('product_class', $conditions);
+
+        if ($result) {
+            $this->db->delete('product_class_field', $conditions);
+        }
 
         $this->hook->fire('delete.product.class.after', $product_class_id, $result);
         return (bool) $result;

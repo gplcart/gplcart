@@ -124,7 +124,7 @@ class Product extends BaseValidator
         $this->validateSkuProduct();
         $this->validateAttributeProduct();
         $this->validateCombinationProduct();
-        $this->validateAliasProduct();
+        $this->validateAlias();
 
         return $this->getResult();
     }
@@ -373,35 +373,6 @@ class Product extends BaseValidator
     }
 
     /**
-     * Validates/creates an alias
-     * @return boolean|null
-     */
-    protected function validateAliasProduct()
-    {
-        if ($this->isError()) {
-            return null;
-        }
-
-        $updating = $this->getUpdating();
-        $value = $this->getSubmitted('alias');
-
-        if (isset($value)//
-                && isset($updating['alias'])//
-                && ($updating['alias'] === $value)) {
-            return true; // Do not check own alias on update
-        }
-
-        if (empty($value) && $this->isUpdating()) {
-            $data = $this->getSubmitted();
-            $value = $this->product->createAlias($this->alias, $data, 'product');
-            $this->setSubmitted('alias', $value);
-            return true;
-        }
-
-        return $this->validateAlias();
-    }
-
-    /**
      * Validates related products
      * @return boolean|null
      */
@@ -526,20 +497,16 @@ class Product extends BaseValidator
      */
     protected function validateAttributeProduct()
     {
-        $attributes = $this->getSubmitted('product_fields.attribute');
+        $attributes = $this->getSubmitted('field.attribute');
+        $fields = $this->getSubmitted('product_fields.attribute');
 
-        if ($this->isError() || empty($attributes)) {
+        if (empty($fields)) {
             return null;
         }
 
-        foreach ($attributes as $field_id => $field) {
-
-            if (isset($attributes[$field_id])) {
-                $value = $attributes[$field_id];
-            }
-
-            if (!empty($field['required']) && empty($value)) {
-                $vars = array('@field' => $this->language->text('Field'));
+        foreach ($fields as $field_id => $field) {
+            if (!empty($field['required']) && empty($attributes[$field_id])) {
+                $vars = array('@field' => $field['title']);
                 $error = $this->language->text('@field is required', $vars);
                 $this->setError("attribute.$field_id", $error);
             }
@@ -554,28 +521,23 @@ class Product extends BaseValidator
      */
     protected function validateCombinationProduct()
     {
-        $fields = $this->getSubmitted('product_fields');
-
-        if ($this->isError() || empty($fields)) {
-            return null;
-        }
-
         $combinations = $this->getSubmitted('combination');
 
         if (empty($combinations)) {
             return null;
         }
 
-        foreach ($combinations as $index => &$combination) {
-
-            if (empty($combination['fields'])) {
-                unset($combinations[$index]);
-                continue;
-            }
+        $index = 1;
+        foreach ($combinations as &$combination) {
 
             $this->validateCombinationOptionsProduct($index, $combination);
 
             if ($this->isError("combination.$index")) {
+                continue;
+            }
+
+            if (empty($combination['fields'])) {
+                unset($combinations[$index]);
                 continue;
             }
 
@@ -597,6 +559,7 @@ class Product extends BaseValidator
             }
 
             $this->processed_combinations[$combination_id] = true;
+            $index++;
         }
 
         if ($this->isError()) {
@@ -617,15 +580,15 @@ class Product extends BaseValidator
     protected function validateCombinationOptionsProduct($index,
             array &$combination)
     {
-        $op = $this->getSubmitted('product_fields.option');
+        $options = $this->getSubmitted('product_fields.option');
 
-        if (empty($op)) {
+        if (empty($options)) {
             return null;
         }
 
-        foreach ($op as $field_id => $field) {
+        foreach ($options as $field_id => $field) {
             if (!empty($field['required']) && !isset($combination['fields'][$field_id])) {
-                $vars = array('@field' => $this->language->text('Field'));
+                $vars = array('@field' => $field['title']);
                 $error = $this->language->text('@field is required', $vars);
                 $this->setError("combination.$index.fields.$field_id", $error);
             }
@@ -646,6 +609,10 @@ class Product extends BaseValidator
             return null;
         }
 
+        if ($combination['sku'] === '') {
+            return true;
+        }
+
         $updating = $this->getUpdating();
 
         $product_id = null;
@@ -653,40 +620,28 @@ class Product extends BaseValidator
             $product_id = $updating['product_id'];
         }
 
-        $sku = $this->getSubmitted('sku');
         $store_id = $this->getSubmitted('store_id');
 
-        if ($combination['sku'] !== '') {
-
-            if (mb_strlen($combination['sku']) > 255) {
-                $vars = array('@max' => 255, '@field' => $this->language->text('SKU'));
-                $error = $this->language->text('@field must not be longer than @max characters', $vars);
-                $this->setError("combination.$index.sku", $error);
-                return false;
-            }
-
-            if (isset($this->processed_skus[$combination['sku']])) {
-                $error = $this->language->text('SKU must be unique per store');
-                $this->setError("combination.$index.sku", $error);
-                return false;
-            }
-
-            if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
-                $error = $this->language->text('SKU must be unique per store');
-                $this->setError("combination.$index.sku", $error);
-                return false;
-            }
-
-            $this->processed_skus[$combination['sku']] = true;
-            return true;
+        if (mb_strlen($combination['sku']) > 255) {
+            $vars = array('@max' => 255, '@field' => $this->language->text('SKU'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
+            $this->setError("combination.$index.sku", $error);
+            return false;
         }
 
-        if (!empty($product_id)) {
-            $pattern = "$sku-" . crc32(uniqid('', true));
-            $combination['sku'] = $this->sku->generate($pattern, array(), array('store_id' => $store_id));
-            $this->processed_skus[$combination['sku']] = true;
+        if (isset($this->processed_skus[$combination['sku']])) {
+            $error = $this->language->text('SKU must be unique per store');
+            $this->setError("combination.$index.sku", $error);
+            return false;
         }
 
+        if ($this->sku->get($combination['sku'], $store_id, $product_id)) {
+            $error = $this->language->text('SKU must be unique per store');
+            $this->setError("combination.$index.sku", $error);
+            return false;
+        }
+
+        $this->processed_skus[$combination['sku']] = true;
         return true;
     }
 
@@ -727,7 +682,7 @@ class Product extends BaseValidator
         }
 
         if (!is_numeric($combination['stock']) || strlen($combination['stock']) > 10) {
-            $error = $this->language->text('Only numeric values and no longer than %s chars', array('%s' => 10));
+            $error = $this->language->text('Only numeric values and no longer than @num characters', array('@num' => 10));
             $this->setError("combination.$index.stock", $error);
         }
 
