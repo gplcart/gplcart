@@ -266,10 +266,10 @@ class Product extends FrontendController
     protected function buildCategoryBreadcrumbsIndexProduct($category_id,
             array &$breadcrumbs)
     {
-        if (!empty($this->category_tree[$category_id]['parents'])) {
+        if (!empty($this->data_category_tree[$category_id]['parents'])) {
 
-            $parent = reset($this->category_tree[$category_id]['parents']);
-            $category = $this->category_tree[$category_id];
+            $parent = reset($this->data_category_tree[$category_id]['parents']);
+            $category = $this->data_category_tree[$category_id];
 
             $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
 

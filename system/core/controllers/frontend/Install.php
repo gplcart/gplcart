@@ -127,22 +127,12 @@ class Install extends FrontendController
 
     /**
      * Starts installing the system
-     * @return null
      */
     protected function submitInstall()
     {
-        if (!$this->isPosted('install')) {
-            return null;
+        if ($this->isPosted('install') && $this->validateInstall()) {
+            $this->processInstall();
         }
-
-        $this->setSubmitted('settings');
-        $this->validateInstall();
-
-        if (!$this->hasErrors('settings')) {
-            return $this->processInstall();
-        }
-
-        return null;
     }
 
     /**
@@ -214,9 +204,12 @@ class Install extends FrontendController
 
     /**
      * Validates an array of submitted form values
+     * @return bool
      */
     protected function validateInstall()
     {
+        $this->setSubmitted('settings');
+
         $language = array(
             $this->install_language => $this->language->getIso($this->install_language)
         );
@@ -226,6 +219,8 @@ class Install extends FrontendController
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
 
         $this->validate('install');
+
+        return !$this->hasErrors('settings');
     }
 
 }

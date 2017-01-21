@@ -77,7 +77,7 @@ class Image extends FrontendController
         $cached_image = "$imagestyle_directory/" . basename($image);
 
         if (file_exists($cached_image)) {
-            $this->response->file($cached_image, array('headers' => $this->headers($cached_image)));
+            $this->response->file($cached_image, array('headers' => $this->getHeaders($cached_image)));
         }
 
         if (!file_exists($imagestyle_directory) && !mkdir($imagestyle_directory, 0755, true)) {
@@ -92,7 +92,7 @@ class Image extends FrontendController
 
         $actions['save'] = array('value' => array($cached_image));
         $this->image->modify($server_file, $actions);
-        $this->response->file($cached_image, array('headers' => $this->headers($cached_image)));
+        $this->response->file($cached_image, array('headers' => $this->getHeaders($cached_image)));
     }
 
     /**
@@ -100,7 +100,7 @@ class Image extends FrontendController
      * @param string $file
      * @return array
      */
-    protected function headers($file)
+    protected function getHeaders($file)
     {
         $timestamp = filemtime($file);
         $expires = (int) $this->config('image_cache_lifetime', 31536000); // 1 year

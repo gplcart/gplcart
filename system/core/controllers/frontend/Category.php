@@ -38,6 +38,18 @@ class Category extends FrontendController
     protected $data_category = array();
 
     /**
+     * An array of products for the current category
+     * @var array
+     */
+    protected $data_products = array();
+
+    /**
+     * An array of children categories
+     * @var array
+     */
+    protected $data_children = array();
+
+    /**
      * Constructor
      * @param SearchModel $search
      * @param CategoryGroupModel $category_group
@@ -62,7 +74,6 @@ class Category extends FrontendController
         $this->setTitleIndexCategory();
 
         $this->setHtmlFilter($this->data_category);
-        $this->setData('category', $this->data_category);
 
         $query = $this->getFilterQueryIndexCategory();
         $total = $this->getTotalProductCategory($category_id, $query);
@@ -70,18 +81,20 @@ class Category extends FrontendController
         $max = $this->settings('catalog_limit', 20);
         $limit = $this->setPager($total, $query, $max);
 
-        $products = $this->getListProductCategory($limit, $query, $category_id);
-        $children = $this->getChildrenCategory($category_id);
+        $this->setListProductCategory($limit, $query, $category_id);
+        $this->setChildrenCategory($category_id);
 
         $this->setDataImagesCategory();
-        $this->setDataProductsCategory($products);
-        $this->setDataChildrenCategory($children);
-        $this->setDataNavbarCategory($products, $total, $query);
+        $this->setDataProductsCategory();
+        $this->setDataChildrenCategory();
 
         $this->setRegionMenuCategory();
         $this->setRegionContentCategory();
+        $this->setDataNavbarCategory($total, $query);
 
-        $this->setMetaIndexCategory($children, $products);
+        $this->setData('category', $this->data_category);
+
+        $this->setMetaIndexCategory();
         $this->outputIndexCategory();
     }
 
@@ -111,15 +124,12 @@ class Category extends FrontendController
 
     /**
      * Sets meta tags on the category page
-     * @param array $children
-     * @param array $products
      */
-    protected function setMetaIndexCategory($children, $products)
+    protected function setMetaIndexCategory()
     {
         $this->setMetaEntity($this->data_category);
 
-        if (empty($children) && empty($products)) {
-            // Forbid Google to index empty pages
+        if (empty($this->data_children) && empty($this->data_products)) {
             $this->setMeta(array('name' => 'robots', 'content' => 'noindex'));
         }
     }
@@ -135,16 +145,15 @@ class Category extends FrontendController
 
     /**
      * Sets rendered category navbar
-     * @param array $products
      * @param integer $total
      * @param array $query
      */
-    protected function setDataNavbarCategory($products, $total, $query)
+    protected function setDataNavbarCategory($total, $query)
     {
         $options = array(
             'total' => $total,
             'view' => $query['view'],
-            'quantity' => count($products),
+            'quantity' => count($this->data_products),
             'sort' => "{$query['sort']}-{$query['order']}"
         );
 
@@ -154,11 +163,10 @@ class Category extends FrontendController
 
     /**
      * Sets rendered product list
-     * @param array $products
      */
-    protected function setDataProductsCategory(array $products)
+    protected function setDataProductsCategory()
     {
-        $html = $this->render('product/list', array('products' => $products));
+        $html = $this->render('product/list', array('products' => $this->data_products));
         $this->setData('products', $html);
     }
 
@@ -182,18 +190,18 @@ class Category extends FrontendController
      * @param integer $category_id
      * @return array
      */
-    protected function getChildrenCategory($category_id)
+    protected function setChildrenCategory($category_id)
     {
-        return $this->category->getChildren($category_id, $this->category_tree);
+        $children = $this->category->getChildren($category_id, $this->data_category_tree);
+        return $this->data_children = $children;
     }
 
     /**
      * Sets rendered category children
-     * @param array $categories
      */
-    protected function setDataChildrenCategory($categories)
+    protected function setDataChildrenCategory()
     {
-        $html = $this->render('category/blocks/children', array('children' => $categories));
+        $html = $this->render('category/blocks/children', array('children' => $this->data_children));
         $this->setData('children', $html);
     }
 
@@ -233,7 +241,7 @@ class Category extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        return $category;
+        return $this->data_category = $category;
     }
 
     /**
@@ -243,17 +251,16 @@ class Category extends FrontendController
      * @param integer $cid
      * @return array
      */
-    protected function getListProductCategory(array $limit, array $query, $cid)
+    protected function setListProductCategory(array $limit, array $query, $cid)
     {
         $options = array(
             'limit' => $limit,
             'category_id' => $cid,
-            'placeholder' => true,
-                //'language' => $this->langcode
+            'placeholder' => true
         );
 
         $options += $query;
-        return $this->getProducts($options, $options);
+        return $this->data_products = $this->getProducts($options, $options);
     }
 
     /**
@@ -266,8 +273,7 @@ class Category extends FrontendController
     {
         $options = array(
             'count' => true,
-            'category_id' => $category_id,
-                //'language' => $this->langcode
+            'category_id' => $category_id
         );
 
         $options += $query;

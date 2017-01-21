@@ -138,8 +138,7 @@ class Search extends FrontendController
             'language' => $this->langcode
         );
 
-        $total = $this->search->search('product', $this->data_search, $options);
-        return (int) $total;
+        return (int) $this->search->search('product', $this->data_search, $options);
     }
 
     /**

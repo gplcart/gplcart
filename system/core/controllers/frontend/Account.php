@@ -78,7 +78,7 @@ class Account extends FrontendController
      * @var array
      */
     protected $data_user = array();
-    
+
     /**
      * The current address
      * @var array
@@ -273,7 +273,6 @@ class Account extends FrontendController
         $html = $this->render('backend|sale/order/panes/components/method', array('method' => $method));
 
         $components[$type] = $html;
-        return null;
     }
 
     /**
@@ -303,7 +302,6 @@ class Account extends FrontendController
 
         $html = $this->render('backend|sale/order/panes/components/rule', $data);
         $components['rule'][$rule_id] = $html;
-        return null;
     }
 
     /**
@@ -370,14 +368,7 @@ class Account extends FrontendController
      */
     protected function submitEditAccount()
     {
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('user', null, 'raw');
-        $this->validateAccount();
-
-        if (!$this->hasErrors('user')) {
+        if ($this->isPosted('save') && $this->validateAccount()) {
             $this->updateAccount();
         }
     }
@@ -388,10 +379,14 @@ class Account extends FrontendController
      */
     protected function validateAccount()
     {
+        $this->setSubmitted('user', null, 'raw');
+
         $this->setSubmitted('update', $this->data_user);
         $this->setSubmitted('user_id', $this->data_user['user_id']);
 
         $this->validate('user');
+
+        return !$this->hasErrors('user');
     }
 
     /**
@@ -542,7 +537,7 @@ class Account extends FrontendController
     {
         $this->setUserAccount($user_id);
         $this->setAddressAccount($address_id);
-        
+
         $this->controlAccessEditAccount();
 
         $this->outputEditAddressFormAccount();
@@ -552,7 +547,7 @@ class Account extends FrontendController
         $this->setData('address', $this->data_address);
 
         $this->submitAddressAccount();
-        
+
         $this->setDataEditAddressAccount();
         $this->outputEditAddressAccount();
     }
@@ -656,10 +651,10 @@ class Account extends FrontendController
     protected function validateAddressAccount()
     {
         $this->setSubmitted('address');
-        
+
         $this->setSubmitted('user_id', $this->data_user['user_id']);
         $this->validate('address');
-        
+
         return !$this->hasErrors('address');
     }
 

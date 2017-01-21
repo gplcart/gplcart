@@ -82,7 +82,7 @@ class Controller extends BaseController
      * Array of recently viewed products
      * @var array
      */
-    protected $viewed = array();
+    protected $data_viewed = array();
 
     /**
      * Current user cart ID
@@ -91,34 +91,34 @@ class Controller extends BaseController
     protected $cart_uid;
 
     /**
+     * Whether price rules enabled for the current store
+     * @var boolean
+     */
+    protected $catalog_pricerules = false;
+
+    /**
      * Array of total cart items and numbers per SKU
      * @var array
      */
-    protected $cart_quantity = array();
+    protected $data_cart_quantity = array();
 
     /**
      * Comparison list content for the current user
      * @var array
      */
-    protected $compare_content = array();
+    protected $data_compare = array();
 
     /**
      * Array of wishlist items
      * @var array
      */
-    protected $wishlist_content = array();
+    protected $data_wishlist = array();
 
     /**
      * Catalog category tree for the current store
      * @var array
      */
-    protected $category_tree = array();
-
-    /**
-     * Whether price rules enabled for the current store
-     * @var boolean
-     */
-    protected $catalog_pricerules = false;
+    protected $data_category_tree = array();
 
     /**
      * Constructor
@@ -162,10 +162,10 @@ class Controller extends BaseController
             return null;
         }
 
-        $this->viewed = $this->getViewed();
+        $this->data_viewed = $this->getViewed();
         $this->cart_uid = $this->cart->uid();
-        $this->category_tree = $this->getCategories();
-        $this->compare_content = $this->compare->get();
+        $this->data_category_tree = $this->getCategories();
+        $this->data_compare = $this->compare->get();
         $this->catalog_pricerules = $this->store->config('catalog_pricerule');
         $this->triggers = $this->trigger->getFired(array('store_id' => $this->store_id, 'status' => 1));
 
@@ -174,15 +174,15 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        $this->cart_quantity = (array) $this->cart->getQuantity($options);
+        $this->data_cart_quantity = (array) $this->cart->getQuantity($options);
 
         // Don't count, use the same arguments to avoid an extra query
         // see setItemProductWishlist method
-        $this->wishlist_content = (array) $this->wishlist->getList($options);
+        $this->data_wishlist = (array) $this->wishlist->getList($options);
 
-        $this->data['cart_quantity'] = $this->cart_quantity;
-        $this->data['wishlist_quantity'] = count($this->wishlist_content);
-        $this->data['compare_content'] = $this->compare_content;
+        $this->data['cart_quantity'] = $this->data_cart_quantity;
+        $this->data['wishlist_quantity'] = count($this->data_wishlist);
+        $this->data['compare_content'] = $this->data_compare;
         return null;
     }
 
@@ -223,13 +223,13 @@ class Controller extends BaseController
     protected function renderMenu($max_depth = null,
             $class = 'list-unstyled menu')
     {
-        if (empty($this->category_tree)) {
+        if (empty($this->data_category_tree)) {
             return '';
         }
 
         $data = array(
             'menu_class' => $class,
-            'tree' => $this->category_tree,
+            'tree' => $this->data_category_tree,
             'menu_max_depth' => $max_depth
         );
 

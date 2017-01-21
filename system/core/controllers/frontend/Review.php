@@ -69,6 +69,7 @@ class Review extends FrontendController
         $this->setReview($review_id);
 
         $this->setTitleEditReview();
+
         $this->submitReview();
 
         $this->setData('review', $this->data_review);
@@ -138,21 +139,14 @@ class Review extends FrontendController
      */
     protected function submitReview()
     {
-        $this->controlSpam('review');
-
         if ($this->isPosted('delete')) {
             $this->deleteReview();
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
+        $this->controlSpam('review');
 
-        $this->setSubmitted('review');
-        $this->validateReview();
-
-        if ($this->hasErrors('review')) {
+        if (!$this->isPosted('save') || !$this->validateReview()) {
             return null;
         }
 
@@ -160,10 +154,27 @@ class Review extends FrontendController
 
         if (isset($this->data_review['review_id'])) {
             $this->updateReview();
-            return null;
+        } else {
+            $this->addReview();
         }
+    }
 
-        $this->addReview();
+    /**
+     * Validates an array of submitted review data
+     * @return bool
+     */
+    protected function validateReview()
+    {
+        $this->setSubmitted('review');
+
+        $this->setSubmitted('user_id', $this->uid);
+        $this->setSubmitted('update', $this->data_review);
+        $this->setSubmitted('product_id', $this->data_product['product_id']);
+        $this->setSubmitted('status', (int) $this->config('review_status', 1));
+
+        $this->validate('review');
+
+        return !$this->hasErrors('review');
     }
 
     /**
@@ -171,19 +182,19 @@ class Review extends FrontendController
      */
     protected function submitRatingReview()
     {
-        $this->validateRatingReview();
-
-        if (!$this->isError()) {
+        if ($this->validateRatingReview()) {
             $this->setRatingReview();
         }
     }
 
     /**
      * Validates a submitted rating
+     * @return bool
      */
     protected function validateRatingReview()
     {
         $this->validate('rating');
+        return !$this->isError();
     }
 
     /**
@@ -238,20 +249,6 @@ class Review extends FrontendController
     }
 
     /**
-     * Validates an array of submitted review data
-     * @return null
-     */
-    protected function validateReview()
-    {
-        $this->setSubmitted('user_id', $this->uid);
-        $this->setSubmitted('update', $this->data_review);
-        $this->setSubmitted('product_id', $this->data_product['product_id']);
-        $this->setSubmitted('status', (int) $this->config('review_status', 1));
-
-        $this->validate('review');
-    }
-
-    /**
      * Whether the review can be deleted
      * @return boolean
      */
@@ -262,21 +259,21 @@ class Review extends FrontendController
 
     /**
      * Deletes a review
+     * @return null
      */
     protected function deleteReview()
     {
-        if ($this->canDeleteReview()) {
-
-            $deleted = $this->review->delete($this->data_review['review_id']);
-
-            if ($deleted) {
-                $message = $this->text('Your review has been deleted');
-                $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
-            }
+        if (!$this->canDeleteReview()) {
+            $message = $this->text('Your review has not been deleted');
+            $this->redirect("product/{$this->data_product['product_id']}", $message, 'warning');
         }
 
-        $message = $this->text('Your review has not been deleted');
-        $this->redirect("product/{$this->data_product['product_id']}", $message, 'warning');
+        $deleted = $this->review->delete($this->data_review['review_id']);
+
+        if ($deleted) {
+            $message = $this->text('Your review has been deleted');
+            $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
+        }
     }
 
     /**
@@ -300,10 +297,18 @@ class Review extends FrontendController
             $this->outputHttpStatus(403);
         }
 
+        return $this->data_review = $this->prepareReview($review);
+    }
+
+    /**
+     * Prepares an array of review data
+     * @param array $review
+     * @return array
+     */
+    protected function prepareReview(array $review)
+    {
         $rating = $this->rating->getByUser($this->data_product['product_id'], $this->uid);
         $review['rating'] = isset($rating['rating']) ? $rating['rating'] : 0;
-
-        $this->data_review = $review;
         return $review;
     }
 
@@ -322,8 +327,7 @@ class Review extends FrontendController
 
         $this->setItemPrice($product);
 
-        $this->data_product = $product;
-        return $product;
+        return $this->data_product = $product;
     }
 
     /**

@@ -68,12 +68,12 @@ class Wishlist extends FrontendController
      */
     protected function getProductsWishlist()
     {
-        if (empty($this->wishlist_content)) {
+        if (empty($this->data_wishlist)) {
             return array();
         }
 
         $ids = array();
-        foreach ($this->wishlist_content as $result) {
+        foreach ($this->data_wishlist as $result) {
             $ids[] = $result['product_id'];
         }
 

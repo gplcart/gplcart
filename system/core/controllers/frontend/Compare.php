@@ -82,7 +82,7 @@ class Compare extends FrontendController
     protected function setDataSelectCompare()
     {
         $data = array(
-            'product_id' => $this->compare_content);
+            'product_id' => $this->data_compare);
 
         $options = array(
             'view' => $this->settings('compare_view', 'grid'),
@@ -159,7 +159,7 @@ class Compare extends FrontendController
      */
     protected function controlAccessCompare()
     {
-        if (count($this->compare_content) < 2) {
+        if (count($this->data_compare) < 2) {
             $this->redirect('compare');
         }
     }
@@ -177,7 +177,7 @@ class Compare extends FrontendController
             )
         );
 
-        $conditions = array('product_id' => $this->compare_content);
+        $conditions = array('product_id' => $this->data_compare);
         $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {

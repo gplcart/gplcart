@@ -129,8 +129,7 @@ class Page extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_page = $page;
-        return $page;
+        return $this->data_page = $page;
     }
 
     /**

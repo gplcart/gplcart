@@ -287,7 +287,7 @@ class City extends BackendController
      */
     protected function canDeleteCity()
     {
-        return $this->data_city['city_id']//
+        return isset($this->data_city['city_id'])//
                 && $this->access('city_delete')//
                 && $this->city->canDelete($this->data_city['city_id']);
     }
