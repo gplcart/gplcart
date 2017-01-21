@@ -32,7 +32,7 @@ class ImageStyle extends BackendController
     protected $file;
 
     /**
-     * The current array of imagestyle data to be updated
+     * The current imagestyle
      * @var array
      */
     protected $data_imagestyle = array();
@@ -142,8 +142,7 @@ class ImageStyle extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_imagestyle = $imagestyle;
-        return $imagestyle;
+        return $this->data_imagestyle = $imagestyle;
     }
 
     /**
@@ -195,10 +194,11 @@ class ImageStyle extends BackendController
     {
         $this->setSubmitted('imagestyle');
 
-        $this->validate('image_style');
         $this->setSubmittedBool('status');
         $this->setSubmittedArray('actions');
         $this->setSubmitted('update', $this->data_imagestyle);
+
+        $this->validate('image_style');
 
         return !$this->hasErrors('imagestyle');
     }

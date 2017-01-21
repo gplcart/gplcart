@@ -112,7 +112,7 @@
         <?php } ?>
         <?php foreach ($stores as $store_id => $store) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $store_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
+          <td class="middle"><input type="checkbox" name="selected[]" value="<?php echo $store_id; ?>"<?php echo ($access_actions && $store_id != $default_store) ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $store_id; ?></td>
           <td class="middle"><?php echo $this->escape($store['name']); ?></td>
           <td class="middle"><?php echo $this->escape($store['domain']); ?></td>

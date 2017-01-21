@@ -78,6 +78,7 @@ class Store extends BackendController
         $total = $this->getTotalStore($query);
         $limit = $this->setPager($total, $query);
 
+        $this->setData('default_store', $this->store->getDefault());
         $this->setData('stores', $this->getListStore($limit, $query));
         $this->outputListStore();
     }

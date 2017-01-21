@@ -195,7 +195,7 @@
             <div class="col-md-8">
               <textarea name="store[data][email]" class="form-control"><?php echo empty($store['data']['email']) ? '' : $this->escape($store['data']['email']); ?></textarea>
               <div class="help-block">
-                <?php echo $this->error('data.map'); ?>
+                <?php echo $this->error('data.email'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('A list of e-mails, one per line. The very first address will be main and used for notifications'); ?>
                 </div>
@@ -458,7 +458,7 @@
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
             </a>
             <?php if ($this->access('store_add') || $this->access('store_edit')) { ?>
-            <button class="btn btn-default save" name="save" value="1"><i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?></button>
+            <button class="btn btn-default save" name="save" value="1" onclick="return confirm(GplCart.text('Are you sure?'));"><i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?></button>
             <?php } ?>
           </div>
         </div>

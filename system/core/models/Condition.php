@@ -175,18 +175,6 @@ class Condition extends Model
     }
 
     /**
-     * Returns a condition handler
-     * @param string $condition_id
-     * @param string $method
-     * @return mixed
-     */
-    public function getHandler($condition_id, $method)
-    {
-        $handlers = $this->getHandlers();
-        return Handler::get($handlers, $condition_id, $method);
-    }
-
-    /**
      * Returns an array of condition handlers
      * @return array
      */
@@ -211,7 +199,7 @@ class Condition extends Model
 
         $handlers['path'] = array(
             'title' => $this->language->text('Path (global)'),
-            'description' => $this->language->text('Parameters: path with regexp pattern. Only = and != operators allowed'),
+            'description' => $this->language->text('Parameters: path with regexp pattern. Only = and != operators allowed. Do not use trailing slashes. Example: account/(\d+)'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'path'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'path'),
@@ -328,7 +316,7 @@ class Condition extends Model
 
         $handlers['cart_total'] = array(
             'title' => $this->language->text('Cart total (checkout)'),
-            'description' => $this->language->text('Parameters: numeric value'),
+            'description' => $this->language->text('Parameters: one value in format "price|currency". If only price specified, default currency will be used'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'cartTotal'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'price'),

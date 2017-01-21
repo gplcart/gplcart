@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\validator;
 
+use gplcart\core\Handler;
 use gplcart\core\models\Trigger as TriggerModel;
 use gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\handlers\validator\Base as BaseValidator;
@@ -127,28 +128,23 @@ class Trigger extends BaseValidator
             });
 
             if (empty($parameters)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '@error' => $this->language->text('No parameters')));
+                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $this->language->text('No parameters')));
                 continue;
             }
 
             if (!in_array(htmlspecialchars($operator), $prepared_operators)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '@error' => $this->language->text('Invalid operator')));
-                continue;
-            }
-
-            $validator = $this->condition->getHandler($condition_id, 'validate');
-
-            if (empty($validator)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '@error' => $this->language->text('Failed validation')));
+                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $this->language->text('Invalid operator')));
                 continue;
             }
 
             $data = $this->getSubmitted();
-            $result = call_user_func_array($validator, array($condition_id, $operator, &$parameters, $data));
+            $parameters = array_unique($parameters);
+            $handlers = $this->condition->getHandlers();
+            $result = Handler::call($handlers, $condition_id, 'validate', array($condition_id, $operator, $parameters, $data));
 
             if ($result !== true) {
                 $error = empty($result) ? $this->language->text('Failed validation') : (string) $result;
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '@error' => $error));
+                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $error));
                 continue;
             }
 
@@ -157,7 +153,7 @@ class Trigger extends BaseValidator
                 'id' => $condition_id,
                 'value' => $parameters,
                 'operator' => $operator,
-                'original' => $condition,
+                'original' => "$condition_id $operator " . implode(',', $parameters),
             );
         }
 

@@ -159,17 +159,16 @@ class Condition
      * @param array $values
      * @return boolean|string
      */
-    public function shippingZoneId($key, $operator, array &$values)
+    public function shippingZoneId($key, $operator, array $values)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
+            return $this->language->text('Unsupported operator');
         }
 
-        $zone_id = reset($values);
-        $zone = $this->zone->get($zone_id);
+        $zone = $this->zone->get(reset($values));
 
         if (empty($zone)) {
-            $vars = array('@name' => $this->language->text('Zone'));
+            $vars = array('@name' => $this->language->text('Condition'));
             return $this->language->text('@name is unavailable', $vars);
         }
 
@@ -184,18 +183,19 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function route($key, $operator, array &$values, array $data)
+    public function route($key, $operator, array $values, array $data)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
+            return $this->language->text('Unsupported operator');
         }
 
-        $route = reset($values);
         $routes = $this->route->getList();
 
-        if (empty($routes[$route])) {
-            $vars = array('@name' => $this->language->text('Route'));
-            return $this->language->text('@name is unavailable', $vars);
+        foreach ($values as $value) {
+            if (empty($routes[$value])) {
+                $vars = array('@name' => $this->language->text('Condition'));
+                return $this->language->text('@name is unavailable', $vars);
+            }
         }
 
         return true;
@@ -209,19 +209,17 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function path($key, $operator, array &$values, array $data)
+    public function path($key, $operator, array $values, array $data)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Supported operators: %operators', array('%operators' => '= !='));
+            return $this->language->text('Unsupported operator');
         }
 
-        $value = reset($values);
-
-        // Validate regexp. Invalid pattern will trigger an error
-        // depending on the current error reporting level
-        if (preg_match($value, null) === false) {
-            $vars = array('@field' => $this->language->text('Path'));
-            return $this->language->text('@field has invalid value', $vars);
+        foreach ($values as $value) {
+            if (preg_match("~$value~", null) === false) {
+                $vars = array('@field' => $this->language->text('Condition'));
+                return $this->language->text('@field has invalid value', $vars);
+            }
         }
 
         return true;
@@ -235,20 +233,20 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function date($key, $operator, array &$values, array $data)
+    public function date($key, $operator, array $values, array $data)
     {
-        if (count($values) !== 1) {
-            return false;
+        if (count($values) != 1) {
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $timestamp = strtotime(reset($values));
 
         if (empty($timestamp) || $timestamp <= GC_TIME) {
-            $vars = array('@field' => $this->language->text('Date'));
+            $vars = array('@field' => $this->language->text('Condition'));
             return $this->language->text('@field has invalid value', $vars);
         }
 
-        $values = array($timestamp);
         return true;
     }
 
@@ -260,20 +258,19 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function used($key, $operator, array &$values, array $data)
+    public function used($key, $operator, array $values, array $data)
     {
         if (count($values) != 1) {
-            return $this->language->text('Only one parameter allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
-        $value = reset($values);
-
-        if (is_numeric($value)) {
-            $values = array((int) $value);
+        if (ctype_digit(reset($values))) {
             return true;
         }
 
-        return false;
+        $vars = array('@field' => $this->language->text('Condition'));
+        return $this->language->text('@field has invalid value', $vars);
     }
 
     /**
@@ -284,16 +281,18 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function price($key, $operator, array &$values, array $data)
+    public function price($key, $operator, array $values, array $data)
     {
         if (count($values) != 1) {
-            return $this->language->text('Only one parameter allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $components = array_map('trim', explode('|', reset($values)));
 
         if (count($components) > 2) {
-            return $this->language->text('Only one delimiter | allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         if (!is_numeric($components[0])) {
@@ -301,24 +300,13 @@ class Condition
             return $this->language->text('@field must be numeric', $vars);
         }
 
-        $price = $components[0];
-
-        if (isset($components[1])) {
-
-            $currency = $components[1];
-
-            if (!$this->currency->get($currency)) {
-                $vars = array('@name' => $this->language->text('Currency'));
-                return $this->language->text('@name is unavailable', $vars);
-            }
+        if (empty($components[1])) {
+            $components[1] = $this->currency->getDefault();
+        } else if (!$this->currency->get($components[1])) {
+            $vars = array('@name' => $this->language->text('Currency'));
+            return $this->language->text('@name is unavailable', $vars);
         }
 
-        if (!isset($currency)) {
-            $currency = $data['currency'];
-        }
-
-        $new_components = array($this->price->amount($price, $currency), $currency);
-        $values = array(implode('|', $new_components));
         return true;
     }
 
@@ -330,13 +318,14 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function productId($key, $operator, array &$values, array $data)
+    public function productId($key, $operator, array $values, array $data)
     {
         $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
+        $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            return $this->language->text('Only numeric parameters allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $exists = array_filter($values, function ($product_id) {
@@ -360,13 +349,14 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function categoryId($key, $operator, array &$values, array $data)
+    public function categoryId($key, $operator, array $values, array $data)
     {
         $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
+        $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            return $this->language->text('Only numeric parameters allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $exists = array_filter($values, function ($category_id) {
@@ -390,13 +380,14 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function userId($key, $operator, array &$values, array $data)
+    public function userId($key, $operator, array $values, array $data)
     {
         $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
+        $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            return $this->language->text('Only numeric parameters allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $exists = array_filter($values, function ($user_id) {
@@ -420,13 +411,14 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function userRole($key, $operator, array &$values, array $data)
+    public function userRole($key, $operator, array $values, array $data)
     {
         $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
+        $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            return $this->language->text('Only numeric parameters allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $exists = array_filter($values, function ($role_id) {
@@ -450,7 +442,7 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function shipping($key, $operator, array &$values, array $data)
+    public function shipping($key, $operator, array $values, array $data)
     {
         $exists = array_filter($values, function ($method_id) {
             return (bool) $this->shipping->get($method_id);
@@ -472,7 +464,7 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function payment($key, $operator, array &$values, array $data)
+    public function payment($key, $operator, array $values, array $data)
     {
         $exists = array_filter($values, function ($method_id) {
             return (bool) $this->payment->get($method_id);
@@ -494,7 +486,7 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function country($key, $operator, array &$values, array $data)
+    public function country($key, $operator, array $values, array $data)
     {
         $exists = array_filter($values, function ($code) {
             $country = $this->country->get($code);
@@ -517,13 +509,14 @@ class Condition
      * @param array $data
      * @return boolean|string
      */
-    public function state($key, $operator, array &$values, array $data)
+    public function state($key, $operator, array $values, array $data)
     {
         $count = count($values);
-        $ids = array_filter($values, 'is_numeric');
+        $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            return $this->language->text('Only numeric parameters allowed');
+            $vars = array('@field' => $this->language->text('Condition'));
+            return $this->language->text('@field has invalid value', $vars);
         }
 
         $exists = array_filter($values, function ($state_id) {

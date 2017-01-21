@@ -84,7 +84,7 @@
               <div class="help-block">
                 <?php echo $this->error('data.conditions'); ?>
                 <div class="text-muted">
-                  <?php echo $this->text('Required. What conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>
+                  <?php echo $this->text('Required. Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>
                 </div>
               </div>
             </div>
