@@ -78,6 +78,12 @@ class Account extends FrontendController
      * @var array
      */
     protected $data_user = array();
+    
+    /**
+     * The current address
+     * @var array
+     */
+    protected $data_address = array();
 
     /**
      * Constructor
@@ -147,8 +153,7 @@ class Account extends FrontendController
             $this->outputHttpStatus(403);
         }
 
-        $this->data_user = $user;
-        return $user;
+        return $this->data_user = $user;
     }
 
     /**
@@ -536,17 +541,19 @@ class Account extends FrontendController
     public function editAddressAccount($user_id, $address_id = null)
     {
         $this->setUserAccount($user_id);
+        $this->setAddressAccount($address_id);
+        
         $this->controlAccessEditAccount();
 
         $this->outputEditAddressFormAccount();
-
-        $this->setDataEditAddressAccount();
         $this->setTitleEditAddressAccount();
 
         $this->setData('user', $this->data_user);
-        $this->setData('address', $this->getAddressAccount($address_id));
+        $this->setData('address', $this->data_address);
 
         $this->submitAddressAccount();
+        
+        $this->setDataEditAddressAccount();
         $this->outputEditAddressAccount();
     }
 
@@ -617,7 +624,7 @@ class Account extends FrontendController
      * @param integer $address_id
      * @return array
      */
-    protected function getAddressAccount($address_id)
+    protected function setAddressAccount($address_id)
     {
         if (!is_numeric($address_id)) {
             return array('country' => $this->country->getDefault());
@@ -629,34 +636,31 @@ class Account extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        return $address;
+        return $this->data_address = $address;
     }
 
     /**
      * Saves a user address
-     * @return null
      */
     protected function submitAddressAccount()
     {
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('address');
-        $this->validateAddressAccount();
-
-        if (!$this->hasErrors('address')) {
+        if ($this->isPosted('save') && $this->validateAddressAccount()) {
             $this->addAddressAccount();
         }
     }
 
     /**
      * Validates a submitted address
+     * @return bool
      */
     protected function validateAddressAccount()
     {
+        $this->setSubmitted('address');
+        
         $this->setSubmitted('user_id', $this->data_user['user_id']);
         $this->validate('address');
+        
+        return !$this->hasErrors('address');
     }
 
     /**

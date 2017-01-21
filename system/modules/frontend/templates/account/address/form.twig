@@ -24,7 +24,7 @@
             <div class="col-md-6">
               <select class="form-control" name="address[country]">
                 {% if address.country is empty %}
-                    <option value=""><?php echo $this->text('- select -'); ?></option>
+                    <option value="">{{ text('- select -') }}</option>
                 {% endif %}
                 {% for code,name in countries %}
                     <option value="{{ code }}"{{ (address.country is defined and address.country == code) ? ' selected' }}>{{ name }}</option>
@@ -66,7 +66,7 @@
                   {{ value.name }}
                 </label>
                 <div class="col-md-6">
-                  <input name="address[{{ key }}]" maxlength="255" class="form-control" value="{{ address[key]|default('') }}">
+                  <input name="address[{{ key }}]" maxlength="255" class="form-control" value="{{ address[key] ?? '' }}">
                   <div class="help-block">{{ error(key) }}</div>
                 </div>
               </div>

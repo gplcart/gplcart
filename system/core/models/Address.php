@@ -168,11 +168,13 @@ class Address extends Model
                 continue; // No countries defined in the system
             }
 
+            // Remove addresses with disabled countries
             if ($address['country'] !== '' && $address['country_status'] == 0) {
                 unset($list[$address_id]);
                 continue;
             }
 
+            // Remove addresses with disabled states
             if (!empty($address['state_id']) && $address['state_status'] == 0) {
                 unset($list[$address_id]);
                 continue;
@@ -200,6 +202,7 @@ class Address extends Model
 
         $results = array();
         foreach ($address as $key => $value) {
+
             if (empty($format[$key]) || empty($value)) {
                 continue;
             }
@@ -210,6 +213,10 @@ class Address extends Model
 
             if ($key === 'state_id') {
                 $value = $address['state_name'];
+            }
+
+            if ($key === 'city_id' && is_numeric($value) && !empty($address['city_name'])) {
+                $value = $address['city_name'];
             }
 
             if ($both) {

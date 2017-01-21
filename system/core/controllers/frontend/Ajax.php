@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use BadMethodCallException;
 use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\City as CityModel;
 use gplcart\core\models\File as FileModel;
 use gplcart\core\models\Search as SearchModel;
 use gplcart\core\models\Rating as RatingModel;
@@ -49,6 +49,12 @@ class Ajax extends FrontendController
     protected $sku;
 
     /**
+     * City model instance
+     * @var \gplcart\core\models\City $city
+     */
+    protected $city;
+
+    /**
      * Collection model instance
      * @var \gplcart\core\models\Collection $collection
      */
@@ -61,21 +67,23 @@ class Ajax extends FrontendController
     protected $collection_item;
 
     /**
-     * 
+     * Constructor
      * @param SearchModel $search
      * @param FileModel $file
      * @param RatingModel $rating
      * @param SkuModel $sku
+     * @param CityModel $city
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
     public function __construct(SearchModel $search, FileModel $file,
-            RatingModel $rating, SkuModel $sku, CollectionModel $collection,
-            CollectionItemModel $collection_item)
+            RatingModel $rating, SkuModel $sku, CityModel $city,
+            CollectionModel $collection, CollectionItemModel $collection_item)
     {
         parent::__construct();
 
         $this->sku = $sku;
+        $this->city = $city;
         $this->file = $file;
         $this->rating = $rating;
         $this->search = $search;
@@ -98,18 +106,23 @@ class Ajax extends FrontendController
             $this->response->json(array('error' => $this->text('Missing handler')));
         }
 
-        // action = method name. Check if the method exists
-        if (!method_exists($this, $action)) {
-            $this->response->json(array('error' => $this->text('Missing handler')));
-        }
-
-        try {
-            $response = $this->{$action}();
-        } catch (BadMethodCallException $exc) {
-            $response = array('error' => $exc->getMessage());
-        }
-
+        $response = $this->{$action}();
         $this->response->json($response);
+    }
+
+    /**
+     * Calls an action method
+     * @param string $action
+     * @param array $args
+     * @return array
+     */
+    public function __call($action, $args)
+    {
+        if (is_callable(array($this, $action))) {
+            return call_user_func_array(array($this, $action), $args);
+        }
+
+        return array('error' => $this->text('Missing handler'));
     }
 
     /**
@@ -360,6 +373,23 @@ class Ajax extends FrontendController
         }
 
         return array('error' => $this->text('An error occurred'));
+    }
+
+    /**
+     * Returns an array of cities for the given country and state ID
+     * @return array
+     */
+    public function searchCityAjax()
+    {
+        $country = (string) $this->request->post('country', '');
+        $state_id = (string) $this->request->post('state_id', '');
+
+        if (empty($country) || empty($state_id)) {
+            return array();
+        }
+
+        $conditions = array('country' => $country, 'state_id' => $state_id);
+        return (array) $this->city->getList($conditions);
     }
 
 }

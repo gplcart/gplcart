@@ -332,11 +332,8 @@ ul.ui-autocomplete.ui-menu li a:hover {
     position: absolute;
     z-index: 1000;
     display: none;
-    min-width: 300px;
-    _width: 300px;
     padding: 4px 0;
     margin: 0;
-    top: 50px !important;
     list-style: none;
     background-color: #ffffff;
     border-color: #ccc;
@@ -381,6 +378,10 @@ ul.ui-autocomplete.ui-menu li a:hover {
 .ui-autocomplete .suggestion img {
     height: 40px;
 }
+
+
+
+
 
 .table.price-components {
     width: 100%;

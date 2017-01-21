@@ -187,7 +187,7 @@
         });
 
         html += '<td>';
-        html += '<input maxlength="255" class="form-control" name="product[combination][' + index + '][sku]" value="">';
+        html += '<input maxlength="255" class="form-control" name="product[combination][' + index + '][sku]" value="" placeholder="' + GplCart.text('Generate automatically') + '">';
         html += '</td>';
         html += '<td>';
         html += '<input class="form-control" name="product[combination][' + index + '][price]" value="">';

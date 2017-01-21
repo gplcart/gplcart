@@ -219,6 +219,7 @@ class Address extends BaseValidator
             return true;
         }
 
+        // City ID can be either numeric ID or non-numeric human name
         if (is_numeric($city_id)) {
 
             $city = $this->city->get($city_id);
@@ -237,6 +238,31 @@ class Address extends BaseValidator
             $error = $this->language->text('@field must not be longer than @max characters', $vars);
             $this->setError('city_id', $error);
             return false;
+        }
+
+        // Try to convert human name to a numeric ID
+        $country = $this->getSubmitted('country');
+        $state_id = $this->getSubmitted('state_id');
+
+        if (empty($country) || empty($state_id)) {
+            return true;
+        }
+
+        $conditions = array(
+            'name' => $city_id,
+            'country' => $country,
+            'state_id' => $state_id
+        );
+
+        $cities = $this->city->getList($conditions);
+
+        // Loop over results to find exact match,
+        // because we search "name" using "LIKE" condition
+        foreach ($cities as $city) {
+            if (strcasecmp($city['name'], $city_id) == 0) {
+                $this->setSubmitted('city_id', $city['city_id']);
+                return true;
+            }
         }
 
         return true;

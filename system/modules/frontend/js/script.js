@@ -1,7 +1,7 @@
-/* global GplCart, Frontend */
-var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
-
+/* global GplCart */
 (function (window, document, GplCart, $) {
+
+    var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
 
     /**
      * Returns HTML of modal pop-up
@@ -440,9 +440,11 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
      */
     Frontend.attach.updateAdressFields = function () {
 
-        var data, form;
+        var data, form,
+                input = '#edit-address [name$="[country]"]',
+                wrapper = '#address-form-wrapper';
 
-        $(document).on('change', '#edit-address [name$="[country]"]', function () {
+        $(document).on('change', input, function () {
 
             data = {
                 country: $(this).val(),
@@ -455,8 +457,9 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
                 dataType: 'html',
                 url: GplCart.settings.urn,
                 success: function (data) {
-                    form = $(data).find('#address-form-wrapper').html();
-                    $('#address-form-wrapper').html(form);
+                    form = $(data).find(wrapper).html();
+                    $(wrapper).html(form);
+                    Frontend.helper.cityAutocomplete();
                 }
             });
         });
@@ -471,8 +474,8 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
         var params,
                 url = GplCart.settings.base + 'ajax',
                 input = $('input[name="q"]');
-        
-        if(input.length === 0){
+
+        if (input.length === 0) {
             return;
         }
 
@@ -505,6 +508,60 @@ var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
                 $(this).autocomplete("search");
             }
         });
+    };
+
+    /**
+     * Add state change listener that updates city autocomplete field
+     * @returns {undefined}
+     */
+    Frontend.attach.cityAutocomplete = function () {
+        $(document).on('change', '[name="address[state_id]"]', function () {
+            Frontend.helper.cityAutocomplete();
+        });
+    };
+
+    /**
+     * City autocomplete field handler
+     * @returns {undefined}
+     */
+    Frontend.helper.cityAutocomplete = function () {
+
+        var params,
+                url = GplCart.settings.base + 'ajax',
+                city = $('[name="address[city_id]"]'),
+                country = $('[name="address[country]"]'),
+                state_id = $('[name="address[state_id]"]');
+
+        if (city.length === 0 || country.length === 0 || state_id.length === 0) {
+            return;
+        }
+
+        city.val('');
+
+        city.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+
+                params = {
+                    country: country.val(),
+                    state_id: state_id.val(),
+                    action: 'searchCityAjax',
+                    token: GplCart.settings.token
+                };
+
+                $.post(url, params, function (data) {
+                    response($.map(data, function (value, key) {
+                        return {name: value.name};
+                    }));
+                });
+            },
+            select: function (event, ui) {
+                city.val(ui.item.name);
+                return false;
+            }
+        }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $('<li>').append('<a>' + item.name + '</a>').appendTo(ul);
+        };
     };
 
     /**

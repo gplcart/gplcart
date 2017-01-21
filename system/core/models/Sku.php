@@ -179,14 +179,14 @@ class Sku extends Model
             return $sku;
         }
 
-        $counter = 1;
+        $counter = 0;
 
         do {
             $counter++;
-            $sku = $sku . '-' . $counter;
-        } while ($this->get($sku, $store_id));
+            $modified = $sku . '-' . $counter;
+        } while ($this->get($modified, $store_id));
 
-        return $sku;
+        return $modified;
     }
 
     /**

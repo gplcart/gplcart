@@ -223,14 +223,14 @@ class Alias extends Model
         $info = pathinfo($alias);
         $ext = isset($info['extension']) ? '.' . $info['extension'] : '';
 
-        $counter = 1;
+        $counter = 0;
 
         do {
             $counter++;
-            $alias = $info['filename'] . '-' . $counter . $ext;
-        } while ($this->exists($alias));
+            $modified = $info['filename'] . '-' . $counter . $ext;
+        } while ($this->exists($modified));
 
-        return $alias;
+        return $modified;
     }
 
     /**
