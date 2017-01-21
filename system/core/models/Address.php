@@ -200,31 +200,33 @@ class Address extends Model
         $default = $this->country->defaultFormat();
         $format = gplcart_array_merge($default, $address['country_format']);
 
-        $results = array();
-        foreach ($address as $key => $value) {
+        gplcart_array_sort($format);
 
-            if (empty($format[$key]) || empty($value)) {
+        $results = array();
+        foreach ($format as $key => $data) {
+
+            if (empty($address[$key]) || empty($data['status'])) {
                 continue;
             }
 
             if ($key === 'country') {
-                $value = $address['country_native_name'];
+                $address[$key] = $address['country_native_name'];
             }
 
             if ($key === 'state_id') {
-                $value = $address['state_name'];
+                $address[$key] = $address['state_name'];
             }
 
-            if ($key === 'city_id' && is_numeric($value) && !empty($address['city_name'])) {
-                $value = $address['city_name'];
+            if ($key === 'city_id' && is_numeric($address[$key]) && !empty($address['city_name'])) {
+                $address[$key] = $address['city_name'];
             }
 
             if ($both) {
-                $results[$format[$key]['name']] = $value;
+                $results[$data['name']] = $address[$key];
                 continue;
             }
 
-            $results[$key] = $value;
+            $results[$key] = $address[$key];
         }
 
         return $results;

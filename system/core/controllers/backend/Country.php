@@ -240,8 +240,7 @@ class Country extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_country = $country;
-        return $country;
+        return $this->data_country = $country;
     }
 
     /**
