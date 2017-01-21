@@ -113,7 +113,7 @@ class Address extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, ci.city_id) AS city_name,'
+        $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, a.city_id) AS city_name,'
                 . ' c.name AS country_name, ci.status AS city_status,'
                 . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
                 . ' s.name AS state_name, s.status AS state_status'
@@ -205,7 +205,7 @@ class Address extends Model
         $results = array();
         foreach ($format as $key => $data) {
 
-            if (empty($address[$key]) || empty($data['status'])) {
+            if (!array_key_exists($key, $address) || empty($data['status'])) {
                 continue;
             }
 
@@ -217,7 +217,7 @@ class Address extends Model
                 $address[$key] = $address['state_name'];
             }
 
-            if ($key === 'city_id' && is_numeric($address[$key]) && !empty($address['city_name'])) {
+            if ($key === 'city_id' && !empty($address['city_name'])) {
                 $address[$key] = $address['city_name'];
             }
 
@@ -229,7 +229,7 @@ class Address extends Model
             $results[$key] = $address[$key];
         }
 
-        return $results;
+        return array_filter($results);
     }
 
     /**

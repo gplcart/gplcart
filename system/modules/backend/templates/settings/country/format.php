@@ -39,7 +39,7 @@
               <?php if($name == 'country') { ?>
               <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1" checked disabled>
               <?php } else { ?>
-              <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1"<?php echo empty($item['status']) ? '' : ' checked'; ?><?php echo $access_actions ? '' : ' disabled'; ?>>
+              <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1"<?php echo empty($item['status']) ? '' : ' checked'; ?><?php echo $access_actions && empty($item['required']) ? '' : ' disabled'; ?>>
               <?php } ?>
               <input type="hidden" name="format[<?php echo $name; ?>][weight]" value="<?php echo $item['weight']; ?>">
             </td>
@@ -47,7 +47,7 @@
               <?php if($name == 'country') { ?>
               <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1" disabled checked>
               <?php } else { ?>
-              <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo empty($item['status']) ? '' : ' checked'; ?><?php echo $access_actions ? '' : ' disabled'; ?>>
+              <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo empty($item['required']) ? '' : ' checked'; ?><?php echo $access_actions ? '' : ' disabled'; ?>>
               <?php } ?>
             </td>
             <td class="middle">

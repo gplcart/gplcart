@@ -275,9 +275,21 @@ class City extends BackendController
         $this->setData('state', $this->data_state);
         $this->setData('country', $this->data_country);
         $this->setData('zones', $this->getZonesCity());
+        $this->setData('can_delete', $this->canDeleteCity());
 
         $this->submitCity();
         $this->outputEditCity();
+    }
+
+    /**
+     * Whether the city can be deleted
+     * @return bool
+     */
+    protected function canDeleteCity()
+    {
+        return $this->data_city['city_id']//
+                && $this->access('city_delete')//
+                && $this->city->canDelete($this->data_city['city_id']);
     }
 
     /**
@@ -306,8 +318,7 @@ class City extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_city = $city;
-        return $city;
+        return $this->data_city = $city;
     }
 
     /**
@@ -321,11 +332,7 @@ class City extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        if (!$this->validateCity()) {
+        if (!$this->isPosted('save') || !$this->validateCity()) {
             return null;
         }
 

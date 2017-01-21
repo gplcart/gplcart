@@ -388,7 +388,14 @@ class Ajax extends FrontendController
             return array();
         }
 
-        $conditions = array('country' => $country, 'state_id' => $state_id);
+        $conditions = array(
+            'status' => 1,
+            'state_status' => 1,
+            'country_status' => 1,
+            'country' => $country,
+            'state_id' => $state_id,
+        );
+
         return (array) $this->city->getList($conditions);
     }
 
