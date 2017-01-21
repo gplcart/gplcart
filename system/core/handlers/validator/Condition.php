@@ -153,13 +153,12 @@ class Condition
     }
 
     /**
-     * 
-     * @param string $key
-     * @param string $operator
+     * Validates zone ID
      * @param array $values
-     * @return boolean|string
+     * @param string $operator
+     * @return boolean
      */
-    public function shippingZoneId($key, $operator, array $values)
+    public function shippingZoneId(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
             return $this->language->text('Unsupported operator');
@@ -177,13 +176,11 @@ class Condition
 
     /**
      * Validates the route pattern
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
+     * @param string $operator
      * @return boolean|string
      */
-    public function route($key, $operator, array $values, array $data)
+    public function route(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
             return $this->language->text('Unsupported operator');
@@ -203,13 +200,11 @@ class Condition
 
     /**
      * Validates the path pattern
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
+     * @param string $operator
      * @return boolean|string
      */
-    public function path($key, $operator, array $values, array $data)
+    public function path(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
             return $this->language->text('Unsupported operator');
@@ -227,13 +222,10 @@ class Condition
 
     /**
      * Validates the date condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function date($key, $operator, array $values, array $data)
+    public function date(array $values)
     {
         if (count($values) != 1) {
             $vars = array('@field' => $this->language->text('Condition'));
@@ -252,13 +244,10 @@ class Condition
 
     /**
      * Validates the number of usage condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function used($key, $operator, array $values, array $data)
+    public function used(array $values)
     {
         if (count($values) != 1) {
             $vars = array('@field' => $this->language->text('Condition'));
@@ -275,13 +264,10 @@ class Condition
 
     /**
      * Validates the price condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function price($key, $operator, array $values, array $data)
+    public function price(array $values)
     {
         if (count($values) != 1) {
             $vars = array('@field' => $this->language->text('Condition'));
@@ -312,13 +298,10 @@ class Condition
 
     /**
      * Validates the product ID condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function productId($key, $operator, array $values, array $data)
+    public function productId(array $values)
     {
         $count = count($values);
         $ids = array_filter($values, 'ctype_digit');
@@ -343,13 +326,10 @@ class Condition
 
     /**
      * Validates the product category ID condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function categoryId($key, $operator, array $values, array $data)
+    public function categoryId(array $values)
     {
         $count = count($values);
         $ids = array_filter($values, 'ctype_digit');
@@ -374,13 +354,10 @@ class Condition
 
     /**
      * Validates the user ID condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function userId($key, $operator, array $values, array $data)
+    public function userId(array $values)
     {
         $count = count($values);
         $ids = array_filter($values, 'ctype_digit');
@@ -405,13 +382,10 @@ class Condition
 
     /**
      * Validates the role ID condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function userRole($key, $operator, array $values, array $data)
+    public function userRole(array $values)
     {
         $count = count($values);
         $ids = array_filter($values, 'ctype_digit');
@@ -436,13 +410,10 @@ class Condition
 
     /**
      * Validates the shipping method condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function shipping($key, $operator, array $values, array $data)
+    public function shipping(array $values)
     {
         $exists = array_filter($values, function ($method_id) {
             return (bool) $this->shipping->get($method_id);
@@ -458,13 +429,10 @@ class Condition
 
     /**
      * Validates the payment method condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function payment($key, $operator, array $values, array $data)
+    public function payment(array $values)
     {
         $exists = array_filter($values, function ($method_id) {
             return (bool) $this->payment->get($method_id);
@@ -480,13 +448,10 @@ class Condition
 
     /**
      * Validates the country code condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function country($key, $operator, array $values, array $data)
+    public function country(array $values)
     {
         $exists = array_filter($values, function ($code) {
             $country = $this->country->get($code);
@@ -503,13 +468,10 @@ class Condition
 
     /**
      * Validates the country state condition
-     * @param string $key
-     * @param string $operator
      * @param array $values
-     * @param array $data
      * @return boolean|string
      */
-    public function state($key, $operator, array $values, array $data)
+    public function state(array $values)
     {
         $count = count($values);
         $ids = array_filter($values, 'ctype_digit');

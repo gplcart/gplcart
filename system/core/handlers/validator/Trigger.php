@@ -140,7 +140,7 @@ class Trigger extends BaseValidator
             $data = $this->getSubmitted();
             $parameters = array_unique($parameters);
             $handlers = $this->condition->getHandlers();
-            $result = Handler::call($handlers, $condition_id, 'validate', array($condition_id, $operator, $parameters, $data));
+            $result = Handler::call($handlers, $condition_id, 'validate', array($parameters, $operator, $condition_id, $data));
 
             if ($result !== true) {
                 $error = empty($result) ? $this->language->text('Failed validation') : (string) $result;
