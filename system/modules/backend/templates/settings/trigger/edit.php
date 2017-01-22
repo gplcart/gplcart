@@ -77,14 +77,14 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
-          <div class="form-group<?php echo $this->error('data.conditions', ' has-error'); ?>">
+          <div class="form-group required<?php echo $this->error('data.conditions', ' has-error'); ?>">
             <label class="col-md-3 control-label"><?php echo $this->text('Conditions'); ?></label>
             <div class="col-md-9">
-              <textarea name="trigger[data][conditions]" rows="6" class="form-control" placeholder="<?php echo $this->text('E.g, user is logged in: user_id > 0'); ?>"><?php echo empty($trigger['data']['conditions']) ? '' : $this->escape($trigger['data']['conditions']); ?></textarea>
+              <textarea name="trigger[data][conditions]" rows="6" class="form-control"><?php echo empty($trigger['data']['conditions']) ? '' : $this->escape($trigger['data']['conditions']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.conditions'); ?>
                 <div class="text-muted">
-                  <?php echo $this->text('Required. Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom'); ?>
+                  <?php echo $this->text('Required. Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]'); ?>
                 </div>
               </div>
             </div>
@@ -124,7 +124,7 @@
           <table class="table table-striped table-condensed">
             <thead>
               <tr>
-                <td><?php echo $this->text('Key'); ?></td>
+                <td><?php echo $this->text('Operator'); ?></td>
                 <td><?php echo $this->text('Description'); ?></td>
               </tr>
             </thead>
@@ -145,7 +145,7 @@
           <table class="table table-striped table-condensed">
             <thead>
               <tr>
-                <td><?php echo $this->text('Key'); ?></td>
+                <td><?php echo $this->text('ID'); ?></td>
                 <td><?php echo $this->text('Description'); ?></td>
               </tr>
             </thead>

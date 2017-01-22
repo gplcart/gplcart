@@ -74,65 +74,29 @@ trait EntityImage
 
     /**
      * Set entity images
-     * @param \gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $model
      * @param array $data
      * @param string $entity
-     * @param boolean $update
-     * @return boolean
+     * @return array
      */
-    protected function setImages($file, array &$data, $entity, $update = true)
+    protected function setImages($model, array &$data, $entity)
     {
-        if (empty($data['form']) && empty($data['images'])) {
-            return false;
-        }
-
-        $key = "{$entity}_id";
-
-        if ($update) {
-            $this->deleteImages($file, $data[$key], $key);
-        }
-
         if (empty($data['images'])) {
-            return false;
+            return array();
         }
 
-        return $this->addImages($file, $data, $key);
-    }
+        foreach ($data['images'] as &$image) {
 
-    /**
-     * Add an array of images
-     * @param \gplcart\core\models\File $file
-     * @param array $data
-     * @param string $key
-     * @return bool
-     */
-    protected function addImages($file, array $data, $key)
-    {
-        $added = 0;
-        foreach ($data['images'] as $image) {
-            $image += array('id_key' => $key, 'id_value' => $data[$key]);
-            $added += (int) $file->add($image);
+            if (!empty($image['file_id'])) {
+                $model->update($image['file_id'], $image);
+                continue;
+            }
+
+            $file = $image + array('id_key' => "{$entity}_id", 'id_value' => $data["{$entity}_id"]);
+            $image['file_id'] = (int) $model->add($file);
         }
 
-        return $added > 0;
-    }
-
-    /**
-     * Deletes entity images
-     * @param \gplcart\core\models\File $file
-     * @param string $id
-     * @param string $key
-     * @return bool
-     */
-    protected function deleteImages($file, $id, $key)
-    {
-        $options = array(
-            'id_key' => $key,
-            'id_value' => $id,
-            'file_type' => 'image'
-        );
-
-        return $file->deleteMultiple($options);
+        return $data['images'];
     }
 
 }

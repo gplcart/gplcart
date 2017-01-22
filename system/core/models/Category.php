@@ -382,7 +382,7 @@ class Category extends Model
         $data['category_id'] = $this->db->insert('category', $data);
 
         $this->setTranslation($this->db, $data, 'category', false);
-        $this->setImages($this->file, $data, 'category', false);
+        $this->setImages($this->file, $data, 'category');
         $this->setAliasTrait($this->alias, $data, 'category', false);
 
         $this->hook->fire('add.category.after', $data);

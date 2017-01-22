@@ -173,55 +173,6 @@ class Report extends Model
     }
 
     /**
-     * Clears Google Analytics cache
-     * @param string $profile_id
-     */
-    public function clearGaCache($profile_id)
-    {
-        $this->cache->clear("ga.$profile_id.", array('pattern' => '*'));
-    }
-
-    /**
-     * Returns an array of chart data
-     * @param object $analytics
-     * @return array
-     */
-    public function buildTrafficChart(\gplcart\core\models\Analytics $analytics)
-    {
-        $results = $analytics->get('traffic');
-
-        if (empty($results)) {
-            return array();
-        }
-
-        $build = array();
-        $traffic_data = array();
-
-        foreach ($results as $row => $values) {
-            $date = DateTime::createFromFormat('Ymd', $values[0]);
-            $build['labels'][$row] = $date->format('M j');
-            $traffic_data[0][$row] = $values[1];
-            $traffic_data[1][$row] = $values[2];
-        }
-
-        $build['datasets'][0] = array(
-            'label' => 'sessions',
-            'data' => $traffic_data[0],
-        );
-
-        $build['datasets'][1] = array(
-            'label' => 'pageviews',
-            'data' => $traffic_data[1],
-        );
-
-        $build['options'] = array(
-            'responsive' => true,
-            'maintainAspectRatio' => false);
-
-        return $build;
-    }
-
-    /**
      * Returns an array of system statuses
      * @return array
      */

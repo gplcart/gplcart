@@ -220,18 +220,20 @@ label.option-wrapper > input {
     display: none;
 }
 
-label.option-wrapper > input  + img,
-label.option-wrapper > input  + span {
+label.option-wrapper > input  + img {
     height:40px;
-    width:40px;
     display: block;
     cursor: pointer;
-    border: 1px solid transparent;  
+}
+label.option-wrapper > input  + .btn {
+background-size: 100% 100%;
+color: rgba(0, 0, 0, 0);
 }
 
 label.option-wrapper > input:checked  + img,
-label.option-wrapper > input:checked  + span {
+label.option-wrapper > input:checked  + .btn {
     border: 1px solid #f00;
+    
 }
 
 

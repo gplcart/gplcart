@@ -84,6 +84,16 @@ class Image extends Model
     }
 
     /**
+     * Deletes multiple images
+     * @param array $options
+     * @return bool
+     */
+    public function deleteMultiple(array $options)
+    {
+        return $this->file->deleteMultiple($options);
+    }
+
+    /**
      * Modify an image (crop, watermark etc)
      * @param string $file
      * @param array $actions

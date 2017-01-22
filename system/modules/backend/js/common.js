@@ -325,11 +325,13 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     Backend.attach.deleteImages = function () {
 
         var item = 'div.thumb',
-                selector = '.image-container .delete-image';
+                selector = '[name="delete_images[]"]';
 
         $(document).on('click', selector, function () {
-            $(this).closest(item).remove();
-            return false;
+            if (!$(this).val()) {
+                $(this).closest(item).remove();
+                return false;
+            }
         });
     };
 
@@ -340,7 +342,7 @@ var Backend = Backend || {html: {}, ui: {}, attach: {}, settings: {}, include: {
     Backend.attach.imagesSortable = function () {
 
         var params = {
-            items: '> div > .thumb',
+            items: '> div > div',
             handle: '.handle',
             stop: function () {
                 $('input[name$="[weight]"]').each(function (i, v) {

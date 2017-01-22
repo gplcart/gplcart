@@ -299,7 +299,7 @@ class Category extends BackendController
         if (empty($category)) {
             $this->outputHttpStatus(404);
         }
-        
+
         $prepared = $this->prepareCategory($category);
         return $this->data_category = $prepared;
     }
@@ -325,13 +325,11 @@ class Category extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save')) {
+        if (!$this->isPosted('save') || !$this->validateCategory()) {
             return null;
         }
 
-        if (!$this->validateCategory()) {
-            return null;
-        }
+        $this->deleteImagesTrait($this->request, $this->image, $this->data_category, 'category');
 
         if (isset($this->data_category['category_id'])) {
             $this->updateCategory();
@@ -357,6 +355,7 @@ class Category extends BackendController
         }
 
         $this->validate('category');
+
         return !$this->hasErrors('category');
     }
 

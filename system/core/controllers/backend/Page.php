@@ -244,8 +244,7 @@ class Page extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_page = $this->preparePage($page);
-        return $this->data_page;
+        return $this->data_page = $this->preparePage($page);
     }
 
     /**
@@ -275,6 +274,8 @@ class Page extends BackendController
         if (!$this->isPosted('save') || !$this->validatePage()) {
             return null;
         }
+
+        $this->deleteImagesTrait($this->request, $this->image, $this->data_page, 'page');
 
         if (isset($this->data_page['page_id'])) {
             $this->updatePage();

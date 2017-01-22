@@ -29,7 +29,7 @@ trait BackendController
             $item['thumb'] = $image->url($imagestyle, $item['path']);
         }
     }
-    
+
     /**
      * Adds thumb url to a single file
      * @param \gplcart\core\models\Image $image
@@ -63,7 +63,7 @@ trait BackendController
 
         return $items;
     }
-    
+
     /**
      * Adds rendered images to the edit entity form
      * @param \gplcart\core\Controller $controller
@@ -75,6 +75,31 @@ trait BackendController
         $data = array('images' => $images, 'name_prefix' => $entity);
         $html = $controller->render('common/image/attache', $data);
         $controller->setData('attached_images', $html);
+    }
+
+    /**
+     * Deletes submitted image file IDs
+     * @param \gplcart\core\helpers\Request $request
+     * @param \gplcart\core\models\Image $image
+     * @param array $data
+     * @param string $entity
+     */
+    protected function deleteImagesTrait($request, $image, array $data, $entity)
+    {
+        $file_ids = $request->post('delete_images', array());
+
+        if (empty($file_ids) || empty($data["{$entity}_id"])) {
+            return null;
+        }
+
+        $options = array(
+            'file_id' => $file_ids,
+            'file_type' => 'image',
+            'id_key' => "{$entity}_id",
+            'id_value' => $data["{$entity}_id"]
+        );
+
+        return $image->deleteMultiple($options);
     }
 
 }

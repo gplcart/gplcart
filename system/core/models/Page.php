@@ -109,7 +109,7 @@ class Page extends Model
         $data['page_id'] = $this->db->insert('page', $data);
 
         $this->setTranslation($this->db, $data, 'page', false);
-        $this->setImages($this->file, $data, 'page', false);
+        $this->setImages($this->file, $data, 'page');
         $this->setAliasTrait($this->alias, $data, 'page', false);
 
         $this->hook->fire('add.page.after', $data);

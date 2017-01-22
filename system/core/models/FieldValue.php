@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\File as FileModel;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -20,10 +20,10 @@ class FieldValue extends Model
 {
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
+     * File model instance
+     * @var \gplcart\core\models\File $file
      */
-    protected $image;
+    protected $file;
 
     /**
      * Language model instance
@@ -33,14 +33,14 @@ class FieldValue extends Model
 
     /**
      * Constructor
-     * @param ImageModel $image
+     * @param FileModel $file
      * @param LanguageModel $language
      */
-    public function __construct(ImageModel $image, LanguageModel $language)
+    public function __construct(FileModel $file, LanguageModel $language)
     {
         parent::__construct();
 
-        $this->image = $image;
+        $this->file = $file;
         $this->language = $language;
     }
 
@@ -195,8 +195,8 @@ class FieldValue extends Model
     {
         if ($delete) {
             $this->deleteTranslation($data['field_value_id']);
-        } 
-        
+        }
+
         if (empty($data['translation'])) {
             return false;
         }
@@ -271,7 +271,7 @@ class FieldValue extends Model
             'id_value' => $data['field_value_id']
         );
 
-        $file_id = $this->image->add($conditions);
+        $file_id = $this->file->add($conditions);
         $this->update($data['field_value_id'], array('file_id' => $file_id));
         return true;
     }

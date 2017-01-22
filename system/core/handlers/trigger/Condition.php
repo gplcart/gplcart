@@ -12,6 +12,7 @@ namespace gplcart\core\handlers\trigger;
 use gplcart\core\Route;
 use gplcart\core\models\Zone as ZoneModel;
 use gplcart\core\models\User as UserModel;
+use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\Currency as CurrencyModel;
@@ -37,6 +38,12 @@ class Condition
      * @var \gplcart\core\models\Product $product
      */
     protected $product;
+
+    /**
+     * Price model instance
+     * @var \gplcart\core\models\Price $price
+     */
+    protected $price;
 
     /**
      * User model instance
@@ -67,17 +74,19 @@ class Condition
      * @param ConditionModel $condition
      * @param UserModel $user
      * @param CurrencyModel $currency
+     * @param PriceModel $price
      * @param ProductModel $product
      * @param AddressModel $address
      * @param ZoneModel $zone
      * @param Route $route
      */
     public function __construct(ConditionModel $condition, UserModel $user,
-            CurrencyModel $currency, ProductModel $product,
+            CurrencyModel $currency, PriceModel $price, ProductModel $product,
             AddressModel $address, ZoneModel $zone, Route $route)
     {
         $this->zone = $zone;
         $this->user = $user;
+        $this->price = $price;
         $this->route = $route;
         $this->address = $address;
         $this->product = $product;
@@ -181,8 +190,13 @@ class Condition
      */
     public function date(array $condition)
     {
-        $value = reset($condition['value']);
-        return $this->condition->compareNumeric(GC_TIME, (int) $value, $condition['operator']);
+        $value = strtotime(reset($condition['value']));
+
+        if (empty($value)) {
+            return false;
+        }
+
+        return $this->condition->compareNumeric(GC_TIME, $value, $condition['operator']);
     }
 
     /**
@@ -213,7 +227,8 @@ class Condition
             return false;
         }
 
-        $condition_value = explode('|', reset($condition['value']));
+        $condition_value = explode('|', reset($condition['value']), 2);
+
         $cart_currency = $data['cart']['currency'];
         $condition_currency = $cart_currency;
 
@@ -221,7 +236,9 @@ class Condition
             $condition_currency = $condition_value[1];
         }
 
+        $condition_value[0] = (int) $this->price->amount($condition_value[0], $condition_currency);
         $value = $this->currency->convert((int) $condition_value[0], $condition_currency, $cart_currency);
+
         return $this->condition->compareNumeric((int) $data['cart']['total'], $value, $condition['operator']);
     }
 
@@ -238,6 +255,7 @@ class Condition
         }
 
         $value = (array) $condition['value'];
+
         if (!in_array($condition['operator'], array('=', '!='))) {
             $value = (int) reset($value);
         }
@@ -455,6 +473,7 @@ class Condition
     public function state(array $condition, array $data)
     {
         $value = (array) $condition['value'];
+
         if (!in_array($condition['operator'], array('=', '!='))) {
             $value = (int) reset($value);
         }

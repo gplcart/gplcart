@@ -326,8 +326,7 @@ class Product extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_product = $this->prepareProduct($product);
-        return $this->data_product;
+        return $this->data_product = $this->prepareProduct($product);
     }
 
     /**
@@ -398,6 +397,8 @@ class Product extends BackendController
         if (!$this->isPosted('save') || !$this->validateProduct()) {
             return null;
         }
+
+        $this->deleteImagesTrait($this->request, $this->image, $this->data_product, 'product');
 
         if (isset($this->data_product['product_id'])) {
             $this->updateProduct();

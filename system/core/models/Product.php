@@ -145,7 +145,7 @@ class Product extends Model
         $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslation($this->db, $data, 'product', false);
-        $this->setImages($this->file, $data, 'product', false);
+        $this->setImages($this->file, $data, 'product');
 
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
@@ -261,31 +261,69 @@ class Product extends Model
     /**
      * Loads a product from the database
      * @param integer $product_id
-     * @param string|null $language
+     * @param array $options
      * @return array
      */
-    public function get($product_id, $language = null)
+    public function get($product_id, array $options = array())
     {
-        $this->hook->fire('get.product.before', $product_id);
+        $this->hook->fire('get.product.before', $product_id, $options);
 
-        if (empty($product_id)) {
+        if (empty($product_id) && empty($options)) {
             return array();
         }
 
-        $sql = 'SELECT p.*, u.role_id'
-                . ' FROM product p'
-                . ' LEFT JOIN user u ON(p.user_id=u.user_id)'
-                . ' WHERE p.product_id=?';
+        $conditions = array();
 
-        $product = $this->db->fetch($sql, array($product_id));
+        $sql = 'SELECT p.*, u.role_id, ps.sku, ps.price, ps.stock, ps.file_id'
+                . ' FROM product p'
+                . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
+                . ' LEFT JOIN user u ON(p.user_id=u.user_id)';
+
+        if (isset($options['sku'])) {
+            $sql .= ' WHERE ps.sku = ?';
+            $conditions[] = $options['sku'];
+        } else {
+            $sql .= ' WHERE p.product_id = ?';
+            $conditions[] = $product_id;
+        }
+
+        if (!empty($options['store_id'])) {
+            $sql .= ' AND p.store_id = ?';
+            $conditions[] = $options['store_id'];
+        }
+
+        if (!isset($options['language'])) {
+            $options['language'] = null;
+        }
+
+        $product = $this->db->fetch($sql, $conditions);
 
         $this->attachFields($product);
         $this->attachSku($product);
-        $this->attachImages($this->file, $product, 'product', $language);
-        $this->attachTranslation($this->db, $product, 'product', $language);
+        $this->attachImages($this->file, $product, 'product', $options['language']);
+        $this->attachTranslation($this->db, $product, 'product', $options['language']);
 
-        $this->hook->fire('get.product.after', $product_id, $product);
+        $this->hook->fire('get.product.after', $product_id, $options, $product);
+
         return $product;
+    }
+
+    /**
+     * Returns a product by the SKU
+     * @param string $sku
+     * @param integer $store_id
+     * @param string|null $language
+     * @return array
+     */
+    public function getBySku($sku, $store_id, $language = null)
+    {
+        $conditions = array(
+            'sku' => $sku,
+            'language' => $language,
+            'store_id' => $store_id
+        );
+
+        return $this->get(null, $conditions);
     }
 
     /**
@@ -309,8 +347,6 @@ class Product extends Model
         foreach ($product['field']['option'] as &$field_values) {
             $field_values = array_unique($field_values);
         }
-
-        return null;
     }
 
     /**
@@ -337,41 +373,6 @@ class Product extends Model
             $product['price'] = $sku['price'];
             $product['stock'] = $sku['stock'];
         }
-
-        return null;
-    }
-
-    /**
-     * Returns a product by the SKU
-     * @param string $sku
-     * @param integer $store_id
-     * @param string|null $language
-     * @return array
-     */
-    public function getBySku($sku, $store_id, $language = null)
-    {
-        if (!isset($language)) {
-            $language = $this->language->current();
-        }
-
-        $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . ' ps.sku, ps.price, ps.stock, ps.file_id'
-                . ' FROM product p'
-                . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
-                . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id'
-                . ' AND pt.language=:language)'
-                . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
-
-        $conditions = array(
-            'sku' => $sku,
-            'language' => $language,
-            'store_id' => $store_id
-        );
-
-        $product = $this->db->fetch($sql, $conditions);
-
-        $this->attachImage($product);
-        return $product;
     }
 
     /**
@@ -737,6 +738,8 @@ class Product extends Model
                 $combination['price'] = $this->price->amount($combination['price'], $data['currency']);
             }
 
+            $this->setCombinationFileId($combination, $data);
+
             $sku = array(
                 'sku' => $combination['sku'],
                 'store_id' => $data['store_id'],
@@ -747,10 +750,6 @@ class Product extends Model
                 'combination_id' => $this->sku->getCombinationId($combination['fields'], $data['product_id'])
             );
 
-            if (isset($combination['path']) && isset($data['images'][$combination['path']])) {
-                $sku['file_id'] = $data['images'][$combination['path']];
-            }
-
             if (empty($sku['sku'])) {
                 $sku['sku'] = $this->sku->generate($data['sku'], array(), array('store_id' => $data['store_id']));
             }
@@ -759,6 +758,23 @@ class Product extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Adds a file ID from uploaded images to the combination item
+     * @param array $combination
+     * @param array $data
+     * @return array
+     */
+    protected function setCombinationFileId(array &$combination, array $data)
+    {
+        foreach ($data['images'] as $image) {
+            if ($image['path'] === $combination['path']) {
+                $combination['file_id'] = $image['file_id'];
+            }
+        }
+
+        return $combination;
     }
 
     /**

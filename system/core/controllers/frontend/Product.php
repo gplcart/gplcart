@@ -216,7 +216,6 @@ class Product extends FrontendController
         $access = ($this->data_product['stock'] || empty($this->data_product['subtract']));
 
         $cart = array(
-            'token' => $this->token,
             'cart_access' => $access,
             'product' => $this->data_product,
             'field_data' => $this->data_product['fields']
@@ -370,7 +369,7 @@ class Product extends FrontendController
      */
     protected function setProduct($product_id)
     {
-        $product = $this->product->get($product_id, $this->langcode);
+        $product = $this->product->get($product_id, array('language' => $this->langcode));
 
         if (empty($product)) {
             $this->outputHttpStatus(404);
@@ -387,8 +386,7 @@ class Product extends FrontendController
         $product['fields'] = $this->getFieldsProduct($product);
         $this->setItemPrice($product);
 
-        $this->data_product = $product;
-        return $product;
+        return $this->data_product = $product;
     }
 
     /**
@@ -446,11 +444,11 @@ class Product extends FrontendController
 
         foreach ($product['field']['option'] as $field_id => $field_values) {
 
-            if (empty($data['option'][$field_id])) {
+            if (empty($data['option'][$field_id]['widget'])) {
                 continue;
             }
 
-            if (empty($data['option'][$field_id]['widget'] !== 'image')) {
+            if ($data['option'][$field_id]['widget'] !== 'image') {
                 continue;
             }
 

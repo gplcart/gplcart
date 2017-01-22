@@ -56,14 +56,11 @@ class Frontend
             return null;
         }
 
-        if (!$controller->isInstalling()) {
-            $controller->setJs('system/modules/frontend/js/script.js');
-        }
-
         $libraries = array('bootstrap', 'font_awesome');
 
         if (!$controller->isInstalling()) {
-            $libraries += array('jquery_match_height', 'lightgallery', 'lightslider', 'jquery_ui');
+            $controller->setJs('system/modules/frontend/js/script.js');
+            $libraries = array_merge($libraries, array('jquery_match_height', 'lightgallery', 'lightslider', 'jquery_ui'));
         }
 
         $controller->addAssetLibrary($libraries);

@@ -11,7 +11,6 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\Cache;
-use gplcart\core\Logger;
 use gplcart\core\models\Sku as SkuModel;
 use gplcart\core\models\User as UserModel;
 use gplcart\core\models\Product as ProductModel;
@@ -69,12 +68,6 @@ class Cart extends Model
     protected $request;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Constructor
      * @param ProductModel $product
      * @param SkuModel $sku
@@ -83,17 +76,15 @@ class Cart extends Model
      * @param WishlistModel $wishlist
      * @param LanguageModel $language
      * @param RequestHelper $request
-     * @param Logger $logger
      */
     public function __construct(ProductModel $product, SkuModel $sku,
             CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
-            LanguageModel $language, RequestHelper $request, Logger $logger)
+            LanguageModel $language, RequestHelper $request)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->user = $user;
-        $this->logger = $logger;
         $this->product = $product;
         $this->request = $request;
         $this->currency = $currency;
@@ -261,8 +252,6 @@ class Cart extends Model
                     '!href' => $this->request->base() . 'checkout'
                 ))
             );
-
-            $this->logAddToCart($product, $data);
         }
 
         $this->hook->fire('add.product.cart.after', $product, $data, $result);
@@ -392,28 +381,6 @@ class Cart extends Model
     }
 
     /**
-     * Logs adding products to the cart
-     * @param array $product
-     * @param array $data
-     * @return boolean
-     */
-    protected function logAddToCart(array $product, array $data)
-    {
-        $log = array(
-            'message' => 'User %uid added product <a target="_blank" href="@url">@product</a> (SKU: %sku) at store #%store',
-            'variables' => array(
-                '%sku' => $data['sku'],
-                '%store' => $product['store_id'],
-                '@url' => $this->request->base() . "product/{$product['product_id']}",
-                '@product' => $product['product_id'],
-                '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : '**anonymous**'
-            )
-        );
-
-        return $this->logger->log('cart', $log);
-    }
-
-    /**
      * Loads a cart from the database
      * @param integer $cart_id
      * @return array
@@ -496,7 +463,6 @@ class Cart extends Model
         }
 
         $this->deleteCookie();
-        $this->logLoginCheckout($user);
 
         $result = array(
             'user' => $user,
@@ -554,20 +520,6 @@ class Cart extends Model
     {
         $cookie = $this->config->get('user_cookie_name', 'user_id');
         return $this->request->deleteCookie($cookie);
-    }
-
-    /**
-     * Logs logging in during checkout
-     * @param array $user
-     */
-    protected function logLoginCheckout(array $user)
-    {
-        $log = array(
-            'message' => 'User has logged in during checkout using %email',
-            'variables' => array('%email' => $user['email'])
-        );
-
-        $this->logger->log('checkout', $log);
     }
 
 }

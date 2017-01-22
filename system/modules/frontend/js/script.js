@@ -94,22 +94,20 @@
             return;
         }
 
-        var slider = $('[data-slider="true"]'),
-                settings,
-                gSettings;
+        var slider = $('[data-slider="true"]'), slider_settings, gallery_settings;
 
         slider.each(function () {
 
-            settings = $(this).data('slider-settings') || {};
-            gSettings = $(this).data('slider-gallery');
+            slider_settings = $(this).data('slider-settings') || {};
 
-            if (!$.isEmptyObject(gSettings) && $.fn.lightGallery) {
-                settings.onSliderLoad = function (gallery) {
-                    gallery.lightGallery(gallery.data('slider-gallery'));
+            if ($.fn.lightGallery) {
+                gallery_settings = $(this).data('gallery-settings') || {};
+                slider_settings.onSliderLoad = function (gallery) {
+                    gallery.lightGallery(gallery_settings);
                 };
             }
 
-            $(this).lightSlider(settings);
+            $(this).lightSlider(slider_settings);
         });
     };
 

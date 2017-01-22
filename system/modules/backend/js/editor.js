@@ -52,7 +52,7 @@
             mode: mode,
             lineNumbers: true, theme: 'dracula', readOnly: readonly};
 
-        // Allow to rewrite default setting with inline data-codemirror-settings attribute
+        // Allow to rewrite default setting with inline configuration
         settings = element.data('codemirror-settings') || {};
 
         if (typeof settings === 'object') {

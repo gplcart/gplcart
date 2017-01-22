@@ -25,10 +25,16 @@
                   {% if field_data.option[field_id].widget == 'image' %}
                       {# image widget #}
                       {% for field_value_id in field_values %}
-                          {% if field_data['option'][field_id]['values'][field_value_id] is defined and field_data['option'][field_id]['values'][field_value_id]['thumb'] is defined %}
+                          {% if field_data['option'][field_id]['values'][field_value_id] is defined %}
                               <label class="option-wrapper image" data-field-value-id="{{ field_value_id }}" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}">
                                 <input class="option" data-field-id="{{ field_id }}" data-field-value-id="{{ field_value_id }}" type="radio" name="product[options][{{ field_id }}]" value="{{ field_value_id }}">
-                                <img src="{{ field_data['option'][field_id]['values'][field_value_id]['thumb'] }}">
+                                {% if field_data['option'][field_id]['values'][field_value_id]['thumb'] is not empty %}
+                                    <span class="btn btn-default has-image" style="background-image: url({{ field_data['option'][field_id]['values'][field_value_id]['thumb'] }})">fdsfd</span>
+                                {% else %}
+                                    <span class="btn btn-default">
+                                    {{ field_data['option'][field_id]['values'][field_value_id]['title'] }}
+                                    </span>
+                                {% endif %}
                               </label>
                           {% endif %}
                       {% endfor %}
@@ -38,7 +44,7 @@
                           {% if field_data['option'][field_id]['values'][field_value_id] is defined %}
                               <label class="option-wrapper color" data-field-value-id="{{ field_value_id }}" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}">
                                 <input class="option" data-field-id="{{ field_id }}" data-field-value-id="{{ field_value_id }}" type="radio" name="product[options][{{ field_id }}]" value="{{ field_value_id }}">
-                                <span style="background-color:{{ field_data['option'][field_id]['values'][field_value_id]['color'] }}"></span>
+                                <span class="button" style="background-color:{{ field_data['option'][field_id]['values'][field_value_id]['color'] }}"></span>
                               </label>
                           {% endif %}
                       {% endfor %}

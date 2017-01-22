@@ -226,7 +226,7 @@ class Condition extends Model
 
         $handlers['date'] = array(
             'title' => $this->language->text('Current date (global)'),
-            'description' => $this->language->text('Parameters: One value in time format'),
+            'description' => $this->language->text('Parameters: One value in <a target="_blank" href="http://php.net/manual/en/datetime.formats.php">time format</a>'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\trigger\\Condition', 'date'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'date'),

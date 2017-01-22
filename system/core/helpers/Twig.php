@@ -283,7 +283,7 @@ class Twig
     protected function addFunctionVarDump($object)
     {
         $function = new \Twig_SimpleFunction('var_dump', function ($key = null) use ($object) {
-            ddd($object->getData($key));
+            d($object->getData($key));
         });
 
         $this->twig->addFunction($function);
