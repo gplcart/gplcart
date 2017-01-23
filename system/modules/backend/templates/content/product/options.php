@@ -47,6 +47,7 @@
               <th class="middle"><?php echo $this->text('Price'); ?></th>
               <th class="middle"><?php echo $this->text('Stock'); ?></th>
               <th class="middle"><?php echo $this->text('Image'); ?></th>
+              <th class="middle"><?php echo $this->text('Default'); ?> <a href="#" class="uncheck-default-combination"><span class="fa fa-times"></span></a></th>
               <th class="middle"><?php echo $this->text('Action'); ?></th>
             </tr>
           </thead>
@@ -92,6 +93,11 @@
                 <?php } ?>
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][file_id]" value="<?php echo $combination['file_id']; ?>">
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][path]" value="<?php echo $this->escape($combination['path']); ?>">
+              </td>
+              <td>
+                <div class="default">
+                  <input type="radio" class="form-control" name="product[combination][<?php echo $row; ?>][is_default]" value="1"<?php echo empty($combination['is_default']) ? '' : ' checked'; ?>>
+                </div>
               </td>
               <td><a href="#" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a></td>
             </tr>

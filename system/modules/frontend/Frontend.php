@@ -60,7 +60,7 @@ class Frontend
 
         if (!$controller->isInstalling()) {
             $controller->setJs('system/modules/frontend/js/script.js');
-            $libraries = array_merge($libraries, array('jquery_match_height', 'lightgallery', 'lightslider', 'jquery_ui'));
+            $libraries = array_merge($libraries, array('jquery_match_height', 'lightgallery', 'lightgallery_thumbnail', 'lightslider', 'jquery_ui'));
         }
 
         $controller->addAssetLibrary($libraries);
@@ -96,7 +96,7 @@ class Frontend
             'image_style_page' => 5,
             'image_style_category' => 3,
             'image_style_category_child' => 3,
-            'image_style_product' => 5,
+            'image_style_product' => 6,
             'image_style_product_grid' => 3,
             'image_style_product_list' => 3,
             'image_style_cart' => 3,

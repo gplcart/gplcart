@@ -177,7 +177,7 @@
                 index = $('#option-form-wrapper tbody tr').length + 1;
 
         html += '<tr>';
-        
+
         $('#option-form-wrapper tfoot select').each(function () {
             html += '<td class="field-title">';
             html += '<select data-live-search="true" class="form-control selectpicker" name="product[combination][' + index + '][fields][' + $(this).attr('data-field-id') + ']">';
@@ -200,6 +200,11 @@
         html += '<input type="hidden" name="product[combination][' + index + '][file_id]" value="">';
         html += '<input type="hidden" name="product[combination][' + index + '][path]" value="">';
         html += '<input type="hidden" name="product[combination][' + index + '][thumb]" value="">';
+        html += '</td>';
+        html += '<td>';
+        html += '<div class="default">';
+        html += '<input type="radio" class="form-control" name="product[combination][' + index + '][is_default]">';
+        html += '</div>';
         html += '</td>';
         html += '<td>';
         html += '<a href="#" onclick="return false;" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a>';
@@ -286,6 +291,25 @@
             $(tbody).append(row);
             $('.selectpicker').selectpicker();
             return false;
+        });
+    };
+
+    /**
+     * Ensure that only one combination default radio button is selected
+     * @returns {undefined}
+     */
+    Backend.include.product.attach.checkDefaultCombination = function () {
+        
+        var radio = '.option input[name$="[is_default]"]',
+                uncheck = '.uncheck-default-combination';
+        
+        $(document).on('click', uncheck, function(){
+            $(radio).prop('checked', false);
+            return false;
+        });
+
+        $(document).on('change', radio, function () {
+            $(radio + ':checked').not(this).prop('checked', false);
         });
     };
 

@@ -72,6 +72,7 @@ class Twig
         $this->addFunctionError($object);
         $this->addFunctionToken($object);
         $this->addFunctionConfig($object);
+        $this->addFunctionSettings($object);
         $this->addFunctionAccess($object);
         $this->addFunctionSummary($object);
         $this->addFunctionAttributes($object);
@@ -232,6 +233,19 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('config', function ($key = null, $default = null) use ($object) {
             return $object->config($key, $default);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \gplcart\core\Controller::settings()
+     * @param \gplcart\core\Controller $object
+     */
+    protected function addFunctionSettings($object)
+    {
+        $function = new \Twig_SimpleFunction('settings', function ($key = null, $default = null) use ($object) {
+            return $object->settings($key, $default);
         });
 
         $this->twig->addFunction($function);

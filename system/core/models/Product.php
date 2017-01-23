@@ -747,6 +747,7 @@ class Product extends Model
                 'stock' => $combination['stock'],
                 'product_id' => $data['product_id'],
                 'file_id' => $combination['file_id'],
+                'is_default' => !empty($combination['is_default']),
                 'combination_id' => $this->sku->getCombinationId($combination['fields'], $data['product_id'])
             );
 

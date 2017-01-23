@@ -8,12 +8,6 @@ html {
     min-height: 100%;
 }
 
-.navbar {
-    margin-bottom: 0;
-    border: none;
-    background-color: #364F6B;
-}
-
 .footer {
     position: absolute;
     bottom: 0;
@@ -27,8 +21,12 @@ html {
     background-color: #eee;
 }
 
-.main {
+.row.main {
     padding-top: 20px;
+}
+
+.row.main h1:first-child {
+    margin-top: 0;
 }
 
 .container.wrapper {
@@ -115,14 +113,15 @@ body.checkout .navbar .cart {
     display: inline;
 }
 
-.navbar.second {
-    background-color: #444;
-    z-index: 999;
+.navbar {
+    margin-bottom: 0;
+    border: none;
 }
 
-
-.navbar.second a {
-    color: #9d9d9d;
+.navbar.second {
+    background-color: #fff;
+    z-index: 999;
+    border-bottom: 1px solid #eee;
 }
 
 a.disabled {
@@ -150,10 +149,6 @@ a.disabled {
 
 .section.collection {
     background: #fff;
-}
-
-.margin-bottom-20 {
-    margin-bottom: 20px !important;
 }
 
 .form-group.required .control-label:before,
@@ -216,33 +211,42 @@ table.compare tbody > tr > td  {
 
 /*********************** Product options **************************/
 
-label.option-wrapper > input {
+.option-combination:not(.field-widget-radio) input {
     display: none;
 }
 
-label.option-wrapper > input  + img {
-    height:40px;
-    display: block;
-    cursor: pointer;
-}
-label.option-wrapper > input  + .btn {
-background-size: 100% 100%;
-color: rgba(0, 0, 0, 0);
+.option-combination.field-widget-image > .btn {
+    background-size: 100% 100%;
 }
 
-label.option-wrapper > input:checked  + img,
-label.option-wrapper > input:checked  + .btn {
+.option-combination.field-widget-image > .btn.has-image {
+    height: 34px;
+    width: 40px;
+}
+
+.option-combination > input:checked  + .btn {
     border: 1px solid #f00;
-    
 }
 
+label.field-title {
+    display: block;
+}
+
+.no-color{
+    background: repeating-linear-gradient(-45deg, #ccc, #ccc 1px, #fff 1px, #fff 4px);
+}
+
+.lSSlideOuter .lSPager.lSGallery li {
+    opacity: 0.8;
+}
+
+.lSSlideOuter .lSPager.lSGallery li.active, .lSSlideOuter .lSPager.lSGallery li:hover {
+    border-radius: 0;
+    opacity: 1;
+}
 
 .option.not-matching {
     opacity: 0.5;
-}
-
-td.middle {
-    vertical-align: middle !important;
 }
 
 .table-auto {
@@ -255,11 +259,6 @@ td.middle {
 
 .hidden-js {
     display: none !important;
-}
-
-.products.section {
-    margin-bottom: 0;
-    padding-bottom: 0;
 }
 
 .panel-footer .pagination {
@@ -287,8 +286,6 @@ td.middle {
 .collection-file .slider li {
     width:1140px;
 }
-
-
 
 .item .thumbnail .thumbnail {
     border: none;
