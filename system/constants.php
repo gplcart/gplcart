@@ -16,6 +16,7 @@ define('GC_TEST_UNIT_DIR', GC_TEST_DIR . '/unit');
 define('GC_SYSTEM_DIR', GC_ROOT_DIR . '/system');
 define('GC_CORE_DIR', GC_SYSTEM_DIR . '/core');
 define('GC_MODULE_DIR', GC_SYSTEM_DIR . '/modules');
+define('GC_VENDOR_NAME', 'gplcart/libraries');
 define('GC_VENDOR_DIR_NAME', 'vendor');
 define('GC_VENDOR_CONFIG', 'gplcart.json');
 define('GC_VENDOR_DIR', GC_ROOT_DIR . '/' . GC_VENDOR_DIR_NAME);

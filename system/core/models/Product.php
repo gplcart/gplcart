@@ -363,12 +363,14 @@ class Product extends Model
         $skus = (array) $this->sku->getList(array('product_id' => $product['product_id']));
 
         foreach ($skus as $sku) {
-
             if ($sku['combination_id'] !== '') {
                 $product['combination'][$sku['combination_id']] = $sku;
+                if (!empty($sku['is_default'])) {
+                    $product['default_field_values'] = $sku['fields'];
+                    $product['default_combination_id'] = $sku['combination_id'];
+                }
                 continue;
             }
-
             $product['sku'] = $sku['sku'];
             $product['price'] = $sku['price'];
             $product['stock'] = $sku['stock'];

@@ -385,7 +385,6 @@ class Product extends FrontendController
 
         $product['fields'] = $this->getFieldsProduct($product);
         $this->setItemPrice($product);
-
         return $this->data_product = $product;
     }
 

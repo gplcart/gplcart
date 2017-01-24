@@ -23,7 +23,7 @@
                     {% for field_value_id in field_values %}
                         {% if field_data['option'][field_id]['values'][field_value_id] is defined %}
                             <label class="option-combination field-widget-image" data-field-value-id="{{ field_value_id }}" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}">
-                              <input class="option" data-field-id="{{ field_id }}" data-field-value-id="{{ field_value_id }}" type="radio" name="product[options][{{ field_id }}]" value="{{ field_value_id }}">
+                              <input class="option" data-field-id="{{ field_id }}" data-field-value-id="{{ field_value_id }}" type="radio" name="product[options][{{ field_id }}]" value="{{ field_value_id }}"{{ field_value_id in product['default_field_values'] ? ' checked' }}>
                               {% if field_data['option'][field_id]['values'][field_value_id]['thumb'] is not empty %}
                                   <span class="btn btn-default has-image" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}" style="background-image: url({{ field_data['option'][field_id]['values'][field_value_id]['thumb'] }})"></span>
                               {% else %}
@@ -40,9 +40,9 @@
                             <label class="option-combination field-widget-color" data-field-value-id="{{ field_value_id }}" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}">
                               <input class="option" data-field-id="{{ field_id }}" data-field-value-id="{{ field_value_id }}" type="radio" name="product[options][{{ field_id }}]" value="{{ field_value_id }}">
                               {% if field_data['option'][field_id]['values'][field_value_id]['color'] %}
-                              <span class="btn btn-default" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}" style="background-color:{{ field_data['option'][field_id]['values'][field_value_id]['color'] }}"></span>
+                                  <span class="btn btn-default" title="{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}" style="background-color:{{ field_data['option'][field_id]['values'][field_value_id]['color'] }}"></span>
                               {% else %}
-                              <span class="btn btn-default no-color">{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}</span> 
+                                  <span class="btn btn-default no-color">{{ field_data['option'][field_id]['values'][field_value_id]['title'] }}</span> 
                               {% endif %}
                             </label>
                         {% endif %}

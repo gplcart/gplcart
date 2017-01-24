@@ -122,6 +122,7 @@
               <td><input class="form-control" value=""></td>
               <td><input class="form-control" value=""></td>
               <td><a href="#" class="btn btn-default select-image"><i class="fa fa-image"></i></a></td>
+              <td></td>
               <td><a href="#" class="btn btn-default add-option-combination"><i class="fa fa-plus"></i></a></td>
             </tr>
           </tfoot>

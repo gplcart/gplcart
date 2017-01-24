@@ -80,15 +80,12 @@ class Library
 
         $cached = $this->cache->get('libraries');
 
-        if ($cache && isset($cached)) {
+        if ($cache && !empty($cached)) {
             $libraries = $cached;
         } else {
-
             $configs = $this->scan(GC_VENDOR_CONFIG);
             $prepared = $this->prepareList($configs);
-
             $libraries = $prepared;
-
             $this->cache->set('libraries', $libraries);
         }
 
@@ -104,14 +101,20 @@ class Library
     {
         $files = gplcart_file_scan_recursive(GC_VENDOR_DIR . "/$filename");
 
-        if (empty($files)) {
-            return array();
-        }
+        $has_required = false;
 
         $config = array();
         foreach ($files as $file) {
             $vendor = substr(dirname($file), strlen(GC_VENDOR_DIR . '/'));
             $config[$vendor] = $this->getJsonData($file);
+
+            if ($vendor == GC_VENDOR_NAME && !empty($config[$vendor])) {
+                $has_required = true;
+            }
+        }
+
+        if (!$has_required) {
+            throw new \RuntimeException('Required vendor library ' . GC_VENDOR_NAME . ' not found. Did you install it?');
         }
 
         return $config;
@@ -163,7 +166,7 @@ class Library
 
         $prepared = $this->graph->build($libraries);
         gplcart_array_sort($prepared);
-        
+
         return $prepared;
     }
 
