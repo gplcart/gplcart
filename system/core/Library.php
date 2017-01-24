@@ -9,6 +9,7 @@
 
 namespace gplcart\core;
 
+use RuntimeException;
 use gplcart\core\Cache;
 use gplcart\core\helpers\Graph as GraphHelper;
 
@@ -81,43 +82,44 @@ class Library
         $cached = $this->cache->get('libraries');
 
         if ($cache && !empty($cached)) {
-            $libraries = $cached;
-        } else {
-            $configs = $this->scan(GC_VENDOR_CONFIG);
-            $prepared = $this->prepareList($configs);
-            $libraries = $prepared;
-            $this->cache->set('libraries', $libraries);
+            return $libraries = $cached;
         }
 
+        $libraries = $this->prepareList($this->getConfigs());
+        $this->cache->set('libraries', $libraries);
         return $libraries;
     }
 
     /**
-     * Scans vendor config files
-     * @param string $filename
+     * Scans and parses vendor config files
      * @return array
      */
-    protected function scan($filename)
+    protected function getConfigs()
     {
-        $files = gplcart_file_scan_recursive(GC_VENDOR_DIR . "/$filename");
-
         $has_required = false;
+        $required_vendor = GC_VENDOR_NAME;
+        $directory = GC_VENDOR_DIR . '/' . GC_VENDOR_CONFIG;
 
-        $config = array();
-        foreach ($files as $file) {
+        $configs = array();
+        
+        foreach (gplcart_file_scan_recursive($directory) as $file) {
             $vendor = substr(dirname($file), strlen(GC_VENDOR_DIR . '/'));
-            $config[$vendor] = $this->getJsonData($file);
+            $configs[$vendor] = $this->getJsonData($file);
 
-            if ($vendor == GC_VENDOR_NAME && !empty($config[$vendor])) {
+            if ($vendor == $required_vendor && !empty($configs[$vendor])) {
                 $has_required = true;
             }
         }
 
-        if (!$has_required) {
-            throw new \RuntimeException('Required vendor library ' . GC_VENDOR_NAME . ' not found. Did you install it?');
+        if ($has_required) {
+            return $configs;
         }
 
-        return $config;
+        $message = "Required library $required_vendor not found."
+                . " Did you install it from https://github.com/$required_vendor?"
+                . " See INSTALL.txt for details.";
+
+        throw new RuntimeException($message);
     }
 
     /**
@@ -336,9 +338,14 @@ class Library
     {
         $libraries = $this->getList();
 
-        $ids = (array) $ids;
+        settype($ids, 'array');
 
         foreach ($ids as $key => $id) {
+
+            if ($this->isLoaded($id)) {
+                unset($ids[$key]);
+                continue;
+            }
 
             if (empty($libraries[$id]['type'])) {
                 unset($ids[$key]);
@@ -346,11 +353,6 @@ class Library
             }
 
             if ($libraries[$id]['type'] !== 'php') {
-                unset($ids[$key]);
-                continue;
-            }
-
-            if ($this->isLoaded($id)) {
                 unset($ids[$key]);
             }
         }
@@ -361,13 +363,11 @@ class Library
             return false;
         }
 
-        $this->loaded = array_merge($this->loaded, $sorted);
-        $prepared = $this->prepareFiles($sorted, $libraries);
-
-        foreach ($prepared as $file) {
+        foreach ($this->prepareFiles($sorted, $libraries) as $file) {
             require_once gplcart_absolute_path($file);
         }
 
+        $this->loaded = array_merge($this->loaded, $sorted);
         return true;
     }
 
