@@ -88,6 +88,11 @@ class Sku extends Model
             $sql .= ' AND combination_id=?';
             $where[] = $data['combination_id'];
         }
+        
+        if (isset($data['status'])) {
+            $sql .= ' AND status=?';
+            $where[] = (int) $data['status'];
+        }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND store_id=?';
@@ -171,7 +176,6 @@ class Sku extends Model
         }
 
         $sku = mb_strimwidth($sku, 0, 200, 'UTF-8');
-
         $store_id = isset($data['store_id']) ? $data['store_id'] : null;
         $existing = $this->get($sku, $store_id);
 
@@ -198,7 +202,6 @@ class Sku extends Model
     {
         $field_value_ids = explode('_', substr($combination_id, strpos($combination_id, '-') + 1));
         sort($field_value_ids);
-
         return $field_value_ids;
     }
 
@@ -211,12 +214,8 @@ class Sku extends Model
     public function getCombinationId(array $field_value_ids, $product_id = null)
     {
         sort($field_value_ids);
-
-        if (!empty($product_id)) {
-            return $product_id . '-' . implode('_', $field_value_ids);
-        }
-
-        return implode('_', $field_value_ids);
+        $combination_id = implode('_', $field_value_ids);
+        return empty($product_id) ? $combination_id : "$product_id-$combination_id";
     }
 
     /**
@@ -229,36 +228,52 @@ class Sku extends Model
     {
         $this->hook->fire('select.sku.combination.before', $product, $field_value_ids);
 
+        $access = (!empty($product['stock']) || empty($product['subtract']));
+
         $response = array(
             'modal' => '',
-            'cart_access' => true,
             'severity' => '',
+            'cart_access' => $access,
             'combination' => array(),
-            'message' => ''
+            'sku' => $product['sku'],
+            'price' => $product['price'],
+            'currency' => $product['currency'],
+            'message' => $access ? '' : $this->language->text('Out of stock')
         );
+
+        if (empty($field_value_ids)) {
+            $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
+            return $response;
+        }
 
         if (empty($product['status'])) {
             $response['severity'] = 'danger';
             $response['message'] = $this->language->text('Unavailable product');
-            return $response;
-        }
 
-        if (empty($field_value_ids)) {
-            $response['severity'] = 'warning';
-            $response['message'] = $this->language->text('No option selected');
+            $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
             return $response;
         }
 
         $combination_id = $this->getCombinationId($field_value_ids, $product['product_id']);
 
-        if (empty($product['combination'][$combination_id])) {
+        if (empty($product['combination'][$combination_id]['status'])) {
+
+            $response['not_matched'] = true;
+            $response['cart_access'] = false;
+            
             $response['severity'] = 'danger';
-            $response['message'] = $this->language->text('Invalid option combination');
+            $response['message'] = $this->language->text('Unavailable');
+            $response['related'] = $this->getRelatedFieldValues($product, $field_value_ids);
+
+            $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
             return $response;
         }
 
         $response['combination'] = $product['combination'][$combination_id];
         $response['combination']['currency'] = $product['currency'];
+
+        $response['sku'] = $response['combination']['sku'];
+        $response['price'] = $response['combination']['price'];
 
         if (empty($response['combination']['stock']) && $product['subtract']) {
             $response['cart_access'] = false;
@@ -271,6 +286,25 @@ class Sku extends Model
     }
 
     /**
+     * Returns an array of related fields value IDs
+     * @todo Rethink this. It should return all possible combinations
+     * @param array $product
+     * @param array $ids
+     * @return array
+     */
+    protected function getRelatedFieldValues(array $product, array $ids)
+    {
+        $related = array();
+        foreach ($product['combination'] as $combination) {
+            if (array_intersect($ids, $combination['fields'])) {
+                $related += $combination['fields'];
+            }
+        }
+
+        return $related;
+    }
+
+    /**
      * Loads a SKU
      * @param string $sku
      * @param integer|null $store_id
@@ -279,9 +313,9 @@ class Sku extends Model
      */
     public function get($sku, $store_id = null, $exclude_product_id = null)
     {
-        $results = (array) $this->getList(array('sku' => $sku, 'store_id' => $store_id));
+        $options = array('sku' => $sku, 'store_id' => $store_id);
 
-        foreach ($results as $result) {
+        foreach ((array) $this->getList($options) as $result) {
 
             if (isset($exclude_product_id) && $result['product_id'] == $exclude_product_id) {
                 continue;
