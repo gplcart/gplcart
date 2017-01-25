@@ -21,19 +21,21 @@
       <div class="col-md-8">{{ images|raw }}</div>
     </div>
     {% if product['description'] is not empty %}
-    <div class="row section description">
-      <div class="col-md-12">
-        {{ xss(product['description']) }}
-      </div>
-    </div>
-   {% endif %}
+        <div class="row section description">
+          <div class="col-md-12">
+            {{ xss(product['description']) }}
+          </div>
+        </div>
+    {% endif %}
   </div>
   <div class="col-md-4 right">
-          <div class="well">
-    <div id="price" class="h4">{{ product['price_formatted'] }}</div>
-    <p>{{ text('SKU') }}: <span id="sku" class="small">{{ product['sku'] }}</span></p>
-    {{ cart_form|raw }}
-        </div>
+    <div class="panel add-to-cart panel-default">
+      <div class="panel-body">
+        <div id="price" class="h4">{{ product['selected_combination']['price_formatted'] }}</div>
+        <p>{{ text('SKU') }}: <span id="sku" class="small">{{ product['selected_combination']['sku'] }}</span></p>
+          {{ cart_form|raw }}
+      </div>
+    </div>
     {{ share|raw }}
   </div>
 </div>

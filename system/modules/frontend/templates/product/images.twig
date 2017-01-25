@@ -12,30 +12,28 @@
     @link http://gplcart.com Support, modules, demo
 #}
 {% if product['images'] is not empty %}
-<div class="image-gallery-wrapper">
-  <ul class="list-unstyled" data-slider="true"
-      data-slider-settings='{
-      "gallery":true,
-      "item":1,
-      "vertical":true,
-      "loop":true,
-      "enableDrag": false,
-      "verticalHeight": 400,
-      "vThumbWidth":50,
-      "slideMargin":0
-      }'
-      data-gallery-settings='{
-      "download":false,
-      "actualSize":false,
-      "scale":false,
-      "thumbnail":true,
-      "autoplayControls":false
-      }'>
-    {% for image in product['images'] %}
-        <li class="thumb" data-thumb="{{ image['thumb'] }}" data-src="{{ image['url'] ?? '' }}">
-          <img src="{{ image['thumb'] }}">
-        </li>
-    {% endfor %}
-  </ul>
-</div>
+    <ul class="list-unstyled" id="product-image-gallery" data-slider="true"
+        data-slider-settings='{
+        "gallery":true,
+        "item":1,
+        "vertical":true,
+        "loop":true,
+        "enableDrag": false,
+        "verticalHeight": 400,
+        "vThumbWidth":50,
+        "slideMargin":0
+        }'
+        data-gallery-settings='{
+        "download":false,
+        "actualSize":false,
+        "scale":false,
+        "thumbnail":true,
+        "autoplayControls":false
+        }'>
+      {% for image in product['images'] %}
+          <li class="thumb" data-thumb="{{ image['thumb'] }}" data-src="{{ image['url'] ?? '' }}">
+            <img data-file-id="{{ image['file_id'] }}" src="{{ image['thumb'] }}">
+          </li>
+      {% endfor %}
+    </ul>
 {% endif %}

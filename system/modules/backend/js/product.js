@@ -1,5 +1,5 @@
 /* global GplCart, Backend  */
-(function (document, GplCart, $) {
+(function (document, GplCart, Backend, $) {
 
     Backend.include.product = {attach: {}, helper: {}, html: {}};
 
@@ -9,28 +9,27 @@
      */
     Backend.include.product.attach.updateCategories = function () {
 
-        var id, url, catOptions, brandOptions, selectedCat, selectedBrand;
+        var params, cat_options, brand_options, selected_cat, selected_brand;
 
         $('select[name$="[store_id]"]').change(function () {
 
-            selectedCat = GplCart.settings.product.category_id || '';
-            selectedBrand = GplCart.settings.product.brand_category_id || '';
+            selected_cat = GplCart.settings.product.category_id || '';
+            selected_brand = GplCart.settings.product.brand_category_id || '';
 
-            url = GplCart.settings.urn;
-            id = $(this).find('option:selected').val();
+            params = {store_id: $(this).find('option:selected').val()};
 
-            $.get(url, {store_id: id}, function (data) {
+            $.get(GplCart.settings.urn, params, function (data) {
 
                 if (!('catalog' in data) || !('brand' in data)) {
                     alert(GplCart.text('An error occurred'));
                     return false;
                 }
 
-                catOptions = Backend.html.options(data.catalog, selectedCat);
-                $('select[name$="[category_id]"]').html(catOptions).selectpicker('refresh');
+                cat_options = Backend.html.options(data.catalog, selected_cat);
+                $('select[name$="[category_id]"]').html(cat_options).selectpicker('refresh');
 
-                brandOptions = Backend.html.options(data.brand, selectedBrand);
-                $('select[name$="[brand_category_id]"]').html(brandOptions).selectpicker('refresh');
+                brand_options = Backend.html.options(data.brand, selected_brand);
+                $('select[name$="[brand_category_id]"]').html(brand_options).selectpicker('refresh');
             });
 
         });
@@ -42,19 +41,12 @@
      * @returns {undefined}
      */
     Backend.include.product.helper.loadFields = function (id) {
-
-        var opForm, attrForm;
-
         $.ajax({
-            url: GplCart.settings.urn + '?product_class_id=' + id,
             dataType: 'html',
+            url: GplCart.settings.urn + '?product_class_id=' + id,
             success: function (data) {
-
-                opForm = $(data).find('#option-form').html();
-                attrForm = $(data).find('div#attribute-form').html();
-
-                $('#attribute-form-wrapper').html(attrForm);
-                $('#option-form-wrapper').html(opForm);
+                $('#attribute-form-wrapper').html($(data).find('div#attribute-form').html());
+                $('#option-form-wrapper').html($(data).find('#option-form').html());
                 $('.selectpicker').selectpicker('show');
             },
             error: function () {
@@ -68,9 +60,7 @@
      * @returns {undefined}
      */
     Backend.include.product.helper.markSelectedCombinationImage = function (modal) {
-
         var path;
-
         modal.find('img').each(function () {
             path = $(this).attr('data-file-path');
             if ($('#option-form-wrapper tbody input[name$="[path]"][value="' + path + '"]').length) {
@@ -102,16 +92,14 @@
      */
     Backend.include.product.attach.updateFieldsProductClass = function () {
 
-        var val,
-                wrapper = '#option-form-wrapper',
-                selector = $('[name$="[product_class_id]"]');
+        var val;
 
-        selector.change(function () {
+        $('[name$="[product_class_id]"]').change(function () {
             val = $(this).val();
             Backend.include.product.helper.loadFields(val);
 
             if (val) {
-                $('body,html').animate({scrollTop: $(wrapper).offset().top - 60});
+                $('body,html').animate({scrollTop: $('#option-form-wrapper').offset().top - 60});
             }
         });
     };
@@ -121,12 +109,8 @@
      * @returns {undefined}
      */
     Backend.include.product.attach.updateFields = function () {
-
-        var id;
-
         $(document).on('click', '.refresh-fields', function () {
-            id = $('[name$="[product_class_id]"]').val();
-            Backend.include.product.helper.loadFields(id);
+            Backend.include.product.helper.loadFields($('[name$="[product_class_id]"]').val());
             return false;
         });
     };
@@ -142,12 +126,10 @@
         $('#product-class-fields tbody').sortable({
             handle: '.handle',
             stop: function () {
-
                 $('input[name$="[weight]"]').each(function (i) {
                     $(this).val(i);
                     $(this).closest('tr').find('td .weight').text(i);
                 });
-
                 message = GplCart.text('Changes will not be saved until the form is submitted');
                 Backend.ui.alert(message, 'warning');
             }
@@ -159,10 +141,7 @@
      * @returns {undefined}
      */
     Backend.include.product.attach.removeField = function () {
-
-        var selector = '#product-class-fields input[name$="[remove]"]';
-
-        $(document).on('click', selector, function () {
+        $(document).on('click', '#product-class-fields input[name$="[remove]"]', function () {
             $(this).closest('tr').toggleClass('danger', this.checked);
         });
     };
@@ -173,8 +152,7 @@
      */
     Backend.include.product.html.combinationRow = function () {
 
-        var html = '',
-                index = $('#option-form-wrapper tbody tr').length + 1;
+        var html = '', index = $('#option-form-wrapper tbody tr').length + 1;
 
         html += '<tr>';
 
@@ -204,6 +182,11 @@
         html += '<td>';
         html += '<div class="default">';
         html += '<input type="radio" class="form-control" name="product[combination][' + index + '][is_default]">';
+        html += '</div>';
+        html += '</td>';
+        html += '<td>';
+        html += '<div class="status">';
+        html += '<input type="checkbox" class="form-control" value="1" name="product[combination][' + index + '][status]" checked>';
         html += '</div>';
         html += '</td>';
         html += '<td>';
@@ -281,14 +264,8 @@
      * @returns {undefined}
      */
     Backend.include.product.attach.addCombination = function () {
-
-        var row,
-                tbody = '#option-form-wrapper table tbody',
-                button = '#option-form-wrapper .add-option-combination';
-
-        $(document).on('click', button, function () {
-            row = Backend.include.product.html.combinationRow();
-            $(tbody).append(row);
+        $(document).on('click', '#option-form-wrapper .add-option-combination', function () {
+            $('#option-form-wrapper table tbody').append(Backend.include.product.html.combinationRow());
             $('.selectpicker').selectpicker();
             return false;
         });
@@ -299,11 +276,10 @@
      * @returns {undefined}
      */
     Backend.include.product.attach.checkDefaultCombination = function () {
-        
-        var radio = '.option input[name$="[is_default]"]',
-                uncheck = '.uncheck-default-combination';
-        
-        $(document).on('click', uncheck, function(){
+
+        var radio = '.option input[name$="[is_default]"]';
+
+        $(document).on('click', '.uncheck-default-combination', function () {
             $(radio).prop('checked', false);
             return false;
         });
@@ -318,12 +294,21 @@
      * @returns {undefined}
      */
     Backend.include.product.attach.deleteCombination = function () {
-
-        var button = '#option-form-wrapper .remove-option-combination';
-
-        $(document).on('click', button, function () {
+        $(document).on('click', '#option-form-wrapper .remove-option-combination', function () {
             $(this).closest('tr').remove();
             return false;
+        });
+    };
+
+    /**
+     * Highlight rows with disabled option combinations
+     * @returns {undefined}
+     */
+    Backend.include.product.attach.markCombinationStatus = function () {
+        $(document).on('change', '#option-form-wrapper input[name$="[status]"]', function () {
+            if ($(this).not(':checked')) {
+                $(this).closest('tr').toggleClass('bg-danger');
+            }
         });
     };
 
@@ -333,12 +318,9 @@
      */
     Backend.include.product.attach.selectCombinationImage = function () {
 
-        var modal,
-                position,
-                html,
-                button = '#option-form-wrapper .select-image';
+        var modal, html;
 
-        $(document).on('click', button, function () {
+        $(document).on('click', '#option-form-wrapper .select-image', function () {
 
             if (Backend.include.product.helper.toggleCombinationImageButton($(this))) {
                 return false;
@@ -353,10 +335,7 @@
             Backend.ui.modal(html, Backend.settings.imageModal);
 
             modal = $(Backend.settings.imageModal);
-
-            // Memorize clicked row position
-            position = $(this).closest('tr').index();
-            modal.attr('data-active-row', position);
+            modal.attr('data-active-row', $(this).closest('tr').index());
 
             Backend.include.product.helper.markSelectedCombinationImage(modal);
             return false;
@@ -369,18 +348,17 @@
      */
     Backend.include.product.attach.setCombinationImage = function () {
 
-        var e, src, path, pos, html, image = 'img.combination-image';
+        var e, src, path, pos;
 
-        $(document).on('click', image, function () {
+        $(document).on('click', 'img.combination-image', function () {
 
             src = $(this).attr('src');
             path = $(this).attr('data-file-path');
 
             pos = $(this).closest(Backend.settings.imageModal).attr('data-active-row');
             e = $('#option-form-wrapper tbody tr').eq(pos).find('.select-image');
-            html = Backend.include.product.html.combinationImage(src);
 
-            e.html(html);
+            e.html(Backend.include.product.html.combinationImage(src));
             e.siblings('input[name$="[path]"]').val(path);
             e.siblings('input[name$="[thumb]"]').val(src);
 
@@ -394,7 +372,7 @@
      */
     Backend.include.product.attach.autocompleteRelated = function () {
 
-        var params, html, input = $('.related-product');
+        var params, input = $('.related-product');
 
         if (input.length === 0) {
             return;
@@ -423,8 +401,7 @@
                 });
             },
             select: function (event, ui) {
-                html = Backend.include.product.html.relatedProduct(ui.item);
-                $('#related-products').append(html);
+                $('#related-products').append(Backend.include.product.html.relatedProduct(ui.item));
                 $('.related-product').val('');
                 return false;
             }
@@ -453,4 +430,4 @@
         GplCart.attach(Backend.include.product);
     });
 
-})(document, GplCart, jQuery);
+})(document, GplCart, Backend, jQuery);

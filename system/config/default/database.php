@@ -406,7 +406,8 @@ $tables['product_sku'] = array(
         'stock' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'price' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'file_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
-        'is_default' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0)
+        'is_default' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 0),
+        'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
     )
 );
 

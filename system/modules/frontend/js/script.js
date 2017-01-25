@@ -1,7 +1,16 @@
 /* global GplCart */
 (function (window, document, GplCart, $) {
 
-    var Frontend = Frontend || {html: {}, ui: {}, helper: {}, attach: {}};
+    var Frontend = Frontend || {
+        ui: {},
+        html: {},
+        helper: {},
+        attach: {},
+        sliders: {},
+        settings: {}
+    };
+
+    Frontend.settings.product_gallery_id = 'product-image-gallery';
 
     /**
      * Returns HTML of modal pop-up
@@ -35,13 +44,10 @@
      */
     Frontend.html.buttonInCompare = function () {
 
-        var html = '',
-                url = GplCart.settings.base + 'compare',
-                title = GplCart.text('Already in comparison');
-
-        html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
-        html += '<i class="fa fa-balance-scale"></i></a>';
-
+        var html = '';
+        html += '<a title="' + GplCart.text('Already in comparison') + '" href="' + GplCart.settings.base + 'compare" class="btn btn-default active">';
+        html += '<i class="fa fa-balance-scale"></i>';
+        html += '</a>';
         return html;
     };
 
@@ -94,12 +100,10 @@
             return;
         }
 
-        var slider = $('[data-slider="true"]'), slider_settings, gallery_settings;
+        var slider_settings, gallery_settings;
 
-        slider.each(function () {
-
+        $('[data-slider="true"]').each(function () {
             slider_settings = $(this).data('slider-settings') || {};
-
             if ($.fn.lightGallery) {
                 gallery_settings = $(this).data('gallery-settings') || {};
                 slider_settings.onSliderLoad = function (gallery) {
@@ -107,7 +111,7 @@
                 };
             }
 
-            $(this).lightSlider(slider_settings);
+            Frontend.sliders[$(this).attr('id')] = $(this).lightSlider(slider_settings);
         });
     };
 
@@ -116,13 +120,9 @@
      * @returns {undefined}
      */
     Frontend.attach.equalHeight = function () {
-
-        if (!$.fn.matchHeight) {
-            return;
+        if ($.fn.matchHeight) {
+            $('.products .thumbnail .title, label.address').matchHeight();
         }
-
-        var selector = '.products .thumbnail .title, label.address';
-        $(selector).matchHeight();
     };
 
     /**
@@ -131,20 +131,18 @@
      */
     Frontend.attach.cartPreview = function () {
 
-        var post = {
-            action: 'getCartPreviewAjax',
-            token: GplCart.settings.token
-        };
-
         $('#cart-link').click(function () {
 
             $.ajax({
                 type: 'POST',
                 url: GplCart.settings.base + 'ajax',
                 dataType: 'json',
-                data: post,
+                data: {
+                    action: 'getCartPreviewAjax',
+                    token: GplCart.settings.token
+                },
                 success: function (data) {
-                    if (data.preview) {
+                    if (typeof data === 'object' && data.preview) {
                         Frontend.ui.modal(data.preview, 'cart-preview', GplCart.text('Cart'));
                     }
                 },
@@ -171,7 +169,7 @@
      */
     Frontend.attach.submit = function () {
 
-        var button, action, header = '';
+        var button, action, header;
 
         $(':button[name][data-ajax="true"]').click(function (e) {
 
@@ -218,6 +216,388 @@
             });
 
             return false;
+        });
+    };
+
+    /**
+     * Handles changing product options
+     * @returns {undefined}
+     */
+    Frontend.attach.updateOptions = function () {
+
+        var input, slider, image, images, values, message = $('.add-to-cart .message');
+
+        Frontend.helper.setSelectedMessage(Frontend.helper.getOptionValues());
+
+        $(document).on('change', '[name^="product[options]"]', function () {
+
+            input = $(this);
+
+            values = Frontend.helper.getOptionValues();
+            Frontend.helper.setSelectedMessage(values);
+
+            $.ajax({
+                data: {
+                    values: values.values,
+                    token: GplCart.settings.token,
+                    action: 'switchProductOptionsAjax',
+                    product_id: GplCart.settings.product.product_id
+                },
+                method: 'post',
+                dataType: 'json',
+                url: GplCart.settings.base + 'ajax',
+                success: function (data) {
+
+                    if (typeof data !== 'object') {
+                        alert(GplCart.text('An error occurred'));
+                        return false;
+                    }
+
+                    if (data.message) {
+                        message.html(data.message);
+                    }
+
+                    if (data.modal) {
+                        Frontend.ui.modal(data.modal, 'product-update-option');
+                    }
+
+                    $('#sku').text(data.sku);
+                    $('#price').text(data.price_formatted);
+
+                    if (data.combination.file_id) {
+
+                        slider = $('#' + Frontend.settings.product_gallery_id);
+                        image = slider.find('img[data-file-id="' + data.combination.file_id + '"]');
+
+                        if (image.length && Frontend.sliders[Frontend.settings.product_gallery_id]) {
+                            images = slider.find('img[data-file-id]');
+                            Frontend.sliders[Frontend.settings.product_gallery_id].goToSlide(images.index(image));
+                        }
+                    }
+
+                    $(':input[data-field-value-id]').closest('label').removeClass('related');
+
+                    if (data.related) {
+                        $(':input[data-field-value-id]').each(function () {
+                            if ($.inArray($(this).data('field-value-id').toString(), data.related) > -1) {
+                                $(this).closest('label').addClass('related');
+                            }
+                        });
+                    }
+
+                    input.closest('form').find('[name="add_to_cart"]').prop('disabled', !data.cart_access);
+                },
+                error: function () {
+                    alert(GplCart.text('An error occurred'));
+                },
+                beforeSend: function () {
+                    message.html('<span class="loading">' + GplCart.text('Checking availability...') + '</span>');
+                },
+                complete: function () {
+                    message.find('.loading').remove();
+                }
+            });
+        });
+    };
+
+    /**
+     * Returns arrays of selected option field values an titles
+     * @returns object
+     */
+    Frontend.helper.getOptionValues = function () {
+
+        var values = [], titles = [];
+
+        $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').each(function () {
+            values.push($(this).val());
+            titles.push(Frontend.html.selectOptionBtn($(this).data('field-id'), $(this).data('field-title')));
+        });
+
+        return {values: values, titles: titles};
+    };
+
+    /**
+     * 
+     * @param {type} fid
+     * @param {type} title
+     * @returns {String}
+     */
+    Frontend.html.selectOptionBtn = function (fid, title) {
+        var btn = '';
+        btn += '<span data-reset-field-id="' + fid + '"';
+        btn += 'class="btn btn-default btn-xs">' + title + ' <span class="fa fa-times"></span></span>';
+        return btn;
+    };
+
+    /**
+     * 
+     * @returns {undefined}
+     */
+    Frontend.helper.setSelectedMessage = function (data) {
+        var text = '';
+        if (!$.isEmptyObject(data.titles)) {
+            text = GplCart.text('Selected: !combination', {'!combination': data.titles.join(' ')});
+        }
+        $('.selected-combination').html(text);
+    };
+
+    /**
+     * Reset a checked radio button on second click
+     * @returns {undefined}
+     */
+    Frontend.attach.resetRadioOption = function () {
+        var fid;
+        $(document).on('click', '[data-reset-field-id]', function () {
+            fid = $(this).data('reset-field-id');
+            $('input[data-field-id="' + fid + '"]:radio').prop('checked', false).last().trigger('change');
+            return false;
+        });
+    };
+
+    /**
+     * Shows only rows with different values
+     * @returns {undefined}
+     */
+    Frontend.attach.compareDiff = function () {
+
+        var row, values, count;
+
+        $('#compare-difference').change(function () {
+
+            if ($(this).not(':checked')) {
+                $('table.compare tr.togglable').show();
+                return;
+            }
+
+            $('table.compare tr.togglable').each(function () {
+
+                row = this;
+                values = $('.value', this).map(function () {
+                    return $(this).text();
+                });
+
+                count = 0;
+                $(values).each(function () {
+                    if (this === values[0]) {
+                        count++;
+                    }
+                });
+
+                if (values.length > 0 && count === values.length) {
+                    $(row).hide();
+                }
+            });
+        });
+    };
+
+    /**
+     * Prevents search for empty keyword
+     * @returns {undefined}
+     */
+    Frontend.attach.searchBlockEmpty = function () {
+        $('form.search').submit(function () {
+            if ($('input[name="q"]').val() === "") {
+                return false;
+            }
+        });
+    };
+
+    /**
+     * Updates address fields depending on chosen country
+     * @returns {undefined}
+     */
+    Frontend.attach.updateAdressFields = function () {
+
+        var wrapper = '#address-form-wrapper';
+
+        $(document).on('change', '#edit-address [name$="[country]"]', function () {
+
+            $.ajax({
+                method: 'POST',
+                dataType: 'html',
+                url: GplCart.settings.urn,
+                data: {
+                    country: $(this).val(),
+                    token: GplCart.settings.token
+                },
+                success: function (data) {
+                    $(wrapper).html($(data).find(wrapper).html());
+                    Frontend.helper.cityAutocomplete();
+                }
+            });
+        });
+    };
+
+    /**
+     * Search autocomplete field
+     * @returns {undefined}
+     */
+    Frontend.attach.searchAutocomplete = function () {
+
+        var params, input = $('input[name="q"]');
+
+        if (input.length === 0) {
+            return;
+        }
+
+        input.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+
+                params = {
+                    term: request.term,
+                    action: 'searchProductsAjax',
+                    token: GplCart.settings.token
+                };
+
+                $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                    response($.map(data, function (value, key) {
+                        return {suggestion: value.rendered};
+                    }));
+                });
+            },
+            select: function () {
+                return false;
+            }
+        }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
+        };
+
+        // Retain searching on focus
+        input.focus(function () {
+            if ($(this).val()) {
+                $(this).autocomplete("search");
+            }
+        });
+    };
+
+    /**
+     * Add state change listener that updates city autocomplete field
+     * @returns {undefined}
+     */
+    Frontend.attach.cityAutocomplete = function () {
+        $(document).on('change', '[name="address[state_id]"]', function () {
+            Frontend.helper.cityAutocomplete();
+        });
+    };
+
+    /**
+     * City autocomplete field handler
+     * @returns {undefined}
+     */
+    Frontend.helper.cityAutocomplete = function () {
+
+        var params,
+                city = $('[name="address[city_id]"]'),
+                country = $('[name="address[country]"]'),
+                state_id = $('[name="address[state_id]"]');
+
+        if (city.length === 0 || country.length === 0 || state_id.length === 0) {
+            return;
+        }
+
+        city.val('');
+
+        city.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+
+                params = {
+                    action: 'searchCityAjax',
+                    country: country.val(),
+                    state_id: state_id.val(),
+                    token: GplCart.settings.token
+                };
+
+                $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                    response($.map(data, function (value, key) {
+                        return {name: value.name};
+                    }));
+                });
+            },
+            select: function (event, ui) {
+                city.val(ui.item.name);
+                return false;
+            }
+        }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $('<li>').append('<a>' + item.name + '</a>').appendTo(ul);
+        };
+    };
+
+    /**
+     * Redirects to a page when clicked on the suggested item
+     * @returns {undefined}
+     */
+    Frontend.attach.redirectSuggestions = function () {
+        $(document).on('click', '.ui-autocomplete .suggestion', function () {
+            window.location.href = $(this).attr('data-url');
+        });
+    };
+
+
+    /**
+     * Handles checkout form submits
+     * @returns {undefined}
+     */
+    Frontend.attach.submitCheckout = function () {
+
+        var clicked, queue, settings;
+
+        $(document).on('focus', 'form#checkout [name$="[quantity]"]', function () {
+            clearTimeout(queue);
+        });
+
+        $(document).on('blur', 'form#checkout [name$="[quantity]"]', function () {
+            queue = setTimeout(function () {
+                $('form#checkout').submit();
+            }, 100);
+        });
+
+        $(document).on('change', 'form#checkout input[type="radio"], form#checkout select', function () {
+            $('form#checkout').submit();
+        });
+
+        $(document).on('click', 'form#checkout :submit', function (e) {
+
+            clicked = $(this).attr('name');
+
+            $(this).closest('form').append($("<input type='hidden'>").attr({
+                name: $(this).attr('name'),
+                value: $(this).attr('value')
+            }));
+        });
+
+        $(document).off('submit').on('submit', 'form#checkout', function (e) {
+
+            if (clicked === 'save' || clicked === 'login') {
+                return true;
+            }
+
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: GplCart.settings.urn,
+                data: $('form#checkout').serialize(),
+                beforeSend: function () {
+                    $('form#checkout :input').prop('disabled', true);
+                },
+                success: function (data) {
+
+                    if (data.length) {
+
+                        $('#checkout-form-wrapper').html(data);
+                        settings = $(data).data('settings');
+
+                        if (typeof settings === "object" && settings.quantity) {
+                            Frontend.helper.updateWishlistQuantity(settings.quantity.wishlist);
+                        }
+
+                        $('form#checkout :input').prop('disabled', false);
+                    }
+                }
+            });
         });
     };
 
@@ -287,8 +667,6 @@
         }
     };
 
-
-
     /**
      * Handles "Remove from wishlist" action
      * @param {String} action
@@ -310,331 +688,6 @@
      */
     Frontend.helper.updateWishlistQuantity = function (quantity) {
         $('#wishlist-quantity').text(quantity).show();
-    };
-
-    /**
-     * Handles changing product options
-     * @returns {undefined}
-     */
-    Frontend.attach.updateOptions = function () {
-
-        var element, input, data, values, wrapper;
-
-        $('form.add-to-cart [name^="product[options]"]').change(function () {
-
-            element = $(this);
-            input = '[name^="product[options]"]:checked, [name^="product[options]"] option:selected';
-
-            values = $(input).map(function () {
-                return this.value;
-            }).get();
-
-            data = {
-                values: values,
-                token: GplCart.settings.token,
-                action: 'switchProductOptionsAjax',
-                product_id: GplCart.settings.product.product_id
-            };
-
-            $.ajax({
-                url: GplCart.settings.base + 'ajax',
-                dataType: 'json',
-                method: 'post',
-                data: data,
-                success: function (data) {
-
-                    if ($.isEmptyObject(data)) {
-                        alert(GplCart.text('An error occurred'));
-                        return false;
-                    }
-
-                    wrapper = $('#combination-message');
-                    wrapper.empty().hide();
-
-                    if (data.message) {
-                        wrapper.toggleClass('text-' + data.severity).html(data.message).show();
-                    }
-
-                    if (data.modal) {
-                        Frontend.ui.modal(data.modal, 'product-update-option');
-                    }
-
-                    if (!data.combination) {
-                        return false;
-                    }
-
-                    $('#price').text(data.combination.price_formatted);
-
-                    if (data.combination.sku) {
-                        $('#sku').text(data.combination.sku);
-                    }
-
-                    if (data.combination.thumb) {
-                        $('#main-image').attr('src', data.combination.thumb);
-                    }
-
-                    element.closest('form').find('[name="add_to_cart"]').prop('disabled', !data.cart_access);
-
-                },
-                error: function () {
-                    alert(GplCart.text('An error occurred'));
-                }
-            });
-        });
-    };
-
-    /**
-     * Shows only rows with different values
-     * @returns {undefined}
-     */
-    Frontend.attach.compareDiff = function () {
-
-        var row, values, count = 0;
-
-        $('#compare-difference').change(function () {
-
-            if ($(this).not(':checked')) {
-                $('table.compare tr.togglable').show();
-                return;
-            }
-
-            $('table.compare tr.togglable').each(function () {
-
-                row = this;
-
-                values = $('.value', this).map(function () {
-                    return $(this).text();
-                });
-
-                count = 0;
-                $(values).each(function () {
-                    if (this === values[0]) {
-                        count++;
-                    }
-                });
-
-                if (values.length > 0 && count === values.length) {
-                    $(row).hide();
-                }
-            });
-        });
-    };
-
-    /**
-     * Prevents search for empty keyword
-     * @returns {undefined}
-     */
-    Frontend.attach.searchBlockEmpty = function () {
-        $('form.search').submit(function () {
-            if ($('input[name="q"]').val() === "") {
-                return false;
-            }
-        });
-    };
-
-    /**
-     * Updates address fields depending on chosen country
-     * @returns {undefined}
-     */
-    Frontend.attach.updateAdressFields = function () {
-
-        var data, form,
-                input = '#edit-address [name$="[country]"]',
-                wrapper = '#address-form-wrapper';
-
-        $(document).on('change', input, function () {
-
-            data = {
-                country: $(this).val(),
-                token: GplCart.settings.token
-            };
-
-            $.ajax({
-                data: data,
-                method: 'POST',
-                dataType: 'html',
-                url: GplCart.settings.urn,
-                success: function (data) {
-                    form = $(data).find(wrapper).html();
-                    $(wrapper).html(form);
-                    Frontend.helper.cityAutocomplete();
-                }
-            });
-        });
-    };
-
-    /**
-     * Search autocomplete field
-     * @returns {undefined}
-     */
-    Frontend.attach.searchAutocomplete = function () {
-
-        var params,
-                url = GplCart.settings.base + 'ajax',
-                input = $('input[name="q"]');
-
-        if (input.length === 0) {
-            return;
-        }
-
-        input.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-
-                params = {
-                    term: request.term,
-                    action: 'searchProductsAjax',
-                    token: GplCart.settings.token
-                };
-
-                $.post(url, params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {suggestion: value.rendered};
-                    }));
-                });
-            },
-            select: function () {
-                return false;
-            }
-        }).autocomplete('instance')._renderItem = function (ul, item) {
-            return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
-        };
-
-        // Retain searching on focus
-        input.focus(function () {
-            if ($(this).val()) {
-                $(this).autocomplete("search");
-            }
-        });
-    };
-
-    /**
-     * Add state change listener that updates city autocomplete field
-     * @returns {undefined}
-     */
-    Frontend.attach.cityAutocomplete = function () {
-        $(document).on('change', '[name="address[state_id]"]', function () {
-            Frontend.helper.cityAutocomplete();
-        });
-    };
-
-    /**
-     * City autocomplete field handler
-     * @returns {undefined}
-     */
-    Frontend.helper.cityAutocomplete = function () {
-
-        var params,
-                url = GplCart.settings.base + 'ajax',
-                city = $('[name="address[city_id]"]'),
-                country = $('[name="address[country]"]'),
-                state_id = $('[name="address[state_id]"]');
-
-        if (city.length === 0 || country.length === 0 || state_id.length === 0) {
-            return;
-        }
-
-        city.val('');
-
-        city.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-
-                params = {
-                    country: country.val(),
-                    state_id: state_id.val(),
-                    action: 'searchCityAjax',
-                    token: GplCart.settings.token
-                };
-
-                $.post(url, params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {name: value.name};
-                    }));
-                });
-            },
-            select: function (event, ui) {
-                city.val(ui.item.name);
-                return false;
-            }
-        }).autocomplete('instance')._renderItem = function (ul, item) {
-            return $('<li>').append('<a>' + item.name + '</a>').appendTo(ul);
-        };
-    };
-
-    /**
-     * Redirects to a page when clicked on the suggested item
-     * @returns {undefined}
-     */
-    Frontend.attach.redirectSuggestions = function () {
-        $(document).on('click', '.ui-autocomplete .suggestion', function () {
-            window.location.href = $(this).attr('data-url');
-        });
-    };
-
-
-    /**
-     * Handles checkout form submits
-     * @returns {undefined}
-     */
-    Frontend.attach.submitCheckout = function () {
-
-        var clicked, queueSubmit, settings;
-
-        $(document).on('focus', 'form#checkout [name$="[quantity]"]', function () {
-            clearTimeout(queueSubmit);
-        });
-
-        $(document).on('blur', 'form#checkout [name$="[quantity]"]', function () {
-            queueSubmit = setTimeout(function () {
-                $('form#checkout').submit();
-
-            }, 100);
-        });
-
-        $(document).on('change', 'form#checkout input[type="radio"], form#checkout select', function () {
-            $('form#checkout').submit();
-        });
-
-        $(document).on('click', 'form#checkout :submit', function (e) {
-            clicked = $(this).attr('name');
-            $(this).closest('form').append($("<input type='hidden'>").attr({name: $(this).attr('name'), value: $(this).attr('value')}));
-        });
-
-        $(document).off('submit').on('submit', 'form#checkout', function (e) {
-
-            if (clicked === 'save' || clicked === 'login') {
-                return true;
-            }
-
-            e.preventDefault();
-
-            $.ajax({
-                type: 'POST',
-                url: GplCart.settings.urn,
-                dataType: 'html',
-                data: $('form#checkout').serialize(),
-                beforeSend: function () {
-                    $('form#checkout :input').prop('disabled', true);
-                },
-                success: function (data) {
-
-                    if (!data.length) {
-                        return;
-                    }
-
-                    $('#checkout-form-wrapper').html(data);
-
-                    settings = $(data).data('settings');
-
-                    if (typeof settings === "object" && settings.quantity) {
-                        Frontend.helper.updateWishlistQuantity(settings.quantity.wishlist);
-                    }
-
-                    $('form#checkout :input').prop('disabled', false);
-                }
-            });
-        });
     };
 
     /**

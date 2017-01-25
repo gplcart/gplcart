@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Sku as SkuModel;
 use gplcart\core\models\Review as ReviewModel;
 use gplcart\core\models\Rating as RatingModel;
 use gplcart\core\models\ProductClass as ProductClassModel;
@@ -21,6 +21,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Product extends FrontendController
 {
 
+    use \gplcart\core\traits\ControllerSku;
+
     /**
      * Product class model instance
      * @var \gplcart\core\models\ProductClass $product_class
@@ -28,10 +30,10 @@ class Product extends FrontendController
     protected $product_class;
 
     /**
-     * Orders model instance
-     * @var \gplcart\core\models\Order $order
+     * Sku model instance
+     * @var \gplcart\core\models\Sku $sku
      */
-    protected $order;
+    protected $sku;
 
     /**
      * Review model instance
@@ -54,16 +56,16 @@ class Product extends FrontendController
     /**
      * Constructor
      * @param ProductClassModel $product_class
-     * @param OrderModel $order
+     * @param SkuModel $sku
      * @param ReviewModel $review
      * @param RatingModel $rating
      */
-    public function __construct(ProductClassModel $product_class,
-            OrderModel $order, ReviewModel $review, RatingModel $rating)
+    public function __construct(ProductClassModel $product_class, SkuModel $sku,
+            ReviewModel $review, RatingModel $rating)
     {
         parent::__construct();
 
-        $this->order = $order;
+        $this->sku = $sku;
         $this->review = $review;
         $this->rating = $rating;
         $this->product_class = $product_class;
@@ -213,10 +215,7 @@ class Product extends FrontendController
      */
     protected function setCartFormProduct()
     {
-        $access = ($this->data_product['stock'] || empty($this->data_product['subtract']));
-
         $cart = array(
-            'cart_access' => $access,
             'product' => $this->data_product,
             'field_data' => $this->data_product['fields']
         );
@@ -333,12 +332,12 @@ class Product extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5)
         );
-        
-        if(empty($this->data_product['images'])){
+
+        if (empty($this->data_product['images'])) {
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-           $this->setItemThumb($this->data_product, $options); 
+            $this->setItemThumb($this->data_product, $options);
         }
 
         $data = array('product' => $this->data_product);
@@ -383,9 +382,29 @@ class Product extends FrontendController
             $this->outputHttpStatus(403);
         }
 
+        return $this->data_product = $this->prepareProduct($product);
+    }
+
+    /**
+     * 
+     * @param array $product
+     * @return type
+     */
+    protected function prepareProduct(array $product)
+    {
+        $field_values = array();
+        if (!empty($product['default_field_values'])) {
+            $field_values = $product['default_field_values'];
+        }
+
+        $selected = $this->getSelectedCombinationTrait($this, $this->sku, $product, $field_values);
+        $product['selected_combination'] = $selected;
+
         $product['fields'] = $this->getFieldsProduct($product);
+
         $this->setItemPrice($product);
-        return $this->data_product = $product;
+
+        return $product;
     }
 
     /**
@@ -433,32 +452,33 @@ class Product extends FrontendController
      */
     protected function getFieldsProduct(array $product)
     {
-        $data = $this->product_class->getFieldData($product['product_class_id']);
+        $fields = $this->product_class->getFieldData($product['product_class_id']);
+        return $this->prepareFieldsProduct($product, $fields);
+    }
 
+    /**
+     * Add thumbs to field values
+     * @param array $product
+     * @param array $fields
+     */
+    protected function prepareFieldsProduct(array $product, array $fields)
+    {
         if (empty($product['field']['option'])) {
-            return $data;
+            return $fields;
         }
 
         $imagestyle = $this->settings('image_style_option', 1);
-
         foreach ($product['field']['option'] as $field_id => $field_values) {
-
-            if (empty($data['option'][$field_id]['widget'])) {
-                continue;
-            }
-
-            if ($data['option'][$field_id]['widget'] !== 'image') {
-                continue;
-            }
-
             foreach ($field_values as $field_value_id) {
-                $path = $data['option'][$field_id]['values'][$field_value_id]['path'];
-                $options = array('path' => $path, 'imagestyle' => $imagestyle);
-                $this->setItemThumb($data['option'][$field_id]['values'][$field_value_id], $options);
+                $options = array(
+                    'imagestyle' => $imagestyle,
+                    'path' => $fields['option'][$field_id]['values'][$field_value_id]['path']
+                );
+                $this->setItemThumb($fields['option'][$field_id]['values'][$field_value_id], $options);
             }
         }
 
-        return $data;
+        return $fields;
     }
 
 }

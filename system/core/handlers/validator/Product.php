@@ -530,6 +530,8 @@ class Product extends BaseValidator
         $index = 1;
         foreach ($combinations as &$combination) {
 
+            $combination['status'] = !empty($combination['status']);
+
             $this->validateCombinationOptionsProduct($index, $combination);
 
             if ($this->isError("combination.$index")) {

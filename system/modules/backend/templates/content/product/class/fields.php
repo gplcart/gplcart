@@ -15,6 +15,9 @@
         <button class="btn btn-default" name="save" value="1">
           <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
         </button>
+        <a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
+          <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
+        </a>
       </div>
     </div>
     <div class="panel-body table-responsive">
@@ -26,6 +29,7 @@
             <th><?php echo $this->text('Multiple'); ?></th>
             <th><?php echo $this->text('Weight'); ?></th>
             <th><?php echo $this->text('Remove'); ?></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -53,6 +57,13 @@
             </td>
             <td class="middle">
               <input type="checkbox" name="fields[<?php echo $field_id; ?>][remove]" value="1">
+            </td>
+              <td class="middle">
+                <?php if($this->access('field_edit')) { ?>
+                <a href="<?php echo $this->url("admin/content/field/edit/$field_id"); ?>">
+                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                </a>
+                <?php } ?>
             </td>
           </tr>
           <?php } ?>

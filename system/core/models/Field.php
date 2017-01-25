@@ -49,10 +49,9 @@ class Field extends Model
         }
 
         $types = array(
-            'image' => $this->language->text('Image'),
+            'button' => $this->language->text('Button'),
             'radio' => $this->language->text('Radio buttons'),
-            'select' => $this->language->text('Dropdown list'),
-            'color' => $this->language->text('Color picker')
+            'select' => $this->language->text('Dropdown list')
         );
 
         $this->hook->fire('field.widget.types', $types);

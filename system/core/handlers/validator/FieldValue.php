@@ -162,22 +162,8 @@ class FieldValue extends BaseValidator
     {
         $color = $this->getSubmitted('color');
 
-        if ($this->isUpdating() && !isset($color)) {
+        if (!isset($color) || $color === '') {
             return null;
-        }
-
-        $field = $this->getSubmitted('field');
-
-        if (isset($field['widget']) && $field['widget'] != 'color') {
-            $this->setSubmitted('color', '');
-            return true;
-        }
-
-        if (empty($color)) {
-            $vars = array('@field' => $this->language->text('Color'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('color', $error);
-            return false;
         }
 
         if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {

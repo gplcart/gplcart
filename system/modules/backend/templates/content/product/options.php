@@ -48,14 +48,15 @@
               <th class="middle"><?php echo $this->text('Stock'); ?></th>
               <th class="middle"><?php echo $this->text('Image'); ?></th>
               <th class="middle"><?php echo $this->text('Default'); ?> <a href="#" class="uncheck-default-combination"><span class="fa fa-times"></span></a></th>
-              <th class="middle"><?php echo $this->text('Action'); ?></th>
+              <th class="middle"><?php echo $this->text('Status'); ?></th>
+              <th class="middle"><?php echo $this->text('Delete'); ?></th>
             </tr>
           </thead>
           <tbody>
             <?php if (!empty($product['combination'])) { ?>
             <?php $row = 1; ?>
             <?php foreach ($product['combination'] as $combination) { ?>
-            <tr class="<?php echo $this->error("combination.$row", 'combination-error'); ?>">
+            <tr class="<?php echo empty($combination['status']) ? 'bg-danger' : ''; ?><?php echo $this->error("combination.$row", ' combination-error'); ?>">
               <?php foreach ($fields['option'] as $field_id => $option) { ?>
               <td class="field-title">
                 <div class="field<?php echo $this->error("combination.$row.fields.$field_id", ' has-error'); ?>">
@@ -99,6 +100,11 @@
                   <input type="radio" class="form-control" name="product[combination][<?php echo $row; ?>][is_default]" value="1"<?php echo empty($combination['is_default']) ? '' : ' checked'; ?>>
                 </div>
               </td>
+              <td>
+                <div class="status">
+                  <input type="checkbox" class="form-control" name="product[combination][<?php echo $row; ?>][status]" value="1"<?php echo empty($combination['status']) ? '' : ' checked'; ?>>
+                </div>
+              </td>
               <td><a href="#" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a></td>
             </tr>
             <?php $row++; ?>
@@ -122,6 +128,7 @@
               <td><input class="form-control" value=""></td>
               <td><input class="form-control" value=""></td>
               <td><a href="#" class="btn btn-default select-image"><i class="fa fa-image"></i></a></td>
+              <td></td>
               <td></td>
               <td><a href="#" class="btn btn-default add-option-combination"><i class="fa fa-plus"></i></a></td>
             </tr>

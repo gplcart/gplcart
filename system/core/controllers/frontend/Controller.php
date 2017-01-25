@@ -545,7 +545,7 @@ class Controller extends BaseController
             return $data;
         }
 
-        if (isset($options['path'])) {
+        if (!empty($options['path'])) {
             $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
             return $data;
         }

@@ -362,15 +362,17 @@ class Product extends Model
 
         $skus = (array) $this->sku->getList(array('product_id' => $product['product_id']));
 
+        $product['default_field_values'] = array();
+
         foreach ($skus as $sku) {
             if ($sku['combination_id'] !== '') {
                 $product['combination'][$sku['combination_id']] = $sku;
                 if (!empty($sku['is_default'])) {
                     $product['default_field_values'] = $sku['fields'];
-                    $product['default_combination_id'] = $sku['combination_id'];
                 }
                 continue;
             }
+
             $product['sku'] = $sku['sku'];
             $product['price'] = $sku['price'];
             $product['stock'] = $sku['stock'];
@@ -749,6 +751,7 @@ class Product extends Model
                 'stock' => $combination['stock'],
                 'product_id' => $data['product_id'],
                 'file_id' => $combination['file_id'],
+                'status' => !empty($combination['status']),
                 'is_default' => !empty($combination['is_default']),
                 'combination_id' => $this->sku->getCombinationId($combination['fields'], $data['product_id'])
             );

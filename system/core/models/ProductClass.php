@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use gplcart\core\Cache;
 use gplcart\core\Model;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\Language as LanguageModel;
@@ -247,7 +248,13 @@ class ProductClass extends Model
      */
     public function getFieldData($product_class_id)
     {
-        $return = array();
+        $result = &Cache::memory("product.class.field.data.$product_class_id");
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = array();
         $fields = $this->field->getList();
 
         foreach ($this->getFields($product_class_id) as $field) {
@@ -256,16 +263,15 @@ class ProductClass extends Model
                 continue;
             }
 
-            $data = array(
-                'values' => $this->field_value->getList(array(
-                    'field_id' => $field['field_id'])));
+            $options = array('field_id' => $field['field_id']);
+            $data = array('values' => $this->field_value->getList($options));
 
             $data += $fields[$field['field_id']];
             $data += $field;
-            $return[$fields[$field['field_id']]['type']][$field['field_id']] = $data;
+            $result[$fields[$field['field_id']]['type']][$field['field_id']] = $data;
         }
 
-        return $return;
+        return $result;
     }
 
     /**

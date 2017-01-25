@@ -342,7 +342,7 @@ class Cart extends BaseValidator
 
         $combination_id = $this->sku->getCombinationId($ops, $product['product_id']);
 
-        if (empty($product['combination'][$combination_id]['sku'])) {
+        if (empty($product['combination'][$combination_id]['status'])) {
             $error = $this->language->text('Invalid option combination');
             $this->setError('options', $error);
             return false;
