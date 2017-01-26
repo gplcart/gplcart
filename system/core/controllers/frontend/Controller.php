@@ -17,6 +17,10 @@ use gplcart\core\Controller as BaseController;
  */
 class Controller extends BaseController
 {
+    
+    use \gplcart\core\traits\ControllerCart,
+        \gplcart\core\traits\ControllerCompare,
+            \gplcart\core\traits\ControllerWishlist;
 
     /**
      * Trigger model instance
@@ -41,12 +45,6 @@ class Controller extends BaseController
      * @var \gplcart\core\models\Image $image
      */
     protected $image;
-
-    /**
-     * Cart model instance
-     * @var \gplcart\core\models\Cart $cart
-     */
-    protected $cart;
 
     /**
      * Product model instance
@@ -85,22 +83,10 @@ class Controller extends BaseController
     protected $data_viewed = array();
 
     /**
-     * Current user cart ID
-     * @var integer|string
-     */
-    protected $cart_uid;
-
-    /**
      * Whether price rules enabled for the current store
      * @var boolean
      */
     protected $catalog_pricerules = false;
-
-    /**
-     * Array of total cart items and numbers per SKU
-     * @var array
-     */
-    protected $data_cart_quantity = array();
 
     /**
      * Comparison list content for the current user
@@ -129,8 +115,11 @@ class Controller extends BaseController
 
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
-        $this->setFrontendSubmits();
         $this->setFrontendMenu();
+        
+        $this->submitCartTrait($this, $this->cart, $this->request, $this->response);
+        $this->submitCompareTrait($this, $this->compare, $this->request, $this->response);
+        $this->submitWishlistTrait($this, $this->wishlist, $this->request, $this->response);
 
         $this->hook->fire('init.frontend', $this);
 
@@ -144,12 +133,11 @@ class Controller extends BaseController
     {
         $this->price = Container::get('gplcart\\core\\models\\Price');
         $this->image = Container::get('gplcart\\core\\models\\Image');
-        $this->cart = Container::get('gplcart\\core\\models\\Cart');
+        $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
         $this->product = Container::get('gplcart\\core\\models\\Product');
         $this->compare = Container::get('gplcart\\core\\models\\Compare');
         $this->wishlist = Container::get('gplcart\\core\\models\\Wishlist');
         $this->category = Container::get('gplcart\\core\\models\\Category');
-        $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
         $this->collection_item = Container::get('gplcart\\core\\models\\CollectionItem');
     }
 
@@ -163,7 +151,6 @@ class Controller extends BaseController
         }
 
         $this->data_viewed = $this->getViewed();
-        $this->cart_uid = $this->cart->uid();
         $this->data_category_tree = $this->getCategories();
         $this->data_compare = $this->compare->get();
         $this->catalog_pricerules = $this->store->config('catalog_pricerule');
@@ -174,13 +161,10 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        $this->data_cart_quantity = (array) $this->cart->getQuantity($options);
-
         // Don't count, use the same arguments to avoid an extra query
         // see setItemProductWishlist method
         $this->data_wishlist = (array) $this->wishlist->getList($options);
 
-        $this->data['cart_quantity'] = $this->data_cart_quantity;
         $this->data['wishlist_quantity'] = count($this->data_wishlist);
         $this->data['compare_content'] = $this->data_compare;
         return null;
@@ -242,15 +226,14 @@ class Controller extends BaseController
      */
     protected function renderCartPreview()
     {
-        $data = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
-        );
-
-        $cart = $this->cart->getContent($data);
-
+        $cart = $this->cart();
+        
+        if(empty($cart['items'])){
+            return '';
+        }
+        
         $options = array(
-            'cart' => $this->prepareCart($cart),
+            'cart' => $this->prepareCart($this->cart()),
             'limit' => $this->config('cart_preview_limit', 5)
         );
 
@@ -455,6 +438,10 @@ class Controller extends BaseController
         $options += array(
             'prepare' => true
         );
+        
+        if(isset($conditions['product_id']) && empty($conditions['product_id'])){
+            return array(); // Prevent loading all available products
+        }
 
         $products = (array) $this->product->getList($conditions);
 
@@ -680,208 +667,6 @@ class Controller extends BaseController
     protected function setItemRendered(array &$item, array $data, array $options)
     {
         $item['rendered'] = $this->render($options['template_item'], $data);
-    }
-
-    /**
-     * Sets all submit listeners
-     */
-    protected function setFrontendSubmits()
-    {
-        $this->submitCart();
-        $this->submitCompare();
-        $this->submitWishlist();
-    }
-
-    /**
-     * Adds/removes a product from comparison
-     * @return null
-     */
-    protected function submitCompare()
-    {
-        $this->setSubmitted('product');
-
-        if ($this->isPosted('remove_from_compare')) {
-            return $this->deleteCompare();
-        }
-
-        if (!$this->isPosted('add_to_compare')) {
-            return null; // No "Add to compare" clicked
-        }
-
-        $this->validateAddToCompare();
-
-        if ($this->hasErrors(null, false)) {
-            return $this->completeSubmit();
-        }
-
-        $submitted = $this->getSubmitted();
-        $product = $this->getSubmitted('product');
-
-        $result = $this->compare->addProduct($product, $submitted);
-        $this->completeSubmit($result);
-        return null;
-    }
-
-    /**
-     * Deletes a submitted product from the comparison
-     */
-    protected function deleteCompare()
-    {
-        $product_id = $this->getSubmitted('product_id');
-        $result = $this->compare->deleteProduct($product_id);
-        $this->completeSubmit($result);
-    }
-
-    /**
-     * Adds a product to the cart
-     * @return null
-     */
-    protected function submitCart()
-    {
-        if (!$this->isPosted('add_to_cart')) {
-            return null;
-        }
-
-        $this->setSubmitted('product');
-        $this->validateAddToCart();
-
-        if ($this->hasErrors(null, false)) {
-            return $this->completeSubmit();
-        }
-
-        $submitted = $this->getSubmitted();
-
-        $result = $this->cart->addProduct($submitted['product'], $submitted);
-        $this->completeSubmit($result);
-    }
-
-    /**
-     * Adds a product to the wishlist
-     * @return null
-     */
-    protected function submitWishlist()
-    {
-        $this->setSubmitted('product');
-
-        if ($this->isPosted('remove_from_wishlist')) {
-            return $this->deleteWishlist();
-        }
-
-        if (!$this->isPosted('add_to_wishlist')) {
-            return null;
-        }
-
-        $this->validateAddToWishlist();
-
-        if ($this->hasErrors(null, false)) {
-            return $this->completeSubmit();
-        }
-
-        $submitted = $this->getSubmitted();
-        $result = $this->wishlist->addProduct($submitted);
-
-        $this->completeSubmit($result);
-    }
-
-    /**
-     * Deletes a submitted product from the wishlist
-     */
-    protected function deleteWishlist()
-    {
-        $condititons = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id,
-            'product_id' => $this->getSubmitted('product_id')
-        );
-
-        $result = $this->wishlist->deleteProduct($condititons);
-        $this->completeSubmit($result);
-    }
-
-    /**
-     * Finishes a submitted action.
-     * For non-AJAX requests - redirects the user with a message
-     * For AJAX requests - outputs JSON string with results such as message, redirect path...
-     * @param array $data
-     * @return mixed
-     */
-    protected function completeSubmit(array $data = array())
-    {
-        $data += $this->getErrorSubmitResult();
-        $this->outputAjaxResponse($data);
-        $this->redirect($data['redirect'], $data['message'], $data['severity']);
-    }
-
-    /**
-     * Returns an array of default error result
-     * @return array
-     */
-    protected function getErrorSubmitResult()
-    {
-        // Get validation errors
-        $errors = $this->error();
-
-        if (!empty($errors)) {
-            // Errors can be nested, so flatten them into a simple array
-            // then conver to a string
-            $message = implode('<br>', gplcart_array_flatten($errors));
-        } else {
-            $message = $this->text('An error occurred');
-        }
-
-        return array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $message
-        );
-    }
-
-    /**
-     * Outputs JSON with various data
-     */
-    protected function outputAjaxResponse(array $data)
-    {
-        if ($this->request->isAjax()) {
-
-            $response = $data;
-            if ($this->isPosted('add_to_cart') && $data['severity'] === 'success') {
-                $cart = $this->renderCartPreview();
-                $response += array('modal' => $cart);
-            }
-
-            $this->response->json($response);
-        }
-    }
-
-    /**
-     * Validates Add to cart action
-     */
-    protected function validateAddToCart()
-    {
-        $this->setSubmitted('user_id', $this->cart_uid);
-        $this->setSubmitted('store_id', $this->store_id);
-
-        $quantity = $this->getSubmitted('quantity', 1);
-        $this->setSubmitted('quantity', $quantity);
-        $this->validate('cart');
-    }
-
-    /**
-     * Validates "Add to wishlist" action
-     */
-    protected function validateAddToWishlist()
-    {
-        $this->setSubmitted('user_id', $this->cart_uid);
-        $this->setSubmitted('store_id', $this->store_id);
-        $this->validate('wishlist');
-    }
-
-    /**
-     * Validates "Add to compare" action
-     */
-    protected function validateAddToCompare()
-    {
-        $this->validate('compare');
     }
 
     protected function getCollectionItems(array $options)

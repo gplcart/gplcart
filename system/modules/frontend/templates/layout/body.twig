@@ -30,8 +30,9 @@
             <ul class="nav navbar-nav navbar-right">
               <li class="cart">
                 <a rel="nofollow" id="cart-link" href="{{ url('checkout') }}">
-                  {% if cart_quantity.total is not empty %}
-                      <span class="badge" id="cart-quantity">{{ cart_quantity.total }}</span>
+                  {% set cart_quantity = cart('count_total') %}
+                  {% if cart_quantity %}
+                      <span class="badge" id="cart-quantity">{{ cart_quantity }}</span>
                   {% else %}
                       <span class="badge" id="cart-quantity" style="display:none;"></span>
                   {% endif %}

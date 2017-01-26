@@ -75,11 +75,15 @@
      */
     Frontend.ui.modal = function (content, id, header) {
 
-        var html = Frontend.html.modal(content, id, header);
-
         $('.modal').remove();
-        $('body').append(html);
-        $('#' + id).modal('show');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').removeAttr('style');
+
+        if (content.length) {
+            var html = Frontend.html.modal(content, id, header);
+            $('body').append(html);
+            $('#' + id).modal('show');
+        }
     };
 
     /**
@@ -171,9 +175,7 @@
 
         var button, action, header;
 
-        $(':button[name][data-ajax="true"]').click(function (e) {
-            
-            return;
+        $(document).on('click', ':button[name][data-ajax="true"]', function (e) {
 
             e.preventDefault();
 
@@ -200,17 +202,22 @@
                         return false;
                     }
 
-                    if (data.modal) {
+                    if ('modal' in data) {
                         if (action === 'add_to_cart') {
                             header = GplCart.text('Cart');
                         }
-
                         Frontend.ui.modal(data.modal, action + '-content-modal', header);
-                    } else if (data.message) {
+                    } else if ('message' in data) {
                         Frontend.ui.modal(data.message, action + '-message-modal');
                     }
 
-                    Frontend.helper.submit(action, button, data);
+                    if (data.severity === 'success') {
+                        Frontend.helper.submitAddToCart(action, data);
+                        Frontend.helper.submitRemoveFromCart(action, data);
+                        Frontend.helper.submitAddToCompare(action, data, button);
+                        Frontend.helper.submitAddToWishlist(action, data, button);
+                        Frontend.helper.submitRemoveFromWishlist(action, data, button);
+                    }
                 },
                 error: function () {
                     alert(GplCart.text('An error occurred'));
@@ -538,7 +545,6 @@
         });
     };
 
-
     /**
      * Handles checkout form submits
      * @returns {undefined}
@@ -606,30 +612,25 @@
     };
 
     /**
-     * Handles submitted actions
+     * Handles "Add to cart" action
      * @param {String} action
-     * @param {Object} button
      * @param {Object} data
      * @returns {undefined}
      */
-    Frontend.helper.submit = function (action, button, data) {
-        if (data.severity === 'success') {
-            Frontend.helper.submitAddToCart(action, button, data);
-            Frontend.helper.submitAddToCompare(action, button, data);
-            Frontend.helper.submitAddToWishlist(action, button, data);
-            Frontend.helper.submitRemoveFromWishlist(action, button, data);
+    Frontend.helper.submitAddToCart = function (action, data) {
+        if (action === 'add_to_cart' && 'quantity' in data) {
+            Frontend.helper.updateCartQuantity(data.quantity);
         }
     };
 
     /**
-     * Handles "Add to cart" action
+     * Handles "Remove from cart" action
      * @param {String} action
-     * @param {Object} button
      * @param {Object} data
      * @returns {undefined}
      */
-    Frontend.helper.submitAddToCart = function (action, button, data) {
-        if (action === 'add_to_cart' && 'quantity' in data) {
+    Frontend.helper.submitRemoveFromCart = function (action, data) {
+        if (action === 'remove_from_cart' && 'quantity' in data) {
             Frontend.helper.updateCartQuantity(data.quantity);
         }
     };
@@ -646,11 +647,11 @@
     /**
      * Handles "Add to compare" action
      * @param {String} action
-     * @param {Object} button
      * @param {Object} data
+     * @param {Object} button
      * @returns {undefined}
      */
-    Frontend.helper.submitAddToCompare = function (action, button, data) {
+    Frontend.helper.submitAddToCompare = function (action, data, button) {
         if (action === 'add_to_compare' && 'quantity' in data) {
             $('#compare-quantity').text(data.quantity).show();
             button.replaceWith(Frontend.html.buttonInCompare());
@@ -660,11 +661,11 @@
     /**
      * Handles "Add to wishlist" action
      * @param {String} action
-     * @param {Object} button
      * @param {Object} data
+     * @param {Object} button
      * @returns {undefined}
      */
-    Frontend.helper.submitAddToWishlist = function (action, button, data) {
+    Frontend.helper.submitAddToWishlist = function (action, data, button) {
         if (action === 'add_to_wishlist' && 'quantity' in data) {
             Frontend.helper.updateWishlistQuantity(data.quantity);
             button.replaceWith(Frontend.html.buttonInWishlist());
@@ -674,11 +675,11 @@
     /**
      * Handles "Remove from wishlist" action
      * @param {String} action
-     * @param {Object} button
      * @param {Object} data
+     * @param {Object} button
      * @returns {undefined}
      */
-    Frontend.helper.submitRemoveFromWishlist = function (action, button, data) {
+    Frontend.helper.submitRemoveFromWishlist = function (action, data, button) {
         if (action === 'remove_from_wishlist' && 'quantity' in data) {
             Frontend.helper.updateWishlistQuantity(data.quantity);
             button.closest('.product.item').remove();

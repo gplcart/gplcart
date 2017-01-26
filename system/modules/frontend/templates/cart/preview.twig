@@ -22,23 +22,30 @@
       <div class="row items">
         <div class="col-md-12 pre-scrollable">
           {% for item in cart['items'] %}
-              <div class="media cart-item">
-                <div class="media-left image col-md-2">
-                  <img class="media-object thumbnail img-responsive" alt="{{ item['product']['title'] }}" src="{{ item['thumb'] }}">
+              <form method="post" class="form-horizontal">
+                <input type="hidden" name="token" value="{{ token() }}">
+                <input type="hidden" name="cart[cart_id]" value="{{ item['cart_id'] }}">
+                <div class="media cart-item">
+                  <div class="media-left image col-md-2">
+                    <img class="media-object thumbnail img-responsive" alt="{{ item['product']['title'] }}" src="{{ item['thumb'] }}">
+                    <button title="{{ text('Remove') }}" class="btn btn-default" data-ajax="true" name="remove_from_cart" value="1">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="media-body info">
+                    <div class="media-heading">{{ item['product']['title'] }}</div>
+                    <p>{{ item['sku'] }}</p>
+                    <p>{{ item['quantity'] }} X {{ item['price_formatted'] }} = {{ item['total_formatted'] }}</p>
+                  </div>
                 </div>
-                <div class="media-body info">
-                  <div class="media-heading">{{ item['product']['title'] }}</div>
-                  <p>{{ item['sku'] }}</p>
-                  <p>{{ item['quantity'] }} X {{ item['price_formatted'] }} = {{ item['total_formatted'] }}</p>
-                </div>
-              </div>
+              </form>
           {% endfor %}
         </div>
       </div>
       <hr>
       <div class="row subtotal">
         <div class="col-md-12">
-          <b>{{ text('Subtotal') }}</b> : <span class="price">{{ cart['total_formatted'] }}</span>
+          <b>{{ text('Subtotal') }}</b> : <span id="cart-preview-subtotal">{{ cart['total_formatted'] }}</span>
           <div class="help-block">{{ text('Final price will be shown on checkout page') }}</div>
         </div>
       </div>

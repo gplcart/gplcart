@@ -66,23 +66,24 @@ class Twig
             $this->twig->addExtension(new \Twig_Extension_Debug());
         }
 
+        $this->addFunctionD($object);
+        $this->addFunctionXss($object);
         $this->addFunctionUrl($object);
         $this->addFunctionDate($object);
+        $this->addFunctionCart($object);
+        $this->addFunctionDate($object);
         $this->addFunctionText($object);
+        $this->addFunctionUser($object);
+        $this->addFunctionStore($object);
         $this->addFunctionError($object);
         $this->addFunctionToken($object);
         $this->addFunctionConfig($object);
-        $this->addFunctionSettings($object);
         $this->addFunctionAccess($object);
         $this->addFunctionSummary($object);
+        $this->addFunctionTruncate($object);
+        $this->addFunctionSettings($object);
         $this->addFunctionAttributes($object);
         $this->addFunctionIsSuperadmin($object);
-        $this->addFunctionUser($object);
-        $this->addFunctionStore($object);
-        $this->addFunctionD($object);
-        $this->addFunctionXss($object);
-        $this->addFunctionTruncate($object);
-        $this->addFunctionDate($object);
     }
 
     /**
@@ -324,6 +325,19 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('truncate', function ($string, $length = 100, $trimmarker = '...') use ($object) {
             return $object->truncate($string, $length, $trimmarker);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \gplcart\core\Controller::cart()
+     * @param \gplcart\core\Controller $object
+     */
+    protected function addFunctionCart($object)
+    {
+        $function = new \Twig_SimpleFunction('cart', function ($key = null) use ($object) {
+            return $object->cart($key);
         });
 
         $this->twig->addFunction($function);

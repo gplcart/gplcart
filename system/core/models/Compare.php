@@ -85,27 +85,27 @@ class Compare extends Model
     {
         $this->hook->fire('add.product.compare.before', $product, $data);
 
-        if (empty($product)) {
-            return array();
-        }
-
         $result = array(
+            'redirect' => '',
             'severity' => 'warning',
             'message' => $this->language->text('Product has not been added to comparison')
         );
+
+        if (empty($product)) {
+            return $result;
+        }
 
         $added = $this->add($product['product_id']);
 
         if (!empty($added)) {
 
-            // Since the cookie isn't available until the next request
-            // we add one more here
             $existing = count($this->get());
             $existing ++;
-            
+
             $href = $this->request->base() . 'compare';
 
             $result = array(
+                'redirect' => '',
                 'severity' => 'success',
                 'quantity' => $existing,
                 'message' => $this->language->text('Product has been added to <a href="!href">comparison</a>', array('!href' => $href))
@@ -115,10 +115,9 @@ class Compare extends Model
         $this->hook->fire('add.product.compare.after', $product, $data, $result);
         return $result;
     }
-    
+
     /**
-     * Removes a product from comparison and returns
-     * an array of result data
+     * Removes a product from comparison and returns an array of result data
      * @param integer $product_id
      * @return array
      */
@@ -126,22 +125,22 @@ class Compare extends Model
     {
         $this->hook->fire('delete.product.compare.before', $product_id);
 
-        if (empty($product_id)) {
-            return array();
-        }
-
         $result = array(
+            'redirect' => '',
             'severity' => 'warning',
             'message' => $this->language->text('Product has not been removed from comparison')
         );
 
-        $deleted = (bool) $this->delete($product_id);
+        if (empty($product_id)) {
+            return $result;
+        }
 
-        if ($deleted) {
+        if ($this->delete($product_id)) {
 
             $existing = count($this->get());
 
             $result = array(
+                'redirect' => '',
                 'severity' => 'success',
                 'quantity' => $existing,
                 'message' => $this->language->text('Product has been deleted from comparison')
@@ -236,14 +235,13 @@ class Compare extends Model
         }
 
         $product_ids = array_flip($compared);
-
+        
         unset($product_ids[$product_id]);
 
-        $rest = array_keys($product_ids);
-        $this->set($rest);
-
-        $this->hook->fire('delete.compare.after', $product_id, $rest);
-        return $rest;
+        $result = $this->set(array_keys($product_ids));
+        $this->hook->fire('delete.compare.after', $product_id, $result);
+        
+        return $result;
     }
 
 }

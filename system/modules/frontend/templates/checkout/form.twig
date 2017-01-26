@@ -45,22 +45,30 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4">{{ pane_shipping_address|raw }}</div>
+        <div class="col-md-4">
+          {% if pane_shipping_address is defined and pane_shipping_address is not empty %}
+              {{ pane_shipping_address|raw }}
+          {% endif %}
+        </div>
         {% if shipping_methods or payment_methods %}
             <div class="col-md-3">
               <div class="form-group">
                 <div class="col-md-12">
-                  {% if shipping_methods %}
+                  {% if shipping_methods and pane_shipping_methods is defined %}
                       {{ pane_shipping_methods|raw }}
                   {% endif %}
-                  {% if payment_methods %}
+                  {% if payment_methods and pane_payment_methods is defined  %}
                       {{ pane_payment_methods|raw }}
                   {% endif %}
                 </div>
               </div>
             </div>
         {% endif %}
-        <div class="col-md-5">{{ pane_review|raw }}</div>
+        <div class="col-md-5">
+          {% if pane_review is defined and pane_review is not empty %}
+              {{ pane_review|raw }}
+          {% endif %}
+        </div>
       </div>
     </form>
 {% endif %}

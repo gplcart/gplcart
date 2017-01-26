@@ -92,6 +92,12 @@ class Controller
      * @var integer
      */
     protected $uid;
+    
+    /**
+     * Current user cart ID
+     * @var integer|string
+     */
+    protected $cart_uid;
 
     /**
      * A random string generated from the session
@@ -249,6 +255,12 @@ class Controller
      * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
+    
+    /**
+     * Cart model instance
+     * @var \gplcart\core\models\Cart $cart
+     */
+    protected $cart;
 
     /**
      * Library instance
@@ -366,8 +378,18 @@ class Controller
         $this->setDefaultData();
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
+        
+        $this->setCartProperties();
 
         $this->hook->fire('init', $this);
+    }
+    
+    /**
+     * Sets cart properties
+     */
+    protected function setCartProperties()
+    {
+        $this->cart_uid = $this->cart->uid();
     }
 
     /**
@@ -377,6 +399,28 @@ class Controller
     {
         if (isset($this->http_status)) {
             $this->outputHttpStatus($this->http_status);
+        }
+    }
+    
+    /**
+     * Returns the current cart data
+     * @param null|string $key
+     * @return mixed
+     */
+    public function cart($key = null)
+    {
+        $conditions = array('user_id' => $this->cart_uid, 'store_id' => $this->store_id);
+
+        if (!isset($key)) {
+            return $this->cart->getContent($conditions);
+        }
+
+        if ($key == 'count_total') {
+            return (int) $this->cart->getQuantity($conditions, 'total');
+        }
+
+        if ($key == 'user_id') {
+            return $this->cart_uid;
         }
     }
 
@@ -861,6 +905,7 @@ class Controller
      */
     protected function setInstanceProperties()
     {
+        $this->cart = Container::get('gplcart\\core\\models\\Cart');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->language = Container::get('gplcart\\core\\models\\Language');

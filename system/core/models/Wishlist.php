@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\Logger;
 use gplcart\core\Cache;
 use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\models\User as UserModel;
@@ -35,12 +34,6 @@ class Wishlist extends Model
     protected $language;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Url class instance
      * @var \gplcart\core\helpers\Url $url
      */
@@ -50,17 +43,15 @@ class Wishlist extends Model
      * Constructor
      * @param UserModel $user
      * @param LanguageModel $language
-     * @param Logger $logger
      * @param UrlHelper $url
      */
     public function __construct(UserModel $user, LanguageModel $language,
-            Logger $logger, UrlHelper $url)
+            UrlHelper $url)
     {
         parent::__construct();
 
         $this->url = $url;
         $this->user = $user;
-        $this->logger = $logger;
         $this->language = $language;
     }
 
@@ -112,6 +103,7 @@ class Wishlist extends Model
         $this->hook->fire('add.product.wishlist.before', $data);
 
         $result = array(
+            'redirect' => '',
             'severity' => 'warning',
             'message' => $this->language->text('Product has not been added to your wishlist')
         );
@@ -123,21 +115,14 @@ class Wishlist extends Model
         $href = $this->url->get('wishlist');
 
         if ($this->exists($data)) {
-            return array(
-                'severity' => 'warning',
-                'message' => $this->language->text('Product already exists in your <a href="!href">wishlist</a>', array('!href' => $href))
-            );
+            $result['message'] = $this->language->text('Product already exists in your <a href="!href">wishlist</a>', array('!href' => $href));
+            return $result;
         }
 
         if (!$this->canAdd($data['user_id'], $data['store_id'])) {
-
-            $limit = $this->getLimits($data['user_id']);
-
-            return array(
-                'severity' => 'warning',
-                'message' => $this->language->text('Oops, you\'re exceeding %limit items', array(
-                    '%limit' => $limit))
-            );
+            $vars = array('%limit' => $this->getLimits($data['user_id']));
+            $result['message'] = $this->language->text('You\'re exceeding %limit items', $vars);
+            return $result;
         }
 
         $wishlist_id = $this->add($data);
@@ -152,12 +137,11 @@ class Wishlist extends Model
             $exists = $this->getList($options);
 
             $result = array(
+                'redirect' => '',
                 'severity' => 'success',
-                'wishlist_id' => $wishlist_id,
                 'quantity' => count($exists),
+                'wishlist_id' => $wishlist_id,
                 'message' => $this->language->text('Product has been added to your <a href="!href">wishlist</a>', array('!href' => $href)));
-
-            $this->logAddToWishlist($data);
         }
 
         $this->hook->fire('add.product.wishlist.after', $data, $result);
@@ -165,23 +149,23 @@ class Wishlist extends Model
     }
 
     /**
-     * Removes a product from wishlist and returns
-     * an array of result data
+     * Removes a product from wishlist and returns an array of result data
      * @param array $data
      * @return array
      */
     public function deleteProduct(array $data)
     {
-        $result = array('redirect' => null, 'severity' => '', 'message' => '');
+        $this->hook->fire('delete.product.wishlist.before', $data);
 
-        $this->hook->fire('delete.product.wishlist.before', $data, $result);
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->language->text('Product has not been deleted from wishlist')
+        );
 
         if (empty($data)) {
             return $result;
         }
-
-        $result['severity'] = 'warning';
-        $result['message'] = $this->language->text('Product has not been deleted from wishlist');
 
         $deleted = (bool) $this->delete($data);
 
@@ -193,6 +177,7 @@ class Wishlist extends Model
 
             $result = array(
                 'message' => '',
+                'redirect' => '',
                 'severity' => 'success',
                 'quantity' => count($existing),
                 'redirect' => empty($existing) ? 'wishlist' : ''
@@ -201,24 +186,6 @@ class Wishlist extends Model
 
         $this->hook->fire('delete.product.wishlist.after', $data, $result);
         return $result;
-    }
-
-    /**
-     * Logs adding a product to a wishlist
-     * @param array $data
-     * @return boolean
-     */
-    protected function logAddToWishlist(array $data)
-    {
-        $log = array(
-            'message' => 'User %uid added product #%product to wishlist',
-            'variables' => array(
-                '%product' => $data['product_id'],
-                '%uid' => is_numeric($data['user_id']) ? $data['user_id'] : '**anonymous**'
-            )
-        );
-
-        return $this->logger->log('wishlist', $log);
     }
 
     /**

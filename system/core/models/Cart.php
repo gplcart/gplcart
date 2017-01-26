@@ -213,21 +213,13 @@ class Cart extends Model
         $this->hook->fire('add.product.cart.before', $product, $data);
 
         $result = array(
+            'redirect' => '',
             'severity' => 'warning',
             'message' => $this->language->text('Product has not been added')
         );
 
         if (empty($product) || empty($data)) {
             return $result;
-        }
-
-        if (!empty($product['combination']) && empty($data['combination_id'])) {
-
-            return array(
-                'severity' => 'warning',
-                'redirect' => "product/{$product['product_id']}",
-                'message' => $this->language->text('Please select product options before adding to the cart')
-            );
         }
 
         $data += array(
@@ -241,16 +233,20 @@ class Cart extends Model
 
         if (!empty($cart_id)) {
 
-            $options = array('user_id' => $data['user_id'], 'store_id' => $data['store_id']);
+            $options = array(
+                'user_id' => $data['user_id'],
+                'store_id' => $data['store_id']
+            );
+
             $existing = $this->getQuantity($options);
+            $vars = array('!href' => $this->request->base() . 'checkout');
 
             $result = array(
+                'redirect' => '',
                 'cart_id' => $cart_id,
                 'severity' => 'success',
                 'quantity' => $existing['total'],
-                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', array(
-                    '!href' => $this->request->base() . 'checkout'
-                ))
+                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', $vars)
             );
         }
 

@@ -23,7 +23,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Ajax extends FrontendController
 {
-    
+
     use \gplcart\core\traits\ControllerSku;
 
     /**
@@ -213,12 +213,7 @@ class Ajax extends FrontendController
      */
     public function getCartPreviewAjax()
     {
-        $options = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
-        );
-
-        $cart = $this->cart->getContent($options);
+        $cart = $this->cart();
 
         if (empty($cart['items'])) {
             return array();
