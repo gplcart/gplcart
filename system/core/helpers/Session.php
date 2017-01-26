@@ -91,10 +91,7 @@ class Session
      */
     public function get($key, $default = null)
     {
-        $session = $_SESSION;
-        gplcart_array_trim($session, true);
-
-        $value = gplcart_array_get_value($session, $key);
+        $value = gplcart_array_get_value($_SESSION, $key);
 
         if (isset($value)) {
             return $value;
