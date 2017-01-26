@@ -2,7 +2,7 @@
     Displays the module settings page
 
     To see available variables:
-        - without enabling Twig debug mode: {{ var_dump() }}
+        - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
 
     @package GPL Cart core
@@ -26,7 +26,7 @@
           </div>
           <div class="help-block">
             <div class="text-muted">
-              {{ text('If enabled you can use native Twig debugger to see available variables in templates {{ dump }}. Otherwise use built-in tool {{ var_dump }} which is probably better') }}
+              {{ text('If enabled you can use native Twig debugger to see available variables in templates {{ dump }}. Otherwise use built-in tool {{ d }} which is more spectacular') }}
             </div>
           </div>
         </div>

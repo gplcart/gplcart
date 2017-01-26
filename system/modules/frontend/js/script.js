@@ -172,6 +172,8 @@
         var button, action, header;
 
         $(':button[name][data-ajax="true"]').click(function (e) {
+            
+            return;
 
             e.preventDefault();
 
@@ -223,7 +225,7 @@
      * Handles changing product options
      * @returns {undefined}
      */
-    Frontend.attach.updateOptions = function () {
+    Frontend.attach.updateOption = function () {
 
         var input, slider, image, images, values, message = $('.add-to-cart .message');
 
@@ -301,7 +303,7 @@
     };
 
     /**
-     * Returns arrays of selected option field values an titles
+     * Returns arrays of selected field values and their titles
      * @returns object
      */
     Frontend.helper.getOptionValues = function () {
@@ -317,15 +319,17 @@
     };
 
     /**
-     * 
-     * @param {type} fid
-     * @param {type} title
+     * Returns rendered reset field options button
+     * @param {String} fid
+     * @param {String} title
      * @returns {String}
      */
     Frontend.html.selectOptionBtn = function (fid, title) {
         var btn = '';
-        btn += '<span data-reset-field-id="' + fid + '"';
-        btn += 'class="btn btn-default btn-xs">' + title + ' <span class="fa fa-times"></span></span>';
+        btn += '<span title="' + GplCart.text('Remove') + '" data-reset-field-id="' + fid + '" class="btn btn-default btn-xs">';
+        btn += title;
+        btn += '<span class="fa fa-times"></span>';
+        btn += '</span>';
         return btn;
     };
 

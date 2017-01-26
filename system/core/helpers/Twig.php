@@ -79,7 +79,7 @@ class Twig
         $this->addFunctionIsSuperadmin($object);
         $this->addFunctionUser($object);
         $this->addFunctionStore($object);
-        $this->addFunctionVarDump($object);
+        $this->addFunctionD($object);
         $this->addFunctionXss($object);
         $this->addFunctionTruncate($object);
         $this->addFunctionDate($object);
@@ -294,9 +294,9 @@ class Twig
      * Adds debug function to see template variables \gplcart\core\Controller::$data
      * @param \gplcart\core\Controller $object
      */
-    protected function addFunctionVarDump($object)
+    protected function addFunctionD($object)
     {
-        $function = new \Twig_SimpleFunction('var_dump', function ($key = null) use ($object) {
+        $function = new \Twig_SimpleFunction('d', function ($key = null) use ($object) {
             d($object->getData($key));
         });
 
