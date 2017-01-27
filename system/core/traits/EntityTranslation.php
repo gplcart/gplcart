@@ -23,14 +23,15 @@ trait EntityTranslation
      * @param string $language
      * @return null
      */
-    protected function attachTranslation($db, array &$data, $entity, $language)
+    protected function attachTranslationTrait($db, array &$data, $entity,
+            $language)
     {
         if (empty($data)) {
             return null;
         }
 
         $data['language'] = 'und';
-        $translations = $this->getTranslation($db, $data["{$entity}_id"], $entity);
+        $translations = $this->getTranslationTrait($db, $data["{$entity}_id"], $entity);
 
         foreach ($translations as $translation) {
             $data['translation'][$translation['language']] = $translation;
@@ -48,7 +49,7 @@ trait EntityTranslation
      * @param string $entity
      * @return array
      */
-    public function getTranslation($db, $id, $entity)
+    public function getTranslationTrait($db, $id, $entity)
     {
         $sql = "SELECT * FROM {$entity}_translation WHERE {$entity}_id=?";
         return $db->fetchAll($sql, array($id));
@@ -62,14 +63,15 @@ trait EntityTranslation
      * @param boolean $update
      * @return null
      */
-    protected function setTranslation($db, array $data, $entity, $update = true)
+    protected function setTranslationTrait($db, array $data, $entity,
+            $update = true)
     {
         if (empty($data['form']) && empty($data['translation'])) {
             return null;
         }
 
         if ($update) {
-            $this->deleteTranslation($db, $data["{$entity}_id"], $entity);
+            $this->deleteTranslationTrait($db, $data["{$entity}_id"], $entity);
         }
 
         if (empty($data['translation'])) {
@@ -77,7 +79,7 @@ trait EntityTranslation
         }
 
         foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($db, $data["{$entity}_id"], $entity, $language, $translation);
+            $this->addTranslationTrait($db, $data["{$entity}_id"], $entity, $language, $translation);
         }
     }
 
@@ -88,7 +90,7 @@ trait EntityTranslation
      * @param string $entity
      * @param null|string $language
      */
-    public function deleteTranslation($db, $id, $entity, $language = null)
+    public function deleteTranslationTrait($db, $id, $entity, $language = null)
     {
         $conditions = array("{$entity}_id" => $id);
 
@@ -107,7 +109,7 @@ trait EntityTranslation
      * @param string $language
      * @param array $translation
      */
-    public function addTranslation($db, $id, $entity, $language,
+    public function addTranslationTrait($db, $id, $entity, $language,
             array $translation)
     {
         $translation['language'] = $language;

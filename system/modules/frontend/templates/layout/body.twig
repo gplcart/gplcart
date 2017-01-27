@@ -30,9 +30,8 @@
             <ul class="nav navbar-nav navbar-right">
               <li class="cart">
                 <a rel="nofollow" id="cart-link" href="{{ url('checkout') }}">
-                  {% set cart_quantity = cart('count_total') %}
-                  {% if cart_quantity %}
-                      <span class="badge" id="cart-quantity">{{ cart_quantity }}</span>
+                  {% if cart('count_total') %}
+                      <span class="badge" id="cart-quantity">{{ cart('count_total') }}</span>
                   {% else %}
                       <span class="badge" id="cart-quantity" style="display:none;"></span>
                   {% endif %}
@@ -41,9 +40,9 @@
               </li>
               <li class="wishlist">
                 <a rel="nofollow" id="wishlist-link" href="{{ url('wishlist') }}">
-                  {% if wishlist_quantity is not empty %}
+                  {% if wishlist('count') %}
                       <span class="badge" id="wishlist-quantity">
-                        {{ wishlist_quantity }}
+                        {{ wishlist('count') }}
                       </span>
                       <i class="fa fa-heart"></i>
                   {% else %}
@@ -53,10 +52,10 @@
                 </a>
               </li>
               <li class="compare">
-                {% if compare_content is not empty %}
+                {% if compare('count') %}
                     <a rel="nofollow" id="compare-link" href="{{ url('compare') }}">
                       <span class="badge" id="compare-quantity">
-                        {{ compare_content|length }}
+                        {{ compare('count') }}
                       </span>
                       <i class="fa fa-balance-scale"></i>
                     </a>

@@ -1,9 +1,7 @@
 /* global GplCart */
-var GplCart = GplCart || {settings: {}, translations: {}, theme: {}, onload: {}};
+var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
 
 (function ($, GplCart) {
-    
-    "use strict";
 
     $(function () {
         $('body').addClass('js');

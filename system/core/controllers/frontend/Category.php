@@ -178,7 +178,7 @@ class Category extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_category', 3));
 
-        $this->setItemThumb($this->data_category, $options);
+        $this->setThumbTrait($this->image, $this->data_category, $options);
 
         $data = array('category' => $this->data_category);
         $html = $this->render('category/blocks/images', $data);
@@ -192,7 +192,7 @@ class Category extends FrontendController
      */
     protected function setChildrenCategory($category_id)
     {
-        $children = $this->category->getChildren($category_id, $this->data_category_tree);
+        $children = $this->category->getChildren($category_id, $this->data_categories);
         return $this->data_children = $children;
     }
 

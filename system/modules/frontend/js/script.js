@@ -3,10 +3,9 @@
 
     "use strict";
 
-    var loaded_sliders = {};
-    var theme_settings = {
-        product_gallery_id: 'product-image-gallery'
-    };
+    var selected_option_values = [],
+            loaded_sliders = {},
+            theme_settings = {product_gallery_id: 'product-image-gallery'};
 
     /**
      * Returns HTML of modal pop-up
@@ -184,20 +183,35 @@
      * Returns arrays of selected field values and their titles
      * @returns object
      */
-    var getOptionValues = function () {
+    var getSelectedOptions = function () {
 
-        var values = [], titles = [];
+        var value, values = [], titles = [];
 
         $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').each(function () {
-            values.push($(this).val());
-            titles.push(htmlBtnSelectedOptions($(this).data('field-id'), $(this).data('field-title')));
+
+            value = $(this).val();
+
+            if (value.length) {
+                values.push(value);
+                titles.push(htmlBtnSelectedOptions($(this).data('field-id'), $(this).data('field-title')));
+            }
         });
 
         return {values: values, titles: titles};
     };
 
     /**
+     * Uncheck all but current checkboxes in the group
+     * @param {Object} current
+     * @returns {undefined}
+     */
+    var setSingleCheckedCheckbox = function (current) {
+        $(current).closest('.form-group').find('input:checkbox').not(current).prop('checked', false);
+    };
+
+    /**
      * 
+     * @param {type} data
      * @returns {undefined}
      */
     var setSelectedMessage = function (data) {
@@ -399,20 +413,28 @@
      */
     GplCart.onload.updateOption = function () {
 
-        var input, slider, image, images, values, message = $('.add-to-cart .message');
+        var slider, image, images,
+                selected = getSelectedOptions(),
+                message = $('.add-to-cart .message');
 
-        setSelectedMessage(getOptionValues());
+        setSelectedMessage(selected);
 
         $(document).on('change', '[name^="product[options]"]', function () {
 
-            input = $(this);
+            setSingleCheckedCheckbox(this);
 
-            values = getOptionValues();
-            setSelectedMessage(values);
+            selected = getSelectedOptions();
+            setSelectedMessage(selected);
+
+            if (selected_option_values.toString() === selected.values.toString()) {
+                return; // Already posted this combination
+            }
+
+            selected_option_values = selected.values;
 
             $.ajax({
                 data: {
-                    values: values.values,
+                    values: selected.values,
                     token: GplCart.settings.token,
                     action: 'switchProductOptionsAjax',
                     product_id: GplCart.settings.product.product_id
@@ -459,15 +481,17 @@
                         });
                     }
 
-                    input.closest('form').find('[name="add_to_cart"]').prop('disabled', !data.cart_access);
+                    $('[name="add_to_cart"]').prop('disabled', !data.cart_access);
                 },
                 error: function () {
                     alert(GplCart.text('An error occurred'));
                 },
                 beforeSend: function () {
+                    $('[data-field-id]').prop('disabled', true);
                     message.html('<span class="loading">' + GplCart.text('Checking availability...') + '</span>');
                 },
                 complete: function () {
+                    $('[data-field-id]').prop('disabled', false);
                     message.find('.loading').remove();
                 }
             });
@@ -475,14 +499,16 @@
     };
 
     /**
-     * Reset a checked radio button on second click
+     * Reset selected field options
      * @returns {undefined}
      */
-    GplCart.onload.resetRadioOption = function () {
+    GplCart.onload.resetFieldOptions = function () {
         var fid;
         $(document).on('click', '[data-reset-field-id]', function () {
             fid = $(this).data('reset-field-id');
-            $('input[data-field-id="' + fid + '"]:radio').prop('checked', false).last().trigger('change');
+            $('input[data-field-id="' + fid + '"]:checkbox').prop('checked', false).trigger('change');
+            $('input[data-field-id="' + fid + '"][value=""]:radio').prop('checked', true).trigger('change');
+            $('select option[data-field-id="' + fid + '"][value=""]').prop('selected', true).trigger('change');
             return false;
         });
     };

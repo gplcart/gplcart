@@ -82,7 +82,7 @@ class Compare extends FrontendController
     protected function setDataSelectCompare()
     {
         $data = array(
-            'product_id' => $this->data_compare);
+            'product_id' => $this->compare());
 
         $options = array(
             'view' => $this->settings('compare_view', 'grid'),
@@ -143,23 +143,25 @@ class Compare extends FrontendController
      * Displays the product compare page
      * @param string $ids
      */
-    public function compare($ids)
+    public function compareCompare($ids)
     {
-        $this->setTitleCompare();
-        $this->setBreadcrumbCompare();
+        $this->setTitleCompareCompare();
+        $this->setBreadcrumbCompareCompare();
 
-        $this->controlAccessCompare();
+        $this->controlAccessCompareCompare();
 
-        $this->setDataCompare();
-        $this->outputCompare();
+        $this->setDataCompareCompare();
+        $this->outputCompareCompare();
     }
 
     /**
      * Controls access to the comparison page
      */
-    protected function controlAccessCompare()
+    protected function controlAccessCompareCompare()
     {
-        if (count($this->data_compare) < 2) {
+        $items = $this->compare->getList();
+
+        if (count($items) < 2) {
             $this->redirect('compare');
         }
     }
@@ -167,7 +169,7 @@ class Compare extends FrontendController
     /**
      * Sets product field data on the product compare page
      */
-    protected function setDataCompare()
+    protected function setDataCompareCompare()
     {
         $options = array(
             'buttons' => array(
@@ -177,7 +179,7 @@ class Compare extends FrontendController
             )
         );
 
-        $conditions = array('product_id' => $this->data_compare);
+        $conditions = array('product_id' => $this->compare->getList());
         $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {
@@ -214,7 +216,7 @@ class Compare extends FrontendController
     /**
      * Sets titles on the product compare page
      */
-    protected function setTitleCompare()
+    protected function setTitleCompareCompare()
     {
         $this->setTitle($this->text('Comparison'));
     }
@@ -222,7 +224,7 @@ class Compare extends FrontendController
     /**
      * Sets breadcrumbs on the product compare page
      */
-    protected function setBreadcrumbCompare()
+    protected function setBreadcrumbCompareCompare()
     {
         $breadcrumbs = array();
 
@@ -240,7 +242,7 @@ class Compare extends FrontendController
     /**
      * Renders product compare templates
      */
-    protected function outputCompare()
+    protected function outputCompareCompare()
     {
         $this->output('compare/compare');
     }

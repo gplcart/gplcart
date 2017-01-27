@@ -109,7 +109,7 @@ class Review extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5));
 
-        $this->setItemThumb($this->data_product, $options);
+        $this->setThumbTrait($this->image, $this->data_product, $options);
 
         if (!empty($this->data_product['images'])) {
             // Get only first image
@@ -324,9 +324,7 @@ class Review extends FrontendController
         if (empty($product['status']) || $product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
-
-        $this->setItemPrice($product);
-
+        $this->setProductPriceTrait($this, $this->price, $this->product, $product);
         return $this->data_product = $product;
     }
 

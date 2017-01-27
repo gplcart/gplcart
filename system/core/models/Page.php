@@ -85,8 +85,8 @@ class Page extends Model
 
         $page = $this->db->fetch($sql, array($page_id));
 
-        $this->attachImages($this->file, $page, 'page', $language);
-        $this->attachTranslation($this->db, $page, 'page', $language);
+        $this->attachImagesTrait($this->file, $page, 'page', $language);
+        $this->attachTranslationTrait($this->db, $page, 'page', $language);
 
         $this->hook->fire('get.page.after', $page_id, $page);
         return $page;
@@ -108,8 +108,8 @@ class Page extends Model
         $data['created'] = GC_TIME;
         $data['page_id'] = $this->db->insert('page', $data);
 
-        $this->setTranslation($this->db, $data, 'page', false);
-        $this->setImages($this->file, $data, 'page');
+        $this->setTranslationTrait($this->db, $data, 'page', false);
+        $this->setImagesTrait($this->file, $data, 'page');
         $this->setAliasTrait($this->alias, $data, 'page', false);
 
         $this->hook->fire('add.page.after', $data);
@@ -137,8 +137,8 @@ class Page extends Model
 
         $data['page_id'] = $page_id;
 
-        $updated += (int) $this->setImages($this->file, $data, 'page');
-        $updated += (int) $this->setTranslation($this->db, $data, 'page');
+        $updated += (int) $this->setImagesTrait($this->file, $data, 'page');
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'page');
         $updated += (int) $this->setAliasTrait($this->alias, $data, 'page');
 
         $this->cache->clear("page.$page_id");

@@ -27,7 +27,7 @@ trait ControllerWishlist
     {
         // Goes before deleteWishlistTrait()
         $controller->setSubmitted('product');
-        
+
         if ($controller->isPosted('remove_from_wishlist')) {
             $this->deleteWishlistTrait($controller, $wishlist, $request, $response);
         } else if ($controller->isPosted('add_to_wishlist')) {

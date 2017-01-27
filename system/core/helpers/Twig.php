@@ -80,8 +80,10 @@ class Twig
         $this->addFunctionConfig($object);
         $this->addFunctionAccess($object);
         $this->addFunctionSummary($object);
+        $this->addFunctionCompare($object);
         $this->addFunctionTruncate($object);
         $this->addFunctionSettings($object);
+        $this->addFunctionWishlist($object);
         $this->addFunctionAttributes($object);
         $this->addFunctionIsSuperadmin($object);
     }
@@ -338,6 +340,32 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('cart', function ($key = null) use ($object) {
             return $object->cart($key);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \gplcart\core\controllers\frontend\Controller::compare()
+     * @param \gplcart\core\controllers\frontend\Controller $object
+     */
+    protected function addFunctionCompare($object)
+    {
+        $function = new \Twig_SimpleFunction('compare', function ($key = null) use ($object) {
+            return $object->compare($key);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \gplcart\core\controllers\frontend\Controller::wishlist()
+     * @param \gplcart\core\controllers\frontend\Controller $object
+     */
+    protected function addFunctionWishlist($object)
+    {
+        $function = new \Twig_SimpleFunction('wishlist', function ($key = null) use ($object) {
+            return $object->wishlist($key);
         });
 
         $this->twig->addFunction($function);

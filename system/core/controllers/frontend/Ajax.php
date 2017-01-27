@@ -24,8 +24,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Ajax extends FrontendController
 {
 
-    use \gplcart\core\traits\ControllerSku;
-
     /**
      * Search model instance
      * @var \gplcart\core\models\Search $search
@@ -204,7 +202,18 @@ class Ajax extends FrontendController
         $field_value_ids = (array) $this->request->post('values');
 
         $product = $this->product->get($product_id);
-        return $this->getSelectedCombinationTrait($this, $this->sku, $product, $field_value_ids);
+        $response = $this->sku->selectCombination($product, $field_value_ids);
+
+        $options = array(
+            'calculate' => false,
+            'imagestyle' => $this->settings('image_style_product', 5),
+            'path' => empty($response['combination']['path']) ? '' : $response['combination']['path']
+        );
+        
+        $this->setProductPriceTrait($this, $this->price, $this->product, $product, $options);
+        $this->setThumbTrait($this->image, $response, $options);
+        
+        return $response;
     }
 
     /**

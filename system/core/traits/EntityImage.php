@@ -23,12 +23,12 @@ trait EntityImage
      * @param null|string $language
      * @return null
      */
-    protected function attachImages($file, array &$data, $entity,
+    protected function attachImagesTrait($file, array &$data, $entity,
             $language = null)
     {
         if (!empty($data)) {
-            $images = $this->getImages($file, $data, "{$entity}_id");
-            $this->attachImageTranslation($file, $images, $language);
+            $images = $this->getImagesTrait($file, $data, "{$entity}_id");
+            $this->attachImageTranslationTrait($file, $images, $language);
             $data['images'] = $images;
         }
     }
@@ -39,7 +39,7 @@ trait EntityImage
      * @param array $images
      * @param null|string $language
      */
-    protected function attachImageTranslation($file, array &$images, $language)
+    protected function attachImageTranslationTrait($file, array &$images, $language)
     {
         foreach ($images as &$image) {
             foreach ($file->getTranslation($image['file_id']) as $translation) {
@@ -59,7 +59,7 @@ trait EntityImage
      * @param string $key
      * @return array
      */
-    protected function getImages($file, array $data, $key)
+    protected function getImagesTrait($file, array $data, $key)
     {
         $options = array(
             'order' => 'asc',
@@ -79,7 +79,7 @@ trait EntityImage
      * @param string $entity
      * @return array
      */
-    protected function setImages($model, array &$data, $entity)
+    protected function setImagesTrait($model, array &$data, $entity)
     {
         if (empty($data['images'])) {
             return array();

@@ -94,8 +94,8 @@ class Category extends Model
 
         $category = $this->db->fetch($sql, $conditions);
 
-        $this->attachTranslation($this->db, $category, 'category', $language);
-        $this->attachImages($this->file, $category, 'category', $language);
+        $this->attachTranslationTrait($this->db, $category, 'category', $language);
+        $this->attachImagesTrait($this->file, $category, 'category', $language);
 
         $this->hook->fire('get.category.after', $category);
         return $category;
@@ -381,8 +381,8 @@ class Category extends Model
 
         $data['category_id'] = $this->db->insert('category', $data);
 
-        $this->setTranslation($this->db, $data, 'category', false);
-        $this->setImages($this->file, $data, 'category');
+        $this->setTranslationTrait($this->db, $data, 'category', false);
+        $this->setImagesTrait($this->file, $data, 'category');
         $this->setAliasTrait($this->alias, $data, 'category', false);
 
         $this->hook->fire('add.category.after', $data);
@@ -408,8 +408,8 @@ class Category extends Model
 
         $data['category_id'] = $category_id;
 
-        $updated += (int) $this->setTranslation($this->db, $data, 'category');
-        $updated += (int) $this->setImages($this->file, $data, 'category');
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'category');
+        $updated += (int) $this->setImagesTrait($this->file, $data, 'category');
         $updated += (int) $this->setAliasTrait($this->alias, $data, 'category');
 
         $result = ($updated > 0);

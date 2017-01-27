@@ -23,7 +23,7 @@
                     {% for field_value_id in product.field.option[field_id] %}
                         {% if field['values'][field_value_id] is defined %}
                             <label class="option-combination field-widget-button" title="{{ field['values'][field_value_id]['title'] }}">
-                              <input class="option" data-field-id="{{ field_id }}" data-field-title="{{ field['values'][field_value_id]['title'] }}" data-field-value-id="{{ field_value_id }}" type="radio" name="product[options][{{ field_id }}]" value="{{ field_value_id }}"{{ field_value_id in product['default_field_values'] ? ' checked' }}>
+                              <input class="option" data-field-id="{{ field_id }}" data-field-title="{{ field['values'][field_value_id]['title'] }}" data-field-value-id="{{ field_value_id }}" type="checkbox" name="product[options][{{ field_id }}]" value="{{ field_value_id }}"{{ field_value_id in product['default_field_values'] ? ' checked' }}>
                               {% if field['values'][field_value_id]['thumb'] is defined and field['values'][field_value_id]['thumb'] %}
                                   <span class="btn btn-default image has-value" title="{{ field['values'][field_value_id]['title'] }}" style="background-image: url({{ field['values'][field_value_id]['thumb'] }})"></span>
                               {% elseif field['values'][field_value_id]['color'] %}
@@ -37,6 +37,12 @@
                         {% endif %}
                     {% endfor %}
                 {% elseif field.widget == 'radio' %}
+                    <div class="radio">
+                      <label class="option-combination field-widget-radio" title="{{ text('Any') }}">
+                        <input class="option" data-field-id="{{ field_id }}" name="product[options][{{ field_id }}]" type="radio" value="">
+                        {{ text('Any') }}
+                      </label>
+                    </div>
                     {% for field_value_id in product.field.option[field_id] %}
                         {% if field['values'][field_value_id] is defined %}
                             <div class="radio">
@@ -48,9 +54,9 @@
                         {% endif %}
                     {% endfor %}
                 {% elseif field.widget == 'select' %}
-                    <select class="form-control option-combination" name="product[options][{{ field_id }}]">
+                    <select class="form-control option-combination" data-field-id="{{ field_id }}" name="product[options][{{ field_id }}]">
+                      <option data-field-id="{{ field_id }}" value="">{{ text('Any') }}</option>
                       {% for field_value_id in product.field.option[field_id] %}
-                          <option>{{ text('Any') }}</option>
                           {% if field['values'][field_value_id] is defined %}
                               <option data-field-id="{{ field_id }}" data-field-title="{{ field['values'][field_value_id]['title'] }}" data-field-value-id="{{ field_value_id }}" value="{{ field_value_id }}"{{ field_value_id in product['default_field_values'] ? ' selected' }}>
                                 {{ field['values'][field_value_id]['title'] }}

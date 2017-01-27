@@ -58,7 +58,7 @@ class Compare extends Model
             return false;
         }
 
-        $product_ids = $this->get();
+        $product_ids = $this->getList();
 
         if (in_array($product_id, $product_ids)) {
             return false;
@@ -99,7 +99,7 @@ class Compare extends Model
 
         if (!empty($added)) {
 
-            $existing = count($this->get());
+            $existing = count($this->getList());
             $existing ++;
 
             $href = $this->request->base() . 'compare';
@@ -137,7 +137,7 @@ class Compare extends Model
 
         if ($this->delete($product_id)) {
 
-            $existing = count($this->get());
+            $existing = count($this->getList());
 
             $result = array(
                 'redirect' => '',
@@ -168,7 +168,7 @@ class Compare extends Model
      * Returns an array of products to be compared
      * @return array
      */
-    public function get()
+    public function getList()
     {
         $items = &Cache::memory('comparison');
 
@@ -186,7 +186,7 @@ class Compare extends Model
         $array = explode('|', urldecode($cookie));
         $items = array_filter(array_map('trim', $array), 'is_numeric');
 
-        $this->hook->fire('get.compare', $items);
+        $this->hook->fire('get.compared', $items);
         return $items;
     }
 
@@ -197,7 +197,7 @@ class Compare extends Model
      */
     public function exists($product_id)
     {
-        $compared = $this->get();
+        $compared = $this->getList();
         return in_array($product_id, $compared);
     }
 
@@ -228,7 +228,7 @@ class Compare extends Model
             return false;
         }
 
-        $compared = $this->get();
+        $compared = $this->getList();
 
         if (empty($compared)) {
             return false;

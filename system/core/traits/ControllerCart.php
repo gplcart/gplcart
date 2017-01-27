@@ -122,5 +122,4 @@ trait ControllerCart
 
         $controller->redirect($result['redirect'], $result['message'], $result['severity']);
     }
-
 }

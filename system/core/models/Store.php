@@ -226,7 +226,6 @@ class Store extends Model
         return array(
             'address' => '',
             'anonymous_checkout' => 1,
-            'catalog_pricerule' => 1,
             'email' => array(),
             'favicon' => '',
             'fax' => array(),

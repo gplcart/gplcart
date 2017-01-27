@@ -144,8 +144,8 @@ class Product extends Model
 
         $data['product_id'] = $this->db->insert('product', $data);
 
-        $this->setTranslation($this->db, $data, 'product', false);
-        $this->setImages($this->file, $data, 'product');
+        $this->setTranslationTrait($this->db, $data, 'product', false);
+        $this->setImagesTrait($this->file, $data, 'product');
 
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
@@ -183,8 +183,8 @@ class Product extends Model
         $updated = $this->db->update('product', $data, $conditions);
 
         $updated += (int) $this->setSku($data);
-        $updated += (int) $this->setTranslation($this->db, $data, 'product');
-        $updated += (int) $this->setImages($this->file, $data, 'product');
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'product');
+        $updated += (int) $this->setImagesTrait($this->file, $data, 'product');
         $updated += (int) $this->setAliasTrait($this->alias, $data, 'product');
         $updated += (int) $this->setSkuCombinations($data);
         $updated += (int) $this->setOptions($data);
@@ -300,8 +300,8 @@ class Product extends Model
 
         $this->attachFields($product);
         $this->attachSku($product);
-        $this->attachImages($this->file, $product, 'product', $options['language']);
-        $this->attachTranslation($this->db, $product, 'product', $options['language']);
+        $this->attachImagesTrait($this->file, $product, 'product', $options['language']);
+        $this->attachTranslationTrait($this->db, $product, 'product', $options['language']);
 
         $this->hook->fire('get.product.after', $product_id, $options, $product);
 

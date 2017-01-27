@@ -21,8 +21,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Product extends FrontendController
 {
 
-    use \gplcart\core\traits\ControllerSku;
-
     /**
      * Product class model instance
      * @var \gplcart\core\models\ProductClass $product_class
@@ -264,10 +262,10 @@ class Product extends FrontendController
     protected function buildCategoryBreadcrumbsIndexProduct($category_id,
             array &$breadcrumbs)
     {
-        if (!empty($this->data_category_tree[$category_id]['parents'])) {
+        if (!empty($this->data_categories[$category_id]['parents'])) {
 
-            $parent = reset($this->data_category_tree[$category_id]['parents']);
-            $category = $this->data_category_tree[$category_id];
+            $parent = reset($this->data_categories[$category_id]['parents']);
+            $category = $this->data_categories[$category_id];
 
             $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
 
@@ -337,7 +335,7 @@ class Product extends FrontendController
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-            $this->setItemThumb($this->data_product, $options);
+            $this->setThumbTrait($this->image, $this->data_product, $options);
         }
 
         $data = array('product' => $this->data_product);
@@ -392,18 +390,26 @@ class Product extends FrontendController
      */
     protected function prepareProduct(array $product)
     {
-        $field_values = array();
+        $field_value_ids = array();
         if (!empty($product['default_field_values'])) {
-            $field_values = $product['default_field_values'];
+            $field_value_ids = $product['default_field_values'];
         }
 
-        $selected = $this->getSelectedCombinationTrait($this, $this->sku, $product, $field_values);
-        $product['selected_combination'] = $selected;
+        $selected = $this->sku->selectCombination($product, $field_value_ids);
 
+        $options = array(
+            'calculate' => false,
+            'imagestyle' => $this->settings('image_style_product', 5),
+            'path' => empty($selected['combination']['path']) ? '' : $selected['combination']['path']
+        );
+
+        $this->setProductPriceTrait($this, $this->price, $this->product, $selected, $options);
+        $this->setThumbTrait($this->image, $selected, $options);
+
+        $product['selected_combination'] = $selected;
         $product['fields'] = $this->getFieldsProduct($product);
 
-        $this->setItemPrice($product);
-
+        $this->setProductPriceTrait($this, $this->price, $this->product, $product);
         return $product;
     }
 
@@ -468,13 +474,14 @@ class Product extends FrontendController
         }
 
         $imagestyle = $this->settings('image_style_option', 1);
+        
         foreach ($product['field']['option'] as $field_id => $field_values) {
             foreach ($field_values as $field_value_id) {
                 $options = array(
                     'imagestyle' => $imagestyle,
                     'path' => $fields['option'][$field_id]['values'][$field_value_id]['path']
                 );
-                $this->setItemThumb($fields['option'][$field_id]['values'][$field_value_id], $options);
+                $this->setThumbTrait($this->image, $fields['option'][$field_id]['values'][$field_value_id], $options);
             }
         }
 

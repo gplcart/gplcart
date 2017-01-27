@@ -25,7 +25,7 @@ trait Dependency
         foreach ($items as &$item) {
             $this->validateDependencyTrait($items, $item);
         }
-        
+
         return $items;
     }
 
