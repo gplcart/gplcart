@@ -1,10 +1,17 @@
 /* global GplCart */
-var GplCart = GplCart || {settings: {}, translations: {}};
+var GplCart = GplCart || {settings: {}, translations: {}, theme: {}, onload: {}};
 
-(function ($) {
+(function ($, GplCart) {
+    
+    "use strict";
 
     $(function () {
         $('body').addClass('js');
+        $.each(GplCart.onload, function () {
+            if ($.isFunction(this)) {
+                this.call();
+            }
+        });
     });
 
     /**
@@ -167,4 +174,4 @@ var GplCart = GplCart || {settings: {}, translations: {}};
         return Math.random().toString(36).slice(portion);
     };
 
-})(jQuery);
+})(jQuery, GplCart);

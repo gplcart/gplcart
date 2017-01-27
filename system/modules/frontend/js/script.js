@@ -1,16 +1,12 @@
-/* global GplCart */
+/* global window, document, GplCart, jQuery */
 (function (window, document, GplCart, $) {
 
-    var Frontend = Frontend || {
-        ui: {},
-        html: {},
-        helper: {},
-        attach: {},
-        sliders: {},
-        settings: {}
-    };
+    "use strict";
 
-    Frontend.settings.product_gallery_id = 'product-image-gallery';
+    var loaded_sliders = {};
+    var theme_settings = {
+        product_gallery_id: 'product-image-gallery'
+    };
 
     /**
      * Returns HTML of modal pop-up
@@ -19,7 +15,7 @@
      * @param {String} header
      * @returns {String}
      */
-    Frontend.html.modal = function (content, id, header) {
+    var htmlModal = function (content, id, header) {
 
         var html = '';
 
@@ -42,7 +38,7 @@
      * Returns HTML of "In comparison" button
      * @returns {String}
      */
-    Frontend.html.buttonInCompare = function () {
+    var htmlBtnInCompare = function () {
 
         var html = '';
         html += '<a title="' + GplCart.text('Already in comparison') + '" href="' + GplCart.settings.base + 'compare" class="btn btn-default active">';
@@ -55,7 +51,7 @@
      * Returns HTML of "In wishlist" button
      * @returns {String}
      */
-    Frontend.html.buttonInWishlist = function () {
+    var htmlBtnInWishlist = function () {
 
         var html = '',
                 url = GplCart.settings.base + 'wishlist',
@@ -67,22 +63,201 @@
     };
 
     /**
+     * Returns rendered reset field options button
+     * @param {String} fid
+     * @param {String} title
+     * @returns {String}
+     */
+    var htmlBtnSelectedOptions = function (fid, title) {
+        var btn = '';
+        btn += '<span title="' + GplCart.text('Remove') + '" data-reset-field-id="' + fid + '" class="btn btn-default btn-xs">';
+        btn += title;
+        btn += '<span class="fa fa-times"></span>';
+        btn += '</span>';
+        return btn;
+    };
+
+    /**
      * Displays a modal popup
      * @param {String} content
      * @param {String} id
      * @param {String} header
      * @returns {undefined}
      */
-    Frontend.ui.modal = function (content, id, header) {
+    var setModal = function (content, id, header) {
 
         $('.modal').remove();
         $('.modal-backdrop').remove();
         $('body').removeClass('modal-open').removeAttr('style');
 
         if (content.length) {
-            var html = Frontend.html.modal(content, id, header);
-            $('body').append(html);
+            $('body').append(htmlModal(content, id, header));
             $('#' + id).modal('show');
+        }
+    };
+
+    /**
+     * Handles "Add to cart" action
+     * @param {String} action
+     * @param {Object} data
+     * @returns {undefined}
+     */
+    var submitAddToCart = function (action, data) {
+        if (action === 'add_to_cart' && 'quantity' in data) {
+            updateCartQuantity(data.quantity);
+        }
+    };
+
+    /**
+     * Handles "Remove from cart" action
+     * @param {String} action
+     * @param {Object} data
+     * @returns {undefined}
+     */
+    var submitRemoveFromCart = function (action, data) {
+        if (action === 'remove_from_cart' && 'quantity' in data) {
+            updateCartQuantity(data.quantity);
+        }
+    };
+
+    /**
+     * Inserts a number of cart items into a HTML element
+     * @param {Integer} quantity
+     * @returns {undefined}
+     */
+    var updateCartQuantity = function (quantity) {
+        $('#cart-quantity').text(quantity).show();
+    };
+
+    /**
+     * Handles "Add to compare" action
+     * @param {String} action
+     * @param {Object} data
+     * @param {Object} button
+     * @returns {undefined}
+     */
+    var submitAddToCompare = function (action, data, button) {
+        if (action === 'add_to_compare' && 'quantity' in data) {
+            $('#compare-quantity').text(data.quantity).show();
+            button.replaceWith(htmlBtnInCompare());
+        }
+    };
+
+    /**
+     * Handles "Add to wishlist" action
+     * @param {String} action
+     * @param {Object} data
+     * @param {Object} button
+     * @returns {undefined}
+     */
+    var submitAddToWishlist = function (action, data, button) {
+        if (action === 'add_to_wishlist' && 'quantity' in data) {
+            updateWishlistQuantity(data.quantity);
+            button.replaceWith(htmlBtnInWishlist());
+        }
+    };
+
+    /**
+     * Handles "Remove from wishlist" action
+     * @param {String} action
+     * @param {Object} data
+     * @param {Object} button
+     * @returns {undefined}
+     */
+    var submitRemoveFromWishlist = function (action, data, button) {
+        if (action === 'remove_from_wishlist' && 'quantity' in data) {
+            updateWishlistQuantity(data.quantity);
+            button.closest('.product.item').remove();
+        }
+    };
+
+    /**
+     * Inserts a number of wishlist items into a HTML element
+     * @param {Integer} quantity
+     * @returns {undefined}
+     */
+    var updateWishlistQuantity = function (quantity) {
+        $('#wishlist-quantity').text(quantity).show();
+    };
+
+    /**
+     * Returns arrays of selected field values and their titles
+     * @returns object
+     */
+    var getOptionValues = function () {
+
+        var values = [], titles = [];
+
+        $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').each(function () {
+            values.push($(this).val());
+            titles.push(htmlBtnSelectedOptions($(this).data('field-id'), $(this).data('field-title')));
+        });
+
+        return {values: values, titles: titles};
+    };
+
+    /**
+     * 
+     * @returns {undefined}
+     */
+    var setSelectedMessage = function (data) {
+        var text = '';
+        if (!$.isEmptyObject(data.titles)) {
+            text = GplCart.text('Selected: !combination', {'!combination': data.titles.join(' ')});
+        }
+        $('.selected-combination').html(text);
+    };
+
+    /**
+     * City autocomplete field handler
+     * @returns {undefined}
+     */
+    var setCityAutocomplete = function () {
+
+        var params,
+                city = $('[name="address[city_id]"]'),
+                country = $('[name="address[country]"]'),
+                state_id = $('[name="address[state_id]"]');
+
+        if (city.length === 0 || country.length === 0 || state_id.length === 0) {
+            return;
+        }
+
+        city.val('');
+
+        city.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+
+                params = {
+                    action: 'searchCityAjax',
+                    country: country.val(),
+                    state_id: state_id.val(),
+                    token: GplCart.settings.token
+                };
+
+                $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                    response($.map(data, function (value, key) {
+                        return {name: value.name};
+                    }));
+                });
+            },
+            select: function (event, ui) {
+                city.val(ui.item.name);
+                return false;
+            }
+        }).autocomplete('instance')._renderItem = function (ul, item) {
+            return $('<li>').append('<a>' + item.name + '</a>').appendTo(ul);
+        };
+    };
+
+    /**
+     * Fix equal height of items
+     * @returns {undefined}
+     */
+    GplCart.onload.equalHeight = function () {
+        if ($.fn.matchHeight) {
+            $('.products .thumbnail .title, label.address').matchHeight();
         }
     };
 
@@ -90,7 +265,7 @@
      * Deal with W3C validator warnings
      * @returns {undefined}
      */
-    Frontend.attach.fixRadio = function () {
+    GplCart.onload.fixRadio = function () {
         $('label.btn > input[type="radio"]').attr('autocomplete', 'off');
     };
 
@@ -98,7 +273,7 @@
      * Sets up lightSlider
      * @returns {undefined}
      */
-    Frontend.attach.slider = function () {
+    GplCart.onload.slider = function () {
 
         if (!$.fn.lightSlider) {
             return;
@@ -115,25 +290,15 @@
                 };
             }
 
-            Frontend.sliders[$(this).attr('id')] = $(this).lightSlider(slider_settings);
+            loaded_sliders[$(this).attr('id')] = $(this).lightSlider(slider_settings);
         });
-    };
-
-    /**
-     * Fix equal height of items
-     * @returns {undefined}
-     */
-    Frontend.attach.equalHeight = function () {
-        if ($.fn.matchHeight) {
-            $('.products .thumbnail .title, label.address').matchHeight();
-        }
     };
 
     /**
      * Loads cart preview on demand
      * @returns {undefined}
      */
-    Frontend.attach.cartPreview = function () {
+    GplCart.onload.cartPreview = function () {
 
         $('#cart-link').click(function () {
 
@@ -147,7 +312,7 @@
                 },
                 success: function (data) {
                     if (typeof data === 'object' && data.preview) {
-                        Frontend.ui.modal(data.preview, 'cart-preview', GplCart.text('Cart'));
+                        setModal(data.preview, 'cart-preview', GplCart.text('Cart'));
                     }
                 },
                 error: function () {
@@ -163,7 +328,7 @@
      * Setup Bootstrap tooltips
      * @returns {undefined}
      */
-    Frontend.attach.tooltip = function () {
+    GplCart.onload.tooltip = function () {
         $('.star-rating.static').tooltip();
     };
 
@@ -171,7 +336,7 @@
      * Handles various submit events
      * @returns {undefined}
      */
-    Frontend.attach.submit = function () {
+    GplCart.onload.submit = function () {
 
         var button, action, header;
 
@@ -206,17 +371,17 @@
                         if (action === 'add_to_cart') {
                             header = GplCart.text('Cart');
                         }
-                        Frontend.ui.modal(data.modal, action + '-content-modal', header);
+                        setModal(data.modal, action + '-content-modal', header);
                     } else if ('message' in data) {
-                        Frontend.ui.modal(data.message, action + '-message-modal');
+                        setModal(data.message, action + '-message-modal');
                     }
 
                     if (data.severity === 'success') {
-                        Frontend.helper.submitAddToCart(action, data);
-                        Frontend.helper.submitRemoveFromCart(action, data);
-                        Frontend.helper.submitAddToCompare(action, data, button);
-                        Frontend.helper.submitAddToWishlist(action, data, button);
-                        Frontend.helper.submitRemoveFromWishlist(action, data, button);
+                        submitAddToCart(action, data);
+                        submitRemoveFromCart(action, data);
+                        submitAddToCompare(action, data, button);
+                        submitAddToWishlist(action, data, button);
+                        submitRemoveFromWishlist(action, data, button);
                     }
                 },
                 error: function () {
@@ -232,18 +397,18 @@
      * Handles changing product options
      * @returns {undefined}
      */
-    Frontend.attach.updateOption = function () {
+    GplCart.onload.updateOption = function () {
 
         var input, slider, image, images, values, message = $('.add-to-cart .message');
 
-        Frontend.helper.setSelectedMessage(Frontend.helper.getOptionValues());
+        setSelectedMessage(getOptionValues());
 
         $(document).on('change', '[name^="product[options]"]', function () {
 
             input = $(this);
 
-            values = Frontend.helper.getOptionValues();
-            Frontend.helper.setSelectedMessage(values);
+            values = getOptionValues();
+            setSelectedMessage(values);
 
             $.ajax({
                 data: {
@@ -267,7 +432,7 @@
                     }
 
                     if (data.modal) {
-                        Frontend.ui.modal(data.modal, 'product-update-option');
+                        setModal(data.modal, 'product-update-option');
                     }
 
                     $('#sku').text(data.sku);
@@ -275,12 +440,12 @@
 
                     if (data.combination.file_id) {
 
-                        slider = $('#' + Frontend.settings.product_gallery_id);
+                        slider = $('#' + theme_settings.product_gallery_id);
                         image = slider.find('img[data-file-id="' + data.combination.file_id + '"]');
 
-                        if (image.length && Frontend.sliders[Frontend.settings.product_gallery_id]) {
+                        if (image.length && loaded_sliders[theme_settings.product_gallery_id]) {
                             images = slider.find('img[data-file-id]');
-                            Frontend.sliders[Frontend.settings.product_gallery_id].goToSlide(images.index(image));
+                            loaded_sliders[theme_settings.product_gallery_id].goToSlide(images.index(image));
                         }
                     }
 
@@ -310,53 +475,10 @@
     };
 
     /**
-     * Returns arrays of selected field values and their titles
-     * @returns object
-     */
-    Frontend.helper.getOptionValues = function () {
-
-        var values = [], titles = [];
-
-        $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').each(function () {
-            values.push($(this).val());
-            titles.push(Frontend.html.selectOptionBtn($(this).data('field-id'), $(this).data('field-title')));
-        });
-
-        return {values: values, titles: titles};
-    };
-
-    /**
-     * Returns rendered reset field options button
-     * @param {String} fid
-     * @param {String} title
-     * @returns {String}
-     */
-    Frontend.html.selectOptionBtn = function (fid, title) {
-        var btn = '';
-        btn += '<span title="' + GplCart.text('Remove') + '" data-reset-field-id="' + fid + '" class="btn btn-default btn-xs">';
-        btn += title;
-        btn += '<span class="fa fa-times"></span>';
-        btn += '</span>';
-        return btn;
-    };
-
-    /**
-     * 
-     * @returns {undefined}
-     */
-    Frontend.helper.setSelectedMessage = function (data) {
-        var text = '';
-        if (!$.isEmptyObject(data.titles)) {
-            text = GplCart.text('Selected: !combination', {'!combination': data.titles.join(' ')});
-        }
-        $('.selected-combination').html(text);
-    };
-
-    /**
      * Reset a checked radio button on second click
      * @returns {undefined}
      */
-    Frontend.attach.resetRadioOption = function () {
+    GplCart.onload.resetRadioOption = function () {
         var fid;
         $(document).on('click', '[data-reset-field-id]', function () {
             fid = $(this).data('reset-field-id');
@@ -369,7 +491,7 @@
      * Shows only rows with different values
      * @returns {undefined}
      */
-    Frontend.attach.compareDiff = function () {
+    GplCart.onload.compareDiff = function () {
 
         var row, values, count;
 
@@ -405,7 +527,7 @@
      * Prevents search for empty keyword
      * @returns {undefined}
      */
-    Frontend.attach.searchBlockEmpty = function () {
+    GplCart.onload.searchBlockEmpty = function () {
         $('form.search').submit(function () {
             if ($('input[name="q"]').val() === "") {
                 return false;
@@ -417,7 +539,7 @@
      * Updates address fields depending on chosen country
      * @returns {undefined}
      */
-    Frontend.attach.updateAdressFields = function () {
+    GplCart.onload.updateAdressFields = function () {
 
         var wrapper = '#address-form-wrapper';
 
@@ -433,7 +555,7 @@
                 },
                 success: function (data) {
                     $(wrapper).html($(data).find(wrapper).html());
-                    Frontend.helper.cityAutocomplete();
+                    setCityAutocomplete();
                 }
             });
         });
@@ -443,7 +565,7 @@
      * Search autocomplete field
      * @returns {undefined}
      */
-    Frontend.attach.searchAutocomplete = function () {
+    GplCart.onload.searchAutocomplete = function () {
 
         var params, input = $('input[name="q"]');
 
@@ -486,60 +608,17 @@
      * Add state change listener that updates city autocomplete field
      * @returns {undefined}
      */
-    Frontend.attach.cityAutocomplete = function () {
+    GplCart.onload.setCityAutocomplete = function () {
         $(document).on('change', '[name="address[state_id]"]', function () {
-            Frontend.helper.cityAutocomplete();
+            setCityAutocomplete();
         });
-    };
-
-    /**
-     * City autocomplete field handler
-     * @returns {undefined}
-     */
-    Frontend.helper.cityAutocomplete = function () {
-
-        var params,
-                city = $('[name="address[city_id]"]'),
-                country = $('[name="address[country]"]'),
-                state_id = $('[name="address[state_id]"]');
-
-        if (city.length === 0 || country.length === 0 || state_id.length === 0) {
-            return;
-        }
-
-        city.val('');
-
-        city.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-
-                params = {
-                    action: 'searchCityAjax',
-                    country: country.val(),
-                    state_id: state_id.val(),
-                    token: GplCart.settings.token
-                };
-
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {name: value.name};
-                    }));
-                });
-            },
-            select: function (event, ui) {
-                city.val(ui.item.name);
-                return false;
-            }
-        }).autocomplete('instance')._renderItem = function (ul, item) {
-            return $('<li>').append('<a>' + item.name + '</a>').appendTo(ul);
-        };
     };
 
     /**
      * Redirects to a page when clicked on the suggested item
      * @returns {undefined}
      */
-    Frontend.attach.redirectSuggestions = function () {
+    GplCart.onload.redirectSuggestions = function () {
         $(document).on('click', '.ui-autocomplete .suggestion', function () {
             window.location.href = $(this).attr('data-url');
         });
@@ -549,7 +628,7 @@
      * Handles checkout form submits
      * @returns {undefined}
      */
-    Frontend.attach.submitCheckout = function () {
+    GplCart.onload.submitCheckout = function () {
 
         var clicked, queue, settings;
 
@@ -601,7 +680,7 @@
                         settings = $(data).data('settings');
 
                         if (typeof settings === "object" && settings.quantity) {
-                            Frontend.helper.updateWishlistQuantity(settings.quantity.wishlist);
+                            updateWishlistQuantity(settings.quantity.wishlist);
                         }
 
                         $('form#checkout :input').prop('disabled', false);
@@ -610,97 +689,5 @@
             });
         });
     };
-
-    /**
-     * Handles "Add to cart" action
-     * @param {String} action
-     * @param {Object} data
-     * @returns {undefined}
-     */
-    Frontend.helper.submitAddToCart = function (action, data) {
-        if (action === 'add_to_cart' && 'quantity' in data) {
-            Frontend.helper.updateCartQuantity(data.quantity);
-        }
-    };
-
-    /**
-     * Handles "Remove from cart" action
-     * @param {String} action
-     * @param {Object} data
-     * @returns {undefined}
-     */
-    Frontend.helper.submitRemoveFromCart = function (action, data) {
-        if (action === 'remove_from_cart' && 'quantity' in data) {
-            Frontend.helper.updateCartQuantity(data.quantity);
-        }
-    };
-
-    /**
-     * Inserts a number of cart items into a HTML element
-     * @param {Integer} quantity
-     * @returns {undefined}
-     */
-    Frontend.helper.updateCartQuantity = function (quantity) {
-        $('#cart-quantity').text(quantity).show();
-    };
-
-    /**
-     * Handles "Add to compare" action
-     * @param {String} action
-     * @param {Object} data
-     * @param {Object} button
-     * @returns {undefined}
-     */
-    Frontend.helper.submitAddToCompare = function (action, data, button) {
-        if (action === 'add_to_compare' && 'quantity' in data) {
-            $('#compare-quantity').text(data.quantity).show();
-            button.replaceWith(Frontend.html.buttonInCompare());
-        }
-    };
-
-    /**
-     * Handles "Add to wishlist" action
-     * @param {String} action
-     * @param {Object} data
-     * @param {Object} button
-     * @returns {undefined}
-     */
-    Frontend.helper.submitAddToWishlist = function (action, data, button) {
-        if (action === 'add_to_wishlist' && 'quantity' in data) {
-            Frontend.helper.updateWishlistQuantity(data.quantity);
-            button.replaceWith(Frontend.html.buttonInWishlist());
-        }
-    };
-
-    /**
-     * Handles "Remove from wishlist" action
-     * @param {String} action
-     * @param {Object} data
-     * @param {Object} button
-     * @returns {undefined}
-     */
-    Frontend.helper.submitRemoveFromWishlist = function (action, data, button) {
-        if (action === 'remove_from_wishlist' && 'quantity' in data) {
-            Frontend.helper.updateWishlistQuantity(data.quantity);
-            button.closest('.product.item').remove();
-        }
-    };
-
-    /**
-     * Inserts a number of wishlist items into a HTML element
-     * @param {Integer} quantity
-     * @returns {undefined}
-     */
-    Frontend.helper.updateWishlistQuantity = function (quantity) {
-        $('#wishlist-quantity').text(quantity).show();
-    };
-
-    /**
-     * Init the module when DOM is ready
-     * @returns {undefined}
-     */
-    $(function () {
-        GplCart.attach(Frontend);
-    });
 
 })(window, document, GplCart, jQuery);
