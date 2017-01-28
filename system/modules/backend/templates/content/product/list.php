@@ -70,7 +70,7 @@
               </a>
             </th>
             <th class="middle">
-              <a href="<?php echo $sort_sku; ?>">
+              <a href="<?php echo $sort_sku_like; ?>">
                 <?php echo $this->text('SKU'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
@@ -108,7 +108,7 @@
               <input class="form-control" placeholder="<?php echo $this->text('Any'); ?>" maxlength="255" name="title" value="<?php echo $filter_title; ?>">
             </th>
             <th class="middle">
-              <input class="form-control" placeholder="<?php echo $this->text('Any'); ?>" maxlength="255" name="sku" value="<?php echo $filter_sku; ?>">
+              <input class="form-control" placeholder="<?php echo $this->text('Any'); ?>" maxlength="255" name="sku_like" value="<?php echo $filter_sku_like; ?>">
             </th>
             <th class="middle">
               <input class="form-control" placeholder="<?php echo $this->text('Any'); ?>" maxlength="8" name="price" value="<?php echo $filter_price; ?>">

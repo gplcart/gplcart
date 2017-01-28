@@ -121,7 +121,7 @@ class Product extends BackendController
 
         $query = $this->getFilterQuery();
 
-        $filters = array('title', 'sku', 'price', 'stock', 'status',
+        $filters = array('title', 'sku_like', 'price', 'stock', 'status',
             'store_id', 'product_id', 'currency');
 
         $this->setFilter($filters, $query);

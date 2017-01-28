@@ -268,35 +268,18 @@ class Product extends Model
     {
         $this->hook->fire('get.product.before', $product_id, $options);
 
-        if (empty($product_id) && empty($options)) {
+        if (empty($product_id)) {
             return array();
         }
 
-        $conditions = array();
+        $options += array('language' => null);
+        $list = $this->getList(array('product_id' => $product_id));
 
-        $sql = 'SELECT p.*, u.role_id, ps.sku, ps.price, ps.stock, ps.file_id'
-                . ' FROM product p'
-                . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
-                . ' LEFT JOIN user u ON(p.user_id=u.user_id)';
-
-        if (isset($options['sku'])) {
-            $sql .= ' WHERE ps.sku = ?';
-            $conditions[] = $options['sku'];
-        } else {
-            $sql .= ' WHERE p.product_id = ?';
-            $conditions[] = $product_id;
+        if (empty($list)) {
+            return array();
         }
 
-        if (!empty($options['store_id'])) {
-            $sql .= ' AND p.store_id = ?';
-            $conditions[] = $options['store_id'];
-        }
-
-        if (!isset($options['language'])) {
-            $options['language'] = null;
-        }
-
-        $product = $this->db->fetch($sql, $conditions);
+        $product = reset($list);
 
         $this->attachFields($product);
         $this->attachSku($product);
@@ -323,7 +306,13 @@ class Product extends Model
             'store_id' => $store_id
         );
 
-        return $this->get(null, $conditions);
+        $list = $this->getList($conditions);
+
+        if (empty($list)) {
+            return array();
+        }
+
+        return reset($list);
     }
 
     /**
@@ -526,19 +515,17 @@ class Product extends Model
         $this->hook->fire('get.product.list.before', $data);
 
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id';
+                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
         }
 
         $sql .= ' FROM product p'
-                . ' LEFT JOIN product_translation pt'
-                . ' ON(p.product_id = pt.product_id AND pt.language=?)'
-                . ' LEFT JOIN alias a'
-                . ' ON(a.id_key=? AND a.id_value=p.product_id)'
-                . ' LEFT JOIN product_sku ps'
-                . ' ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
+                . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
+                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.product_id)'
+                . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
+                . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
 
         $language = $this->language->current();
         $where = array($language, 'product_id');
@@ -565,8 +552,13 @@ class Product extends Model
         }
 
         if (isset($data['sku'])) {
+            $sql .= ' AND ps.sku=?';
+            $where[] = $data['sku'];
+        }
+
+        if (isset($data['sku_like'])) {
             $sql .= ' AND ps.sku LIKE ?';
-            $where[] = "%{$data['sku']}%";
+            $where[] = "%{$data['sku_like']}%";
         }
 
         if (isset($data['price']) && isset($data['currency'])) {
@@ -606,7 +598,7 @@ class Product extends Model
         $allowed_order = array('asc', 'desc');
 
         $allowed_sort = array(
-            'title' => 'p.title', 'sku' => 'ps.sku', 'price' => 'ps.price',
+            'title' => 'p.title', 'sku' => 'ps.sku', 'sku_like' => 'ps.sku', 'price' => 'ps.price',
             'currency' => 'p.currency', 'stock' => 'ps.stock',
             'status' => 'p.status', 'store_id' => 'p.store_id',
             'product_id' => 'p.product_id'
