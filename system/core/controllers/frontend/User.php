@@ -67,7 +67,7 @@ class User extends FrontendController
             return null;
         }
 
-        $this->controlSpam('login');
+        $this->controlSpam();
 
         if ($this->validateLoginUser()) {
             $this->loginUser();
@@ -167,7 +167,7 @@ class User extends FrontendController
             return null;
         }
 
-        $this->controlSpam('register');
+        $this->controlSpam();
 
         if ($this->validateRegisterUser()) {
             $this->registerUser();
@@ -303,7 +303,7 @@ class User extends FrontendController
             return null;
         }
 
-        $this->controlSpam('reset_password');
+        $this->controlSpam();
 
         if ($this->validateResetPasswordUser()) {
             $this->resetPasswordUser();

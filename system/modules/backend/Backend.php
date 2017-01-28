@@ -48,8 +48,6 @@ class Backend
             'codemirror', 'chart');
 
         $controller->addAssetLibrary($libraries);
-
-        // Add theme-specific CSS. Goes after all added CSS
         $controller->setCss('system/modules/backend/css/style.css');
 
         $controller->setMeta(array('charset' => 'utf-8'));

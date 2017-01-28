@@ -144,7 +144,7 @@ class Review extends FrontendController
             return null;
         }
 
-        $this->controlSpam('review');
+        $this->controlSpam();
 
         if (!$this->isPosted('save') || !$this->validateReview()) {
             return null;

@@ -292,8 +292,8 @@ class Page extends BackendController
     {
         $this->setSubmitted('page', null, false);
 
+        $this->setSubmittedBool('form');
         $this->setSubmittedBool('status');
-        $this->setSubmittedBool('form', true);
         $this->setSubmitted('update', $this->data_page);
 
         if (empty($this->data_page['page_id'])) {

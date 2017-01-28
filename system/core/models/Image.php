@@ -74,7 +74,7 @@ class Image extends Model
             'id_key' => $options['id_key']
         );
 
-        foreach ($this->file->getList($conditions) as $file) {
+        foreach ((array) $this->file->getList($conditions) as $file) {
             if ($file['id_value'] == $data[$options['id_key']]) {
                 return $this->url($options['imagestyle'], $file['path']);
             }

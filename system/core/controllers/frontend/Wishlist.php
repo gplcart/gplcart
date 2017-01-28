@@ -49,7 +49,8 @@ class Wishlist extends FrontendController
     {
         $breadcrumb = array(
             'text' => $this->text('Home'),
-            'url' => $this->url('/'));
+            'url' => $this->url('/')
+        );
 
         $this->setBreadcrumb($breadcrumb);
     }
@@ -75,7 +76,7 @@ class Wishlist extends FrontendController
         }
 
         $ids = array();
-        foreach ($list as $result) {
+        foreach ((array) $list as $result) {
             $ids[] = $result['product_id'];
         }
 

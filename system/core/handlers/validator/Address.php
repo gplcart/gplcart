@@ -254,7 +254,7 @@ class Address extends BaseValidator
             'state_id' => $state_id
         );
 
-        $cities = $this->city->getList($conditions);
+        $cities = (array) $this->city->getList($conditions);
 
         // Loop over results to find exact match,
         // because we search "name" using "LIKE" condition

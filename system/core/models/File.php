@@ -282,7 +282,7 @@ class File extends Model
     public function deleteMultiple($options)
     {
         $deleted = 0;
-        foreach ($this->getList($options) as $file) {
+        foreach ((array) $this->getList($options) as $file) {
             $deleted += (int) $this->delete($file['file_id']);
         }
 

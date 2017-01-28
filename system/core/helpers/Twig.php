@@ -352,6 +352,10 @@ class Twig
      */
     protected function addFunctionCompare($object)
     {
+        if (!$object instanceof \gplcart\core\Controller) {
+            throw new \Exception;
+        }
+
         $function = new \Twig_SimpleFunction('compare', function ($key = null) use ($object) {
             return $object->compare($key);
         });
@@ -365,6 +369,10 @@ class Twig
      */
     protected function addFunctionWishlist($object)
     {
+        if (!$object instanceof \gplcart\core\Controller) {
+            throw new \Exception;
+        }
+
         $function = new \Twig_SimpleFunction('wishlist', function ($key = null) use ($object) {
             return $object->wishlist($key);
         });
@@ -380,6 +388,10 @@ class Twig
      */
     protected function addFunctionMenu($object)
     {
+        if (!$object instanceof \gplcart\core\Controller) {
+            throw new \Exception;
+        }
+
         $function = new \Twig_SimpleFunction('menu', function (array $options = array()) use ($object) {
             return $object->menu($options);
         }, array('is_safe' => array('all')));
