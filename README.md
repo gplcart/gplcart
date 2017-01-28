@@ -39,7 +39,7 @@ For developers:
 
 For owners:
 
-- Multistore `anotherstore.com, anotherstore.domain.com, domain.com/anotherstore`
+- Multistore `anotherstore.com, anotherstore.domain.com`
 - No stupid cart pages. Yes, it's a feature. Customer goes immediately to checkout
 - True one page checkout that works even with JS turned off
 - Product classes
