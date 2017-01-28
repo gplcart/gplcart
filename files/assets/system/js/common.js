@@ -13,19 +13,6 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
     });
 
     /**
-     * Calls attached methods
-     * @param {Object} object
-     * @returns {undefined}
-     */
-    GplCart.attach = function (object) {
-        if ('attach' in object) {
-            $.each(object.attach, function () {
-                this.call();
-            });
-        }
-    };
-
-    /**
      * Translates a string
      * @param {type} text
      * @param {type} options

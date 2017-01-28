@@ -49,13 +49,6 @@ class Backend
 
         $controller->addAssetLibrary($libraries);
 
-        $includes = array('category', 'collection', 'country', 'editor',
-            'field', 'page', 'product', 'review');
-
-        foreach ($includes as $name) {
-            $controller->setJs("system/modules/backend/js/$name.js");
-        }
-
         // Add theme-specific CSS. Goes after all added CSS
         $controller->setCss('system/modules/backend/css/style.css');
 

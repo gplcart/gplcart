@@ -59,7 +59,7 @@ class Frontend
         $libraries = array('bootstrap', 'font_awesome');
 
         if (!$controller->isInstalling()) {
-            $controller->setJs('system/modules/frontend/js/script.js');
+            $controller->setJs('system/modules/frontend/js/common.js');
             $libraries = array_merge($libraries, array('jquery_match_height', 'lightgallery', 'lightgallery_thumbnail', 'lightslider', 'jquery_ui'));
         }
 

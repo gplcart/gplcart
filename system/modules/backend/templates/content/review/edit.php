@@ -29,7 +29,7 @@
       <div class="form-group<?php echo $this->error('created', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Created'); ?></label>
         <div class="col-md-4">
-          <input name="review[created]" class="form-control" value="<?php echo empty($review['created']) ? $this->date(null, false) : $this->date($review['created'], false); ?>">
+          <input data-datepicker="true" data-datepicker-settings='{dateFormat: "dd.mm.yy"}' name="review[created]" class="form-control" value="<?php echo empty($review['created']) ? $this->date(null, false) : $this->date($review['created'], false); ?>">
           <div class="help-block">
             <?php echo $this->error('created'); ?>
             <div class="text-muted"><?php echo $this->text('A date when the review was created'); ?></div>

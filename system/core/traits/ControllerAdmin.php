@@ -10,9 +10,9 @@
 namespace gplcart\core\traits;
 
 /**
- * Methods for backend controller
+ * Methods for administrators
  */
-trait BackendController
+trait ControllerAdmin
 {
 
     /**

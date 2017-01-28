@@ -21,7 +21,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Page extends BackendController
 {
 
-    use \gplcart\core\traits\BackendController;
+    use \gplcart\core\traits\ControllerAdmin;
 
     /**
      * Page model instance
