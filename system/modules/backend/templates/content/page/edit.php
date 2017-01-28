@@ -24,7 +24,7 @@
       <div class="form-group required<?php echo $this->error('description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
         <div class="col-md-8">
-          <textarea class="form-control summernote" name="page[description]"><?php echo (isset($page['description'])) ? $this->xss($page['description']) : ''; ?></textarea>
+          <textarea class="form-control" data-wysiwyg="true" name="page[description]"><?php echo (isset($page['description'])) ? $this->xss($page['description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error('description'); ?>
             <div class="text-muted">
@@ -55,7 +55,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Text %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-6">
-            <textarea class="form-control summernote" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->xss($page['translation'][$code]['description']) : ''; ?></textarea>
+            <textarea class="form-control" data-wysiwyg="true" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->xss($page['translation'][$code]['description']) : ''; ?></textarea>
             <div class="help-block">
                <?php echo $this->error("translation.$code.description"); ?>
             </div>

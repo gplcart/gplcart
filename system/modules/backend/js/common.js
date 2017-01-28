@@ -62,27 +62,6 @@
     };
 
     /**
-     * Transforms an object of items into <select> options
-     * @param {Object} items
-     * @param {String} selected
-     * @returns {String}
-     */
-    var htmlOptions = function (items, selected) {
-
-        var i, attr = '', options = '';
-
-        for (i in items) {
-            if (items.hasOwnProperty(i)) {
-                if (selected === i) {
-                    attr = ' selected';
-                }
-                options += '<option value="' + i + '"' + attr + '>' + items[i] + '</option>';
-            }
-        }
-        return options;
-    };
-
-    /**
      * Displays a modal popup with a custom content
      * @param {String} content
      * @param {String} id
@@ -95,8 +74,6 @@
         $('.modal').remove();
         $('.modal-backdrop').remove();
         $('body').removeClass('modal-open').removeAttr('style');
-
-        id = id.replace(/^[^a-z]+|[^\w:.-]+/gi, '');
 
         var html = htmlModal(content, id, header, footer);
 
@@ -178,6 +155,14 @@
     };
 
     /**
+     * Draw charts
+     * @returns {undefined}
+     */
+    GplCart.onload.drawChart = function () {
+        setChart('events', 'doughnut');
+    };
+
+    /**
      * Handles bulk actions
      * @returns {undefined}
      */
@@ -222,7 +207,6 @@
                     setLoading(false);
                 }
             });
-
             return false;
         });
     };
@@ -282,6 +266,12 @@
             return;
         }
 
+        var selector = $('textarea[data-wysiwyg="true"]');
+
+        if (selector.length === 0) {
+            return;
+        }
+
         var settings = {
             height: 150,
             lang: GplCart.settings.lang_region,
@@ -294,7 +284,12 @@
                 ['view', ['fullscreen', 'codeview']]
             ]};
 
-        $('textarea.summernote').summernote(settings);
+        var inline_settings = selector.data('wysiwyg-settings') || {};
+
+        if (typeof inline_settings === 'object') {
+            settings = $.extend(settings, inline_settings);
+        }
+        selector.summernote(settings);
     };
 
     /**
@@ -392,7 +387,6 @@
             GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1], GplCart.settings.map.key);
             return;
         }
-
         console.warn('Invalid arguments for Google Maps');
     };
 
@@ -409,9 +403,7 @@
         var handler;
 
         $('*[data-terminal]').click(function () {
-
             setModal('<div id="terminal"></div>', 'terminal-wrapper');
-
             $('#terminal').puiterminal({
                 prompt: '> ',
                 handler: function (request, response) {
@@ -436,7 +428,6 @@
                     });
                 }
             });
-
             return false;
         });
     };
@@ -513,7 +504,6 @@
                     action: 'getCollectionItemAjax',
                     collection_id: GplCart.settings.collection.collection_id
                 };
-
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         return {
@@ -599,7 +589,6 @@
      * @returns {undefined}
      */
     GplCart.onload.makeCountryFormatSortable = function () {
-
         $('table.country-format tbody').sortable({
             cursor: 'n-resize',
             handle: '.handle',
@@ -608,7 +597,6 @@
                     $(this).val(i);
                     $(this).closest('tr').find('td .weight').text(i);
                 });
-
                 setAlert(GplCart.text('Changes will not be saved until the form is submitted'), 'info');
             }
         });
@@ -692,11 +680,9 @@
             cursor: 'n-resize',
             handle: '.handle',
             stop: function () {
-
                 $('.field-values tbody tr').each(function (i) {
                     weight[$(this).attr('data-field-value-id')] = i;
                 });
-
                 $.ajax({
                     data: {
                         action: 'weight',
@@ -738,12 +724,11 @@
      */
     GplCart.onload.handleUpdateCategories = function () {
 
-        var i, g, cats, options = '',
+        var i, g, cats, options,
                 store = $('select[name$="[store_id]"]'),
                 category = $('select[name$="[category_id]"]');
 
         store.change(function () {
-
             $.ajax({
                 url: GplCart.settings.urn,
                 method: 'POST',
@@ -758,6 +743,7 @@
                     category.prop('disabled', true);
                 },
                 success: function (response) {
+                    options = '';
                     if (typeof response === 'object') {
                         for (g in response) {
                             options += '<optgroup label="' + g + '">';
@@ -766,7 +752,6 @@
                                 options += '<option value="' + i + '">' + cats[i] + '</option>';
                             }
                         }
-
                         category.html(options).selectpicker('refresh');
                     }
                 },
@@ -780,19 +765,18 @@
 
     /************************* Review **************************/
 
-
     /**
      * Adds a datepicker popup to the field
      * @returns {undefined}
      */
     GplCart.onload.handleDatepicker = function () {
 
-        var el = $('[data-datepicker="true"]'),
-                default_settings = {dateFormat: 'dd.mm.yy'};
-        var settings = el.data('datepicker-settings') || {};
+        var el = $('[data-datepicker="true"]');
+        var settings = {dateFormat: 'dd.mm.yy'},
+        inline_settings = el.data('datepicker-settings') || {};
 
-        if (typeof settings === 'object') {
-            settings = $.extend(default_settings, settings);
+        if (typeof inline_settings === 'object') {
+            settings = $.extend(settings, inline_settings);
         }
 
         el.datepicker(settings);
@@ -815,13 +799,11 @@
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
-
                 params = {
                     term: request.term,
                     action: 'getUsersAjax',
                     token: GplCart.settings.token
                 };
-
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         return {
@@ -1197,21 +1179,17 @@
      * @returns {undefined}
      */
     GplCart.onload.setProductCombinationImage = function () {
-
         var e, src, path, pos;
-
         $(document).on('click', 'img.combination-image', function () {
-
             src = $(this).attr('src');
             path = $(this).attr('data-file-path');
-
             pos = $(this).closest('#select-image-modal').attr('data-active-row');
+
             e = $('#option-form-wrapper tbody tr').eq(pos).find('.select-image');
 
             e.html(htmlProductCombinationImage(src));
             e.siblings('input[name$="[path]"]').val(path);
             e.siblings('input[name$="[thumb]"]').val(src);
-
             $('#select-image-modal').modal('hide');
         });
     };
@@ -1223,15 +1201,12 @@
     GplCart.onload.makeAutocompleteRelatedProducts = function () {
 
         var params, input = $('.related-product');
-
         if (input.length === 0) {
             return;
         }
-
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
-
                 params = {
                     status: 1,
                     term: request.term,
@@ -1239,7 +1214,6 @@
                     token: GplCart.settings.token,
                     store_id: $('select[name$="[store_id]"] option:selected').val()
                 };
-
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         return {
@@ -1255,11 +1229,9 @@
                 $('.related-product').val('');
                 return false;
             }
-
         }).autocomplete("instance")._renderItem = function (ul, item) {
             return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
-
     };
 
     /**

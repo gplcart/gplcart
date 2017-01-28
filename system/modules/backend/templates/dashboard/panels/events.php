@@ -49,7 +49,6 @@
       <?php } ?>
       <?php } ?>
     </div>
-    <script>Backend.ui.chart('events', 'doughnut');</script>
     <?php } else { ?>
     <?php echo $this->text('No events yet'); ?>
     <?php } ?>
