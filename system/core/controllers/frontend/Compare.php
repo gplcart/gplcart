@@ -81,7 +81,7 @@ class Compare extends FrontendController
      */
     protected function setDataSelectCompare()
     {
-        $data = array(
+        $conditions = array(
             'product_id' => $this->compare());
 
         $options = array(
@@ -89,7 +89,7 @@ class Compare extends FrontendController
             'buttons' => array('cart_add', 'wishlist_add', 'compare_remove')
         );
 
-        $products = $this->getProducts($data, $options);
+        $products = $this->getProducts($conditions, $options);
         $prepared = $this->prepareProductsCompare($products);
 
         $this->setData('products', $prepared);
@@ -179,7 +179,9 @@ class Compare extends FrontendController
             )
         );
 
-        $conditions = array('product_id' => $this->compare->getList());
+        $conditions = array(
+            'product_id' => $this->compare->getList());
+        
         $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {

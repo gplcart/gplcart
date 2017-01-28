@@ -91,7 +91,7 @@ class Product extends FrontendController
         $this->setHtmlFilter($this->data_product);
 
         $this->setData('product', $this->data_product);
-        $this->setData('share', $this->renderShareWidget());
+        $this->setData('share', $this->renderShareWidgetTrait($this));
 
         $this->setJsIndexProduct();
         $this->outputIndexProduct();

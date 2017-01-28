@@ -92,7 +92,7 @@ class Controller
      * @var integer
      */
     protected $uid;
-    
+
     /**
      * Current user cart ID
      * @var integer|string
@@ -255,7 +255,7 @@ class Controller
      * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
-    
+
     /**
      * Cart model instance
      * @var \gplcart\core\models\Cart $cart
@@ -378,12 +378,12 @@ class Controller
         $this->setDefaultData();
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
-        
+
         $this->setCartProperties();
 
         $this->hook->fire('init', $this);
     }
-    
+
     /**
      * Sets cart properties
      */
@@ -392,16 +392,6 @@ class Controller
         $this->cart_uid = $this->cart->uid();
     }
 
-    /**
-     * 
-     */
-    protected function controlHttpStatus()
-    {
-        if (isset($this->http_status)) {
-            $this->outputHttpStatus($this->http_status);
-        }
-    }
-    
     /**
      * Returns the current cart data
      * @param null|string $key
@@ -552,7 +542,7 @@ class Controller
     {
         return $this->breadcrumbs;
     }
-    
+
     /**
      * Returns an array of enabled languages
      * @return array
@@ -1214,6 +1204,26 @@ class Controller
         $this->controlAccessRestrictedArea();
         $this->controlAccessAdmin();
         $this->controlAccessAccount();
+    }
+
+    /**
+     * Output status page if status is set, e.g other than 200
+     */
+    protected function controlHttpStatus()
+    {
+        if (isset($this->http_status)) {
+            $this->outputHttpStatus($this->http_status);
+        }
+    }
+
+    /**
+     * "Honey pot" submission protection
+     */
+    public function controlSpam()
+    {
+        if ($this->request->request('url', '') !== '') {
+            $this->response->error403(false);
+        }
     }
 
     /**

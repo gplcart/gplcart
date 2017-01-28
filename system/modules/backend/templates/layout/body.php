@@ -25,9 +25,7 @@
         <?php } ?>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
-        <?php if(!empty($admin_menu)) { ?>
-        <?php echo $admin_menu; ?>
-        <?php } ?>
+        <?php echo $this->menu(); ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
           <?php if($this->access('cli')) { ?>
           <li>
@@ -38,9 +36,8 @@
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-globe"></i>
             </a>
-            <?php if(!empty($store_list)) { ?>
             <ul class="dropdown-menu dropdown-menu-right">
-              <?php foreach ($store_list as $store) { ?>
+              <?php foreach ($this->stores() as $store) { ?>
               <li>
                 <a target="_blank" href="<?php echo $this->escape("{$this->scheme}{$store['domain']}/{$store['basepath']}"); ?>">
                   <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
@@ -48,7 +45,6 @@
               </li>
               <?php } ?>
             </ul>
-            <?php } ?>
           </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">

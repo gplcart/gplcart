@@ -13,16 +13,13 @@ use gplcart\core\Container;
 use gplcart\core\Controller as BaseController;
 
 /**
- * Contents specific to the backend methods
+ * Contents methods related to admin backend
  */
 class Controller extends BaseController
 {
 
-    /**
-     * Current job
-     * @var array
-     */
-    protected $current_job = array();
+    use \gplcart\core\traits\ControllerWidget,
+        \gplcart\core\traits\ControllerJob;
 
     /**
      * Job model instance
@@ -37,93 +34,22 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        $this->setJobProperties();
-        $this->processCurrentJob();
-        $this->setDataFrontend();
+        $this->job = Container::get('gplcart\\core\\models\\Job');
+
+        $this->processCurrentJobTrait($this, $this->job, $this->request, $this->response);
 
         $this->hook->fire('init.backend', $this);
-
         $this->controlHttpStatus();
     }
 
     /**
-     * Sets template data
-     */
-    protected function setDataFrontend()
-    {
-        $this->data['admin_menu'] = $this->getAdminMenu();
-        $this->data['store_list'] = $this->store->getList();
-    }
-
-    /**
-     * Sets a batch job from the current URL
-     * @return null
-     */
-    protected function setJobProperties()
-    {
-        $this->job = Container::get('gplcart\\core\\models\\Job');
-
-        $job_id = (string) $this->request->get('job_id');
-
-        if (!empty($job_id)) {
-            $this->current_job = $this->job->get($job_id);
-        }
-    }
-
-    /**
-     * Processes the current job
-     * @return null
-     */
-    protected function processCurrentJob()
-    {
-        if (empty($this->current_job['status'])) {
-            return null;
-        }
-
-        $this->setJsSettings('job', $this->current_job);
-        $process_job_id = (string) $this->request->get('process_job');
-
-        if ($this->request->isAjax() && $process_job_id == $this->current_job['id']) {
-            $response = $this->job->process($this->current_job);
-            $this->response->json($response);
-        }
-
-        return null;
-    }
-
-    /**
-     * Submits a new job
-     * @param array $job
-     */
-    protected function setJob(array $job)
-    {
-        $this->job->delete($job['id']);
-
-        if (!empty($job['data']['operation']['log']['errors'])) {
-            file_put_contents($job['data']['operation']['log']['errors'], '');
-        }
-
-        $this->job->set($job);
-        $this->url->redirect('', array('job_id' => $job['id']));
-    }
-
-    /**
      * Returns rendered admin menu
+     * @param array $options
      * @return string
      */
-    public function getAdminMenu()
+    public function menu(array $options = array())
     {
-        $items = $this->getAdminMenuArray();
-        return $this->render('common/menu', array('items' => $items));
-    }
-
-    /**
-     * Returns an array of admin menu items
-     * @return array
-     */
-    protected function getAdminMenuArray()
-    {
-        $array = array();
+        $items = array();
         foreach ($this->route->getList() as $path => $route) {
 
             if (strpos($path, 'admin/') !== 0 || empty($route['menu']['admin'])) {
@@ -134,42 +60,35 @@ class Controller extends BaseController
                 continue;
             }
 
-            $data = array(
+            $items[$path] = array(
                 'url' => $this->url($path),
                 'depth' => (substr_count($path, '/') - 1),
                 'text' => $this->text($route['menu']['admin'])
             );
-
-            $array[$path] = $data;
         }
 
-        ksort($array);
-        return $array;
+        ksort($items);
+
+        $options += array('items' => $items);
+        return $this->renderMenuTrait($this, $options);
     }
 
     /**
-     * Displays nested admin categories
+     * Returns an array of existing stores
+     * @return array
+     */
+    public function stores()
+    {
+        return $this->store->getList();
+    }
+
+    /**
+     * Displays parent admin menu items
+     * @todo Output real content
      */
     public function adminSections()
     {
-        $this->redirect('admin'); // TODO: replace with real content
-    }
-
-    /**
-     * Returns a rendered job widget
-     * @return string
-     */
-    public function getJob()
-    {
-        if (empty($this->current_job['status'])) {
-            return '';
-        }
-
-        if (!empty($this->current_job['widget'])) {
-            return $this->render($this->current_job['widget'], array('job' => $this->current_job));
-        }
-
-        return $this->render('common/job/widget', array('job' => $this->current_job));
+        $this->redirect('admin');
     }
 
 }

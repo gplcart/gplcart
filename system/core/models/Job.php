@@ -123,7 +123,6 @@ class Job extends Model
             'id' => uniqid(),
             'status' => true,
             'title' => '',
-            'widget' => '',
             'url' => '',
             'total' => 0,
             'errors' => 0,
@@ -403,6 +402,22 @@ class Job extends Model
 
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
+    }
+
+    /**
+     * Submits a new job
+     * @param array $job
+     */
+    public function submit($job)
+    {
+        $this->delete($job['id']);
+
+        if (!empty($job['data']['operation']['log']['errors'])) {
+            file_put_contents($job['data']['operation']['log']['errors'], '');
+        }
+
+        $this->set($job);
+        $this->url->redirect('', array('job_id' => $job['id']));
     }
 
 }

@@ -39,8 +39,8 @@ class Import extends BackendController
      */
     public function listImport()
     {
-        $job = $this->getJob();
-        $this->setData('job', $job);
+        $job = $this->getCurrentJobTrait($this->job, $this->request);
+        $this->setData('job', $this->renderJobTrait($this, $job));
 
         $this->downloadErrorsImport();
         $this->downloadTemplateImport();
@@ -182,7 +182,7 @@ class Import extends BackendController
             $job['redirect_message']['errors'] = $error;
         }
 
-        $this->setJob($job);
+        $this->job->submit($job);
     }
 
 }

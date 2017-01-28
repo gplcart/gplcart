@@ -12,7 +12,7 @@
     @link http://gplcart.com Support, modules, demo
 #}
 {% if items is not empty %}
-    <ul class="list-unstyled menu">
+    <ul class="nav navbar-nav menu-top">
       {% for item in items %}
           {% if item.depth <= depth %}
               <li class="depth-{{ item.depth }}{{ item.active ? ' active' : '' }}">

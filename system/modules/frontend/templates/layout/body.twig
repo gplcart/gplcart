@@ -118,14 +118,9 @@
           </div>
         </div>
       </nav>
-      {# Top region #}
-      {% if region_top is not empty %}
-          <nav class="navbar navbar-static-top second">
-            <div class="container-fluid region top">
-              {{ region_top|raw }}
-            </div>
-          </nav>
-      {% endif %}
+      <nav class="navbar navbar-static-top second">
+        <div class="container-fluid">{{ menu() }}</div>
+      </nav>
     </div>
     {# Breadcrumbs #}
     {% if breadcrumb is not empty %}
@@ -142,6 +137,16 @@
                 <li><h1>{{ page_title|raw }}</h1></li>
                   {% endif %}
           </ol>
+        </div>
+    {% endif %}
+    {# Top region #}
+    {% if region_top is not empty %}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="region top">
+              {{ region_top|raw }}
+            </div>
+          </div>
         </div>
     {% endif %}
     <div class="row main">

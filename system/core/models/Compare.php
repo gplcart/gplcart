@@ -235,12 +235,12 @@ class Compare extends Model
         }
 
         $product_ids = array_flip($compared);
-        
+
         unset($product_ids[$product_id]);
 
         $result = $this->set(array_keys($product_ids));
         $this->hook->fire('delete.compare.after', $product_id, $result);
-        
+
         return $result;
     }
 

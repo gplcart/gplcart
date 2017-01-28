@@ -23,19 +23,14 @@ class Controller extends BaseController
         \gplcart\core\traits\ControllerWishlist,
         \gplcart\core\traits\ControllerProduct,
         \gplcart\core\traits\ControllerItem,
-        \gplcart\core\traits\ControllerImage;
+        \gplcart\core\traits\ControllerImage,
+        \gplcart\core\traits\ControllerWidget;
 
     /**
      * Trigger model instance
      * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
-
-    /**
-     * An array of fired triggers for the current context
-     * @var array
-     */
-    protected $triggers = array();
 
     /**
      * Price model instance
@@ -80,6 +75,12 @@ class Controller extends BaseController
     protected $collection_item;
 
     /**
+     * An array of fired triggers for the current context
+     * @var array
+     */
+    protected $triggered = array();
+
+    /**
      * Catalog category tree for the current store
      * @var array
      */
@@ -94,7 +95,6 @@ class Controller extends BaseController
 
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
-        $this->setFrontendMenu();
 
         $this->submitCartTrait($this, $this->cart, $this->request, $this->response);
         $this->submitCompareTrait($this, $this->compare, $this->request, $this->response);
@@ -126,7 +126,7 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->url->isInstall()) {
-            $this->triggers = $this->getTriggers();
+            $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
         }
     }
@@ -139,15 +139,6 @@ class Controller extends BaseController
     {
         $limit = $this->config('product_recent_limit', 12);
         return $this->product->getViewed($limit);
-    }
-
-    /**
-     * Returns an array of categories
-     * @return array
-     */
-    public function categories()
-    {
-        return $this->data_categories;
     }
 
     /**
@@ -165,7 +156,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns user wishlist
+     * Returns a wishlist data
      * @return array|integer
      */
     public function wishlist($key = null)
@@ -175,78 +166,35 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        // Don't count in query, use the same arguments to avoid an extra query
         $result = (array) $this->wishlist->getList($options);
 
         if ($key == 'count') {
+            // Don't count using getList() to prevent extra query
+            // We have already the list loaded in memory so simply count it
             return count($result);
         }
-
         return $result;
     }
 
     /**
-     * 
-     * @return type
-     */
-    protected function getTriggers()
-    {
-        $conditions = array(
-            'status' => 1,
-            'store_id' => $this->store_id
-        );
-
-        return $this->trigger->getFired($conditions);
-    }
-
-    protected function setFrontendMenu()
-    {
-        $menu = $this->renderMenu(0, 'nav navbar-nav menu-top');
-        $this->setRegion('region_top', $menu);
-    }
-
-    /**
-     * Returns rendered honeypot input
-     * @return string
-     */
-    public function renderHoneyPotField()
-    {
-        return $this->render('common/honeypot');
-    }
-
-    /**
-     * Returns Share this widget
+     * Returns rendered main menu
      * @param array $options
      * @return string
      */
-    public function renderShareWidget(array $options = array())
+    public function menu(array $options = array())
     {
-        $options += array(
-            'title' => $this->ptitle(),
-            'url' => $this->url('', array(), true)
-        );
-
-        return $this->render('common/share', $options);
+        $options += array('items' => $this->data_categories);
+        return $this->renderMenuTrait($this, $options);
     }
 
     /**
-     * Returns a rendered menu
-     * @return string
+     * Returns an array of fired triggers for the current context
+     * @return array
      */
-    protected function renderMenu($max_depth = null,
-            $class = 'list-unstyled menu')
+    protected function getFiredTriggers()
     {
-        if (empty($this->data_categories)) {
-            return '';
-        }
-
-        $data = array(
-            'menu_class' => $class,
-            'menu_max_depth' => $max_depth,
-            'tree' => $this->data_categories
-        );
-
-        return $this->render('category/blocks/menu', $data);
+        $conditions = array('status' => 1, 'store_id' => $this->store_id);
+        return $this->trigger->getFired($conditions);
     }
 
     /**
@@ -363,6 +311,7 @@ class Controller extends BaseController
         foreach ($files as &$file) {
 
             $options['path'] = $file['path'];
+
             if (!empty($file['collection_item']['data']['url'])) {
                 $url = $file['collection_item']['data']['url'];
                 $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
@@ -413,9 +362,9 @@ class Controller extends BaseController
     }
 
     /**
-     * 
-     * @param type $product_id
-     * @return type
+     * Whether the product ID is already in wishlist
+     * @param integer $product_id
+     * @return bool
      */
     public function isInWishlist($product_id)
     {
@@ -429,9 +378,9 @@ class Controller extends BaseController
     }
 
     /**
-     * 
-     * @param type $product_id
-     * @return type
+     * Whether the product ID is already in comparison
+     * @param integer $product_id
+     * @return bool
      */
     public function isInComparison($product_id)
     {
@@ -462,59 +411,49 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns prepared category tree
+     * Returns an array of prepared categories
+     * @param array $conditions
      * @param array $options
      * @return array
      */
-    protected function getCategories(array $options = array())
+    protected function getCategories($conditions = array(), $options = array())
     {
-        $options += array(
+        $conditions += array(
             'status' => 1,
-            'prepare' => true,
             'type' => 'catalog',
-            'store_id' => $this->store_id,
-            'imagestyle' => $this->settings('image_style_category_child', 3)
+            'store_id' => $this->store_id
         );
 
-        $tree = $this->category->getTree($options);
+        $options += array(
+            'imagestyle' => $this->settings('image_style_category_child', 3));
 
-        if (empty($options['prepare'])) {
-            return $tree;
-        }
-
-        return $this->prepareCategories($tree, $options);
+        $categories = $this->category->getTree($conditions);
+        return $this->prepareCategories($categories, $options);
     }
 
     /**
-     * Loads an array of products from an array of product IDs
+     * Loads products from an array of product IDs
      * @param array $conditions
      * @param array $options
      * @return array
      */
     protected function getProducts($conditions = array(), $options = array())
     {
-        $options += array('prepare' => true);
-        $conditions += array('status' => 1, 'store_id' => $this->store_id);
+        $conditions += array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
 
         if (isset($conditions['product_id']) && empty($conditions['product_id'])) {
             return array();
         }
 
         $products = (array) $this->product->getList($conditions);
-
-        if (empty($products)) {
-            return array();
-        }
-
-        if (empty($options['prepare'])) {
-            return $products;
-        }
-
         return $this->prepareProducts($products, $options);
     }
 
     /**
-     * Modifies an array of category tree before rendering
+     * Prepare an array of categories
      * @param array $categories
      * @param array $options
      * @return array
@@ -541,14 +480,14 @@ class Controller extends BaseController
     }
 
     /**
-     * 
-     * @param array $options
-     * @return type
+     * Returns an array of collection items
+     * @param array $conditions
+     * @return array
      */
-    protected function getCollectionItems(array $options)
+    protected function getCollectionItems(array $conditions)
     {
-        $options += array('status' => 1, 'store_id' => $this->store_id);
-        return $this->collection_item->getItems($options);
+        $conditions += array('status' => 1, 'store_id' => $this->store_id);
+        return $this->collection_item->getItems($conditions);
     }
 
     /**
@@ -566,16 +505,6 @@ class Controller extends BaseController
         }
 
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
-    }
-
-    /**
-     * "Honey pot" submission protection
-     */
-    public function controlSpam()
-    {
-        if ($this->request->request('url', '') !== '') {
-            $this->response->error403(false);
-        }
     }
 
 }

@@ -105,8 +105,10 @@ class Export extends BackendController
         $this->setBreadcrumbEditExport();
 
         $this->submitExport();
+        
+        $job = $this->getCurrentJobTrait($this->job, $this->request);
 
-        $this->setData('job', $this->getJob());
+        $this->setData('job', $this->renderJobTrait($this, $job));
         $this->setData('stores', $this->store->getNames());
         $this->outputEditExport();
     }
@@ -194,7 +196,7 @@ class Export extends BackendController
             $job['redirect_message']['errors'] = $redirect;
         }
 
-        $this->setJob($job);
+        $this->job->submit($job);
     }
 
     /**

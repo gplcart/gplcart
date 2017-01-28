@@ -139,7 +139,12 @@ class Category extends FrontendController
      */
     protected function setRegionMenuCategory()
     {
-        $menu = $this->renderMenu();
+        $options = array(
+            'items' => $this->data_categories,
+            'template' => 'category/blocks/menu'
+        );
+
+        $menu = $this->renderMenuTrait($this, $options);
         $this->setRegion('region_left', $menu);
     }
 
@@ -253,14 +258,9 @@ class Category extends FrontendController
      */
     protected function setListProductCategory(array $limit, array $query, $cid)
     {
-        $options = array(
-            'limit' => $limit,
-            'category_id' => $cid,
-            'placeholder' => true
-        );
-
-        $options += $query;
-        return $this->data_products = $this->getProducts($options, $options);
+        $options = array('placeholder' => true);
+        $conditions = array('limit' => $limit, 'category_id' => $cid) + $query;
+        return $this->data_products = $this->getProducts($conditions, $options);
     }
 
     /**

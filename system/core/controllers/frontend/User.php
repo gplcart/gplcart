@@ -42,7 +42,7 @@ class User extends FrontendController
         $this->setBreadcrumbEditLoginUser();
 
         $this->submitLoginUser();
-        $this->setData('honeypot', $this->renderHoneyPotField());
+        $this->setData('honeypot', $this->renderHoneyPotTrait($this));
 
         $this->outputEditLoginUser();
     }
@@ -141,7 +141,7 @@ class User extends FrontendController
 
         $this->submitRegisterUser();
 
-        $this->setData('honeypot', $this->renderHoneyPotField());
+        $this->setData('honeypot', $this->renderHoneyPotTrait($this));
         $this->setData('password_limit', $this->user->getPasswordLength());
 
         $this->outputEditRegisterUser();
@@ -239,7 +239,7 @@ class User extends FrontendController
         $this->setBreadcrumbEditResetPasswordUser();
 
         $this->setData('forgetful_user', $this->data_user);
-        $this->setData('honeypot', $this->renderHoneyPotField());
+        $this->setData('honeypot', $this->renderHoneyPotTrait($this));
         $this->setData('password_limit', $this->user->getPasswordLength());
 
         $this->submitResetPasswordUser();

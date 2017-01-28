@@ -69,6 +69,7 @@ class Twig
         $this->addFunctionD($object);
         $this->addFunctionXss($object);
         $this->addFunctionUrl($object);
+        $this->addFunctionMenu($object);
         $this->addFunctionDate($object);
         $this->addFunctionCart($object);
         $this->addFunctionDate($object);
@@ -223,7 +224,7 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('attributes', function ($attributes) use ($object) {
             return $object->attributes($attributes);
-        });
+        }, array('is_safe' => array('all')));
 
         $this->twig->addFunction($function);
     }
@@ -367,6 +368,21 @@ class Twig
         $function = new \Twig_SimpleFunction('wishlist', function ($key = null) use ($object) {
             return $object->wishlist($key);
         });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function Controller::menu()
+     * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\controllers\frontend\Controller::menu()
+     * @see \gplcart\core\controllers\backend\Controller::menu()
+     */
+    protected function addFunctionMenu($object)
+    {
+        $function = new \Twig_SimpleFunction('menu', function (array $options = array()) use ($object) {
+            return $object->menu($options);
+        }, array('is_safe' => array('all')));
 
         $this->twig->addFunction($function);
     }
