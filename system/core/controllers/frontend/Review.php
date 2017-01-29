@@ -109,7 +109,7 @@ class Review extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5));
 
-        $this->setThumbTrait($this->image, $this->data_product, $options);
+        $this->setThumbTrait($this, $this->data_product, $options);
 
         if (!empty($this->data_product['images'])) {
             // Get only first image

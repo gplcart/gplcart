@@ -96,9 +96,9 @@ class Controller extends BaseController
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
 
-        $this->submitCartTrait($this, $this->cart, $this->request, $this->response);
-        $this->submitCompareTrait($this, $this->compare, $this->request, $this->response);
-        $this->submitWishlistTrait($this, $this->wishlist, $this->request, $this->response);
+        $this->submitCartTrait($this);
+        $this->submitCompareTrait($this);
+        $this->submitWishlistTrait($this);
 
         $this->hook->fire('init.frontend', $this);
 
@@ -229,7 +229,7 @@ class Controller extends BaseController
             $item['currency'] = $cart['currency'];
             $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
 
-            $this->setThumbCartTrait($this, $this->image, $item);
+            $this->setThumbCartTrait($this, $item);
             $this->setProductPriceTrait($this, $this->price, $this->product, $item);
         }
 
@@ -317,8 +317,8 @@ class Controller extends BaseController
                 $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
             }
 
-            $this->setThumbTrait($this->image, $file, $options);
-            $this->setItemRenderedTrait($this, $file, array('file' => $file), $options);
+            $this->setThumbTrait($this, $file, $options);
+            $this->setRenderedTrait($this, $file, array('file' => $file), $options);
         }
 
         return $this->render('collection/list/file', array('files' => $files));
@@ -349,42 +349,18 @@ class Controller extends BaseController
 
         foreach ($products as &$product) {
 
-            $this->setItemUrlTrait($this, $product, $options);
-            $this->setThumbTrait($this->image, $product, $options);
-            $this->setItemRenderedProductTrait($this, $product, $options);
-            $this->setProductPriceTrait($this, $this->price, $this->product, $product, $options);
+            $this->setUrlTrait($this, $product, $options);
+            $this->setThumbTrait($this, $product, $options);
 
-            $product['in_wishlist'] = $this->isInWishlist($product['product_id']);
-            $product['in_comparison'] = $this->isInComparison($product['product_id']);
+            $this->setProductCalculatedPriceTrait($this, $product);
+            $this->setFormattedPriceTrait($this, $product);
+
+            $this->setInWishlistTrait($this, $product);
+            $this->setInComparisonTrait($this, $product);
+            $this->setRenderedProductTrait($this, $product, $options);
         }
 
         return $products;
-    }
-
-    /**
-     * Whether the product ID is already in wishlist
-     * @param integer $product_id
-     * @return bool
-     */
-    public function isInWishlist($product_id)
-    {
-        $arguments = array(
-            'product_id' => $product_id,
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
-        );
-
-        return (bool) $this->wishlist->exists($arguments);
-    }
-
-    /**
-     * Whether the product ID is already in comparison
-     * @param integer $product_id
-     * @return bool
-     */
-    public function isInComparison($product_id)
-    {
-        return (bool) $this->compare->exists($product_id);
     }
 
     /**
@@ -402,9 +378,9 @@ class Controller extends BaseController
         $options += array('id_key' => 'page_id', 'ids' => array_keys($pages));
 
         foreach ($pages as &$page) {
-            $this->setItemUrlTrait($this, $page, $options);
-            $this->setThumbTrait($this->image, $page, $options);
-            $this->setItemRenderedTrait($this, $page, array('page' => $page), $options);
+            $this->setUrlTrait($this, $page, $options);
+            $this->setThumbTrait($this, $page, $options);
+            $this->setRenderedTrait($this, $page, array('page' => $page), $options);
         }
 
         return $pages;
@@ -468,12 +444,10 @@ class Controller extends BaseController
         $options['ids'] = array_keys($categories);
 
         foreach ($categories as &$category) {
-
-            $this->setItemUrlTrait($this, $category, $options);
-            $this->setThumbTrait($this->image, $category, $options);
-
-            $category['active'] = ($this->base . (string) $this->isCurrentPath($category['url'])) !== '';
-            $category['indentation'] = str_repeat('<span class="indentation"></span>', $category['depth']);
+            $this->setIndentationTrait($category);
+            $this->setUrlTrait($this, $category, $options);
+            $this->setUrlActiveTrait($this, $category);
+            $this->setThumbTrait($this, $category, $options);
         }
 
         return $categories;

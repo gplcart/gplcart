@@ -16,12 +16,11 @@ trait ControllerItem
 {
 
     /**
-     * Sets a URL to the item considering its possible alias
      * @param \gplcart\core\Controller $controller
      * @param array $data
      * @param array $options
      */
-    protected function setItemUrlTrait($controller, array &$data, array $options)
+    protected function setUrlTrait($controller, array &$data, array $options)
     {
         $id = $data[$options['id_key']];
         $entity = preg_replace('/_id$/', '', $options['id_key']);
@@ -29,13 +28,11 @@ trait ControllerItem
     }
 
     /**
-     * Sets to the item its rendered HTML
      * @param \gplcart\core\Controller $controller
      * @param array $product
      * @param array $options
      */
-    protected function setItemRenderedProductTrait($controller, array &$product,
-            array $options)
+    protected function setRenderedProductTrait($controller, &$product, $options)
     {
         $options += array(
             'buttons' => array(
@@ -46,20 +43,47 @@ trait ControllerItem
             'buttons' => $options['buttons']
         );
 
-        $this->setItemRenderedTrait($controller, $product, $data, $options);
+        $this->setRenderedTrait($controller, $product, $data, $options);
     }
 
     /**
-     * Adds to the item rendered HTML
      * @param \gplcart\core\Controller $controller
      * @param array $item
      * @param array $data
      * @param array $options
      */
-    protected function setItemRenderedTrait($controller, array &$item,
-            array $data, array $options)
+    protected function setRenderedTrait($controller, &$item, $data, $options)
     {
         $item['rendered'] = $controller->render($options['template_item'], $data);
+    }
+
+    /**
+     * Sets formatted price
+     * @param \gplcart\core\Controller $controller
+     * @param array $product
+     */
+    protected function setFormattedPriceTrait($controller, &$item)
+    {
+        /* @var $price_model \gplcart\core\models\Price */
+        $price_model = $controller->getInstance('price');
+        $item['price_formatted'] = $price_model->format($item['price'], $item['currency']);
+    }
+
+    /**
+     * @param \gplcart\core\Controller $controller
+     * @param array $item
+     */
+    protected function setUrlActiveTrait($controller, array &$item)
+    {
+        $item['active'] = ($controller->base() . (string) $controller->isCurrentPath($item['url'])) !== '';
+    }
+
+    /**
+     * @param array $item
+     */
+    protected function setIndentationTrait(array &$item)
+    {
+        $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
     }
 
 }

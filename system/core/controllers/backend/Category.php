@@ -190,7 +190,7 @@ class Category extends BackendController
      */
     protected function prepareListCategory(array $categories)
     {
-        $this->attachEntityUrlTrait($this->store, $categories, 'category');
+        $this->attachEntityUrlTrait($this, $categories, 'category');
 
         foreach ($categories as &$category) {
             $category['indentation'] = str_repeat('— ', $category['depth']);
@@ -329,7 +329,7 @@ class Category extends BackendController
             return null;
         }
 
-        $this->deleteImagesTrait($this->request, $this->image, $this->data_category, 'category');
+        $this->deleteImagesTrait($this, $this->data_category, 'category');
 
         if (isset($this->data_category['category_id'])) {
             $this->updateCategory();
@@ -447,7 +447,7 @@ class Category extends BackendController
     protected function setDataImagesCategory()
     {
         $images = $this->getData('category.images', array());
-        $this->attachThumbsTrait($this->image, $this->config, $images);
+        $this->attachThumbsTrait($this, $images);
         $this->setImagesTrait($this, $images, 'category');
     }
 

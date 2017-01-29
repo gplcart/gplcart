@@ -17,14 +17,16 @@ trait ControllerImage
 
     /**
      * Sets image thumbnail
-     * @param \gplcart\core\models\Image $image_model
+     * @param \gplcart\core\Controller $controller
      * @param array $data
      * @param array $options
      * @return array
      */
-    protected function setThumbTrait($image_model, array &$data,
-            array $options = array())
+    protected function setThumbTrait($controller, &$data, $options = array())
     {
+        /* @var $image_model \gplcart\core\models\Image */
+        $image_model = $controller->getInstance('image');
+
         if (empty($options['imagestyle'])) {
             return $data;
         }
@@ -50,10 +52,9 @@ trait ControllerImage
     /**
      * Sets product image thumbnail to the cart item
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Image $image_model
      * @param array $item
      */
-    protected function setThumbCartTrait($controller, $image_model, array &$item)
+    protected function setThumbCartTrait($controller, array &$item)
     {
         $options = array(
             'path' => '',
@@ -70,7 +71,7 @@ trait ControllerImage
             $options['path'] = $item['product']['images'][$item['product']['file_id']]['path'];
         }
 
-        $this->setThumbTrait($image_model, $item, $options);
+        $this->setThumbTrait($controller, $item, $options);
     }
 
 }

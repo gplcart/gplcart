@@ -183,7 +183,7 @@ class Category extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_category', 3));
 
-        $this->setThumbTrait($this->image, $this->data_category, $options);
+        $this->setThumbTrait($this, $this->data_category, $options);
 
         $data = array('category' => $this->data_category);
         $html = $this->render('category/blocks/images', $data);

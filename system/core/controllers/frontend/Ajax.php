@@ -205,14 +205,14 @@ class Ajax extends FrontendController
         $response = $this->sku->selectCombination($product, $field_value_ids);
 
         $options = array(
-            'calculate' => false,
             'imagestyle' => $this->settings('image_style_product', 5),
             'path' => empty($response['combination']['path']) ? '' : $response['combination']['path']
         );
-        
-        $this->setProductPriceTrait($this, $this->price, $this->product, $product, $options);
-        $this->setThumbTrait($this->image, $response, $options);
-        
+
+        $this->setThumbTrait($this, $response, $options);
+        $this->setProductCalculatedPriceTrait($this, $response);
+        $this->setFormattedPriceTrait($this, $response);
+
         return $response;
     }
 

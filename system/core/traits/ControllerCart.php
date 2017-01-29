@@ -18,17 +18,26 @@ trait ControllerCart
     /**
      * Handles "Add to cart" event
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Cart $cart
-     * @param \gplcart\core\helpers\Request $request
-     * @param \gplcart\core\helpers\Response $response
      * @return null
      */
-    protected function submitCartTrait($controller, $cart, $request, $response)
+    protected function submitCartTrait($controller)
     {
+        /* @var $cart \gplcart\core\models\Cart */
+        $cart = $controller->getInstance('cart');
+
+        /* @var $response \gplcart\core\helpers\Response */
+        $response = $controller->getInstance('response');
+
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $controller->getInstance('request');
+
         if ($controller->isPosted('add_to_cart')) {
             $this->validateAddToCartTrait($controller);
             $this->addToCartTrait($controller, $cart, $request, $response);
-        } else if($controller->isPosted('remove_from_cart')){
+            return null;
+        }
+
+        if ($controller->isPosted('remove_from_cart')) {
             $controller->setSubmitted('cart');
             $this->deleteCartTrait($controller, $cart, $request, $response);
         }
@@ -76,14 +85,14 @@ trait ControllerCart
     protected function validateAddToCartTrait($controller)
     {
         $controller->setSubmitted('product');
-        
+
         $controller->setSubmitted('user_id', $controller->cart('user_id'));
         $controller->setSubmitted('store_id', $controller->store('store_id'));
         $controller->setSubmitted('quantity', $controller->getSubmitted('quantity', 1));
 
         $controller->validate('cart');
     }
-    
+
     /**
      * Deletes a cart item
      * @param \gplcart\core\Controller $controller
@@ -107,10 +116,10 @@ trait ControllerCart
             'quantity' => $controller->cart('count_total'),
             'message' => $controller->text('Cart item has been deleted')
         );
-        
+
         $preview = $controller->renderCartPreview();
-        
-        if(empty($preview)){
+
+        if (empty($preview)) {
             $result['message'] = '';
             $result['quantity'] = 0;
         }
@@ -122,4 +131,5 @@ trait ControllerCart
 
         $controller->redirect($result['redirect'], $result['message'], $result['severity']);
     }
+
 }

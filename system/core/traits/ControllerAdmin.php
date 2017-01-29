@@ -17,46 +17,54 @@ trait ControllerAdmin
 
     /**
      * Adds thumb url to an array of files
-     * @param \gplcart\core\models\Image $image
-     * @param \gplcart\core\Config $config
+     * @param \gplcart\core\Controller $controller
      * @param array $items
      */
-    protected function attachThumbsTrait($image, $config, array &$items)
+    protected function attachThumbsTrait($controller, array &$items)
     {
-        $imagestyle = $config->get('image_style_admin', 2);
+        $imagestyle = $controller->config('image_style_admin', 2);
+
+        /* @var $image_model \gplcart\core\models\Image */
+        $image_model = $controller->getInstance('image');
 
         foreach ($items as &$item) {
-            $item['thumb'] = $image->url($imagestyle, $item['path']);
+            $item['thumb'] = $image_model->url($imagestyle, $item['path']);
         }
     }
 
     /**
      * Adds thumb url to a single file
-     * @param \gplcart\core\models\Image $image
-     * @param \gplcart\core\Config $config
+     * @param \gplcart\core\Controller $controller
      * @param array $item
      */
-    protected function attachThumbTrait($image, $config, array &$item)
+    protected function attachThumbTrait($controller, array &$item)
     {
-        $imagestyle = $config->get('image_style_admin', 2);
-        $item['thumb'] = $image->url($imagestyle, $item['path']);
+        $imagestyle = $controller->config('image_style_admin', 2);
+
+        /* @var $image_model \gplcart\core\models\Image */
+        $image_model = $controller->getInstance('image');
+
+        $item['thumb'] = $image_model->url($imagestyle, $item['path']);
     }
 
     /**
      * Adds full store url for every entity in the array
-     * @param \gplcart\core\models\Store $store
+     * @param \gplcart\core\Controller $controller
      * @param array $items
      * @param string $entity
-     * @return array $items
+     * @return array
      */
-    protected function attachEntityUrlTrait($store, array &$items, $entity)
+    protected function attachEntityUrlTrait($controller, array &$items, $entity)
     {
-        $stores = $store->getList();
+        /* @var $store_model \gplcart\core\models\Store */
+        $store_model = $controller->getInstance('store');
+
+        $stores = $store_model->getList();
 
         foreach ($items as &$item) {
             $item['url'] = '';
             if (isset($stores[$item['store_id']])) {
-                $url = $store->url($stores[$item['store_id']]);
+                $url = $store_model->url($stores[$item['store_id']]);
                 $item['url'] = "$url/$entity/{$item["{$entity}_id"]}";
             }
         }
@@ -79,13 +87,18 @@ trait ControllerAdmin
 
     /**
      * Deletes submitted image file IDs
-     * @param \gplcart\core\helpers\Request $request
-     * @param \gplcart\core\models\Image $image
+     * @param \gplcart\core\Controller $controller
      * @param array $data
      * @param string $entity
      */
-    protected function deleteImagesTrait($request, $image, array $data, $entity)
+    protected function deleteImagesTrait($controller, array $data, $entity)
     {
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $controller->getInstance('request');
+
+        /* @var $image_model \gplcart\core\models\Image */
+        $image_model = $controller->getInstance('image');
+
         $file_ids = $request->post('delete_images', array());
 
         if (empty($file_ids) || empty($data["{$entity}_id"])) {
@@ -99,7 +112,7 @@ trait ControllerAdmin
             'id_value' => $data["{$entity}_id"]
         );
 
-        return $image->deleteMultiple($options);
+        return $image_model->deleteMultiple($options);
     }
 
 }

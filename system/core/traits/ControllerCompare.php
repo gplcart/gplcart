@@ -18,20 +18,28 @@ trait ControllerCompare
     /**
      * Adds/removes a product from comparison
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Compare $compare
-     * @param \gplcart\core\helpers\Request $request
-     * @param \gplcart\core\helpers\Response $response
      * @return null
      */
-    protected function submitCompareTrait($controller, $compare, $request,
-            $response)
+    protected function submitCompareTrait($controller)
     {
+        /* @var $compare \gplcart\core\models\Compare */
+        $compare = $controller->getInstance('compare');
+
+        /* @var $response \gplcart\core\helpers\Response */
+        $response = $controller->getInstance('response');
+
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $controller->getInstance('request');
+
         // Goes before deleteCompareTrait()
         $controller->setSubmitted('product');
 
         if ($controller->isPosted('remove_from_compare')) {
             $this->deleteCompareTrait($controller, $compare, $request, $response);
-        } else if($controller->isPosted('add_to_compare')) {
+            return null;
+        }
+
+        if ($controller->isPosted('add_to_compare')) {
             $this->validateAddToCompareTrait($controller);
             $this->addToCompareTrait($controller, $compare, $request, $response);
         }
@@ -95,6 +103,19 @@ trait ControllerCompare
     protected function validateAddToCompareTrait($controller)
     {
         $controller->validate('compare');
+    }
+
+    /**
+     * Set "in comparison" boolean flag
+     * @param \gplcart\core\Controller $controller
+     * @param array $product
+     */
+    protected function setInComparisonTrait($controller, array &$product)
+    {
+        /* @var $compare \gplcart\core\models\Compare */
+        $compare = $controller->getInstance('compare');
+
+        $product['in_comparison'] = $compare->exists($product['product_id']);
     }
 
 }

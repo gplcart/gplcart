@@ -415,6 +415,25 @@ class Controller
     }
 
     /**
+     * Returns a model instance
+     * @param string $name
+     * @return object
+     */
+    public function getInstance($name)
+    {
+        return $this->$name;
+    }
+
+    /**
+     * URL base path
+     * @return string
+     */
+    public function base()
+    {
+        return $this->base;
+    }
+
+    /**
      * Whether the user has a given access
      * @param string $permission
      * @return boolean

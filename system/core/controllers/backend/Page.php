@@ -170,7 +170,7 @@ class Page extends BackendController
         $query['limit'] = $limit;
         $pages = (array) $this->page->getList($query);
 
-        $this->attachEntityUrlTrait($this->store, $pages, 'page');
+        $this->attachEntityUrlTrait($this, $pages, 'page');
         return $pages;
     }
 
@@ -275,7 +275,7 @@ class Page extends BackendController
             return null;
         }
 
-        $this->deleteImagesTrait($this->request, $this->image, $this->data_page, 'page');
+        $this->deleteImagesTrait($this, $this->data_page, 'page');
 
         if (isset($this->data_page['page_id'])) {
             $this->updatePage();
@@ -351,7 +351,7 @@ class Page extends BackendController
     protected function setDataImagesPage()
     {
         $images = $this->getData('page.images', array());
-        $this->attachThumbsTrait($this->image, $this->config, $images);
+        $this->attachThumbsTrait($this, $images);
         $this->setImagesTrait($this, $images, 'page');
     }
 

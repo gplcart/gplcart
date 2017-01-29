@@ -17,12 +17,17 @@ trait ControllerJob
 
     /**
      * Loads the current job from the current URL
-     * @param \gplcart\core\models\Job $job
-     * @param \gplcart\core\helpers\Request $request
+     * @param \gplcart\core\Controller $controller
      * @return array
      */
-    protected function getCurrentJobTrait($job, $request)
+    protected function getCurrentJobTrait($controller)
     {
+        /* @var $job \gplcart\core\models\Job */
+        $job = $controller->getInstance('job');
+
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $controller->getInstance('request');
+
         $job_id = (string) $request->get('job_id');
 
         if (empty($job_id)) {
@@ -35,15 +40,20 @@ trait ControllerJob
     /**
      * Processes the current job
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Job $job
-     * @param \gplcart\core\helpers\Request $request
-     * @param \gplcart\core\helpers\Response $response
      * @return null
      */
-    protected function processCurrentJobTrait($controller, $job, $request,
-            $response)
+    protected function processCurrentJobTrait($controller)
     {
-        $data = $this->getCurrentJobTrait($job, $request);
+        /* @var $job \gplcart\core\models\Job */
+        $job = $controller->getInstance('job');
+
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $controller->getInstance('request');
+
+        /* @var $response \gplcart\core\helpers\Response */
+        $response = $controller->getInstance('response');
+
+        $data = $this->getCurrentJobTrait($controller);
 
         if (empty($data['status'])) {
             return null;

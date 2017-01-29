@@ -18,19 +18,28 @@ trait ControllerWishlist
     /**
      * Adds/removes a product from the wishlist
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Wishlist $wishlist
-     * @param \gplcart\core\helpers\Request $request
-     * @param \gplcart\core\helpers\Response $response
+     * @return null
      */
-    protected function submitWishlistTrait($controller, $wishlist, $request,
-            $response)
+    protected function submitWishlistTrait($controller)
     {
+        /* @var $wishlist \gplcart\core\models\Wishlist */
+        $wishlist = $controller->getInstance('wishlist');
+
+        /* @var $response \gplcart\core\helpers\Response */
+        $response = $controller->getInstance('response');
+
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $controller->getInstance('request');
+
         // Goes before deleteWishlistTrait()
         $controller->setSubmitted('product');
 
         if ($controller->isPosted('remove_from_wishlist')) {
             $this->deleteWishlistTrait($controller, $wishlist, $request, $response);
-        } else if ($controller->isPosted('add_to_wishlist')) {
+            return null;
+        }
+
+        if ($controller->isPosted('add_to_wishlist')) {
             $this->validateAddToWishlistTrait($controller);
             $this->addWishlistTrait($controller, $wishlist, $request, $response);
         }
@@ -103,6 +112,25 @@ trait ControllerWishlist
         }
 
         $controller->redirect($result['redirect'], $result['message'], $result['severity']);
+    }
+
+    /**
+     * Set "In wishlist" boolean flag
+     * @param \gplcart\core\Controller $controller
+     * @param array $product
+     */
+    protected function setInWishlistTrait($controller, &$product)
+    {
+        /* @var $wishlist \gplcart\core\models\Wishlist */
+        $wishlist = $controller->getInstance('wishlist');
+
+        $conditions = array(
+            'product_id' => $product['product_id'],
+            'user_id' => $controller->cart('user_id'),
+            'store_id' => $controller->store('store_id')
+        );
+
+        $product['in_wishlist'] = $wishlist->exists($conditions);
     }
 
 }

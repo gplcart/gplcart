@@ -106,7 +106,7 @@ class Export extends BackendController
 
         $this->submitExport();
         
-        $job = $this->getCurrentJobTrait($this->job, $this->request);
+        $job = $this->getCurrentJobTrait($this);
 
         $this->setData('job', $this->renderJobTrait($this, $job));
         $this->setData('stores', $this->store->getNames());

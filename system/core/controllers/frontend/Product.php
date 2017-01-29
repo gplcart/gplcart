@@ -335,7 +335,7 @@ class Product extends FrontendController
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-            $this->setThumbTrait($this->image, $this->data_product, $options);
+            $this->setThumbTrait($this, $this->data_product, $options);
         }
 
         $data = array('product' => $this->data_product);
@@ -402,14 +402,14 @@ class Product extends FrontendController
             'imagestyle' => $this->settings('image_style_product', 5),
             'path' => empty($selected['combination']['path']) ? '' : $selected['combination']['path']
         );
+        
+        $this->setThumbTrait($this, $product, $options);
 
-        $this->setProductPriceTrait($this, $this->price, $this->product, $selected, $options);
-        $this->setThumbTrait($this->image, $selected, $options);
+        $this->setProductCalculatedPriceTrait($this, $selected);
+        $this->setFormattedPriceTrait($this, $selected);
 
         $product['selected_combination'] = $selected;
         $product['fields'] = $this->getFieldsProduct($product);
-
-        $this->setProductPriceTrait($this, $this->price, $this->product, $product);
         return $product;
     }
 
@@ -481,7 +481,7 @@ class Product extends FrontendController
                     'imagestyle' => $imagestyle,
                     'path' => $fields['option'][$field_id]['values'][$field_value_id]['path']
                 );
-                $this->setThumbTrait($this->image, $fields['option'][$field_id]['values'][$field_value_id], $options);
+                $this->setThumbTrait($this, $fields['option'][$field_id]['values'][$field_value_id], $options);
             }
         }
 

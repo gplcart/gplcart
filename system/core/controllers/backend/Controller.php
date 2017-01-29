@@ -36,7 +36,7 @@ class Controller extends BaseController
 
         $this->job = Container::get('gplcart\\core\\models\\Job');
 
-        $this->processCurrentJobTrait($this, $this->job, $this->request, $this->response);
+        $this->processCurrentJobTrait($this);
 
         $this->hook->fire('init.backend', $this);
         $this->controlHttpStatus();

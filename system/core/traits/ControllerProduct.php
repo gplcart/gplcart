@@ -10,30 +10,24 @@
 namespace gplcart\core\traits;
 
 /**
- * Controller methods related to products
+ * Controller methods to work with products
  */
 trait ControllerProduct
 {
 
     /**
-     * Sets product formatted price
+     * Set product calculated price
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Price $price_model
-     * @param \gplcart\core\models\Product $product_model
      * @param array $product
      * @param array $options
      */
-    protected function setProductPriceTrait($controller, $price_model, $product_model,
-            array &$product, array $options = array())
+    protected function setProductCalculatedPriceTrait($controller, &$product)
     {
-        $options += array('calculate' => true);
+        /* @var $product_model \gplcart\core\models\Product */
+        $product_model = $controller->getInstance('product');
 
-        if (!empty($options['calculate'])) {
-            //$calculated = $this->product->calculate($product, $this->store_id);
-            //$product['price'] = $calculated['total'];
-        }
-
-        $product['price_formatted'] = $price_model->format($product['price'], $product['currency']);
+        $calculated = $product_model->calculate($product, $controller->store('store_id'));
+        $product['price'] = $calculated['total'];
     }
 
 }

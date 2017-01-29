@@ -199,7 +199,7 @@ class Product extends BackendController
             return array();
         }
 
-        $this->attachEntityUrlTrait($this->store, $products, 'product');
+        $this->attachEntityUrlTrait($this, $products, 'product');
 
         foreach ($products as &$product) {
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
@@ -357,7 +357,7 @@ class Product extends BackendController
             $combination['path'] = $combination['thumb'] = '';
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                $this->attachThumbTrait($this->image, $this->config, $combination);
+                $this->attachThumbTrait($this, $combination);
             }
 
             $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
@@ -379,7 +379,7 @@ class Product extends BackendController
         $options = array('store_id' => $this->data_product['store_id']);
         $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
 
-        $this->attachEntityUrlTrait($this->store, $products, 'product');
+        $this->attachEntityUrlTrait($this, $products, 'product');
         return $products;
     }
 
@@ -398,7 +398,7 @@ class Product extends BackendController
             return null;
         }
 
-        $this->deleteImagesTrait($this->request, $this->image, $this->data_product, 'product');
+        $this->deleteImagesTrait($this, $this->data_product, 'product');
 
         if (isset($this->data_product['product_id'])) {
             $this->updateProduct();
@@ -542,7 +542,7 @@ class Product extends BackendController
 
         if (!empty($related)) {
             $products = (array) $this->product->getList(array('product_id' => $related));
-            $this->attachEntityUrlTrait($this->store, $products, 'product');
+            $this->attachEntityUrlTrait($this, $products, 'product');
             $this->setData('related', $products);
         }
     }
@@ -554,7 +554,7 @@ class Product extends BackendController
     protected function setDataImagesProduct()
     {
         $images = $this->getData('product.images', array());
-        $this->attachThumbsTrait($this->image, $this->config, $images);
+        $this->attachThumbsTrait($this, $images);
         $this->setImagesTrait($this, $images, 'product');
     }
 
