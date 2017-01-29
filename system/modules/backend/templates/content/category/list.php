@@ -53,7 +53,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table categories">
+    <table class="table categories" data-sortable-weight="true">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -67,7 +67,7 @@
       </thead>
       <tbody>
         <?php foreach ($categories as $category) { ?>
-        <tr data-category-id="<?php echo $category['category_id']; ?>">
+        <tr data-id="<?php echo $category['category_id']; ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $category['category_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $category['category_id']; ?></td>
           <td class="middle"><?php echo $category['indentation']; ?><?php echo $this->truncate($this->escape($category['title'])); ?></td>

@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table fields">
+      <table class="table fields" data-sortable-input-weight="true">
         <thead>
           <tr>
             <th><?php echo $this->text('Name'); ?></th>

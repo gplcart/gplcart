@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table collection-items">
+    <table class="table collection-items" data-sortable-weight="true">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -61,7 +61,7 @@
       </thead>
       <tbody>
         <?php foreach ($items as $item) { ?>
-        <tr data-collection-item-id="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>">
+        <tr data-id="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $this->truncate($this->escape($item['collection_item']['collection_item_id'])); ?></td>
           <td class="middle"><?php echo $this->truncate($this->escape($item['title'])); ?></td>

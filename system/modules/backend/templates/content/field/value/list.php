@@ -34,7 +34,7 @@
     </div> 
   </div>
   <div class="panel-body table-responsive">
-    <table class="table field-values">
+    <table class="table field-values" data-sortable-weight="true">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -50,7 +50,7 @@
       </thead>
       <tbody>
         <?php foreach ($values as $value) { ?>
-        <tr data-field-value-id="<?php echo $value['field_value_id']; ?>">
+        <tr data-id="<?php echo $value['field_value_id']; ?>">
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $value['field_value_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
