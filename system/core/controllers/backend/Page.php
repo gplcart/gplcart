@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Page as PageModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
@@ -20,8 +19,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Page extends BackendController
 {
-
-    use \gplcart\core\traits\ControllerAdmin;
 
     /**
      * Page model instance
@@ -42,12 +39,6 @@ class Page extends BackendController
     protected $alias;
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * The current page
      * @var array
      */
@@ -58,16 +49,14 @@ class Page extends BackendController
      * @param PageModel $page
      * @param CategoryModel $category
      * @param AliasModel $alias
-     * @param ImageModel $image
      */
     public function __construct(PageModel $page, CategoryModel $category,
-            AliasModel $alias, ImageModel $image)
+            AliasModel $alias)
     {
         parent::__construct();
 
         $this->page = $page;
         $this->alias = $alias;
-        $this->image = $image;
         $this->category = $category;
     }
 
@@ -170,7 +159,7 @@ class Page extends BackendController
         $query['limit'] = $limit;
         $pages = (array) $this->page->getList($query);
 
-        $this->attachEntityUrlTrait($this, $pages, 'page');
+        $this->setEntityUrl($pages, 'page');
         return $pages;
     }
 
@@ -275,7 +264,7 @@ class Page extends BackendController
             return null;
         }
 
-        $this->deleteImagesTrait($this, $this->data_page, 'page');
+        $this->deleteImages($this->data_page, 'page');
 
         if (isset($this->data_page['page_id'])) {
             $this->updatePage();
@@ -351,8 +340,8 @@ class Page extends BackendController
     protected function setDataImagesPage()
     {
         $images = $this->getData('page.images', array());
-        $this->attachThumbsTrait($this, $images);
-        $this->setImagesTrait($this, $images, 'page');
+        $this->attachThumbs($images);
+        $this->setDataAttachedImages($images, 'page');
     }
 
     /**

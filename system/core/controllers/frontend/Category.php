@@ -144,7 +144,7 @@ class Category extends FrontendController
             'template' => 'category/blocks/menu'
         );
 
-        $menu = $this->renderMenuTrait($this, $options);
+        $menu = $this->renderMenu($options);
         $this->setRegion('region_left', $menu);
     }
 
@@ -183,7 +183,7 @@ class Category extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_category', 3));
 
-        $this->setThumbTrait($this, $this->data_category, $options);
+        $this->attachItemThumb($this->data_category, $options);
 
         $data = array('category' => $this->data_category);
         $html = $this->render('category/blocks/images', $data);

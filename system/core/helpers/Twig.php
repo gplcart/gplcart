@@ -55,7 +55,7 @@ class Twig
     public function set($path, $object, array $options = array())
     {
         if (!empty($options['cache'])) {
-            $theme = $object->getTheme();
+            $theme = $object->prop('current_theme');
             $options['cache'] = GC_MODULE_DIR . "/{$theme['id']}/{$options['cache']}";
         }
 
@@ -69,6 +69,7 @@ class Twig
         $this->addFunctionD($object);
         $this->addFunctionXss($object);
         $this->addFunctionUrl($object);
+        $this->addFunctionProp($object);
         $this->addFunctionMenu($object);
         $this->addFunctionDate($object);
         $this->addFunctionCart($object);
@@ -77,7 +78,6 @@ class Twig
         $this->addFunctionUser($object);
         $this->addFunctionStore($object);
         $this->addFunctionError($object);
-        $this->addFunctionToken($object);
         $this->addFunctionConfig($object);
         $this->addFunctionAccess($object);
         $this->addFunctionSummary($object);
@@ -128,6 +128,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::error()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::error()
      */
     protected function addFunctionError($object)
     {
@@ -139,21 +140,9 @@ class Twig
     }
 
     /**
-     * Adds function \gplcart\core\Controller::token()
-     * @param \gplcart\core\Controller $object
-     */
-    protected function addFunctionToken($object)
-    {
-        $function = new \Twig_SimpleFunction('token', function () use ($object) {
-            return $object->token();
-        });
-
-        $this->twig->addFunction($function);
-    }
-
-    /**
      * Adds function \gplcart\core\Controller::text()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::text()
      */
     protected function addFunctionText($object)
     {
@@ -167,6 +156,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::access()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::access()
      */
     protected function addFunctionAccess($object)
     {
@@ -180,6 +170,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::url()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::url()
      */
     protected function addFunctionUrl($object)
     {
@@ -193,6 +184,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::isSuperadmin()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::isSuperadmin()
      */
     protected function addFunctionIsSuperadmin($object)
     {
@@ -206,6 +198,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::date()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::date()
      */
     protected function addFunctionDate($object)
     {
@@ -219,6 +212,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::attributes()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::attributes()
      */
     protected function addFunctionAttributes($object)
     {
@@ -232,6 +226,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::config()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::config()
      */
     protected function addFunctionConfig($object)
     {
@@ -245,6 +240,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::settings()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::settings()
      */
     protected function addFunctionSettings($object)
     {
@@ -258,6 +254,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::summary()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::summary()
      */
     protected function addFunctionSummary($object)
     {
@@ -271,6 +268,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::user()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::user()
      */
     protected function addFunctionUser($object)
     {
@@ -284,6 +282,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::store()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::store()
      */
     protected function addFunctionStore($object)
     {
@@ -310,6 +309,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::xss()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::xss()
      */
     protected function addFunctionXss($object)
     {
@@ -323,6 +323,7 @@ class Twig
     /**
      * Adds function \gplcart\core\Controller::truncate()
      * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::truncate()
      */
     protected function addFunctionTruncate($object)
     {
@@ -334,8 +335,9 @@ class Twig
     }
 
     /**
-     * Adds function \gplcart\core\Controller::cart()
-     * @param \gplcart\core\Controller $object
+     * Adds function \gplcart\core\controllers\frontend\Controller::cart()
+     * @param \gplcart\core\controllers\frontend\Controller $object
+     * @see \gplcart\core\controllers\frontend\Controller::cart()
      */
     protected function addFunctionCart($object)
     {
@@ -349,6 +351,7 @@ class Twig
     /**
      * Adds function \gplcart\core\controllers\frontend\Controller::compare()
      * @param \gplcart\core\controllers\frontend\Controller $object
+     * @see \gplcart\core\controllers\frontend\Controller::compare()
      */
     protected function addFunctionCompare($object)
     {
@@ -366,6 +369,7 @@ class Twig
     /**
      * Adds function \gplcart\core\controllers\frontend\Controller::wishlist()
      * @param \gplcart\core\controllers\frontend\Controller $object
+     * @see \gplcart\core\controllers\frontend\Controller::wishlist()
      */
     protected function addFunctionWishlist($object)
     {
@@ -395,6 +399,20 @@ class Twig
         $function = new \Twig_SimpleFunction('menu', function (array $options = array()) use ($object) {
             return $object->menu($options);
         }, array('is_safe' => array('all')));
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \gplcart\core\Controller::prop()
+     * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::prop()
+     */
+    protected function addFunctionProp($object)
+    {
+        $function = new \Twig_SimpleFunction('prop', function ($name) use ($object) {
+            return $object->prop($name);
+        });
 
         $this->twig->addFunction($function);
     }

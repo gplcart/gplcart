@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
@@ -19,12 +18,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Store extends BackendController
 {
-
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
 
     /**
      * Module model instance
@@ -46,16 +39,13 @@ class Store extends BackendController
 
     /**
      * Constructor
-     * @param ImageModel $image
      * @param ModuleModel $module
      * @param CollectionModel $collection
      */
-    public function __construct(ImageModel $image, ModuleModel $module,
-            CollectionModel $collection)
+    public function __construct(ModuleModel $module, CollectionModel $collection)
     {
         parent::__construct();
 
-        $this->image = $image;
         $this->module = $module;
         $this->collection = $collection;
     }

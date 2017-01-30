@@ -75,7 +75,7 @@ class Review extends FrontendController
         $this->setData('review', $this->data_review);
         $this->setData('product', $this->data_product);
         $this->setData('can_delete', $this->canDeleteReview());
-        $this->setData('honeypot', $this->renderHoneyPotTrait($this));
+        $this->setData('honeypot', $this->renderHoneyPot());
 
         $this->setDataImageReview();
         $this->setDataRatingReview();
@@ -109,10 +109,9 @@ class Review extends FrontendController
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5));
 
-        $this->setThumbTrait($this, $this->data_product, $options);
+        $this->attachItemThumb($this->data_product, $options);
 
         if (!empty($this->data_product['images'])) {
-            // Get only first image
             $image = reset($this->data_product['images']);
             $this->setData('image', $image);
         }
@@ -324,7 +323,7 @@ class Review extends FrontendController
         if (empty($product['status']) || $product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
-        $this->setProductPriceTrait($this, $this->price, $this->product, $product);
+        $this->attachItemPriceCalculated($product);
         return $this->data_product = $product;
     }
 

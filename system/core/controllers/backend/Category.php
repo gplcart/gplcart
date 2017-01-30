@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
@@ -20,8 +19,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Category extends BackendController
 {
-
-    use \gplcart\core\traits\ControllerAdmin;
 
     /**
      * Category model instance
@@ -42,12 +39,6 @@ class Category extends BackendController
     protected $alias;
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * The current category data
      * @var array
      */
@@ -63,16 +54,14 @@ class Category extends BackendController
      * Constructor
      * @param CategoryModel $category
      * @param AliasModel $alias
-     * @param ImageModel $image
      * @param CategoryGroupModel $category_group
      */
     public function __construct(CategoryModel $category, AliasModel $alias,
-            ImageModel $image, CategoryGroupModel $category_group)
+            CategoryGroupModel $category_group)
     {
         parent::__construct();
 
         $this->alias = $alias;
-        $this->image = $image;
         $this->category = $category;
         $this->category_group = $category_group;
     }
@@ -190,7 +179,7 @@ class Category extends BackendController
      */
     protected function prepareListCategory(array $categories)
     {
-        $this->attachEntityUrlTrait($this, $categories, 'category');
+        $this->setEntityUrl($categories, 'category');
 
         foreach ($categories as &$category) {
             $category['indentation'] = str_repeat('— ', $category['depth']);
@@ -329,7 +318,7 @@ class Category extends BackendController
             return null;
         }
 
-        $this->deleteImagesTrait($this, $this->data_category, 'category');
+        $this->deleteImages($this->data_category, 'category');
 
         if (isset($this->data_category['category_id'])) {
             $this->updateCategory();
@@ -447,8 +436,8 @@ class Category extends BackendController
     protected function setDataImagesCategory()
     {
         $images = $this->getData('category.images', array());
-        $this->attachThumbsTrait($this, $images);
-        $this->setImagesTrait($this, $images, 'category');
+        $this->attachThumbs($images);
+        $this->setDataAttachedImages($images, 'category');
     }
 
     /**

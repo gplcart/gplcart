@@ -11,13 +11,13 @@
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
 #}
-{% if products is not empty %}
+{% if items is not empty %}
 <div class="panel panel-default collection collection-product">
   <div class="panel-heading">{{ title }}</div>
   <div class="panel-body">
     <div class="row">
-      {% for product in products %}
-        <li>{{ product.rendered|raw }}</li>
+      {% for item in items %}
+        <li>{{ item.rendered|raw }}</li>
       {% endfor %}
     </div>
   </div>

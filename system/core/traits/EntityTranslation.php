@@ -61,7 +61,7 @@ trait EntityTranslation
      * @param array $data
      * @param string $entity
      * @param boolean $update
-     * @return null
+     * @return null|bool
      */
     protected function setTranslationTrait($db, array $data, $entity,
             $update = true)
@@ -81,6 +81,8 @@ trait EntityTranslation
         foreach ($data['translation'] as $language => $translation) {
             $this->addTranslationTrait($db, $data["{$entity}_id"], $entity, $language, $translation);
         }
+        
+        return true;
     }
 
     /**

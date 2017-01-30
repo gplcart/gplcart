@@ -18,14 +18,6 @@ use gplcart\core\Controller as BaseController;
 class Controller extends BaseController
 {
 
-    use \gplcart\core\traits\ControllerCart,
-        \gplcart\core\traits\ControllerCompare,
-        \gplcart\core\traits\ControllerWishlist,
-        \gplcart\core\traits\ControllerProduct,
-        \gplcart\core\traits\ControllerItem,
-        \gplcart\core\traits\ControllerImage,
-        \gplcart\core\traits\ControllerWidget;
-
     /**
      * Trigger model instance
      * @var \gplcart\core\models\Trigger $trigger
@@ -69,6 +61,12 @@ class Controller extends BaseController
     protected $category;
 
     /**
+     * Cart model instance
+     * @var \gplcart\core\models\Cart $cart
+     */
+    protected $cart;
+
+    /**
      * Collection item model instance
      * @var \gplcart\core\models\CollectionItem $collection_item
      */
@@ -87,6 +85,12 @@ class Controller extends BaseController
     protected $data_categories = array();
 
     /**
+     * Current user cart ID
+     * @var integer|string
+     */
+    protected $cart_uid;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -96,9 +100,9 @@ class Controller extends BaseController
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
 
-        $this->submitCartTrait($this);
-        $this->submitCompareTrait($this);
-        $this->submitWishlistTrait($this);
+        $this->submitCart();
+        $this->submitCompare();
+        $this->submitWishlist();
 
         $this->hook->fire('init.frontend', $this);
 
@@ -110,6 +114,7 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
+        $this->cart = Container::get('gplcart\\core\\models\\Cart');
         $this->price = Container::get('gplcart\\core\\models\\Price');
         $this->image = Container::get('gplcart\\core\\models\\Image');
         $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
@@ -128,6 +133,37 @@ class Controller extends BaseController
         if (!$this->url->isInstall()) {
             $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
+            $this->cart_uid = $this->cart->uid();
+        }
+    }
+
+    /**
+     * Returns an array of fired triggers for the current context
+     * @return array
+     */
+    protected function getFiredTriggers()
+    {
+        $conditions = array('status' => 1, 'store_id' => $this->store_id);
+        return $this->trigger->getFired($conditions);
+    }
+
+    /**
+     * Returns the current cart data
+     * @param null|string $key
+     * @return mixed
+     */
+    public function cart($key = null)
+    {
+        $conditions = array('user_id' => $this->cart_uid, 'store_id' => $this->store_id);
+
+        if (!isset($key)) {
+            return $this->cart->getContent($conditions);
+        }
+        if ($key == 'count_total') {
+            return (int) $this->cart->getQuantity($conditions, 'total');
+        }
+        if ($key == 'user_id') {
+            return $this->cart_uid;
         }
     }
 
@@ -169,8 +205,6 @@ class Controller extends BaseController
         $result = (array) $this->wishlist->getList($options);
 
         if ($key == 'count') {
-            // Don't count using getList() to prevent extra query
-            // We have already the list loaded in memory so simply count it
             return count($result);
         }
         return $result;
@@ -184,206 +218,96 @@ class Controller extends BaseController
     public function menu(array $options = array())
     {
         $options += array('items' => $this->data_categories);
-        return $this->renderMenuTrait($this, $options);
+        return $this->renderMenu($options);
     }
 
     /**
-     * Returns an array of fired triggers for the current context
-     * @return array
+     * Handles "Add to cart" event
      */
-    protected function getFiredTriggers()
+    protected function submitCart()
     {
-        $conditions = array('status' => 1, 'store_id' => $this->store_id);
-        return $this->trigger->getFired($conditions);
-    }
-
-    /**
-     * Returns rendered cart preview
-     * @return string
-     */
-    protected function renderCartPreview()
-    {
-        $cart = $this->cart();
-
-        if (empty($cart['items'])) {
-            return '';
+        if ($this->isPosted('add_to_cart')) {
+            $this->validateAddToCart();
+            $this->addToCart();
+        } else if ($this->isPosted('remove_from_cart')) {
+            $this->setSubmitted('cart');
+            $this->deleteFromCart();
         }
+    }
 
-        $options = array(
-            'cart' => $this->prepareCart($this->cart()),
-            'limit' => $this->config('cart_preview_limit', 5)
+    /**
+     * Performs "Add to cart" action
+     */
+    protected function addToCart()
+    {
+        $errors = $this->error();
+
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->text('An error occurred')
         );
 
-        return $this->render('cart/preview', $options);
-    }
-
-    /**
-     * Prepares an array of cart items
-     * @param array $cart
-     * @return array
-     */
-    public function prepareCart(array $cart)
-    {
-        foreach ($cart['items'] as &$item) {
-
-            $item['currency'] = $cart['currency'];
-            $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
-
-            $this->setThumbCartTrait($this, $item);
-            $this->setProductPriceTrait($this, $this->price, $this->product, $item);
+        if (empty($errors)) {
+            $submitted = $this->getSubmitted();
+            $result = $this->cart->addProduct($submitted['product'], $submitted);
+        } else {
+            $result['message'] = implode('<br>', gplcart_array_flatten($errors));
         }
 
-        $cart['total_formatted'] = $this->price->format($cart['total'], $cart['currency']);
-        return $cart;
-    }
-
-    /**
-     * Returns rendered product collection
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollectionProduct(array $options)
-    {
-        $options += array(
-            'template_list' => 'collection/list/product'
-        );
-
-        $products = $this->getCollectionItems($options);
-
-        if (empty($products)) {
-            return '';
-        }
-
-        $item = reset($products);
-        $title = $item['collection_item']['collection_title'];
-
-        $prepared = $this->prepareProducts($products, $options);
-        $data = array('products' => $prepared, 'title' => $title);
-
-        return $this->render($options['template_list'], $data);
-    }
-
-    /**
-     * Returns rendered page collection
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollectionPage(array $options)
-    {
-        $options += array(
-            'template_list' => 'collection/list/page',
-            'template_item' => 'collection/item/page'
-        );
-
-        $pages = $this->getCollectionItems($options);
-
-        if (empty($pages)) {
-            return '';
-        }
-
-        $item = reset($pages);
-        $title = $item['collection_item']['collection_title'];
-
-        $prepared = $this->preparePages($pages, $options);
-        $data = array('pages' => $prepared, 'title' => $title);
-
-        return $this->render($options['template_list'], $data);
-    }
-
-    /**
-     * Returns rendered file collection
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollectionFile(array $options)
-    {
-        $options += array(
-            'template_item' => 'collection/item/file',
-            'imagestyle' => $this->settings('image_style_collection_banner', 7)
-        );
-
-        $files = $this->getCollectionItems($options);
-
-        if (empty($files)) {
-            return '';
-        }
-
-        foreach ($files as &$file) {
-
-            $options['path'] = $file['path'];
-
-            if (!empty($file['collection_item']['data']['url'])) {
-                $url = $file['collection_item']['data']['url'];
-                $file['url'] = $this->url($url, array(), $this->url->isAbsolute($url));
+        if ($this->request->isAjax()) {
+            if ($result['severity'] === 'success') {
+                $result += array('modal' => $this->renderCartPreview());
             }
-
-            $this->setThumbTrait($this, $file, $options);
-            $this->setRenderedTrait($this, $file, array('file' => $file), $options);
+            $this->response->json($result);
         }
-
-        return $this->render('collection/list/file', array('files' => $files));
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
-     * Sets an additional data to an array of products
-     * @param array $products
-     * @param array $options
-     * @return array
+     * Validates "Add to cart" action
      */
-    protected function prepareProducts(array $products, array $options = array())
+    protected function validateAddToCart()
     {
-        if (empty($products)) {
-            return array();
+        $this->setSubmitted('product');
+        $this->setSubmitted('user_id', $this->cart_uid);
+        $this->setSubmitted('store_id', $this->store_id);
+        $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
+        $this->validate('cart');
+    }
+
+    /**
+     * Deletes a cart item
+     * @todo More generic solution. Move to Cart model?
+     */
+    protected function deleteFromCart()
+    {
+        $conditions = array('cart_id' => $this->getSubmitted('cart_id'));
+
+        if (!$this->cart->delete($conditions)) {
+            return array('redirect' => '', 'severity' => 'success');
         }
 
-        if (!isset($options['view']) || !in_array($options['view'], array('list', 'grid'))) {
-            $options['view'] = 'grid';
-        }
-
-        $options += array(
-            'id_key' => 'product_id',
-            'ids' => array_keys($products),
-            'template_item' => "product/item/{$options['view']}",
-            'imagestyle' => $this->settings("image_style_product_{$options['view']}", 3)
+        $result = array(
+            'redirect' => '',
+            'severity' => 'success',
+            'quantity' => $this->cart('count_total'),
+            'message' => $this->text('Cart item has been deleted')
         );
 
-        foreach ($products as &$product) {
+        $preview = $this->renderCartPreview();
 
-            $this->setUrlTrait($this, $product, $options);
-            $this->setThumbTrait($this, $product, $options);
-
-            $this->setProductCalculatedPriceTrait($this, $product);
-            $this->setFormattedPriceTrait($this, $product);
-
-            $this->setInWishlistTrait($this, $product);
-            $this->setInComparisonTrait($this, $product);
-            $this->setRenderedProductTrait($this, $product, $options);
+        if (empty($preview)) {
+            $result['message'] = '';
+            $result['quantity'] = 0;
         }
 
-        return $products;
-    }
-
-    /**
-     * Sets an additional data to an array of pages
-     * @param array $pages
-     * @param array $options
-     * @return array
-     */
-    protected function preparePages(array $pages, array $options = array())
-    {
-        if (empty($pages)) {
-            return array();
+        if ($this->request->isAjax()) {
+            $result['modal'] = $preview;
+            $this->response->json($result);
         }
 
-        $options += array('id_key' => 'page_id', 'ids' => array_keys($pages));
-
-        foreach ($pages as &$page) {
-            $this->setUrlTrait($this, $page, $options);
-            $this->setThumbTrait($this, $page, $options);
-            $this->setRenderedTrait($this, $page, array('page' => $page), $options);
-        }
-
-        return $pages;
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -401,10 +325,181 @@ class Controller extends BaseController
         );
 
         $options += array(
+            'entity' => 'category',
             'imagestyle' => $this->settings('image_style_category_child', 3));
 
         $categories = $this->category->getTree($conditions);
-        return $this->prepareCategories($categories, $options);
+        return $this->prepareEntityItems($categories, $options);
+    }
+
+    /**
+     * Returns rendered cart preview
+     * @return string
+     */
+    protected function renderCartPreview()
+    {
+        $cart = $this->cart();
+
+        if (empty($cart['items'])) {
+            return '';
+        }
+
+        $options = array(
+            'cart' => $this->prepareCart($cart),
+            'limit' => $this->config('cart_preview_limit', 5)
+        );
+
+        return $this->render('cart/preview', $options);
+    }
+
+    /**
+     * Prepares an array of cart items
+     * @param array $cart
+     * @return array
+     */
+    public function prepareCart(array $cart)
+    {
+        foreach ($cart['items'] as &$item) {
+            $item['currency'] = $cart['currency'];
+            $this->attachItemThumbCart($item);
+            $this->attachItemPriceFormatted($item);
+            $this->attachItemTotalFormatted($item);
+        }
+        $this->attachItemTotalFormatted($cart);
+        return $cart;
+    }
+
+    /**
+     * Adds/removes a product from comparison
+     */
+    protected function submitCompare()
+    {
+        $this->setSubmitted('product');
+
+        if ($this->isPosted('remove_from_compare')) {
+            $this->deleteFromCompare();
+        } else if ($this->isPosted('add_to_compare')) {
+            $this->validateAddToCompare();
+            $this->addToCompare();
+        }
+    }
+
+    /**
+     * Adds a product to comparison
+     */
+    protected function addToCompare()
+    {
+        $errors = $this->error();
+
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->text('An error occurred')
+        );
+
+        if (empty($errors)) {
+            $submitted = $this->getSubmitted();
+            $result = $this->compare->addProduct($submitted['product'], $submitted);
+        } else {
+            $result['message'] = implode('<br>', gplcart_array_flatten($errors));
+        }
+
+        if ($this->request->isAjax()) {
+            $this->response->json($result);
+        }
+
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
+    }
+
+    /**
+     * Deletes a submitted product from the comparison
+     */
+    protected function deleteFromCompare()
+    {
+        $result = $this->compare->deleteProduct($this->getSubmitted('product_id'));
+        if ($this->request->isAjax()) {
+            $this->response->json($result);
+        }
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
+    }
+
+    /**
+     * Validates "Add to compare" action
+     */
+    protected function validateAddToCompare()
+    {
+        $this->validate('compare');
+    }
+
+    /**
+     * Adds/removes a product from the wishlist
+     */
+    protected function submitWishlist()
+    {
+        $this->setSubmitted('product');
+
+        if ($this->isPosted('remove_from_wishlist')) {
+            $this->deleteFromWishlist();
+        } else if ($this->isPosted('add_to_wishlist')) {
+            $this->validateAddToWishlist();
+            $this->addToWishlist();
+        }
+    }
+
+    /**
+     * Validates "Add to wishlist" action
+     */
+    protected function validateAddToWishlist()
+    {
+        $this->setSubmitted('user_id', $this->cart_uid);
+        $this->setSubmitted('store_id', $this->store_id);
+        $this->validate('wishlist');
+    }
+
+    /**
+     * Add a product to the wishlist
+     */
+    protected function addToWishlist()
+    {
+        $errors = $this->error();
+
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->text('An error occurred')
+        );
+
+        if (empty($errors)) {
+            $submitted = $this->getSubmitted();
+            $result = $this->wishlist->addProduct($submitted);
+        } else {
+            $result['message'] = implode('<br>', gplcart_array_flatten($errors));
+        }
+
+        if ($this->request->isAjax()) {
+            $this->response->json($result);
+        }
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
+    }
+
+    /**
+     * Deletes a submitted product from the wishlist
+     */
+    protected function deleteFromWishlist()
+    {
+        $condititons = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id,
+            'product_id' => $this->getSubmitted('product_id')
+        );
+
+        $result = $this->wishlist->deleteProduct($condititons);
+
+        if ($this->request->isAjax()) {
+            $this->response->json($result);
+        }
+
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -415,42 +510,15 @@ class Controller extends BaseController
      */
     protected function getProducts($conditions = array(), $options = array())
     {
-        $conditions += array(
-            'status' => 1,
-            'store_id' => $this->store_id
-        );
+        $options += array('entity' => 'product');
+        $conditions += array('status' => 1, 'store_id' => $this->store_id);
 
         if (isset($conditions['product_id']) && empty($conditions['product_id'])) {
             return array();
         }
 
         $products = (array) $this->product->getList($conditions);
-        return $this->prepareProducts($products, $options);
-    }
-
-    /**
-     * Prepare an array of categories
-     * @param array $categories
-     * @param array $options
-     * @return array
-     */
-    protected function prepareCategories($categories, $options = array())
-    {
-        if (empty($categories)) {
-            return array();
-        }
-
-        $options['id_key'] = 'category_id';
-        $options['ids'] = array_keys($categories);
-
-        foreach ($categories as &$category) {
-            $this->setIndentationTrait($category);
-            $this->setUrlTrait($this, $category, $options);
-            $this->setUrlActiveTrait($this, $category);
-            $this->setThumbTrait($this, $category, $options);
-        }
-
-        return $categories;
+        return $this->prepareEntityItems($products, $options);
     }
 
     /**
@@ -458,27 +526,294 @@ class Controller extends BaseController
      * @param array $conditions
      * @return array
      */
-    protected function getCollectionItems(array $conditions)
+    protected function getCollectionItems($conditions = array(),
+            $options = array())
     {
-        $conditions += array('status' => 1, 'store_id' => $this->store_id);
-        return $this->collection_item->getItems($conditions);
+        $conditions += array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
+
+        $items = $this->collection_item->getItems($conditions);
+
+        if (empty($items)) {
+            return array();
+        }
+
+        $item = reset($items);
+
+        $options += array(
+            'entity' => $item['collection_item']['type'],
+            'template_item' => $item['collection_handler']['template']['item']
+        );
+
+        return $this->prepareEntityItems($items, $options);
     }
 
     /**
-     * Sets meta tags on the entity page
-     * @param array $data
+     * 
+     * @param array $conditions
+     * @return string
      */
-    protected function setMetaEntity(array $data)
+    protected function renderCollection(array $conditions)
     {
-        if ($data['meta_title'] !== '') {
-            $this->setTitle($data['meta_title'], false);
+        $items = $this->getCollectionItems($conditions);
+
+        if (empty($items)) {
+            return '';
         }
 
-        if ($data['meta_description'] !== '') {
-            $this->setMeta(array('name' => 'description', 'content' => $data['meta_description']));
+        $item = reset($items);
+
+        $data = array(
+            'items' => $items,
+            'title' => $item['collection_item']['collection_title']
+        );
+
+        return $this->render($item['collection_handler']['template']['list'], $data);
+    }
+
+    /**
+     * Prepare an array of entity items like pages, products etc
+     * @param array $items
+     * @param array $options
+     * @return array
+     */
+    protected function prepareEntityItems($items, $options = array())
+    {
+        if (empty($items) || empty($options['entity'])) {
+            return array();
         }
 
-        $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
+        if (!isset($options['view']) || !in_array($options['view'], array('list', 'grid'))) {
+            $options['view'] = 'grid';
+        }
+
+        $options += array(
+            'ids' => array_keys($items),
+            'id_key' => "{$options['entity']}_id",
+            'template_item' => "{$options['entity']}/item/{$options['view']}",
+            'imagestyle' => $this->settings("image_style_{$options['entity']}_{$options['view']}", 3)
+        );
+
+        foreach ($items as &$item) {
+
+            $this->attachItemUrl($item, $options);
+            $this->attachItemUrlActive($item);
+            $this->attachItemIndentation($item);
+            $this->attachItemThumb($item, $options);
+
+            if ($options['entity'] == 'product') {
+                $this->attachItemPriceCalculated($item);
+                $this->attachItemPriceFormatted($item);
+                $this->attachItemInWishlist($item);
+                $this->attachItemInComparison($item);
+                $this->attachItemRenderedProduct($item, $options);
+            } else {
+                $this->attachItemRendered($item, array($options['entity'] => $item), $options);
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Adds "In comparison" boolean flag
+     * @param array $item
+     */
+    protected function attachItemInComparison(array &$item)
+    {
+        $item['in_comparison'] = $this->compare->exists($item['product_id']);
+    }
+
+    /**
+     * Adds "In wishlist" boolean flag
+     * @param array $item
+     */
+    protected function attachItemInWishlist(&$item)
+    {
+        $conditions = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id,
+            'product_id' => $item['product_id']
+        );
+
+        $item['in_wishlist'] = $this->wishlist->exists($conditions);
+    }
+
+    /**
+     * Add formatted total amount
+     * @param array $item
+     */
+    protected function attachItemTotalFormatted(array &$item)
+    {
+        $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
+    }
+
+    /**
+     * Add thumb URL
+     * @param array $data
+     * @param array $options
+     * @return array
+     */
+    protected function attachItemThumb(&$data, $options = array())
+    {
+        if (empty($options['imagestyle'])) {
+            return $data;
+        }
+
+        if (!empty($options['path'])) {
+            $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
+            return $data;
+        }
+
+        if (empty($data['images'])) {
+            $data['thumb'] = $this->image->getThumb($data, $options);
+            return $data; // Processing single item, exit 
+        }
+
+        foreach ($data['images'] as &$image) {
+            $image['url'] = $this->image->urlFromPath($image['path']);
+            $image['thumb'] = $this->image->url($options['imagestyle'], $image['path']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Add thumb URLs to cart items
+     * @param array $item
+     */
+    protected function attachItemThumbCart(array &$item)
+    {
+        $options = array(
+            'path' => '',
+            'imagestyle' => $this->settings('image_style_cart', 3)
+        );
+
+        if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
+            $imagefile = reset($item['product']['images']);
+            $options['path'] = $imagefile['path'];
+        }
+
+        if (!empty($item['product']['file_id'])//
+                && !empty($item['product']['images'][$item['product']['file_id']]['path'])) {
+            $options['path'] = $item['product']['images'][$item['product']['file_id']]['path'];
+        }
+
+        $this->attachItemThumb($item, $options);
+    }
+
+    /**
+     * Add alias URL to an entity
+     * @param array $data
+     * @param array $options
+     */
+    protected function attachItemUrl(array &$data, array $options)
+    {
+        if (isset($options['id_key'])) {
+            $id = $data[$options['id_key']];
+            $entity = preg_replace('/_id$/', '', $options['id_key']);
+            $data['url'] = empty($data['alias']) ? $this->url("$entity/$id") : $this->url($data['alias']);
+        }
+    }
+
+    /**
+     * Adds rendered product item
+     * @param array $product
+     * @param array $options
+     */
+    protected function attachItemRenderedProduct(&$product, $options)
+    {
+        $options += array(
+            'buttons' => array(
+                'cart_add', 'wishlist_add', 'compare_add'));
+
+        $data = array(
+            'product' => $product,
+            'buttons' => $options['buttons']
+        );
+
+        $this->attachItemRendered($product, $data, $options);
+    }
+
+    /**
+     * Add rendered item
+     * @param array $item
+     * @param array $data
+     * @param array $options
+     */
+    protected function attachItemRendered(&$item, $data, $options)
+    {
+        if (isset($options['template_item'])) {
+            $item['rendered'] = $this->render($options['template_item'], $data);
+        }
+    }
+
+    /**
+     * Add formatted price
+     * @param array $item
+     */
+    protected function attachItemPriceFormatted(array &$item)
+    {
+        $item['price_formatted'] = $this->price->format($item['price'], $item['currency']);
+    }
+
+    /**
+     * Add calculated product price
+     * @param array $product
+     * @param array $options
+     */
+    protected function attachItemPriceCalculated(array &$product)
+    {
+        $calculated = $this->product->calculate($product, $this->store_id);
+        $product['price'] = $calculated['total'];
+    }
+
+    /**
+     * Whether the item URL mathes the current URL
+     * @param array $item
+     */
+    protected function attachItemUrlActive(array &$item)
+    {
+        if (isset($item['url'])) {
+            $item['active'] = ($this->base . (string) $this->isCurrentPath($item['url'])) !== '';
+        }
+    }
+
+    /**
+     * Add indentation string indicating item depth (only for categories)
+     * @param array $item
+     */
+    protected function attachItemIndentation(array &$item)
+    {
+        if (isset($item['depth'])) {
+            $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
+        }
+    }
+
+    /**
+     * Returns rendered honeypot input
+     * @return string
+     */
+    public function renderHoneyPot()
+    {
+        return $this->render('common/honeypot');
+    }
+
+    /**
+     * Returns rendered "Share this" widget
+     * @param array $options
+     * @return string
+     */
+    public function renderShareWidget(array $options = array())
+    {
+        $options += array(
+            'title' => $this->ptitle,
+            'url' => $this->url('', array(), true)
+        );
+
+        return $this->render('common/share', $options);
     }
 
 }

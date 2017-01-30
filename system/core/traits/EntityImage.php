@@ -15,40 +15,25 @@ namespace gplcart\core\traits;
 trait EntityImage
 {
 
+    use \gplcart\core\traits\EntityTranslation;
+
     /**
      * Adds images to an entity
-     * @param \gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $file_model
      * @param array $data
      * @param string $entity
      * @param null|string $language
      * @return null
      */
-    protected function attachImagesTrait($file, array &$data, $entity,
+    protected function attachImagesTrait($file_model, array &$data, $entity,
             $language = null)
     {
         if (!empty($data)) {
-            $images = $this->getImagesTrait($file, $data, "{$entity}_id");
-            $this->attachImageTranslationTrait($file, $images, $language);
+            $images = $this->getImagesTrait($file_model, $data, "{$entity}_id");
+            foreach ($images as &$image) {
+                $this->attachTranslationTrait($file_model->getDb(), $image, 'file', $language);
+            }
             $data['images'] = $images;
-        }
-    }
-
-    /**
-     * Adds translations to images
-     * @param \gplcart\core\models\File $file
-     * @param array $images
-     * @param null|string $language
-     */
-    protected function attachImageTranslationTrait($file, array &$images, $language)
-    {
-        foreach ($images as &$image) {
-            foreach ($file->getTranslation($image['file_id']) as $translation) {
-                $image['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($image['translation'][$language])) {
-                $image = $image['translation'][$language] + $image;
-            }
         }
     }
 

@@ -91,7 +91,7 @@ class Product extends FrontendController
         $this->setHtmlFilter($this->data_product);
 
         $this->setData('product', $this->data_product);
-        $this->setData('share', $this->renderShareWidgetTrait($this));
+        $this->setData('share', $this->renderShareWidget());
 
         $this->setJsIndexProduct();
         $this->outputIndexProduct();
@@ -335,7 +335,7 @@ class Product extends FrontendController
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-            $this->setThumbTrait($this, $this->data_product, $options);
+            $this->attachItemThumb($this->data_product, $options);
         }
 
         $data = array('product' => $this->data_product);
@@ -398,15 +398,13 @@ class Product extends FrontendController
         $selected = $this->sku->selectCombination($product, $field_value_ids);
 
         $options = array(
-            'calculate' => false,
             'imagestyle' => $this->settings('image_style_product', 5),
             'path' => empty($selected['combination']['path']) ? '' : $selected['combination']['path']
         );
         
-        $this->setThumbTrait($this, $product, $options);
-
-        $this->setProductCalculatedPriceTrait($this, $selected);
-        $this->setFormattedPriceTrait($this, $selected);
+        $this->attachItemThumb($product, $options);
+        $this->attachItemPriceCalculated($selected);
+        $this->attachItemPriceFormatted($selected);
 
         $product['selected_combination'] = $selected;
         $product['fields'] = $this->getFieldsProduct($product);
@@ -421,14 +419,16 @@ class Product extends FrontendController
     {
         $limit = $this->config('product_related_limit', 12);
 
-        $options = array(
+        $conditions = array(
             'status' => 1,
             'limit' => array(0, $limit),
             'store_id' => $this->store_id
         );
 
-        $products = (array) $this->product->getRelated($this->data_product['product_id'], true, $options);
-        return $this->prepareProducts($products, $options);
+        $products = (array) $this->product->getRelated($this->data_product['product_id'], true, $conditions);
+
+        $options = array('entity' => 'product');
+        return $this->prepareEntityItems($products, $options);
     }
 
     /**
@@ -481,7 +481,7 @@ class Product extends FrontendController
                     'imagestyle' => $imagestyle,
                     'path' => $fields['option'][$field_id]['values'][$field_value_id]['path']
                 );
-                $this->setThumbTrait($this, $fields['option'][$field_id]['values'][$field_value_id], $options);
+                $this->attachItemThumb($fields['option'][$field_id]['values'][$field_value_id], $options);
             }
         }
 

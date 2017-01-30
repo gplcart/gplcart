@@ -237,8 +237,8 @@ class Store extends Model
             'phone' => array(),
             'theme' => 'frontend',
             'title' => 'GPL Cart',
-            'collection_banner' => 1,
-            'collection_featured' => 2,
+            'collection_file' => 1,
+            'collection_product' => 2,
             'collection_page' => 3
         );
     }

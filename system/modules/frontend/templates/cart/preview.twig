@@ -23,7 +23,7 @@
         <div class="col-md-12 pre-scrollable">
           {% for item in cart['items'] %}
               <form method="post" class="form-horizontal">
-                <input type="hidden" name="token" value="{{ token() }}">
+                <input type="hidden" name="token" value="{{ prop('token') }}">
                 <input type="hidden" name="cart[cart_id]" value="{{ item['cart_id'] }}">
                 <div class="media cart-item">
                   <div class="media-left image col-md-2">

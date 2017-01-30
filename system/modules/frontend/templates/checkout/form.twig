@@ -22,7 +22,7 @@
     </div>
 {% else %}
     <form method="post" class="form-horizontal" id="checkout" data-settings='{{ settings|raw }}'>
-      <input type="hidden" name="token" value="{{ token() }}">
+      <input type="hidden" name="token" value="{{ prop('token') }}">
       <div class="row">
         <div class="col-md-12">
           {{ pane_admin|raw }}

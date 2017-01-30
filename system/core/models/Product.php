@@ -28,8 +28,7 @@ class Product extends Model
 {
 
     use \gplcart\core\traits\EntityImage,
-        \gplcart\core\traits\EntityAlias,
-        \gplcart\core\traits\EntityTranslation;
+        \gplcart\core\traits\EntityAlias;
 
     /**
      * Cache instance
@@ -297,22 +296,30 @@ class Product extends Model
      * @param integer $store_id
      * @param string|null $language
      * @return array
+     * @todo Reuse getList(), but tune up its query (LENGTH)
      */
     public function getBySku($sku, $store_id, $language = null)
     {
+        if (!isset($language)) {
+            $language = $this->language->current();
+        }
+        $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
+                . ' ps.sku, ps.price, ps.stock, ps.file_id'
+                . ' FROM product p'
+                . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
+                . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id'
+                . ' AND pt.language=:language)'
+                . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
+
         $conditions = array(
             'sku' => $sku,
             'language' => $language,
             'store_id' => $store_id
         );
 
-        $list = $this->getList($conditions);
-
-        if (empty($list)) {
-            return array();
-        }
-
-        return reset($list);
+        $product = $this->db->fetch($sql, $conditions);
+        $this->attachImagesTrait($this->file, $product, 'product', $language);
+        return $product;
     }
 
     /**

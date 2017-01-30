@@ -19,6 +19,8 @@ use gplcart\core\models\Language as LanguageModel;
 class Collection extends Model
 {
 
+    use \gplcart\core\traits\EntityTranslation;
+
     /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
@@ -112,71 +114,10 @@ class Collection extends Model
 
         $data['collection_id'] = $this->db->insert('collection', $data);
 
-        $this->setTranslation($data, false);
+        $this->setTranslationTrait($this->db, $data, 'collection', false);
 
         $this->hook->fire('add.collection.after', $data);
         return $data['collection_id'];
-    }
-
-    /**
-     * Deletes and/or adds collection translations
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($data['collection_id']);
-        }
-
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['collection_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes collection translation(s)
-     * @param integer $collection_id
-     * @param null|string $language
-     * @return boolean
-     */
-    protected function deleteTranslation($collection_id, $language = null)
-    {
-        $conditions = array('collection_id' => (int) $collection_id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('collection_translation', $conditions);
-    }
-
-    /**
-     * Adds a collection translation
-     * @param integer $collection_id
-     * @param string $language
-     * @param array $translation
-     * @return integer
-     */
-    public function addTranslation($collection_id, $language, array $translation)
-    {
-        if (empty($translation['title'])) {
-            return false;
-        }
-
-        $translation += array(
-            'language' => $language,
-            'collection_id' => $collection_id
-        );
-
-        return $this->db->insert('collection_translation', $translation);
     }
 
     /**
@@ -192,50 +133,10 @@ class Collection extends Model
         $sql = 'SELECT * FROM collection WHERE collection_id=?';
         $collection = $this->db->fetch($sql, array($collection_id));
 
-        $this->attachTranslation($collection, $language);
+        $this->attachTranslationTrait($this->db, $collection, 'collection', $language);
 
         $this->hook->fire('get.collection.after', $collection_id, $collection);
         return $collection;
-    }
-
-    /**
-     * Adds translations to the collection
-     * @param array $collection
-     * @param string|null $language
-     * @return null
-     */
-    protected function attachTranslation(array &$collection, $language)
-    {
-        if (empty($collection)) {
-            return null;
-        }
-
-        $collection['language'] = 'und';
-
-        $translations = $this->getTranslation($collection['collection_id']);
-        foreach ($translations as $translation) {
-            $collection['translation'][$translation['language']] = $translation;
-        }
-
-        if (isset($language) && isset($collection['translation'][$language])) {
-            $collection = $collection['translation'][$language] + $collection;
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns an array of translations
-     * @param integer $collection_id
-     * @return array
-     */
-    public function getTranslation($collection_id)
-    {
-        $sql = 'SELECT *'
-                . ' FROM collection_translation'
-                . ' WHERE collection_id=?';
-
-        return $this->db->fetchAll($sql, array($collection_id));
     }
 
     /**
@@ -255,7 +156,7 @@ class Collection extends Model
         $result = $this->db->delete('collection', $conditions);
 
         if (!empty($result)) {
-            $this->deleteTranslation($collection_id);
+            $this->db->delete('collection_translation', $conditions);
         }
 
         $this->hook->fire('delete.collection.after', $collection_id, $result);
@@ -297,8 +198,7 @@ class Collection extends Model
         $updated = $this->db->update('collection', $data, $conditions);
 
         $data['collection_id'] = $collection_id;
-        $updated += (int) $this->setTranslation($data);
-
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'collection');
         $result = ($updated > 0);
 
         $this->hook->fire('update.collection.after', $collection_id, $data, $result);
@@ -326,6 +226,10 @@ class Collection extends Model
                 'list' => array('gplcart\\core\\models\\Product', 'getList'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'product'),
             ),
+            'template' => array(
+                'item' => 'product/item/grid',
+                'list' => 'collection/list/product'
+            ),
         );
 
         $handlers['file'] = array(
@@ -335,6 +239,10 @@ class Collection extends Model
                 'list' => array('gplcart\\core\\models\\File', 'getList'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'file'),
             ),
+            'template' => array(
+                'item' => 'collection/item/file',
+                'list' => 'collection/list/file'
+            )
         );
 
         $handlers['page'] = array(
@@ -344,6 +252,10 @@ class Collection extends Model
                 'list' => array('gplcart\\core\\models\\Page', 'getList'),
                 'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'page'),
             ),
+            'template' => array(
+                'item' => 'collection/item/page',
+                'list' => 'collection/list/page'
+            )
         );
 
         $this->hook->fire('collection.handlers', $handlers);

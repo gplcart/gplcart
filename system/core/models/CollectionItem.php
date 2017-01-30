@@ -234,6 +234,7 @@ class CollectionItem extends Model
             if (isset($items[$entity_id])) {
                 $result['weight'] = $items[$entity_id]['weight'];
                 $result['collection_item'] = $items[$entity_id];
+                $result['collection_handler'] = $handlers[$handler_id];
             }
         }
 

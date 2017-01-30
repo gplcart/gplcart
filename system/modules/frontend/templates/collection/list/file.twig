@@ -11,7 +11,7 @@
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
 #}
-{% if files is not empty %}
+{% if items is not empty %}
 <div class="row section collection collection-file">
   <div class="col-md-12">
     <ul class="slider" data-slider="true" data-slider-settings='{
@@ -22,8 +22,8 @@
         "autoWidth": true,
         "pauseOnHover": true
         }'>
-      {% for file in files %}
-        <li>{{ file.rendered|raw }}</li>
+      {% for item in items %}
+        <li>{{ item.rendered|raw }}</li>
       {% endfor %}
     </ul>
   </div>

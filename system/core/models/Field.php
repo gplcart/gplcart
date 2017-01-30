@@ -19,6 +19,8 @@ use gplcart\core\models\Language as LanguageModel;
 class Field extends Model
 {
 
+    use \gplcart\core\traits\EntityTranslation;
+
     /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
@@ -94,67 +96,10 @@ class Field extends Model
 
         $data['field_id'] = $this->db->insert('field', $data);
 
-        $this->setTranslation($data, false);
+        $this->setTranslationTrait($this->db, $data, 'field', false);
 
         $this->hook->fire('add.field.after', $data);
         return $data['field_id'];
-    }
-
-    /**
-     * Deletes and/or adds field translations
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $delete = true)
-    {
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        if ($delete) {
-            $this->deleteTranslation($data['field_id']);
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['field_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes a field translation(s)
-     * @param integer $field_id
-     * @param null|string $language
-     * @return boolean
-     */
-    protected function deleteTranslation($field_id, $language = null)
-    {
-        $conditions = array('field_id' => $field_id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('field_translation', $conditions);
-    }
-
-    /**
-     * Adds a field translation
-     * @param integer $field_id
-     * @param string $language
-     * @param array $translation
-     * @return type
-     */
-    protected function addTranslation($field_id, $language, array $translation)
-    {
-        $translation += array(
-            'language' => $language,
-            'field_id' => $field_id,
-        );
-
-        return $this->db->insert('field_translation', $translation);
     }
 
     /**
@@ -237,44 +182,10 @@ class Field extends Model
         $sql = 'SELECT * FROM field WHERE field_id=?';
         $field = $this->db->fetch($sql, array($field_id));
 
-        $this->attachTranslation($field, $language);
+        $this->attachTranslationTrait($this->db, $field, 'field', $language);
 
         $this->hook->fire('get.field.after', $field_id, $language, $field);
         return $field;
-    }
-
-    /**
-     * Adds translations to the field
-     * @param array $field
-     * @param null|string $language
-     */
-    protected function attachTranslation(array &$field, $language)
-    {
-        if (empty($field)) {
-            return;
-        }
-
-        $field['language'] = 'und';
-        $translations = $this->getTranslation($field['field_id']);
-
-        foreach ($translations as $translation) {
-            $field['translation'][$translation['language']] = $translation;
-        }
-
-        if (isset($language) && isset($field['translation'][$language])) {
-            $field = $field['translation'][$language] + $field;
-        }
-    }
-
-    /**
-     * Returns an array of field translations
-     * @param integer $field_id
-     * @return array
-     */
-    public function getTranslation($field_id)
-    {
-        $sql = 'SELECT * FROM field_translation WHERE field_id=?';
-        return $this->db->fetchAll($sql, array($field_id));
     }
 
     /**
@@ -349,8 +260,8 @@ class Field extends Model
         $updated = $this->db->update('field', $data, $conditions);
 
         $data['field_id'] = $field_id;
-        $updated += (int) $this->setTranslation($data);
 
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'field');
         $result = ($updated > 0);
 
         $this->hook->fire('update.field.after', $field_id, $data, $result);

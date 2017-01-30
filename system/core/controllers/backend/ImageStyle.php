@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -18,12 +17,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class ImageStyle extends BackendController
 {
-
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
 
     /**
      * File model instance
@@ -39,15 +32,13 @@ class ImageStyle extends BackendController
 
     /**
      * Constructor
-     * @param ImageModel $image
      * @param FileModel $file
      */
-    public function __construct(ImageModel $image, FileModel $file)
+    public function __construct(FileModel $file)
     {
         parent::__construct();
 
         $this->file = $file;
-        $this->image = $image;
     }
 
     /**

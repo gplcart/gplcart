@@ -22,6 +22,8 @@ use gplcart\core\models\Validator as ValidatorModel;
 class File extends Model
 {
 
+    use \gplcart\core\traits\EntityTranslation;
+
     /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
@@ -110,67 +112,10 @@ class File extends Model
         $data += array('created' => GC_TIME);
         $data['file_id'] = $this->db->insert('file', $data);
 
-        $this->setTranslation($data, false);
+        $this->setTranslationTrait($this->db, $data, 'file', false);
 
         $this->hook->fire('add.file.after', $data);
         return $data['file_id'];
-    }
-
-    /**
-     * Deletes and/or adds file translations
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($data['file_id']);
-        }
-
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['file_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes file translation(s)
-     * @param integer $file_id
-     * @param null|string $language
-     * @return boolean
-     */
-    public function deleteTranslation($file_id, $language = null)
-    {
-        $conditions = array('file_id' => (int) $file_id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('file_translation', $conditions);
-    }
-
-    /**
-     * Adds a translation to the file
-     * @param array $file_id
-     * @param string $language
-     * @param array $translation
-     * @return integer
-     */
-    public function addTranslation($file_id, $language, array $translation)
-    {
-        $translation += array(
-            'file_id' => $file_id,
-            'language' => $language
-        );
-
-        return $this->db->insert('file_translation', $translation);
     }
 
     /**
@@ -187,8 +132,7 @@ class File extends Model
 
         $data['file_id'] = $file_id;
 
-        $updated += (int) $this->setTranslation($data);
-
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
         $result = ($updated > 0);
 
         $this->hook->fire('update.file.after', $file_id, $data, $result);
@@ -206,44 +150,11 @@ class File extends Model
         $this->hook->fire('get.file.before', $file_id);
 
         $file = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
-        $this->attachTranslation($file, $language);
+
+        $this->attachTranslationTrait($this->db, $file, 'file', $language);
 
         $this->hook->fire('get.file.after', $file);
         return $file;
-    }
-
-    /**
-     * Adds translations to the file
-     * @param array $file
-     * @param null|string $language
-     */
-    protected function attachTranslation(array &$file, $language)
-    {
-        if (empty($file)) {
-            return;
-        }
-
-        $file['language'] = 'und';
-        $translations = $this->getTranslation($file['file_id']);
-
-        foreach ($translations as $translation) {
-            $file['translation'][$translation['language']] = $translation;
-        }
-
-        if (isset($language) && isset($file['translation'][$language])) {
-            $file = $file['translation'][$language] + $file;
-        }
-    }
-
-    /**
-     * Returns an array of file translations
-     * @param integer $file_id
-     * @return array
-     */
-    public function getTranslation($file_id)
-    {
-        $sql = 'SELECT * FROM file_translation WHERE file_id=?';
-        return $this->db->fetchAll($sql, array($file_id));
     }
 
     /**

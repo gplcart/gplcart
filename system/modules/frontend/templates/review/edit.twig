@@ -27,7 +27,7 @@
   <div class="col-md-12">
     <form method="post" class="form-horizontal" id="edit-review">
       {{ honeypot }}
-      <input type="hidden" name="token" value="{{ token() }}">
+      <input type="hidden" name="token" value="{{ prop('token') }}">
       <div class="form-group">
         <label class="col-md-1">{{ text('Rating') }}</label>
         <div class="col-md-6">{{ rating|raw }}</div>

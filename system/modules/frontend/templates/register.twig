@@ -15,7 +15,7 @@
   <div class="panel-body">
     <form method="post" class="register form-horizontal">
       {{ honeypot|raw }}
-      <input type="hidden" name="token" value="{{ token() }}">
+      <input type="hidden" name="token" value="{{ prop('token') }}">
       <div class="form-group{{ error('name', ' has-error') }}">
         <label class="control-label col-md-2">{{ text('Name') }}</label>
         <div class="col-md-4">

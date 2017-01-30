@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\Category as CategoryModel;
@@ -24,8 +23,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Product extends BackendController
 {
-
-    use \gplcart\core\traits\ControllerAdmin;
 
     /**
      * Product model instance
@@ -64,12 +61,6 @@ class Product extends BackendController
     protected $currency;
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Url model instance
      * @var \gplcart\core\models\Alias $alias
      */
@@ -89,18 +80,16 @@ class Product extends BackendController
      * @param CategoryGroupModel $category_group
      * @param PriceModel $price
      * @param CurrencyModel $currency
-     * @param ImageModel $image
      * @param AliasModel $alias
      */
     public function __construct(ProductModel $product,
             ProductClassModel $product_class, CategoryModel $category,
             CategoryGroupModel $category_group, PriceModel $price,
-            CurrencyModel $currency, ImageModel $image, AliasModel $alias)
+            CurrencyModel $currency, AliasModel $alias)
     {
         parent::__construct();
 
         $this->alias = $alias;
-        $this->image = $image;
         $this->price = $price;
         $this->product = $product;
         $this->category = $category;
@@ -199,7 +188,7 @@ class Product extends BackendController
             return array();
         }
 
-        $this->attachEntityUrlTrait($this, $products, 'product');
+        $this->setEntityUrl($products, 'product');
 
         foreach ($products as &$product) {
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
@@ -357,7 +346,7 @@ class Product extends BackendController
             $combination['path'] = $combination['thumb'] = '';
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                $this->attachThumbTrait($this, $combination);
+                $this->attachThumb($combination);
             }
 
             $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
@@ -379,7 +368,7 @@ class Product extends BackendController
         $options = array('store_id' => $this->data_product['store_id']);
         $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
 
-        $this->attachEntityUrlTrait($this, $products, 'product');
+        $this->setEntityUrl($products, 'product');
         return $products;
     }
 
@@ -398,7 +387,7 @@ class Product extends BackendController
             return null;
         }
 
-        $this->deleteImagesTrait($this, $this->data_product, 'product');
+        $this->deleteImages($this->data_product, 'product');
 
         if (isset($this->data_product['product_id'])) {
             $this->updateProduct();
@@ -542,7 +531,7 @@ class Product extends BackendController
 
         if (!empty($related)) {
             $products = (array) $this->product->getList(array('product_id' => $related));
-            $this->attachEntityUrlTrait($this, $products, 'product');
+            $this->setEntityUrl($products, 'product');
             $this->setData('related', $products);
         }
     }
@@ -554,8 +543,8 @@ class Product extends BackendController
     protected function setDataImagesProduct()
     {
         $images = $this->getData('product.images', array());
-        $this->attachThumbsTrait($this, $images);
-        $this->setImagesTrait($this, $images, 'product');
+        $this->attachThumbs($images);
+        $this->setDataAttachedImages($images, 'product');
     }
 
     /**

@@ -175,7 +175,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return gplcart_string_equals($this->token(), (string) $token);
+        return gplcart_string_equals($this->prop('token'), (string) $token);
     }
 
     /**

@@ -10,7 +10,6 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Image as ImageModel;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
@@ -32,12 +31,6 @@ class FieldValue extends BackendController
      * @var \gplcart\core\models\FieldValue $value
      */
     protected $value;
-
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
 
     /**
      * File model instance
@@ -67,18 +60,15 @@ class FieldValue extends BackendController
      * Constructor
      * @param FieldModel $field
      * @param FieldValueModel $field_value
-     * @param ImageModel $image
      * @param FileModel $file
      */
     public function __construct(FieldModel $field, FieldValueModel $field_value,
-            ImageModel $image, FileModel $file
-    )
+            FileModel $file)
     {
         parent::__construct();
 
         $this->file = $file;
         $this->field = $field;
-        $this->image = $image;
         $this->field_value = $field_value;
     }
 

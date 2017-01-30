@@ -19,6 +19,8 @@ use gplcart\core\models\Language as LanguageModel;
 class FieldValue extends Model
 {
 
+    use \gplcart\core\traits\EntityTranslation;
+
     /**
      * File model instance
      * @var \gplcart\core\models\File $file
@@ -120,47 +122,10 @@ class FieldValue extends Model
                 . ' WHERE fv.field_value_id=?';
 
         $field_value = $this->db->fetch($sql, array($field_value_id));
-        $this->attachTranslation($field_value, $language);
+        $this->attachTranslationTrait($this->db, $field_value, 'field_value', $language);
 
         $this->hook->fire('get.field.value.after', $field_value);
         return $field_value;
-    }
-
-    /**
-     * Adds translations to the field value
-     * @param array $field_value
-     * @param null|string $language
-     */
-    protected function attachTranslation(array &$field_value, $language)
-    {
-        if (empty($field_value)) {
-            return;
-        }
-
-        $field_value['language'] = 'und';
-        $translations = $this->getTranslation($field_value['field_value_id']);
-
-        foreach ($translations as $translation) {
-            $field_value['translation'][$translation['language']] = $translation;
-        }
-
-        if (isset($language) && isset($field_value['translation'][$language])) {
-            $field_value = $field_value['translation'][$language] + $field_value;
-        }
-    }
-
-    /**
-     * Returns an array of field value translations
-     * @param integer $field_value_id
-     * @return array
-     */
-    public function getTranslation($field_value_id)
-    {
-        $sql = 'SELECT *'
-                . ' FROM field_value_translation'
-                . ' WHERE field_value_id=?';
-
-        return $this->db->fetchAll($sql, array($field_value_id));
     }
 
     /**
@@ -179,68 +144,10 @@ class FieldValue extends Model
         $data['field_value_id'] = $this->db->insert('field_value', $data);
 
         $this->setFile($data, false);
-        $this->setTranslation($data, false);
+        $this->setTranslationTrait($this->db, $data, 'field_value', false);
 
         $this->hook->fire('add.field.value.after', $data);
         return $data['field_value_id'];
-    }
-
-    /**
-     * Deletes and/or adds field value translations
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setTranslation(array $data, $delete = true)
-    {
-        if ($delete) {
-            $this->deleteTranslation($data['field_value_id']);
-        }
-
-        if (empty($data['translation'])) {
-            return false;
-        }
-
-        foreach ($data['translation'] as $language => $translation) {
-            $this->addTranslation($data['field_value_id'], $language, $translation);
-        }
-
-        return true;
-    }
-
-    /**
-     * Deletes field value translation(s)
-     * @param integer $field_value_id
-     * @param null|string $language
-     * @return boolean
-     */
-    public function deleteTranslation($field_value_id, $language = null)
-    {
-        $conditions = array('field_value_id' => (int) $field_value_id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        return (bool) $this->db->delete('field_value_translation', $conditions);
-    }
-
-    /**
-     * Adds a translation to the field value
-     * @param integer $field_value_id
-     * @param string $language
-     * @param array $translation
-     * @return integer
-     */
-    public function addTranslation($field_value_id, $language,
-            array $translation)
-    {
-        $translation += array(
-            'language' => $language,
-            'field_value_id' => $field_value_id
-        );
-
-        return $this->db->insert('field_value_translation', $translation);
     }
 
     /**
@@ -296,8 +203,7 @@ class FieldValue extends Model
         $data['field_value_id'] = $field_value_id;
 
         $updated += (int) $this->setFile($data);
-        $updated += (int) $this->setTranslation($data);
-
+        $updated += (int) $this->setTranslationTrait($this->db, $data, 'field_value');
         $result = ($updated > 0);
 
         $this->hook->fire('update.field.value.after', $field_value_id, $data, $result);

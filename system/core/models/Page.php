@@ -22,8 +22,7 @@ class Page extends Model
 {
 
     use \gplcart\core\traits\EntityImage,
-        \gplcart\core\traits\EntityAlias,
-        \gplcart\core\traits\EntityTranslation;
+        \gplcart\core\traits\EntityAlias;
 
     /**
      * Cache instance

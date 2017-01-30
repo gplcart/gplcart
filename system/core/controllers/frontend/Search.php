@@ -152,6 +152,7 @@ class Search extends FrontendController
         $options = array(
             'status' => 1,
             'limit' => $limit,
+            'entity' => 'product',
             'language' => $this->langcode,
             'store_id' => $this->store_id
         );
@@ -163,8 +164,8 @@ class Search extends FrontendController
             return array();
         }
 
-        $query['placeholder'] = true;
-        return $this->prepareProducts($results, $query);
+        $options['placeholder'] = true;
+        return $this->prepareEntityItems($results, $options);
     }
 
     /**

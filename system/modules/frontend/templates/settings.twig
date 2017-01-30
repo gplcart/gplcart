@@ -12,7 +12,7 @@
     @link http://gplcart.com Support, modules, demo
 #}
 <form method="post" class="module-settings frontend-settings form-horizontal">
-  <input type="hidden" name="token" value="{{ token() }}">
+  <input type="hidden" name="token" value="{{ prop('token') }}">
   <div class="panel panel-default">
     <div class="panel-heading">{{ text('Twig') }}</div>
     <div class="panel-body">

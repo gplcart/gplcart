@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" id="edit-page" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
+  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>
     <div class="panel-body">

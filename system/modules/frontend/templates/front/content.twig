@@ -11,12 +11,12 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-{% if collection_banners is not empty %}
-    {{collection_banners|raw}}
+{% if collection_file is defined and collection_file is not empty %}
+    {{collection_file|raw}}
 {% endif %}
-{% if collection_products is not empty %}
-    {{collection_products|raw}}
+{% if collection_product is defined and collection_product is not empty %}
+    {{collection_product|raw}}
 {% endif %}
-{% if collection_pages is not empty %}
-    {{collection_pages|raw}}
+{% if collection_page is defined and collection_page is not empty %}
+    {{collection_page|raw}}
 {% endif %}

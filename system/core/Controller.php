@@ -94,12 +94,6 @@ class Controller
     protected $uid;
 
     /**
-     * Current user cart ID
-     * @var integer|string
-     */
-    protected $cart_uid;
-
-    /**
      * A random string generated from the session
      * @var string
      */
@@ -257,12 +251,6 @@ class Controller
     protected $validator;
 
     /**
-     * Cart model instance
-     * @var \gplcart\core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
      * Library instance
      * @var \gplcart\core\Library $library
      */
@@ -379,58 +367,21 @@ class Controller
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
-        $this->setCartProperties();
-
         $this->hook->fire('init', $this);
     }
 
     /**
-     * Sets cart properties
-     */
-    protected function setCartProperties()
-    {
-        $this->cart_uid = $this->cart->uid();
-    }
-
-    /**
-     * Returns the current cart data
-     * @param null|string $key
-     * @return mixed
-     */
-    public function cart($key = null)
-    {
-        $conditions = array('user_id' => $this->cart_uid, 'store_id' => $this->store_id);
-
-        if (!isset($key)) {
-            return $this->cart->getContent($conditions);
-        }
-
-        if ($key == 'count_total') {
-            return (int) $this->cart->getQuantity($conditions, 'total');
-        }
-
-        if ($key == 'user_id') {
-            return $this->cart_uid;
-        }
-    }
-
-    /**
-     * Returns a model instance
+     * Returns a property
      * @param string $name
      * @return object
      */
-    public function getInstance($name)
+    public function prop($name)
     {
-        return $this->$name;
-    }
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
 
-    /**
-     * URL base path
-     * @return string
-     */
-    public function base()
-    {
-        return $this->base;
+        throw new \InvalidArgumentException("Property $name does not exist in class " . __CLASS__);
     }
 
     /**
@@ -515,69 +466,6 @@ class Controller
         }
 
         return $this->current_user;
-    }
-
-    /**
-     * Returns a token
-     * @return string
-     */
-    public function token()
-    {
-        return $this->token;
-    }
-
-    /**
-     * Returns the current path
-     * @return string
-     */
-    public function path()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Returns a string containing head meta title
-     * @return string
-     */
-    public function title()
-    {
-        return $this->title;
-    }
-
-    /**
-     * Returns a string containing H title
-     * @return string
-     */
-    public function ptitle()
-    {
-        return $this->ptitle;
-    }
-
-    /**
-     * Returns an array with page breadcrumbs
-     * @return array
-     */
-    public function breadcrumbs()
-    {
-        return $this->breadcrumbs;
-    }
-
-    /**
-     * Returns an array of enabled languages
-     * @return array
-     */
-    public function languages()
-    {
-        return $this->languages;
-    }
-
-    /**
-     * Returns an array of meta data
-     * @return array
-     */
-    public function meta()
-    {
-        return $this->meta;
     }
 
     /**
@@ -914,7 +802,6 @@ class Controller
      */
     protected function setInstanceProperties()
     {
-        $this->cart = Container::get('gplcart\\core\\models\\Cart');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->language = Container::get('gplcart\\core\\models\\Language');
@@ -1043,15 +930,6 @@ class Controller
         }
 
         $this->hook->fire('theme', $this);
-    }
-
-    /**
-     * Returns the current theme
-     * @return mixed
-     */
-    public function getTheme()
-    {
-        return $this->current_theme;
     }
 
     /**
@@ -1652,10 +1530,10 @@ class Controller
      */
     protected function prepareOutput()
     {
-        $this->data['meta'] = $this->meta();
-        $this->data['head_title'] = $this->title();
-        $this->data['page_title'] = $this->ptitle();
-        $this->data['breadcrumb'] = $this->breadcrumbs();
+        $this->data['meta'] = $this->prop('meta');
+        $this->data['head_title'] = $this->prop('title');
+        $this->data['page_title'] = $this->prop('ptitle');
+        $this->data['breadcrumb'] = $this->prop('breadcrumbs');
 
         $this->data['css'] = $this->css();
         $this->data['js_top'] = $this->js('top');
@@ -1922,6 +1800,35 @@ class Controller
     }
 
     /**
+     * Set meta tags on entity page
+     * @param array $data
+     */
+    protected function setMetaEntity(array $data)
+    {
+        if ($data['meta_title'] !== '') {
+            $this->setTitle($data['meta_title'], false);
+        }
+        if ($data['meta_description'] !== '') {
+            $this->setMeta(array('name' => 'description', 'content' => $data['meta_description']));
+        }
+        $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
+    }
+
+    /**
+     * Returns rendered menu
+     * @param array $options
+     * @return string
+     */
+    protected function renderMenu(array $options = array())
+    {
+        if (empty($options['items'])) {
+            return '';
+        }
+        $options += array('depth' => 0, 'template' => 'common/menu');
+        return $this->render($options['template'], $options);
+    }
+
+    /**
      * Sets a single page breadcrumb
      * @param array $breadcrumb
      * @return array
@@ -1980,15 +1887,6 @@ class Controller
     }
 
     /**
-     * Returns the current HTML filter
-     * @return array
-     */
-    public function getHtmlFilter()
-    {
-        return $this->current_filter;
-    }
-
-    /**
      * Returns true if an error occurred
      * and passes back to template the submitted data
      * @param string $key
@@ -2039,12 +1937,10 @@ class Controller
     public function setMessage($messages, $severity = 'info', $once = false)
     {
         foreach ((array) $messages as $message) {
-
             if ($once) {
                 $this->session->setMessage($message, $severity);
                 continue;
             }
-
             $this->data['messages'][$severity][] = $message;
         }
     }

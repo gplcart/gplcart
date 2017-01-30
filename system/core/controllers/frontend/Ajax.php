@@ -209,10 +209,9 @@ class Ajax extends FrontendController
             'path' => empty($response['combination']['path']) ? '' : $response['combination']['path']
         );
 
-        $this->setThumbTrait($this, $response, $options);
-        $this->setProductCalculatedPriceTrait($this, $response);
-        $this->setFormattedPriceTrait($this, $response);
-
+        $this->attachItemThumb($response, $options);
+        $this->attachItemPriceCalculated($response);
+        $this->attachItemPriceFormatted($response);
         return $response;
     }
 
@@ -265,7 +264,7 @@ class Ajax extends FrontendController
             'imagestyle' => $this->settings('image_style_product_list', 3)
         );
 
-        return $this->prepareProducts($products, $options);
+        return $this->prepareProductsTrait($products, $options);
     }
 
     /**

@@ -30,7 +30,7 @@
             <?php echo $this->text('Path: %s', array('%s' => $image['path'])); ?>
           </div>
         </div>
-        <?php $languages = $this->languages(); ?>
+        <?php $languages = $this->prop('languages'); ?>
         <?php if (!empty($languages)) { ?>
         <ul class="nav nav-tabs">
           <li class="active">

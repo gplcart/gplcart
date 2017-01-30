@@ -27,7 +27,7 @@
       <p>{{ product['price_formatted'] }}</p>
       {% if buttons is not empty %}
           <form method="post" class="form-horizontal product-action">
-            <input type="hidden" name="token" value="{{ token() }}">
+            <input type="hidden" name="token" value="{{ prop('token') }}">
             <input type="hidden" name="product[product_id]" value="{{ product['product_id'] }}">
             <div class="row">
               <div class="col-md-12">

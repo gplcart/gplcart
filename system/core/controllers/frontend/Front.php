@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -19,20 +18,11 @@ class Front extends FrontendController
 {
 
     /**
-     * Collection item model instance
-     * @var \gplcart\core\models\CollectionItem $collection_item
-     */
-    protected $collection_item;
-
-    /**
      * Constructor
-     * @param CollectionItemModel $collection_item
      */
-    public function __construct(CollectionItemModel $collection_item)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->collection_item = $collection_item;
     }
 
     /**
@@ -42,11 +32,11 @@ class Front extends FrontendController
     {
         $this->setTitleIndexFront();
 
-        $this->setDataCollectionBannersFront();
-        $this->setDataCollectionProductsFront();
-        $this->setDataCollectionPagesFront();
-        $this->setRegionContentFront();
+        $this->setDataCollectionFront('page');
+        $this->setDataCollectionFront('file');
+        $this->setDataCollectionFront('product');
 
+        $this->setRegionContentFront();
         $this->outputIndexFront();
     }
 
@@ -60,44 +50,16 @@ class Front extends FrontendController
     }
 
     /**
-     * Adds a block with featured products on the front page
+     * Adds a collection block
      */
-    protected function setDataCollectionProductsFront()
+    protected function setDataCollectionFront($type)
     {
-        $collection_id = $this->store->config('collection_featured');
+        $collection_id = $this->store("data.collection_$type");
 
         if (!empty($collection_id)) {
-            $options = array('collection_id' => $collection_id);
-            $html = $this->renderCollectionProduct($options);
-            $this->setData('collection_products', $html);
-        }
-    }
-
-    /**
-     * Adds a block with banners on the front page
-     */
-    protected function setDataCollectionBannersFront()
-    {
-        $collection_id = $this->store->config('collection_banner');
-
-        if (!empty($collection_id)) {
-            $options = array('collection_id' => $collection_id);
-            $html = $this->renderCollectionFile($options);
-            $this->setData('collection_banners', $html);
-        }
-    }
-
-    /**
-     * Adds a block with pages on the front page
-     */
-    protected function setDataCollectionPagesFront()
-    {
-        $collection_id = $this->store->config('collection_page');
-
-        if (!empty($collection_id)) {
-            $options = array('collection_id' => $collection_id);
-            $html = $this->renderCollectionPage($options);
-            $this->setData('collection_pages', $html);
+            $conditions = array('collection_id' => $collection_id);
+            $html = $this->renderCollection($conditions);
+            $this->setData("collection_$type", $html);
         }
     }
 
@@ -106,7 +68,7 @@ class Front extends FrontendController
      */
     protected function setTitleIndexFront()
     {
-        $title = $this->store->config('title');
+        $title = $this->store('data.title');
         $this->setTitle($title, false);
     }
 

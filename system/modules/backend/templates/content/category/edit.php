@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" id="edit-category" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->token(); ?>">
+  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <input type="hidden" name="category[category_group_id]" value="<?php echo $category_group['category_group_id']; ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>

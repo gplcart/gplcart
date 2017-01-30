@@ -11,7 +11,7 @@
     @copyright Copyright (c) 2015, Iurii Makukh
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
 #}
-{% if region_content is not empty %}
+{% if region_content is defined and region_content is not empty %}
     {% for item in region_content %}
         {{ item|raw }}
     {% endfor %}
