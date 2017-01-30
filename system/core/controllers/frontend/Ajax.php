@@ -260,11 +260,12 @@ class Ajax extends FrontendController
         }
 
         $options = array(
+            'entity' => 'product',
             'template_item' => 'search/suggestion',
             'imagestyle' => $this->settings('image_style_product_list', 3)
         );
 
-        return $this->prepareProductsTrait($products, $options);
+        return $this->prepareEntityItems($products, $options);
     }
 
     /**

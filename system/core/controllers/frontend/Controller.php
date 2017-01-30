@@ -762,7 +762,6 @@ class Controller extends BaseController
     /**
      * Add calculated product price
      * @param array $product
-     * @param array $options
      */
     protected function attachItemPriceCalculated(array &$product)
     {

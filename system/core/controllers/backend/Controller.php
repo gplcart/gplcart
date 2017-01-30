@@ -40,7 +40,7 @@ class Controller extends BaseController
         $this->job = Container::get('gplcart\\core\\models\\Job');
         $this->image = Container::get('gplcart\\core\\models\\Image');
 
-        $this->processCurrentJob($this);
+        $this->processCurrentJob();
 
         $this->hook->fire('init.backend', $this);
         $this->controlHttpStatus();
