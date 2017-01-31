@@ -386,7 +386,7 @@
                             header = GplCart.text('Cart');
                         }
                         setModal(data.modal, action + '-content-modal', header);
-                    } else if ('message' in data) {
+                    } else if (data.message) {
                         setModal(data.message, action + '-message-modal');
                     }
 
@@ -672,10 +672,8 @@
             $('form#checkout').submit();
         });
 
-        $(document).on('click', 'form#checkout :submit', function (e) {
-
+        $(document).on('click', 'form#checkout :submit', function () {
             clicked = $(this).attr('name');
-
             $(this).closest('form').append($("<input type='hidden'>").attr({
                 name: $(this).attr('name'),
                 value: $(this).attr('value')
@@ -684,7 +682,9 @@
 
         $(document).off('submit').on('submit', 'form#checkout', function (e) {
 
-            if (clicked === 'save' || clicked === 'login') {
+            if (clicked === 'save'
+                    || clicked === 'login'
+                    || clicked.slice(-10) === '[wishlist]') {
                 return true;
             }
 

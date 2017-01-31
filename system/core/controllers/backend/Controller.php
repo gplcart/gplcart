@@ -123,15 +123,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns an array of existing stores
-     * @return array
-     */
-    public function stores()
-    {
-        return $this->store->getList();
-    }
-
-    /**
      * Displays parent admin menu items
      * @todo Output real content
      */

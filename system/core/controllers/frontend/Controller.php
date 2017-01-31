@@ -240,13 +240,13 @@ class Controller extends BaseController
      */
     protected function addToCart()
     {
-        $errors = $this->error();
-
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
             'message' => $this->text('An error occurred')
         );
+
+        $errors = $this->error();
 
         if (empty($errors)) {
             $submitted = $this->getSubmitted();
@@ -270,15 +270,16 @@ class Controller extends BaseController
     protected function validateAddToCart()
     {
         $this->setSubmitted('product');
+
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
+
         $this->validate('cart');
     }
 
     /**
      * Deletes a cart item
-     * @todo More generic solution. Move to Cart model?
      */
     protected function deleteFromCart()
     {
@@ -776,7 +777,7 @@ class Controller extends BaseController
     protected function attachItemUrlActive(array &$item)
     {
         if (isset($item['url'])) {
-            $item['active'] = ($this->base . (string) $this->isCurrentPath($item['url'])) !== '';
+            $item['active'] = ($this->base . (string) $this->path($item['url'])) !== '';
         }
     }
 

@@ -28,16 +28,18 @@
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-              <li class="cart">
-                <a rel="nofollow" id="cart-link" href="{{ url('checkout') }}">
-                  {% if cart('count_total') %}
-                      <span class="badge" id="cart-quantity">{{ cart('count_total') }}</span>
-                  {% else %}
-                      <span class="badge" id="cart-quantity" style="display:none;"></span>
-                  {% endif %}
-                  <i class="fa fa-shopping-cart"></i>
-                </a>
-              </li>
+              {% if not path('checkout') %}
+                  <li class="cart">
+                    <a rel="nofollow" id="cart-link" href="{{ url('checkout') }}">
+                      {% if cart('count_total') %}
+                          <span class="badge" id="cart-quantity">{{ cart('count_total') }}</span>
+                      {% else %}
+                          <span class="badge" id="cart-quantity" style="display:none;"></span>
+                      {% endif %}
+                      <i class="fa fa-shopping-cart"></i>
+                    </a>
+                  </li>
+              {% endif %}
               <li class="wishlist">
                 <a rel="nofollow" id="wishlist-link" href="{{ url('wishlist') }}">
                   {% if wishlist('count') %}

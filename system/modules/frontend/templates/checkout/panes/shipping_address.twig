@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
           <div class="col-md-12">
-            <button class="btn btn-default" name="add_address" value="1"><i class="fa fa-plus"></i> {{ text('Add address') }}</button>
+            <button class="btn btn-default" name="add_address" value="1">{{ text('Add address') }}</button>
           </div>
         </div>
     {% else %}
@@ -63,10 +63,10 @@
               {% for key,data in format %}
                   {% if key != 'country' %}
                       <tr>
-                        <td class="middle{{ data['required'] is not empty ? ' required' }}">
-                          {{ data['name'] }}
+                        <td class="middle">
+                          <span class="{{ data['required'] is not empty ? ' required' }}">{{ data['name'] }}</span>
                         </td>
-                        <td>
+                        <td class="middle">
                           <div class="{{ key }}{{ error('address.' ~ key, ' has-error') }}">
                             {% if key == 'state_id' %}
                                 <select class="form-control" name="order[address][state_id]">
@@ -93,7 +93,7 @@
             <div class="form-group">
               <div class="col-md-12">
                 <button class="btn btn-default" name="cancel_address_form" value="1">
-                  <i class="fa fa-reply"></i> {{ text('Select saved address') }}
+                  {{ text('Select saved address') }}
                 </button>
               </div>
             </div>

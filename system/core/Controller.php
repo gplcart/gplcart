@@ -455,6 +455,15 @@ class Controller
     }
 
     /**
+     * Returns an array of existing stores
+     * @return array
+     */
+    public function stores()
+    {
+        return $this->store->getList();
+    }
+
+    /**
      * Returns a data of the current user
      * @param mixed $item
      * @return mixed
@@ -608,7 +617,6 @@ class Controller
             $data = implode(' ', (array) $data);
             $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
         }
-
         return empty($attributes) ? '' : ' ' . implode(' ', $attributes);
     }
 
@@ -645,13 +653,19 @@ class Controller
     }
 
     /**
-     * Whether the current path matches the given path
-     * @param string $path
-     * @return bool
+     * If $path isset - returns TRUE if the path pattern mathes the current URL path
+     * If $path is not set or NULL - returns the current URL path
+     * @param null|string $pattern
+     * @return string|bool
      */
-    public function isCurrentPath($path)
+    public function path($pattern = null)
     {
-        return $this->path == trim($path, '/');
+        if (isset($pattern)) {
+            $result = gplcart_parse_pattern($this->path, $pattern);
+            return $result !== false;
+        }
+
+        return $this->path;
     }
 
     /**
@@ -670,8 +684,6 @@ class Controller
         $template = $this->getTemplateFile($file, $fullpath);
 
         $this->hook->fire('render', $template, $data, $this);
-
-        $this->setPhpErrors($data);
 
         if (empty($template)) {
             return $this->text('Could not load template %path', array('%path' => $template));
@@ -869,7 +881,6 @@ class Controller
         }
 
         $this->session->set('device', $this->current_device);
-        return null;
     }
 
     /**
@@ -1530,24 +1541,25 @@ class Controller
      */
     protected function prepareOutput()
     {
-        $this->data['meta'] = $this->prop('meta');
-        $this->data['head_title'] = $this->prop('title');
-        $this->data['page_title'] = $this->prop('ptitle');
-        $this->data['breadcrumb'] = $this->prop('breadcrumbs');
+        $this->data['meta'] = $this->meta;
+        $this->data['head_title'] = $this->title;
+        $this->data['page_title'] = $this->ptitle;
+        $this->data['breadcrumb'] = $this->breadcrumbs;
 
         $this->data['css'] = $this->css();
         $this->data['js_top'] = $this->js('top');
         $this->data['js_bottom'] = $this->js('bottom');
+
+        $this->setPhpErrors();
     }
 
     /**
      * Sets php errors recorded by logger
-     * @param array $data
      * @return null
      */
-    protected function setPhpErrors(array &$data)
+    protected function setPhpErrors()
     {
-        $this->setPhpErrorsLive($data);
+        $this->setPhpErrorsLive();
 
         $errors = $this->logger->getErrors();
 
@@ -1557,22 +1569,19 @@ class Controller
 
         foreach ($errors as $severity => $messages) {
             foreach ($messages as $message) {
-                $data['messages'][$severity][] = $message;
+                $this->data['messages'][$severity][] = $message;
             }
 
             unset($errors[$severity]);
         }
-
-        return null;
     }
 
     /**
      * Set up live error reporting
-     * @param array $data
      */
-    protected function setPhpErrorsLive(array &$data)
+    protected function setPhpErrorsLive()
     {
-        if ($this->isCurrentPath('admin/report/events')) {
+        if ($this->path('admin/report/events')) {
             return null; // Don't display on the event reporting page
         }
 
@@ -1591,7 +1600,7 @@ class Controller
         if (!empty($count)) {
             $options = array('@count' => $count, '@url' => $this->url('admin/report/events'));
             $message = $this->text('Logged PHP errors: <a href="@url">@count</a>', $options);
-            $data['messages']['warning'][] = $message;
+            $this->data['messages']['warning'][] = $message;
         }
     }
 
@@ -1936,7 +1945,9 @@ class Controller
      */
     public function setMessage($messages, $severity = 'info', $once = false)
     {
-        foreach ((array) $messages as $message) {
+        settype($messages, 'array');
+
+        foreach (gplcart_array_flatten($messages) as $message) {
             if ($once) {
                 $this->session->setMessage($message, $severity);
                 continue;
@@ -2004,7 +2015,7 @@ class Controller
 
         foreach ($query as $key => $value) {
 
-            $value = (string) $value;
+            settype($value, 'string');
 
             if ($key === 'sort' && strpos($value, '-') !== false) {
                 $parts = explode('-', $value, 2);

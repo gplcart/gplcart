@@ -81,8 +81,8 @@ class Cart extends BaseValidator
         $this->validateUserCartId();
         $this->validateOrderCart();
         $this->validateQuantityCart();
-        $this->validateLimitCart();
         $this->validateOptionsCart();
+        $this->validateLimitCart();
 
         return $this->getResult();
     }
@@ -332,15 +332,16 @@ class Cart extends BaseValidator
             return null;
         }
 
-        $ops = $this->getSubmitted('options');
+        $options = array_filter((array) $this->getSubmitted('options'));
 
-        if (empty($ops)) {
+        if (empty($options)) {
+            $this->setSubmitted('options', array());
             $this->setSubmitted('sku', $product['sku']);
             $this->setSubmitted('stock', $product['stock']);
             return true;
         }
 
-        $combination_id = $this->sku->getCombinationId($ops, $product['product_id']);
+        $combination_id = $this->sku->getCombinationId($options, $product['product_id']);
 
         if (empty($product['combination'][$combination_id]['status'])) {
             $error = $this->language->text('Invalid option combination');
@@ -348,6 +349,7 @@ class Cart extends BaseValidator
             return false;
         }
 
+        $this->setSubmitted('options', $options);
         $this->setSubmitted('combination_id', $combination_id);
         $this->setSubmitted('sku', $product['combination'][$combination_id]['sku']);
         $this->setSubmitted('stock', $product['combination'][$combination_id]['stock']);

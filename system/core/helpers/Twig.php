@@ -69,6 +69,7 @@ class Twig
         $this->addFunctionD($object);
         $this->addFunctionXss($object);
         $this->addFunctionUrl($object);
+        $this->addFunctionPath($object);
         $this->addFunctionProp($object);
         $this->addFunctionMenu($object);
         $this->addFunctionDate($object);
@@ -412,6 +413,20 @@ class Twig
     {
         $function = new \Twig_SimpleFunction('prop', function ($name) use ($object) {
             return $object->prop($name);
+        });
+
+        $this->twig->addFunction($function);
+    }
+
+    /**
+     * Adds function \gplcart\core\Controller::path()
+     * @param \gplcart\core\Controller $object
+     * @see \gplcart\core\Controller::path()
+     */
+    protected function addFunctionPath($object)
+    {
+        $function = new \Twig_SimpleFunction('path', function ($path = null) use ($object) {
+            return $object->path($path);
         });
 
         $this->twig->addFunction($function);

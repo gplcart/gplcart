@@ -30,12 +30,12 @@
             <span class="price">{{ text('Price') }} : {{ item['price_formatted'] }}</span>
             <div>
               <div class="input-group input-group-sm">
-                <input class="form-control text-center" maxlength="2" name="order[cart][items][{{ sku }}][quantity]" value="{{ item['quantity'] }}">
-              </div>
-              <div class="input-group input-group-sm hidden-js">
-                <button title="{{ text('Update') }}" class="btn btn-default btn-sm" name="update" value="1">
-                  <i class="fa fa-refresh"></i>
-                </button>
+                <input class="form-control text-center" name="order[cart][items][{{ sku }}][quantity]" value="{{ item['quantity'] }}">
+                <span class="input-group-btn hidden-js">
+                  <button title="{{ text('Update') }}" class="btn btn-default btn-sm" name="update" value="1">
+                    <i class="fa fa-refresh"></i>
+                  </button>
+                </span>
               </div>
             </div>
             <div>{{ text('Amount') }} : {{ item['total_formatted'] }}</div>
@@ -45,7 +45,7 @@
               <button title="{{ text('Delete') }}" class="btn btn-default btn-sm" name="order[cart][action][delete]" value="{{ item['cart_id'] }}">
                 <i class="fa fa-trash"></i>
               </button>
-              {% if admin is not empty %}
+              {% if admin is empty %}
                   <button title="{{ text('Move to wishlist') }}" class="btn btn-default btn-sm" name="order[cart][action][wishlist]" value="{{ sku }}">
                     <i class="fa fa-star"></i>
                   </button>
@@ -61,17 +61,19 @@
               <button type="button" class="close" data-dismiss="alert">
                 <span aria-hidden="true">&times;</span>
               </button>
-              {{ text|escape('html') }}
+              {{ text|raw }}
             </div>
         {% endfor %}
     {% endif %}
     <div class="form-group">
       <div class="col-md-12">
         <table class="table table-borderless price-components">
-          <tr>
-            <td>{{ text('Subtotal') }}</td>
-            <td>{{ cart['total_formatted'] }}</td>
-          </tr>
+          {% if price_components is not empty %}
+              <tr>
+                <td>{{ text('Subtotal') }}</td>
+                <td>{{ cart['total_formatted'] }}</td>
+              </tr>
+          {% endif %}
           {% for id,price_component in price_components %}
               <tr>
                 <td>
@@ -95,10 +97,10 @@
               </tr>
           {% endfor %}
           <tr>
-            <td><span class="h4">{{ text('Grand total') }}</span></td>
+            <td><b>{{ text('Grand total') }}</b></td>
             <td>
               <input type="hidden" name="order[total]" value="{{ total }}">
-              <span class="h4">{{ total_formatted }}</span>
+              <b>{{ total_formatted }}</b>
             </td>
           </tr>
         </table>
@@ -108,16 +110,13 @@
                   <button type="button" class="close" data-dismiss="alert">
                     <span aria-hidden="true">&times;</span>
                   </button>
-                  {{ text|e('html') }}
+                  {{ text|raw }}
                 </div>
             {% endfor %}
         {% endif %}
       </div>
     </div>
     <div class="form-group">
-      <div class="col-md-6 hidden-js">
-        <button class="btn btn-default" name="update" value="1"><i class="fa fa-refresh"></i> {{ text('Update') }}</button>
-      </div>
       <div class="col-md-6">
         <button class="btn btn-success" name="save" value="1">
           {% if admin is not empty %}

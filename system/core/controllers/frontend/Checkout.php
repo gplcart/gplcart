@@ -332,7 +332,6 @@ class Checkout extends FrontendController
 
         $this->data_form['order'] = $order;
         $this->data_form['messages'] = array();
-        $this->data_form['settings'] = array();
         $this->data_form['admin'] = $this->admin;
         $this->data_form['user'] = $this->data_user;
 
@@ -370,8 +369,6 @@ class Checkout extends FrontendController
 
         $this->calculateCheckout();
 
-        $this->data_form['settings'] = json_encode($this->data_form['settings'], JSON_FORCE_OBJECT);
-
         $panes = array('admin', 'login', 'review', 'payment_methods', 'shipping_address');
 
         foreach ($panes as $pane) {
@@ -404,6 +401,10 @@ class Checkout extends FrontendController
         if ($this->isPosted('checkout_login') && empty($this->uid)) {
             $this->login_form = true;
         }
+        
+        if($this->isPosted('update')){
+            $this->setMessage($this->text('Form has been updated'), 'success', false);
+        }
 
         $this->submitLoginCheckout();
 
@@ -413,12 +414,10 @@ class Checkout extends FrontendController
 
         $this->validateCouponCheckout();
 
-        if ($this->hasErrors('order', false)) {
-            return null;
+        if (!$this->hasErrors('order', false)) {
+            $this->submitCartCheckout();
+            $this->submitOrderCheckout();
         }
-
-        $this->submitCartCheckout();
-        $this->submitOrderCheckout();
     }
 
     /**
@@ -437,18 +436,17 @@ class Checkout extends FrontendController
      */
     protected function loginCheckout()
     {
-        $user = $this->getSubmitted('user');
-        $result = $this->user->login($user);
+        $result = $this->user->login($this->getSubmitted('user'));
 
         if (isset($result['user'])) {
             $result = $this->cart->login($result['user'], $this->data_cart);
         }
 
-        if (!empty($result['user'])) {
-            $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        if (empty($result['user'])) {
+            $this->setError('login', $result['message']);
+        } else {
+           $this->redirect($result['redirect'], $result['message'], $result['severity']); 
         }
-
-        $this->setError('login', $result['message']);
     }
 
     /**
@@ -485,6 +483,7 @@ class Checkout extends FrontendController
     {
         $this->submitCartItemsCheckout();
         $this->moveCartWishlistCheckout();
+        
         $this->deleteCartCheckout();
         $this->updateCartCheckout();
     }
@@ -502,23 +501,20 @@ class Checkout extends FrontendController
         }
 
         $errors = array();
-
         foreach ($items as $sku => $item) {
-
             $errors += $this->validateCartItemCheckout($sku, $item);
-
             if (empty($errors)) {
                 $this->updateCartQuantityCheckout($sku, $item['quantity']);
             }
         }
 
-        if (!empty($errors)) {
-            $this->setMessageFormCheckout('cart.warning', $errors);
-            return false;
+        if (empty($errors)) {
+            $this->setSubmitted('cart.action.update', true);
+            return true;
         }
 
-        $this->setSubmitted('cart.action.update', true);
-        return true;
+        $this->setMessageFormCheckout('cart.warning', $errors);
+        return false;
     }
 
     /**
@@ -528,9 +524,9 @@ class Checkout extends FrontendController
      */
     protected function setMessageFormCheckout($key, $message)
     {
-        $messages = (array) $message;
+        settype($message, 'array');
 
-        $flatten = gplcart_array_flatten($messages);
+        $flatten = gplcart_array_flatten($message);
         $string = implode('<br>', array_unique($flatten));
         gplcart_array_set_value($this->data_form['messages'], $key, $string);
     }
@@ -548,7 +544,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Validates a cart item and returns foun errors
+     * Validates a cart item and returns possible errors
      * @param string $sku
      * @param array $item
      * @return array
@@ -557,23 +553,20 @@ class Checkout extends FrontendController
     {
         $item += array(
             'sku' => $sku,
+            'increment' => false,
+            'admin' => $this->admin,
             'user_id' => $this->order_user_id,
             'store_id' => $this->order_store_id
         );
 
         $this->setSubmitted('update', $item);
-        $this->setSubmitted('increment', false);
-        $this->setSubmitted('admin', $this->admin);
         $this->setSubmitted("cart.items.$sku", $item);
 
-        // Do not pass product data here
-        // to avoid rewriting by the next validators
         return $this->validate('cart', array('parents' => "cart.items.$sku"));
     }
 
     /**
      * Moves a cart item to the wishlist
-     * @return null|array
      */
     protected function moveCartWishlistCheckout()
     {
@@ -584,23 +577,17 @@ class Checkout extends FrontendController
         }
 
         $options = array(
+            'sku' => $sku,
             'user_id' => $this->order_user_id,
             'store_id' => $this->order_store_id
         );
 
-        $result = $this->cart->moveToWishlist($options + array('sku' => $sku));
+        $result = $this->cart->moveToWishlist($options);
 
-        if (empty($result['wishlist_id'])) {
-            return null;
+        if (isset($result['wishlist_id'])) {
+            $this->setSubmitted('cart.action.update', true);
+            $this->setMessage($result['message'], 'success');
         }
-
-        // Add JSON settings to update cart/wishlist quantities
-        $this->data_form['settings']['quantity']['cart'] = $this->cart->getQuantity($options, 'total');
-        $this->data_form['settings']['quantity']['wishlist'] = $this->wishlist->getList($options + array('count' => true));
-
-        $this->setMessageFormCheckout('cart.success', $result['message']);
-        $this->setSubmitted('cart.action.update', true);
-        return $result;
     }
 
     /**
@@ -625,18 +612,9 @@ class Checkout extends FrontendController
      */
     protected function updateCartCheckout()
     {
-        if (!$this->isSubmitted('cart.action.update')) {
-            return null;
+        if ($this->isSubmitted('cart.action.update')) {
+            $this->setCartContentCheckout();
         }
-
-        $this->setCartContentCheckout();
-
-        if ($this->request->isAjax() || $this->isPosted('save')) {
-            return null;
-        }
-
-        $message = $this->text('Cart has been updated');
-        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -689,6 +667,12 @@ class Checkout extends FrontendController
      */
     protected function validateOrderCheckout()
     {
+        $this->setSubmitted('update', array()); // Reset all values set before
+        
+        $this->setSubmitted('store_id', $this->store_id);
+        $this->setSubmitted('user_id', $this->order_user_id);
+        $this->setSubmitted('creator', $this->admin_user_id);
+        
         $this->validate('order');
     }
 
@@ -753,20 +737,23 @@ class Checkout extends FrontendController
      * @param array $data
      * @return array
      */
-    protected function prepareOrderComponentsCheckout(array $calculated,
-            array $data)
+    protected function prepareOrderComponentsCheckout($calculated, $data)
     {
-        $payment_methods = $this->shipping->getList();
-        $shipping_methods = $this->payment->getList();
-
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
 
-            if (isset(${$type . '_methods'}) && isset(${$type . '_methods'}[$data[$type]['name']])) {
-                $name = ${$type . '_methods'}[$data[$type]['name']];
+            switch ($type) {
+                case 'shipping':
+                    $methods = $this->shipping->getList();
+                    break;
+                case 'payment':
+                    $methods = $this->payment->getList();
+                    break;
             }
 
-            if (isset($component['rule']['name'])) {
+            if (isset($methods) && isset($methods[$data[$type]['name']])) {
+                $name = $methods[$data[$type]['name']];
+            } else if (isset($component['rule']['name'])) {
                 $name = $component['rule']['name'];
             }
 
@@ -836,7 +823,14 @@ class Checkout extends FrontendController
         $templates = array();
         foreach (array('payment', 'shipping') as $type) {
 
-            $method = $this->{$type}->get($this->data_order[$type]);
+            switch ($type) {
+                case 'shipping':
+                    $method = $this->shipping->get($this->data_order[$type]);
+                    break;
+                case 'payment':
+                    $method = $this->payment->get($this->data_order[$type]);
+                    break;
+            }
 
             if (empty($method['status']) || empty($method['template']['complete'])) {
                 continue;

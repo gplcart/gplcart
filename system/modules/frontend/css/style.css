@@ -70,7 +70,7 @@ pre,
     border-radius:0 !important;
 }
 
-.panel:not(.add-to-cart) {
+.panel.panel-borderless {
     border: none;
 }
 
@@ -98,7 +98,6 @@ pre,
     padding-right: 0;
     padding-bottom: 0;
 }
-
 
 body.checkout .navbar .cart {
     display: none;
@@ -256,6 +255,14 @@ label.title {
     display: none !important;
 }
 
+td.middle {
+    vertical-align: middle !important;
+}
+
+.help-block:empty {
+    display: none
+}
+
 .panel-footer .pagination {
     margin: 0;
 }
@@ -372,10 +379,6 @@ ul.ui-autocomplete.ui-menu li a:hover {
 .ui-autocomplete .suggestion img {
     height: 40px;
 }
-
-
-
-
 
 .table.price-components {
     width: 100%;
