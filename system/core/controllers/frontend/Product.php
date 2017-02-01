@@ -401,7 +401,7 @@ class Product extends FrontendController
             'imagestyle' => $this->settings('image_style_product', 5),
             'path' => empty($selected['combination']['path']) ? '' : $selected['combination']['path']
         );
-        
+
         $this->attachItemThumb($product, $options);
         $this->attachItemPriceCalculated($selected);
         $this->attachItemPriceFormatted($selected);
@@ -474,7 +474,7 @@ class Product extends FrontendController
         }
 
         $imagestyle = $this->settings('image_style_option', 1);
-        
+
         foreach ($product['field']['option'] as $field_id => $field_values) {
             foreach ($field_values as $field_value_id) {
                 $options = array(

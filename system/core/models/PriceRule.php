@@ -258,16 +258,57 @@ class PriceRule extends Model
      * @param array $data
      * @param array $components
      */
-    public function calculate(&$total, array $cart, array $data,
-            array &$components)
+    public function calculate(&$total, $cart, $data, &$components)
     {
-
-        $options = array('store_id' => $data['order']['store_id'], 'status' => 1);
+        $options = array(
+            'status' => 1,
+            'store_id' => $data['order']['store_id']
+        );
+        
         $rules = $this->getTriggered($options, array('cart' => $cart, 'data' => $data));
 
         foreach ($rules as $rule) {
             $this->calculateComponent($total, $cart, $data, $components, $rule);
         }
+    }
+    
+    /**
+     * Calculates a price rule component
+     * @param integer $amount
+     * @param array $cart
+     * @param array $data
+     * @param array $components
+     * @param array $rule
+     * @return integer
+     */
+    protected function calculateComponent(&$amount, $cart, $data, &$components, $rule)
+    {
+        $rule_id = $rule['price_rule_id'];
+
+        if ($rule['code'] !== '') {
+            if (!isset($data['order']['data']['pricerule_code']) || !$this->codeMatches($rule_id, $data['order']['data']['pricerule_code'])) {
+                $components[$rule_id] = array('rule' => $rule, 'price' => 0);
+                return $amount;
+            }
+        }
+
+        if ($rule['value_type'] === 'percent') {
+            $value = $amount * ((float) $rule['value'] / 100);
+            $components[$rule_id] = array('rule' => $rule, 'price' => $value);
+            $amount += $value;
+            return $amount;
+        }
+        
+        settype($rule['value'], 'integer');
+
+        if ($cart['currency'] !== $rule['currency']) {
+            $converted = $this->currency->convert(abs($rule['value']), $rule['currency'], $cart['currency']);
+            $rule['value'] = ($rule['value'] < 0) ? -$converted : $converted;
+        }
+
+        $components[$rule_id] = array('rule' => $rule, 'price' => $rule['value']);
+        $amount += $rule['value'];
+        return $amount;
     }
 
     /**
@@ -277,7 +318,6 @@ class PriceRule extends Model
      */
     public function getTriggered(array $options, array $data)
     {
-        
         $triggers = $this->trigger->getFired($options, $data);
 
         if (empty($triggers)) {
@@ -309,46 +349,6 @@ class PriceRule extends Model
         });
 
         return $results;
-    }
-
-    /**
-     * Calculates a price rule component
-     * @param integer $amount
-     * @param array $cart
-     * @param array $data
-     * @param array $components
-     * @param array $rule
-     * @return integer
-     */
-    protected function calculateComponent(&$amount, array $cart, array $data,
-            array &$components, array $rule)
-    {
-        $rule_id = $rule['price_rule_id'];
-
-        if ($rule['code'] !== '') {
-            if (!isset($data['pricerule_code']) || !$this->codeMatches($rule_id, $data['pricerule_code'])) {
-                $components[$rule_id] = array('rule' => $rule, 'price' => 0);
-                return $amount;
-            }
-        }
-
-        if ($rule['value_type'] === 'percent') {
-            $value = $amount * ((float) $rule['value'] / 100);
-            $components[$rule_id] = array('rule' => $rule, 'price' => $value);
-            $amount += $value;
-            return $amount;
-        }
-
-        $value = (int) $rule['value'];
-
-        if ($cart['currency'] !== $rule['currency']) {
-            $converted = $this->currency->convert(abs($value), $rule['currency'], $cart['currency']);
-            $value = ($value < 0) ? -$converted : $converted;
-        }
-
-        $components[$rule_id] = array('rule' => $rule, 'price' => $value);
-        $amount += $value;
-        return $amount;
     }
 
 }

@@ -290,9 +290,9 @@ $tables['orders'] = array(
         'transaction_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
         'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
         'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-        'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
-        'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+        'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+        'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
         'comment' => array('type' => 'text', 'not_null' => true, 'default' => ''),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )

@@ -90,16 +90,6 @@ class Price extends Model
     }
 
     /**
-     * Extracts a decimal part of a string including decimal separators
-     * @param string $string
-     * @return string
-     */
-    public function filterDecimal($string)
-    {
-        return filter_var($string, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    }
-
-    /**
      * Converts a price from minor to major units
      * @staticvar array $divisors
      * @param integer $amount

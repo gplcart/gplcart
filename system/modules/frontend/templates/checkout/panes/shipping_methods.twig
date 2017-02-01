@@ -24,6 +24,9 @@
                 {% endif %}
                 <input type="radio" name="order[shipping]" value="{{ method_id }}"{{ (order['shipping'] is defined and order['shipping'] == method_id) ? ' checked'}}>
                 {{ method['title'] }}
+                {% if method['description'] is defined and method['description'] is not empty %}
+                    <div class="description small">{{ method['description']|e('html') }}</div>
+                {% endif %}
               </label>
             </div>
         {% endfor %}

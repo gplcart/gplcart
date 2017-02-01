@@ -249,8 +249,7 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-        $order['total_formatted_decimal'] = $this->price->filterDecimal($order['total_formatted']);
+        $this->attachItemTotalFormatted($order);
 
         $this->data_order = $order;
         $this->order_id = $order_id;
@@ -314,8 +313,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     *
-     * @return type
+     * Sets initial form data
      */
     protected function setFormDataBeforeCheckout()
     {
@@ -323,8 +321,8 @@ class Checkout extends FrontendController
             'user_id' => $this->order_user_id,
             'creator' => $this->admin_user_id,
             'store_id' => $this->order_store_id,
-            'status' => $this->order->getInitialStatus(),
-            'currency' => $this->data_cart['currency']
+            'currency' => $this->data_cart['currency'],
+            'status' => $this->order->getInitialStatus()
         );
 
         // Override with existing order values if we're editing the order
@@ -338,11 +336,10 @@ class Checkout extends FrontendController
         $this->data_form['statuses'] = $this->order->getStatuses();
         $this->data_form['payment_methods'] = $this->payment->getList(true);
         $this->data_form['shipping_methods'] = $this->shipping->getList(true);
-        $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
     }
 
     /**
-     * Prepares form data before passing them to templates
+     * Set finish data before passing to templates
      * @return null
      */
     protected function setFormDataAfterCheckout()
@@ -362,14 +359,23 @@ class Checkout extends FrontendController
         $this->data_form['countries'] = $this->country->getNames(true);
         $this->data_form['cart'] = $this->prepareCart($this->data_cart);
         $this->data_form['format'] = $this->country->getFormat($this->country_code, true);
+        $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
 
         if (empty($this->data_form['states'])) {
             unset($this->data_form['format']['state_id']);
         }
 
         $this->calculateCheckout();
+        $this->setFormDataPanesOrder();
+    }
 
-        $panes = array('admin', 'login', 'review', 'payment_methods', 'shipping_address');
+    /**
+     * Sets rendered panes
+     */
+    protected function setFormDataPanesOrder()
+    {
+        $panes = array('admin', 'login', 'review', 'payment_methods',
+            'shipping_methods', 'shipping_address');
 
         foreach ($panes as $pane) {
             $this->data_form["pane_$pane"] = $this->render("checkout/panes/$pane", $this->data_form);
@@ -398,11 +404,13 @@ class Checkout extends FrontendController
             $this->address_form = false;
         }
 
+        $this->submitAddAddressCheckout();
+
         if ($this->isPosted('checkout_login') && empty($this->uid)) {
             $this->login_form = true;
         }
-        
-        if($this->isPosted('update')){
+
+        if ($this->isPosted('update')) {
             $this->setMessage($this->text('Form has been updated'), 'success', false);
         }
 
@@ -413,10 +421,25 @@ class Checkout extends FrontendController
         }
 
         $this->validateCouponCheckout();
+        $this->submitCartCheckout();
+        $this->submitOrderCheckout();
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    protected function submitAddAddressCheckout()
+    {
+        if (!$this->isPosted('save_address')) {
+            return null;
+        }
+
+        $this->validateAddressCheckout();
 
         if (!$this->hasErrors('order', false)) {
-            $this->submitCartCheckout();
-            $this->submitOrderCheckout();
+            $this->addAddressCheckout();
+            $this->address_form = false;
         }
     }
 
@@ -445,7 +468,7 @@ class Checkout extends FrontendController
         if (empty($result['user'])) {
             $this->setError('login', $result['message']);
         } else {
-           $this->redirect($result['redirect'], $result['message'], $result['severity']); 
+            $this->redirect($result['redirect'], $result['message'], $result['severity']);
         }
     }
 
@@ -467,13 +490,10 @@ class Checkout extends FrontendController
             return null;
         }
 
-        if ($this->order->codeMatches($price_rule_id, $code)) {
-            $this->setMessageFormCheckout('components.success', $this->text('Code is valid'));
-            return null;
+        if (!$this->order->priceRuleCodeMatches($price_rule_id, $code)) {
+            $this->setError('pricerule_code', $this->text('Invalid code'));
+            $this->setMessageFormCheckout('components.warning', $this->text('Invalid code'));
         }
-
-        $this->setError('pricerule_code', $this->text('Invalid code'));
-        $this->setMessageFormCheckout('components.warning', $this->text('Invalid code'));
     }
 
     /**
@@ -483,21 +503,21 @@ class Checkout extends FrontendController
     {
         $this->submitCartItemsCheckout();
         $this->moveCartWishlistCheckout();
-        
+
         $this->deleteCartCheckout();
         $this->updateCartCheckout();
     }
 
     /**
      * Applies an action to the cart items
-     * @return boolean
+     * @return null
      */
     protected function submitCartItemsCheckout()
     {
         $items = $this->getSubmitted('cart.items');
 
         if (empty($items)) {
-            return false;
+            return null;
         }
 
         $errors = array();
@@ -508,13 +528,12 @@ class Checkout extends FrontendController
             }
         }
 
-        if (empty($errors)) {
-            $this->setSubmitted('cart.action.update', true);
-            return true;
+        if (!empty($errors)) {
+            $this->setMessageFormCheckout('cart.warning', $errors);
+            return null;
         }
 
-        $this->setMessageFormCheckout('cart.warning', $errors);
-        return false;
+        $this->setSubmitted('cart.action.update', true);
     }
 
     /**
@@ -619,7 +638,7 @@ class Checkout extends FrontendController
 
     /**
      * Saves an order to the database
-     * @return null|void
+     * @return null
      */
     protected function submitOrderCheckout()
     {
@@ -630,36 +649,37 @@ class Checkout extends FrontendController
         $this->validateAddressCheckout();
         $this->validateOrderCheckout();
 
-        if ($this->hasErrors('order', false)) {
-            return null;
+        if (!$this->isError()) {
+            $this->addAddressCheckout();
+            $this->saveOrderCheckout();
         }
+    }
 
-        $this->addAddressCheckout();
-
-        // Add / update an order
+    /**
+     * Adds/updates an order
+     */
+    protected function saveOrderCheckout()
+    {
         $submitted = $this->getSubmitted();
         $submitted += $this->data_form['order'];
         $submitted['cart'] = $this->data_cart;
 
         if (empty($this->data_order['order_id'])) {
-            return $this->addOrderCheckout($submitted);
+            $this->addOrderCheckout($submitted);
+        } else {
+            $this->updateOrderCheckout($this->data_order['order_id'], $submitted);
         }
-
-        return $this->updateOrderCheckout($this->data_order['order_id'], $submitted);
     }
 
     /**
      * Validates a submitted address
-     * @return null|array
      */
     protected function validateAddressCheckout()
     {
-        if (empty($this->address_form)) {
-            return null;
+        if (!empty($this->address_form)) {
+            $this->setSubmitted('address.user_id', $this->order_user_id);
+            $this->validate('address', array('parents' => 'address'));
         }
-
-        $this->setSubmitted('address.user_id', $this->order_user_id);
-        return $this->validate('address', array('parents' => 'address'));
     }
 
     /**
@@ -668,11 +688,11 @@ class Checkout extends FrontendController
     protected function validateOrderCheckout()
     {
         $this->setSubmitted('update', array()); // Reset all values set before
-        
+
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);
-        
+
         $this->validate('order');
     }
 
@@ -724,6 +744,7 @@ class Checkout extends FrontendController
         $this->data_form = gplcart_array_merge($this->data_form, $submitted);
 
         $result = $this->order->calculate($this->data_cart, $this->data_form);
+
         $this->data_form['total_formatted'] = $this->price->format($result['total'], $result['currency']);
         $this->data_form['total'] = $result['total'];
 
@@ -757,18 +778,13 @@ class Checkout extends FrontendController
                 $name = $component['rule']['name'];
             }
 
-            if (!isset($name)) {
-                $name = $this->text($type);
-            }
-
             $components[$type] = array(
-                'name' => $name,
                 'price' => $component['price'],
+                'name' => isset($name) ? $name : $this->text($type),
                 'rule' => isset($component['rule']) ? $component['rule'] : false,
                 'price_formatted' => $this->price->format($component['price'], $calculated['currency'])
             );
         }
-
         return $components;
     }
 

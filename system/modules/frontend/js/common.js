@@ -271,7 +271,7 @@
      */
     GplCart.onload.equalHeight = function () {
         if ($.fn.matchHeight) {
-            $('.products .thumbnail .title, label.address').matchHeight();
+            $('.products .thumbnail .title').matchHeight();
         }
     };
 
@@ -550,16 +550,19 @@
     };
 
     /**
-     * Prevents search for empty keyword
+     * Blocks submit for empty imputs
      * @returns {undefined}
      */
-    GplCart.onload.searchBlockEmpty = function () {
-        $('form.search').submit(function () {
-            if ($('input[name="q"]').val() === "") {
+    GplCart.onload.blockEmptyInput = function () {
+        var input;
+        $(document).on('click', '[data-block-if-empty]', function () {
+            input = $('[name="' + $(this).data('block-if-empty') + '"]');
+            if (input.length === 0 || input.val().length === 0) {
                 return false;
             }
         });
     };
+
 
     /**
      * Updates address fields depending on chosen country
@@ -682,9 +685,9 @@
 
         $(document).off('submit').on('submit', 'form#checkout', function (e) {
 
-            if (clicked === 'save'
+            if (clicked && (clicked === 'save'
                     || clicked === 'login'
-                    || clicked.slice(-10) === '[wishlist]') {
+                    || clicked.slice(-10) === '[wishlist]')) {
                 return true;
             }
 

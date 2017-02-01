@@ -22,7 +22,7 @@
                   <label class="address btn btn-default{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' active'}}">
                     {% for name,value in address %}
                         <span class="clearfix">
-                          <span class="pull-left">{{ name }} : {{ value }}</span>
+                          {{ name }} : {{ value }}
                         </span>
                     {% endfor %}
                     <input type="radio" name="order[shipping_address]" value="{{ address_id }}" autocomplete="off"{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' checked'}}>
@@ -89,15 +89,22 @@
             </table>
           </div>
         </div>
-        {% if addresses is not empty %}
-            <div class="form-group">
-              <div class="col-md-12">
+        <div class="form-group">
+          {% if addresses is not empty %}
+              <div class="col-md-6">
                 <button class="btn btn-default" name="cancel_address_form" value="1">
                   {{ text('Select saved address') }}
                 </button>
               </div>
-            </div>
-        {% endif %}
+          {% endif %}
+          {% if user('user_id') %}
+              <div class="col-md-6 text-right">
+                <button class="btn btn-default" name="save_address" value="1">
+                  {{ text('Save') }}
+                </button>
+              </div>
+          {% endif %}
+        </div>
     {% endif %}
     {% if error('shipping_address', true) %}
         <div class="alert alert-danger alert-dismissible">

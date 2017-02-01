@@ -143,9 +143,9 @@ class Trigger extends Model
     {
         $this->hook->fire('get.trigger.before', $trigger_id);
 
+        $options = array('unserialize' => 'data');
         $sql = 'SELECT * FROM triggers WHERE trigger_id=?';
 
-        $options = array('unserialize' => 'data');
         $trigger = $this->db->fetch($sql, array($trigger_id), $options);
 
         $this->hook->fire('get.trigger.after', $trigger);
@@ -210,9 +210,7 @@ class Trigger extends Model
 
         $fired = array();
         foreach ($triggers as $trigger) {
-
             $result = $this->condition->isMet($trigger['data']['conditions'], $data);
-
             if ($result === true) {
                 $fired[] = $trigger['trigger_id'];
             }

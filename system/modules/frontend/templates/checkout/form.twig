@@ -33,46 +33,44 @@
           {% if login_form %}
               {{ pane_login|raw }}
           {% elseif user('user_id') is empty %}
-              <div class="panel panel-default">
-                <div class="panel-body">
+              <div class="form-group">
+                <label class="col-md-2 control-label">{{ text('Already registered?') }}</label>
+                <div class="col-md-4">
+                  <button class="btn btn-default form-control" name="checkout_login" value="1">
+                    {{ text('Click to login') }}
+                  </button>
+                </div>
+              </div>
+          {% endif %}
+        </div>
+      </div>
+      {% if not login_form %}
+          <div class="row">
+            <div class="col-md-4">
+              {% if pane_shipping_address is defined and pane_shipping_address is not empty %}
+                  {{ pane_shipping_address|raw }}
+              {% endif %}
+            </div>
+            {% if shipping_methods or payment_methods %}
+                <div class="col-md-3">
                   <div class="form-group">
-                    <label class="col-md-2 control-label">{{ text('Already registered?') }}</label>
-                    <div class="col-md-3">
-                      <button class="btn btn-default form-control" name="checkout_login" value="1">
-                        {{ text('Click to login') }}
-                      </button>
+                    <div class="col-md-12">
+                      {% if shipping_methods %}
+                          {{ pane_shipping_methods|raw }}
+                      {% endif %}
+                      {% if payment_methods  %}
+                          {{ pane_payment_methods|raw }}
+                      {% endif %}
                     </div>
                   </div>
                 </div>
-              </div>
-          {% endif %}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-          {% if pane_shipping_address is defined and pane_shipping_address is not empty %}
-              {{ pane_shipping_address|raw }}
-          {% endif %}
-        </div>
-        {% if shipping_methods or payment_methods %}
-            <div class="col-md-3">
-              <div class="form-group">
-                <div class="col-md-12">
-                  {% if shipping_methods and pane_shipping_methods is defined %}
-                      {{ pane_shipping_methods|raw }}
-                  {% endif %}
-                  {% if payment_methods and pane_payment_methods is defined  %}
-                      {{ pane_payment_methods|raw }}
-                  {% endif %}
-                </div>
-              </div>
+            {% endif %}
+            <div class="col-md-5">
+              {% if pane_review is defined and pane_review is not empty %}
+                  {{ pane_review|raw }}
+              {% endif %}
             </div>
-        {% endif %}
-        <div class="col-md-5">
-          {% if pane_review is defined and pane_review is not empty %}
-              {{ pane_review|raw }}
-          {% endif %}
-        </div>
-      </div>
+          </div>
+      {% endif %}
     </form>
 {% endif %}

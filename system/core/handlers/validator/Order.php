@@ -98,7 +98,7 @@ class Order extends BaseValidator
         $this->validatePaymentOrder();
         $this->validateShippingOrder();
         $this->validateStatusOrder();
-        $this->validateAddressOrder();
+        $this->validateShippingAddressOrder();
         $this->validateUserCartId();
         $this->validateCreatorOrder();
         $this->validateTotalOrder();
@@ -143,13 +143,20 @@ class Order extends BaseValidator
     {
         $module_id = $this->getSubmitted('payment');
 
-        if (empty($module_id)) {
+        if ($this->isUpdating() && !isset($module_id)) {
             return null;
+        }
+
+        if (empty($module_id)) {
+            $vars = array('@field' => $this->language->text('Payment'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('payment', $error);
+            return false;
         }
 
         $method = $this->payment->get($module_id);
 
-        if (empty($method)) {
+        if (empty($method['status'])) {
             $vars = array('@name' => $this->language->text('Payment'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('payment', $error);
@@ -167,13 +174,20 @@ class Order extends BaseValidator
     {
         $module_id = $this->getSubmitted('shipping');
 
-        if (empty($module_id)) {
+        if ($this->isUpdating() && !isset($module_id)) {
             return null;
+        }
+
+        if (empty($module_id)) {
+            $vars = array('@field' => $this->language->text('Shipping'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('shipping', $error);
+            return false;
         }
 
         $method = $this->shipping->get($module_id);
 
-        if (empty($method)) {
+        if (empty($method['status'])) {
             $vars = array('@name' => $this->language->text('Shipping'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('shipping', $error);
@@ -191,7 +205,7 @@ class Order extends BaseValidator
     {
         $status = $this->getSubmitted('status');
 
-        if (empty($status)) {
+        if (!isset($status)) {
             return null;
         }
 
@@ -208,43 +222,41 @@ class Order extends BaseValidator
     }
 
     /**
-     * Validates order addresses
+     * Validates a shipping address
      * @return boolean
      */
-    protected function validateAddressOrder()
+    protected function validateShippingAddressOrder()
     {
-        foreach ($this->address->getTypes() as $type) {
+        $address_id = $this->getSubmitted('shipping_address');
 
-            $field = $type . '_address';
-            $address_id = $this->getSubmitted($field);
-
-            if (!isset($address_id)) {
-                continue;
-            }
-
-            $name = ucfirst(str_replace('_', ' ', $field));
-
-            if (!is_numeric($address_id)) {
-                $vars = array('@field' => $this->language->text($name));
-                $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError($field, $error);
-                continue;
-            }
-
-            if (empty($address_id)) {
-                continue;
-            }
-
-            $address = $this->address->get($address_id);
-
-            if (empty($address)) {
-                $vars = array('@name' => $this->language->text($name));
-                $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError($field, $error);
-            }
+        if ($this->isUpdating() && !isset($address_id)) {
+            return null;
         }
 
-        return !isset($error);
+        if (empty($address_id)) {
+            $vars = array('@field' => $this->language->text('Shipping address'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('shipping_address', $error);
+            return false;
+        }
+
+        if (!is_numeric($address_id)) {
+            $vars = array('@field' => $this->language->text('Shipping address'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('shipping_address', $error);
+            return false;
+        }
+
+        $address = $this->address->get($address_id);
+
+        if (empty($address)) {
+            $vars = array('@name' => $this->language->text($name));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('shipping_address', $error);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -255,15 +267,8 @@ class Order extends BaseValidator
     {
         $creator = $this->getSubmitted('creator');
 
-        if ($this->isUpdating() && !isset($creator)) {
-            return null;
-        }
-
         if (empty($creator)) {
-            $vars = array('@field' => $this->language->text('Creator'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('creator', $error);
-            return false;
+            return null;
         }
 
         if (!is_numeric($creator)) {

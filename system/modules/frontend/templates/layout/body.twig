@@ -107,7 +107,7 @@
                 <input type="search" class="form-control" autocomplete="off" name="q" value="{{ query.q | default('') }}" placeholder="{{ text('Search') }}">
                 <i class="fa fa-spinner fa-spin hidden"></i>
                 <span class="input-group-btn">
-                  <button class="btn btn-default">
+                  <button class="btn btn-default" data-block-if-empty="q" name="search">
                     <i class="fa fa-search"></i>
                   </button>
                 </span>

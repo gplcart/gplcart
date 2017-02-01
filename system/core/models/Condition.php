@@ -73,18 +73,15 @@ class Condition extends Model
             case '<':
                 return ($value1 < $value2);
             case '=':
-
                 if (is_array($value2)) {
                     return in_array($value1, $value2);
                 }
-
                 return ($value1 == $value2);
 
             case '!=':
                 if (is_array($value2)) {
                     return !in_array($value1, $value2);
                 }
-
                 return ($value1 != $value2);
         }
 
@@ -110,18 +107,15 @@ class Condition extends Model
 
         switch ($operator) {
             case '=':
-
                 if (is_array($value2)) {
                     return in_array($value1, $value2, true);
                 }
-
                 return (strcmp($value1, $value2) === 0);
 
             case '!=':
                 if (is_array($value2)) {
                     return !in_array($value1, $value2, true);
                 }
-
                 return (strcmp($value1, $value2) !== 0);
         }
 
@@ -144,16 +138,15 @@ class Condition extends Model
 
         $handlers = $this->getHandlers();
 
-        $met = 0;
+        $result = true;
         foreach ($conditions as $condition) {
             $result = Handler::call($handlers, $condition['id'], 'process', array($condition, $data));
-
-            if ($result === true) {
-                $met++;
+            if ($result !== true) {
+                $result = false;
+                break;
             }
         }
 
-        $result = (count($conditions) == $met);
         $this->hook->fire('condition.met.after', $conditions, $data, $result);
         return $result;
     }

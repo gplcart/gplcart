@@ -11,7 +11,6 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\Cache;
-use gplcart\core\Logger;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Mail as MailModel;
 use gplcart\core\models\Cart as CartModel;
@@ -70,12 +69,6 @@ class Order extends Model
     protected $product;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -91,12 +84,10 @@ class Order extends Model
      * @param LanguageModel $language
      * @param MailModel $mail
      * @param RequestHelper $request
-     * @param Logger $logger
      */
     public function __construct(UserModel $user, PriceModel $price,
             PriceRuleModel $pricerule, ProductModel $product, CartModel $cart,
-            LanguageModel $language, MailModel $mail, RequestHelper $request,
-            Logger $logger)
+            LanguageModel $language, MailModel $mail, RequestHelper $request)
     {
         parent::__construct();
 
@@ -104,7 +95,6 @@ class Order extends Model
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
-        $this->logger = $logger;
         $this->product = $product;
         $this->request = $request;
         $this->language = $language;
@@ -304,7 +294,7 @@ class Order extends Model
         $data['modified'] = GC_TIME;
 
         if (!empty($data['cart'])) {
-            $this->setComponents($data, $data['cart']);
+            $this->prepareComponents($data, $data['cart']);
         }
 
         $result = $this->db->update('orders', $data, array('order_id' => $order_id));
@@ -433,7 +423,7 @@ class Order extends Model
             return $result; // Blocked by a module
         }
 
-        $this->setComponents($data, $cart);
+        $this->prepareComponents($data, $cart);
         $order_id = $this->add($data);
 
         if (empty($order_id)) {
@@ -443,9 +433,8 @@ class Order extends Model
         // Get fresh order from the database
         $order = $this->get((int) $order_id);
 
-        $this->logSubmit($order);
         $this->setPriceRule($order);
-        $this->setCart($order, $cart);
+        $this->updateCart($order, $cart);
 
         $result = array(
             'order' => $order,
@@ -511,7 +500,7 @@ class Order extends Model
     public function getCompleteMessage(array $order)
     {
         if (is_numeric($order['user_id'])) {
-            $message = $this->getCompleteMessageLogged($order);
+            $message = $this->getCompleteMessageLoggedIn($order);
         } else {
             $message = $this->getCompleteMessageAnonymous($order);
         }
@@ -525,7 +514,7 @@ class Order extends Model
      * @param array $order
      * @return string
      */
-    protected function getCompleteMessageLogged(array $order)
+    protected function getCompleteMessageLoggedIn(array $order)
     {
         $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
         $message = $this->config->get('order_complete_message', $default);
@@ -579,6 +568,7 @@ class Order extends Model
 
         $order['order_id'] = $this->db->insert('orders', $order);
         $this->hook->fire('add.order.after', $order);
+
         return $order['order_id'];
     }
 
@@ -681,7 +671,11 @@ class Order extends Model
         $this->pricerule->calculate($total, $cart, $data, $components);
         $this->hook->fire('calculate.order', $total, $cart, $data, $components);
 
-        return array('total' => $total, 'currency' => $cart['currency'], 'components' => $components);
+        return array(
+            'total' => $total,
+            'components' => $components,
+            'currency' => $cart['currency']
+        );
     }
 
     /**
@@ -690,7 +684,7 @@ class Order extends Model
      * @param string $code
      * @return boolean
      */
-    public function codeMatches($price_rule_id, $code)
+    public function priceRuleCodeMatches($price_rule_id, $code)
     {
         return $this->pricerule->codeMatches($price_rule_id, $code);
     }
@@ -735,11 +729,11 @@ class Order extends Model
     }
 
     /**
-     * Set cart items after order was created
+     * Update cart items after order was created
      * @param array $order
      * @param array $cart
      */
-    protected function setCart(array $order, array $cart)
+    protected function updateCart(array $order, array $cart)
     {
         foreach ($cart['items'] as $item) {
 
@@ -747,26 +741,12 @@ class Order extends Model
                 // Replace default order ID (0) with order ID we just created
                 'order_id' => $order['order_id'],
                 // Make sure that cart items have the same user ID with order.
-                // It can be different e.g admin adds an order using own cart items
+                // It can be different e.g admin created the order using own cart
                 'user_id' => $order['user_id']
             );
 
             $this->cart->update($item['cart_id'], $values);
         }
-    }
-
-    /**
-     * Logs the order submit event
-     * @param array $order
-     */
-    protected function logSubmit(array $order)
-    {
-        $log = array(
-            'message' => 'User %s has submitted order',
-            'variables' => array('%s' => $order['user_id'])
-        );
-
-        $this->logger->log('checkout', $log);
     }
 
     /**
@@ -787,11 +767,12 @@ class Order extends Model
      * Prepares order components
      * @param array $order
      * @param array $cart
+     * @return null
      */
-    protected function setComponents(array &$order, array $cart)
+    protected function prepareComponents(array &$order, array $cart)
     {
         if (empty($cart['items'])) {
-            return;
+            return null;
         }
 
         foreach ($cart['items'] as $sku => $item) {

@@ -368,6 +368,9 @@ class Condition
         }
 
         $exists = array_filter($values, function ($user_id) {
+            if ($user_id == 0) {
+                return true; // 0 also valid if we check a user is logged in
+            }
             $user = $this->user->get($user_id);
             return isset($user['user_id']);
         });

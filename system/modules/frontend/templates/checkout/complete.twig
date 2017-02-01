@@ -11,13 +11,9 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-<div class="panel panel-default complete">
-  <div class="panel-body">
-    {{ complete_message }}
-    {% if templates is not empty %}
-        {% for template in templates %}
-            {{ template }}
-        {% endfor %}
-    {% endif %}
-  </div>
-</div>
+{{ complete_message|raw }}
+{% if templates is not empty %}
+    {% for template in templates %}
+        {{ template|raw }}
+    {% endfor %}
+{% endif %}

@@ -53,7 +53,6 @@
             </div>
           </div>
         </div>
-        <hr>
     {% endfor %}
     {% if messages['cart'] is defined and messages['cart'] is not empty %}
         {% for severity,text in messages['cart'] %}
@@ -84,11 +83,14 @@
                   {% if price_component['rule']['code'] is defined and price_component['rule']['code'] != '' %}
                       <div class="form-group col-md-8{{ error('check_pricerule', ' has-error') }}">
                         <div class="input-group">
-                          <input class="form-control col-md-2" name="order[data][pricerule_code]" placeholder="{{ text('Enter your discount code') }}" value="{{ order['data']['pricerule_code'] ?? '' }}">
+                          <input class="form-control col-md-2" name="order[data][pricerule_code]" placeholder="{{ text('Enter code') }}" value="{{ order['data']['pricerule_code'] ?? '' }}">
                           <span class="input-group-btn">
-                            <button class="btn btn-default" name="check_pricerule" value="{{ id }}">{{ text('Check') }}</button>
+                            <button class="btn btn-default" data-block-if-empty="order[data][pricerule_code]" name="check_pricerule" value="{{ id }}">{{ text('Apply') }}</button>
                           </span>
                         </div>
+                        {% if price_component['price'] != 0 %}
+                            {{ price_component['price_formatted'] }}
+                        {% endif %}
                       </div>
                   {% else %}    
                       {{ price_component['price_formatted'] }}
@@ -104,18 +106,18 @@
             </td>
           </tr>
         </table>
-        {% if messages['components'] is defined and messages['components'] is not empty %}
-            {% for severity,text in messages['components'] %}
-                <div class="alert alert-{{ severity }} alert-dismissible">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                  {{ text|raw }}
-                </div>
-            {% endfor %}
-        {% endif %}
       </div>
     </div>
+    {% if messages['components'] is defined and messages['components'] is not empty %}
+        {% for severity,text in messages['components'] %}
+            <div class="alert alert-{{ severity }} alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              {{ text|raw }}
+            </div>
+        {% endfor %}
+    {% endif %}
     <div class="form-group">
       <div class="col-md-6">
         <button class="btn btn-success" name="save" value="1">

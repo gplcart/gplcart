@@ -80,12 +80,46 @@ class Address extends BaseValidator
         $this->validateCityAddress();
         $this->validateTypeAddress();
         $this->validateTextFieldsAddress();
-        $this->validateUserId();
+        $this->validateUserIdAddress();
 
         // No more needed, remove
         $this->unsetSubmitted('format');
-
         return $this->getResult();
+    }
+
+    /**
+     * Validates a user Id
+     * @return boolean
+     */
+    protected function validateUserIdAddress()
+    {
+        $user_id = $this->getSubmitted('user_id');
+
+        if ($this->isUpdating() && !isset($user_id)) {
+            return null;
+        }
+
+        if (empty($user_id) || mb_strlen($user_id) > 255) {
+            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('User'));
+            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+            $this->setError('user_id', $error);
+            return false;
+        }
+
+        if (!is_numeric($user_id)) {
+            return true; // Anonymous user
+        }
+
+        $user = $this->user->get($user_id);
+
+        if (empty($user)) {
+            $vars = array('@name' => $this->language->text('User'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('user_id', $error);
+            return false;
+        }
+
+        return true;
     }
 
     /**

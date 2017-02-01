@@ -117,43 +117,49 @@ class Install extends Model
         $requirements['extensions']['gd'] = array(
             'status' => extension_loaded('gd'),
             'severity' => 'danger',
-            'message' => $this->language->text('GD image extension installed')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'GD'))
         );
 
         $requirements['extensions']['pdo'] = array(
             'status' => extension_loaded('pdo'),
             'severity' => 'danger',
-            'message' => $this->language->text('PDO database driver installed')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'PDO'))
         );
 
         $requirements['extensions']['spl'] = array(
             'status' => extension_loaded('spl'),
             'severity' => 'danger',
-            'message' => $this->language->text('SPL extension installed')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'SPL'))
         );
 
         $requirements['extensions']['curl'] = array(
             'status' => extension_loaded('curl'),
             'severity' => 'danger',
-            'message' => $this->language->text('CURL extension installed')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'CURL'))
         );
 
         $requirements['extensions']['fileinfo'] = array(
             'status' => extension_loaded('fileinfo'),
             'severity' => 'danger',
-            'message' => $this->language->text('FileInfo extension installed')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'FileInfo'))
         );
 
         $requirements['extensions']['openssl'] = array(
             'status' => extension_loaded('openssl'),
             'severity' => 'danger',
-            'message' => $this->language->text('OpenSSL extension installed')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'OpenSSL'))
+        );
+
+        $requirements['extensions']['ctype'] = array(
+            'status' => extension_loaded('ctype'),
+            'severity' => 'danger',
+            'message' => $this->language->text('@name extension installed', array('@name' => 'Ctype'))
         );
 
         $requirements['extensions']['zip'] = array(
             'status' => class_exists('ZipArchive'),
             'severity' => 'danger',
-            'message' => $this->language->text('Supports ZIP files')
+            'message' => $this->language->text('@name extension installed', array('@name' => 'ZIP'))
         );
 
         $requirements['php']['allow_url_fopen'] = array(
@@ -165,13 +171,13 @@ class Install extends Model
         $requirements['files']['system_directory'] = array(
             'status' => is_writable(GC_SYSTEM_DIR),
             'severity' => 'danger',
-            'message' => $this->language->text('System directory exists and writable')
+            'message' => $this->language->text('@file exists and writable', array('@file' => '/system'))
         );
 
         $requirements['files']['cache_directory'] = array(
             'status' => is_writable(GC_CACHE_DIR),
             'severity' => 'danger',
-            'message' => $this->language->text('Cache directory exists and writable')
+            'message' => $this->language->text('@file exists and writable', array('@file' => '/cache'))
         );
 
         return $requirements;

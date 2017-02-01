@@ -31,8 +31,8 @@
     <table class="table table-condensed">
       <caption>{{ text('Components') }}</caption>
       <tbody>
-        {{ components.cart|default('')|raw }}
-        {% if components.rule is not empty %}
+        {{ components.cart is defined and components.cart is not empty ? components.cart|raw }}
+        {% if components.rule is defined and components.rule is not empty %}
             {% for rule in components.rule %}
                 {{ rule }}
             {% endfor %}

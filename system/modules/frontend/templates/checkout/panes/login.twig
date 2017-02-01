@@ -11,44 +11,30 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-<div class="form-group">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        {% if error('login', true) %}
-            <div class="alert alert-danger alert-dismissible clearfix">
-              <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ error('login') }}
-            </div>
-        {% endif %}
-        <div class="form-inline clearfix">
-          <div class="form-group col-md-4{{ error('order.user.email', ' has-error') }}">
-            <label class="col-md-3 control-label">{{ text('E-mail') }}</label>
-            <div class="col-md-9">
-              <input maxlength="255" class="form-control" name="order[user][email]" value="{{ order['user']['email'] ?? '' }}" autofocus>
-              <div class="help-block">{{ error('order.user.email') }}</div>
-            </div>
-          </div>
-          <div class="form-group col-md-4">
-            <label class="col-md-3 control-label">{{ text('Password') }}</label>
-            <div class="col-md-9">
-              <input type="order[user][password]" maxlength="32" class="form-control" name="order[user][password]" value="">
-            </div>
-          </div>
-          <div class="form-group col-md-4">
-            <div class="btn-toolbar">
-              <button class="btn btn-default" name="login" value="1">
-                {{ text('Log in') }}
-              </button>
-              <button class="btn btn-default" name="checkout_anonymous" value="1">
-                {{ text('Continue as guest') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+{% if error('login', true) %}
+    <div class="alert alert-danger alert-dismissible clearfix">
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{ error('login') }}
     </div>
+{% endif %}
+<div class="form-group{{ error('order.user.email', ' has-error') }}">
+  <label class="col-md-2 control-label">{{ text('E-mail') }}</label>
+  <div class="col-md-4">
+    <input class="form-control" name="order[user][email]" value="{{ order['user']['email'] ?? '' }}" autofocus>
+    <div class="help-block">{{ error('order.user.email') }}</div>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-md-2 control-label">{{ text('Password') }}</label>
+  <div class="col-md-4">
+    <input type="password" class="form-control" name="order[user][password]" value="">
+  </div>
+</div>
+<div class="form-group">
+  <div class="col-md-offset-2 col-md-4">
+    <button class="btn btn-default" name="login" value="1">{{ text('Log in') }}</button>
+    <button class="btn btn-default" name="checkout_anonymous" value="1">{{ text('Continue as guest') }}</button>
   </div>
 </div>
