@@ -251,7 +251,11 @@ label.title {
     font-size: 100%;
 }
 
-.hidden-js {
+body.js .hidden-js {
+    display: none !important;
+}
+
+body:not(.js) .hidden-non-js {
     display: none !important;
 }
 
@@ -266,7 +270,6 @@ td.middle {
 .panel-footer .pagination {
     margin: 0;
 }
-
 
 .indentation {
     padding-left: 1em;

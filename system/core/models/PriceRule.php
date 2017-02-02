@@ -45,8 +45,8 @@ class PriceRule extends Model
      * @param TriggerModel $trigger
      * @param LanguageModel $language
      */
-    public function __construct(CurrencyModel $currency,
-            TriggerModel $trigger, LanguageModel $language)
+    public function __construct(CurrencyModel $currency, TriggerModel $trigger,
+            LanguageModel $language)
     {
         parent::__construct();
 
@@ -264,14 +264,14 @@ class PriceRule extends Model
             'status' => 1,
             'store_id' => $data['order']['store_id']
         );
-        
+
         $rules = $this->getTriggered($options, array('cart' => $cart, 'data' => $data));
 
         foreach ($rules as $rule) {
             $this->calculateComponent($total, $cart, $data, $components, $rule);
         }
     }
-    
+
     /**
      * Calculates a price rule component
      * @param integer $amount
@@ -281,7 +281,8 @@ class PriceRule extends Model
      * @param array $rule
      * @return integer
      */
-    protected function calculateComponent(&$amount, $cart, $data, &$components, $rule)
+    protected function calculateComponent(&$amount, $cart, $data, &$components,
+            $rule)
     {
         $rule_id = $rule['price_rule_id'];
 
@@ -298,7 +299,7 @@ class PriceRule extends Model
             $amount += $value;
             return $amount;
         }
-        
+
         settype($rule['value'], 'integer');
 
         if ($cart['currency'] !== $rule['currency']) {

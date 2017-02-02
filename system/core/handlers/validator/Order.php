@@ -250,7 +250,7 @@ class Order extends BaseValidator
         $address = $this->address->get($address_id);
 
         if (empty($address)) {
-            $vars = array('@name' => $this->language->text($name));
+            $vars = array('@name' => $this->language->text('Shipping address'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('shipping_address', $error);
             return false;

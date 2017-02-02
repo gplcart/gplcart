@@ -78,12 +78,6 @@ class Checkout extends FrontendController
     protected $cart_updated = false;
 
     /**
-     * Current country code
-     * @var string
-     */
-    protected $country_code;
-
-    /**
      * Whether we're in admin mode
      * @var boolean
      */
@@ -162,7 +156,6 @@ class Checkout extends FrontendController
         $this->admin_user_id = $this->uid;
         $this->order_user_id = $this->cart_uid;
         $this->order_store_id = $this->store_id;
-        $this->country_code = $this->country->getDefault();
     }
 
     /**
@@ -345,25 +338,36 @@ class Checkout extends FrontendController
     protected function setFormDataAfterCheckout()
     {
         if (empty($this->data_cart)) {
-            return null; // Required
+            return null;
         }
 
-        $this->data_form['address'] = $this->getSubmitted('address', array());
+        $default_country = '';
+        $countries = $this->country->getNames(true);
+
+        if (count($countries) == 1) {
+            $default_country = key($countries);
+        }
+
+        $address = $this->getSubmitted('address', array('country' => $default_country));
+
+        $this->data_form['address'] = $address;
+        $this->data_form['countries'] = $countries;
         $this->data_form['login_form'] = $this->login_form;
         $this->data_form['address_form'] = $this->address_form;
-        $this->data_form['country_code'] = $this->country_code;
+        $this->data_form['format'] = $this->country->getFormat($address['country']);
 
-        $options = array('country' => $this->country_code, 'status' => 1);
-        $this->data_form['states'] = $this->state->getList($options);
-
-        $this->data_form['countries'] = $this->country->getNames(true);
-        $this->data_form['cart'] = $this->prepareCart($this->data_cart);
-        $this->data_form['format'] = $this->country->getFormat($this->country_code, true);
-        $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
+        $state_conditions = array('country' => $address['country'], 'status' => 1);
+        $this->data_form['states'] = $this->state->getList($state_conditions);
 
         if (empty($this->data_form['states'])) {
             unset($this->data_form['format']['state_id']);
         }
+
+        $this->data_form['cart'] = $this->prepareCart($this->data_cart);
+        $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
+
+        $excess = $this->address->getExcess($this->order_user_id, $this->data_form['addresses']);
+        $this->data_form['can_add_address'] = empty($excess);
 
         $this->calculateCheckout();
         $this->setFormDataPanesOrder();
@@ -426,8 +430,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * 
-     * @return type
+     * Saves a submitted address
      */
     protected function submitAddAddressCheckout()
     {
@@ -435,9 +438,9 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $this->validateAddressCheckout();
+        $errors = $this->validateAddressCheckout();
 
-        if (!$this->hasErrors('order', false)) {
+        if (empty($errors)) {
             $this->addAddressCheckout();
             $this->address_form = false;
         }
@@ -646,13 +649,25 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $this->validateAddressCheckout();
-        $this->validateOrderCheckout();
+        $address_errors = $this->validateAddressCheckout();
+        $order_errors = $this->validateOrderCheckout();
 
-        if (!$this->isError()) {
+        if ($this->address_form) {
+            // Since we're going to save a new address and have no address ID yet,
+            // order validator will throw "Shipping address required" error
+            // which is useless for users and should be replaced with
+            // more informative per-field errors (if any) from address validator
+            unset($order_errors['shipping_address']);
+        }
+
+        if (empty($address_errors) && empty($order_errors)) {
             $this->addAddressCheckout();
             $this->saveOrderCheckout();
+            return null;
         }
+
+        $errors = gplcart_array_merge($order_errors, $address_errors);
+        $this->setError(null, $errors);
     }
 
     /**
@@ -673,17 +688,20 @@ class Checkout extends FrontendController
 
     /**
      * Validates a submitted address
+     * @return array
      */
     protected function validateAddressCheckout()
     {
-        if (!empty($this->address_form)) {
+        if ($this->address_form) {
             $this->setSubmitted('address.user_id', $this->order_user_id);
-            $this->validate('address', array('parents' => 'address'));
+            return $this->validate('address', array('parents' => 'address'));
         }
+        return array();
     }
 
     /**
      * Validates an array of submitted values before creating an order
+     * @return array
      */
     protected function validateOrderCheckout()
     {
@@ -693,7 +711,7 @@ class Checkout extends FrontendController
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);
 
-        $this->validate('order');
+        return $this->validate('order');
     }
 
     /**
@@ -745,8 +763,8 @@ class Checkout extends FrontendController
 
         $result = $this->order->calculate($this->data_cart, $this->data_form);
 
-        $this->data_form['total_formatted'] = $this->price->format($result['total'], $result['currency']);
         $this->data_form['total'] = $result['total'];
+        $this->data_form['total_formatted'] = $this->price->format($result['total'], $result['currency']);
 
         $components = $this->prepareOrderComponentsCheckout($result, $this->data_form);
         $this->data_form['price_components'] = $components;

@@ -11,7 +11,7 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-<div class="panel panel-default">
+<div class="panel panel-default checkout-review">
   <div class="panel-heading">{{ text('Review') }}</div>
   <div class="panel-body">
     {% for sku,item in cart['items'] %}
@@ -29,10 +29,20 @@
             <span class="sku">{{ text('SKU') }} : {{ item['sku'] }}</span><br>
             <span class="price">{{ text('Price') }} : {{ item['price_formatted'] }}</span>
             <div>
-              <div class="input-group input-group-sm">
-                <input class="form-control text-center" name="order[cart][items][{{ sku }}][quantity]" value="{{ item['quantity'] }}">
+              <div class="input-group">
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default hidden-non-js" data-spinner="-">
+                    <span class="fa fa-minus"></span>
+                  </button>
+                </span>
+                <input data-min="1" data-max="99" class="form-control text-center quantity" name="order[cart][items][{{ sku }}][quantity]" value="{{ item['quantity'] }}">
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default hidden-non-js" data-spinner="+">
+                    <span class="fa fa-plus"></span>
+                  </button>
+                </span>
                 <span class="input-group-btn hidden-js">
-                  <button title="{{ text('Update') }}" class="btn btn-default btn-sm" name="update" value="1">
+                  <button title="{{ text('Update') }}" class="btn btn-default" name="update" value="1">
                     <i class="fa fa-refresh"></i>
                   </button>
                 </span>
@@ -42,11 +52,11 @@
           </div>
           <div class="col-md-3">
             <div class="btn-toolbar">
-              <button title="{{ text('Delete') }}" class="btn btn-default btn-sm" name="order[cart][action][delete]" value="{{ item['cart_id'] }}">
+              <button title="{{ text('Delete') }}" class="btn btn-default" name="order[cart][action][delete]" value="{{ item['cart_id'] }}">
                 <i class="fa fa-trash"></i>
               </button>
               {% if admin is empty %}
-                  <button title="{{ text('Move to wishlist') }}" class="btn btn-default btn-sm" name="order[cart][action][wishlist]" value="{{ sku }}">
+                  <button title="{{ text('Move to wishlist') }}" class="btn btn-default" name="order[cart][action][wishlist]" value="{{ sku }}">
                     <i class="fa fa-star"></i>
                   </button>
               {% endif %}

@@ -563,7 +563,6 @@
         });
     };
 
-
     /**
      * Updates address fields depending on chosen country
      * @returns {undefined}
@@ -659,19 +658,10 @@
      */
     GplCart.onload.submitCheckout = function () {
 
-        var clicked, queue, settings;
+        var clicked,
+                selector = 'form#checkout input[type="radio"], form#checkout select, form#checkout [name$="[quantity]"]';
 
-        $(document).on('focus', 'form#checkout [name$="[quantity]"]', function () {
-            clearTimeout(queue);
-        });
-
-        $(document).on('blur', 'form#checkout [name$="[quantity]"]', function () {
-            queue = setTimeout(function () {
-                $('form#checkout').submit();
-            }, 100);
-        });
-
-        $(document).on('change', 'form#checkout input[type="radio"], form#checkout select', function () {
+        $(document).on('change', selector, function () {
             $('form#checkout').submit();
         });
 
@@ -698,24 +688,64 @@
                 dataType: 'html',
                 url: GplCart.settings.urn,
                 data: $('form#checkout').serialize(),
+                success: function (data) {
+                    if (data.length) {
+                        $('#checkout-form-wrapper').html(data);
+                    }
+                },
                 beforeSend: function () {
                     $('form#checkout :input').prop('disabled', true);
                 },
-                success: function (data) {
-
-                    if (data.length) {
-
-                        $('#checkout-form-wrapper').html(data);
-                        settings = $(data).data('settings');
-
-                        if (typeof settings === "object" && settings.quantity) {
-                            updateWishlistQuantity(settings.quantity.wishlist);
-                        }
-
-                        $('form#checkout :input').prop('disabled', false);
-                    }
+                complete: function () {
+                    $('form#checkout :input').prop('disabled', false);
                 }
             });
+        });
+    };
+
+    /**
+     * Adds + - spinner functionality
+     * @returns {undefined}
+     */
+    GplCart.onload.plusMinusInput = function () {
+
+        var btn, group, type, input, val, min, max;
+
+        $(document).on('click', '[data-spinner]', function () {
+
+            btn = $(this);
+            group = btn.closest('.input-group');
+            group.find('[data-spinner]').attr('disabled', false);
+
+            type = btn.data('spinner');
+            input = group.find('input');
+            val = parseInt(input.val());
+            min = input.data('min') === 'undefined' ? 0 : input.data('min');
+            max = input.data('max') === 'undefined' ? 9999999999 : input.data('max');
+
+            if (isNaN(val)) {
+                input.val(min);
+                return false;
+            }
+
+            if (type === '-') {
+                if (val > min) {
+                    input.val(val - 1).change();
+                }
+                if (parseInt(input.val()) === min) {
+                    btn.attr('disabled', true);
+                }
+
+            } else if (type === '+') {
+                if (val < max) {
+                    input.val(val + 1).change();
+                }
+                if (parseInt(input.val()) === max) {
+                    btn.attr('disabled', true);
+                }
+            }
+
+            return false;
         });
     };
 

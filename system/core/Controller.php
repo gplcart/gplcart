@@ -974,12 +974,16 @@ class Controller
 
     /**
      * Sets an error
-     * @param string|array $key
+     * @param null|string|array $key
      * @param mixed $value
      */
     public function setError($key, $value)
     {
-        gplcart_array_set_value($this->errors, $key, $value);
+        if (isset($key)) {
+            gplcart_array_set_value($this->errors, $key, $value);
+        } else {
+            $this->errors = $value;
+        }
     }
 
     /**

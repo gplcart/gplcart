@@ -264,35 +264,53 @@ class Address extends Model
     /**
      * Reduces max number of addresses that a user can have
      * @param integer $user_id
-     * @return boolean
      */
     public function controlLimit($user_id)
     {
-        $limit = $this->getLimit();
-        $existing = $this->getList(array('user_id' => $user_id));
+        foreach ($this->getExcess($user_id) as $address) {
+            $this->delete($address['address_id']);
+        }
+    }
+
+    /**
+     * Returns an array of excess address items for the user ID
+     * @param string|integer $user_id
+     * @param null|array $existing
+     * @return array
+     */
+    public function getExcess($user_id, $existing = null)
+    {
+        $limit = $this->getLimit($user_id);
+
+        if (empty($limit)) {
+            return array();
+        }
+
+        if (!isset($existing)) {
+            $existing = $this->getList(array('user_id' => $user_id));
+        }
 
         $count = count($existing);
 
-        if (empty($limit) || $count <= $limit) {
-            return false;
+        if (empty($count) || $count <= $limit) {
+            return array();
         }
 
-        $delete = array_slice($existing, 0, ($count - $limit));
-
-        foreach ($delete as $address) {
-            $this->delete($address['address_id']);
-        }
-
-        return true;
+        return array_slice((array) $existing, 0, ($count - $limit));
     }
 
     /**
      * Returns a number of addresses that a user can have
+     * @param string|integer
      * @return integer
      */
-    public function getLimit()
+    public function getLimit($user_id)
     {
-        return (int) $this->config->get('user_address_limit', 6);
+        if (empty($user_id) || !is_numeric($user_id)) {
+            return (int) $this->config->get('user_address_limit_anonymous', 1);
+        }
+
+        return (int) $this->config->get('user_address_limit', 4);
     }
 
     /**
