@@ -33,39 +33,17 @@ class Order
     }
 
     /**
-     * Returns true if a number of usage condition is met
-     * @param array $condition
-     * @param array $data
-     * @return boolean
-     */
-    public function used(array $condition, array $data)
-    {
-        if (!isset($data['rule']['used'])) {
-            return false;
-        }
-
-        $value = reset($condition['value']);
-        return $this->condition->compareNumeric((int) $data['rule']['used'], (int) $value, $condition['operator']);
-    }
-
-    /**
      * Returns true if a shipping service condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
      */
-    public function shipping(array $condition, array $data)
+    public function shippingMethod(array $condition, array $data)
     {
         if (!isset($data['data']['order']['shipping'])) {
             return false;
         }
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        return $this->condition->compareString($data['data']['order']['shipping'], $value, $condition['operator']);
+        return $this->condition->compare($data['data']['order']['shipping'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -74,18 +52,12 @@ class Order
      * @param array $data
      * @return boolean
      */
-    public function payment(array $condition, array $data)
+    public function paymentMethod(array $condition, array $data)
     {
         if (!isset($data['data']['order']['payment'])) {
             return false;
         }
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        return $this->condition->compareString($data['data']['order']['payment'], $value, $condition['operator']);
+        return $this->condition->compare($data['data']['order']['payment'], $condition['value'], $condition['operator']);
     }
 
 }

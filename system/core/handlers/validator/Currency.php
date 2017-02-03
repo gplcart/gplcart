@@ -189,27 +189,27 @@ class Currency extends BaseValidator
     }
 
     /**
-     * Validates currency convertion rate
+     * Validates currency Conversion rate
      * @return boolean|null
      */
     protected function validateConvertionRateCurrency()
     {
-        $convertion_rate = $this->getSubmitted('convertion_rate');
+        $conversion_rate = $this->getSubmitted('conversion_rate');
 
-        if ($this->isUpdating() && !isset($convertion_rate)) {
+        if ($this->isUpdating() && !isset($conversion_rate)) {
             return null;
         }
 
-        if (empty($convertion_rate) || strlen($convertion_rate) > 10) {
-            $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Convertion rate'));
+        if (empty($conversion_rate) || strlen($conversion_rate) > 10) {
+            $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Conversion rate'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('convertion_rate', $error);
+            $this->setError('conversion_rate', $error);
             return false;
         }
 
-        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $convertion_rate) !== 1) {
-            $error = $this->language->text('Invalid convertion rate. It must be decimal or integer positive value');
-            $this->setError('convertion_rate', $error);
+        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $conversion_rate) !== 1) {
+            $error = $this->language->text('Invalid Conversion rate. It must be decimal or integer positive value');
+            $this->setError('conversion_rate', $error);
             return false;
         }
 

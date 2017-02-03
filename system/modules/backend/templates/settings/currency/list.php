@@ -23,7 +23,7 @@
           <th><?php echo $this->text('Name'); ?></th>
           <th><?php echo $this->text('Code'); ?></th>
           <th><?php echo $this->text('Symbol'); ?></th>
-          <th><?php echo $this->text('Convertion rate'); ?></th>
+          <th><?php echo $this->text('Conversion rate'); ?></th>
           <th><?php echo $this->text('Default'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
           <th></th>
@@ -35,7 +35,7 @@
           <td class="middle"><?php echo $this->escape($currency['name']); ?></td>
           <td class="middle"><?php echo $this->escape($code); ?></td>
           <td class="middle"><?php echo $this->escape($currency['symbol']); ?></td>
-          <td class="middle"><?php echo $this->escape($currency['convertion_rate']); ?></td>
+          <td class="middle"><?php echo $this->escape($currency['conversion_rate']); ?></td>
           <td class="middle"><?php echo($default_currency == $code) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
           <td class="middle"><?php echo (!empty($currency['status']) || $default_currency == $code) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
           <td class="middle">

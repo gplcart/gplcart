@@ -7,14 +7,14 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core\handlers\condition;
+namespace gplcart\core\handlers\trigger;
 
 use gplcart\core\models\Condition as ConditionModel;
 
 /**
- * Provides methods to check date/time conditions
+ * Provides methods to check price rule conditions
  */
-class Date
+class PriceRule
 {
 
     /**
@@ -33,19 +33,17 @@ class Date
     }
 
     /**
-     * Returns true if a date condition is met
+     * Returns true if a number of usage condition is met
      * @param array $condition
+     * @param array $data
      * @return boolean
      */
-    public function date(array $condition)
+    public function used(array $condition, array $data)
     {
-        $value = strtotime(reset($condition['value']));
-
-        if (empty($value)) {
+        if (!isset($data['rule']['used'])) {
             return false;
         }
-
-        return $this->condition->compare(GC_TIME, $value, $condition['operator']);
+        return $this->condition->compare($data['rule']['used'], $condition['value'], $condition['operator']);
     }
 
 }

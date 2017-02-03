@@ -46,16 +46,10 @@ class User
      * @param array $condition
      * @return boolean
      */
-    public function userId(array $condition)
+    public function id(array $condition)
     {
         $user_id = (int) $this->user->getSession('user_id');
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        return $this->condition->compareNumeric($user_id, $value, $condition['operator']);
+        return $this->condition->compare($user_id, $condition['value'], $condition['operator']);
     }
 
     /**
@@ -63,16 +57,10 @@ class User
      * @param array $condition
      * @return boolean
      */
-    public function userRole(array $condition)
+    public function roleId(array $condition)
     {
         $role_id = (string) $this->user->getSession('role_id');
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        return $this->condition->compareNumeric($role_id, $value, $condition['operator']);
+        return $this->condition->compare($role_id, $condition['value'], $condition['operator']);
     }
 
 }

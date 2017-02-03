@@ -32,8 +32,8 @@ class Settings extends BackendController
 
         $this->controlAccessEditSettings();
 
-        $settings = $this->getSettings();
-        $this->setData('settings', $settings);
+        $this->setData('settings', $this->getSettings());
+        $this->setData('timezones', gplcart_timezones());
 
         $this->submitSettings();
         $this->setDataEditSettings();
@@ -68,7 +68,8 @@ class Settings extends BackendController
             'smtp_username' => '',
             'smtp_password' => '',
             'smtp_port' => 587,
-            'gapi_browser_key' => ''
+            'gapi_browser_key' => '',
+            'timezone' => 'Europe/London'
         );
     }
 

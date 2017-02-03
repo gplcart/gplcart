@@ -64,18 +64,50 @@ class Cart
         }
 
         $condition_value = explode('|', reset($condition['value']), 2);
-
-        $cart_currency = $data['cart']['currency'];
-        $condition_currency = $cart_currency;
+        $condition_currency = $data['cart']['currency'];
 
         if (!empty($condition_value[1])) {
             $condition_currency = $condition_value[1];
         }
 
-        $condition_value[0] = (int) $this->price->amount($condition_value[0], $condition_currency);
-        $value = $this->currency->convert((int) $condition_value[0], $condition_currency, $cart_currency);
+        $condition_value[0] = $this->price->amount($condition_value[0], $condition_currency);
+        $value = $this->currency->convert($condition_value[0], $condition_currency, $data['cart']['currency']);
 
-        return $this->condition->compareNumeric((int) $data['cart']['total'], $value, $condition['operator']);
+        return $this->condition->compare($data['cart']['total'], $value, $condition['operator']);
+    }
+
+    /**
+     * Returns true if cart product ID condition is met
+     * @param array $condition
+     * @param array $data
+     * @return boolean
+     */
+    public function productId(array $condition, array $data)
+    {
+        if (empty($data['cart']['items']) || !in_array($condition['operator'], array('=', '!='))) {
+            return false;
+        }
+
+        $ids = array();
+        foreach ($data['cart']['items'] as $item) {
+            $ids[] = $item['product_id'];
+        }
+
+        return $this->condition->compare($ids, $condition['value'], $condition['operator']);
+    }
+
+    /**
+     * Returns true if cart product SKU condition is met
+     * @param array $condition
+     * @param array $data
+     * @return boolean
+     */
+    public function sku(array $condition, array $data)
+    {
+        if (empty($data['cart']['items']) || !in_array($condition['operator'], array('=', '!='))) {
+            return false;
+        }
+        return $this->condition->compare(array_keys($data['cart']['items']), $condition['value'], $condition['operator']);
     }
 
 }

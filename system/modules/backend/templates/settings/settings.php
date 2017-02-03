@@ -150,6 +150,21 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Miscellaneous'); ?></div>
     <div class="panel-body">
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Timezone'); ?></label>
+        <div class="col-md-4">
+          <select  name="settings[timezone]" class="form-control">
+            <?php foreach($timezones as $timezone_id => $timezone_name) { ?>
+            <option value="<?php echo $timezone_id; ?>"<?php echo ($settings['timezone'] == $timezone_id) ? ' selected' : ''; ?>>
+            <?php echo $this->escape($timezone_name); ?>
+            </option>
+            <?php } ?>
+          </select>
+          <div class="help-block">
+            <?php echo $this->text('Select your sitewide time zone. This setting can affect price rules and other important things'); ?>
+          </div>
+        </div>
+      </div>
       <div class="form-group<?php echo $this->error('gapi_browser_key', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Google API browser key'); ?></label>
         <div class="col-md-4">

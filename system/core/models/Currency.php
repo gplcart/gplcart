@@ -78,7 +78,7 @@ class Currency extends Model
             'symbol_spacer' => ' ',
             'rounding_step' => 0,
             'code_placement' => 'after',
-            'convertion_rate' => 1,
+            'conversion_rate' => 1,
             'symbol_placement' => 'before',
             'decimal_separator' => '.',
             'thousands_separator' => ',',
@@ -92,8 +92,7 @@ class Currency extends Model
      */
     public function getList($enabled = false)
     {
-        $key = $enabled ? 'currencies.enabled' : 'currencies';
-        $currencies = &Cache::memory($key);
+        $currencies = &Cache::memory("currencies.$enabled");
 
         if (isset($currencies)) {
             return $currencies;
@@ -105,11 +104,13 @@ class Currency extends Model
 
         $this->hook->fire('currencies', $currencies);
 
-        if ($enabled) {
-            $currencies = array_filter($currencies, function ($currency) {
-                return !empty($currency['status']);
-            });
+        if (!$enabled) {
+            return $currencies;
         }
+
+        $currencies = array_filter($currencies, function ($currency) {
+            return !empty($currency['status']);
+        });
 
         return $currencies;
     }
@@ -153,11 +154,7 @@ class Currency extends Model
 
         $currencies = $this->getList();
 
-        if (empty($currencies[$code])) {
-            return false;
-        }
-
-        if (!$this->canDelete($code)) {
+        if (empty($currencies[$code]) || !$this->canDelete($code)) {
             return false;
         }
 
@@ -224,34 +221,50 @@ class Currency extends Model
         $list = $this->getList();
 
         if (!empty($code)) {
-            $currency = isset($list[$code]) ? $list[$code] : array();
+            $currency = empty($list[$code]) ? array() : $list[$code];
             return $currency;
         }
 
-        $url = (string) $this->request->get('currency');
+        $code = $this->getFromUrl();
 
-        if (!empty($url)) {
-            $code = $url;
-            $query = true;
-        } else {
-            $cookie = (string) $this->request->cookie('currency');
-            if (!empty($cookie)) {
-                $code = $cookie;
-            }
+        if (empty($code)) {
+            $code = $this->getFromCookie();
         }
 
-        if (isset($code) && isset($list[$code])) {
-            if (isset($query)) {
-                $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
-                $this->request->setCookie('currency', $code, $lifespan);
-            }
-
-            $currency = $code;
-            return $code;
+        if (empty($list[$code])) {
+            $code = $this->getDefault();
         }
 
-        $currency = $this->getDefault();
-        return $currency;
+        $this->setCookie($code);
+        return $currency = $code;
+    }
+
+    /**
+     * Saves a currency code in cookie
+     * @param string $code
+     */
+    public function setCookie($code)
+    {
+        $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
+        $this->request->setCookie('currency', $code, $lifespan);
+    }
+
+    /**
+     * Returns a currency code from cookie
+     * @return string
+     */
+    public function getFromCookie()
+    {
+        return (string) $this->request->cookie('currency');
+    }
+
+    /**
+     * Returns a currency code from the current GET query
+     * @return string
+     */
+    public function getFromUrl()
+    {
+        return (string) $this->request->get('currency');
     }
 
     /**
@@ -310,7 +323,7 @@ class Currency extends Model
                 'symbol_spacer' => ' ',
                 'rounding_step' => 0,
                 'code_placement' => 'after',
-                'convertion_rate' => 1,
+                'conversion_rate' => 1,
                 'symbol_placement' => 'before',
                 'decimal_separator' => '.',
                 'thousands_separator' => ','

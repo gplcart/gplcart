@@ -10,12 +10,12 @@
   <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group<?php echo $this->error('convertion_rate', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Convertion rate'); ?></label>
+      <div class="form-group<?php echo $this->error('conversion_rate', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Conversion rate'); ?></label>
         <div class="col-md-4">
-          <input name="currency[convertion_rate]" class="form-control" value="<?php echo isset($currency['convertion_rate']) ? $this->escape($currency['convertion_rate']) : 1; ?>">
+          <input name="currency[conversion_rate]" class="form-control" value="<?php echo isset($currency['conversion_rate']) ? $this->escape($currency['conversion_rate']) : 1; ?>">
           <div class="help-block">
-            <?php echo $this->error('convertion_rate'); ?>
+            <?php echo $this->error('conversion_rate'); ?>
             <div class="text-muted">
               <?php echo $this->text('An exchange rate against default (base) currency. Only numeric positive values'); ?>
             </div>

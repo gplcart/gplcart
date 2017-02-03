@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\Cache;
-use gplcart\core\Handler;
+use gplcart\core\Container;
 use gplcart\core\helpers\Url;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -48,75 +48,32 @@ class Condition extends Model
 
     /**
      * Compares numeric values
-     * @param string $value1
-     * @param mixed $value2
+     * @param mixed $a
+     * @param mixed $b
      * @param string $operator
      * @return boolean
      */
-    public function compareNumeric($value1, $value2, $operator)
+    public function compare($a, $b, $operator)
     {
-        if (!is_numeric($value1)) {
-            return false;
-        }
-
-        if (!is_numeric($value2) && !is_array($value2)) {
-            return false;
-        }
-
         switch ($operator) {
             case '>=':
-                return ($value1 >= $value2);
+                return ($a >= $b);
             case '<=':
-                return ($value1 <= $value2);
+                return ($a <= $b);
             case '>':
-                return ($value1 > $value2);
+                return ($a > $b);
             case '<':
-                return ($value1 < $value2);
-            case '=':
-                if (is_array($value2)) {
-                    return in_array($value1, $value2);
-                }
-                return ($value1 == $value2);
-
-            case '!=':
-                if (is_array($value2)) {
-                    return !in_array($value1, $value2);
-                }
-                return ($value1 != $value2);
+                return ($a < $b);
         }
 
-        return false;
-    }
-
-    /**
-     * Compares string values
-     * @param integer $value1
-     * @param mixed $value2
-     * @param string $operator
-     * @return boolean
-     */
-    public function compareString($value1, $value2, $operator)
-    {
-        if (!is_string($value1)) {
-            return false;
-        }
-
-        if (!is_string($value2) && !is_array($value2)) {
-            return false;
-        }
+        settype($a, 'array');
+        settype($b, 'array');
 
         switch ($operator) {
             case '=':
-                if (is_array($value2)) {
-                    return in_array($value1, $value2, true);
-                }
-                return (strcmp($value1, $value2) === 0);
-
+                return count(array_intersect($a, $b)) > 0;
             case '!=':
-                if (is_array($value2)) {
-                    return !in_array($value1, $value2, true);
-                }
-                return (strcmp($value1, $value2) !== 0);
+                return count(array_intersect($a, $b)) == 0;
         }
 
         return false;
@@ -136,19 +93,30 @@ class Condition extends Model
             return true;
         }
 
+        $met = true;
+        $context = array('processed' => array());
         $handlers = $this->getHandlers();
 
-        $result = true;
         foreach ($conditions as $condition) {
-            $result = Handler::call($handlers, $condition['id'], 'process', array($condition, $data));
+
+            if (empty($handlers[$condition['id']]['handlers']['process'])) {
+                continue;
+            }
+
+            $class = $handlers[$condition['id']]['handlers']['process'];
+            $instance = Container::get($class);
+
+            $result = call_user_func_array(array($instance, $class[1]), array($condition, $data, &$context));
+            $context['processed'][$condition['id']] = $result;
+
             if ($result !== true) {
-                $result = false;
+                $met = false;
                 break;
             }
         }
 
-        $this->hook->fire('condition.met.after', $conditions, $data, $result);
-        return $result;
+        $this->hook->fire('condition.met.after', $conditions, $data, $met);
+        return $met;
     }
 
     /**
@@ -181,21 +149,21 @@ class Condition extends Model
 
         $handlers = array();
 
-        $handlers['route'] = array(
-            'title' => $this->language->text('Route (global)'),
+        $handlers['url_route'] = array(
+            'title' => $this->language->text('System URL route (global)'),
             'description' => $this->language->text('Parameters: <a href="@url">system route pattern</a>. Only = and != operators allowed', array('@url' => $this->url->get('admin/report/route'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Url', 'route'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'route'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Url', 'route'),
             ),
         );
 
-        $handlers['path'] = array(
-            'title' => $this->language->text('Path (global)'),
+        $handlers['url_path'] = array(
+            'title' => $this->language->text('URL path (global)'),
             'description' => $this->language->text('Parameters: path with regexp pattern. Only = and != operators allowed. Do not use trailing slashes. Example: account/(\d+)'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Url', 'path'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'path'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Url', 'path'),
             ),
         );
 
@@ -203,8 +171,8 @@ class Condition extends Model
             'title' => $this->language->text('User ID (global)'),
             'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/user/list'))),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\User', 'userId'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'userId'),
+                'process' => array('gplcart\\core\\handlers\\condition\\User', 'id'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\User', 'id'),
             ),
         );
 
@@ -212,8 +180,8 @@ class Condition extends Model
             'title' => $this->language->text('User role ID (global)'),
             'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/user/role'))),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\User', 'userRole'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'userRole'),
+                'process' => array('gplcart\\core\\handlers\\condition\\User', 'roleId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\User', 'roleId'),
             ),
         );
 
@@ -222,79 +190,52 @@ class Condition extends Model
             'description' => $this->language->text('Parameters: One value in <a target="_blank" href="http://php.net/manual/en/datetime.formats.php">time format</a>'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Date', 'date'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'date'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Date', 'date'),
             ),
         );
 
-        $handlers['product_id'] = array(
-            'title' => $this->language->text('Product ID (checkout)'),
-            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/product'))),
-            'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Product', 'productId'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'productId'),
-            ),
-        );
-
-        $handlers['product_category_id'] = array(
-            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'catalog')),
-            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
-            'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Product', 'categoryId'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'categoryId'),
-            ),
-        );
-
-        $handlers['product_brand_category_id'] = array(
-            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'brand')),
-            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
-            'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Product', 'brandCategoryId'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'categoryId'),
-            ),
-        );
-
-        $handlers['used'] = array(
-            'title' => $this->language->text('Number of times the coupon was used (checkout)'),
+        $handlers['pricerule_used'] = array(
+            'title' => $this->language->text('Number of times a price rule code (coupon) has been used (checkout)'),
             'description' => $this->language->text('Parameters: One numeric value'),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Order', 'used'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'used'),
+                'process' => array('gplcart\\core\\handlers\\condition\\PriceRule', 'used'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\PriceRule', 'used'),
             ),
         );
 
-        $handlers['shipping'] = array(
+        $handlers['order_shipping_method'] = array(
             'title' => $this->language->text('Shipping method (checkout)'),
             'description' => $this->language->text('Parameters: <a href="@url">list of IDs</a>, separated by comma', array('@url' => $this->url->get('admin/report/shipping'))),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Order', 'shipping'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shipping'),
+                'process' => array('gplcart\\core\\handlers\\condition\\Order', 'shippingMethod'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Order', 'shippingMethod'),
             ),
         );
 
-        $handlers['payment'] = array(
+        $handlers['order_payment_method'] = array(
             'title' => $this->language->text('Payment method (checkout)'),
             'description' => $this->language->text('Parameters: <a href="@url">list of IDs</a>, separated by comma', array('@url' => $this->url->get('admin/report/payment'))),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Order', 'payment'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'payment'),
+                'process' => array('gplcart\\core\\handlers\\condition\\Order', 'paymentMethod'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Order', 'paymentMethod'),
             ),
         );
 
-        $handlers['country'] = array(
-            'title' => $this->language->text('Country code (checkout)'),
+        $handlers['shipping_country_code'] = array(
+            'title' => $this->language->text('Shipping country code (checkout)'),
             'description' => $this->language->text('Parameters: <a href="@url">list of codes</a>, separated by comma', array('@url' => $this->url->get('admin/settings/country'))),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Address', 'country'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'country'),
+                'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'countryCode'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'countryCode'),
             ),
         );
 
-        $handlers['state'] = array(
-            'title' => $this->language->text('Country state code (checkout)'),
-            'description' => $this->language->text('Parameters: list of codes, separated by comma'),
+        $handlers['shipping_state_id'] = array(
+            'title' => $this->language->text('Shipping state ID (checkout)'),
+            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Address', 'state'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'state'),
+                'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'stateId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'stateId'),
             ),
         );
 
@@ -302,8 +243,8 @@ class Condition extends Model
             'title' => $this->language->text('Shipping address zone ID (checkout)'),
             'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\condition\\Address', 'shippingZoneId'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'shippingZoneId'),
+                'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'zoneId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'zoneId'),
             ),
         );
 
@@ -312,7 +253,52 @@ class Condition extends Model
             'description' => $this->language->text('Parameters: one value in format "price|currency". If only price specified, default currency will be used'),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Cart', 'total'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\Condition', 'price'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Price', 'price'),
+            ),
+        );
+
+        $handlers['cart_product_id'] = array(
+            'title' => $this->language->text('Cart contains product ID (checkout)'),
+            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Cart', 'productId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'id'),
+            ),
+        );
+
+        $handlers['cart_sku'] = array(
+            'title' => $this->language->text('Cart contains SKU (checkout)'),
+            'description' => $this->language->text('Parameters: list of SKU, separated by comma'),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Cart', 'sku'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'sku'),
+            ),
+        );
+
+        $handlers['product_id'] = array(
+            'title' => $this->language->text('Product ID (checkout)'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/product'))),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Product', 'id'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'id'),
+            ),
+        );
+
+        $handlers['product_category_id'] = array(
+            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'catalog')),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Product', 'categoryId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'categoryId'),
+            ),
+        );
+
+        $handlers['product_brand_category_id'] = array(
+            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'brand')),
+            'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Product', 'brandCategoryId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'categoryId'),
             ),
         );
 

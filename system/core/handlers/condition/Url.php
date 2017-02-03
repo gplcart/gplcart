@@ -58,7 +58,7 @@ class Url
             return false;
         }
 
-        return $this->condition->compareString($route['pattern'], (array) $condition['value'], $condition['operator']);
+        return $this->condition->compare($route['pattern'], $condition['value'], $condition['operator']);
     }
 
     /**

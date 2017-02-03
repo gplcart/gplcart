@@ -982,7 +982,7 @@ class Controller
         if (isset($key)) {
             gplcart_array_set_value($this->errors, $key, $value);
         } else {
-            $this->errors = $value;
+            $this->errors = (array) $value;
         }
     }
 
