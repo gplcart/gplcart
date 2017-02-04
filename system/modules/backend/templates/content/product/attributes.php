@@ -9,7 +9,7 @@
 <div>
   <div id="attribute-form">
     <?php if (!empty($fields['attribute'])) { ?>
-    <div class="panel panel-default margin-top-20">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
         <?php echo $this->text('Attributes'); ?>

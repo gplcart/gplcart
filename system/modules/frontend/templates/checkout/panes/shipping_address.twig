@@ -14,19 +14,21 @@
 <div class="panel panel-default">
   <div class="panel-heading">{{ text('Shipping address') }}</div>
   <div class="panel-body">
-    {% if addresses is not empty and address_form is empty %}
+    {% if addresses and not address_form %}
         <div class="form-group">
           <div class="col-md-12">
-            <div class="btn-group margin-top-20 saved-addresses" data-toggle="buttons">
-              {% for address_id,address in addresses %}
-                  <label class="address btn btn-default{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' active'}}">
-                    {% for name,value in address %}
-                        <span class="clearfix">
-                          {{ name }} : {{ value }}
-                        </span>
-                    {% endfor %}
-                    <input type="radio" name="order[shipping_address]" value="{{ address_id }}" autocomplete="off"{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' checked'}}>
-                  </label>
+            <div class="btn-group saved-addresses">
+              {% for address_id, address in addresses %}
+                  <div class="radio address">
+                    <label class="address{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' active'}}">
+                      <input type="radio" name="order[shipping_address]" value="{{ address_id }}" autocomplete="off"{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' checked'}}>
+                      {% for name,value in address %}
+                          <span class="clearfix">
+                            {{ name }} : {{ value }}
+                          </span>
+                      {% endfor %}
+                    </label>
+                  </div>
               {% endfor %}
             </div>
           </div>
@@ -41,7 +43,7 @@
     {% elseif(can_add_address) %}
         <div class="form-group">
           <div class="col-md-12">
-            <table class="table table-borderless table-striped table-condensed margin-top-20 shipping-address">
+            <table class="table table-borderless table-striped table-condensed shipping-address">
               {% if countries is not empty %}
                   <tr>
                     <td class="middle">{{ text('Country') }}</td>
@@ -88,7 +90,6 @@
                               </div>
                             </td>
                           </tr>
-
                       {% endif %}
                   {% endfor %}
               {% endif %}
@@ -96,14 +97,14 @@
           </div>
         </div>
         <div class="form-group">
-          {% if addresses is not empty %}
+          {% if addresses %}
               <div class="col-md-6">
                 <button class="btn btn-default" name="cancel_address_form" value="1">
                   {{ text('Select saved address') }}
                 </button>
               </div>
           {% endif %}
-          {% if user('user_id') and can_add_address %}
+          {% if can_save_address %}
               <div class="col-md-6 text-right">
                 <button class="btn btn-default" name="save_address" value="1">
                   {{ text('Save') }}

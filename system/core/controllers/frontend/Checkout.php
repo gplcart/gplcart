@@ -345,14 +345,11 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $default_country = '';
         $countries = $this->country->getNames(true);
+        $default_country = count($countries) == 1 ? key($countries) : '';
 
-        if (count($countries) == 1) {
-            $default_country = key($countries);
-        }
-
-        $address = $this->getSubmitted('address', array('country' => $default_country));
+        $address = $this->getSubmitted('address', array());
+        $address += array('country' => $default_country);
 
         $this->data_form['address'] = $address;
         $this->data_form['countries'] = $countries;
@@ -371,7 +368,11 @@ class Checkout extends FrontendController
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
 
         $excess = $this->address->getExcess($this->order_user_id, $this->data_form['addresses']);
+
         $this->data_form['can_add_address'] = empty($excess);
+        $this->data_form['can_save_address'] = empty($excess)//
+                && !empty($this->uid)//
+                && (!empty($address['country']) || empty($countries));
 
         $this->calculateCheckout();
         $this->setFormDataPanesOrder();
@@ -658,7 +659,7 @@ class Checkout extends FrontendController
 
         if ($this->address_form) {
             // Since we're going to save a new address and have no address ID yet,
-            // order validator will throw "Shipping address required" error
+            // so order validator will throw "Shipping address required" error
             // which is useless for users and should be replaced with
             // more informative per-field errors (if any) from address validator
             unset($order_errors['shipping_address']);
