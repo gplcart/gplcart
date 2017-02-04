@@ -69,7 +69,7 @@ class Cart extends Model
 
     /**
      * Constructor
-     * @param ProductModel $product
+     * @param PriceRuleModel $product
      * @param SkuModel $sku
      * @param CurrencyModel $currency
      * @param UserModel $user
@@ -111,41 +111,60 @@ class Cart extends Model
             return array();
         }
 
+        $cart = array(
+            'store_id' => $data['store_id'],
+            'currency' => (string) $this->currency->get()
+        );
+
         $total = 0;
         $quantity = 0;
-        $current_currency = (string) $this->currency->get();
-
-        $cart = array();
         foreach ($items as $sku => $item) {
 
-            $item['product'] = $this->product->getBySku($item['sku'], $item['store_id']);
+            $prepared = $this->prepareItem($item, $cart);
 
-            if (empty($item['product']['status'])) {
-                continue; // Invalid / disabled product
+            if (empty($prepared)) {
+                continue;
             }
 
-            if (isset($data['store_id']) && $data['store_id'] != $item['product']['store_id']) {
-                continue; // Store has been changed for this product
-            }
-
-            $currency = $item['product']['currency'];
-            $price = $this->currency->convert($item['product']['price'], $currency, $current_currency);
-
-            $item['price'] = $price;
-            $item['total'] = $item['price'] * $item['quantity'];
-
-            $total += (int) $item['total'];
-            $quantity += (int) $item['quantity'];
-
-            $cart['items'][$sku] = $item;
+            $cart['items'][$sku] = $prepared;
+            $total += (int) $prepared['total'];
+            $quantity += (int) $prepared['quantity'];
         }
 
         $cart['total'] = $total;
         $cart['quantity'] = $quantity;
-        $cart['currency'] = $current_currency;
 
         $this->hook->fire('get.cart.after', $data, $cart);
         return $cart;
+    }
+
+    /**
+     * 
+     * @param array $item
+     * @param array $data
+     * @return boolean
+     */
+    protected function prepareItem(array $item, array $data)
+    {
+        $product = $this->product->getBySku($item['sku'], $item['store_id']);
+
+        if (empty($product['status']) || $data['store_id'] != $product['store_id']) {
+            return array();
+        }
+
+        $product['price'] = $this->currency->convert($product['price'], $product['currency'], $data['currency']);
+
+        $calculated = $this->product->calculate($product);
+
+        if ($calculated['total'] != $product['price']) {
+            $item['original_price'] = $product['price'];
+        }
+
+        $item['product'] = $product;
+        $item['price'] = $calculated['total'];
+        $item['total'] = $item['price'] * $item['quantity'];
+
+        return $item;
     }
 
     /**

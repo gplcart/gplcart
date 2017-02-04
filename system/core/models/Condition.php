@@ -81,23 +81,23 @@ class Condition extends Model
 
     /**
      * Returns true if all conditions are met
-     * @param array $conditions
+     * @param array $trigger
      * @param array $data
      * @return boolean
      */
-    public function isMet(array $conditions, array $data)
+    public function isMet(array $trigger, array $data)
     {
-        $this->hook->fire('condition.met.before', $conditions, $data);
+        $this->hook->fire('condition.met.before', $trigger, $data);
 
-        if (empty($conditions)) {
-            return true;
+        if (empty($trigger['data']['conditions'])) {
+            return false;
         }
 
         $met = true;
         $context = array('processed' => array());
         $handlers = $this->getHandlers();
 
-        foreach ($conditions as $condition) {
+        foreach ($trigger['data']['conditions'] as $condition) {
 
             if (empty($handlers[$condition['id']]['handlers']['process'])) {
                 continue;
@@ -115,7 +115,7 @@ class Condition extends Model
             }
         }
 
-        $this->hook->fire('condition.met.after', $conditions, $data, $met);
+        $this->hook->fire('condition.met.after', $trigger, $data, $met);
         return $met;
     }
 
@@ -276,7 +276,7 @@ class Condition extends Model
         );
 
         $handlers['product_id'] = array(
-            'title' => $this->language->text('Product ID (checkout)'),
+            'title' => $this->language->text('Product ID'),
             'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/product'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Product', 'id'),
@@ -285,7 +285,7 @@ class Condition extends Model
         );
 
         $handlers['product_category_id'] = array(
-            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'catalog')),
+            'title' => $this->language->text('Product category ID of "@type" category group', array('@type' => 'catalog')),
             'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Product', 'categoryId'),
@@ -294,7 +294,7 @@ class Condition extends Model
         );
 
         $handlers['product_brand_category_id'] = array(
-            'title' => $this->language->text('Product category ID of "@type" category group (checkout)', array('@type' => 'brand')),
+            'title' => $this->language->text('Product category ID of "@type" category group', array('@type' => 'brand')),
             'description' => $this->language->text('Parameters: <a href="@url">list of numeric IDs</a>, separated by comma', array('@url' => $this->url->get('admin/content/category-group'))),
             'handlers' => array(
                 'process' => array('gplcart\\core\\handlers\\condition\\Product', 'brandCategoryId'),

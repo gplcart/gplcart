@@ -132,7 +132,7 @@ class Currency extends BackendController
      */
     protected function validateCurrency()
     {
-        $this->setSubmitted('currency', null, 'raw');
+        $this->setSubmitted('currency');
 
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
@@ -202,8 +202,7 @@ class Currency extends BackendController
     {
         $this->controlAccess('currency_edit');
 
-        $values = $this->getSubmitted();
-        $this->currency->update($this->data_currency['code'], $values);
+        $this->currency->update($this->data_currency['code'], $this->getSubmitted());
 
         $vars = array('%code' => $this->data_currency['code']);
         $message = $this->text('Currency %code has been updated', $vars);

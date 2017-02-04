@@ -210,7 +210,8 @@ class Trigger extends Model
 
         $fired = array();
         foreach ($triggers as $trigger) {
-            $result = $this->condition->isMet($trigger['data']['conditions'], $data);
+            
+            $result = $this->condition->isMet($trigger, $data);
             if ($result === true) {
                 $fired[] = $trigger['trigger_id'];
             }

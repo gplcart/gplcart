@@ -252,37 +252,35 @@ class PriceRule extends Model
     }
 
     /**
-     * Applies all suited rules and calculates order totals
+     * Applies all suited rules and calculates totals
      * @param integer $total
-     * @param array $cart
      * @param array $data
      * @param array $components
+     * @return array
      */
-    public function calculate(&$total, $cart, $data, &$components)
+    public function calculate(&$total, $data, &$components = array())
     {
         $options = array(
             'status' => 1,
-            'store_id' => $data['order']['store_id']
+            'store_id' => $data['store_id']
         );
 
-        $rules = $this->getTriggered($options, array('cart' => $cart, 'data' => $data));
-
-        foreach ($rules as $rule) {
-            $this->calculateComponent($total, $cart, $data, $components, $rule);
+        foreach ($this->getTriggered($options, $data) as $rule) {
+            $this->calculateComponent($total, $data, $components, $rule);
         }
+        
+        return array('total' => $total, 'components' => $components);
     }
 
     /**
      * Calculates a price rule component
      * @param integer $amount
-     * @param array $cart
      * @param array $data
      * @param array $components
      * @param array $rule
      * @return integer
      */
-    protected function calculateComponent(&$amount, $cart, $data, &$components,
-            $rule)
+    protected function calculateComponent(&$amount, $data, &$components, $rule)
     {
         $rule_id = $rule['price_rule_id'];
 
@@ -300,15 +298,14 @@ class PriceRule extends Model
             return $amount;
         }
 
-        settype($rule['value'], 'integer');
-
-        if ($cart['currency'] !== $rule['currency']) {
-            $converted = $this->currency->convert(abs($rule['value']), $rule['currency'], $cart['currency']);
+        if ($data['currency'] != $rule['currency']) {
+            $converted = $this->currency->convert(abs($rule['value']), $rule['currency'], $data['currency']);
             $rule['value'] = ($rule['value'] < 0) ? -$converted : $converted;
         }
 
         $components[$rule_id] = array('rule' => $rule, 'price' => $rule['value']);
         $amount += $rule['value'];
+        
         return $amount;
     }
 
@@ -319,36 +316,29 @@ class PriceRule extends Model
      */
     public function getTriggered(array $options, array $data)
     {
-        $triggers = $this->trigger->getFired($options, $data);
+        $options['trigger_id'] = $this->trigger->getFired($options, $data);
 
-        if (empty($triggers)) {
+        if (empty($options['trigger_id'])) {
             return array();
         }
-
-        $options['trigger_id'] = $triggers;
-
-        $rules = (array) $this->getList($options);
 
         $coupons = 0;
         $results = array();
 
-        foreach ($rules as $id => $rule) {
+        foreach ((array) $this->getList($options) as $id => $rule) {
 
-            if (!empty($rule['code'])) {
+            if ($rule['code'] !== '') {
                 $coupons++;
             }
 
-            if ($coupons > 1) {
-                continue;
+            if ($coupons <= 1) {
+                $results[$id] = $rule;
             }
-
-            $results[$id] = $rule;
         }
 
-        uasort($results, function ($a) {
-            return empty($a['code']) ? -1 : 1; // Coupons always bottom
-        });
-
+        // Coupons always go last
+        uasort($results, function ($a) {return $a['code'] === '' ? -1 : 1;});
+        
         return $results;
     }
 

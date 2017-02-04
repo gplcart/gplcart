@@ -758,6 +758,10 @@ class Controller extends BaseController
     protected function attachItemPriceFormatted(array &$item)
     {
         $item['price_formatted'] = $this->price->format($item['price'], $item['currency']);
+
+        if (isset($item['original_price'])) {
+            $item['original_price_formatted'] = $this->price->format($item['original_price'], $item['currency']);
+        }
     }
 
     /**
@@ -766,8 +770,18 @@ class Controller extends BaseController
      */
     protected function attachItemPriceCalculated(array &$product)
     {
-        $calculated = $this->product->calculate($product, $this->store_id);
+        $calculated = $this->product->calculate($product);
+
+        if (empty($calculated)) {
+            return null;
+        }
+
+        if ($product['price'] != $calculated['total']) {
+            $product['original_price'] = $product['price'];
+        }
+
         $product['price'] = $calculated['total'];
+        $product['price_rule_components'] = $calculated['components'];
     }
 
     /**

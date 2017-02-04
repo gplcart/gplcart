@@ -27,7 +27,13 @@
             </a>
             <br>
             <span class="sku">{{ text('SKU') }} : {{ item['sku'] }}</span><br>
-            <span class="price">{{ text('Price') }} : {{ item['price_formatted'] }}</span>
+            <span class="price">
+              {{ text('Price') }} :
+              {% if item['original_price'] is defined and item['original_price'] > item['price'] %}
+                  <s>{{ item['original_price_formatted'] }}</s>
+                  {% endif %}
+                  {{ item['price_formatted'] }}
+            </span>
             <div>
               <div class="input-group">
                 <span class="input-group-btn">

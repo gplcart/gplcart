@@ -31,6 +31,11 @@
   <div class="col-md-4 right">
     <div class="panel add-to-cart panel-default">
       <div class="panel-body">
+        <s id="original-price">
+          {% if product['selected_combination']['original_price'] is defined and product['selected_combination']['original_price'] > product['selected_combination']['price'] %}
+              {{ product['selected_combination']['original_price_formatted'] }}
+          {% endif %}
+        </s>
         <div id="price" class="h4">{{ product['selected_combination']['price_formatted'] }}</div>
         <p>{{ text('SKU') }}: <span id="sku" class="small">{{ product['selected_combination']['sku'] }}</span></p>
           {{ cart_form|raw }}

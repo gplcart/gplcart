@@ -47,24 +47,13 @@ class Product
      * @param array $data
      * @return boolean
      */
-    public function productId(array $condition, array $data)
+    public function id(array $condition, array $data)
     {
-        if (empty($data['cart']['items'])) {
+        if (empty($data['product_id'])) {
             return false;
         }
 
-        $value = (array) $condition['value'];
-
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        foreach ($data['cart']['items'] as $item) {
-            if ($this->condition->compareNumeric((int) $item['product_id'], $value, $condition['operator'])) {
-                return true;
-            }
-        }
-        return false;
+        return $this->condition->compare($data['product_id'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -75,39 +64,11 @@ class Product
      */
     public function categoryId(array $condition, array $data)
     {
-        if (empty($data['cart']['items'])) {
+        if (empty($data['product_id']) || empty($data['category_id'])) {
             return false;
         }
 
-        $product_ids = array();
-        foreach ($data['cart']['items'] as $item) {
-            $product_ids[] = $item['product_id'];
-        }
-
-        if (empty($product_ids)) {
-            return false;
-        }
-
-        $args = array('product_id' => $product_ids, 'status' => 1);
-        $products = $this->product->getList($args);
-
-        if (empty($products)) {
-            return false;
-        }
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        foreach ((array) $products as $product) {
-            $matched = $this->condition->compareNumeric((int) $product['category_id'], $value, $condition['operator']);
-            if ($matched) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->condition->compare($data['category_id'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -118,38 +79,11 @@ class Product
      */
     public function brandCategoryId(array $condition, array $data)
     {
-        if (empty($data['cart']['items'])) {
+        if (empty(empty($data['product_id']) || $data['brand_category_id'])) {
             return false;
         }
 
-        $product_ids = array();
-        foreach ($data['cart']['items'] as $item) {
-            $product_ids[] = $item['product_id'];
-        }
-
-        if (empty($product_ids)) {
-            return false;
-        }
-
-        $products = $this->product->getList(array('product_id' => $product_ids, 'status' => 1));
-
-        if (empty($products)) {
-            return false;
-        }
-
-        $value = (array) $condition['value'];
-        if (!in_array($condition['operator'], array('=', '!='))) {
-            $value = (int) reset($value);
-        }
-
-        foreach ((array) $products as $product) {
-            $matched = $this->condition->compareNumeric((int) $product['brand_category_id'], $value, $condition['operator']);
-            if ($matched) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->condition->compare($data['brand_category_id'], $condition['value'], $condition['operator']);
     }
 
 }

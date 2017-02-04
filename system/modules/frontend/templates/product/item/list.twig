@@ -31,7 +31,12 @@
         <div class="col-md-3">
           <div class="row text-right">
             <div class="col-md-12">
-              <p>{{ product['price_formatted'] }}</p>
+              <p>
+                {% if product['original_price'] is defined and product['original_price'] > product['price'] %}
+                    <s>{{ product['original_price_formatted'] }}</s>
+                    {% endif %}
+                    {{ product['price_formatted'] }}
+              </p>
             </div>
           </div>
           {% if buttons is not empty %}

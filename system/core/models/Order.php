@@ -646,15 +646,14 @@ class Order extends Model
     /**
      * Calculates order totals
      * @staticvar int $total
-     * @param array $cart
      * @param array $data
      * @return array
      */
-    public function calculate(array $cart, array $data)
+    public function calculate(array $data)
     {
         static $total = 0;
 
-        $total += $cart['total'];
+        $total += $data['cart']['total'];
 
         $components = array();
         foreach (array('shipping', 'payment') as $module) {
@@ -665,16 +664,16 @@ class Order extends Model
                 $total += $components[$module]['price'];
             }
 
-            $this->hook->fire("calculate.order.$module", $total, $cart, $data, $components);
+            $this->hook->fire("calculate.order.$module", $total, $data, $components);
         }
 
-        $this->pricerule->calculate($total, $cart, $data, $components);
-        $this->hook->fire('calculate.order', $total, $cart, $data, $components);
+        $this->pricerule->calculate($total, $data, $components);
+        $this->hook->fire('calculate.order', $total, $data, $components);
 
         return array(
             'total' => $total,
             'components' => $components,
-            'currency' => $cart['currency']
+            'currency' => $data['cart']['currency']
         );
     }
 

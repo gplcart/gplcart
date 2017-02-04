@@ -57,36 +57,28 @@ class Price extends Model
     /**
      * Formats a price value as a currency string
      * @param integer $amount
-     * @param string $currency_code
+     * @param string $currency
      * @param boolean $convert
      * @return string
      */
-    public function format($amount, $currency_code, $convert = true)
+    public function format($amount, $currency, $convert = true)
     {
-        $currency = (array) $this->currency->get($currency_code);
+        $data = (array) $this->currency->get($currency);
 
         if ($convert) {
-            $amount = $this->decimal($amount, $currency_code);
+            $amount = $this->decimal($amount, $currency);
         }
 
-        $rounded = $this->round(abs($amount), $currency);
-        $price = number_format($rounded, $currency['decimals'], $currency['decimal_separator'], $currency['thousands_separator']);
+        $rounded = $this->round(abs($amount), $data);
+        $data['price'] = number_format($rounded, $data['decimals'], $data['decimal_separator'], $data['thousands_separator']);
 
-        $replacement = array(
-            '%s%s%s%s%s%s%s%s%s',
-            $currency['code_placement'] == 'before' ? $currency['code'] : '',
-            $currency['code_spacer'],
-            $amount < 0 ? '-' : '',
-            $currency['symbol_placement'] == 'before' ? $currency['symbol'] : '',
-            $price,
-            $currency['symbol_spacer'],
-            $currency['symbol_placement'] == 'after' ? $currency['symbol'] : '',
-            $currency['code_spacer'],
-            $currency['code_placement'] == 'after' ? $currency['code'] : '',
-        );
+        $placeholders = array();
+        foreach (array_keys($data) as $key) {
+            $placeholders["%$key"] = $key;
+        }
 
-        $string = call_user_func_array('sprintf', $replacement);
-        return trim($string);
+        $formatted = gplcart_string_replace($data['template'], $placeholders, $data);
+        return $amount < 0 ? "-$formatted" : $formatted;
     }
 
     /**

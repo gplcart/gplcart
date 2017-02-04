@@ -75,17 +75,14 @@ function gplcart_string_equals($str1, $str2)
  */
 function gplcart_string_replace($pattern, array $placeholders, array $data)
 {
-    foreach ($placeholders as $placeholder => $data_key) {
-
-        if (!isset($data[$data_key]) || !is_string($data[$data_key])) {
-            unset($placeholders[$placeholder]);
-            continue;
+    $pairs = array();
+    foreach ($placeholders as $placeholder => $key) {
+        if (isset($data[$key]) && !is_array($data[$key])) {
+            $pairs[$placeholder] = $data[$key];
         }
-
-        $placeholders[$placeholder] = $data[$data_key];
     }
 
-    return $placeholders ? strtr($pattern, $placeholders) : '';
+    return strtr($pattern, $pairs);
 }
 
 /**
@@ -107,8 +104,8 @@ function gplcart_string_array($string, $limit = null)
 
 /**
  * Formats a string by replacing variable placeholders
- * @param string $string A string containing placeholders
- * @param array $arguments An associative array of replacements
+ * @param string $string
+ * @param array $arguments
  * @return string
  */
 function gplcart_string_format($string, array $arguments = array())

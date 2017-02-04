@@ -10,98 +10,6 @@
   <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group<?php echo $this->error('conversion_rate', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Conversion rate'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[conversion_rate]" class="form-control" value="<?php echo isset($currency['conversion_rate']) ? $this->escape($currency['conversion_rate']) : 1; ?>">
-          <div class="help-block">
-            <?php echo $this->error('conversion_rate'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('An exchange rate against default (base) currency. Only numeric positive values'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="required form-group<?php echo $this->error('name', ' has-error'); ?>">
-        <label class="col-md-2 control-label">
-          <?php echo $this->text('Name'); ?>
-        </label>
-        <div class="col-md-4">
-          <input name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->escape($currency['name']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('name'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Required. An official currency name in english'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="required form-group<?php echo $this->error('code', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->escape($currency['code']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('code'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Required. A three-letter upper-case code according to ISO 4217 standard, e.g USD'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="required form-group<?php echo $this->error('symbol', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Symbol'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->escape($currency['symbol']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('symbol'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Required. A sign of the currency, e.g $'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="required form-group<?php echo $this->error('numeric_code', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Numeric code'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->escape($currency['numeric_code']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('numeric_code'); ?>
-            <div class="text-muted"><?php echo $this->text('Required. A numeric code according to ISO 4217 standard'); ?></div>
-          </div>
-        </div>
-      </div>
-      <div class="required form-group<?php echo $this->error('major_unit', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Major unit'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->escape($currency['major_unit']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('major_unit'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Required. A name of the highest valued currency unit, e.g Dollar'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="required form-group<?php echo $this->error('minor_unit', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Minor unit'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->escape($currency['minor_unit']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('minor_unit'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Required. A name of the lowest valued currency unit. Usually it\'s 1/100 of the major unit, e.g Cent'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-body">
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Default'); ?></label>
         <div class="col-md-6">
@@ -142,32 +50,92 @@
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div class="form-group<?php echo $this->error('symbol_placement', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Symbol placement'); ?></label>
+      <div class="form-group<?php echo $this->error('conversion_rate', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Conversion rate'); ?></label>
         <div class="col-md-4">
-          <select class="form-control" name="currency[symbol_placement]">
-            <option value="before"<?php echo (isset($currency['symbol_placement']) && $currency['symbol_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
-            <option value="after"<?php echo (isset($currency['symbol_placement']) && $currency['symbol_placement'] == 'after') ? ' selected' : ''; ?>><?php echo $this->text('After'); ?></option>
-          </select>
+          <input name="currency[conversion_rate]" class="form-control" value="<?php echo isset($currency['conversion_rate']) ? $this->escape($currency['conversion_rate']) : 1; ?>">
           <div class="help-block">
-            <?php echo $this->error('symbol_placement'); ?>
+            <?php echo $this->error('conversion_rate'); ?>
             <div class="text-muted">
-            <?php echo $this->text('A position of the currency sign, either before or after price value'); ?>
+              <?php echo $this->text('An exchange rate against default (base) currency. Only numeric positive values'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo $this->error('code_placement', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Code placement'); ?></label>
+      <div class="required form-group<?php echo $this->error('name', ' has-error'); ?>">
+        <label class="col-md-2 control-label">
+          <?php echo $this->text('Name'); ?>
+        </label>
         <div class="col-md-4">
-          <select class="form-control" name="currency[code_placement]">
-            <option value="after"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'after') ? ' selected' : ''; ?>><?php echo $this->text('After'); ?></option>
-            <option value="before"<?php echo (isset($currency['code_placement']) && $currency['code_placement'] == 'before') ? ' selected' : ''; ?>><?php echo $this->text('Before'); ?></option>
-          </select>
+          <input name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->escape($currency['name']) : ''; ?>">
           <div class="help-block">
-            <?php echo $this->error('code_placement'); ?>
+            <?php echo $this->error('name'); ?>
             <div class="text-muted">
-              <?php echo $this->text('A position of the currency code, either before or after price value'); ?>
+              <?php echo $this->text('Required. An official currency name in english'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%name')); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="required form-group<?php echo $this->error('code', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
+        <div class="col-md-4">
+          <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->escape($currency['code']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('code'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A three-letter upper-case code according to ISO 4217 standard, e.g USD.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%code')); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="required form-group<?php echo $this->error('symbol', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Symbol'); ?></label>
+        <div class="col-md-4">
+          <input name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->escape($currency['symbol']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('symbol'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A sign of the currency, e.g $.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%symbol')); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="required form-group<?php echo $this->error('numeric_code', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Numeric code'); ?></label>
+        <div class="col-md-4">
+          <input name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->escape($currency['numeric_code']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('numeric_code'); ?>
+            <div class="text-muted">
+                <?php echo $this->text('Required. A numeric code according to ISO 4217 standard.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%numeric_code')); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="required form-group<?php echo $this->error('major_unit', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Major unit'); ?></label>
+        <div class="col-md-4">
+          <input name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->escape($currency['major_unit']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('major_unit'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A name of the highest valued currency unit, e.g Dollar.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%major_unit')); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="required form-group<?php echo $this->error('minor_unit', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Minor unit'); ?></label>
+        <div class="col-md-4">
+          <input name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->escape($currency['minor_unit']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('minor_unit'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. A name of the lowest valued currency unit. Usually it\'s 1/100 of the major unit, e.g Cent.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%minor_unit')); ?>
             </div>
           </div>
         </div>
@@ -203,7 +171,7 @@
         <div class="col-md-4">
           <input name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->escape($currency['thousands_separator']) : ','; ?>">
           <div class="help-block">
-            <?php echo $this->text('A character used to separate thousands, e.g comma'); ?>
+            <?php echo $this->text('A character used to separate thousands, e.g comma.'); ?>
           </div>
         </div>
       </div>
@@ -212,25 +180,16 @@
         <div class="col-md-4">
           <input name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->escape($currency['decimal_separator']) : '.'; ?>">
           <div class="help-block">
-            <?php echo $this->text('A character used to separate decimals, e.g period'); ?>
+            <?php echo $this->text('A character used to separate decimals, e.g period.'); ?>
           </div>
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Symbol spacer'); ?></label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Template'); ?></label>
         <div class="col-md-4">
-          <input name="currency[symbol_spacer]" class="form-control" value="<?php echo (isset($currency['symbol_spacer'])) ? $this->escape($currency['symbol_spacer']) : ' '; ?>">
+          <input name="currency[template]" class="form-control" value="<?php echo isset($currency['template']) ? $this->escape($currency['template']) : '%symbol%price'; ?>">
           <div class="help-block">
-            <?php echo $this->text('A character used to separate currency sign and price value, e.g whitespace'); ?>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Code spacer'); ?></label>
-        <div class="col-md-4">
-          <input name="currency[code_spacer]" class="form-control" value="<?php echo (isset($currency['code_spacer'])) ? $this->escape($currency['code_spacer']) : ' '; ?>">
-          <div class="help-block">
-            <?php echo $this->text('A character used to separate currency code and price value, e.g whitespace'); ?>
+            <?php echo $this->text('A template to format prices of the currency. For price value use %price'); ?>
           </div>
         </div>
       </div>

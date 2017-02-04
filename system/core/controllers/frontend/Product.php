@@ -402,12 +402,15 @@ class Product extends FrontendController
             'path' => empty($selected['combination']['path']) ? '' : $selected['combination']['path']
         );
 
+        $selected += $product;
+
         $this->attachItemThumb($product, $options);
         $this->attachItemPriceCalculated($selected);
         $this->attachItemPriceFormatted($selected);
 
         $product['selected_combination'] = $selected;
         $product['fields'] = $this->getFieldsProduct($product);
+
         return $product;
     }
 

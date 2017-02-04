@@ -441,32 +441,11 @@ class Product extends Model
     /**
      * Calculates product price
      * @param array $product
-     * @param integer $store_id
      * @return array
-     * @todo check this method
      */
-    public function calculate(array $product, $store_id = 1)
+    public function calculate(array $product)
     {
-        //@todo check method, options and data arrays
-        $options = array('store_id' => $store_id, 'value_type' => 'product');
-        $rules = $this->pricerule->getTriggered($options, $product);
-
-        $components = array();
-        $price = $product['price'];
-        $currency_code = $product['currency'];
-
-        foreach ($rules as $rule) {
-
-            //$this->pricerule->calculate($total, $cart, $data, $components);
-        }
-
-        $result = array(
-            'total' => $price,
-            'currency' => $currency_code,
-            'components' => $components
-        );
-
-        return $result;
+        return $this->pricerule->calculate($product['price'], $product);
     }
 
     /**

@@ -24,7 +24,12 @@
           {{ truncate(product['title'], 50) }}
         </a>
       </div>
-      <p>{{ product['price_formatted'] }}</p>
+      <p>
+        {% if product['original_price'] is defined and product['original_price'] > product['price'] %}
+            <s>{{ product['original_price_formatted'] }}</s>
+            {% endif %}
+            {{ product['price_formatted'] }}
+      </p>
       {% if buttons is not empty %}
           <form method="post" class="form-horizontal product-action">
             <input type="hidden" name="token" value="{{ prop('token') }}">

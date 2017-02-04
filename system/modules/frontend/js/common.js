@@ -460,6 +460,10 @@
                     $('#sku').text(data.sku);
                     $('#price').text(data.price_formatted);
 
+                    if (data.original_price_formatted) {
+                        $('#original-price').text(data.original_price_formatted);
+                    }
+
                     if (data.combination.file_id) {
 
                         slider = $('#' + theme_settings.product_gallery_id);

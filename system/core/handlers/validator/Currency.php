@@ -57,8 +57,10 @@ class Currency extends BaseValidator
         $this->validateConvertionRateCurrency();
         $this->validateDecimalsCurrency();
         $this->validateRoundingStepCurrency();
-        $this->validateSymbolPlacementCurrency();
-        $this->validateCodePlacementCurrency();
+
+        // Remove data of updating currency
+        // to prevent from saving in serialized string
+        $this->unsetSubmitted('update');
 
         return $this->getResult();
     }
@@ -86,40 +88,6 @@ class Currency extends BaseValidator
 
         $this->setUpdating($data);
         return true;
-    }
-
-    /**
-     * Validates symbol placement field value
-     * @return boolean
-     */
-    protected function validateSymbolPlacementCurrency()
-    {
-        $symbol_placement = $this->getSubmitted('symbol_placement');
-
-        if (!isset($symbol_placement) || in_array($symbol_placement, array('before', 'after'))) {
-            return true;
-        }
-
-        $error = $this->language->text('Symbol placement can be either "before" or "after"');
-        $this->setError('symbol_placement', $error);
-        return false;
-    }
-
-    /**
-     * Validates code placement field value
-     * @return boolean
-     */
-    protected function validateCodePlacementCurrency()
-    {
-        $code_placement = $this->getSubmitted('code_placement');
-
-        if (!isset($code_placement) || in_array($code_placement, array('before', 'after'))) {
-            return true;
-        }
-
-        $error = $this->language->text('Code placement can be either "before" or "after"');
-        $this->setError('code_placement', $error);
-        return false;
     }
 
     /**

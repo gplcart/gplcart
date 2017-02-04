@@ -209,9 +209,12 @@ class Ajax extends FrontendController
             'path' => empty($response['combination']['path']) ? '' : $response['combination']['path']
         );
 
+        $response += $product;
+
         $this->attachItemThumb($response, $options);
         $this->attachItemPriceCalculated($response);
         $this->attachItemPriceFormatted($response);
+
         return $response;
     }
 

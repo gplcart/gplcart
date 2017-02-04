@@ -114,7 +114,7 @@ class Language extends BaseValidator
         }
 
         // Remove data of updating language
-        // to prevent from saving in the serialized string
+        // to prevent from saving in serialized string
         $this->unsetSubmitted('update');
         return true;
     }

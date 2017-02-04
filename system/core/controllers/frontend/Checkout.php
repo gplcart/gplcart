@@ -329,6 +329,10 @@ class Checkout extends FrontendController
         $this->data_form['statuses'] = $this->order->getStatuses();
         $this->data_form['payment_methods'] = $this->payment->getList(true);
         $this->data_form['shipping_methods'] = $this->shipping->getList(true);
+
+        // It's for price rule calculator
+        $this->data_form['store_id'] = $this->order_store_id;
+        $this->data_form['currency'] = $this->data_cart['currency'];
     }
 
     /**
@@ -761,22 +765,21 @@ class Checkout extends FrontendController
         $submitted = array('order' => $this->getSubmitted());
         $this->data_form = gplcart_array_merge($this->data_form, $submitted);
 
-        $result = $this->order->calculate($this->data_cart, $this->data_form);
+        $result = $this->order->calculate($this->data_form);
 
         $this->data_form['total'] = $result['total'];
         $this->data_form['total_formatted'] = $this->price->format($result['total'], $result['currency']);
 
-        $components = $this->prepareOrderComponentsCheckout($result, $this->data_form);
+        $components = $this->prepareOrderComponentsCheckout($result);
         $this->data_form['price_components'] = $components;
     }
 
     /**
      * Prepares an array of price rule components
      * @param array $calculated
-     * @param array $data
      * @return array
      */
-    protected function prepareOrderComponentsCheckout($calculated, $data)
+    protected function prepareOrderComponentsCheckout($calculated)
     {
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -790,8 +793,8 @@ class Checkout extends FrontendController
                     break;
             }
 
-            if (isset($methods) && isset($methods[$data[$type]['name']])) {
-                $name = $methods[$data[$type]['name']];
+            if (isset($methods) && isset($methods[$this->data_form[$type]['name']])) {
+                $name = $methods[$this->data_form[$type]['name']];
             } else if (isset($component['rule']['name'])) {
                 $name = $component['rule']['name'];
             }

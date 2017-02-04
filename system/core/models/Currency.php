@@ -49,7 +49,9 @@ class Currency extends Model
             return false;
         }
 
-        $data += $this->defaultCurrencyValues();
+        $default = $this->defaultCurrencyValues();
+
+        $data += $default;
 
         if (!empty($data['default'])) {
             $data['status'] = 1;
@@ -57,32 +59,13 @@ class Currency extends Model
         }
 
         $currencies = $this->getList();
-        $currencies[$data['code']] = $data;
+
+        // Use array_intersect_key to filter out garbage keys
+        $currencies[$data['code']] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
         $this->hook->fire('add.currency.after', $data);
         return true;
-    }
-
-    /**
-     * Returns an array of default currency values
-     * @return array
-     */
-    protected function defaultCurrencyValues()
-    {
-        return array(
-            'status' => 0,
-            'default' => 0,
-            'decimals' => 2,
-            'code_spacer' => ' ',
-            'symbol_spacer' => ' ',
-            'rounding_step' => 0,
-            'code_placement' => 'after',
-            'conversion_rate' => 1,
-            'symbol_placement' => 'before',
-            'decimal_separator' => '.',
-            'thousands_separator' => ',',
-        );
     }
 
     /**
@@ -136,7 +119,11 @@ class Currency extends Model
             $this->config->set('currency', $code);
         }
 
-        $currencies[$code] = $data + $currencies[$code];
+        $data += $currencies[$code];
+        $default = $this->defaultCurrencyValues();
+
+        // Use array_intersect_key to filter out garbage keys
+        $currencies[$code] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
         $this->hook->fire('update.currency.after', $data);
@@ -296,7 +283,7 @@ class Currency extends Model
 
         if ($load) {
             $currencies = $this->getList();
-            return isset($currencies[$currency]) ? $currencies[$currency] : array();
+            return empty($currencies[$currency]) ? array() : $currencies[$currency];
         }
 
         return $currency;
@@ -318,16 +305,37 @@ class Currency extends Model
                 'decimals' => 2,
                 'major_unit' => 'Dollar',
                 'minor_unit' => 'Cent',
-                'code_spacer' => ' ',
                 'numeric_code' => 840,
-                'symbol_spacer' => ' ',
                 'rounding_step' => 0,
-                'code_placement' => 'after',
                 'conversion_rate' => 1,
-                'symbol_placement' => 'before',
                 'decimal_separator' => '.',
-                'thousands_separator' => ','
+                'thousands_separator' => ',',
+                'template' => '%symbol%price'
             )
+        );
+    }
+
+    /**
+     * Returns an array of default currency values
+     * @return array
+     */
+    protected function defaultCurrencyValues()
+    {
+        return array(
+            'code' => '',
+            'name' => '',
+            'symbol' => '',
+            'status' => 0,
+            'default' => 0,
+            'decimals' => 2,
+            'major_unit' => '',
+            'minor_unit' => '',
+            'numeric_code' => '',
+            'rounding_step' => 0,
+            'conversion_rate' => 1,
+            'decimal_separator' => '.',
+            'thousands_separator' => ',',
+            'template' => '%symbol%price'
         );
     }
 
