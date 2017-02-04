@@ -67,7 +67,6 @@ class Country extends BaseValidator
 
         $this->validateCountry();
         $this->validateWeight();
-        $this->validateDefault();
         $this->validateStatus();
         $this->validateCodeCountry();
         $this->validateName();

@@ -64,7 +64,6 @@ class Country extends BackendController
         $total = $this->getTotalCountry($query);
         $limit = $this->setPager($total, $query);
 
-        $this->setData('default_country', $this->country->getDefault());
         $this->setData('countries', $this->getListCountry($limit, $query));
 
         $allowed = array('name', 'native_name', 'code', 'status', 'weight');
@@ -274,8 +273,8 @@ class Country extends BackendController
         $this->setSubmitted('country');
 
         $this->setSubmittedBool('status');
-        $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_country);
+
         $this->validate('country');
 
         return !$this->hasErrors('country');

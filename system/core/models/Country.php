@@ -78,7 +78,6 @@ class Country extends Model
         if (!empty($country)) {
             $default_format = $this->defaultFormat();
             $country['format'] = gplcart_array_merge($default_format, $country['format']);
-            $country['default'] = $this->isDefault($code);
             gplcart_array_sort($country['format']);
         }
 
@@ -182,35 +181,6 @@ class Country extends Model
     }
 
     /**
-     * Returns a default country code
-     * @return string
-     */
-    public function getDefault()
-    {
-        return $this->config->get('country', '');
-    }
-
-    /**
-     * Sets a default country code
-     * @param string $code
-     * @return boolean
-     */
-    public function setDefault($code)
-    {
-        return $this->config->set('country', $code);
-    }
-
-    /**
-     * Whether a country is default
-     * @param string $code
-     * @return boolean
-     */
-    public function isDefault($code)
-    {
-        return ($code === $this->getDefault());
-    }
-
-    /**
      * Adds a country
      * @param array $data
      * @return boolean
@@ -221,11 +191,6 @@ class Country extends Model
 
         if (empty($data['code'])) {
             return false;
-        }
-
-        if (!empty($data['default'])) {
-            $data['status'] = 1;
-            $this->setDefault($data['code']);
         }
 
         $result = true;
@@ -247,15 +212,6 @@ class Country extends Model
 
         if (empty($code) || empty($data)) {
             return false;
-        }
-
-        if (!empty($data['default'])) {
-            $data['status'] = 1;
-            $this->setDefault($code);
-        }
-
-        if ($this->isDefault($code)) {
-            $data['status'] = 1;
         }
 
         unset($data['code']); // Cannot update primary key
@@ -299,10 +255,6 @@ class Country extends Model
      */
     public function canDelete($code)
     {
-        if ($this->isDefault($code)) {
-            return false;
-        }
-
         $sql = 'SELECT address_id FROM address WHERE country=?';
         $result = $this->db->fetchColumn($sql, array($code));
 

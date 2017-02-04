@@ -10,6 +10,22 @@
   <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
     <div class="panel-body">
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+        <div class="col-md-4">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default<?php echo empty($country['status']) ? '' : ' active'; ?>">
+              <input name="country[status]" type="radio" autocomplete="off" value="1"<?php echo empty($country['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
+            </label>
+            <label class="btn btn-default<?php echo empty($country['status']) ? ' active' : ''; ?>">
+              <input name="country[status]" type="radio" autocomplete="off" value="0"<?php echo empty($country['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+            </label>
+          </div>
+          <div class="help-block">
+            <?php echo $this->text('Disabled countries will not be available for frontend users'); ?>
+          </div>
+        </div>
+      </div>
       <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label">
           <?php echo $this->text('Code'); ?>
@@ -70,44 +86,6 @@
             <div class="text-muted">
               <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Default'); ?></label>
-        <div class="col-md-4">
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default<?php echo empty($country['default']) ? '' : ' active'; ?>">
-              <input name="country[default]" type="radio" autocomplete="off" value="1"<?php echo empty($country['default']) ? '' : ' checked'; ?>>
-              <?php echo $this->text('Yes'); ?>
-            </label>
-            <label class="btn btn-default<?php echo empty($country['default']) ? ' active' : ''; ?>">
-              <input name="country[default]" type="radio" autocomplete="off" value="0"<?php echo empty($country['default']) ? ' checked' : ''; ?>>
-              <?php echo $this->text('No'); ?>
-            </label>
-          </div>
-          <div class="help-block">
-            <?php echo $this->text('Use this country by default in addresses'); ?>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
-        <div class="col-md-4">
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default<?php echo empty($country['status']) ? '' : ' active'; ?>">
-              <input name="country[status]" type="radio" autocomplete="off" value="1"<?php echo empty($country['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
-            </label>
-            <label class="btn btn-default<?php echo empty($country['status']) ? ' active' : ''; ?>">
-              <input name="country[status]" type="radio" autocomplete="off" value="0"<?php echo empty($country['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
-            </label>
-          </div>
-          <div class="help-block">
-            <?php echo $this->text('Disabled countries will not be available for frontend users'); ?>
           </div>
         </div>
       </div>

@@ -622,7 +622,7 @@ class Account extends FrontendController
     protected function setAddressAccount($address_id)
     {
         if (!is_numeric($address_id)) {
-            return array('country' => $this->country->getDefault());
+            return array();
         }
 
         $address = $this->address->get($address_id);

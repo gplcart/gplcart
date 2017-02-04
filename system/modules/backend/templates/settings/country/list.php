@@ -105,9 +105,6 @@
           <td class="middle">
             <input type="hidden" name="country[<?php echo $code; ?>][weight]" value="<?php echo $country['weight']; ?>">
             <?php echo $this->escape($country['name']); ?>
-            <?php if ($default_country == $code) { ?>
-            (<?php echo mb_strtolower($this->text('Default')); ?>)
-            <?php } ?>
           </td>
           <td class="middle"><?php echo $this->escape($country['native_name']); ?></td>
           <td class="middle"><?php echo $this->escape($code); ?></td>
