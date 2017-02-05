@@ -51,14 +51,14 @@ trait Dependency
             $components = $this->getVersionComponentsTrait($version);
 
             if (empty($components)) {
-                $item['errors'][] = array('Unknown version of @id', array('@id' => $id));
+                $item['errors'][] = array('Unknown version of @name', array('@name' => $id));
                 continue;
             }
 
             list($operator, $number) = $components;
 
             if (!version_compare($items[$id]['version'], $number, $operator)) {
-                $item['errors'][] = array('Requires incompatible version of @id', array('@id' => $id));
+                $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
             }
         }
     }

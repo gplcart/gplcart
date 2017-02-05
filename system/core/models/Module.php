@@ -207,6 +207,12 @@ class Module extends Model
      */
     protected function checkRequirements($module_id)
     {
+        $result_module_id = $this->checkModuleId($module_id);
+
+        if ($result_module_id !== true) {
+            return $result_module_id;
+        }
+
         $modules = $this->getList();
 
         $result_core = $this->checkCore($module_id, $modules);
@@ -215,10 +221,10 @@ class Module extends Model
             return $result_core;
         }
 
-        $result_module_id = $this->checkModuleId($module_id);
+        $result_php = $this->checkPhpVersion($module_id, $modules);
 
-        if ($result_module_id !== true) {
-            return $result_module_id;
+        if ($result_php !== true) {
+            return $result_php;
         }
 
         if ($modules[$module_id]['type'] === 'installer') {
@@ -226,6 +232,33 @@ class Module extends Model
         }
 
         return $this->checkDependenciesModule($module_id, $modules);
+    }
+
+    /**
+     * Checks PHP version compatibility for the module ID
+     * @param string $module_id
+     * @param array $modules
+     * @return boolean|string
+     */
+    protected function checkPhpVersion($module_id, array $modules)
+    {
+        if (empty($modules[$module_id]['php'])) {
+            return true;
+        }
+
+        $components = $this->getVersionComponentsTrait($modules[$module_id]['php']);
+
+        if (empty($components)) {
+            return $this->language->text('Requires incompatible version of @name', array('@name' => 'PHP'));
+        }
+
+        list($operator, $number) = $components;
+
+        if (!version_compare(PHP_VERSION, $number, $operator)) {
+            return $this->language->text('Requires incompatible version of @name', array('@name' => 'PHP'));
+        }
+
+        return true;
     }
 
     /**
