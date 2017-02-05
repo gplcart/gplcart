@@ -304,15 +304,13 @@ class Cart extends BaseValidator
         if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku])//
                 && (count($existing_quantity['sku']) >= $limit_item)) {
 
-            $vars = array('%num' => $limit_item);
-            $error = $this->language->text('Sorry, you cannot have more than %num items in your cart', $vars);
+            $error = $this->language->text('Please no more than @num items', array('@num' => $limit_item));
             $this->setError('quantity', $error);
             return false;
         }
 
         if (!empty($limit_sku) && $expected_quantity_sku > $limit_sku) {
-            $vars = array('%num' => $limit_sku);
-            $error = $this->language->text('Sorry, you cannot have more than %num items per SKU in your cart', $vars);
+            $error = $this->language->text('Please no more than @num items per SKU', array('@num' => $limit_sku));
             $this->setError('quantity', $error);
             return false;
         }

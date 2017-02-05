@@ -311,6 +311,7 @@ class Checkout extends FrontendController
     protected function setFormDataBeforeCheckout()
     {
         $default_order = array(
+            'comment' => '',
             'user_id' => $this->order_user_id,
             'creator' => $this->admin_user_id,
             'store_id' => $this->order_store_id,
@@ -330,7 +331,7 @@ class Checkout extends FrontendController
         $this->data_form['payment_methods'] = $this->payment->getList(true);
         $this->data_form['shipping_methods'] = $this->shipping->getList(true);
 
-        // It's for price rule calculator
+        // Price rule calculator requires this data
         $this->data_form['store_id'] = $this->order_store_id;
         $this->data_form['currency'] = $this->data_cart['currency'];
     }
@@ -370,9 +371,9 @@ class Checkout extends FrontendController
         $excess = $this->address->getExcess($this->order_user_id, $this->data_form['addresses']);
 
         $this->data_form['can_add_address'] = empty($excess);
-        $this->data_form['can_save_address'] = empty($excess)//
-                && !empty($this->uid)//
-                && (!empty($address['country']) || empty($countries));
+        $this->data_form['can_save_address'] = empty($excess)// Limit is not exceeded
+                && !empty($this->uid)// User is logged in
+                && (!empty($address['country']) || empty($countries)); // User selected a country if countries exist in the system
 
         $this->calculateCheckout();
         $this->setFormDataPanesOrder();
@@ -500,7 +501,7 @@ class Checkout extends FrontendController
 
         if (!$this->order->priceRuleCodeMatches($price_rule_id, $code)) {
             $this->setError('pricerule_code', $this->text('Invalid code'));
-            $this->setMessageFormCheckout('components.warning', $this->text('Invalid code'));
+            $this->setMessageFormCheckout('components.danger', $this->text('Invalid code'));
         }
     }
 
@@ -537,7 +538,7 @@ class Checkout extends FrontendController
         }
 
         if (!empty($errors)) {
-            $this->setMessageFormCheckout('cart.warning', $errors);
+            $this->setMessageFormCheckout('cart.danger', $errors);
             return null;
         }
 

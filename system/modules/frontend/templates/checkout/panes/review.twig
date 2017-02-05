@@ -11,9 +11,19 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-<div class="panel panel-default checkout-review">
+<div class="panel panel-checkout panel-default review">
   <div class="panel-heading">{{ text('Review') }}</div>
   <div class="panel-body">
+    {% if messages['cart'] is defined and messages['cart'] is not empty %}
+        {% for severity,text in messages['cart'] %}
+            <div class="alert alert-{{ severity }} alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              {{ text|raw }}
+            </div>
+        {% endfor %}
+    {% endif %}
     {% for sku,item in cart['items'] %}
         <div class="form-group{{ error('cart.items.' ~ sku, ' has-error') }}">
           <div class="col-md-2">
@@ -70,16 +80,6 @@
           </div>
         </div>
     {% endfor %}
-    {% if messages['cart'] is defined and messages['cart'] is not empty %}
-        {% for severity,text in messages['cart'] %}
-            <div class="alert alert-{{ severity }} alert-dismissible">
-              <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ text|raw }}
-            </div>
-        {% endfor %}
-    {% endif %}
     <div class="form-group">
       <div class="col-md-12">
         <table class="table table-borderless price-components">
@@ -134,6 +134,16 @@
             </div>
         {% endfor %}
     {% endif %}
+    <div class="form-group">
+      <div class="col-md-12">
+        <a href="#" onclick="return false;" data-toggle="collapse" data-target="#order-comments">{{ text('Order comments') }} <span class="caret"></span></a>
+          {% if order['comment'] %}
+          <textarea name="order[comment]" id="order-comments" class="form-control">{{ order['comment'] }}</textarea>
+        {% else %}
+            <textarea name="order[comment]" id="order-comments" class="form-control collapse">{{ order['comment'] }}</textarea>
+        {% endif %}
+      </div>
+    </div>
     <div class="form-group">
       <div class="col-md-6">
         <button class="btn btn-success" name="save" value="1">

@@ -143,7 +143,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
                 GplCart.job(settings);
 
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function () {
                 console.log(arguments);
             }
         });

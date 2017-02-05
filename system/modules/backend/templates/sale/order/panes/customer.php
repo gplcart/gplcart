@@ -6,12 +6,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if (isset($user['user_id'])) { ?>
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Customer'); ?></div>
   <div class="panel-body">
     <div class="row">
       <div class="col-md-12">
-        <?php if (isset($user['user_id'])) { ?>
         <table class="table table-condensed">
           <tr>
             <td><?php echo $this->text('ID'); ?></td>
@@ -63,8 +63,8 @@
             </td>
           </tr>
         </table>
-        <?php } ?>
       </div>
     </div>   
   </div>
-</div> 
+</div>
+<?php } ?>

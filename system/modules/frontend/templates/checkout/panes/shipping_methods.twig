@@ -11,9 +11,17 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-<div class="panel panel-default">
+<div class="panel panel-checkout shipping-methods panel-default">
   <div class="panel-heading">{{ text('Shipping') }}</div>
   <div class="panel-body">
+    {% if error('shipping', true) and error('shipping') is not iterable %}
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ error('shipping') }}
+        </div>
+    {% endif %}
     <div class="form-group">
       <div class="col-md-12">
         {% for method_id,method in shipping_methods %}
@@ -30,14 +38,6 @@
               </label>
             </div>
         {% endfor %}
-        {% if error('shipping', true) and error('shipping') is not iterable %}
-            <div class="alert alert-danger alert-dismissible">
-              <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ error('shipping') }}
-            </div>
-        {% endif %}
       </div>
     </div>
   </div>

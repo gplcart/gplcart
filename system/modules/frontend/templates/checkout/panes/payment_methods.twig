@@ -11,9 +11,17 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-<div class="panel panel-default">
+<div class="panel panel-checkout payment-methods panel-default">
   <div class="panel-heading">{{ text('Payment') }}</div>
   <div class="panel-body">
+    {% if error('payment', true) and error('payment') is not iterable %}
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ error('payment') }}
+        </div>
+    {% endif %}
     <div class="form-group">
       <div class="col-md-12">
         {% for method_id,method in payment_methods %}
@@ -29,14 +37,6 @@
               </label>
             </div>
         {% endfor %}
-        {% if error('payment', true) and error('payment') is not iterable %}
-            <div class="alert alert-danger alert-dismissible">
-              <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ error('payment') }}
-            </div>
-        {% endif %}
       </div>
     </div>
   </div>

@@ -9,9 +9,13 @@
 <div class="row">
   <div class="col-md-6">
     <?php echo $pane_summary; ?>
-    <?php echo $pane_shipping_address; ?>
+    <?php echo $pane_customer; ?>
+    <?php echo $pane_log; ?>
   </div>
   <div class="col-md-6">
+    <?php echo $pane_components; ?>
+    <?php echo $pane_shipping_address; ?>
+    <?php echo $pane_comment; ?>
     <div class="panel panel-default hidden-print">
       <div class="panel-body">
         <div class="btn-toolbar">
@@ -26,8 +30,5 @@
         </div>
       </div>
     </div>
-    <?php echo $pane_components; ?>
-    <?php echo $pane_customer; ?>
-    <?php echo $pane_log; ?>
   </div>
 </div>

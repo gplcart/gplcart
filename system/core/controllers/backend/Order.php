@@ -255,6 +255,7 @@ class Order extends BackendController
 
         $this->setDataLogsOrder();
         $this->setDataSummaryOrder();
+        $this->setDataCommentOrder();
         $this->setDataCustomerOrder();
         $this->setDataComponentsOrder();
         $this->setDataShippingAddressOrder();
@@ -410,6 +411,16 @@ class Order extends BackendController
 
         $html = $this->render('sale/order/panes/summary', $data);
         $this->setData('pane_summary', $html);
+    }
+    
+    /**
+     * Sets order comment pane on the order overview page
+     */
+    protected function setDataCommentOrder()
+    {
+        $data = array('order' => $this->data_order);
+        $html = $this->render('sale/order/panes/comment', $data);
+        $this->setData('pane_comment', $html);
     }
 
     /**

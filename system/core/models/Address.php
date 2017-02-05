@@ -248,7 +248,7 @@ class Address extends Model
             }
         }
 
-        $this->hook->fire('geocode.query', $data, $fields, $components);
+        $this->hook->fire('geocode.address', $data, $fields, $components);
         return implode(',', $components);
     }
 
