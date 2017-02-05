@@ -135,80 +135,6 @@ class Order extends BackendController
     }
 
     /**
-     * Displays the order snapshot page
-     * @param integer $order_id
-     */
-    public function snapshotOrder($order_id)
-    {
-        $this->setLogOrder($order_id);
-
-        $this->setTitleSnapshotOrder();
-        $this->setBreadcrumbSnapshotOrder();
-
-        $this->setDataOrder();
-        $this->setMessageSnapshotOrder();
-        $this->outputSnapshotOrder();
-    }
-
-    /**
-     * Sets a message on the order snapshot page
-     */
-    protected function setMessageSnapshotOrder()
-    {
-        $vars = array(
-            '@order_id' => $this->data_order['order_id'],
-            '@url' => $this->url("admin/sale/order/{$this->data_order['order_id']}")
-        );
-
-        $message = $this->text('This is a saved snapshot of order #@order_id. You can see current state of the order <a href="@url">here</a>', $vars);
-        $this->setMessage($message, 'warning');
-    }
-
-    /**
-     * Sets titles on the order snapshot page
-     */
-    protected function setTitleSnapshotOrder()
-    {
-        $vars = array('@order_id' => $this->data_order['order_id']);
-        $title = $this->text('Snapshot of order #@order_id', $vars);
-        $this->setTitle($title);
-    }
-
-    /**
-     * Sets breadcrumbs on the order snapshot page
-     */
-    protected function setBreadcrumbSnapshotOrder()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Orders'),
-            'url' => $this->url('admin/sale/order')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Order #@order_id', array(
-                '@order_id' => $this->data_order['order_id'])),
-            'url' => $this->url("admin/sale/order/{$this->data_order['order_id']}")
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders order snapshot templates
-     */
-    protected function outputSnapshotOrder()
-    {
-        $this->output('sale/order/order');
-    }
-
-    /**
      * Returns an order log
      * @param integer $order_id
      * @return array
@@ -225,8 +151,7 @@ class Order extends BackendController
         unset($log['data']);
         $order['log'] = $log;
 
-        $this->data_order = $this->prepareOrder($order);
-        return $this->data_order;
+        return $this->data_order = $this->prepareOrder($order);
     }
 
     /**
@@ -412,7 +337,7 @@ class Order extends BackendController
         $html = $this->render('sale/order/panes/summary', $data);
         $this->setData('pane_summary', $html);
     }
-    
+
     /**
      * Sets order comment pane on the order overview page
      */

@@ -41,11 +41,6 @@
           </div>
           <div class="text"><?php echo $this->escape($item['text']); ?></div>
         </td>
-        <td class="middle text-right">
-          <a href="<?php echo $this->url("admin/sale/order-snapshot/$id"); ?>">
-          <?php echo $this->text('snapshot'); ?>
-          </a>
-        </td>
       </tr>
       <?php } ?>
     </table>

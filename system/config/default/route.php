@@ -356,13 +356,6 @@ $routes['admin/sale/order/(\d+)'] = array(
     )
 );
 
-$routes['admin/sale/order-snapshot/(\d+)'] = array(
-    'access' => 'order',
-    'handlers' => array(
-        'controller' => array('gplcart\\core\\controllers\\backend\\Order', 'snapshotOrder')
-    )
-);
-
 $routes['admin/sale/price'] = array(
     'access' => 'price_rule',
     'menu' => array('admin' => 'Prices'),
