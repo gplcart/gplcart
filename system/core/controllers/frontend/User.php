@@ -96,6 +96,7 @@ class User extends FrontendController
     protected function validateLoginUser()
     {
         $this->setSubmitted('user', null, 'raw');
+
         $this->validate('user_login');
 
         return !$this->hasErrors('user', false);
@@ -191,8 +192,8 @@ class User extends FrontendController
     protected function validateRegisterUser()
     {
         $this->setSubmitted('user', null, 'raw');
-
         $this->setSubmitted('store_id', $this->store_id);
+
         $this->validate('user');
 
         return !$this->hasErrors('user');
@@ -327,8 +328,8 @@ class User extends FrontendController
     protected function validateResetPasswordUser()
     {
         $this->setSubmitted('user', null, 'raw');
-
         $this->setSubmitted('user', $this->data_user);
+
         $this->validate('user_reset_password');
 
         return !$this->hasErrors('user');

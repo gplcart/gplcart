@@ -303,10 +303,10 @@ class State extends BackendController
     protected function validateState()
     {
         $this->setSubmitted('state');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_state);
         $this->setSubmitted('country', $this->data_country['code']);
+        
         $this->validate('state');
 
         return !$this->hasErrors('state');

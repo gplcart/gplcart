@@ -43,6 +43,10 @@ class Language extends BaseValidator
         $this->validateNameLanguage();
         $this->validateNativeNameLanguage();
         $this->validateCodeLanguage();
+        
+        // Remove data of updating language
+        // to prevent from saving in serialized string
+        $this->unsetSubmitted('update');
 
         return $this->getResult();
     }
@@ -113,9 +117,6 @@ class Language extends BaseValidator
             return false;
         }
 
-        // Remove data of updating language
-        // to prevent from saving in serialized string
-        $this->unsetSubmitted('update');
         return true;
     }
 

@@ -380,7 +380,6 @@ class Account extends FrontendController
     protected function validateAccount()
     {
         $this->setSubmitted('user', null, 'raw');
-
         $this->setSubmitted('update', $this->data_user);
         $this->setSubmitted('user_id', $this->data_user['user_id']);
 
@@ -651,8 +650,8 @@ class Account extends FrontendController
     protected function validateAddressAccount()
     {
         $this->setSubmitted('address');
-
         $this->setSubmitted('user_id', $this->data_user['user_id']);
+        
         $this->validate('address');
 
         return !$this->hasErrors('address');

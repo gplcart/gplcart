@@ -248,8 +248,7 @@ class PriceRule extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_rule = $this->preparePriceRule($rule);
-        return $this->data_rule;
+        return $this->data_rule = $this->preparePriceRule($rule);
     }
 
     /**
@@ -296,9 +295,10 @@ class PriceRule extends BackendController
     {
         $this->setSubmitted('price_rule', null, false);
 
-        $this->validate('price_rule');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_rule);
+
+        $this->validate('price_rule');
 
         return !$this->hasErrors('price_rule');
     }

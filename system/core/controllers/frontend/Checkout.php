@@ -711,7 +711,6 @@ class Checkout extends FrontendController
     protected function validateOrderCheckout()
     {
         $this->setSubmitted('update', array()); // Reset all values set before
-
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);

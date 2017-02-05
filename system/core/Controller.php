@@ -689,6 +689,10 @@ class Controller
             return $this->text('Could not load template %path', array('%path' => $template));
         }
 
+        if ($file == 'layout/body') {
+            $this->setPhpErrors($data);
+        }
+
         if (pathinfo($template, PATHINFO_EXTENSION) === 'twig') {
             $settings = empty($this->theme_settings['twig']) ? array() : $this->theme_settings['twig'];
             return $this->renderTwig($template, $data, $settings);
@@ -1553,46 +1557,36 @@ class Controller
         $this->data['css'] = $this->css();
         $this->data['js_top'] = $this->js('top');
         $this->data['js_bottom'] = $this->js('bottom');
-
-        $this->setPhpErrors();
     }
 
     /**
      * Sets php errors recorded by logger
+     * @param $data
      * @return null
      */
-    protected function setPhpErrors()
+    protected function setPhpErrors(array &$data)
     {
         $this->setPhpErrorsLive();
 
-        $errors = $this->logger->getErrors();
-
-        if (empty($errors)) {
-            return null;
-        }
-
-        foreach ($errors as $severity => $messages) {
-            foreach ($messages as $message) {
-                $this->data['messages'][$severity][] = $message;
-            }
-
-            unset($errors[$severity]);
+        foreach ($this->logger->getPhpErrors() as $message) {
+            $data['messages']['warning'][] = $message;
         }
     }
 
     /**
      * Set up live error reporting
+     * @return null
      */
     protected function setPhpErrorsLive()
     {
-        if ($this->path('admin/report/events')) {
-            return null; // Don't display on the event reporting page
-        }
-
         $access = $this->config('error_live_report', 0);
 
         if (!$access) {
             return null; // Disabled
+        }
+
+        if ($this->path('admin/report/events')) {
+            return null; // Don't display on the event reporting page
         }
 
         if ($access == 1 && !$this->access('report_events')) {

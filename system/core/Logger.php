@@ -21,7 +21,7 @@ class Logger
      * Collected PHP errors
      * @var array
      */
-    protected $errors = array();
+    protected $php_errors = array();
 
     /**
      * Database instance
@@ -91,8 +91,8 @@ class Logger
         $values = array(
             'time' => GC_TIME,
             'text' => $message,
-            'log_id' => gplcart_string_random(6),
             'data' => serialize((array) $data),
+            'log_id' => gplcart_string_random(6),
             'translatable' => (int) $translatable,
             'type' => mb_substr($type, 0, 255, 'UTF-8'),
             'severity' => mb_substr($severity, 0, 255, 'UTF-8')
@@ -131,9 +131,15 @@ class Logger
             'message' => $message
         );
 
+        // Get a unique key for every error to check if it has already caught
+        $key = md5(json_encode($error));
+
+        if (isset($this->php_errors[$key])) {
+            return null; // Don't log the same error again
+        }
+
         $this->log('php_error', $error, 'warning', false);
-        $formatted = $this->getFormattedError($error);
-        $this->errors['warning'][] = $formatted;
+        $this->php_errors[$key] = $this->getFormattedError($error);
     }
 
     /**
@@ -168,8 +174,7 @@ class Logger
         $error = $this->getExceptionMessageArray($exception);
         $this->log('php_exception', $error, 'danger', false);
 
-        $message = $this->getFormattedError($error, 'PHP Exception');
-        echo $message;
+        echo $this->getFormattedError($error, 'PHP Exception');
     }
 
     /**
@@ -210,12 +215,12 @@ class Logger
     }
 
     /**
-     * Returns an array of collected errors
+     * Returns an array of collected PHP errors
      * @return array
      */
-    public function getErrors()
+    public function getPhpErrors()
     {
-        return $this->errors;
+        return $this->php_errors;
     }
 
 }

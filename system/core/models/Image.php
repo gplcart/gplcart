@@ -200,7 +200,8 @@ class Image extends Model
         $imagestyle_id = $imagestyles ? (int) max(array_keys($imagestyles)) : 0;
         $imagestyle_id++;
 
-        $imagestyles[$imagestyle_id] = $data;
+        $allowed = array('name', 'status', 'actions');
+        $imagestyles[$imagestyle_id] = array_intersect_key($data, array_flip($allowed));
 
         $this->config->set('imagestyles', $imagestyles);
         $this->hook->fire('add.imagestyle.after', $data, $imagestyle_id);
@@ -224,7 +225,9 @@ class Image extends Model
             return false;
         }
 
-        $imagestyles[$imagestyle_id] = $data;
+        $allowed = array('name', 'status', 'actions');
+        $imagestyles[$imagestyle_id] = array_intersect_key($data, array_flip($allowed));
+
         $this->config->set('imagestyles', $imagestyles);
         $this->hook->fire('update.imagestyle.after', $imagestyle_id, $data);
         return true;

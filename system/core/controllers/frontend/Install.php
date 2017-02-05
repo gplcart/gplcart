@@ -208,12 +208,11 @@ class Install extends FrontendController
      */
     protected function validateInstall()
     {
-        $this->setSubmitted('settings');
-
         $language = array(
             $this->install_language => $this->language->getIso($this->install_language)
         );
 
+        $this->setSubmitted('settings');
         $this->setSubmitted('store.language', $language);
         $this->setSubmitted('store.host', $this->request->host());
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));

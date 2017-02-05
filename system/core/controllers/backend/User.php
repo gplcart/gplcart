@@ -275,9 +275,9 @@ class User extends BackendController
     protected function validateUser()
     {
         $this->setSubmitted('user');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_user);
+
         $this->validate('user', array('admin' => $this->access('user_edit')));
 
         return !$this->hasErrors('user');

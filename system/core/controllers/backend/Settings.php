@@ -107,8 +107,8 @@ class Settings extends BackendController
     protected function validateSettings()
     {
         $this->setSubmitted('settings');
-
         $this->setSubmittedBool('smtp_auth');
+
         $this->validate('settings');
 
         return !$this->hasErrors('settings');

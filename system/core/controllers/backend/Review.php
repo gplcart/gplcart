@@ -258,9 +258,9 @@ class Review extends BackendController
     protected function validateReview()
     {
         $this->setSubmitted('review');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_review);
+        
         $this->validate('review');
 
         return !$this->hasErrors('review');

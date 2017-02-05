@@ -233,9 +233,9 @@ class Zone extends BackendController
     protected function validateZone()
     {
         $this->setSubmitted('zone');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_zone);
+
         $this->validate('zone');
 
         return !$this->hasErrors('zone');

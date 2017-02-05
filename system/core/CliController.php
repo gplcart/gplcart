@@ -237,12 +237,8 @@ class CliController
      */
     protected function setPhpErrors()
     {
-        $errors = $this->logger->getErrors();
-
-        foreach ($errors as $messages) {
-            foreach ($messages as $message) {
-                $this->setMessage($message);
-            }
+        foreach ($this->logger->getPhpErrors() as $message) {
+            $this->setMessage($message);
         }
     }
 

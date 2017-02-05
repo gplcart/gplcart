@@ -51,6 +51,10 @@ class ImageStyle extends BaseValidator
         $this->validateStatus();
         $this->validateActionsImageStyle();
 
+        // Remove data of updating image style
+        // to prevent from saving in serialized string
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 

@@ -394,7 +394,7 @@ ul.ui-autocomplete.ui-menu li a:hover {
 
 .saved-addresses > .address {
     flex-grow: 1;
-    min-width: 50%;
+    max-width: 50%;
     margin: 0;
     border: 1px solid #fff;
     overflow: hidden;

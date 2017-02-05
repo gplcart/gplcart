@@ -234,6 +234,7 @@ class ProductClass extends BackendController
         
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_product_class);
+        
         $this->validate('product_class');
         
         return !$this->hasErrors('product_class');

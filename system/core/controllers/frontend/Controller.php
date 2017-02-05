@@ -270,7 +270,6 @@ class Controller extends BaseController
     protected function validateAddToCart()
     {
         $this->setSubmitted('product');
-
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
@@ -454,6 +453,7 @@ class Controller extends BaseController
     {
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
+        
         $this->validate('wishlist');
     }
 
