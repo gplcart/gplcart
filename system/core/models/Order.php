@@ -338,13 +338,13 @@ class Order extends Model
      */
     public function setViewed(array $order)
     {
-        $user_id = (int) $this->user->getSession('user_id');
+        $user_id = $this->user->getSession('user_id');
 
         if ($this->isViewed($order, $user_id)) {
             return true; // Record already exists
         }
 
-        $lifespan = (int) $this->config->get('history_lifespan', 2628000);
+        $lifespan = $this->config->get('history_lifespan', 2628000);
 
         // Do not mark again old orders.
         // Their history records probably have been removed by cron
@@ -370,17 +370,8 @@ class Order extends Model
      */
     public function isViewed(array $order, $user_id)
     {
-        $sql = 'SELECT history_id'
-                . ' FROM history'
-                . ' WHERE id_key=?'
-                . ' AND id_value=?'
-                . ' AND user_id=?';
-
-        $conditions = array(
-            'order_id',
-            $order['order_id'],
-            $user_id
-        );
+        $sql = 'SELECT history_id FROM history WHERE id_key=? AND id_value=? AND user_id=?';
+        $conditions = array('order_id', $order['order_id'], $user_id);
 
         return (bool) $this->db->fetchColumn($sql, $conditions);
     }
@@ -392,14 +383,13 @@ class Order extends Model
      */
     public function isNew(array $order)
     {
-        $viewed = isset($order['viewed']) ? (int) $order['viewed'] : 0;
-        $lifespan = (int) $this->config->get('history_lifespan', 2628000);
+        $lifespan = $this->config->get('history_lifespan', 2628000);
 
-        if (empty($viewed)) {
-            return !((GC_TIME - (int) $order['created']) > $lifespan);
+        if (empty($order['viewed'])) {
+            return !((GC_TIME - $order['created']) > $lifespan);
         }
 
-        return ((GC_TIME - $viewed) > $lifespan);
+        return ((GC_TIME - $order['viewed']) > $lifespan);
     }
 
     /**
@@ -431,7 +421,7 @@ class Order extends Model
         }
 
         // Get fresh order from the database
-        $order = $this->get((int) $order_id);
+        $order = $this->get($order_id);
 
         $this->setPriceRule($order);
         $this->updateCart($order, $cart);
@@ -445,7 +435,7 @@ class Order extends Model
 
         if (empty($options['admin'])) {
 
-            $this->setNotification($order);
+            $this->setNotificationCreated($order);
 
             $result = array(
                 'message' => '',
@@ -460,26 +450,51 @@ class Order extends Model
     }
 
     /**
-     * Sets user notifications
+     * Notify when an order has been created
      * @param array $order
      * @return mixed
      */
-    public function setNotification(array $order)
+    public function setNotificationCreated(array $order)
     {
         $this->mail->set('order_created_admin', array($order));
 
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->mail->set('order_created_customer', array($order));
         }
+
+        return false;
     }
 
     /**
-     * Returns a default order status
+     * Notify when an order has been updated
+     * @param array $order
+     * @return mixed
+     */
+    public function setNotificationUpdated(array $order)
+    {
+        if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
+            return $this->mail->set('order_updated_customer', array($order));
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns default status ID
      * @return string
      */
     public function getDefaultStatus()
     {
         return $this->config->get('order_status', 'pending');
+    }
+
+    /**
+     * Returns "canceled" status ID
+     * @return string
+     */
+    public function getCanceledStatus()
+    {
+        return $this->config->get('order_status_canceled', 'canceled');
     }
 
     /**
@@ -574,26 +589,24 @@ class Order extends Model
 
     /**
      * Adds an order log record to the database
-     * @param string $message
-     * @param integer $user_id
-     * @param array|integer $order
+     * @param array $log
      * @return integer
      */
-    public function addLog($message, $user_id, $order)
+    public function addLog(array $log)
     {
-        if (is_numeric($order)) {
-            $order = $this->get($order);
-        }
+        $log += array('data' => array(), 'created' => GC_TIME);
+        return $this->db->insert('order_log', $log);
+    }
 
-        $values = array(
-            'data' => $order,
-            'text' => $message,
-            'created' => GC_TIME,
-            'user_id' => $user_id,
-            'order_id' => $order['order_id']
-        );
-
-        return $this->db->insert('order_log', $values);
+    /**
+     * Cancel an order by setting its status to "Canceled"
+     * @param integer $order_id
+     * @return bool
+     */
+    public function cancel($order_id)
+    {
+        $data = array('status' => $this->getCanceledStatus());
+        return $this->update($order_id, $data);
     }
 
     /**

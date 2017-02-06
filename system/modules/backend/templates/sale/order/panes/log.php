@@ -29,10 +29,10 @@
       <?php foreach ($items as $id => $item) { ?>
       <tr>
         <td>
-          <div class="small created">
+          <div class="created">
             <?php echo $this->date($item['created']); ?>,
             <?php if (empty($item['user_name'])) { ?>
-            <span class="text-danger"><?php echo $this->text('unknown user'); ?></span>
+            <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } else { ?>
             <a href="<?php echo $this->url("account/{$item['user_id']}"); ?>">
               <?php echo $this->escape($item['user_email']); ?>

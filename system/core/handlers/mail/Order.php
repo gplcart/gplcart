@@ -78,7 +78,7 @@ class Order extends BaseHandler
                 . "View: !order\n";
 
         $message_text = $this->config->get('email_message_order_created_admin', $message_default);
-        
+
         $default = (array) $this->store->getDefault(true);
         $url = $this->store->url($default);
 
@@ -95,7 +95,7 @@ class Order extends BaseHandler
     }
 
     /**
-     * Sends an email to the logged in customer after he/she created an order
+     * Sends an email to a logged in customer after the order has been created
      * @param array $order
      * @return boolean
      */
@@ -121,6 +121,44 @@ class Order extends BaseHandler
                 . $this->signatureText($options);
 
         $message_text = $this->config->get('email_message_order_created_customer', $message_default);
+        $url = $this->store->url($store);
+
+        $message_arguments = array(
+            '!store' => $store_name,
+            '!order' => "$url/account/{$order['user_id']}",
+            '!status' => $this->order->getStatusName($order['status']),
+        );
+
+        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
+        $message = $this->language->text($message_text, $message_arguments);
+
+        return $this->mail->send(array($order['user_email']), array($subject => $message), $options);
+    }
+
+    /**
+     * Sends an email to a registered customer after the order has been updated
+     * @param array $order
+     * @return boolean
+     */
+    public function updatedToCustomer(array $order)
+    {
+        $store = $this->store->get($order['store_id']);
+        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $options = $this->store->config(null, $store);
+        $options['from'] = array($this->store->email($store), $store_name);
+
+        $subject_default = "Order #!order_id at !store";
+        $subject_text = $this->config->get('email_subject_order_updated_customer', $subject_default);
+
+        $subject_arguments = array('!order_id' => $order['order_id'], '!store' => $store_name);
+        $subject = $this->language->text($subject_text, $subject_arguments);
+
+        $message_default = "Your order at !store has been updated\n\n"
+                . "Order status: !status\n"
+                . "View orders: !order\n"
+                . $this->signatureText($options);
+
+        $message_text = $this->config->get('email_message_order_updated_customer', $message_default);
         $url = $this->store->url($store);
 
         $message_arguments = array(

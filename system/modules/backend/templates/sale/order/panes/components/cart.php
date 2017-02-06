@@ -12,9 +12,13 @@
 <?php foreach ($order['cart'] as $sku => $item) { ?>
 <tr>
   <td>
+    <?php if(empty($item['product_status'])) { ?>
+    <?php echo $this->escape($item['title']); ?> <span class="text-danger">(<?php echo $this->text('unavailable'); ?>)</span>
+    <?php } else { ?>
     <a href="<?php echo $this->url("product/{$item['product_id']}"); ?>">
       <?php echo $this->escape($item['title']); ?>
     </a>
+    <?php } ?>
     X <?php echo $this->escape($item['quantity']); ?>
   </td>
   <td>

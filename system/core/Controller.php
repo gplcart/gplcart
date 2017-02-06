@@ -2046,8 +2046,8 @@ class Controller
             $query = $this->getFilterQuery();
         }
 
+        $page = isset($query['p']) ? $query['p'] : 1;
         $query['p'] = '%num';
-        $page = isset($query['p']) ? (int) $query['p'] : 1;
 
         $this->pager->setPage($page)
                 ->setPerPage($limit)

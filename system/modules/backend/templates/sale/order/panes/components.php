@@ -14,8 +14,12 @@
           <table class="table table-condensed">
             <tbody>
               <?php foreach($components as $component) { ?>
-              <?php echo $component; ?>
+              <?php echo $component['rendered']; ?>
               <?php } ?>
+              <tr>
+                <td><b><?php echo $this->text('Grand total'); ?></b></td>
+                <td><b><?php echo $this->escape($order['total_formatted']); ?></b></td>
+              </tr>
             </tbody>
           </table>
         </div>

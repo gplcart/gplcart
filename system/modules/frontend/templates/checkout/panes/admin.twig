@@ -15,12 +15,8 @@
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-group">
-          <label class="col-md-2 control-label">{{ text('Customer') }}</label>
-          <div class="col-md-2">{{ user['name'] }} ({{ user['email'] }})</div>
-        </div>
-        <div class="form-group">
           <label class="col-md-2 control-label">{{ text('Status') }}</label>
-          <div class="col-md-2">
+          <div class="col-md-4">
             <select class="form-control" name="order[status]">
               {% for status_id,status_name in statuses %}
                   <option value="{{ status_id }}"{{ (order['status'] is defined and order['status'] == status_id) ? ' selected' : '' }}>

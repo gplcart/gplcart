@@ -71,7 +71,7 @@
               <button title="{{ text('Delete') }}" class="btn btn-default" name="order[cart][action][delete]" value="{{ item['cart_id'] }}">
                 <i class="fa fa-trash"></i>
               </button>
-              {% if admin is empty %}
+              {% if not admin %}
                   <button title="{{ text('Move to wishlist') }}" class="btn btn-default" name="order[cart][action][wishlist]" value="{{ sku }}">
                     <i class="fa fa-star"></i>
                   </button>
@@ -83,13 +83,13 @@
     <div class="form-group">
       <div class="col-md-12">
         <table class="table table-borderless price-components">
-          {% if price_components is not empty %}
+          {% if price_components %}
               <tr>
                 <td>{{ text('Subtotal') }}</td>
                 <td>{{ cart['total_formatted'] }}</td>
               </tr>
           {% endif %}
-          {% for id,price_component in price_components %}
+          {% for id, price_component in price_components %}
               <tr>
                 <td>
                   {{ price_component['name'] }}
@@ -117,8 +117,12 @@
           <tr>
             <td><b>{{ text('Grand total') }}</b></td>
             <td>
+              {% if admin %}
+                  <input class="form-control" name="order[total]" value="{{ total_decimal }}">
+              {% else %}
               <input type="hidden" name="order[total]" value="{{ total }}">
               <b>{{ total_formatted }}</b>
+                  {% endif %}
             </td>
           </tr>
         </table>

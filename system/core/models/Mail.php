@@ -20,6 +20,7 @@ use gplcart\core\Handler;
  */
 class Mail extends Model
 {
+
     /**
      * Debug info
      * @var string
@@ -88,6 +89,12 @@ class Mail extends Model
             ),
         );
 
+        $handlers['order_updated_customer'] = array(
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\mail\\Order', 'updatedToCustomer'),
+            ),
+        );
+
         $handlers['user_registered_admin'] = array(
             'access' => 'user',
             'handlers' => array(
@@ -134,7 +141,7 @@ class Mail extends Model
         if (empty($options['from']) || empty($to) || empty($message)) {
             return false; // Allows modules to abort sending
         }
-        
+
         $this->library->load('phpmailer');
 
         // Get fresh instance for each sending

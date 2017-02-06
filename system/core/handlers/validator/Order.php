@@ -402,9 +402,16 @@ class Order extends BaseValidator
             return null;
         }
 
-        $log = $this->getSubmitted('log');
+        $order = $this->getUpdating();
+        $status = $this->getSubmitted('status');
+        $log = (string) $this->getSubmitted('log');
 
-        if (empty($log) || mb_strlen($log) > 255) {
+        if ($log === '' && isset($status) && $order['status'] !== $status) {
+            $log = $this->language->text('Update order status to @status', array('@status' => $status));
+            $this->setSubmitted('log', $log);
+        }
+
+        if ($log === '' || mb_strlen($log) > 255) {
             $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Log'));
             $error = $this->language->text('@field must be @min - @max characters long', $vars);
             $this->setError('log', $error);

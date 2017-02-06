@@ -57,6 +57,7 @@ $config = array();
 # $config['no_image'] = 'image/misc/no-image.png';
 # $config['order_status'] = 'pending';
 # $config['order_status_initial'] = 'pending';
+# $config['order_status_canceled'] = 'canceled';
 # $config['order_log_limit'] = 5;
 # $config['page_alias_check'] = 1;
 # $config['page_alias_pattern'] = '%t.html';
@@ -132,6 +133,17 @@ $config = array();
 # $config['compress_js'] = 0; // Aggregate JS files
 # $config['compress_css'] = 0; // Aggregate and compress CSS files
 # $config['gapi_browser_key'] = ''; // Google API browser key
+# 
+# $config['email_subject_order_created_admin'] = ''; // Text of E-mail subject sent after order has been created to an admin
+# $config['email_message_order_created_admin'] = ''; // Text of E-mail message sent after order has been created to an admin
+#
+# $config['email_subject_order_created_customer'] = ''; // Text of E-mail subject sent after order has been created to a customer
+# $config['email_message_order_created_customer'] = ''; // Text of E-mail message sent after order has been created to a customer
+#
+# $config['email_subject_order_updated_customer'] = ''; // Text of E-mail subject sent after order has been updated to a customer
+# $config['email_message_order_updated_customer'] = ''; // Text of E-mail message sent after order has been updated to a customer
+
+
 
 /**
  * End of configurable settings

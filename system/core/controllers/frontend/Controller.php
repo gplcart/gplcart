@@ -650,6 +650,15 @@ class Controller extends BaseController
     {
         $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
     }
+    
+    /**
+     * Add decimat total
+     * @param array $item
+     */
+    protected function attachItemTotalDecimal(array &$item)
+    {
+        $item['total_decimal'] = $this->price->decimal($item['total'], $item['currency']);
+    }
 
     /**
      * Add thumb URL
