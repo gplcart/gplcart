@@ -175,8 +175,8 @@ class Checkout extends FrontendController
      */
     public function editOrderCheckout($order_id)
     {
-        $this->setAdminModeCheckout();
         $this->setOrderCheckout($order_id);
+        $this->setAdminModeCheckout();
         $this->editCheckout();
     }
 
@@ -242,8 +242,6 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $this->attachItemTotalFormatted($order);
-
         $this->data_order = $order;
         $this->order_id = $order_id;
 
@@ -273,7 +271,14 @@ class Checkout extends FrontendController
      */
     protected function setTitleEditCheckout()
     {
-        $this->setTitle($this->text('Checkout'));
+        if (isset($this->data_order['order_id']) && $this->admin) {
+            $vars = array('@num' => $this->data_order['order_id'], '@name' => $this->data_order['user_name']);
+            $text = $this->text('Edit order #@num for user @name', $vars);
+        } else {
+            $text = $this->text('Checkout');
+        }
+
+        $this->setTitle($text);
     }
 
     /**
@@ -711,7 +716,7 @@ class Checkout extends FrontendController
      */
     protected function validateOrderCheckout()
     {
-        $this->setSubmitted('update', array()); // Reset all values set before
+        $this->setSubmitted('update', $this->data_order);
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);
@@ -767,12 +772,12 @@ class Checkout extends FrontendController
         $this->data_form = gplcart_array_merge($this->data_form, $submitted);
 
         $result = $this->order->calculate($this->data_form);
-
+        
         $this->data_form['total'] = $result['total'];
-        $this->data_form['total_formatted'] = $this->price->format($result['total'], $result['currency']);
+        $this->data_form['price_components'] = $this->prepareOrderComponentsCheckout($result);
 
-        $components = $this->prepareOrderComponentsCheckout($result);
-        $this->data_form['price_components'] = $components;
+        $this->attachItemTotalDecimal($this->data_form);
+        $this->attachItemTotalFormatted($this->data_form);
     }
 
     /**
