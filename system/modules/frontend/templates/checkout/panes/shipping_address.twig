@@ -12,7 +12,12 @@
     @link http://gplcart.com Support, modules, demo
 #}
 <div class="panel panel-checkout shipping-address panel-default">
-  <div class="panel-heading">{{ text('Shipping address') }}</div>
+  <div class="panel-heading clearfix">
+    {{ text('Shipping address') }}
+    <noscript>
+      <button title="{{ text('Update') }}" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+    </noscript>
+  </div>
   <div class="panel-body">
     {% if error('shipping_address', true) %}
         <div class="alert alert-danger alert-dismissible">

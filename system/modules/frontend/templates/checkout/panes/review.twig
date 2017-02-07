@@ -91,10 +91,7 @@
           {% endif %}
           {% for id, price_component in price_components %}
               <tr>
-                <td>
-                  {{ price_component['name'] }}
-                  <input type="hidden" name="order[data][components][{{ id }}]" value="{{ price_component['price'] }}">
-                </td>
+                <td>{{ price_component['name'] }}</td>
                 <td>
                   {% if price_component['rule']['code'] is defined and price_component['rule']['code'] != '' %}
                       <div class="form-group col-md-8{{ error('check_pricerule', ' has-error') }}">
@@ -108,9 +105,15 @@
                             {{ price_component['price_formatted'] }}
                         {% endif %}
                       </div>
-                  {% else %}    
-                      {{ price_component['price_formatted'] }}
+                  {% else %}
+                      {% if admin %}
+                          <input class="form-control" name="order[data][components][{{ id }}]" value="{{ price_component['price_decimal'] }}">
+                      {% else %}
+                          {{ price_component['price_formatted'] }}
+                          <input type="hidden" name="order[data][components][{{ id }}]" value="{{ price_component['price'] }}">
+                      {% endif %}
                   {% endif %}
+                  {{ error('data.components.' ~ id) }}
                 </td>
               </tr>
           {% endfor %}
@@ -120,9 +123,10 @@
               {% if admin %}
                   <input class="form-control" name="order[total]" value="{{ total_decimal }}">
               {% else %}
-              <input type="hidden" name="order[total]" value="{{ total }}">
-              <b>{{ total_formatted }}</b>
-                  {% endif %}
+                  <input type="hidden" name="order[total]" value="{{ total }}">
+                  <b>{{ total_formatted }}</b>
+              {% endif %}
+              {{ error('total') }}
             </td>
           </tr>
         </table>
@@ -150,7 +154,7 @@
     </div>
     <div class="form-group">
       <div class="col-md-6">
-        <button class="btn btn-success" name="save" value="1">
+        <button class="btn btn-default" name="save" value="1">
           {% if admin is not empty %}
               {{ text('Save') }}
           {% else %}

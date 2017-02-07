@@ -58,6 +58,7 @@ $config = array();
 # $config['order_status'] = 'pending';
 # $config['order_status_initial'] = 'pending';
 # $config['order_status_canceled'] = 'canceled';
+# $config['order_update_notify_customer'] = 1; // Send notification to customer when order status has been updated
 # $config['order_log_limit'] = 5;
 # $config['page_alias_check'] = 1;
 # $config['page_alias_pattern'] = '%t.html';

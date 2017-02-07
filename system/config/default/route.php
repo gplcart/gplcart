@@ -113,17 +113,17 @@ $routes['checkout/complete/(\d+)'] = array(
     )
 );
 
-$routes['checkout/edit/(\d+)'] = array(
-    'access' => 'order_edit',
+$routes['checkout/clone/(\d+)'] = array(
+    'access' => 'order_add',
     'handlers' => array(
-        'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'editOrderCheckout')
+        'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'cloneOrderCheckout')
     )
 );
 
 $routes['checkout/add/(\d+)'] = array(
     'access' => 'order_add',
     'handlers' => array(
-        'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'addUserOrderCheckout')
+        'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'createOrderCheckout')
     )
 );
 

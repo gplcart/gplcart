@@ -155,6 +155,20 @@
     };
 
     /**
+     * Updates order view form
+     * @returns {undefined}
+     */
+    GplCart.onload.updateOrder = function () {
+        var conf;
+        $('[name="order[status]"]').change(function () {
+            conf = confirm(GplCart.text('Do you want to change order status?'));
+            if (conf) {
+                $(this).closest('form').find('[name="status"]:submit').click();
+            }
+        });
+    };
+
+    /**
      * Draw charts
      * @returns {undefined}
      */

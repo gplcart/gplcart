@@ -9,15 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Cart as CartModel;
 use gplcart\core\models\Order as OrderModel;
 use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\State as StateModel;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
@@ -29,6 +24,10 @@ class Order extends BackendController
 {
 
     use \gplcart\core\traits\ControllerOrder;
+
+    const NOTIFICATION_SENT = 2;
+    const NOTIFICATION_ERROR = 1;
+    const NOTIFICATION_DISABLED = 0;
 
     /**
      * Order model instance
@@ -43,18 +42,6 @@ class Order extends BackendController
     protected $pricerule;
 
     /**
-     * Country model instance
-     * @var \gplcart\core\models\Country $country
-     */
-    protected $country;
-
-    /**
-     * State model instance
-     * @var \gplcart\core\models\State $state
-     */
-    protected $state;
-
-    /**
      * Address model instance
      * @var \gplcart\core\models\Address $address
      */
@@ -65,24 +52,6 @@ class Order extends BackendController
      * @var \gplcart\core\models\Price $price
      */
     protected $price;
-
-    /**
-     * Currency model instance
-     * @var \gplcart\core\models\Currency $currency
-     */
-    protected $currency;
-
-    /**
-     * Cart model instance
-     * @var \gplcart\core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
-     * Product model instance
-     * @var \gplcart\core\models\Product $product
-     */
-    protected $product;
 
     /**
      * Payment model instance
@@ -111,34 +80,23 @@ class Order extends BackendController
     /**
      * Constructor
      * @param OrderModel $order
-     * @param CountryModel $country
-     * @param StateModel $state
      * @param AddressModel $address
      * @param PriceModel $price
-     * @param CurrencyModel $currency
-     * @param CartModel $cart
-     * @param ProductModel $product
      * @param PriceRuleModel $pricerule
+     * @param PaymentModel $payment
+     * @param ShippingModel $shipping
      */
-    public function __construct(OrderModel $order, CountryModel $country,
-            StateModel $state, AddressModel $address, PriceModel $price,
-            CurrencyModel $currency, CartModel $cart, ProductModel $product,
-            PriceRuleModel $pricerule, PaymentModel $payment,
-            ShippingModel $shipping
-    )
+    public function __construct(OrderModel $order, AddressModel $address,
+            PriceModel $price, PriceRuleModel $pricerule, PaymentModel $payment,
+            ShippingModel $shipping)
     {
         parent::__construct();
 
-        $this->cart = $cart;
-        $this->state = $state;
         $this->order = $order;
         $this->price = $price;
-        $this->product = $product;
-        $this->country = $country;
         $this->address = $address;
         $this->payment = $payment;
         $this->shipping = $shipping;
-        $this->currency = $currency;
         $this->pricerule = $pricerule;
     }
 
@@ -167,12 +125,9 @@ class Order extends BackendController
         $this->setTitleViewOrder();
         $this->setBreadcrumbViewOrder();
 
-        $this->order->setViewed($this->data_order);
-
         $this->setData('order', $this->data_order);
 
         $this->setDataLogsOrder();
-        $this->setDataActionsOrder();
         $this->setDataSummaryOrder();
         $this->setDataCommentOrder();
         $this->setDataCustomerOrder();
@@ -184,19 +139,41 @@ class Order extends BackendController
     }
 
     /**
-     * 
+     * Handles submitted data
      * @return null
      */
     protected function submitOrder()
     {
-        if ($this->isPosted('status') && $this->validateOrder()) {
-            $this->updateOrder();
+        if ($this->isPosted('delete')) {
+            $this->deleteOrder();
             return null;
         }
 
-        if ($this->isPosted('clone') && $this->validateOrder()) {
+        if (!$this->validateOrder()) {
+            return null;
+        }
+
+        if ($this->isPosted('status')) {
+            $this->updateOrder();
+        } else if ($this->isPosted('clone')) {
             $this->cloneOrder();
         }
+    }
+
+    /**
+     * Deletes the current order
+     */
+    protected function deleteOrder()
+    {
+        $this->controlAccess('order_delete');
+
+        if ($this->order->delete($this->data_order['order_id'])) {
+            $message = $this->text('Order has been deleted');
+            $this->redirect('admin/sale/order', $message, 'success');
+        }
+
+        $message = $this->text('Order has not been deleted');
+        $this->redirect('', $message, 'warning');
     }
 
     /**
@@ -209,8 +186,7 @@ class Order extends BackendController
         $this->setSubmitted('update', $this->data_order);
 
         $this->validate('order');
-
-        return !$this->hasErrors('order');
+        return !$this->isError();
     }
 
     /**
@@ -218,49 +194,69 @@ class Order extends BackendController
      */
     protected function updateOrder()
     {
+        $this->controlAccess('order_edit');
+
         $submitted = $this->getSubmitted();
 
         $order_id = $this->data_order['order_id'];
         $this->order->update($order_id, $submitted);
-        $notified = $this->notifyCustomerOrder($order_id, $submitted);
 
-        $log = array(
-            'order_id' => $order_id,
-            'user_id' => $this->uid,
-            'text' => $submitted['log'],
-            'data' => array('notified' => $notified)
-        );
+        $submitted['notify'] = $this->setNotificationOrder($order_id);
 
-        $this->order->addLog($log);
+        $this->logOrder($submitted);
 
         $messages = array(
-            0 => array('success', 'Order has been updated'),
-            1 => array('warning', 'Order has been updated, notification has not been sent to customer'),
-            2 => array('success', 'Order has been updated, notification has been sent to customer')
+            self::NOTIFICATION_DISABLED => array('success', 'Order has been updated'),
+            self::NOTIFICATION_ERROR => array('warning', 'Order has been updated, notification has not been sent to customer'),
+            self::NOTIFICATION_SENT => array('success', 'Order has been updated, notification has been sent to customer')
         );
 
-        list($severity, $text) = $messages[$notified];
+        list($severity, $text) = $messages[$submitted['notify']];
         $this->redirect('', $this->text($text), $severity);
+    }
+
+    /**
+     * Adds order update log message
+     * @param array $submitted
+     * @return boolean
+     */
+    protected function logOrder(array $submitted)
+    {
+        if ($this->data_order['status'] === $submitted['status']) {
+            return false;
+        }
+
+        $vars = array('@status' => $submitted['status']);
+        $text = $this->text('Update order status to @status', $vars);
+
+        $log = array(
+            'text' => $text,
+            'user_id' => $this->uid,
+            'order_id' => $this->data_order['order_id'],
+            'data' => array('notify' => $submitted['notify'])
+        );
+
+        return (bool) $this->order->addLog($log);
     }
 
     /**
      * Notify a customer when an order has been updated
      * @param integer $order_id
-     * @param array $submitted
      * @return integer
      */
-    protected function notifyCustomerOrder($order_id, array $submitted)
+    protected function setNotificationOrder($order_id)
     {
-        $notified = 0;
-
-        if (!empty($submitted['notify'])) {
-            $notified++;
-            $order = $this->order->get($order_id);
-            $sent = $this->order->setNotificationUpdated($order);
-            $notified += (int) ($sent === true);
+        if (!$this->config('order_update_notify_customer', 1)) {
+            return self::NOTIFICATION_DISABLED;
         }
 
-        return $notified;
+        $order = $this->order->get($order_id);
+
+        if ($this->order->setNotificationUpdated($order) === true) {
+            return self::NOTIFICATION_SENT;
+        }
+
+        return self::NOTIFICATION_ERROR;
     }
 
     /**
@@ -268,10 +264,14 @@ class Order extends BackendController
      */
     protected function cloneOrder()
     {
-        $order_id = $this->data_order['order_id'];
-        $this->order->cancel($order_id);
+        $this->controlAccess('order_edit');
+        $this->controlAccess('order_add');
 
-        $this->redirect();
+        $update = array('status' => $this->order->getCanceledStatus());
+        $this->order->update($this->data_order['order_id'], $update);
+        $this->logOrder($update);
+        
+        $this->redirect("checkout/clone/{$this->data_order['order_id']}");
     }
 
     /**
@@ -308,20 +308,6 @@ class Order extends BackendController
 
         $html = $this->render('sale/order/panes/log', $data);
         $this->setData('pane_log', $html);
-    }
-
-    /**
-     * Adds action pane on the order overview page
-     */
-    protected function setDataActionsOrder()
-    {
-        $data = array(
-            'order' => $this->data_order,
-            'statuses' => $this->order->getStatuses()
-        );
-
-        $html = $this->render('sale/order/panes/action', $data);
-        $this->setData('pane_action', $html);
     }
 
     /**
@@ -406,7 +392,10 @@ class Order extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_order = $this->prepareOrder($order);
+        $this->data_order = $this->prepareOrder($order);
+        $this->order->setViewed($this->data_order);
+
+        return $this->data_order;
     }
 
     /**
@@ -491,7 +480,11 @@ class Order extends BackendController
      */
     protected function setDataSummaryOrder()
     {
-        $data = array('order' => $this->data_order);
+        $data = array(
+            'order' => $this->data_order,
+            'statuses' => $this->order->getStatuses()
+        );
+
         $html = $this->render('sale/order/panes/summary', $data);
         $this->setData('pane_summary', $html);
     }
@@ -578,8 +571,7 @@ class Order extends BackendController
         $this->setBreadcrumbListOrder();
 
         $this->setData('stores', $this->store->getNames());
-        $this->setData('statuses', $this->store->getNames());
-        $this->setData('currencies', $this->currency->getList());
+        $this->setData('statuses', $this->order->getStatuses());
 
         $query = $this->getFilterQuery();
 
@@ -611,10 +603,16 @@ class Order extends BackendController
         $selected = (array) $this->request->post('selected', array());
 
         $deleted = $updated = 0;
+        $failed_notifications = array();
+
         foreach ($selected as $id) {
 
-            if ($action === 'status' && $this->access('order_edit')) {
-                $updated += (int) $this->order->update($id, array('status' => $value));
+            if ($action === 'status' && $this->access('order_edit')//
+                    && $this->order->update($id, array('status' => $value))) {
+                if ($this->setNotificationOrder($id) == self::NOTIFICATION_ERROR) {
+                    $failed_notifications[] = $id;
+                }
+                $updated++;
             }
 
             if ($action === 'delete' && $this->access('order_delete')) {
@@ -625,6 +623,12 @@ class Order extends BackendController
         if ($updated > 0) {
             $message = $this->text('Orders have been updated');
             $this->setMessage($message, 'success', true);
+        }
+
+        if (!empty($failed_notifications)) {
+            $vars = array('@id' => implode(',', $failed_notifications));
+            $message = $this->text('Failed to notify customers in orders: @id', $vars);
+            $this->setMessage($message, 'warning', true);
         }
 
         if ($deleted > 0) {

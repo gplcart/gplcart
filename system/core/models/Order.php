@@ -410,21 +410,24 @@ class Order extends Model
         );
 
         if (empty($data)) {
-            return $result; // Blocked by a module
+            return $result;
         }
 
         $this->prepareComponents($data, $cart);
         $order_id = $this->add($data);
 
         if (empty($order_id)) {
-            return $result; // Blocked by a module
+            return $result;
         }
 
-        // Get fresh order from the database
         $order = $this->get($order_id);
 
-        $this->setPriceRule($order);
-        $this->updateCart($order, $cart);
+        if (empty($data['order_id'])) {
+            $this->setPriceRule($order);
+            $this->updateCart($order, $cart);
+        } else {
+            $this->cloneCart($order, $cart);
+        }
 
         $result = array(
             'order' => $order,
@@ -434,19 +437,70 @@ class Order extends Model
         );
 
         if (empty($options['admin'])) {
-
             $this->setNotificationCreated($order);
-
-            $result = array(
-                'message' => '',
-                'order' => $order,
-                'severity' => 'success',
-                'redirect' => "checkout/complete/$order_id"
-            );
+            $result['message'] = '';
+            $result['redirect'] = "checkout/complete/$order_id";
         }
 
         $this->hook->fire('submit.order.after', $order, $cart, $options, $result);
         return $result;
+    }
+
+    /**
+     * 
+     * @param array $order
+     * @param array $cart
+     */
+    protected function cloneCart(array $order, array $cart)
+    {
+        foreach ($cart['items'] as $item) {
+            unset($item['cart_id']);
+            $item['user_id'] = $order['user_id'];
+            $item['order_id'] = $order['order_id'];
+            $this->cart->add($item);
+        }
+    }
+
+    /**
+     * Update cart items after order was created
+     * @param array $order
+     * @param array $cart
+     */
+    protected function updateCart(array $order, array $cart)
+    {
+        foreach ($cart['items'] as $item) {
+
+            $values = array(
+                // Replace default order ID (0) with order ID we just created
+                'order_id' => $order['order_id'],
+                // Make sure that cart items have the same user ID with order.
+                // It can be different e.g admin created the order using own cart
+                'user_id' => $order['user_id']
+            );
+
+            $this->cart->update($item['cart_id'], $values);
+        }
+    }
+
+    /**
+     * Sets price rules after the order was created
+     * @param array $order
+     */
+    protected function setPriceRule(array $order)
+    {
+        foreach (array_keys($order['data']['components']) as $component_id) {
+
+            if (!is_numeric($component_id)) {
+                continue; // We need only rules
+            }
+
+            $rule = $this->pricerule->get($component_id);
+
+            // Mark the coupon was used
+            if ($rule['code'] !== '') {
+                $this->pricerule->setUsed($rule['price_rule_id']);
+            }
+        }
     }
 
     /**
@@ -574,6 +628,9 @@ class Order extends Model
             return false;
         }
 
+        // In case we're cloning an order
+        unset($order['order_id']);
+
         $order['created'] = GC_TIME;
         $order += array('status' => $this->getDefaultStatus());
 
@@ -596,17 +653,6 @@ class Order extends Model
     {
         $log += array('data' => array(), 'created' => GC_TIME);
         return $this->db->insert('order_log', $log);
-    }
-
-    /**
-     * Cancel an order by setting its status to "Canceled"
-     * @param integer $order_id
-     * @return bool
-     */
-    public function cancel($order_id)
-    {
-        $data = array('status' => $this->getCanceledStatus());
-        return $this->update($order_id, $data);
     }
 
     /**
@@ -717,48 +763,6 @@ class Order extends Model
         );
 
         return $statuses;
-    }
-
-    /**
-     * Sets price rules after the order was created
-     * @param array $order
-     */
-    protected function setPriceRule(array $order)
-    {
-        foreach (array_keys($order['data']['components']) as $component_id) {
-
-            if (!is_numeric($component_id)) {
-                continue; // We need only rules
-            }
-
-            $rule = $this->pricerule->get($component_id);
-
-            // Mark the coupon was used
-            if ($rule['code'] !== '') {
-                $this->pricerule->setUsed($rule['price_rule_id']);
-            }
-        }
-    }
-
-    /**
-     * Update cart items after order was created
-     * @param array $order
-     * @param array $cart
-     */
-    protected function updateCart(array $order, array $cart)
-    {
-        foreach ($cart['items'] as $item) {
-
-            $values = array(
-                // Replace default order ID (0) with order ID we just created
-                'order_id' => $order['order_id'],
-                // Make sure that cart items have the same user ID with order.
-                // It can be different e.g admin created the order using own cart
-                'user_id' => $order['user_id']
-            );
-
-            $this->cart->update($item['cart_id'], $values);
-        }
     }
 
     /**

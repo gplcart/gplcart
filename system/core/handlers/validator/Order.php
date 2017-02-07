@@ -102,6 +102,7 @@ class Order extends BaseValidator
         $this->validateUserCartId();
         $this->validateCreatorOrder();
         $this->validateTotalOrder();
+        $this->validateComponentPricesOrder();
         $this->validateCurrencyOrder();
         $this->validateCommentOrder();
         $this->validateTransactionOrder();
@@ -320,6 +321,36 @@ class Order extends BaseValidator
     }
 
     /**
+     * Validates order component prices
+     * @return bool
+     */
+    protected function validateComponentPricesOrder()
+    {
+        $components = $this->getSubmitted('data.components');
+
+        if (empty($components)) {
+            return null;
+        }
+
+        foreach ($components as $id => $price) {
+            if (is_numeric($id) && !is_numeric($price)) {
+                $vars = array('@field' => $this->language->text('Price'));
+                $error = $this->language->text('@field must be numeric', $vars);
+                $this->setError("data.components.$id", $error);
+                continue;
+            }
+
+            if (strlen($price) > 10) {
+                $vars = array('@max' => 10, '@field' => $this->language->text('Price'));
+                $error = $this->language->text('@field must not be longer than @max characters', $vars);
+                $this->setError("data.components.$id", $error);
+            }
+        }
+
+        return !$this->isError('components');
+    }
+
+    /**
      * Validates a currency code
      * @return boolean|null
      */
@@ -398,22 +429,11 @@ class Order extends BaseValidator
      */
     protected function validateLogOrder()
     {
-        if (!$this->isUpdating()) {
-            return null;
-        }
-
-        $order = $this->getUpdating();
-        $status = $this->getSubmitted('status');
         $log = (string) $this->getSubmitted('log');
 
-        if ($log === '' && isset($status) && $order['status'] !== $status) {
-            $log = $this->language->text('Update order status to @status', array('@status' => $status));
-            $this->setSubmitted('log', $log);
-        }
-
-        if ($log === '' || mb_strlen($log) > 255) {
-            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Log'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
+        if (mb_strlen($log) > 255) {
+            $vars = array('@max' => 255, '@field' => $this->language->text('Log'));
+            $error = $this->language->text('@field must not be longer than @max characters', $vars);
             $this->setError('log', $error);
             return false;
         }

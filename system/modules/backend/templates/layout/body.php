@@ -87,6 +87,11 @@
   </div>
   <?php } ?>
   <div class="container-fluid content">
+    <noscript>
+      <div class="alert alert-warning">
+        <?php echo $this->text('Your browser seems to have JavaScript disabled. Some functions may not work'); ?>
+      </div>
+    </noscript>
     <?php if (!empty($messages)) { ?>
     <div class="row hidden-print" id="message">
       <div class="col-md-12">

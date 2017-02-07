@@ -162,7 +162,7 @@ class Checkout extends FrontendController
      * Page callback for add order form
      * @param integer $user_id
      */
-    public function addUserOrderCheckout($user_id)
+    public function createOrderCheckout($user_id)
     {
         $this->setAdminModeCheckout();
         $this->setUserCheckout($user_id);
@@ -173,7 +173,7 @@ class Checkout extends FrontendController
      * Page callback for edit order form
      * @param integer $order_id
      */
-    public function editOrderCheckout($order_id)
+    public function cloneOrderCheckout($order_id)
     {
         $this->setOrderCheckout($order_id);
         $this->setAdminModeCheckout();
@@ -242,6 +242,8 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(404);
         }
 
+        $order['status'] = $this->order->getInitialStatus();
+
         $this->data_order = $order;
         $this->order_id = $order_id;
 
@@ -272,8 +274,8 @@ class Checkout extends FrontendController
     protected function setTitleEditCheckout()
     {
         if (isset($this->data_order['order_id']) && $this->admin) {
-            $vars = array('@num' => $this->data_order['order_id'], '@name' => $this->data_order['user_name']);
-            $text = $this->text('Edit order #@num for user @name', $vars);
+            $vars = array('@num' => $this->data_order['order_id']);
+            $text = $this->text('Cloning order #@num', $vars);
         } else {
             $text = $this->text('Checkout');
         }
@@ -324,7 +326,6 @@ class Checkout extends FrontendController
             'status' => $this->order->getInitialStatus()
         );
 
-        // Override with existing order values if we're editing the order
         $order = gplcart_array_merge($default_order, $this->data_order);
 
         $this->data_form['order'] = $order;
@@ -389,7 +390,7 @@ class Checkout extends FrontendController
      */
     protected function setFormDataPanesOrder()
     {
-        $panes = array('admin', 'login', 'review', 'payment_methods',
+        $panes = array('login', 'review', 'payment_methods',
             'shipping_methods', 'shipping_address');
 
         foreach ($panes as $pane) {
@@ -664,37 +665,17 @@ class Checkout extends FrontendController
         $order_errors = $this->validateOrderCheckout();
 
         if ($this->address_form) {
-            // Since we're going to save a new address and have no address ID yet,
-            // so order validator will throw "Shipping address required" error
-            // which is useless for users and should be replaced with
-            // more informative per-field errors (if any) from address validator
             unset($order_errors['shipping_address']);
         }
 
         if (empty($address_errors) && empty($order_errors)) {
             $this->addAddressCheckout();
-            $this->saveOrderCheckout();
+            $this->addOrderCheckout();
             return null;
         }
 
         $errors = gplcart_array_merge($order_errors, $address_errors);
         $this->setError(null, $errors);
-    }
-
-    /**
-     * Adds/updates an order
-     */
-    protected function saveOrderCheckout()
-    {
-        $submitted = $this->getSubmitted();
-        $submitted += $this->data_form['order'];
-        $submitted['cart'] = $this->data_cart;
-
-        if (empty($this->data_order['order_id'])) {
-            $this->addOrderCheckout($submitted);
-        } else {
-            $this->updateOrderCheckout($this->data_order['order_id'], $submitted);
-        }
     }
 
     /**
@@ -716,7 +697,7 @@ class Checkout extends FrontendController
      */
     protected function validateOrderCheckout()
     {
-        $this->setSubmitted('update', $this->data_order);
+        $this->setSubmitted('update', array());
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);
@@ -741,26 +722,64 @@ class Checkout extends FrontendController
     /**
      * Adds a new order
      */
-    protected function addOrderCheckout(array $submitted)
+    protected function addOrderCheckout()
     {
-        $options = array('admin' => $this->admin);
-        $result = $this->order->submit($submitted, $this->data_cart, $options);
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        if ($this->admin) {
+            $this->controlAccess('order_add');
+        }
+
+        $submitted = $this->getSubmittedOrderCheckout();
+        $result = $this->order->submit($submitted, $this->data_cart, array('admin' => $this->admin));
+
+        if (!$this->admin) {
+            $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        }
+
+        $log = array(
+            'user_id' => $this->uid,
+            'order_id' => $this->data_order['order_id'],
+            'text' => $this->text('Cloned into order #@num', array('@num' => $result['order']['order_id']))
+        );
+
+        $this->order->addLog($log);
+
+        $vars = array(
+            '@num' => $this->data_order['order_id'],
+            '@url' => $this->url("admin/sale/order/{$this->order_id}"),
+            '@status' => $this->order->getStatusName($submitted['status'])
+        );
+
+        $message = $this->text('Order has been cloned from order <a href="@url">@num</a>. Order status: @status', $vars);
+        $this->redirect("admin/sale/order/{$result['order']['order_id']}", $message, 'success');
     }
 
     /**
-     * Updates an order
-     * @param type $order_id
+     * Returns an array of prepared submitted order data
+     * @return array
+     * @return null
      */
-    protected function updateOrderCheckout($order_id, array $submitted)
+    protected function getSubmittedOrderCheckout()
     {
-        $this->controlAccess('order_edit');
+        $submitted = $this->getSubmitted();
+        $submitted += $this->data_form['order'];
+        $submitted['cart'] = $this->data_cart;
 
-        $this->order->update($order_id, $submitted);
-        $this->order->addLog($submitted['log'], $this->uid, $order_id);
+        if (!$this->admin) {
+            return null;
+        }
 
-        $message = $this->text('Order has been updated');
-        $this->redirect("admin/sale/order/$order_id", $message, 'success');
+        // Convert decimal prices from text fields
+        $submitted['total'] = $this->price->amount($submitted['total'], $submitted['currency']);
+
+        foreach ($submitted['data']['components'] as $id => &$price) {
+            if ($price == 0) {
+                unset($submitted['data']['components'][$id]);
+                continue;
+            }
+            $price = $this->price->amount($price, $submitted['currency']);
+        }
+
+        return $submitted;
     }
 
     /**
@@ -772,7 +791,7 @@ class Checkout extends FrontendController
         $this->data_form = gplcart_array_merge($this->data_form, $submitted);
 
         $result = $this->order->calculate($this->data_form);
-        
+
         $this->data_form['total'] = $result['total'];
         $this->data_form['price_components'] = $this->prepareOrderComponentsCheckout($result);
 
@@ -809,9 +828,11 @@ class Checkout extends FrontendController
                 'price' => $component['price'],
                 'name' => isset($name) ? $name : $this->text($type),
                 'rule' => isset($component['rule']) ? $component['rule'] : false,
+                'price_decimal' => $this->price->decimal($component['price'], $calculated['currency']),
                 'price_formatted' => $this->price->format($component['price'], $calculated['currency'])
             );
         }
+
         return $components;
     }
 

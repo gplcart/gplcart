@@ -7,7 +7,7 @@
  */
 ?>
 <?php if (!empty($items) || !empty($order['log'])) { ?>
-<div class="panel panel-default">
+<div class="panel panel-default hidden-print">
   <div class="panel-heading"><?php echo $this->text('Log'); ?></div>
   <div class="panel-body">
     <?php if (!empty($order['log'])) { ?>
@@ -37,6 +37,17 @@
             <a href="<?php echo $this->url("account/{$item['user_id']}"); ?>">
               <?php echo $this->escape($item['user_email']); ?>
             </a>
+            <?php } ?>
+          </div>
+          <div class="notify">
+            <?php if(isset($item['data']['notify'])) { ?>
+            <?php if($item['data']['notify'] == 0) { ?>
+            <span class="label label-warning"><?php echo $this->text('Customer not notified'); ?></span>
+            <?php } else if($item['data']['notify'] == 1){ ?>
+            <span class="label label-danger"><?php echo $this->text('Failed to notify customer'); ?></span>
+            <?php } else if($item['data']['notify'] == 2) { ?>
+            <span class="label label-success"><?php echo $this->text('Customer notified'); ?></span>
+            <?php } ?>
             <?php } ?>
           </div>
           <div class="text"><?php echo $this->escape($item['text']); ?></div>

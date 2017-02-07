@@ -128,11 +128,13 @@
         </thead>
         <tbody>
           <?php foreach ($orders as $id => $order) { ?>
-          <tr class="<?php echo empty($order['is_new']) ? '' : 'danger'; ?>" data-order-id="<?php echo $id; ?>">
+          <tr data-order-id="<?php echo $id; ?>">
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
-            <td class="middle"><?php echo $id; ?></td>
+            <td class="middle">
+              <?php echo $id; ?>
+            </td>
             <td class="middle">
             <?php if (is_numeric($order['user_id'])) { ?>
             <?php if ($order['customer_email']) { ?>
@@ -166,7 +168,12 @@
               <?php } ?>
             </td>
             <td class="middle"><?php echo $this->escape($order['total_formatted']); ?></td>
-            <td class="middle"><?php echo $this->date($order['created']); ?></td>
+            <td class="middle">
+                <?php echo $this->date($order['created']); ?>
+              <?php if($order['is_new']) { ?>
+              <span class="label label-danger"><?php echo $this->text('new'); ?></span>
+              <?php } ?>
+            </td>
             <td>
               <ul class="list-inline">
                 <li>
@@ -174,13 +181,6 @@
                     <?php echo mb_strtolower($this->text('View')); ?>
                   </a>
                 </li>
-                <?php if ($this->access('order_edit')) { ?>
-                <li>
-                  <a href="<?php echo $this->url("checkout/edit/$id"); ?>">
-                    <?php echo mb_strtolower($this->text('Edit')); ?>
-                  </a>
-                </li>
-                <?php } ?>
               </ul>
             </td>
           </tr>

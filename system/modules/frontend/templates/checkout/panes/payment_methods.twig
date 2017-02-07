@@ -12,7 +12,12 @@
     @link http://gplcart.com Support, modules, demo
 #}
 <div class="panel panel-checkout payment-methods panel-default">
-  <div class="panel-heading">{{ text('Payment') }}</div>
+  <div class="panel-heading clearfix">
+    {{ text('Payment') }}
+    <noscript>
+      <button title="{{ text('Update') }}" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+    </noscript>
+  </div>
   <div class="panel-body">
     {% if error('payment', true) and error('payment') is not iterable %}
         <div class="alert alert-danger alert-dismissible">

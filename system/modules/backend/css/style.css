@@ -51,6 +51,10 @@ body {
     background-color: #f4f4f4;
 }
 
+body.js .hidden-js {
+    display: none !important;
+}
+
 .navbar-fixed-top {
     background-color: #364F6B;
     border: none;

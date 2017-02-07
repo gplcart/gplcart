@@ -12,7 +12,12 @@
     @link http://gplcart.com Support, modules, demo
 #}
 <div class="panel panel-checkout shipping-methods panel-default">
-  <div class="panel-heading">{{ text('Shipping') }}</div>
+  <div class="panel-heading">
+    {{ text('Shipping') }}
+    <noscript>
+    <button title="{{ text('Update') }}" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+    </noscript>
+  </div>
   <div class="panel-body">
     {% if error('shipping', true) and error('shipping') is not iterable %}
         <div class="alert alert-danger alert-dismissible">
