@@ -37,6 +37,14 @@
         </td>
       </tr>
       <tr>
+        <td><?php echo $this->text('Shipping'); ?></td>
+        <td><?php echo $this->escape($order['shipping_name']); ?></td>
+      </tr>
+      <tr>
+        <td><?php echo $this->text('Payment'); ?></td>
+        <td><?php echo $this->escape($order['payment_name']); ?></td>
+      </tr>
+      <tr>
         <td><?php echo $this->text('Created'); ?></td>
         <td><?php echo $this->date($order['created']); ?></td>
       </tr>
@@ -49,11 +57,7 @@
       <tr>
         <td><?php echo $this->text('Store'); ?></td>
         <td>
-          <?php if (empty($order['store_name'])) { ?>
-          <?php echo $this->text('Unknown'); ?>
-          <?php } else { ?>
           <?php echo $this->escape($order['store_name']); ?>
-          <?php } ?>
         </td>
       </tr>
       <tr>

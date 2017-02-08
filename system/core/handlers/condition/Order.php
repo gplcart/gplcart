@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core\handlers\trigger;
+namespace gplcart\core\handlers\condition;
 
 use gplcart\core\models\Condition as ConditionModel;
 
@@ -40,10 +40,10 @@ class Order
      */
     public function shippingMethod(array $condition, array $data)
     {
-        if (!isset($data['data']['order']['shipping'])) {
+        if (!isset($data['order']['shipping'])) {
             return false;
         }
-        return $this->condition->compare($data['data']['order']['shipping'], $condition['value'], $condition['operator']);
+        return $this->condition->compare($data['order']['shipping'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -54,10 +54,11 @@ class Order
      */
     public function paymentMethod(array $condition, array $data)
     {
-        if (!isset($data['data']['order']['payment'])) {
+        if (!isset($data['order']['payment'])) {
             return false;
         }
-        return $this->condition->compare($data['data']['order']['payment'], $condition['value'], $condition['operator']);
+
+        return $this->condition->compare($data['order']['payment'], $condition['value'], $condition['operator']);
     }
 
 }

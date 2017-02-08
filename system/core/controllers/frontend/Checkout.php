@@ -678,11 +678,10 @@ class Checkout extends FrontendController
         if (empty($address_errors) && empty($order_errors)) {
             $this->addAddressCheckout();
             $this->addOrderCheckout();
-            return null;
+        } else {
+            $errors = gplcart_array_merge($order_errors, $address_errors);
+            $this->setError(null, $errors);
         }
-
-        $errors = gplcart_array_merge($order_errors, $address_errors);
-        $this->setError(null, $errors);
     }
 
     /**
@@ -732,8 +731,9 @@ class Checkout extends FrontendController
     protected function addOrderCheckout()
     {
         $submitted = $this->getSubmittedOrderCheckout();
+
         $result = $this->order->submit($submitted, $this->data_cart, array('admin' => $this->admin));
-        $this->finishOrderCheckout($result);
+        $this->finishOrderCheckout($result, $submitted);
     }
 
     /**
@@ -813,7 +813,7 @@ class Checkout extends FrontendController
         $submitted['cart'] = $this->data_cart;
 
         if (empty($this->admin)) {
-            return array();
+            return $submitted;
         }
 
         $submitted['total'] = $this->price->amount($submitted['total'], $submitted['currency']);
@@ -859,26 +859,10 @@ class Checkout extends FrontendController
     {
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
-
-            switch ($type) {
-                case 'shipping':
-                    $methods = $this->shipping->getList();
-                    break;
-                case 'payment':
-                    $methods = $this->payment->getList();
-                    break;
-            }
-
-            if (isset($methods) && isset($methods[$this->data_form[$type]['name']])) {
-                $name = $methods[$this->data_form[$type]['name']];
-            } else if (isset($component['rule']['name'])) {
-                $name = $component['rule']['name'];
-            }
-
             $components[$type] = array(
+                'rule' => $component['rule'],
                 'price' => $component['price'],
-                'name' => isset($name) ? $name : $this->text($type),
-                'rule' => isset($component['rule']) ? $component['rule'] : false,
+                'name' => $component['rule']['name'],
                 'price_decimal' => $this->price->decimal($component['price'], $calculated['currency']),
                 'price_formatted' => $this->price->format($component['price'], $calculated['currency'])
             );

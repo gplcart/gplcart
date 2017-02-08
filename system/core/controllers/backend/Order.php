@@ -259,7 +259,7 @@ class Order extends BackendController
         $update = array('status' => $this->order->getCanceledStatus());
         $this->order->update($this->data_order['order_id'], $update);
         $this->logOrder($update);
-        
+
         $this->redirect("checkout/clone/{$this->data_order['order_id']}");
     }
 
@@ -404,18 +404,32 @@ class Order extends BackendController
      */
     protected function prepareOrder(array $order)
     {
-        $store = $this->store->get($order['store_id']);
+        $unknown = $this->text('Unknown');
 
-        if (!empty($store['name'])) {
+        $order['store_name'] = $unknown;
+        $order['status_name'] = $unknown;
+        $order['payment_name'] = $unknown;
+        $order['shipping_name'] = $unknown;
+
+        $store = $this->store->get($order['store_id']);
+        $payment = $this->payment->get($order['payment']);
+        $shipping = $this->shipping->get($order['shipping']);
+        $status = $this->order->getStatusName($order['status']);
+
+        if (!empty($status)) {
+            $order['status_name'] = $status;
+        }
+
+        if (isset($store['name'])) {
             $order['store_name'] = $store['name'];
         }
 
-        $statuses = $this->order->getStatuses();
+        if (isset($payment['title'])) {
+            $order['payment_name'] = $payment['title'];
+        }
 
-        if (empty($statuses[$order['status']])) {
-            $order['status_name'] = $this->text('Unknown');
-        } else {
-            $order['status_name'] = $statuses[$order['status']];
+        if (isset($shipping['title'])) {
+            $order['shipping_name'] = $shipping['title'];
         }
 
         $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);

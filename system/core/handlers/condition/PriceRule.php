@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core\handlers\trigger;
+namespace gplcart\core\handlers\condition;
 
 use gplcart\core\models\Condition as ConditionModel;
 
