@@ -78,8 +78,8 @@ class Checkout extends FrontendController
     protected $cart_updated = false;
 
     /**
-     * Whether we're in admin mode
-     * @var boolean
+     * Admin mode
+     * @var string
      */
     protected $admin;
 
@@ -159,38 +159,46 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Page callback for add order form
+     * Displays the checkout page when admin adds a new order for a user
      * @param integer $user_id
      */
     public function createOrderCheckout($user_id)
     {
-        $this->setAdminModeCheckout();
+        $this->setAdminModeCheckout('add');
         $this->setUserCheckout($user_id);
         $this->editCheckout();
     }
 
     /**
-     * Page callback for edit order form
+     * Displays the checkout page when admin cloning an order
      * @param integer $order_id
      */
     public function cloneOrderCheckout($order_id)
     {
         $this->setOrderCheckout($order_id);
-        $this->setAdminModeCheckout();
+        $this->setAdminModeCheckout('clone');
         $this->editCheckout();
     }
 
     /**
-     * Sets flag that we're in admin mode, i.e adding/updating an order
+     * Sets the current admin mode
+     * @param string
      */
-    protected function setAdminModeCheckout()
+    protected function setAdminModeCheckout($mode)
     {
-        $this->admin = ($this->access('order_add') || $this->access('order_edit'));
+        if ($this->access('order_add')) {
+            if ($mode === 'add') {
+                $this->admin = 'add';
+            }
+            if ($mode === 'clone' && $this->access('order_edit')) {
+                $this->admin = 'clone';
+            }
+        }
     }
 
     /**
-     * Loads a user and sets properties for a new order
-     * @param integer|string $user_id
+     * Loads a user from the database
+     * @param integer $user_id
      */
     protected function setUserCheckout($user_id)
     {
@@ -231,8 +239,8 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Sets an order data to be updated
-     * @param null|integer $order_id
+     * Loads an order from the database
+     * @param integer $order_id
      */
     protected function setOrderCheckout($order_id)
     {
@@ -254,8 +262,8 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Sets a cart content depending on whether we're editing an existing order
-     * or creating a new one during checkout
+     * Loads the current cart content
+     * @return array
      */
     protected function setCartContentCheckout()
     {
@@ -265,19 +273,25 @@ class Checkout extends FrontendController
             'store_id' => $this->order_store_id
         );
 
-        $this->data_cart = $this->cart->getContent($data);
+        return $this->data_cart = $this->cart->getContent($data);
     }
 
     /**
-     * Sets titles on the checkout page
+     * Sets title on the checkout page
      */
     protected function setTitleEditCheckout()
     {
-        if (isset($this->data_order['order_id']) && $this->admin) {
-            $vars = array('@num' => $this->data_order['order_id']);
-            $text = $this->text('Cloning order #@num', $vars);
-        } else {
-            $text = $this->text('Checkout');
+        $text = $this->text('Checkout');
+
+        switch ($this->admin) {
+            case 'clone':
+                $vars = array('@num' => $this->data_order['order_id']);
+                $text = $this->text('Cloning order #@num', $vars);
+                break;
+            case 'add':
+                $vars = array('@name' => $this->data_user['name']);
+                $text = $this->text('Add order for user @name', $vars);
+                break;
         }
 
         $this->setTitle($text);
@@ -289,8 +303,8 @@ class Checkout extends FrontendController
     protected function setBreadcrumbEditCheckout()
     {
         $breadcrumb = array(
-            'text' => $this->text('Home'),
-            'url' => $this->url('/')
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
         );
 
         $this->setBreadcrumb($breadcrumb);
@@ -301,15 +315,11 @@ class Checkout extends FrontendController
      */
     protected function controlAccessCheckout()
     {
-        if (!empty($this->data_cart['items'])) {
-            return null;
+        if (empty($this->data_cart['items'])) {
+            $form = $this->render('checkout/form', array('admin' => $this->admin));
+            $this->setData('checkout_form', $form);
+            $this->output('checkout/checkout');
         }
-
-        $data = array('admin' => $this->admin);
-
-        $form = $this->render('checkout/form', $data);
-        $this->setData('checkout_form', $form);
-        $this->output('checkout/checkout');
     }
 
     /**
@@ -343,7 +353,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Set finish data before passing to templates
+     * Prepares form data before passing to templates
      * @return null
      */
     protected function setFormDataAfterCheckout()
@@ -400,7 +410,6 @@ class Checkout extends FrontendController
 
     /**
      * Handles submitted actions
-     * @return null
      */
     protected function submitCheckout()
     {
@@ -443,6 +452,7 @@ class Checkout extends FrontendController
 
     /**
      * Saves a submitted address
+     * @return null
      */
     protected function submitAddAddressCheckout()
     {
@@ -470,7 +480,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Logs in a customer during checkout
+     * Log in a customer during checkout
      */
     protected function loginCheckout()
     {
@@ -543,16 +553,15 @@ class Checkout extends FrontendController
             }
         }
 
-        if (!empty($errors)) {
+        if (empty($errors)) {
+            $this->setSubmitted('cart.action.update', true);
+        } else {
             $this->setMessageFormCheckout('cart.danger', $errors);
-            return null;
         }
-
-        $this->setSubmitted('cart.action.update', true);
     }
 
     /**
-     * Sets an array of messages to the checkout form
+     * Sets an array of messages on the checkout form
      * @param string $key
      * @param string|array $message
      */
@@ -562,6 +571,7 @@ class Checkout extends FrontendController
 
         $flatten = gplcart_array_flatten($message);
         $string = implode('<br>', array_unique($flatten));
+
         gplcart_array_set_value($this->data_form['messages'], $key, $string);
     }
 
@@ -588,7 +598,7 @@ class Checkout extends FrontendController
         $item += array(
             'sku' => $sku,
             'increment' => false,
-            'admin' => $this->admin,
+            'admin' => !empty($this->admin),
             'user_id' => $this->order_user_id,
             'store_id' => $this->order_store_id
         );
@@ -601,6 +611,7 @@ class Checkout extends FrontendController
 
     /**
      * Moves a cart item to the wishlist
+     * @return null
      */
     protected function moveCartWishlistCheckout()
     {
@@ -626,23 +637,19 @@ class Checkout extends FrontendController
 
     /**
      * Deletes an item from the cart
-     * @return boolean
      */
     protected function deleteCartCheckout()
     {
         $cart_id = $this->getSubmitted('cart.action.delete');
 
-        if (empty($cart_id)) {
-            return false;
+        if (!empty($cart_id)) {
+            $this->setSubmitted('cart.action.update', true);
+            $this->cart->delete(array('cart_id' => $cart_id));
         }
-
-        $this->setSubmitted('cart.action.update', true);
-        return $this->cart->delete(array('cart_id' => $cart_id));
     }
 
     /**
      * Updates the current cart
-     * @return null
      */
     protected function updateCartCheckout()
     {
@@ -692,7 +699,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Validates an array of submitted values before creating an order
+     * Validates an array of submitted data before creating an order
      * @return array
      */
     protected function validateOrderCheckout()
@@ -706,7 +713,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Saves a submitted address
+     * Adds a submitted address
      */
     protected function addAddressCheckout()
     {
@@ -724,15 +731,57 @@ class Checkout extends FrontendController
      */
     protected function addOrderCheckout()
     {
-        if ($this->admin) {
-            $this->controlAccess('order_add');
-        }
-
         $submitted = $this->getSubmittedOrderCheckout();
         $result = $this->order->submit($submitted, $this->data_cart, array('admin' => $this->admin));
+        $this->finishOrderCheckout($result);
+    }
 
-        if (!$this->admin) {
+    /**
+     * Performs final tasks after an order has been created
+     * @param array $result
+     * @param array $submitted
+     */
+    protected function finishOrderCheckout(array $result, array $submitted)
+    {
+        if (empty($this->admin)) {
             $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        }
+
+        $this->finishAddOrderCheckout($result);
+        $this->finishCloneOrderCheckout($result, $submitted);
+    }
+
+    /**
+     * Performs final tasks after an order has been added for a user
+     * @param array $result
+     * @return null
+     */
+    protected function finishAddOrderCheckout(array $result)
+    {
+        if ($this->admin !== 'add') {
+            return null;
+        }
+
+        $vars = array(
+            '@num' => $result['order']['order_id'],
+            '@name' => $result['order']['user_name'],
+            '@status' => $this->order->getStatusName($result['order']['status'])
+        );
+
+        $message = $this->text('Order #@num has been created for user @name. Order status: @status', $vars);
+        $this->redirect("admin/sale/order/{$result['order']['order_id']}", $message, 'success');
+    }
+
+    /**
+     * Performs final tasks after an order has been cloned
+     * @param array $result
+     * @param array $submitted
+     * @return null
+     */
+    protected function finishCloneOrderCheckout(array $result, array $submitted)
+    {
+        if ($this->admin !== 'clone') {
+            return null;
         }
 
         $log = array(
@@ -763,12 +812,15 @@ class Checkout extends FrontendController
         $submitted += $this->data_form['order'];
         $submitted['cart'] = $this->data_cart;
 
-        if (!$this->admin) {
+        if (empty($this->admin)) {
             return array();
         }
 
-        // Convert decimal prices from text fields
         $submitted['total'] = $this->price->amount($submitted['total'], $submitted['currency']);
+
+        if (empty($submitted['data']['components'])) {
+            return $submitted;
+        }
 
         foreach ($submitted['data']['components'] as $id => &$price) {
             if ($price == 0) {
@@ -877,8 +929,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Returns an array of rendered templates
-     * provided by payment/shipping methods and used on the order complete page
+     * Returns an array of rendered templates provided by payment/shipping methods
      * @return array
      */
     protected function getCompleteTemplatesCheckout()
@@ -920,7 +971,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Ensures the order belongs to the current cart user
+     * Controls access to the complete order page
      */
     protected function controlAccessCompleteCheckout()
     {
@@ -958,8 +1009,8 @@ class Checkout extends FrontendController
     protected function setBreadcrumbCompleteCheckout()
     {
         $breadcrumb = array(
-            'text' => $this->text('Home'),
-            'url' => $this->url('/')
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
         );
 
         $this->setBreadcrumb($breadcrumb);

@@ -455,7 +455,7 @@ class Order extends BackendController
 
         if (!empty($order['creator'])) {
             $order['creator_formatted'] = $this->text('Unknown');
-            $user = $this->user->get($order['user_id']);
+            $user = $this->user->get($order['creator']);
             if (isset($user['user_id'])) {
                 $order['creator_formatted'] = "{$user['name']} ({$user['email']})";
             }
