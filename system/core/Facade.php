@@ -9,10 +9,10 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Hook as Hook;
-use gplcart\core\Route as Route;
-use gplcart\core\Config as Config;
-use gplcart\core\Logger as Logger;
+use gplcart\core\Hook;
+use gplcart\core\Route;
+use gplcart\core\Config;
+use gplcart\core\Logger;
 use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\helpers\Session as SessionHelper;
 
