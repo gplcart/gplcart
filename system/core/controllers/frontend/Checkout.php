@@ -756,7 +756,6 @@ class Checkout extends FrontendController
     /**
      * Returns an array of prepared submitted order data
      * @return array
-     * @return null
      */
     protected function getSubmittedOrderCheckout()
     {
@@ -765,7 +764,7 @@ class Checkout extends FrontendController
         $submitted['cart'] = $this->data_cart;
 
         if (!$this->admin) {
-            return null;
+            return array();
         }
 
         // Convert decimal prices from text fields

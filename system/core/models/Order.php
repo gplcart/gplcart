@@ -618,14 +618,14 @@ class Order extends Model
     /**
      * Adds an order
      * @param array $order
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $order)
     {
         $this->hook->fire('add.order.before', $order);
 
         if (empty($order)) {
-            return false;
+            return 0;
         }
 
         // In case we're cloning an order

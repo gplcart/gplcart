@@ -101,17 +101,6 @@ class Order extends BackendController
     }
 
     /**
-     * This method required by trait \gplcart\core\traits\ControllerOrder
-     * @param string $name
-     * @return object
-     * @see \gplcart\core\traits\ControllerOrder
-     */
-    protected function getInstanceTrait($name)
-    {
-        return $this->prop($name);
-    }
-
-    /**
      * Displays the order overview page
      * @param integer $order_id
      */
@@ -534,7 +523,7 @@ class Order extends BackendController
     protected function setDataComponentsOrder()
     {
         $templates = 'sale/order/panes/components';
-        $components = $this->prepareOrderComponentsTrait($this->data_order, $templates);
+        $components = $this->prepareOrderComponentsTrait($this, $this->data_order, $templates);
 
         $data = array(
             'components' => $components,

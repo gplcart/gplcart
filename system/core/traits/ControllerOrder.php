@@ -15,24 +15,27 @@ namespace gplcart\core\traits;
 trait ControllerOrder
 {
 
-    abstract protected function getInstanceTrait($name);
-
     /**
      * Returns an array of prepared order components
+     * @param \gplcart\core\Controller $controller
      * @param array $order
      * @param string $dir
      * @return array
      */
-    protected function prepareOrderComponentsTrait(array &$order, $dir)
+    protected function prepareOrderComponentsTrait($controller, &$order, $dir)
     {
+        if (!$controller instanceof \gplcart\core\Controller) {
+            throw new \RuntimeException("Object is not instance of \gplcart\core\Controller");
+        }
+
         if (empty($order['data']['components'])) {
             return array();
         }
 
         foreach (array_keys($order['data']['components']) as $type) {
-            $this->prepareOrderComponentsCartTrait($order, $type, $dir);
-            $this->prepareOrderComponentsMethodTrait($order, $type, $dir);
-            $this->prepareOrderComponentsPriceRuleTrait($order, $type, $dir);
+            $this->prepareOrderComponentsCartTrait($controller, $order, $type, $dir);
+            $this->prepareOrderComponentsMethodTrait($controller, $order, $type, $dir);
+            $this->prepareOrderComponentsPriceRuleTrait($controller, $order, $type, $dir);
         }
 
         ksort($order['data']['components']);
@@ -41,47 +44,51 @@ trait ControllerOrder
 
     /**
      * Sets rendered component "Cart"
+     * @param \gplcart\core\Controller $controller
      * @param array $order
      * @param string $type
      * @param string $dir
      */
-    protected function prepareOrderComponentsCartTrait(&$order, $type, $dir)
+    protected function prepareOrderComponentsCartTrait($controller, &$order,
+            $type, $dir)
     {
         if ($type === 'cart') {
             $data = array('order' => $order);
-            $html = $this->render("$dir/cart", $data);
+            $html = $controller->render("$dir/cart", $data);
             $order['data']['components']['cart']['rendered'] = $html;
         }
     }
 
     /**
      * Sets rendered shipping/payment component
+     * @param \gplcart\core\Controller $controller
      * @param array $order
      * @param string $type
      * @param string $dir
      * @return null
      */
-    protected function prepareOrderComponentsMethodTrait(&$order, $type, $dir)
+    protected function prepareOrderComponentsMethodTrait($controller, &$order,
+            $type, $dir)
     {
         /* @var $shipping_model \gplcart\core\models\Shipping */
-        $shipping_model = $this->getInstanceTrait('shipping');
+        $shipping_model = $controller->prop('shipping');
 
         /* @var $payment_model \gplcart\core\models\Payment */
-        $payment_model = $this->getInstanceTrait('payment');
+        $payment_model = $controller->prop('payment');
 
         /* @var $price_model \gplcart\core\models\Price */
-        $price_model = $this->getInstanceTrait('price');
+        $price_model = $controller->prop('price');
 
         if ($type == 'shipping') {
-            $method = $shipping_model->get();
+            $method = $shipping_model->get($order['shipping']);
         } else if ($type == 'payment') {
-            $method = $payment_model->get();
+            $method = $payment_model->get($order['payment']);
         } else {
             return null;
         }
 
         if (empty($method['name'])) {
-            $method['name'] = $this->text('Unknown');
+            $method['name'] = $controller->text('Unknown');
         }
 
         $price = $order['data']['components'][$type];
@@ -92,28 +99,30 @@ trait ControllerOrder
 
         $method['price_formatted'] = $price_model->format($price, $order['currency']);
 
-        $html = $this->render("$dir/method", array('method' => $method));
+        $html = $controller->render("$dir/method", array('method' => $method));
         $order['data']['components'][$type]['rendered'] = $html;
     }
 
     /**
      * Sets rendered rule component
+     * @param \gplcart\core\Controller $controller
      * @param array $order
      * @param string $type
      * @param string $dir
      * @return null
      */
-    protected function prepareOrderComponentsPriceRuleTrait(&$order, $type, $dir)
+    protected function prepareOrderComponentsPriceRuleTrait($controller,
+            &$order, $type, $dir)
     {
         if (!is_numeric($type)) {
             return null; // Numeric type = price rule ID
         }
 
         /* @var $price_model \gplcart\core\models\Price */
-        $price_model = $this->getInstanceTrait('price');
+        $price_model = $controller->prop('price');
 
         /* @var $pricerule_model \gplcart\core\models\PriceRule */
-        $pricerule_model = $this->getInstanceTrait('pricerule');
+        $pricerule_model = $controller->prop('pricerule');
 
         $rule = $pricerule_model->get($type);
         $price = $order['data']['components'][$type];
@@ -127,7 +136,7 @@ trait ControllerOrder
             'price' => $price_model->format($price, $rule['currency'])
         );
 
-        $html = $this->render("$dir/rule", $data);
+        $html = $controller->render("$dir/rule", $data);
 
         $order['data']['components'][$type] = array(
             'rendered' => $html,
