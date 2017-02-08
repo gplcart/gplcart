@@ -254,8 +254,6 @@ class Checkout extends FrontendController
 
         $this->data_order = $order;
         $this->order_id = $order_id;
-
-        $this->cart_uid = $order['user_id'];
         $this->order_user_id = $order['user_id'];
         $this->order_store_id = $order['store_id'];
         $this->data_user = $this->user->get($order['user_id']);
@@ -900,11 +898,10 @@ class Checkout extends FrontendController
     public function completeCheckout($order_id)
     {
         $this->setOrderCheckout($order_id);
+        $this->controlAccessCompleteCheckout();
 
         $this->setTitleCompleteCheckout();
         $this->setBreadcrumbCompleteCheckout();
-
-        $this->controlAccessCompleteCheckout();
 
         $this->setData('templates', $this->getCompleteTemplatesCheckout());
         $this->setData('complete_message', $this->getCompleteMessageCheckout());
@@ -959,7 +956,7 @@ class Checkout extends FrontendController
      */
     protected function controlAccessCompleteCheckout()
     {
-        if (strcmp((string) $this->data_order['user_id'], $this->order_user_id) !== 0) {
+        if ($this->data_order['user_id'] !== $this->cart_uid) {
             $this->outputHttpStatus(403);
         }
 
