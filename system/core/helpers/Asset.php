@@ -189,9 +189,7 @@ class Asset
             return $data;
         }
 
-        $is_absolute = (strpos($data['asset'], GC_ROOT_DIR) === 0);
-
-        if ($is_absolute) {
+        if (strpos($data['asset'], GC_ROOT_DIR) === 0) {
             $data['file'] = $data['asset'];
             $data['asset'] = str_replace(GC_ROOT_DIR . '/', '', $data['asset']);
         } else {
