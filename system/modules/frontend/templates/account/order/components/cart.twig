@@ -1,0 +1,32 @@
+{#
+    To see available variables:
+        - without enabling Twig debug mode: {{ d() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if order['cart'] %}
+    {% for sku, item in order['cart'] %}
+        <tr>
+          <td>
+            {% if item['product_status'] is empty %}
+                {{ item['title'] }} <span class="text-danger">({{ text('unavailable') }})</span>
+            {% else %}
+                <a href="{{ url('product/' ~ item['product_id']) }}">
+                  {{ item['title'] }}
+                </a>
+            {% endif %}
+            X {{ item['quantity'] }}
+          </td>
+          <td>
+            {{ item['price_formatted'] }}
+          </td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr><td colspan="2">{{ text('No products in the cart') }}</td></tr>
+    {% endif %}

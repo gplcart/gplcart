@@ -590,7 +590,7 @@ class Order extends Model
 
         $variables = array(
             '!order_id' => $order['order_id'],
-            '!url' => $this->request->base() . "account/{$order['user_id']}",
+            '!url' => $this->request->base() . "account/{$order['user_id']}/order/{$order['order_id']}",
             '!status' => $this->getStatusName($order['status'])
         );
 

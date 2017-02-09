@@ -16,14 +16,14 @@
   <div id="address-form-wrapper">
     <form method="post" id="edit-address" class="form-horizontal">
       <input type="hidden" name="token" value="{{ prop('token') }}">
-      {% if countries is not empty %}
+      {% if countries %}
           <div class="form-group country{{ error('country', ' has-error') }}">
             <label class="col-md-2 control-label">
               {{ format_country.name }}
             </label>
             <div class="col-md-6">
               <select class="form-control" name="address[country]">
-                {% if address.country is empty %}
+                {% if address.country is not defined or address.country is empty %}
                     <option value="">{{ text('- select -') }}</option>
                 {% endif %}
                 {% for code,name in countries %}
@@ -36,7 +36,7 @@
             </div>
           </div>
       {% endif %}
-      {% if states is not empty %}
+      {% if states %}
           <div class="form-group state_id{{ error('state_id', ' has-error') }}">
             <label class="col-md-2 control-label">
               {% if format_state_id.required is not empty %}
@@ -56,7 +56,7 @@
             </div>
           </div>
       {% endif %}
-      {% if countries is empty or address.country is not empty %}
+      {% if not countries or (address.country is not defined or address.country is empty) %}
           {% for key,value in format %}
               <div class="form-group {{ key }}{{ error(key, ' has-error') }}">
                 <label class="col-md-2 control-label">

@@ -12,7 +12,7 @@
  */
 $config = array();
 
-# $config['account_order_limit'] = 5;
+# $config['account_order_limit'] = 10;
 # $config['admin_autocomplete_limit'] = 10; // Number of autocomplete suggestions for an admin
 # $config['image_style_admin'] = 2; // Image style for admin UI
 # $config['admin_list_limit'] = 20; // Max number of items to be shown for an admin

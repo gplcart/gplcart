@@ -133,6 +133,12 @@ $routes['account/(\d+)'] = array(
     )
 );
 
+$routes['account/(\d+)/order/(\d+)'] = array(
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'orderAccount')
+    )
+);
+
 $routes['account/(\d+)/edit'] = array(
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'editAccount')

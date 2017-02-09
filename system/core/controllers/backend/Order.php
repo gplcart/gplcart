@@ -72,12 +72,6 @@ class Order extends BackendController
     protected $data_order = array();
 
     /**
-     * Shipping addaress
-     * @var array
-     */
-    protected $data_shipping_address = array();
-
-    /**
      * Constructor
      * @param OrderModel $order
      * @param AddressModel $address
@@ -107,7 +101,6 @@ class Order extends BackendController
     public function viewOrder($order_id)
     {
         $this->setOrder($order_id);
-        $this->setShippingAddressOrder();
 
         $this->submitOrder();
 
@@ -116,12 +109,12 @@ class Order extends BackendController
 
         $this->setData('order', $this->data_order);
 
-        $this->setDataLogsOrder();
-        $this->setDataSummaryOrder();
-        $this->setDataCommentOrder();
-        $this->setDataCustomerOrder();
-        $this->setDataComponentsOrder();
-        $this->setDataShippingAddressOrder();
+        $this->setDataPaneLogsOrder();
+        $this->setDataPaneSummaryOrder();
+        $this->setDataPaneCommentOrder();
+        $this->setDataPaneCustomerOrder();
+        $this->setDataPaneComponentsOrder();
+        $this->setDataPaneShippingAddressOrder();
 
         $this->setJsSettingsViewOrder();
         $this->outputViewOrder();
@@ -268,7 +261,7 @@ class Order extends BackendController
      */
     protected function setJsSettingsViewOrder()
     {
-        $translated = $this->address->getTranslated($this->data_shipping_address);
+        $translated = $this->address->getTranslated($this->data_order['address']['shipping']);
 
         $map = array(
             'key' => $this->config('gapi_browser_key', ''),
@@ -276,27 +269,6 @@ class Order extends BackendController
         );
 
         $this->setJsSettings('map', $map);
-    }
-
-    /**
-     * Adds order logs pane on the order overview page
-     */
-    protected function setDataLogsOrder()
-    {
-        $total = $this->getTotalLogOrder();
-
-        $max = $this->config('order_log_limit', 10);
-        $limit = $this->setPager($total, null, $max);
-        $items = $this->getListLogOrder($limit);
-
-        $data = array(
-            'items' => $items,
-            'pager' => $this->getPager(),
-            'order' => $this->data_order,
-        );
-
-        $html = $this->render('sale/order/panes/log', $data);
-        $this->setData('pane_log', $html);
     }
 
     /**
@@ -381,80 +353,8 @@ class Order extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_order = $this->prepareOrder($order);
-        $this->order->setViewed($this->data_order);
-
-        return $this->data_order;
-    }
-
-    /**
-     * Returns an array of shipping address for the current order
-     * @return array
-     */
-    protected function setShippingAddressOrder()
-    {
-        $address = $this->address->get($this->data_order['shipping_address']);
-        return $this->data_shipping_address = $address;
-    }
-
-    /**
-     * Adds some extra data to the order array
-     * @param array $order
-     * @return array
-     */
-    protected function prepareOrder(array $order)
-    {
-        $unknown = $this->text('Unknown');
-
-        $order['store_name'] = $unknown;
-        $order['status_name'] = $unknown;
-        $order['payment_name'] = $unknown;
-        $order['shipping_name'] = $unknown;
-
-        $store = $this->store->get($order['store_id']);
-        $payment = $this->payment->get($order['payment']);
-        $shipping = $this->shipping->get($order['shipping']);
-        $status = $this->order->getStatusName($order['status']);
-
-        if (!empty($status)) {
-            $order['status_name'] = $status;
-        }
-
-        if (isset($store['name'])) {
-            $order['store_name'] = $store['name'];
-        }
-
-        if (isset($payment['title'])) {
-            $order['payment_name'] = $payment['title'];
-        }
-
-        if (isset($shipping['title'])) {
-            $order['shipping_name'] = $shipping['title'];
-        }
-
-        $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-
-        $this->prepareOrderUserOrder($order);
-        $this->prepareOrderComponentsOrder($order);
-
-        return $order;
-    }
-
-    /**
-     * Sets extra data to order components
-     * @param array $order
-     * @return array
-     */
-    protected function prepareOrderComponentsOrder(array &$order)
-    {
-        foreach ($order['data']['components']['cart'] as $sku => $price) {
-            if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
-                $order['cart'][$sku]['product_status'] = 0;
-            }
-            $order['cart'][$sku]['price_formatted'] = $this->price->format($price, $order['currency']);
-        }
-
-        return $order;
+        $this->order->setViewed($order);
+        return $this->data_order = $this->prepareOrder($order);
     }
 
     /**
@@ -462,8 +362,18 @@ class Order extends BackendController
      * @param array $order
      * @return array
      */
-    protected function prepareOrderUserOrder(array &$order)
+    protected function prepareOrder(array &$order)
     {
+        $this->prepareOrderTrait($this, $order);
+
+        $order['user'] = array();
+        if (is_numeric($order['user_id'])) {
+            $order['user'] = $this->user->get($order['user_id']);
+        }
+
+        $options = array('count' => true, 'user_id' => $order['user_id']);
+        $order['user']['total_orders'] = (int) $this->order->getList($options);
+
         $order['customer'] = $this->text('Anonymous');
         $order['creator_formatted'] = $this->text('Customer');
 
@@ -479,15 +389,31 @@ class Order extends BackendController
     }
 
     /**
-     * Sets summary pane on the order overview page
+     * Adds order logs pane on the order overview page
      */
-    protected function setDataSummaryOrder()
+    protected function setDataPaneLogsOrder()
     {
+        $max = $this->config('order_log_limit', 10);
+
+        $total = $this->getTotalLogOrder();
+        $limit = $this->setPager($total, null, $max);
+
         $data = array(
             'order' => $this->data_order,
-            'statuses' => $this->order->getStatuses()
+            'pager' => $this->getPager(),
+            'items' => $this->getListLogOrder($limit)
         );
 
+        $html = $this->render('sale/order/panes/log', $data);
+        $this->setData('pane_log', $html);
+    }
+
+    /**
+     * Sets summary pane on the order overview page
+     */
+    protected function setDataPaneSummaryOrder()
+    {
+        $data = array('order' => $this->data_order, 'statuses' => $this->order->getStatuses());
         $html = $this->render('sale/order/panes/summary', $data);
         $this->setData('pane_summary', $html);
     }
@@ -495,7 +421,7 @@ class Order extends BackendController
     /**
      * Sets order comment pane on the order overview page
      */
-    protected function setDataCommentOrder()
+    protected function setDataPaneCommentOrder()
     {
         $data = array('order' => $this->data_order);
         $html = $this->render('sale/order/panes/comment', $data);
@@ -505,60 +431,32 @@ class Order extends BackendController
     /**
      * Sets customer pane on the order overview page
      */
-    protected function setDataCustomerOrder()
+    protected function setDataPaneCustomerOrder()
     {
-        $user_id = $this->data_order['user_id'];
-        $user = is_numeric($user_id) ? $this->user->get($user_id) : array();
-
-        $data = array(
-            'user' => $user,
-            'order' => $this->data_order,
-            'placed' => $this->getTotalPlacedOrder($user_id),
-        );
-
+        $data = array('order' => $this->data_order);
         $html = $this->render('sale/order/panes/customer', $data);
         $this->setData('pane_customer', $html);
     }
 
     /**
-     * Returns a number of orders placed by a given user
-     * @param integer|string $user_id
-     * @return integer
-     */
-    protected function getTotalPlacedOrder($user_id)
-    {
-        $options = array('count' => true, 'user_id' => $user_id);
-        return (int) $this->order->getList($options);
-    }
-
-    /**
      * Sets order components pane on the order overview page
      */
-    protected function setDataComponentsOrder()
+    protected function setDataPaneComponentsOrder()
     {
         $templates = 'sale/order/panes/components';
         $components = $this->prepareOrderComponentsTrait($this, $this->data_order, $templates);
 
-        $data = array(
-            'components' => $components,
-            'order' => $this->data_order
-        );
-
+        $data = array('components' => $components, 'order' => $this->data_order);
         $html = $this->render('sale/order/panes/components', $data);
         $this->setData('pane_components', $html);
     }
 
     /**
-     * Returns rendered shipping address pane
+     * Sets shipping address pane on the order overview page
      */
-    protected function setDataShippingAddressOrder()
+    protected function setDataPaneShippingAddressOrder()
     {
-        $data = array(
-            'order' => $this->data_order,
-            'address' => $this->data_shipping_address,
-            'items' => $this->address->getTranslated($this->data_shipping_address, true)
-        );
-
+        $data = array('order' => $this->data_order);
         $html = $this->render('sale/order/panes/shipping_address', $data);
         $this->setData('pane_shipping_address', $html);
     }

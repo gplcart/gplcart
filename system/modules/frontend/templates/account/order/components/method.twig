@@ -1,0 +1,35 @@
+{#
+    To see available variables:
+        - without enabling Twig debug mode: {{ d() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+{% if method is empty %}
+<tr>
+  <td colspan="2"><span class="text-danger">{{ text('Unknown') }}</span></td>
+</tr>
+{% else %}
+<tr class="active">
+  <td colspan="2">{{ method['cart']['type']) }}</td>
+</tr>
+<tr>
+  <td>
+    {% if method['name'] is empty %}
+        <span class="text-danger">{{ text('Unknown') }}</span>
+    {% else %}
+        {{ method['name']) }}
+        {% if method['description'] is defined and method['description'] %}
+            <br><span class="small text-muted">{{ method['description']|e('html') }}</span>
+        {% endif %}
+    {% endif %}
+  </td>
+  <td>
+    {{ method['price_formatted']) }}
+  </td>
+</tr>
+{% endif %}

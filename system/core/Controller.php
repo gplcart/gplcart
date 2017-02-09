@@ -92,6 +92,13 @@ class Controller
      * @var integer
      */
     protected $uid;
+    
+    /**
+     * Current user cart ID
+     * @var integer|string
+     */
+    protected $cart_uid;
+
 
     /**
      * A random string generated from the session
@@ -237,6 +244,12 @@ class Controller
      * @var \gplcart\core\models\Store $store
      */
     protected $store;
+    
+    /**
+     * Cart model instance
+     * @var \gplcart\core\models\Cart $cart
+     */
+    protected $cart;
 
     /**
      * Language model instance
@@ -818,6 +831,7 @@ class Controller
      */
     protected function setInstanceProperties()
     {
+        $this->cart = Container::get('gplcart\\core\\models\\Cart');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->language = Container::get('gplcart\\core\\models\\Language');

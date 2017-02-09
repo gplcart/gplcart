@@ -25,6 +25,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Account extends FrontendController
 {
 
+    use \gplcart\core\traits\ControllerOrder;
+
     /**
      * Address model instance
      * @var \gplcart\core\models\Address $address
@@ -80,6 +82,12 @@ class Account extends FrontendController
     protected $data_user = array();
 
     /**
+     * The current order
+     * @var array
+     */
+    protected $data_order = array();
+
+    /**
      * The current address
      * @var array
      */
@@ -114,6 +122,113 @@ class Account extends FrontendController
     }
 
     /**
+     * Displays the order overview page
+     * @param integer $user_id
+     * @param integer $order_id
+     */
+    public function orderAccount($user_id, $order_id)
+    {
+        $this->setUserAccount($user_id);
+        $this->setOrderAccount($order_id);
+
+        $this->setTitleOrderAccount();
+        $this->setBreadcrumbOrderAccount();
+
+        $this->setData('user', $this->data_user);
+
+        $this->setDataPaneSummaryAccount();
+        $this->setDataPaneComponentsAccount();
+        $this->setDataPaneShippingAddressAccount();
+
+        $this->outputOrderAccount();
+    }
+
+    /**
+     * Sets summary pane on the order overview page
+     */
+    protected function setDataPaneSummaryAccount()
+    {
+        $data = array('order' => $this->data_order);
+        $html = $this->render('account/order/panes/summary', $data);
+        $this->setData('pane_summary', $html);
+    }
+
+    /**
+     * Sets order components pane on the order overview page
+     */
+    protected function setDataPaneComponentsAccount()
+    {
+        $templates = 'account/order/components';
+        $components = $this->prepareOrderComponentsTrait($this, $this->data_order, $templates);
+
+        $data = array('components' => $components, 'order' => $this->data_order);
+        $html = $this->render('account/order/panes/components', $data);
+        $this->setData('pane_components', $html);
+    }
+
+    /**
+     * Sets shipping address pane on the order overview page
+     */
+    protected function setDataPaneShippingAddressAccount()
+    {
+        $data = array('order' => $this->data_order);
+        $html = $this->render('account/order/panes/shipping_address', $data);
+        $this->setData('pane_shipping_address', $html);
+    }
+
+    /**
+     * Sets titles on the order overview page
+     */
+    protected function setTitleOrderAccount()
+    {
+        $vars = array('@order_id' => $this->data_order['order_id']);
+        $title = $this->text('Order #@order_id', $vars);
+        $this->setTitle($title);
+    }
+
+    /**
+     * Sets breadcrumbs on the order overview page
+     */
+    protected function setBreadcrumbOrderAccount()
+    {
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Shop')
+        );
+
+        $breadcrumbs[] = array(
+            'text' => $this->text('Orders'),
+            'url' => $this->url("account/{$this->data_user['user_id']}")
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
+    }
+
+    /**
+     * Outputs the order overview page
+     */
+    protected function outputOrderAccount()
+    {
+        $this->output('account/order/order');
+    }
+
+    /**
+     * Sets the current order
+     * @param integer $order_id
+     * @return array
+     */
+    protected function setOrderAccount($order_id)
+    {
+        $order = $this->order->get($order_id);
+
+        if (empty($order)) {
+            $this->outputHttpStatus(404);
+        }
+
+        return $this->data_order = $this->prepareOrderTrait($this, $order);
+    }
+
+    /**
      * Displays the customer account page
      * @param integer $user_id
      */
@@ -127,7 +242,7 @@ class Account extends FrontendController
         $query = $this->getFilterQuery();
         $total = $this->getTotalOrderAccount();
 
-        $default_limit = $this->config('account_order_limit', 5);
+        $default_limit = $this->config('account_order_limit', 10);
         $limit = $this->setPager($total, $query, $default_limit);
 
         $this->setData('user', $this->data_user);
@@ -173,135 +288,25 @@ class Account extends FrontendController
     /**
      * Returns an array of orders for the customer
      * @param array $limit
-     * @param array $query
+     * @param array $conditions
      * @return array
      */
-    protected function getListOrderAccount(array $limit, array $query)
+    protected function getListOrderAccount(array $limit, array $conditions)
     {
-        $query += array(
+        $conditions += array(
             'order' => 'desc',
             'limit' => $limit,
             'sort' => 'created'
         );
 
-        $query['user_id'] = $this->data_user['user_id'];
-        $orders = (array) $this->order->getList($query);
+        $conditions['user_id'] = $this->data_user['user_id'];
+        $orders = (array) $this->order->getList($conditions);
 
-        foreach ($orders as $order_id => &$order) {
-
-            $order['cart'] = $this->cart->getList(array('order_id' => $order_id));
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
-
-            $components = $this->getOrderComponentsAccount($order);
-            $address = $this->address->get($order['shipping_address']);
-            $translated_address = $this->address->getTranslated($address, true);
-
-            $data = array(
-                'order' => $order,
-                'components' => $components,
-                'shipping_address' => $translated_address
-            );
-
-            $order['rendered'] = $this->render('account/order', $data);
+        foreach ($orders as &$order) {
+            $this->prepareOrderTrait($this, $order);
         }
 
         return $orders;
-    }
-
-    /**
-     * Returns an array of order components
-     * @param array $order
-     * @return array
-     */
-    public function getOrderComponentsAccount(array $order)
-    {
-        $components = array();
-        foreach ($order['data']['components'] as $type => $value) {
-            $this->setComponentCartAccount($components, $type, $value, $order);
-            $this->setComponentMethodAccount($components, $type, $value, $order);
-            $this->setComponentRuleAccount($components, $type, $value);
-        }
-
-        ksort($components);
-        return $components;
-    }
-
-    /**
-     * Sets rendered component "Cart"
-     * @param array $components
-     * @param string $type
-     * @param array $component_cart
-     * @param array $order
-     */
-    protected function setComponentCartAccount(array &$components, $type,
-            $component_cart, array $order)
-    {
-        if ($type === 'cart') {
-
-            foreach ($component_cart as $sku => $price) {
-                $order['cart'][$sku]['price_formatted'] = $this->price->format($price, $order['currency']);
-            }
-
-            $html = $this->render('backend|sale/order/panes/components/cart', array('order' => $order));
-            $components['cart'] = $html;
-        }
-    }
-
-    /**
-     * Sets a rendered payment/shipping component
-     * @param array $components
-     * @param string $type
-     * @param integer $price
-     * @param array $order
-     * @return null
-     */
-    protected function setComponentMethodAccount(array &$components, $type,
-            $price, array $order)
-    {
-        if (!in_array($type, array('shipping', 'payment'))) {
-            return null;
-        }
-
-        $method = $this->{$type}->get();
-        $method['name'] = isset($method['name']) ? $method['name'] : $this->text('Unknown');
-
-        if (abs($price) == 0) {
-            $price = 0; // No negative values
-        }
-
-        $method['price_formatted'] = $this->price->format($price, $order['currency']);
-        $html = $this->render('backend|sale/order/panes/components/method', array('method' => $method));
-
-        $components[$type] = $html;
-    }
-
-    /**
-     * Sets a rendered price rule component
-     * @param array $components
-     * @param integer $rule_id
-     * @param integer $price
-     * @return null
-     */
-    protected function setComponentRuleAccount(array &$components, $rule_id,
-            $price)
-    {
-        if (!is_numeric($rule_id)) {
-            return null;
-        }
-
-        if (abs($price) == 0) {
-            $price = 0;
-        }
-
-        $rule = $this->pricerule->get($rule_id);
-
-        $data = array(
-            'rule' => $rule,
-            'price' => $this->price->format($price, $rule['currency'])
-        );
-
-        $html = $this->render('backend|sale/order/panes/components/rule', $data);
-        $components['rule'][$rule_id] = $html;
     }
 
     /**
@@ -468,7 +473,7 @@ class Account extends FrontendController
 
     /**
      * Deletes an address
-     * @return array
+     * @return null
      */
     protected function deleteAddressAccount()
     {
@@ -566,7 +571,7 @@ class Account extends FrontendController
      * @param array $address
      * @return string
      */
-    protected function getEditAddressFormAccount($address)
+    protected function getEditAddressFormAccount(array $address)
     {
         $country = isset($address['country']) ? $address['country'] : '';
         $format = $this->country->getFormat($country, true);
@@ -594,6 +599,7 @@ class Account extends FrontendController
 
     /**
      * Displays edit address form
+     * @return null
      */
     protected function outputEditAddressFormAccount()
     {
@@ -651,7 +657,7 @@ class Account extends FrontendController
     {
         $this->setSubmitted('address');
         $this->setSubmitted('user_id', $this->data_user['user_id']);
-        
+
         $this->validate('address');
 
         return !$this->hasErrors('address');
@@ -663,6 +669,7 @@ class Account extends FrontendController
     protected function addAddressAccount()
     {
         $this->controlAccessEditAccount();
+
         $result = $this->address->add($this->getSubmitted());
         $this->address->controlLimit($this->data_user['user_id']);
 

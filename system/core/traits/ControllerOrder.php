@@ -10,10 +10,52 @@
 namespace gplcart\core\traits;
 
 /**
- * Contains controller order methods
+ * Contains order controller methods
  */
 trait ControllerOrder
 {
+
+    /**
+     * Adds extra data to the order
+     * @param \gplcart\core\Controller $controller
+     * @param array $order
+     * @return array
+     */
+    protected function prepareOrderTrait($controller, array &$order)
+    {
+        if (!$controller instanceof \gplcart\core\Controller) {
+            throw new \RuntimeException("Object is not instance of \gplcart\core\Controller");
+        }
+
+        /* @var $shipping_model \gplcart\core\models\Shipping */
+        $shipping_model = $controller->prop('shipping');
+        /* @var $payment_model \gplcart\core\models\Payment */
+        $payment_model = $controller->prop('payment');
+        /* @var $store_model \gplcart\core\models\Store */
+        $store_model = $controller->prop('store');
+        /* @var $order_model \gplcart\core\models\Order */
+        $order_model = $controller->prop('order');
+        /* @var $price_model \gplcart\core\models\Price */
+        $price_model = $controller->prop('price');
+        /* @var $address_model \gplcart\core\models\Address */
+        $address_model = $controller->prop('address');
+
+        $store = $store_model->get($order['store_id']);
+        $payment = $payment_model->get($order['payment']);
+        $shipping = $shipping_model->get($order['shipping']);
+        $status = $order_model->getStatusName($order['status']);
+
+        $order['address']['shipping'] = $address_model->get($order['shipping_address']);
+        $order['address_translated']['shipping'] = $address_model->getTranslated($order['address']['shipping'], true);
+
+        $order['status_name'] = empty($status) ? $this->text('Unknown') : $status;
+        $order['store_name'] = empty($store['name']) ? $this->text('Unknown') : $store['name'];
+        $order['payment_name'] = empty($payment['title']) ? $this->text('Unknown') : $payment['title'];
+        $order['shipping_name'] = empty($shipping['title']) ? $this->text('Unknown') : $shipping['title'];
+
+        $order['total_formatted'] = $price_model->format($order['total'], $order['currency']);
+        return $order;
+    }
 
     /**
      * Returns an array of prepared order components
@@ -48,15 +90,28 @@ trait ControllerOrder
      * @param array $order
      * @param string $type
      * @param string $dir
+     * @return null
      */
     protected function prepareOrderComponentsCartTrait($controller, &$order,
             $type, $dir)
     {
-        if ($type === 'cart') {
-            $data = array('order' => $order);
-            $html = $controller->render("$dir/cart", $data);
-            $order['data']['components']['cart']['rendered'] = $html;
+        if ($type !== 'cart') {
+            return null;
         }
+
+        /* @var $price_model \gplcart\core\models\Price */
+        $price_model = $controller->prop('price');
+
+        foreach ($order['data']['components']['cart'] as $sku => $price) {
+            if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
+                $order['cart'][$sku]['product_status'] = 0;
+            }
+            $order['cart'][$sku]['price_formatted'] = $price_model->format($price, $order['currency']);
+        }
+
+        $data = array('order' => $order);
+        $html = $controller->render("$dir/cart", $data);
+        $order['data']['components']['cart']['rendered'] = $html;
     }
 
     /**
@@ -72,10 +127,8 @@ trait ControllerOrder
     {
         /* @var $shipping_model \gplcart\core\models\Shipping */
         $shipping_model = $controller->prop('shipping');
-
         /* @var $payment_model \gplcart\core\models\Payment */
         $payment_model = $controller->prop('payment');
-
         /* @var $price_model \gplcart\core\models\Price */
         $price_model = $controller->prop('price');
 
@@ -120,7 +173,6 @@ trait ControllerOrder
 
         /* @var $price_model \gplcart\core\models\Price */
         $price_model = $controller->prop('price');
-
         /* @var $pricerule_model \gplcart\core\models\PriceRule */
         $pricerule_model = $controller->prop('pricerule');
 

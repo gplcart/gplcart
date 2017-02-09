@@ -61,12 +61,6 @@ class Controller extends BaseController
     protected $category;
 
     /**
-     * Cart model instance
-     * @var \gplcart\core\models\Cart $cart
-     */
-    protected $cart;
-
-    /**
      * Collection item model instance
      * @var \gplcart\core\models\CollectionItem $collection_item
      */
@@ -83,12 +77,6 @@ class Controller extends BaseController
      * @var array
      */
     protected $data_categories = array();
-
-    /**
-     * Current user cart ID
-     * @var integer|string
-     */
-    protected $cart_uid;
 
     /**
      * Constructor
@@ -114,7 +102,6 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        $this->cart = Container::get('gplcart\\core\\models\\Cart');
         $this->price = Container::get('gplcart\\core\\models\\Price');
         $this->image = Container::get('gplcart\\core\\models\\Image');
         $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
@@ -453,7 +440,7 @@ class Controller extends BaseController
     {
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
-        
+
         $this->validate('wishlist');
     }
 
@@ -650,7 +637,7 @@ class Controller extends BaseController
     {
         $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
     }
-    
+
     /**
      * Add decimat total
      * @param array $item

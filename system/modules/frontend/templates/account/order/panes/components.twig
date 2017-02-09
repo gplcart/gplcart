@@ -1,0 +1,27 @@
+{#
+    To see available variables:
+        - without enabling Twig debug mode: {{ d() }}
+        - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
+
+    @package GPL Cart core
+    @author Iurii Makukh <gplcart.software@gmail.com>
+    @copyright Copyright (c) 2015, Iurii Makukh
+    @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+    @link http://gplcart.com Support, modules, demo
+#}
+<div class="panel panel-default order-components">
+  <div class="panel-heading clearfix">{{ text('Components') }}</div>
+  <div class="panel-body">
+    <table class="table table-condensed">
+      <tbody>
+        {% for component in components %}
+            {{ component['rendered']|raw }}
+        {% endfor %}
+        <tr>
+          <td><b>{{ text('Grand total') }}</b></td>
+          <td><b>{{ order['total_formatted'] }}</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

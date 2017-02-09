@@ -11,9 +11,9 @@
   <div class="panel-body">
     <div class="row">
       <div class="col-md-6">
-        <?php if (!empty($items)) { ?>
+        <?php if (!empty($order['address_translated']['shipping'])) { ?>
         <table class="table table-condensed">
-          <?php foreach ($items as $key => $value) { ?>
+          <?php foreach ($order['address_translated']['shipping'] as $key => $value) { ?>
           <tr>
             <td><?php echo $this->escape($key); ?></td>
             <td><?php echo $this->escape($value); ?></td>
