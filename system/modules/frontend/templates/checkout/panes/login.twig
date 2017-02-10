@@ -22,14 +22,14 @@
 <div class="form-group{{ error('order.user.email', ' has-error') }}">
   <label class="col-md-2 control-label">{{ text('E-mail') }}</label>
   <div class="col-md-4">
-    <input class="form-control" name="order[user][email]" value="{{ order['user']['email'] ?? '' }}" autofocus>
+    <input class="form-control" name="order[user][email]" data-ajax="false" value="{{ order['user']['email'] ?? '' }}" autofocus>
     <div class="help-block">{{ error('order.user.email') }}</div>
   </div>
 </div>
 <div class="form-group">
   <label class="col-md-2 control-label">{{ text('Password') }}</label>
   <div class="col-md-4">
-    <input type="password" class="form-control" name="order[user][password]" value="">
+    <input type="password" class="form-control" data-ajax="false" name="order[user][password]" value="">
   </div>
 </div>
 <div class="form-group">

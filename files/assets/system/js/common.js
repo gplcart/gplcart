@@ -81,9 +81,15 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
      * Loads Google Maps
      * @param {type} lat
      * @param {type} lng
+     * @param {type} key
+     * @param {type} id
      * @returns {undefined}
      */
-    GplCart.gmap = function (lat, lng, key) {
+    GplCart.gmap = function (lat, lng, key, id) {
+
+        if (typeof id === 'undefined') {
+            id = 'map-container';
+        }
 
         var ifr = '',
                 src = 'https://www.google.com/maps/embed/v1/place?key=' + key + '&zoom=14';
@@ -97,7 +103,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
         ifr += '<iframe frameborder="0"';
         ifr += 'style="border:0" src="' + src + '" allowfullscreen></iframe>';
 
-        $('#map-container').html(ifr);
+        $('#' + id).html(ifr);
     };
 
     /**

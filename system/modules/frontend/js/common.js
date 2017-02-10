@@ -271,7 +271,7 @@
      */
     GplCart.onload.equalHeight = function () {
         if ($.fn.matchHeight) {
-            $('.products .thumbnail .title').matchHeight();
+            $('[data-equal-height="true"]').matchHeight();
         }
     };
 
@@ -636,10 +636,9 @@
      */
     GplCart.onload.submitCheckout = function () {
 
-        var clicked,
-                selector = 'form#checkout input[type="radio"], form#checkout select, form#checkout [name$="[quantity]"]';
+        var clicked;
 
-        $(document).on('change', selector, function () {
+        $(document).on('change', 'form#checkout :input:not([data-ajax="false"])', function () {
             $('form#checkout').submit();
         });
 

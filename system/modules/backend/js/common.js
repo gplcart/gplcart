@@ -368,21 +368,15 @@
             return;
         }
 
-        if (!GplCart.settings.map.key) {
-            console.warn('Please specify a browser API key for Google Maps at admin/settings/common');
-            return;
-        }
-
         if (GplCart.settings.map.address) {
-            GplCart.gmap(GplCart.settings.map.address, false, GplCart.settings.map.key);
-            return;
+            $.each(GplCart.settings.map.address, function (type, address) {
+                GplCart.gmap(address, false, GplCart.settings.map.key, 'map-container-' + type);
+            });
         }
 
         if (GplCart.settings.map[0] && GplCart.settings.map[1]) {
             GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1], GplCart.settings.map.key);
-            return;
         }
-        console.warn('Invalid arguments for Google Maps');
     };
 
     /**

@@ -60,10 +60,22 @@ class Checkout extends FrontendController
     protected $payment;
 
     /**
-     * Current state of address form
+     * Current state of shipping address form
      * @var boolean
      */
-    protected $address_form = false;
+    protected $shipping_address_form = false;
+
+    /**
+     * Current state of payment address form
+     * @var boolean
+     */
+    protected $payment_address_form = false;
+
+    /**
+     * Whether payment address should be provided
+     * @var bool
+     */
+    protected $has_payment_address = false;
 
     /**
      * Current state of login form
@@ -364,20 +376,21 @@ class Checkout extends FrontendController
         $default_country = count($countries) == 1 ? key($countries) : '';
 
         $address = $this->getSubmitted('address', array());
-        $address += array('country' => $default_country);
+
+        if (!isset($address['payment']['country'])) {
+            $address['payment']['country'] = $default_country;
+        }
+
+        if (!isset($address['shipping']['country'])) {
+            $address['shipping']['country'] = $default_country;
+        }
 
         $this->data_form['address'] = $address;
         $this->data_form['countries'] = $countries;
         $this->data_form['login_form'] = $this->login_form;
-        $this->data_form['address_form'] = $this->address_form;
-        $this->data_form['format'] = $this->country->getFormat($address['country']);
-
-        $state_conditions = array('country' => $address['country'], 'status' => 1);
-        $this->data_form['states'] = $this->state->getList($state_conditions);
-
-        if (empty($this->data_form['states'])) {
-            unset($this->data_form['format']['state_id']);
-        }
+        $this->data_form['has_payment_address'] = $this->has_payment_address;
+        $this->data_form['payment_address_form'] = $this->payment_address_form;
+        $this->data_form['shipping_address_form'] = $this->shipping_address_form;
 
         $this->data_form['cart'] = $this->prepareCart($this->data_cart);
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
@@ -385,9 +398,16 @@ class Checkout extends FrontendController
         $excess = $this->address->getExcess($this->order_user_id, $this->data_form['addresses']);
 
         $this->data_form['can_add_address'] = empty($excess);
-        $this->data_form['can_save_address'] = empty($excess)// Limit is not exceeded
-                && !empty($this->uid)// User is logged in
-                && (!empty($address['country']) || empty($countries)); // User selected a country if countries exist in the system
+        $this->data_form['can_save_address'] = empty($excess) && !empty($this->uid);
+
+        foreach ($address as $type => $fields) {
+            $this->data_form['format'][$type] = $this->country->getFormat($fields['country']);
+            $this->data_form['states'][$type] = $this->state->getList(array('country' => $fields['country'], 'status' => 1));
+
+            if (empty($this->data_form['states'][$type])) {
+                unset($this->data_form['format'][$type]['state_id']);
+            }
+        }
 
         $this->calculateCheckout();
         $this->setFormDataPanesOrder();
@@ -399,7 +419,7 @@ class Checkout extends FrontendController
     protected function setFormDataPanesOrder()
     {
         $panes = array('login', 'review', 'payment_methods',
-            'shipping_methods', 'shipping_address');
+            'shipping_methods', 'shipping_address', 'payment_address');
 
         foreach ($panes as $pane) {
             $this->data_form["pane_$pane"] = $this->render("checkout/panes/$pane", $this->data_form);
@@ -413,24 +433,30 @@ class Checkout extends FrontendController
     {
         $this->setSubmitted('order');
 
-        $address = $this->getSubmitted('address', array());
+        $this->payment_address_form = $this->isSubmitted('address.payment');
+        $this->shipping_address_form = $this->isSubmitted('address.shipping');
 
-        if (!empty($address)) {
-            $this->address_form = true;
-        }
+        $actions = array(
+            'add_address' => true,
+            'get_states' => true,
+            'cancel_address_form' => false
+        );
 
-        if ($this->isPosted('add_address') || $this->isPosted('get_states')) {
-            $this->address_form = true;
-        }
-
-        if ($this->isPosted('cancel_address_form')) {
-            $this->address_form = false;
+        foreach ($actions as $field => $action) {
+            $value = $this->request->post($field);
+            if (isset($value)) {
+                $this->{"{$value}_address_form"} = $action;
+            }
         }
 
         $this->submitAddAddressCheckout();
 
         if ($this->isPosted('checkout_login') && empty($this->uid)) {
             $this->login_form = true;
+        }
+
+        if ($this->isPosted('payment_address')) {
+            $this->has_payment_address = true;
         }
 
         if ($this->isPosted('update')) {
@@ -454,15 +480,17 @@ class Checkout extends FrontendController
      */
     protected function submitAddAddressCheckout()
     {
-        if (!$this->isPosted('save_address')) {
+        $type = $this->request->post('save_address');
+
+        if (empty($type)) {
             return null;
         }
 
-        $errors = $this->validateAddressCheckout();
+        $errors = $this->validateAddressCheckout($type);
 
         if (empty($errors)) {
-            $this->addAddressCheckout();
-            $this->address_form = false;
+            $this->addAddressCheckout($type);
+            $this->{"{$type}_address_form"} = false;
         }
     }
 
@@ -666,32 +694,47 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $address_errors = $this->validateAddressCheckout();
         $order_errors = $this->validateOrderCheckout();
 
-        if ($this->address_form) {
-            unset($order_errors['shipping_address']);
+        foreach (array('payment', 'shipping') as $type) {
+            $address_errors = $this->validateAddressCheckout($type);
+
+            if (!empty($address_errors)) {
+                $order_errors = gplcart_array_merge($order_errors, $address_errors);
+            }
+
+            if ($this->{"{$type}_address_form"}) {
+                unset($order_errors["{$type}_address"]);
+            }
+
+            if (empty($address_errors)) {
+                $this->addAddressCheckout($type);
+            }
         }
 
-        if (empty($address_errors) && empty($order_errors)) {
-            $this->addAddressCheckout();
+        if (empty($order_errors)) {
             $this->addOrderCheckout();
         } else {
-            $errors = gplcart_array_merge($order_errors, $address_errors);
-            $this->setError(null, $errors);
+            $this->setError(null, $order_errors);
         }
     }
 
     /**
      * Validates a submitted address
+     * @param string $type
      * @return array
      */
-    protected function validateAddressCheckout()
+    protected function validateAddressCheckout($type)
     {
-        if ($this->address_form) {
-            $this->setSubmitted('address.user_id', $this->order_user_id);
-            return $this->validate('address', array('parents' => 'address'));
+        if (!$this->has_payment_address) {
+            $this->unsetSubmitted('address.payment');
         }
+
+        if ($this->{"{$type}_address_form"}) {
+            $this->setSubmitted("address.{$type}.user_id", $this->order_user_id);
+            return $this->validate('address', array('parents' => "address.$type"));
+        }
+
         return array();
     }
 
@@ -711,14 +754,15 @@ class Checkout extends FrontendController
 
     /**
      * Adds a submitted address
+     * @param string $type
      */
-    protected function addAddressCheckout()
+    protected function addAddressCheckout($type)
     {
-        $submitted = $this->getSubmitted('address');
+        $submitted = $this->getSubmitted("address.$type");
 
-        if ($this->address_form && !empty($submitted)) {
+        if ($this->{"{$type}_address_form"} && !empty($submitted)) {
             $address_id = $this->address->add($submitted);
-            $this->setSubmitted('shipping_address', $address_id);
+            $this->setSubmitted("{$type}_address", $address_id);
             $this->address->controlLimit($this->order_user_id);
         }
     }

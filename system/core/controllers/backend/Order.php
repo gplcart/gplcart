@@ -114,6 +114,7 @@ class Order extends BackendController
         $this->setDataPaneCommentOrder();
         $this->setDataPaneCustomerOrder();
         $this->setDataPaneComponentsOrder();
+        $this->setDataPanePaymentAddressOrder();
         $this->setDataPaneShippingAddressOrder();
 
         $this->setJsSettingsViewOrder();
@@ -242,7 +243,7 @@ class Order extends BackendController
     }
 
     /**
-     * 
+     * Copies an order
      */
     protected function cloneOrder()
     {
@@ -261,12 +262,12 @@ class Order extends BackendController
      */
     protected function setJsSettingsViewOrder()
     {
-        $translated = $this->address->getTranslated($this->data_order['address']['shipping']);
+        $map = array('key' => $this->config('gapi_browser_key', ''));
 
-        $map = array(
-            'key' => $this->config('gapi_browser_key', ''),
-            'address' => $this->address->getGeocodeQuery($translated)
-        );
+        foreach ($this->data_order['address'] as $type => $address) {
+            $translated = $this->address->getTranslated($address);
+            $map['address'][$type] = $this->address->getGeocodeQuery($translated);
+        }
 
         $this->setJsSettings('map', $map);
     }
@@ -459,6 +460,16 @@ class Order extends BackendController
         $data = array('order' => $this->data_order);
         $html = $this->render('sale/order/panes/shipping_address', $data);
         $this->setData('pane_shipping_address', $html);
+    }
+
+    /**
+     * Sets payment address pane on the order overview page
+     */
+    protected function setDataPanePaymentAddressOrder()
+    {
+        $data = array('order' => $this->data_order);
+        $html = $this->render('sale/order/panes/payment_address', $data);
+        $this->setData('pane_payment_address', $html);
     }
 
     /**

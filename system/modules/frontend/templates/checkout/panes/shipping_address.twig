@@ -1,6 +1,4 @@
 {#
-    Displays the shipping address pane on the checkout page
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -15,7 +13,7 @@
   <div class="panel-heading clearfix">
     {{ text('Shipping address') }}
     <noscript>
-      <button title="{{ text('Update') }}" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+    <button title="{{ text('Update') }}" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
     </noscript>
   </div>
   <div class="panel-body">
@@ -27,7 +25,7 @@
           {{ error('shipping_address') }}
         </div>
     {% endif %}
-    {% if addresses and not address_form %}
+    {% if addresses and not shipping_address_form %}
         <div class="form-group">
           <div class="col-md-12">
             <div class="btn-group saved-addresses">
@@ -36,9 +34,7 @@
                     <label class="address{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' active'}}">
                       <input type="radio" name="order[shipping_address]" value="{{ address_id }}" autocomplete="off"{{ (order['shipping_address'] is defined and order['shipping_address'] == address_id) ? ' checked'}}>
                       {% for name,value in address %}
-                          <span class="clearfix">
-                            {{ name }} : {{ value }}
-                          </span>
+                          <span class="clearfix">{{ name }} : {{ value }}</span>
                       {% endfor %}
                     </label>
                   </div>
@@ -49,7 +45,7 @@
         {% if can_add_address %}
             <div class="form-group">
               <div class="col-md-12">
-                <button class="btn btn-default" name="add_address" value="1">{{ text('Add address') }}</button>
+                <button class="btn btn-default" name="add_address" value="shipping">{{ text('Add address') }}</button>
               </div>
             </div>
         {% endif %}
@@ -57,49 +53,51 @@
         <div class="form-group">
           <div class="col-md-12">
             <table class="table table-borderless table-striped table-condensed shipping-address">
-              {% if countries is not empty %}
+              {% if countries %}
                   <tr>
                     <td class="middle">{{ text('Country') }}</td>
                     <td>
                       <div class="btn-toolbar">
-                        <div class="btn-group country{{ error('address.country', ' has-error') }}">
-                          <select class="form-control" name="order[address][country]">
+                        <div class="btn-group country{{ error('address.shipping.country', ' has-error') }}">
+                          <select class="form-control" name="order[address][shipping][country]">
                             <option value="" disabled selected>{{ text('- select -') }}</option>
                             {% for code,name in countries %}
-                                <option value="{{ code }}"{{ (address['country'] == code) ? ' selected' }}>{{ name }}</option>
+                                <option value="{{ code }}"{{ (address['shipping']['country'] == code) ? ' selected' }}>{{ name }}</option>
                             {% endfor %}
                           </select>
-                          <div class="help-block">{{ error('address.country') }}</div>
+                          <div class="help-block">{{ error('address.shipping.country') }}</div>
                         </div>
-                        <div class="btn-group hidden-js">
-                          <button class="btn btn-default" name="get_states" value="1">{{ text('Get states') }}</button>
+                        <noscript>
+                        <div class="btn-group">
+                          <button class="btn btn-default" name="get_states" value="shipping">{{ text('Get states') }}</button>
                         </div>
+                        </noscript>
                       </div>
                     </td>
                   </tr>
               {% endif %}
-              {% if countries is empty or address['country'] is defined and address['country'] is not empty %}
-                  {% for key,data in format %}
+              {% if not countries or address['shipping']['country'] %}
+                  {% for key, data in format['shipping'] %}
                       {% if key != 'country' %}
                           <tr>
                             <td class="middle">
-                              <span class="{{ data['required'] is not empty ? ' required' }}">{{ data['name'] }}</span>
+                              <span class="{{ data['required'] ? ' required' }}">{{ data['name'] }}</span>
                             </td>
                             <td class="middle">
-                              <div class="{{ key }}{{ error('address.' ~ key, ' has-error') }}">
+                              <div class="{{ key }}{{ error('address.shipping.' ~ key, ' has-error') }}">
                                 {% if key == 'state_id' %}
-                                    <select class="form-control" name="order[address][state_id]">
+                                    <select class="form-control" name="order[address][shipping][state_id]">
                                       <option value="" disabled selected>{{ text('- select -') }}</option>
-                                      {% for state_id,state in states %}
-                                          <option value="{{ state_id }}"{{ (address['state_id'] is defined and address['state_id'] == state_id) ? ' selected' }}>
+                                      {% for state_id,state in states['shipping'] %}
+                                          <option value="{{ state_id }}"{{ (address['shipping']['state_id'] is defined and address['shipping']['state_id'] == state_id) ? ' selected' }}>
                                             {{ state['name'] }}
                                           </option>
                                       {% endfor %}
                                     </select>
                                 {% else %}
-                                    <input name="order[address][{{ key }}]" maxlength="255" class="form-control" value="{{ address[key] ?? '' }}">
+                                    <input name="order[address][shipping][{{ key }}]" data-ajax="false" maxlength="255" class="form-control" value="{{ address['shipping'][key] ?? '' }}">
                                 {% endif %}
-                                <div class="help-block">{{ error('address.' ~ key) }}</div>
+                                <div class="help-block">{{ error('address.shipping.' ~ key) }}</div>
                               </div>
                             </td>
                           </tr>
@@ -112,14 +110,14 @@
         <div class="form-group">
           {% if addresses %}
               <div class="col-md-6">
-                <button class="btn btn-default" name="cancel_address_form" value="1">
-                  {{ text('Select saved address') }}
+                <button class="btn btn-default" name="cancel_address_form" value="shipping">
+                  {{ text('Cancel') }}
                 </button>
               </div>
           {% endif %}
-          {% if can_save_address %}
+          {% if can_save_address and (not countries or address['shipping']['country']) %}
               <div class="col-md-6 text-right">
-                <button class="btn btn-default" name="save_address" value="1">
+                <button class="btn btn-default" name="save_address" value="shipping">
                   {{ text('Save') }}
                 </button>
               </div>

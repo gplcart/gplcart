@@ -17,6 +17,7 @@
     <div class="col-md-6">
       <?php echo $pane_components; ?>
       <?php echo $pane_shipping_address; ?>
+      <?php echo $pane_payment_address; ?>
       <?php echo $pane_comment; ?>
       <div class="panel panel-default hidden-print">
         <div class="panel-body">

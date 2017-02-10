@@ -3,8 +3,6 @@
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
 
-    @uses class \gplcart\core\controllers\frontend\Account
-    @category theme
     @package GPL Cart core
     @author Iurii Makukh <gplcart.software@gmail.com>
     @copyright Copyright (c) 2015, Iurii Makukh
@@ -37,12 +35,17 @@
   </div>
   <div class="col-md-9">
     <div class="row">
-      <div class="col-md-6">
+      <div class="{{ pane_payment_address ? 'col-md-4' : 'col-md-6' }}">
         {{ pane_summary|raw }}
       </div>
-      <div class="col-md-6">
+      <div class="{{ pane_payment_address ? 'col-md-4' : 'col-md-6' }}">
         {{ pane_shipping_address|raw }}
       </div>
+      {% if pane_payment_address %}
+          <div class="col-md-4">
+            {{ pane_payment_address|raw }}
+          </div>
+      {% endif %}
     </div>
     <div class="row">
       <div class="col-md-12">{{ pane_components|raw }}</div>

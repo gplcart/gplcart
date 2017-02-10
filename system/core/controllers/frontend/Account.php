@@ -138,6 +138,7 @@ class Account extends FrontendController
 
         $this->setDataPaneSummaryAccount();
         $this->setDataPaneComponentsAccount();
+        $this->setDataPanePaymentAddressAccount();
         $this->setDataPaneShippingAddressAccount();
 
         $this->outputOrderAccount();
@@ -174,6 +175,16 @@ class Account extends FrontendController
         $data = array('order' => $this->data_order);
         $html = $this->render('account/order/panes/shipping_address', $data);
         $this->setData('pane_shipping_address', $html);
+    }
+
+    /**
+     * Sets payment address pane on the order overview page
+     */
+    protected function setDataPanePaymentAddressAccount()
+    {
+        $data = array('order' => $this->data_order);
+        $html = $this->render('account/order/panes/payment_address', $data);
+        $this->setData('pane_payment_address', $html);
     }
 
     /**
@@ -327,7 +338,7 @@ class Account extends FrontendController
      */
     protected function setTitleIndexAccount()
     {
-        $this->setTitle($this->text('Orders'), false);
+        $this->setTitle($this->text('Orders'));
     }
 
     /**

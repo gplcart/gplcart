@@ -6,14 +6,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<div class="panel panel-default">
-  <div class="panel-heading"><?php echo $this->text('Shipping address'); ?></div>
+<?php if(!empty($order['payment_address']) && $order['payment_address'] != $order['shipping_address']) { ?>
+<div class="panel panel-default payment-address">
+  <div class="panel-heading"><?php echo $this->text('Payment address'); ?></div>
   <div class="panel-body">
     <div class="row">
       <div class="col-md-6">
-        <?php if (!empty($order['address_translated']['shipping'])) { ?>
+        <?php if (!empty($order['address_translated']['payment'])) { ?>
         <table class="table table-condensed">
-          <?php foreach ($order['address_translated']['shipping'] as $key => $value) { ?>
+          <?php foreach ($order['address_translated']['payment'] as $key => $value) { ?>
           <tr>
             <td><?php echo $this->escape($key); ?></td>
             <td><?php echo $this->escape($value); ?></td>
@@ -24,7 +25,7 @@
       </div>
       <div class="col-md-6 hidden-print">
         <div class="embed-responsive embed-responsive-4by3">
-          <div id="map-container-shipping" class="embed-responsive-item text-muted">
+          <div id="map-container-payment" class="embed-responsive-item text-muted">
             <?php if(!$this->config('gapi_browser_key')) { ?>
             <?php echo $this->text('Google Map API key is not set'); ?>
             <?php if($this->access('settings')) { ?>
@@ -37,3 +38,4 @@
     </div>
   </div>
 </div>
+<?php } ?>

@@ -99,6 +99,7 @@ class Order extends BaseValidator
         $this->validateShippingOrder();
         $this->validateStatusOrder();
         $this->validateShippingAddressOrder();
+        $this->validatePaymentAddressOrder();
         $this->validateUserCartId();
         $this->validateCreatorOrder();
         $this->validateTotalOrder();
@@ -257,6 +258,45 @@ class Order extends BaseValidator
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Validates a payment address
+     * @return boolean
+     */
+    protected function validatePaymentAddressOrder()
+    {
+        $address_id = $this->getSubmitted('payment_address');
+
+        if (empty($address_id) && !$this->isError('shipping_address')) {
+            $address_id = $this->getSubmitted('shipping_address');
+        }
+
+        if (empty($address_id)) {
+            $vars = array('@field' => $this->language->text('Payment address'));
+            $error = $this->language->text('@field is required', $vars);
+            $this->setError('payment_address', $error);
+            return false;
+        }
+
+        if (!is_numeric($address_id)) {
+            $vars = array('@field' => $this->language->text('Payment address'));
+            $error = $this->language->text('@field must be numeric', $vars);
+            $this->setError('payment_address', $error);
+            return false;
+        }
+
+        $address = $this->address->get($address_id);
+
+        if (empty($address)) {
+            $vars = array('@name' => $this->language->text('Payment address'));
+            $error = $this->language->text('@name is unavailable', $vars);
+            $this->setError('payment_address', $error);
+            return false;
+        }
+
+        $this->setSubmitted('payment_address', $address_id);
         return true;
     }
 
