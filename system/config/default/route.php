@@ -151,12 +151,6 @@ $routes['account/(\d+)/address'] = array(
     )
 );
 
-$routes['account/(\d+)/address/add'] = array(
-    'handlers' => array(
-        'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'editAddressAccount')
-    )
-);
-
 $routes['wishlist'] = array(
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\frontend\\Wishlist', 'indexWishlist')

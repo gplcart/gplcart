@@ -568,32 +568,6 @@
     };
 
     /**
-     * Updates address fields depending on chosen country
-     * @returns {undefined}
-     */
-    GplCart.onload.updateAdressFields = function () {
-
-        var wrapper = '#address-form-wrapper';
-
-        $(document).on('change', '#edit-address [name$="[country]"]', function () {
-
-            $.ajax({
-                method: 'POST',
-                dataType: 'html',
-                url: GplCart.settings.urn,
-                data: {
-                    country: $(this).val(),
-                    token: GplCart.settings.token
-                },
-                success: function (data) {
-                    $(wrapper).html($(data).find(wrapper).html());
-                    setCityAutocomplete();
-                }
-            });
-        });
-    };
-
-    /**
      * Search autocomplete field
      * @returns {undefined}
      */

@@ -41,7 +41,7 @@
                 <div class="panel panel-default address">
                   <div class="panel-heading clearfix">
                     {% if user('user_id') == user['user_id'] or access('user_edit') %}
-                        <a class="btn btn-default btn-sm pull-right" title="{{ text('Delete') }}" href="{{ url(false, {'delete': address_id}) }}">
+                        <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Are you sure?'));" title="{{ text('Delete') }}" href="{{ url(false, {'delete': address_id}) }}">
                           <i class="fa fa-trash"></i>
                         </a>
                     {% endif %}
@@ -67,11 +67,6 @@
             {% if user('user_id') == user['user_id'] %}
                 <p>{{ text('You have no saved addresses yet') }}</p>
             {% endif %}
-        {% endif %}
-        {% if user('user_id') == user['user_id'] or access('user_edit') %}
-            <a class="btn btn-default" href="{{ url('account/' ~ user.user_id ~ '/address/add') }}">
-              {{ text('Add new address') }}
-            </a>
         {% endif %}
       </div>
     </div>
