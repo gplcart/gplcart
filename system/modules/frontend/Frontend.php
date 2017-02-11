@@ -25,7 +25,7 @@ class Frontend
             'name' => 'Frontend theme',
             'description' => 'Frontend theme',
             'author' => 'IURII MAKUKH',
-            'core' => '1.0',
+            'core' => '1.x',
             'type' => 'theme',
             'configure' => 'admin/module/settings/frontend',
             'settings' => $this->getDefaultSettings()

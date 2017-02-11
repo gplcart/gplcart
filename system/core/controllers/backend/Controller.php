@@ -68,6 +68,13 @@ class Controller extends BaseController
             return null;
         }
 
+        $cancel = $this->request->get('cancel_job');
+
+        if (!empty($cancel)) {
+            $this->job->delete($cancel);
+            return null;
+        }
+
         $this->setJsSettings('job', $data);
         $process_job_id = (string) $this->request->get('process_job');
 

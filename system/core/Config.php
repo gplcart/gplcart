@@ -249,8 +249,6 @@ class Config
                 'id' => $module_name,
                 'dependencies' => array()
             );
-            
-            
 
             if (isset($saved_modules[$module_info['id']])) {
                 $module_info['installed'] = true;
@@ -259,6 +257,7 @@ class Config
 
             if (in_array($module_info['id'], array('backend', 'frontend'))) {
                 $module_info['status'] = 1;
+                $module_info['version'] = GC_VERSION;
             }
 
             if ($module_info['type'] === 'installer') {

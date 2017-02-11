@@ -23,7 +23,12 @@
             <span class="start"><?php echo $this->xss($job['message']['start']); ?></span>
             <?php } ?>
           </div>
-        </div>   
+        </div>
+        <p class="cancel">
+          <a href="<?php echo $this->url('', array('cancel_job' => $job['id'])); ?>">
+            <?php echo $this->text('Cancel'); ?>
+          </a>
+        </p>
       </div>
     </div>
   </div>

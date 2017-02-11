@@ -175,17 +175,12 @@ class Job extends Model
      */
     public function process(array $job)
     {
-        // Try to set endless process
         ini_set('max_execution_time', 0);
-
-        //Register shutdown function to handle fatal errors in processor
         register_shutdown_function(array($this, 'shutdownHandler'), $job);
 
-        // Chance to change the job from a module
         $this->hook->fire('process.job.before', $job);
 
         if (empty($job['status'])) {
-            // Probably has been disabled on the previous iteration
             return $this->result($job, array('finish' => true));
         }
 
@@ -195,22 +190,18 @@ class Job extends Model
         // Loop until the max time limit reached
         while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
 
-            // Call a processor
             $this->call($job);
 
-            // Check if the job has been disabled by processor
             if (empty($job['status'])) {
                 break;
             }
 
-            // Calculate percent progress
             $progress = round($job['done'] * 100 / $job['total']);
 
             if ($job['done'] < $job['total']) {
                 continue;
             }
 
-            // All done
             $job['status'] = false;
             break;
         }

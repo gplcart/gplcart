@@ -25,7 +25,7 @@ class Backend
             'name' => 'Backend theme',
             'description' => 'Backend theme',
             'author' => 'Iurii Makukh',
-            'core' => '1.0',
+            'core' => '1.x',
             'type' => 'theme',
             'settings' => array()
         );
