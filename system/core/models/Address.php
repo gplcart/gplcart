@@ -195,7 +195,7 @@ class Address extends Model
      * @param boolean $both
      * @return array
      */
-    public function getTranslated($address, $both = false)
+    public function getTranslated(array $address, $both = false)
     {
         $default = $this->country->defaultFormat();
         $format = gplcart_array_merge($default, $address['country_format']);
@@ -344,18 +344,10 @@ class Address extends Model
      */
     public function canDelete($address_id)
     {
-        return !$this->isReferenced($address_id);
-    }
+        $sql = 'SELECT NOT EXISTS (SELECT order_id FROM orders WHERE shipping_address=:id)'
+                . ' AND NOT EXISTS (SELECT order_id FROM orders WHERE payment_address=:id)';
 
-    /**
-     * Returns true if the address has no references
-     * @param integer $address_id
-     * @return boolean
-     */
-    public function isReferenced($address_id)
-    {
-        $sql = 'SELECT order_id FROM orders WHERE shipping_address=?';
-        return (bool) $this->db->fetch($sql, array($address_id));
+        return (bool) $this->db->fetchColumn($sql, array('id' => $address_id));
     }
 
     /**

@@ -45,9 +45,11 @@ trait ControllerOrder
         $shipping = $shipping_model->get($order['shipping']);
         $status = $order_model->getStatusName($order['status']);
 
+        $order['address'] = array();
         foreach (array('shipping', 'payment') as $type) {
-            $order['address'][$type] = $address_model->get($order["{$type}_address"]);
-            if (!empty($order['address'][$type])) {
+            $address = $address_model->get($order["{$type}_address"]);
+            if (!empty($address)) {
+                $order['address'][$type] = $address;
                 $order['address_translated'][$type] = $address_model->getTranslated($order['address'][$type], true);
             }
         }

@@ -362,20 +362,17 @@ class Language extends Model
     /**
      * Returns translated and formated staring
      * @param string $source
-     * @param array $arguments
+     * @param array $args
      * @param array $data
      * @return string
      */
-    protected function formatString(
-    $source, array $arguments, array $data = array()
-    )
+    protected function formatString($source, array $args, array $data = array())
     {
-
         if (!isset($data[0]) || $data[0] === '') {
-            return gplcart_string_format($source, $arguments);
+            return gplcart_string_format($source, $args);
         }
 
-        return gplcart_string_format($data[0], $arguments);
+        return gplcart_string_format($data[0], $args);
     }
 
     /**

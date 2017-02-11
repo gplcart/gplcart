@@ -34,21 +34,23 @@
     {% endif %}
   </div>
   <div class="col-md-9">
-    {% if addresses is not empty %}
+    {% if addresses %}
         <div class="row addresses">
           {% for address_id,address in addresses %}
               <div class="col-md-4">
-                <div class="panel panel-default address">
+                <div class="panel panel-default address" data-equal-height="true">
                   <div class="panel-heading clearfix">
-                    {% if user('user_id') == user['user_id'] or access('user_edit') %}
+                    {% if (user('user_id') == user['user_id'] or access('user_edit')) and not address['locked'] %}
                         <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Are you sure?'));" title="{{ text('Delete') }}" href="{{ url(false, {'delete': address_id}) }}">
                           <i class="fa fa-trash"></i>
                         </a>
-                    {% endif %}
+                    {% else %}
+                        <span class="disabled btn btn-default btn-sm pull-right"><i class="fa fa-trash"></i></span>
+                        {% endif %}
                   </div>
                   <div class="panel-body">
                     <table class="table table-condensed address">
-                      {% for label,value in address %}
+                      {% for label,value in address['items'] %}
                           <tr>
                             <td>{{ label}}</td>
                             <td>{{ value }}</td>
@@ -63,9 +65,9 @@
     {% endif %}
     <div class="row">
       <div class="col-md-12">
-        {% if addresses is empty %}
+        {% if not addresses %}
             {% if user('user_id') == user['user_id'] %}
-                <p>{{ text('You have no saved addresses yet') }}</p>
+                <p>{{ text('Currently you have no saved addresses, but they will be added after next <a href="@href">checkout</a>', {'@href': url('checkout')}) }}</p>
             {% endif %}
         {% endif %}
       </div>

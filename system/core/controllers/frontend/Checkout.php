@@ -433,21 +433,7 @@ class Checkout extends FrontendController
     {
         $this->setSubmitted('order');
 
-        $this->payment_address_form = $this->isSubmitted('address.payment');
-        $this->shipping_address_form = $this->isSubmitted('address.shipping');
-
-        $actions = array(
-            'add_address' => true,
-            'get_states' => true,
-            'cancel_address_form' => false
-        );
-
-        foreach ($actions as $field => $action) {
-            $value = $this->request->post($field);
-            if (isset($value)) {
-                $this->{"{$value}_address_form"} = $action;
-            }
-        }
+        $this->setAddressFormCheckout();
 
         $this->submitAddAddressCheckout();
 
@@ -472,6 +458,28 @@ class Checkout extends FrontendController
         $this->validateCouponCheckout();
         $this->submitCartCheckout();
         $this->submitOrderCheckout();
+    }
+
+    /**
+     * Controls state of address forms (open/closed)
+     */
+    protected function setAddressFormCheckout()
+    {
+        $this->payment_address_form = $this->isSubmitted('address.payment');
+        $this->shipping_address_form = $this->isSubmitted('address.shipping');
+
+        $actions = array(
+            'add_address' => true,
+            'get_states' => true,
+            'cancel_address_form' => false
+        );
+
+        foreach ($actions as $field => $action) {
+            $value = $this->request->post($field);
+            if (isset($value)) {
+                $this->{"{$value}_address_form"} = $action;
+            }
+        }
     }
 
     /**
@@ -726,10 +734,6 @@ class Checkout extends FrontendController
      */
     protected function validateAddressCheckout($type)
     {
-        if (!$this->has_payment_address) {
-            $this->unsetSubmitted('address.payment');
-        }
-
         if ($this->{"{$type}_address_form"}) {
             $this->setSubmitted("address.{$type}.user_id", $this->order_user_id);
             return $this->validate('address', array('parents' => "address.$type"));
@@ -744,6 +748,10 @@ class Checkout extends FrontendController
      */
     protected function validateOrderCheckout()
     {
+        if (!$this->has_payment_address) {
+            $this->unsetSubmitted('address.payment');
+        }
+
         $this->setSubmitted('update', array());
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('user_id', $this->order_user_id);
@@ -1024,7 +1032,7 @@ class Checkout extends FrontendController
     protected function setTitleCompleteCheckout()
     {
         $vars = array('@num' => $this->data_order['order_id']);
-        $title = $this->text('Order #@num. Checkout completed', $vars);
+        $title = $this->text('Checkout completed', $vars);
         $this->setTitle($title);
     }
 

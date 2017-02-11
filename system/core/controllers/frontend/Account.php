@@ -202,6 +202,8 @@ class Account extends FrontendController
      */
     protected function setBreadcrumbOrderAccount()
     {
+        $breadcrumbs = array();
+
         $breadcrumbs[] = array(
             'url' => $this->url('/'),
             'text' => $this->text('Shop')
@@ -479,7 +481,15 @@ class Account extends FrontendController
      */
     protected function getListAddressAccount()
     {
-        return $this->address->getTranslatedList($this->data_user['user_id']);
+        $addresses = $this->address->getTranslatedList($this->data_user['user_id']);
+
+        $prepared = array();
+        foreach ($addresses as $address_id => $items) {
+            $prepared[$address_id]['items'] = $items;
+            $prepared[$address_id]['locked'] = !$this->address->canDelete($address_id);
+        }
+
+        return $prepared;
     }
 
     /**

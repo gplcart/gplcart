@@ -207,8 +207,7 @@ class File extends Model
      */
     public function canDelete($file_id)
     {
-        $sql = 'SELECT'
-                . ' NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)'
+        $sql = 'SELECT NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)'
                 . ' AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $file_id));
