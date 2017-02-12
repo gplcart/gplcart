@@ -441,12 +441,7 @@ class Language extends Model
         }
 
         array_unshift($data, $string);
-
-        $fp = fopen($file, 'a');
-        $result = fputcsv($fp, $data);
-        fclose($fp);
-
-        return (bool) $result;
+        return gplcart_file_csv($file, $data);
     }
 
     /**

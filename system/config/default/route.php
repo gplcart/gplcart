@@ -657,6 +657,13 @@ $routes['admin/settings/language/edit/(\w+)'] = array(
     )
 );
 
+$routes['admin/settings/language/upload-translation/(\w+)'] = array(
+    'access' => 'translation_add',
+    'handlers' => array(
+        'controller' => array('gplcart\\core\\controllers\\backend\\Translation', 'uploadTranslation')
+    )
+);
+
 $routes['admin/settings/language/add'] = array(
     'access' => 'language_add',
     'handlers' => array(

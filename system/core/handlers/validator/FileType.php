@@ -32,9 +32,8 @@ class FileType
      */
     public function csv($file)
     {
-        $allowed = array('text/plain', 'text/csv', 'text/tsv');
         $mimetype = gplcart_file_mime($file);
-        return in_array($mimetype, $allowed);
+        return strtok($mimetype, '/') === 'text';
     }
 
     /**

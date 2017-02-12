@@ -34,12 +34,12 @@ function gplcart_file_delete($directory, $pattern, $lifespan = 0)
  */
 function gplcart_file_scan($path, $pattern)
 {
-    if (is_array($pattern)) {
-        $extensions = implode(',', $pattern);
-        return glob("$path/*.{{$extensions}}", GLOB_BRACE);
+    if (!is_array($pattern)) {
+        return glob("$path/$pattern");
     }
 
-    return glob("$path/$pattern");
+    $extensions = implode(',', $pattern);
+    return glob("$path/*.{{$extensions}}", GLOB_BRACE);
 }
 
 /**
@@ -122,14 +122,14 @@ function gplcart_file_unique($file)
 
 /**
  * Writes a CSV file
- * @param string $file An absolute path to the file
- * @param array $data An array of fields to be written
- * @param string $del A field delimiter (one character)
- * @param string $en A field enclosure character (one character)
+ * @param string $file
+ * @param array $data
+ * @param string $del
+ * @param string $en
  * @param integer $limit
  * @return boolean
  */
-function gplcart_file_csv($file, $data, $del = ',', $en = '"', $limit = 0)
+function gplcart_file_csv($file, $data, $del = ",", $en = '"', $limit = 0)
 {
     $handle = fopen($file, 'a+');
 
@@ -144,6 +144,5 @@ function gplcart_file_csv($file, $data, $del = ',', $en = '"', $limit = 0)
 
     $result = fputcsv($handle, $data, $del, $en);
     fclose($handle);
-
     return ($result !== false);
 }

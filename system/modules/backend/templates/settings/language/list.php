@@ -50,13 +50,20 @@
             <ul class="list-inline">
               <?php if ($this->access('language_edit')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>" class="edit">
+                <a href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>">
                   <?php echo mb_strtolower($this->text('Edit')); ?>
                 </a>
               </li>
               <li>
-                <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));" class="refresh">
+                <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));">
                   <?php echo mb_strtolower($this->text('Clear cache')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if($this->access('translation_add') && $this->access('file_upload')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/language/upload-translation/$code"); ?>">
+                  <?php echo mb_strtolower($this->text('Upload translation')); ?>
                 </a>
               </li>
               <?php } ?>

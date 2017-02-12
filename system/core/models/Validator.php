@@ -157,7 +157,7 @@ class Validator extends Model
                 'validate' => array('gplcart\\core\\handlers\\validator\\Editor', 'editor')
             ),
         );
-        
+
         $handlers['export'] = array(
             'handlers' => array(
                 'validate' => array('gplcart\\core\\handlers\\validator\\Export', 'export')
@@ -293,6 +293,12 @@ class Validator extends Model
         $handlers['store'] = array(
             'handlers' => array(
                 'validate' => array('gplcart\\core\\handlers\\validator\\Store', 'store')
+            ),
+        );
+
+        $handlers['translation_upload'] = array(
+            'handlers' => array(
+                'validate' => array('gplcart\\core\\handlers\\validator\\Translation', 'upload')
             ),
         );
 

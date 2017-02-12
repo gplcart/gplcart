@@ -691,7 +691,11 @@ class File extends Model
         $destination = GC_UPLOAD_DIR;
 
         if (!empty($this->path)) {
-            $destination = GC_FILE_DIR . '/' . trim($this->path, '/');
+            if (strpos($this->path, GC_ROOT_DIR) === 0) {
+                $destination = $this->path;
+            } else {
+                $destination = GC_FILE_DIR . '/' . trim($this->path, '/');
+            }
         }
 
         if (!file_exists($destination) && !mkdir($destination, 0644, true)) {

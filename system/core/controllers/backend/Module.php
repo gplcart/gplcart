@@ -195,6 +195,7 @@ class Module extends BackendController
         $this->checkDependenciesListModule($modules);
 
         $this->prepareListModule($modules);
+        
         return $modules;
     }
 
@@ -205,7 +206,6 @@ class Module extends BackendController
      */
     protected function checkDependenciesListModule(array &$modules)
     {
-
         $this->validateDependenciesTrait($modules);
         $modules = $this->graph->build($modules);
     }
@@ -216,7 +216,6 @@ class Module extends BackendController
      */
     protected function prepareListModule(array &$modules)
     {
-
         foreach ($modules as &$module) {
             $module['always_enabled'] = $this->module->isActiveTheme($module['id']);
             $module['type_name'] = $this->text(ucfirst($module['type']));

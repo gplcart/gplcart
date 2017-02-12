@@ -113,6 +113,7 @@ return array(
     'transaction' => 'Transaction: access',
     'transaction_edit' => 'Transaction: edit',
     'transaction_delete' => 'Transaction: delete',
+    'translation_add' => 'Translation: add',
     'trigger' => 'Trigger: access',
     'trigger_add' => 'Trigger: add',
     'trigger_edit' => 'Trigger: edit',
