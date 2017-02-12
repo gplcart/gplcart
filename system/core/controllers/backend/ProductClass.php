@@ -231,12 +231,12 @@ class ProductClass extends BackendController
     protected function validateProductClass()
     {
         $this->setSubmitted('product_class');
-        
+
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_product_class);
-        
+
         $this->validate('product_class');
-        
+
         return !$this->hasErrors('product_class');
     }
 
@@ -410,9 +410,7 @@ class ProductClass extends BackendController
             }
         }
 
-        $options = array('%name' => $this->data_product_class['title']);
-        $message = $this->text('Product class %name has been updated', $options);
-        $this->redirect('', $message, 'success');
+        $this->redirect('', $this->text('Product class has been updated'), 'success');
     }
 
     /**
@@ -420,8 +418,8 @@ class ProductClass extends BackendController
      */
     protected function setTitleFieldsProductClass()
     {
-        $vars = array('%class' => $this->data_product_class['title']);
-        $text = $this->text('Fields of %class', $vars);
+        $vars = array('%name' => $this->data_product_class['title']);
+        $text = $this->text('Fields of %name', $vars);
         $this->setTitle($text);
     }
 
@@ -513,8 +511,8 @@ class ProductClass extends BackendController
      */
     protected function setTitleEditFieldProductClass()
     {
-        $vars = array('%class' => $this->data_product_class['title']);
-        $text = $this->text('Add field to %class', $vars);
+        $vars = array('%name' => $this->data_product_class['title']);
+        $text = $this->text('Add field to %name', $vars);
         $this->setTitle($text);
     }
 
@@ -536,7 +534,7 @@ class ProductClass extends BackendController
         );
 
         $breadcrumbs[] = array(
-            'text' => $this->text('Fields of %s', array('%s' => $this->data_product_class['title'])),
+            'text' => $this->text('Fields of %name', array('%name' => $this->data_product_class['title'])),
             'url' => $this->url("admin/content/product-class/field/{$this->data_product_class['product_class_id']}")
         );
 

@@ -272,7 +272,7 @@ class Install extends Model
         $this->database = $this->config->getDb();
 
         if (empty($this->database)) {
-            return $this->language->text('Unable to connect to the database');
+            return $this->language->text('Could not connect to database');
         }
 
         $this->config->set('intro', 1);

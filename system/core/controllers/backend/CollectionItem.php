@@ -145,7 +145,7 @@ class CollectionItem extends BackendController
         }
 
         $response = array(
-            'success' => $this->text('Collection items have been reordered'));
+            'success' => $this->text('Items have been reordered'));
 
         $this->response->json($response);
     }

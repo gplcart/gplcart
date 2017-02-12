@@ -159,7 +159,7 @@ class FieldValue extends BackendController
         }
 
         $response = array(
-            'success' => $this->text('Field values have been reordered'));
+            'success' => $this->text('Items have been reordered'));
 
         $this->response->json($response);
     }
@@ -207,8 +207,8 @@ class FieldValue extends BackendController
      */
     protected function setTitleListFieldValue()
     {
-        $vars = array('%field' => $this->truncate($this->data_field['title']));
-        $text = $this->text('Values of %field', $vars);
+        $vars = array('%name' => $this->truncate($this->data_field['title']));
+        $text = $this->text('Values of %name', $vars);
         $this->setTitle($text);
     }
 
@@ -341,13 +341,11 @@ class FieldValue extends BackendController
 
         if ($deleted) {
             $url = "admin/content/field/value/{$this->data_field['field_id']}";
-            $options = array('@name' => $this->data_field_value['title']);
-            $message = $this->text('Field value @name has been deleted', $options);
+            $message = $this->text('Field value has been deleted');
             $this->redirect($url, $message, 'success');
         }
 
-        $options = array('@name' => $this->data_field_value['title']);
-        $message = $this->text('Failed to delete field value @name', $options);
+        $message = $this->text('Unable to delete this field value');
         $this->redirect('', $message, 'warning');
     }
 
@@ -375,10 +373,8 @@ class FieldValue extends BackendController
         $submitted = $this->getSubmitted();
         $this->field_value->update($this->data_field_value['field_value_id'], $submitted);
 
-        $vars = array('@name' => $this->data_field_value['title']);
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $message = $this->text('Field value @name has been updated', $vars);
-
+        $message = $this->text('Field value has been updated');
         $this->redirect($url, $message, 'success');
     }
 
@@ -445,7 +441,7 @@ class FieldValue extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/content/field/value/{$this->data_field['field_id']}"),
-            'text' => $this->text('Values of %s', array('%s' => $this->data_field['title']))
+            'text' => $this->text('Values of %name', array('%name' => $this->data_field['title']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

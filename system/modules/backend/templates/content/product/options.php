@@ -61,7 +61,7 @@
               <td class="field-title">
                 <div class="field<?php echo $this->error("combination.$row.fields.$field_id", ' has-error'); ?>">
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
-                    <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
+                    <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                     <?php foreach ($option['values'] as $value) { ?>
                     <option value="<?php echo $value['field_value_id']; ?>"<?php echo (!empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields'])) ? ' selected' : ''; ?>><?php echo $this->escape($value['title']); ?></option>
                     <?php } ?>
@@ -117,7 +117,7 @@
               <?php foreach ($fields['option'] as $option) { ?>
               <td>
                 <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker">
-                  <option value="" selected disabled><?php echo $this->text('Select'); ?></option>
+                  <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                   <?php foreach ($option['values'] as $value) { ?>
                   <option value="<?php echo $value['field_value_id']; ?>"><?php echo $this->escape($value['title']); ?></option>
                   <?php } ?>

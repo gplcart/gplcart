@@ -179,8 +179,8 @@ class Export extends BackendController
     {
         $submitted = $this->getSubmitted();
 
-        $vars1 = array('@href' => $this->url('', array('download' => 1)), '%count' => $submitted['total']);
-        $finish = $this->text('Exported %count items. <a href="@href">Download</a>', $vars1);
+        $vars1 = array('@href' => $this->url('', array('download' => 1)), '%num' => $submitted['total']);
+        $finish = $this->text('Exported %num items. <a href="@href">Download</a>', $vars1);
 
         $vars2 = array('!url' => $this->url('', array('download_errors' => 1)));
         $redirect = $this->text('Errors: %errors. <a href="!url">See error log</a>', $vars2);
@@ -204,8 +204,8 @@ class Export extends BackendController
      */
     protected function setTitleEditExport()
     {
-        $vars = array('%operation' => $this->data_operation['name']);
-        $text = $this->text('Export %operation', $vars);
+        $vars = array('%name' => $this->data_operation['name']);
+        $text = $this->text('Export %name', $vars);
         $this->setTitle($text);
     }
 

@@ -302,8 +302,8 @@ class Editor extends BackendController
      */
     protected function setTitleEditEditor()
     {
-        $vars = array('%path' => substr($this->data_file, strlen(GC_MODULE_DIR . '/')));
-        $text = $this->text('Edit file %path', $vars);
+        $vars = array('%name' => substr($this->data_file, strlen(GC_MODULE_DIR . '/')));
+        $text = $this->text('Edit file %name', $vars);
         $this->setTitle($text);
     }
 

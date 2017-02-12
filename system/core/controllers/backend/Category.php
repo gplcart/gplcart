@@ -155,7 +155,7 @@ class Category extends BackendController
             $this->category->update($category_id, array('weight' => $weight));
         }
 
-        $message = $this->text('Categories have been reordered');
+        $message = $this->text('Items have been reordered');
         $this->response->json(array('success' => $message));
     }
 
@@ -445,8 +445,8 @@ class Category extends BackendController
      */
     protected function setTitleEditCategory()
     {
-        $vars = array('%group' => $this->data_category_group['title']);
-        $title = $this->text('Add category to %group', $vars);
+        $vars = array('%name' => $this->data_category_group['title']);
+        $title = $this->text('Add category to %name', $vars);
 
         if (isset($this->data_category['category_id'])) {
             $vars = array('%name' => $this->data_category['title']);

@@ -239,7 +239,7 @@ class Cart extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Product has not been added')
+            'message' => $this->language->text('Unable to add this product')
         );
 
         if (empty($product) || empty($data)) {

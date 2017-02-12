@@ -317,14 +317,13 @@ class Store extends BackendController
         $this->controlAccess('store_delete');
 
         $deleted = $this->store->delete($this->data_store['store_id']);
-        $vars = array('%name' => $this->data_store['name']);
 
         if ($deleted) {
-            $message = $this->text('Store %name has been deleted', $vars);
+            $message = $this->text('Store has been deleted');
             $this->redirect('admin/settings/store', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete store %name', $vars);
+        $message = $this->text('Unable to delete this store');
         $this->redirect('', $message, 'danger');
     }
 
@@ -338,9 +337,7 @@ class Store extends BackendController
         $submitted = $this->getSubmitted();
         $this->store->update($this->data_store['store_id'], $submitted);
 
-        $vars = array('%name' => $this->data_store['name']);
-        $message = $this->text('Store %name has been updated', $vars);
-
+        $message = $this->text('Store has been updated');
         $this->redirect('admin/settings/store', $message, 'success');
     }
 

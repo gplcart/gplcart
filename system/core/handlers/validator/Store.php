@@ -145,8 +145,8 @@ class Store extends BaseValidator
         $existing = $this->store->get($value);
 
         if (!empty($existing)) {
-            $vars = array('@object' => $this->language->text('Domain'));
-            $error = $this->language->text('@object already exists', $vars);
+            $vars = array('@name' => $this->language->text('Domain'));
+            $error = $this->language->text('@name already exists', $vars);
             $this->setError('domain', $error);
             return false;
         }
@@ -201,8 +201,8 @@ class Store extends BaseValidator
             }
 
             if ($data['domain'] === $domain && $data['basepath'] === $value) {
-                $vars = array('@object' => $this->language->text('Base path'));
-                $error = $this->language->text('@object already exists', $vars);
+                $vars = array('@name' => $this->language->text('Base path'));
+                $error = $this->language->text('@name already exists', $vars);
                 $this->setError('basepath', $error);
                 return false;
             }

@@ -449,8 +449,8 @@ class Product extends BaseValidator
         $existing = $this->sku->get($value, $store_id, $product_id);
 
         if (!empty($existing)) {
-            $vars = array('@object' => $this->language->text('SKU'));
-            $error = $this->language->text('@object already exists', $vars);
+            $vars = array('@name' => $this->language->text('SKU'));
+            $error = $this->language->text('@name already exists', $vars);
             $this->setError('sku', $error);
             return false;
         }

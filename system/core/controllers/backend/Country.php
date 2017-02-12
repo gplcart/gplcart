@@ -126,7 +126,7 @@ class Country extends BackendController
             $this->country->update($code, array('weight' => $weight));
         }
 
-        $response = array('success' => $this->text('Countries have been reordered'));
+        $response = array('success' => $this->text('Items have been reordered'));
         $this->response->json($response);
     }
 
@@ -294,7 +294,7 @@ class Country extends BackendController
             $this->redirect('admin/settings/country', $message, 'success');
         }
 
-        $message = $this->text('Cannot delete this country');
+        $message = $this->text('Unable to delete this country');
         $this->redirect('', $message, 'danger');
     }
 
@@ -431,8 +431,8 @@ class Country extends BackendController
      */
     protected function setTitleFormatCountry()
     {
-        $vars = array('%country' => $this->data_country['name']);
-        $text = $this->text('Address format of %country', $vars);
+        $vars = array('%name' => $this->data_country['name']);
+        $text = $this->text('Address format of %name', $vars);
         $this->setTitle($text);
     }
 

@@ -299,8 +299,8 @@ class Checkout extends FrontendController
                 $text = $this->text('Cloning order #@num', $vars);
                 break;
             case 'add':
-                $vars = array('@name' => $this->data_user['name']);
-                $text = $this->text('Add order for user @name', $vars);
+                $vars = array('%name' => $this->data_user['name']);
+                $text = $this->text('Add order for user %name', $vars);
                 break;
         }
 

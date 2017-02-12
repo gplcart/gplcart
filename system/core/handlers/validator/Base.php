@@ -501,8 +501,8 @@ class Base
         }
 
         if ($this->alias->exists($alias)) {
-            $vars = array('@object' => $this->language->text('Alias'));
-            $error = $this->language->text('@object already exists', $vars);
+            $vars = array('@name' => $this->language->text('Alias'));
+            $error = $this->language->text('@name already exists', $vars);
             $this->setError('alias', $error);
             return false;
         }

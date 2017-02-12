@@ -178,8 +178,8 @@ class State extends BackendController
      */
     protected function setTitleListState()
     {
-        $vars = array('%country' => $this->data_country['name']);
-        $text = $this->text('States of %country', $vars);
+        $vars = array('%name' => $this->data_country['name']);
+        $text = $this->text('Country states of %name', $vars);
         $this->setTitle($text);
     }
 
@@ -306,7 +306,7 @@ class State extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_state);
         $this->setSubmitted('country', $this->data_country['code']);
-        
+
         $this->validate('state');
 
         return !$this->hasErrors('state');
@@ -365,12 +365,12 @@ class State extends BackendController
      */
     protected function setTitleEditState()
     {
-        $vars = array('%country' => $this->data_country['name']);
-        $title = $this->text('Add state for %country', $vars);
+        $vars = array('%name' => $this->data_country['name']);
+        $title = $this->text('Add country state for %name', $vars);
 
         if (isset($this->data_state['state_id'])) {
             $vars = array('%name' => $this->data_state['name']);
-            $title = $this->text('Edit state %name', $vars);
+            $title = $this->text('Edit country state %name', $vars);
         }
 
         $this->setTitle($title);
@@ -395,9 +395,7 @@ class State extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('States of %country', array(
-                '%country' => $this->data_country['code']
-            ))
+            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['code']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

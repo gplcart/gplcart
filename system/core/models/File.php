@@ -294,7 +294,7 @@ class File extends Model
         }
 
         if (isset($this->handler['filesize']) && filesize($path) > $this->handler['filesize']) {
-            return $this->language->text('File size exceeds %s bytes', array('%s' => $this->handler['filesize']));
+            return $this->language->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize']));
         }
 
         $result = $this->validator->run($this->handler['validator'], $path, $this->handler);
@@ -695,7 +695,7 @@ class File extends Model
         }
 
         if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
-            return $this->language->text('Unable to create upload directory !name', array('!name' => $destination));
+            return $this->language->text('Unable to create upload directory @name', array('@name' => $destination));
         }
 
         $rand = gplcart_string_random(6);
@@ -705,8 +705,8 @@ class File extends Model
         unlink($tempname);
 
         if (!$copied) {
-            return $this->language->text('Unable to move file !name to !dest', array(
-                        '!name' => $tempname, '!dest' => $destination));
+            $vars = array('@source' => $tempname, '@destination' => $destination);
+            return $this->language->text('Unable to move @source to @destination', $vars);
         }
 
         if (strpos($destination, GC_PRIVATE_DIR) !== false) {

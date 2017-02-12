@@ -278,8 +278,8 @@ class Currency extends BaseValidator
             return true;
         }
 
-        $vars = array('@object' => $this->language->text('Numeric code'));
-        $error = $this->language->text('@object already exists', $vars);
+        $vars = array('@name' => $this->language->text('Numeric code'));
+        $error = $this->language->text('@name already exists', $vars);
         $this->setError('numeric_code', $error);
         return false;
     }
@@ -319,8 +319,8 @@ class Currency extends BaseValidator
         $existing = $this->currency->get($code);
 
         if (!empty($existing)) {
-            $vars = array('@object' => $this->language->text('Code'));
-            $error = $this->language->text('@object already exists', $vars);
+            $vars = array('@name' => $this->language->text('Code'));
+            $error = $this->language->text('@name already exists', $vars);
             $this->setError('code', $error);
             return false;
         }

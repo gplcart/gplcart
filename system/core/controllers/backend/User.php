@@ -311,9 +311,7 @@ class User extends BackendController
         $values = $this->getSubmitted();
         $this->user->update($this->data_user['user_id'], $values);
 
-        $vars = array('%name' => $this->data_user['name']);
-        $message = $this->text('User %name has been updated', $vars);
-
+        $message = $this->text('User has been updated');
         $this->redirect('admin/user/list', $message, 'success');
     }
 
@@ -337,7 +335,7 @@ class User extends BackendController
         $title = $this->text('Add user');
 
         if (isset($this->data_user['name'])) {
-            $title = $this->text('Edit %user', array('%user' => $this->data_user['name']));
+            $title = $this->text('Edit user %name', array('%name' => $this->data_user['name']));
         }
 
         $this->setTitle($title);

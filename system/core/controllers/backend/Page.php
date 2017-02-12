@@ -364,8 +364,8 @@ class Page extends BackendController
         $title = $this->text('Add page');
 
         if (isset($this->data_page['page_id'])) {
-            $vars = array('%title' => $this->data_page['title']);
-            $title = $this->text('Edit page %title', $vars);
+            $vars = array('%name' => $this->data_page['title']);
+            $title = $this->text('Edit page %name', $vars);
         }
 
         $this->setTitle($title);

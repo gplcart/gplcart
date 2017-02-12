@@ -301,8 +301,8 @@ class Report extends Model
             return true;
         }
 
-        $vars = array('%s' => $file, '%perm' => $permissions);
-        return $this->language->text('File %s is not secure. The file permissions must be %perm', $vars);
+        $vars = array('%name' => $file, '%perm' => $permissions);
+        return $this->language->text('File %name is not secure. The file permissions must be %perm', $vars);
     }
 
 }

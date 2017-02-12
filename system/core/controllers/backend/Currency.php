@@ -187,12 +187,11 @@ class Currency extends BackendController
         $deleted = $this->currency->delete($this->data_currency['code']);
 
         if ($deleted) {
-            $vars = array('%code' => $this->data_currency['code']);
-            $message = $this->text('Currency %code has been deleted', $vars);
+            $message = $this->text('Currency has been deleted');
             $this->redirect('admin/settings/currency', $message, 'success');
         }
 
-        $message = $this->text('Cannot delete this currency');
+        $message = $this->text('Unable to delete this currency');
         $this->redirect('', $message, 'danger');
     }
 
@@ -202,12 +201,9 @@ class Currency extends BackendController
     protected function updateCurrency()
     {
         $this->controlAccess('currency_edit');
-
         $this->currency->update($this->data_currency['code'], $this->getSubmitted());
-
-        $vars = array('%code' => $this->data_currency['code']);
-        $message = $this->text('Currency %code has been updated', $vars);
-
+        
+        $message = $this->text('Currency has been updated');
         $this->redirect('admin/settings/currency', $message, 'success');
     }
 

@@ -147,8 +147,8 @@ class Base
                 $this->job['total'] : $this->job['context']['offset'];
         $this->job['errors'] += $this->countErrors();
 
-        $vars = array('@last' => $this->job['context']['line']);
-        $this->job['message']['process'] = $this->language->text('Last processed line: @last', $vars);
+        $vars = array('@num' => $this->job['context']['line']);
+        $this->job['message']['process'] = $this->language->text('Last processed line: @num', $vars);
     }
 
     /**
@@ -311,8 +311,8 @@ class Base
         $fullpath = GC_FILE_DIR . "/$path";
 
         if (!file_exists($fullpath)) {
-            $vars = array('@path' => $path);
-            $error = $this->language->text('File @path does not exist', $vars);
+            $vars = array('@name' => $path);
+            $error = $this->language->text('@name is unavailable', $vars);
             $this->setError($error);
             return false;
         }

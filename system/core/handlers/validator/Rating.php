@@ -119,7 +119,7 @@ class Rating extends BaseValidator
         }
 
         if ((float) $value > 5) {
-            $error = $this->language->text('Rating must not be greater than @max', array('@max' => 5));
+            $error = $this->language->text('Rating must not be greater than @num', array('@num' => 5));
             $this->setError('rating', $error);
             return false;
         }

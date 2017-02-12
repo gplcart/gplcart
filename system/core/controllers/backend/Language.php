@@ -237,10 +237,7 @@ class Language extends BackendController
         $this->controlAccess('language_edit');
 
         $this->language->refresh($code);
-
-        $vars = array('@code' => $code);
-        $message = $this->text('Cache for language @code has been deleted', $vars);
-        $this->redirect('', $message, 'success');
+        $this->redirect('', $this->text('Cache has been deleted'), 'success');
     }
 
     /**

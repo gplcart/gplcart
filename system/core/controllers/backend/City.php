@@ -218,8 +218,8 @@ class City extends BackendController
      */
     protected function setTitleListCity()
     {
-        $vars = array('%state' => $this->data_state['name']);
-        $text = $this->text('Cities of state %state', $vars);
+        $vars = array('%name' => $this->data_state['name']);
+        $text = $this->text('Cities of state %name', $vars);
         $this->setTitle($text);
     }
 
@@ -242,7 +242,7 @@ class City extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('States of %country', array('%country' => $this->data_country['name']))
+            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -371,17 +371,12 @@ class City extends BackendController
         $deleted = $this->city->delete($this->data_city['city_id']);
 
         if ($deleted) {
-
             $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-            $vars = array('%name' => $this->data_city['name']);
-            $message = $this->text('City %name has been deleted', $vars);
-
+            $message = $this->text('City has been deleted');
             $this->redirect($url, $message, 'success');
         }
 
-        $vars = array('%name' => $this->data_city['name']);
-        $message = $this->text('Cannot delete city %name.', $vars);
-
+        $message = $this->text('Unable to delete this city');
         $this->redirect('', $message, 'warning');
     }
 
@@ -391,12 +386,10 @@ class City extends BackendController
     protected function updateCity()
     {
         $this->controlAccess('city_edit');
-
         $this->city->update($this->data_city['city_id'], $this->getSubmitted());
 
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-        $vars = array('%name' => $this->data_city['name']);
-        $message = $this->text('City %name has been updated', $vars);
+        $message = $this->text('City has been updated');
 
         $this->redirect($url, $message, 'success');
     }
@@ -450,12 +443,12 @@ class City extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('States of %country', array('%country' => $this->data_country['name']))
+            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['name']))
         );
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}"),
-            'text' => $this->text('Cities of state %state', array('%state' => $this->data_state['name']))
+            'text' => $this->text('Cities of state %name', array('%name' => $this->data_state['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

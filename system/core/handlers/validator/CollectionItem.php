@@ -184,8 +184,8 @@ class CollectionItem extends BaseValidator
         $collection_item = $this->collection_item->getList($conditions);
 
         if (!empty($collection_item)) {
-            $vars = array('@object' => $this->language->text('Value'));
-            $error = $this->language->text('@object already exists', $vars);
+            $vars = array('@name' => $this->language->text('Value'));
+            $error = $this->language->text('@name already exists', $vars);
             $this->setError('value', $error);
             return false;
         }

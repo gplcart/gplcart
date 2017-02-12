@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use gplcart\core\exceptions\UserAccessException;
+
 /**
  * Basic CLI controller
  */
@@ -159,8 +161,7 @@ class CliController
         }
 
         if (!$this->config->tokenValid($this->request->post('cli_token'))) {
-            $this->setError($this->text('Invalid CLI token'));
-            $this->output();
+            throw new UserAccessException('Invalid token');
         }
 
         if (!$this->user->access('cli')) {

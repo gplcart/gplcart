@@ -155,8 +155,7 @@ class Order extends BackendController
             $this->redirect('admin/sale/order', $message, 'success');
         }
 
-        $message = $this->text('Order has not been deleted');
-        $this->redirect('', $message, 'warning');
+        $this->redirect('', $this->text('Unable to delete this order'), 'warning');
     }
 
     /**
@@ -538,8 +537,8 @@ class Order extends BackendController
         }
 
         if (!empty($failed_notifications)) {
-            $vars = array('@id' => implode(',', $failed_notifications));
-            $message = $this->text('Failed to notify customers in orders: @id', $vars);
+            $vars = array('@list' => implode(',', $failed_notifications));
+            $message = $this->text('Failed to notify customers in orders: @list', $vars);
             $this->setMessage($message, 'warning', true);
         }
 

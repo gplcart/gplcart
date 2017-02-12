@@ -335,7 +335,7 @@ class File extends BackendController
         $title = $this->text('Add file');
 
         if (isset($this->data_file['file_id'])) {
-            $title = $this->text('Edit file %title', array('%title' => $this->data_file['title']));
+            $title = $this->text('Edit file %name', array('%name' => $this->data_file['title']));
         }
 
         $this->setTitle($title);

@@ -268,8 +268,8 @@ class PriceRule extends BaseValidator
         foreach ((array) $rules as $rule) {
 
             if ($rule['code'] === $code) {
-                $vars = array('@object' => $this->language->text('Code'));
-                $error = $this->language->text('@object already exists', $vars);
+                $vars = array('@name' => $this->language->text('Code'));
+                $error = $this->language->text('@name already exists', $vars);
                 $this->setError('code', $error);
                 return false;
             }

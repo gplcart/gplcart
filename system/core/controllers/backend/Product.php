@@ -563,8 +563,8 @@ class Product extends BackendController
         $title = $this->text('Add product');
 
         if (isset($this->data_product['product_id'])) {
-            $vars = array('%title' => $this->data_product['title']);
-            $title = $this->text('Edit %title', $vars);
+            $vars = array('%name' => $this->data_product['title']);
+            $title = $this->text('Edit product %name', $vars);
         }
 
         $this->setTitle($title);

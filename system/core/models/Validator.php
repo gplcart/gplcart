@@ -64,7 +64,7 @@ class Validator extends Model
         }
 
         if (empty($result)) {
-            return $this->language->text('Failed to pass validation');
+            return $this->language->text('Failed validation');
         }
 
         return $result;

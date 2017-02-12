@@ -96,8 +96,8 @@ class Review extends FrontendController
      */
     protected function setTitleEditReview()
     {
-        $vars = array('%product' => $this->data_product['title']);
-        $text = $this->text('Review of %product', $vars);
+        $vars = array('%name' => $this->data_product['title']);
+        $text = $this->text('Review of %name', $vars);
         $this->setTitle($text, false);
     }
 
@@ -216,10 +216,10 @@ class Review extends FrontendController
             $this->redirect("product/{$this->data_product['product_id']}");
         }
 
-        $message = $this->text('Your review has been updated');
+        $message = $this->text('Review has been updated');
 
         if (empty($submitted['status'])) {
-            $message = $this->text('Your review has been updated and will be visible after approval');
+            $message = $this->text('Review has been updated and will be visible after approval');
         }
 
         $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
@@ -234,14 +234,14 @@ class Review extends FrontendController
         $added = $this->review->add($submitted);
 
         if (empty($added)) {
-            $message = $this->text('Your review has not been added');
+            $message = $this->text('Review has not been added');
             $this->redirect('', $message, 'warning');
         }
 
-        $message = $this->text('Your review has been added');
+        $message = $this->text('Review has been added');
 
         if (empty($submitted['status'])) {
-            $message = $this->text('Your review has been added and will be visible after approval');
+            $message = $this->text('Review has been added and will be visible after approval');
         }
 
         $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
@@ -263,14 +263,14 @@ class Review extends FrontendController
     protected function deleteReview()
     {
         if (!$this->canDeleteReview()) {
-            $message = $this->text('Your review has not been deleted');
+            $message = $this->text('Unable to delete this review');
             $this->redirect("product/{$this->data_product['product_id']}", $message, 'warning');
         }
 
         $deleted = $this->review->delete($this->data_review['review_id']);
 
         if ($deleted) {
-            $message = $this->text('Your review has been deleted');
+            $message = $this->text('Review has been deleted');
             $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
         }
     }

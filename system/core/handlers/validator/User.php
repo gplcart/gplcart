@@ -173,8 +173,8 @@ class User extends BaseValidator
             return true;
         }
 
-        $vars = array('@object' => $this->language->text('E-mail'));
-        $error = $this->language->text('@object already exists', $vars);
+        $vars = array('@name' => $this->language->text('E-mail'));
+        $error = $this->language->text('@name already exists', $vars);
         $this->setError('email', $error);
         return false;
     }

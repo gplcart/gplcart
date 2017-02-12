@@ -88,7 +88,7 @@ class Compare extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Product has not been added to comparison')
+            'message' => $this->language->text('Unable to add this product')
         );
 
         if (empty($product)) {
@@ -128,7 +128,7 @@ class Compare extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Product has not been removed from comparison')
+            'message' => $this->language->text('Unable to remove this product from comparison')
         );
 
         if (empty($product_id)) {
@@ -143,7 +143,7 @@ class Compare extends Model
                 'redirect' => '',
                 'severity' => 'success',
                 'quantity' => $existing,
-                'message' => $this->language->text('Product has been deleted from comparison')
+                'message' => $this->language->text('Product has been removed from comparison')
             );
         }
 

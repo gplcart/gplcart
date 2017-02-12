@@ -27,7 +27,7 @@
             <img src="<?php echo $this->escape($image['thumb']); ?>" class="img-responsive">
           </div>
           <div class="col-md-8 small image-info">
-            <?php echo $this->text('Path: %s', array('%s' => $image['path'])); ?>
+            <?php echo $this->escape($image['path']); ?>
           </div>
         </div>
         <?php $languages = $this->prop('languages'); ?>

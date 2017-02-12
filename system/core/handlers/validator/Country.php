@@ -189,8 +189,8 @@ class Country extends BaseValidator
         $existing = $this->country->get($code);
 
         if (!empty($existing['code'])) {
-            $vars = array('@object' => $this->language->text('Code'));
-            $error = $this->language->text('@object already exists', $vars);
+            $vars = array('@name' => $this->language->text('Code'));
+            $error = $this->language->text('@name already exists', $vars);
             $this->setError('code', $error);
             return false;
         }

@@ -105,7 +105,7 @@ class Wishlist extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Product has not been added to your wishlist')
+            'message' => $this->language->text('Unable to add this product')
         );
 
         if (empty($data)) {
@@ -115,13 +115,13 @@ class Wishlist extends Model
         $href = $this->url->get('wishlist');
 
         if ($this->exists($data)) {
-            $result['message'] = $this->language->text('Product already exists in your <a href="!href">wishlist</a>', array('!href' => $href));
+            $result['message'] = $this->language->text('Product already in your <a href="!href">wishlist</a>', array('!href' => $href));
             return $result;
         }
 
         if (!$this->canAdd($data['user_id'], $data['store_id'])) {
-            $vars = array('%limit' => $this->getLimits($data['user_id']));
-            $result['message'] = $this->language->text('You\'re exceeding %limit items', $vars);
+            $vars = array('%num' => $this->getLimits($data['user_id']));
+            $result['message'] = $this->language->text('You\'re exceeding %num items', $vars);
             return $result;
         }
 
@@ -160,7 +160,7 @@ class Wishlist extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Product has not been deleted from wishlist')
+            'message' => $this->language->text('Unable to delete this product')
         );
 
         if (empty($data)) {

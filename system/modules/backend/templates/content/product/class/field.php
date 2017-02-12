@@ -44,7 +44,7 @@
   </div> 
 </form>
 <?php } else { ?>
-<?php echo $this->text('No fields to add to %class.', array('%class' => $product_class['title'])); ?>
+<?php echo $this->text('No fields to add to %name', array('%name' => $product_class['title'])); ?>
 <?php if($this->access('field_add')) { ?>
 <?php echo $this->text('You can add one or more fields <a href="@href">here</a>', array('@href' => $this->url('admin/content/field/add'))); ?>
 <?php } ?>

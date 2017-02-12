@@ -171,8 +171,8 @@ class Settings extends BackendController
      */
     protected function setTitleEditSettings()
     {
-        $vars = array('%module' => $this->text('Frontend'));
-        $title = $this->text('Edit %module settings', $vars);
+        $vars = array('%name' => $this->text('Frontend'));
+        $title = $this->text('Edit %name settings', $vars);
         $this->setTitle($title);
     }
 
