@@ -59,6 +59,7 @@ class Editor extends Model
             $list[$folder] = $files;
         }
 
+        $this->hook->fire('editor.list', $list);
         return $list;
     }
 
@@ -69,13 +70,14 @@ class Editor extends Model
      */
     public function save($data)
     {
-        $this->hook->fire('save.editor.before', $data);
+        $this->hook->fire('editor.save.before', $data);
 
         if (empty($data)) {
             return false;
         }
 
         $has_backup = true;
+
         if (!$this->hasBackup($data['module'])) {
             $has_backup = $this->backup($data);
         }
@@ -86,7 +88,7 @@ class Editor extends Model
 
         $result = $this->write($data['content'], $data['path']);
 
-        $this->hook->fire('save.editor.after', $data, $result);
+        $this->hook->fire('editor.save.after', $data, $result);
         return $result;
     }
 
@@ -102,8 +104,7 @@ class Editor extends Model
             return false; // Do not create a new file
         }
 
-        $result = file_put_contents($file, $content);
-        return ($result !== false);
+        return file_put_contents($file, $content) !== false;
     }
 
     /**
@@ -135,8 +136,6 @@ class Editor extends Model
         );
 
         $result = $this->backup->backup('module', $backup);
-
-        // On success the result must contain a numeric ID of inserted database record
         return is_numeric($result);
     }
 

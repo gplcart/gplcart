@@ -112,7 +112,7 @@ class Transaction extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.transaction.before', $data);
+        $this->hook->fire('transaction.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -121,7 +121,7 @@ class Transaction extends Model
         $data += array('created' => GC_TIME);
         $data['transaction_id'] = $this->db->insert('transaction', $data);
 
-        $this->hook->fire('add.transaction.after', $data);
+        $this->hook->fire('transaction.add.after', $data);
 
         return $data['transaction_id'];
     }
@@ -133,10 +133,14 @@ class Transaction extends Model
      */
     public function get($transaction_id)
     {
-        $sql = 'SELECT * FROM transaction WHERE transaction_id=?';
+        $this->hook->fire('transaction.get.before', $transaction_id);
 
         $options = array('unserialize' => 'data');
-        return $this->db->fetch($sql, array($transaction_id), $options);
+        $sql = 'SELECT * FROM transaction WHERE transaction_id=?';
+        $transaction = $this->db->fetch($sql, array($transaction_id), $options);
+
+        $this->hook->fire('transaction.get.after', $transaction_id, $transaction);
+        return $transaction;
     }
 
     /**
@@ -146,7 +150,7 @@ class Transaction extends Model
      */
     public function delete($transaction_id)
     {
-        $this->hook->fire('delete.transaction.before', $transaction_id);
+        $this->hook->fire('transaction.delete.before', $transaction_id);
 
         if (empty($transaction_id)) {
             return false;
@@ -155,7 +159,7 @@ class Transaction extends Model
         $conditions = array('transaction_id' => $transaction_id);
         $result = $this->db->delete('transaction', $conditions);
 
-        $this->hook->fire('delete.transaction.after', $transaction_id, $result);
+        $this->hook->fire('transaction.delete.after', $transaction_id, $result);
         return (bool) $result;
     }
 
@@ -167,7 +171,7 @@ class Transaction extends Model
      */
     public function update($transaction_id, array $data)
     {
-        $this->hook->fire('update.transaction.before', $transaction_id, $data);
+        $this->hook->fire('transaction.update.before', $transaction_id, $data);
 
         if (empty($transaction_id)) {
             return false;
@@ -176,7 +180,7 @@ class Transaction extends Model
         $conditions = array('transaction_id' => $transaction_id);
         $result = $this->db->update('transaction', $data, $conditions);
 
-        $this->hook->fire('update.transaction.after', $transaction_id, $data, $result);
+        $this->hook->fire('transaction.update.after', $transaction_id, $data, $result);
         return (bool) $result;
     }
 
@@ -201,7 +205,7 @@ class Transaction extends Model
 
         $result = array('redirect' => '/', 'message' => '', 'severity' => '');
 
-        $this->hook->fire('remote.transaction', $order, $request, $result);
+        $this->hook->fire('transaction.remote', $order, $request, $result);
 
         if (empty($result['remote_transaction_id'])) {
             return $error;

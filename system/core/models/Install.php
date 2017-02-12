@@ -75,7 +75,7 @@ class Install extends Model
     public function getList()
     {
         $installers = array();
-        $this->hook->fire('installer', $installers, $this);
+        $this->hook->fire('installers', $installers, $this);
 
         // Default installer definition goes after the hook 
         // to prevent changing form a module

@@ -380,7 +380,7 @@ class Controller
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
-        $this->hook->fire('init', $this);
+        $this->hook->fire('controller.construct', $this);
     }
 
     /**
@@ -696,7 +696,7 @@ class Controller
 
         $template = $this->getTemplateFile($file, $fullpath);
 
-        $this->hook->fire('render', $template, $data, $this);
+        $this->hook->fire('template.render', $template, $data, $this);
 
         if (empty($template)) {
             return $this->text('Could not load template %path', array('%path' => $template));
@@ -1389,7 +1389,7 @@ class Controller
             $templates = array('region_content' => $templates);
         }
 
-        $this->hook->fire('output', $this->data, $this);
+        $this->hook->fire('template.output', $this->data, $this);
 
         $this->prepareOutput();
 

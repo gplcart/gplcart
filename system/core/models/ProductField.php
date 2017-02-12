@@ -32,7 +32,7 @@ class ProductField extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.product.field.before', $data);
+        $this->hook->fire('product.field.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -40,7 +40,7 @@ class ProductField extends Model
 
         $data['product_field_id'] = $this->db->insert('product_field', $data);
 
-        $this->hook->fire('add.product.field.after', $data);
+        $this->hook->fire('product.field.add.after', $data);
         return $data['product_field_id'];
     }
 
@@ -52,8 +52,13 @@ class ProductField extends Model
      */
     public function delete($type, $product_id)
     {
+        $this->hook->fire('product.field.delete.before', $type, $product_id);
+
         $conditions = array('type' => $type, 'product_id' => $product_id);
-        return (bool) $this->db->delete('product_field', $conditions);
+        $result = (bool) $this->db->delete('product_field', $conditions);
+
+        $this->hook->fire('product.field.delete.after', $type, $product_id, $result);
+        return $result;
     }
 
     /**
@@ -71,6 +76,7 @@ class ProductField extends Model
             $list[$field['type']][$field['field_id']][] = $field['field_value_id'];
         }
 
+        $this->hook->fire('product.field.list', $prodict_id, $list);
         return $list;
     }
 

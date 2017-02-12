@@ -88,7 +88,7 @@ class Field extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.field.before', $data);
+        $this->hook->fire('field.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -98,7 +98,7 @@ class Field extends Model
 
         $this->setTranslationTrait($this->db, $data, 'field', false);
 
-        $this->hook->fire('add.field.after', $data);
+        $this->hook->fire('field.add.after', $data);
         return $data['field_id'];
     }
 
@@ -164,7 +164,7 @@ class Field extends Model
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'field_id'));
-        $this->hook->fire('get.field.list', $list);
+        $this->hook->fire('field.list', $list);
 
         return $list;
     }
@@ -177,14 +177,14 @@ class Field extends Model
      */
     public function get($field_id, $language = null)
     {
-        $this->hook->fire('get.field.before', $field_id, $language);
+        $this->hook->fire('field.get.before', $field_id, $language);
 
         $sql = 'SELECT * FROM field WHERE field_id=?';
         $field = $this->db->fetch($sql, array($field_id));
 
         $this->attachTranslationTrait($this->db, $field, 'field', $language);
 
-        $this->hook->fire('get.field.after', $field_id, $language, $field);
+        $this->hook->fire('field.get.after', $field_id, $language, $field);
         return $field;
     }
 
@@ -195,7 +195,7 @@ class Field extends Model
      */
     public function delete($field_id)
     {
-        $this->hook->fire('delete.field.before', $field_id);
+        $this->hook->fire('field.delete.before', $field_id);
 
         if (empty($field_id)) {
             return false;
@@ -225,7 +225,7 @@ class Field extends Model
             $this->db->delete('product_class_field', $conditions);
         }
 
-        $this->hook->fire('delete.field.after', $field_id, $result);
+        $this->hook->fire('field.delete.after', $field_id, $result);
         return (bool) $result;
     }
 
@@ -250,7 +250,7 @@ class Field extends Model
      */
     public function update($field_id, array $data)
     {
-        $this->hook->fire('update.field.before', $field_id, $data);
+        $this->hook->fire('field.update.before', $field_id, $data);
 
         if (empty($field_id)) {
             return false;
@@ -264,7 +264,7 @@ class Field extends Model
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'field');
         $result = ($updated > 0);
 
-        $this->hook->fire('update.field.after', $field_id, $data, $result);
+        $this->hook->fire('field.update.after', $field_id, $data, $result);
         return (bool) $result;
     }
 

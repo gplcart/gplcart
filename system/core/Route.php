@@ -101,7 +101,7 @@ class Route
 
         $routes = include GC_CONFIG_ROUTE;
 
-        $this->hook->fire('route', $routes);
+        $this->hook->fire('route.list', $routes);
         return $routes;
     }
 

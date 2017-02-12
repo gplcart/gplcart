@@ -88,7 +88,7 @@ class Sku extends Model
             $sql .= ' AND combination_id=?';
             $where[] = $data['combination_id'];
         }
-        
+
         if (isset($data['status'])) {
             $sql .= ' AND status=?';
             $where[] = (int) $data['status'];
@@ -126,7 +126,7 @@ class Sku extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.sku.before', $data);
+        $this->hook->fire('sku.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -134,7 +134,7 @@ class Sku extends Model
 
         $data['product_sku_id'] = $this->db->insert('product_sku', $data);
 
-        $this->hook->fire('add.sku.after', $data);
+        $this->hook->fire('sku.add.after', $data);
         return $data['product_sku_id'];
     }
 
@@ -146,6 +146,12 @@ class Sku extends Model
      */
     public function delete($product_id, array $options = array())
     {
+        $this->hook->fire('sku.delete.before', $product_id, $options);
+
+        if (empty($product_id)) {
+            return false;
+        }
+
         $sql = 'DELETE FROM product_sku WHERE product_id=?';
 
         if (!empty($options['combinations'])) {
@@ -156,7 +162,10 @@ class Sku extends Model
             $sql .= ' AND LENGTH(combination_id) = 0';
         }
 
-        return (bool) $this->db->run($sql, array($product_id))->rowCount();
+        $result = (bool) $this->db->run($sql, array($product_id))->rowCount();
+
+        $this->hook->fire('sku.delete.after', $product_id, $options, $result);
+        return $result;
     }
 
     /**
@@ -226,7 +235,7 @@ class Sku extends Model
      */
     public function selectCombination(array $product, array $field_value_ids)
     {
-        $this->hook->fire('select.sku.combination.before', $product, $field_value_ids);
+        $this->hook->fire('sku.select.combination.before', $product, $field_value_ids);
 
         $access = (!empty($product['stock']) || empty($product['subtract']));
 
@@ -242,7 +251,7 @@ class Sku extends Model
         );
 
         if (empty($field_value_ids)) {
-            $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
+            $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $response);
             return $response;
         }
 
@@ -250,7 +259,7 @@ class Sku extends Model
             $response['severity'] = 'danger';
             $response['message'] = $this->language->text('Unavailable product');
 
-            $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
+            $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $response);
             return $response;
         }
 
@@ -260,12 +269,12 @@ class Sku extends Model
 
             $response['not_matched'] = true;
             $response['cart_access'] = false;
-            
+
             $response['severity'] = 'danger';
             $response['message'] = $this->language->text('Unavailable');
             $response['related'] = $this->getRelatedFieldValues($product, $field_value_ids);
 
-            $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
+            $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $response);
             return $response;
         }
 
@@ -281,7 +290,7 @@ class Sku extends Model
             $response['message'] = $this->language->text('Out of stock');
         }
 
-        $this->hook->fire('select.sku.combination.after', $product, $field_value_ids, $response);
+        $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $response);
         return $response;
     }
 

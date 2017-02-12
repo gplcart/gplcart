@@ -128,7 +128,7 @@ class CollectionItem extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.collection.item.before', $data);
+        $this->hook->fire('collection.item.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -136,7 +136,7 @@ class CollectionItem extends Model
 
         $data['collection_item_id'] = $this->db->insert('collection_item', $data);
 
-        $this->hook->fire('add.collection.item.after', $data);
+        $this->hook->fire('collection.item.add.after', $data);
         return $data['collection_item_id'];
     }
 
@@ -147,7 +147,7 @@ class CollectionItem extends Model
      */
     public function get($id)
     {
-        $this->hook->fire('get.collection.item.before', $id);
+        $this->hook->fire('collection.item.get.before', $id);
 
         $sql = 'SELECT *'
                 . ' FROM collection_item'
@@ -155,7 +155,7 @@ class CollectionItem extends Model
 
         $result = $this->db->fetch($sql, array($id));
 
-        $this->hook->fire('get.collection.item.after', $id, $result);
+        $this->hook->fire('collection.item.get.after', $id, $result);
         return $result;
     }
 
@@ -166,7 +166,7 @@ class CollectionItem extends Model
      */
     public function delete($id)
     {
-        $this->hook->fire('delete.collection.item.before', $id);
+        $this->hook->fire('collection.item.delete.before', $id);
 
         if (empty($id)) {
             return false;
@@ -175,7 +175,7 @@ class CollectionItem extends Model
         $conditions = array('collection_item_id' => $id);
         $result = $this->db->delete('collection_item', $conditions);
 
-        $this->hook->fire('delete.collection.item.after', $id, $result);
+        $this->hook->fire('collection.item.delete.after', $id, $result);
         return (bool) $result;
     }
 
@@ -187,7 +187,7 @@ class CollectionItem extends Model
      */
     public function update($id, array $data)
     {
-        $this->hook->fire('update.collection.item.before', $id, $data);
+        $this->hook->fire('collection.item.update.before', $id, $data);
 
         if (empty($id)) {
             return false;
@@ -196,7 +196,7 @@ class CollectionItem extends Model
         $conditions = array('collection_item_id' => $id);
         $result = $this->db->update('collection_item', $data, $conditions);
 
-        $this->hook->fire('update.collection.item.after', $id, $data, $result);
+        $this->hook->fire('collection.item.update.after', $id, $data, $result);
         return (bool) $result;
     }
 

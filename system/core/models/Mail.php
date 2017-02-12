@@ -136,7 +136,7 @@ class Mail extends Model
     {
         $options += $this->defaultOptions();
 
-        $this->hook->fire('mail.before', $to, $message, $options);
+        $this->hook->fire('mail.send.before', $to, $message, $options);
 
         if (empty($options['from']) || empty($to) || empty($message)) {
             return false; // Allows modules to abort sending
@@ -213,7 +213,7 @@ class Mail extends Model
 
         $this->log(implode(',', $addresses), $options);
 
-        $this->hook->fire('mail.after', $to, $message, $options);
+        $this->hook->fire('mail.send.after', $to, $message, $options);
         return (bool) $options['status'];
     }
 

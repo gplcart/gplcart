@@ -42,7 +42,7 @@ class Address extends Model
      */
     public function get($address_id)
     {
-        $this->hook->fire('get.address.before', $address_id);
+        $this->hook->fire('address.get.before', $address_id);
 
         if (empty($address_id)) {
             $address = array();
@@ -63,7 +63,7 @@ class Address extends Model
         $options = array('unserialize' => array('data', 'country_format'));
         $address = $this->db->fetch($sql, array($address_id), $options);
 
-        $this->hook->fire('get.address.after', $address_id, $address);
+        $this->hook->fire('address.get.after', $address_id, $address);
         return $address;
     }
 
@@ -74,7 +74,7 @@ class Address extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.address.before', $data);
+        $this->hook->fire('address.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -83,7 +83,7 @@ class Address extends Model
         $data['created'] = GC_TIME;
         $data['address_id'] = $this->db->insert('address', $data);
 
-        $this->hook->fire('add.address.after', $data);
+        $this->hook->fire('address.add.after', $data);
         return $data['address_id'];
     }
 
@@ -141,7 +141,7 @@ class Address extends Model
 
         $list = $this->prepareList($results, $data);
 
-        $this->hook->fire('addresses', $data, $list);
+        $this->hook->fire('address.list', $data, $list);
         return $list;
     }
 
@@ -248,7 +248,7 @@ class Address extends Model
             }
         }
 
-        $this->hook->fire('geocode.address', $data, $fields, $components);
+        $this->hook->fire('address.geocode', $data, $fields, $components);
         return implode(',', $components);
     }
 
@@ -320,7 +320,7 @@ class Address extends Model
      */
     public function delete($address_id)
     {
-        $this->hook->fire('delete.address.before', $address_id);
+        $this->hook->fire('address.delete.before', $address_id);
 
         if (empty($address_id)) {
             return false;
@@ -332,7 +332,7 @@ class Address extends Model
 
         $conditions = array('address_id' => $address_id);
         $result = $this->db->delete('address', $conditions);
-        $this->hook->fire('delete.address.after', $address_id, $result);
+        $this->hook->fire('address.delete.after', $address_id, $result);
 
         return (bool) $result;
     }
@@ -358,7 +358,7 @@ class Address extends Model
      */
     public function update($address_id, array $data)
     {
-        $this->hook->fire('update.address.before', $address_id, $data);
+        $this->hook->fire('address.update.before', $address_id, $data);
 
         if (empty($address_id)) {
             return false;
@@ -367,7 +367,7 @@ class Address extends Model
         $conditions = array('address_id' => $address_id);
         $result = $this->db->update('address', $data, $conditions);
 
-        $this->hook->fire('update.address.after', $address_id, $data, $result);
+        $this->hook->fire('address.update.after', $address_id, $data, $result);
         return (bool) $result;
     }
 

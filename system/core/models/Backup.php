@@ -92,7 +92,7 @@ class Backup extends Model
         }
 
         $results = $this->db->fetchAll($sql, $where, array('index' => 'backup_id'));
-        $this->hook->fire('backups', $results);
+        $this->hook->fire('backup.list', $results);
         return $results;
     }
 
@@ -103,7 +103,7 @@ class Backup extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.backup.before', $data);
+        $this->hook->fire('backup.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -112,7 +112,7 @@ class Backup extends Model
         $data['created'] = GC_TIME;
 
         $id = $this->db->insert('backup', $data);
-        $this->hook->fire('add.backup.after', $data, $id);
+        $this->hook->fire('backup.add.after', $data, $id);
         return $id;
     }
 
@@ -134,7 +134,7 @@ class Backup extends Model
      */
     public function delete($id)
     {
-        $this->hook->fire('delete.backup.before', $id);
+        $this->hook->fire('backup.delete.before', $id);
 
         if (empty($id)) {
             return false;
@@ -149,7 +149,7 @@ class Backup extends Model
         $conditions = array('backup_id' => $id);
         $result = $this->db->delete('backup', $conditions);
 
-        $this->hook->fire('delete.backup.after', $id, $result);
+        $this->hook->fire('backup.delete.after', $id, $result);
         return (bool) $result;
     }
 

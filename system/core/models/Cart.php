@@ -105,6 +105,8 @@ class Cart extends Model
             return $cart;
         }
 
+        $this->hook->fire('cart.get.content.before', $data);
+
         $items = $this->getList($data);
 
         if (empty($items)) {
@@ -134,7 +136,7 @@ class Cart extends Model
         $cart['total'] = $total;
         $cart['quantity'] = $quantity;
 
-        $this->hook->fire('get.cart.after', $data, $cart);
+        $this->hook->fire('cart.get.content.after', $data, $cart);
         return $cart;
     }
 
@@ -203,7 +205,10 @@ class Cart extends Model
         $sql .= ' ORDER BY c.created DESC';
 
         $options = array('unserialize' => 'data', 'index' => 'sku');
-        return $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $where, $options);
+
+        $this->hook->fire('cart.list', $list);
+        return $list;
     }
 
     /**
@@ -229,7 +234,7 @@ class Cart extends Model
      */
     public function addProduct(array $product, array $data)
     {
-        $this->hook->fire('add.product.cart.before', $product, $data);
+        $this->hook->fire('cart.add.product.before', $product, $data);
 
         $result = array(
             'redirect' => '',
@@ -269,7 +274,7 @@ class Cart extends Model
             );
         }
 
-        $this->hook->fire('add.product.cart.after', $product, $data, $result);
+        $this->hook->fire('cart.add.product.after', $product, $data, $result);
         return $result;
     }
 
@@ -333,7 +338,7 @@ class Cart extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.cart.before', $data);
+        $this->hook->fire('cart.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -344,7 +349,7 @@ class Cart extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('add.cart.after', $data);
+        $this->hook->fire('cart.add.after', $data);
         return $data['cart_id'];
     }
 
@@ -356,7 +361,7 @@ class Cart extends Model
      */
     public function update($cart_id, array $data)
     {
-        $this->hook->fire('update.cart.before', $cart_id, $data);
+        $this->hook->fire('cart.update.before', $cart_id, $data);
 
         if (empty($cart_id)) {
             return false;
@@ -367,7 +372,7 @@ class Cart extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('update.cart.after', $cart_id, $data, $result);
+        $this->hook->fire('cart.update.after', $cart_id, $data, $result);
         return (bool) $result;
     }
 
@@ -402,7 +407,11 @@ class Cart extends Model
      */
     public function get($cart_id)
     {
-        return $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
+        $this->hook->fire('cart.get.before', $cart_id);
+        $cart = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
+        $this->hook->fire('cart.get.after', $cart_id, $cart);
+
+        return $cart;
     }
 
     /**
@@ -412,7 +421,7 @@ class Cart extends Model
      */
     public function moveToWishlist(array $data)
     {
-        $this->hook->fire('move.cart.wishlist.before', $data);
+        $this->hook->fire('cart.move.wishlist.before', $data);
 
         $result = array('redirect' => null, 'severity' => '', 'message' => '');
 
@@ -448,7 +457,7 @@ class Cart extends Model
             'wishlist_id' => $data['wishlist_id']
         );
 
-        $this->hook->fire('move.cart.wishlist.after', $data, $result);
+        $this->hook->fire('cart.move.wishlist.after', $data, $result);
         return $result;
     }
 
@@ -499,7 +508,7 @@ class Cart extends Model
      */
     public function delete(array $arguments)
     {
-        $this->hook->fire('delete.cart.before', $arguments);
+        $this->hook->fire('cart.delete.before', $arguments);
 
         if (empty($arguments)) {
             return false;
@@ -523,7 +532,7 @@ class Cart extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('delete.cart.after', $arguments, $result);
+        $this->hook->fire('cart.delete.after', $arguments, $result);
         return (bool) $result;
     }
 

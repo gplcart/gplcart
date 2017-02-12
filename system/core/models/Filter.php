@@ -133,7 +133,7 @@ class Filter extends Model
      */
     public function update($filter_id, array $data)
     {
-        $this->hook->fire('update.filter.before', $data);
+        $this->hook->fire('filter.update.before', $data);
 
         if (empty($data)) {
             return false;
@@ -147,7 +147,7 @@ class Filter extends Model
             }
         }
 
-        $this->hook->fire('update.filter.after', $data);
+        $this->hook->fire('filter.update.after', $data);
         return true;
     }
 
@@ -181,7 +181,7 @@ class Filter extends Model
             }
         }
 
-        $this->hook->fire('filters', $filters);
+        $this->hook->fire('filter.list', $filters);
 
         if ($enabled) {
             $filters = array_filter($filters, function ($filter) {

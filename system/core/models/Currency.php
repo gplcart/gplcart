@@ -43,7 +43,7 @@ class Currency extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.currency.before', $data);
+        $this->hook->fire('currency.get.before', $data);
 
         if (empty($data)) {
             return false;
@@ -64,7 +64,7 @@ class Currency extends Model
         $currencies[$data['code']] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
-        $this->hook->fire('add.currency.after', $data);
+        $this->hook->fire('currency.get.after', $data);
         return true;
     }
 
@@ -85,7 +85,7 @@ class Currency extends Model
         $saved = $this->config->get('currencies', array());
         $currencies = gplcart_array_merge($default, $saved);
 
-        $this->hook->fire('currencies', $currencies);
+        $this->hook->fire('currency.list', $currencies);
 
         if (!$enabled) {
             return $currencies;
@@ -106,7 +106,7 @@ class Currency extends Model
      */
     public function update($code, array $data)
     {
-        $this->hook->fire('update.currency.before', $code, $data);
+        $this->hook->fire('currency.update.before', $code, $data);
 
         $currencies = $this->getList();
 
@@ -126,7 +126,7 @@ class Currency extends Model
         $currencies[$code] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
-        $this->hook->fire('update.currency.after', $data);
+        $this->hook->fire('currency.update.after', $data);
         return true;
     }
 
@@ -137,7 +137,7 @@ class Currency extends Model
      */
     public function delete($code)
     {
-        $this->hook->fire('delete.currency.before', $code);
+        $this->hook->fire('currency.delete.before', $code);
 
         $currencies = $this->getList();
 
@@ -148,7 +148,7 @@ class Currency extends Model
         unset($currencies[$code]);
         $this->config->set('currencies', $currencies);
 
-        $this->hook->fire('delete.currency.after', $code);
+        $this->hook->fire('currency.delete.after', $code);
         return true;
     }
 

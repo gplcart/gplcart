@@ -42,7 +42,7 @@ class Controller extends BaseController
 
         $this->processCurrentJob();
 
-        $this->hook->fire('init.backend', $this);
+        $this->hook->fire('controller.backend.construct', $this);
         $this->controlHttpStatus();
     }
 

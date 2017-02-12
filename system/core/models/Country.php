@@ -69,7 +69,7 @@ class Country extends Model
      */
     public function get($code)
     {
-        $this->hook->fire('get.country.before', $code);
+        $this->hook->fire('country.get.before', $code);
 
         $sql = 'SELECT * FROM country WHERE code=?';
         $options = array('unserialize' => 'format');
@@ -81,7 +81,7 @@ class Country extends Model
             gplcart_array_sort($country['format']);
         }
 
-        $this->hook->fire('get.country.after', $code, $country);
+        $this->hook->fire('country.get.after', $code, $country);
         return $country;
     }
 
@@ -187,7 +187,7 @@ class Country extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.country.before', $data);
+        $this->hook->fire('country.add.before', $data);
 
         if (empty($data['code'])) {
             return false;
@@ -195,7 +195,7 @@ class Country extends Model
 
         $result = true;
         $this->db->insert('country', $data);
-        $this->hook->fire('add.country.after', $data, $result);
+        $this->hook->fire('country.add.after', $data, $result);
 
         return (bool) $result;
     }
@@ -208,7 +208,7 @@ class Country extends Model
      */
     public function update($code, array $data)
     {
-        $this->hook->fire('update.country.before', $code, $data);
+        $this->hook->fire('country.update.before', $code, $data);
 
         if (empty($code) || empty($data)) {
             return false;
@@ -216,7 +216,8 @@ class Country extends Model
 
         unset($data['code']); // Cannot update primary key
         $result = $this->db->update('country', $data, array('code' => $code));
-        $this->hook->fire('update.country.after', $code, $data, $result);
+
+        $this->hook->fire('country.update.after', $code, $data, $result);
         return (bool) $result;
     }
 
@@ -227,7 +228,7 @@ class Country extends Model
      */
     public function delete($code)
     {
-        $this->hook->fire('delete.country.before', $code);
+        $this->hook->fire('country.delete.before', $code);
 
         if (empty($code)) {
             return false;
@@ -244,7 +245,7 @@ class Country extends Model
             $this->db->delete('state', array('country' => $code));
         }
 
-        $this->hook->fire('delete.country.after', $code, $result);
+        $this->hook->fire('country.delete.after', $code, $result);
         return (bool) $result;
     }
 
@@ -349,7 +350,7 @@ class Country extends Model
             $list[$country['code']]['format'] += $this->defaultFormat();
         }
 
-        $this->hook->fire('countries', $list);
+        $this->hook->fire('country.list', $list);
         return $list;
     }
 

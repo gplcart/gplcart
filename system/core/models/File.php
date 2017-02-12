@@ -91,7 +91,7 @@ class File extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.file.before', $data);
+        $this->hook->fire('file.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -114,7 +114,7 @@ class File extends Model
 
         $this->setTranslationTrait($this->db, $data, 'file', false);
 
-        $this->hook->fire('add.file.after', $data);
+        $this->hook->fire('file.add.after', $data);
         return $data['file_id'];
     }
 
@@ -125,17 +125,17 @@ class File extends Model
      */
     public function update($file_id, array $data)
     {
-        $this->hook->fire('update.file.before', $file_id, $data);
+        $this->hook->fire('file.update.before', $file_id, $data);
 
         $conditions = array('file_id' => $file_id);
         $updated = $this->db->update('file', $data, $conditions);
 
         $data['file_id'] = $file_id;
-
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
+
         $result = ($updated > 0);
 
-        $this->hook->fire('update.file.after', $file_id, $data, $result);
+        $this->hook->fire('file.update.after', $file_id, $data, $result);
         return $result;
     }
 
@@ -147,13 +147,13 @@ class File extends Model
      */
     public function get($file_id, $language = null)
     {
-        $this->hook->fire('get.file.before', $file_id);
+        $this->hook->fire('file.get.before', $file_id);
 
         $file = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
 
         $this->attachTranslationTrait($this->db, $file, 'file', $language);
 
-        $this->hook->fire('get.file.after', $file);
+        $this->hook->fire('file.get.after', $file);
         return $file;
     }
 
@@ -164,7 +164,7 @@ class File extends Model
      */
     public function delete($file_id)
     {
-        $this->hook->fire('delete.file.before', $file_id);
+        $this->hook->fire('file.delete.before', $file_id);
 
         if (empty($file_id)) {
             return false;
@@ -175,14 +175,13 @@ class File extends Model
         }
 
         $conditions = array('file_id' => $file_id);
-
         $deleted = (bool) $this->db->delete('file', $conditions);
 
         if ($deleted) {
             $this->db->delete('file_translation', $conditions);
         }
 
-        $this->hook->fire('delete.file.after', $file_id, $deleted);
+        $this->hook->fire('file.delete.after', $file_id, $deleted);
         return (bool) $deleted;
     }
 
@@ -196,7 +195,6 @@ class File extends Model
         foreach ((array) $this->getList($options) as $file) {
             $deleted += (int) $this->delete($file['file_id']);
         }
-
         return $deleted > 0;
     }
 
@@ -463,7 +461,7 @@ class File extends Model
         }
 
         $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
-        $this->hook->fire('files', $files);
+        $this->hook->fire('file.list', $files);
         return $files;
     }
 

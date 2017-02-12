@@ -45,14 +45,14 @@ class CategoryGroup extends Model
      */
     public function get($group_id, $language = null)
     {
-        $this->hook->fire('get.category.group.before', $group_id);
+        $this->hook->fire('category.group.get.before', $group_id);
 
         $sql = 'SELECT * FROM category_group WHERE category_group_id=?';
         $group = $this->db->fetch($sql, array($group_id));
 
         $this->attachTranslationTrait($this->db, $group, 'category_group', $language);
 
-        $this->hook->fire('get.category.group.after', $group);
+        $this->hook->fire('category.group.get.after', $group);
         return $group;
     }
 
@@ -115,7 +115,7 @@ class CategoryGroup extends Model
         $options = array('index' => 'category_group_id');
         $list = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('category.groups', $list);
+        $this->hook->fire('category.group.list', $list);
         return $list;
     }
 
@@ -126,7 +126,7 @@ class CategoryGroup extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.category.group.before', $data);
+        $this->hook->fire('category.group.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -136,7 +136,8 @@ class CategoryGroup extends Model
 
         $this->setTranslationTrait($this->db, $data, 'category_group', false);
 
-        $this->hook->fire('add.category.group.after', $data);
+        $this->hook->fire('category.group.add.after', $data);
+
         return $data['category_group_id'];
     }
 
@@ -147,7 +148,7 @@ class CategoryGroup extends Model
      */
     public function delete($category_group_id)
     {
-        $this->hook->fire('delete.category.group.before', $category_group_id);
+        $this->hook->fire('category.group.delete.before', $category_group_id);
 
         if (empty($category_group_id)) {
             return false;
@@ -164,7 +165,7 @@ class CategoryGroup extends Model
         $this->db->delete('category_group', $conditions);
         $this->db->delete('category_group_translation', $conditions);
 
-        $this->hook->fire('delete.category.group.after', $category_group_id);
+        $this->hook->fire('category.group.delete.after', $category_group_id);
         return true;
     }
 
@@ -189,7 +190,7 @@ class CategoryGroup extends Model
      */
     public function update($category_group_id, array $data)
     {
-        $this->hook->fire('update.category.group.before', $category_group_id, $data);
+        $this->hook->fire('category.group.update.before', $category_group_id, $data);
 
         if (empty($category_group_id)) {
             return false;
@@ -203,7 +204,7 @@ class CategoryGroup extends Model
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'category_group');
         $result = ($updated > 0);
 
-        $this->hook->fire('update.category.group.after', $category_group_id, $data, $result);
+        $this->hook->fire('category.group.update.after', $category_group_id, $data, $result);
         return $result;
     }
 

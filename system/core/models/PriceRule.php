@@ -144,7 +144,7 @@ class PriceRule extends Model
         $options = array('index' => 'price_rule_id');
         $price_rules = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('price.rules', $data, $price_rules);
+        $this->hook->fire('price.rule.list', $data, $price_rules);
         return $price_rules;
     }
 
@@ -155,12 +155,12 @@ class PriceRule extends Model
      */
     public function get($price_rule_id)
     {
-        $this->hook->fire('get.price.rule.before', $price_rule_id);
+        $this->hook->fire('price.rule.get.before', $price_rule_id);
 
         $sql = 'SELECT * FROM price_rule WHERE price_rule_id=?';
         $price_rule = $this->db->fetch($sql, array($price_rule_id));
 
-        $this->hook->fire('get.price.rule.after', $price_rule);
+        $this->hook->fire('price.rule.get.after', $price_rule);
         return $price_rule;
     }
 
@@ -171,7 +171,7 @@ class PriceRule extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.price.rule.before', $data);
+        $this->hook->fire('price.rule.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -179,7 +179,7 @@ class PriceRule extends Model
 
         $data['price_rule_id'] = $this->db->insert('price_rule', $data);
 
-        $this->hook->fire('add.price.rule.after', $data);
+        $this->hook->fire('price.rule.add.after', $data);
         return $data['price_rule_id'];
     }
 
@@ -191,7 +191,7 @@ class PriceRule extends Model
      */
     public function update($price_rule_id, array $data)
     {
-        $this->hook->fire('update.price.rule.before', $price_rule_id, $data);
+        $this->hook->fire('price.rule.update.before', $price_rule_id, $data);
 
         if (empty($price_rule_id)) {
             return false;
@@ -200,7 +200,7 @@ class PriceRule extends Model
         $conditions = array('price_rule_id' => $price_rule_id);
         $result = $this->db->update('price_rule', $data, $conditions);
 
-        $this->hook->fire('update.price.rule.after', $price_rule_id, $data, $result);
+        $this->hook->fire('price.rule.update.after', $price_rule_id, $data, $result);
         return (bool) $result;
     }
 
@@ -238,7 +238,7 @@ class PriceRule extends Model
      */
     public function delete($price_rule_id)
     {
-        $this->hook->fire('delete.price.rule.before', $price_rule_id);
+        $this->hook->fire('price.rule.delete.before', $price_rule_id);
 
         if (empty($price_rule_id)) {
             return false;
@@ -247,7 +247,7 @@ class PriceRule extends Model
         $conditions = array('price_rule_id' => $price_rule_id);
         $result = $this->db->delete('price_rule', $conditions);
 
-        $this->hook->fire('delete.price.rule.after', $price_rule_id, $result);
+        $this->hook->fire('price.rule.delete.after', $price_rule_id, $result);
         return (bool) $result;
     }
 
@@ -268,7 +268,7 @@ class PriceRule extends Model
         foreach ($this->getTriggered($options, $data) as $rule) {
             $this->calculateComponent($total, $data, $components, $rule);
         }
-        
+
         return array('total' => $total, 'components' => $components);
     }
 
@@ -305,7 +305,8 @@ class PriceRule extends Model
 
         $components[$rule_id] = array('rule' => $rule, 'price' => $rule['value']);
         $amount += $rule['value'];
-        
+
+        $this->hook->fire('price.rule.calculate.component', $amount, $data, $components, $rule);
         return $amount;
     }
 
@@ -337,8 +338,10 @@ class PriceRule extends Model
         }
 
         // Coupons always go last
-        uasort($results, function ($a) {return $a['code'] === '' ? -1 : 1;});
-        
+        uasort($results, function ($a) {
+            return $a['code'] === '' ? -1 : 1;
+        });
+
         return $results;
     }
 

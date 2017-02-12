@@ -235,7 +235,7 @@ class Order extends Model
      */
     public function get($order_id)
     {
-        $this->hook->fire('get.order.before', $order_id);
+        $this->hook->fire('order.get.before', $order_id);
 
         $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email'
                 . ' FROM orders o'
@@ -246,7 +246,7 @@ class Order extends Model
 
         $this->attachCart($order);
 
-        $this->hook->fire('get.order.after', $order_id, $order);
+        $this->hook->fire('order.get.after', $order_id, $order);
         return $order;
     }
 
@@ -285,7 +285,7 @@ class Order extends Model
      */
     public function update($order_id, array $data)
     {
-        $this->hook->fire('update.order.before', $order_id, $data);
+        $this->hook->fire('order.update.before', $order_id, $data);
 
         if (empty($order_id)) {
             return false;
@@ -298,7 +298,7 @@ class Order extends Model
         }
 
         $result = $this->db->update('orders', $data, array('order_id' => $order_id));
-        $this->hook->fire('update.order.after', $order_id, $data, $result);
+        $this->hook->fire('order.update.after', $order_id, $data, $result);
 
         return (bool) $result;
     }
@@ -310,7 +310,7 @@ class Order extends Model
      */
     public function delete($order_id)
     {
-        $this->hook->fire('delete.order.before', $order_id);
+        $this->hook->fire('order.delete.before', $order_id);
 
         if (empty($order_id)) {
             return false;
@@ -327,7 +327,7 @@ class Order extends Model
             $this->db->delete('history', $conditions2);
         }
 
-        $this->hook->fire('delete.order.after', $order_id, $deleted);
+        $this->hook->fire('order.delete.after', $order_id, $deleted);
         return (bool) $deleted;
     }
 
@@ -401,7 +401,7 @@ class Order extends Model
      */
     public function submit(array $data, array $cart, array $options = array())
     {
-        $this->hook->fire('submit.order.before', $data, $cart, $options);
+        $this->hook->fire('order.submit.before', $data, $cart, $options);
 
         $result = array(
             'redirect' => '',
@@ -442,7 +442,7 @@ class Order extends Model
             $result['redirect'] = "checkout/complete/$order_id";
         }
 
-        $this->hook->fire('submit.order.after', $order, $cart, $options, $result);
+        $this->hook->fire('order.submit.after', $order, $cart, $options, $result);
         return $result;
     }
 
@@ -622,7 +622,7 @@ class Order extends Model
      */
     public function add(array $order)
     {
-        $this->hook->fire('add.order.before', $order);
+        $this->hook->fire('order.add.before', $order);
 
         if (empty($order)) {
             return 0;
@@ -639,7 +639,7 @@ class Order extends Model
         }
 
         $order['order_id'] = $this->db->insert('orders', $order);
-        $this->hook->fire('add.order.after', $order);
+        $this->hook->fire('order.add.after', $order);
 
         return $order['order_id'];
     }
@@ -727,7 +727,7 @@ class Order extends Model
         }
 
         $this->pricerule->calculate($total, $data, $components);
-        $this->hook->fire('calculate.order', $total, $data, $components);
+        $this->hook->fire('order.calculate', $total, $data, $components);
 
         return array(
             'total' => $total,

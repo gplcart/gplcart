@@ -32,7 +32,7 @@ class Review extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.review.before', $data);
+        $this->hook->fire('review.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -41,7 +41,7 @@ class Review extends Model
         $data['created'] = GC_TIME;
         $data['review_id'] = $this->db->insert('review', $data);
 
-        $this->hook->fire('add.review.after', $data);
+        $this->hook->fire('review.add.after', $data);
         return $data['review_id'];
     }
 
@@ -52,12 +52,12 @@ class Review extends Model
      */
     public function get($review_id)
     {
-        $this->hook->fire('get.review.before', $review_id);
+        $this->hook->fire('review.get.before', $review_id);
 
         $sql = 'SELECT * FROM review WHERE review_id=?';
         $review = $this->db->fetch($sql, array($review_id));
 
-        $this->hook->fire('get.review.after', $review_id, $review);
+        $this->hook->fire('review.get.after', $review_id, $review);
         return $review;
     }
 
@@ -69,7 +69,7 @@ class Review extends Model
      */
     public function update($review_id, array $data)
     {
-        $this->hook->fire('update.review.before', $review_id, $data);
+        $this->hook->fire('review.update.before', $review_id, $data);
 
         if (empty($review_id)) {
             return false;
@@ -79,7 +79,7 @@ class Review extends Model
         $conditions = array('review_id' => $review_id);
         $result = $this->db->update('review', $data, $conditions);
 
-        $this->hook->fire('update.review.after', $review_id, $data, $result);
+        $this->hook->fire('review.update.after', $review_id, $data, $result);
         return (bool) $result;
     }
 
@@ -90,7 +90,7 @@ class Review extends Model
      */
     public function delete($review_id)
     {
-        $this->hook->fire('delete.review.before', $review_id);
+        $this->hook->fire('review.delete.before', $review_id);
 
         if (empty($review_id)) {
             return false;
@@ -98,11 +98,11 @@ class Review extends Model
 
         $ids = (array) $review_id;
         $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-        
+
         $sql = "DELETE FROM review WHERE review_id IN($placeholders)";
         $result = (bool) $this->db->run($sql, $ids)->rowCount();
 
-        $this->hook->fire('delete.review.after', $review_id, $result);
+        $this->hook->fire('review.delete.after', $review_id, $result);
         return (bool) $result;
     }
 
@@ -134,7 +134,7 @@ class Review extends Model
             $sql .= ' AND r.user_id = ?';
             $where[] = (int) $data['user_id'];
         }
-        
+
         if (isset($data['email'])) {
             $sql .= ' AND u.email = ?';
             $where[] = $data['email'];
@@ -186,7 +186,7 @@ class Review extends Model
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'review_id'));
-        $this->hook->fire('reviews', $list);
+        $this->hook->fire('review.list', $list);
 
         return $list;
     }

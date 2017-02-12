@@ -33,10 +33,10 @@ class Frontend
     }
 
     /**
-     * Adds a new route for settings page
+     * Implements hook "route.list"
      * @param array $routes
      */
-    public function hookRoute(&$routes)
+    public function hookRouteList(&$routes)
     {
         $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
@@ -47,7 +47,7 @@ class Frontend
     }
 
     /**
-     * Implements hook init.theme
+     * Implements hook "theme"
      * @param \gplcart\core\controllers\frontend\Controller $controller
      */
     public function hookTheme($controller)

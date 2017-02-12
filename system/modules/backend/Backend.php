@@ -32,7 +32,7 @@ class Backend
     }
 
     /**
-     * Implements hook.theme
+     * Implements hook "theme"
      * @param \gplcart\core\controllers\backend\Controller $controller
      */
     public function hookTheme($controller)

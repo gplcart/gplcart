@@ -32,7 +32,7 @@ class State extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.state.before', $data);
+        $this->hook->fire('state.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -40,7 +40,7 @@ class State extends Model
 
         $data['state_id'] = $this->db->insert('state', $data);
 
-        $this->hook->fire('add.state.after', $data);
+        $this->hook->fire('state.add.after', $data);
         return $data['state_id'];
     }
 
@@ -51,8 +51,13 @@ class State extends Model
      */
     public function get($state_id)
     {
+        $this->hook->fire('state.get.before', $state_id);
+
         $sql = 'SELECT * FROM state WHERE state_id=?';
-        return $this->db->fetch($sql, array($state_id));
+        $state = $this->db->fetch($sql, array($state_id));
+
+        $this->hook->fire('state.get.after', $state_id, $state);
+        return $state;
     }
 
     /**
@@ -134,7 +139,7 @@ class State extends Model
      */
     public function delete($state_id)
     {
-        $this->hook->fire('delete.state.before', $state_id);
+        $this->hook->fire('state.delete.before', $state_id);
 
         if (empty($state_id)) {
             return false;
@@ -151,7 +156,7 @@ class State extends Model
             $this->db->delete('city', $conditions);
         }
 
-        $this->hook->fire('delete.state.after', $state_id, $deleted);
+        $this->hook->fire('state.delete.after', $state_id, $deleted);
         return (bool) $deleted;
     }
 
@@ -176,7 +181,7 @@ class State extends Model
      */
     public function update($state_id, array $data)
     {
-        $this->hook->fire('update.state.before', $state_id, $data);
+        $this->hook->fire('state.update.before', $state_id, $data);
 
         if (empty($state_id)) {
             return false;
@@ -185,7 +190,7 @@ class State extends Model
         $conditions = array('state_id' => $state_id);
         $result = $this->db->update('state', $data, $conditions);
 
-        $this->hook->fire('update.state.after', $state_id, $data, $result);
+        $this->hook->fire('state.update.after', $state_id, $data, $result);
         return (bool) $result;
     }
 

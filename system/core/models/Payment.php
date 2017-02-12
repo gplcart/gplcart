@@ -51,7 +51,7 @@ class Payment extends Model
 
         $methods = $this->getDefault();
 
-        $this->hook->fire('payment.method', $methods);
+        $this->hook->fire('payment.methods', $methods);
 
         if ($enabled) {
             $methods = array_filter($methods, function ($method) {

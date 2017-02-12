@@ -130,7 +130,7 @@ class Product extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('add.product.before', $data);
+        $this->hook->fire('product.add.before', $data);
 
         if (empty($data)) {
             return false;
@@ -155,7 +155,7 @@ class Product extends Model
 
         $this->search->index('product', $data);
 
-        $this->hook->fire('add.product.after', $data);
+        $this->hook->fire('product.add.after', $data);
         return $data['product_id'];
     }
 
@@ -167,7 +167,7 @@ class Product extends Model
      */
     public function update($product_id, array $data)
     {
-        $this->hook->fire('update.product.before', $product_id, $data);
+        $this->hook->fire('product.update.before', $product_id, $data);
 
         if (empty($product_id)) {
             return false;
@@ -198,7 +198,7 @@ class Product extends Model
             $this->cache->clear("product.$product_id.", array('pattern' => '*'));
         }
 
-        $this->hook->fire('update.product.after', $product_id, $data, $result);
+        $this->hook->fire('product.update.after', $product_id, $data, $result);
         return (bool) $result;
     }
 
@@ -265,7 +265,7 @@ class Product extends Model
      */
     public function get($product_id, array $options = array())
     {
-        $this->hook->fire('get.product.before', $product_id, $options);
+        $this->hook->fire('product.get.before', $product_id, $options);
 
         if (empty($product_id)) {
             return array();
@@ -285,7 +285,7 @@ class Product extends Model
         $this->attachImagesTrait($this->file, $product, 'product', $options['language']);
         $this->attachTranslationTrait($this->db, $product, 'product', $options['language']);
 
-        $this->hook->fire('get.product.after', $product_id, $options, $product);
+        $this->hook->fire('product.get.after', $product_id, $options, $product);
 
         return $product;
     }
@@ -382,7 +382,7 @@ class Product extends Model
      */
     public function delete($product_id)
     {
-        $this->hook->fire('delete.product.before', $product_id);
+        $this->hook->fire('product.delete.before', $product_id);
 
         if (empty($product_id)) {
             return false;
@@ -419,7 +419,7 @@ class Product extends Model
             $this->db->run($sql, array('product', $product_id));
         }
 
-        $this->hook->fire('delete.product.after', $product_id, $deleted);
+        $this->hook->fire('product.delete.after', $product_id, $deleted);
         return (bool) $deleted;
     }
 
@@ -498,8 +498,6 @@ class Product extends Model
      */
     public function getList(array $data = array())
     {
-        $this->hook->fire('get.product.list.before', $data);
-
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
 
@@ -607,7 +605,7 @@ class Product extends Model
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'product_id'));
 
-        $this->hook->fire('get.product.list.after', $list);
+        $this->hook->fire('product.list', $list);
         return $list;
     }
 

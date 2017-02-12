@@ -90,7 +90,7 @@ class CliRoute
     {
         $routes = include GC_CONFIG_CLI_ROUTE;
 
-        $this->hook->fire('cli.route', $routes);
+        $this->hook->fire('cli.route.list', $routes);
         return $routes;
     }
 

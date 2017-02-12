@@ -57,7 +57,7 @@ class Shipping extends Model
             });
         }
 
-        $this->hook->fire('shipping.method', $methods);
+        $this->hook->fire('shipping.methods', $methods);
 
         gplcart_array_sort($methods);
         return $methods;
