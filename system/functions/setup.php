@@ -55,8 +55,6 @@ function gplcart_setup_server()
         header("{$_SERVER['SERVER_PROTOCOL']} 400 Bad Request");
         exit;
     }
-
-    return null;
 }
 
 /**
@@ -82,7 +80,6 @@ function gplcart_setup_ini_session()
     ini_set('session.use_trans_sid', '0');
     ini_set('session.cache_limiter', '');
     ini_set('session.cookie_httponly', '1');
-    return null;
 }
 
 /**
@@ -102,8 +99,6 @@ function gplcart_setup_ini_memory($value)
     if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
         ini_set('memory_limit', $value);
     }
-
-    return null;
 }
 
 /**

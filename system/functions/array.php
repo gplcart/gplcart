@@ -72,13 +72,13 @@ function gplcart_array_merge(array &$array1, array &$array2)
  */
 function gplcart_array_get_value(array &$array, $parents, $glue = '.')
 {
-    $ref = &$array;
-
     if (!is_array($parents)) {
         $parents = explode($glue, $parents);
     }
 
-    foreach ($parents as $parent) {
+    $ref = &$array;
+
+    foreach ((array) $parents as $parent) {
         if (is_array($ref) && array_key_exists($parent, $ref)) {
             $ref = &$ref[$parent];
         } else {
@@ -97,11 +97,11 @@ function gplcart_array_get_value(array &$array, $parents, $glue = '.')
  */
 function gplcart_array_set_value(array &$array, $parents, $value, $glue = '.')
 {
-    $ref = &$array;
-
     if (!is_array($parents)) {
         $parents = explode($glue, (string) $parents);
     }
+
+    $ref = &$array;
 
     foreach ($parents as $parent) {
         if (isset($ref) && !is_array($ref)) {
@@ -122,7 +122,7 @@ function gplcart_array_set_value(array &$array, $parents, $value, $glue = '.')
  */
 function gplcart_array_unset_value(&$array, $parents, $glue = '.')
 {
-    if (is_string($parents)) {
+    if (!is_array($parents)) {
         $parents = explode($glue, $parents);
     }
 
