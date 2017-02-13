@@ -411,7 +411,7 @@ class Product extends FrontendController
      */
     protected function getRelatedProduct()
     {
-        $limit = $this->config('product_related_limit', 12);
+        $limit = $this->config('related_limit', 12);
 
         $conditions = array(
             'status' => 1,
@@ -431,8 +431,8 @@ class Product extends FrontendController
      */
     protected function getRecentProduct()
     {
-        $limit = $this->config('product_recent_limit', 12);
-        $lifespan = $this->config('product_recent_cookie_lifespan', 31536000);
+        $limit = $this->config('recent_limit', 12);
+        $lifespan = $this->config('recent_cookie_lifespan', 31536000);
         $product_ids = $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
 
         $current = array_search($this->data_product['product_id'], $product_ids);

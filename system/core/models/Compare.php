@@ -157,7 +157,7 @@ class Compare extends Model
      */
     protected function controlLimit(array &$product_ids)
     {
-        $limit = (int) $this->config->get('product_comparison_limit', 10);
+        $limit = (int) $this->config->get('comparison_limit', 10);
 
         if (!empty($limit)) {
             $product_ids = array_slice($product_ids, 0, $limit);
@@ -208,7 +208,7 @@ class Compare extends Model
      */
     public function set(array $product_ids)
     {
-        $lifespan = $this->config->get('product_comparison_cookie_lifespan', 604800);
+        $lifespan = $this->config->get('comparison_cookie_lifespan', 604800);
         $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
 
         Cache::clearMemory('comparison');
