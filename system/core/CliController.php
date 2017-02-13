@@ -109,6 +109,8 @@ class CliController
         $this->setRouteProperties();
         $this->controlAccess();
         $this->outputHelp();
+
+        $this->hook->fire('construct.cli.controller', $this);
     }
 
     /**

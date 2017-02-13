@@ -13,8 +13,8 @@ use gplcart\core\Hook;
 use gplcart\core\Route;
 use gplcart\core\Config;
 use gplcart\core\Logger;
-use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\helpers\Url as UrlHelper,
+    gplcart\core\helpers\Session as SessionHelper;
 
 /**
  * Provides methods to route incoming requests and setup the system
@@ -84,6 +84,8 @@ class Facade
 
         // Register hooks
         $this->hook->modules($this->config->getEnabledModules());
+
+        $this->hook->fire('construct', $this);
     }
 
     /**

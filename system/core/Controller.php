@@ -380,7 +380,7 @@ class Controller
         $this->setAccessProperties();
         $this->controlMaintenanceMode();
 
-        $this->hook->fire('controller.construct', $this);
+        $this->hook->fire('construct.controller', $this);
     }
 
     /**
