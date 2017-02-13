@@ -248,6 +248,33 @@ class Condition extends Model
             ),
         );
 
+        $handlers['payment_country_code'] = array(
+            'title' => $this->language->text('Payment country code (checkout)'),
+            'description' => $this->language->text('Parameters: <a href="@url">list of codes</a>, separated by comma', array('@url' => $this->url->get('admin/settings/country'))),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'countryCode'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'countryCode'),
+            ),
+        );
+
+        $handlers['payment_state_id'] = array(
+            'title' => $this->language->text('Payment state ID (checkout)'),
+            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'stateId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'stateId'),
+            ),
+        );
+
+        $handlers['payment_zone_id'] = array(
+            'title' => $this->language->text('Payment address zone ID (checkout)'),
+            'description' => $this->language->text('Parameters: list of numeric IDs, separated by comma'),
+            'handlers' => array(
+                'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'zoneId'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'zoneId'),
+            ),
+        );
+
         $handlers['cart_total'] = array(
             'title' => $this->language->text('Cart total (checkout)'),
             'description' => $this->language->text('Parameters: one value in format "price|currency". If only price specified, default currency will be used'),
