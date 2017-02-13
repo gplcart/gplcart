@@ -54,6 +54,12 @@ class CliController
     protected $route;
 
     /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -127,19 +133,15 @@ class CliController
      */
     protected function setInstanceProperties()
     {
-        $map = array(
-            'user' => 'models\\User',
-            'validator' => 'models\\Validator',
-            'language' => 'models\\Language',
-            'request' => 'helpers\Request',
-            'config' => 'Config',
-            'logger' => 'Logger',
-            'route' => 'CliRoute'
-        );
+        $this->hook = Container::get('gplcart\\core\\Hook');
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->logger = Container::get('gplcart\\core\\Logger');
+        $this->route = Container::get('gplcart\\core\\CliRoute');
 
-        foreach ($map as $property => $class) {
-            $this->{$property} = Container::get("gplcart\\core\\$class");
-        }
+        $this->user = Container::get('gplcart\\core\\models\\User');
+        $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->validator = Container::get('gplcart\\core\\models\\Validator');
+        $this->request = Container::get('gplcart\\core\\helpers\Request');
     }
 
     /**
