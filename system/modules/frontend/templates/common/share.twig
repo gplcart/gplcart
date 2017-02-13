@@ -1,6 +1,4 @@
 {#
-    Displays simple "Share this" widget
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -12,10 +10,8 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
 #}
 <div class="btn-group btn-group-xs">
-  <button type="button" class="btn btn-default"><i class="fa fa-share-alt"></i> {{ text('Share') }}</button>
   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">{{ text('Toggle dropdown') }}</span>
+    <i class="fa fa-share-alt"></i> {{ text('Share') }} <span class="caret"></span>
   </button>
   <ul class="dropdown-menu">
     <li>

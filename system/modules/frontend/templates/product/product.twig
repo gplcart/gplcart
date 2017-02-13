@@ -1,6 +1,4 @@
 {#
-    Displays main product content
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -15,12 +13,18 @@
   <div class="col-md-8 left">
     <h1 class="h4">{{ product['title'] }}</h1>
     <div class="row section rating">
-      <div class="col-md-12">{{ rating|raw }}</div>
+      <div class="col-md-12">
+        {{ rating|raw }}
+        {% if product['total_reviews'] %}
+            <a href="#reviews">{{ text('@num reviews', {'@num': product['total_reviews']}) }}</a>
+        {% endif %}
+        {{ share|raw }}
+      </div>
     </div>
     <div class="row section images">
       <div class="col-md-8">{{ images|raw }}</div>
     </div>
-    {% if product['description'] is not empty %}
+    {% if product['description'] %}
         <div class="row section description">
           <div class="col-md-12">
             {{ xss(product['description']) }}
@@ -41,15 +45,14 @@
           {{ cart_form|raw }}
       </div>
     </div>
-    {{ share|raw }}
   </div>
 </div>
-{% if related is defined and related is not empty %}
-    {{ related|raw }}
+{% if pane_related is defined and pane_related %}
+    {{ pane_related|raw }}
 {% endif %}
-{% if recent is defined and recent is not empty %}
-    {{ recent|raw }}
+{% if pane_recent is defined and pane_recent %}
+    {{ pane_recent|raw }}
 {% endif %}
-{% if reviews is defined and reviews is not empty %}
-    {{ reviews|raw }}
+{% if pane_reviews is defined and pane_reviews %}
+    {{ pane_reviews|raw }}
 {% endif %}

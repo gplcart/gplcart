@@ -28,23 +28,14 @@ class Rating extends Model
     /**
      * Returns an array of rating data for the given product
      * @param integer $product_id
-     * @param boolean $load
-     * @return array|float
+     * @return array
      */
-    public function getByProduct($product_id, $load = false)
+    public function getByProduct($product_id)
     {
-        $user_id = null;
-        $this->hook->fire('rating.get.before', $product_id, $user_id);
+        $this->hook->fire('rating.get.before', $product_id);
+        $result = $this->db->fetch('SELECT rating, votes FROM rating WHERE product_id=?', array($product_id));
+        $this->hook->fire('rating.get.after', $product_id, $result);
 
-        $sql = 'SELECT rating, votes FROM rating WHERE product_id=?';
-
-        if ($load) {
-            $result = $this->db->fetch($sql, array($product_id));
-        } else {
-            $result = $this->db->fetchColumn($sql, array($product_id));
-        }
-
-        $this->hook->fire('rating.get.after', $product_id, $user_id, $result);
         return $result;
     }
 
@@ -59,7 +50,7 @@ class Rating extends Model
         $this->hook->fire('rating.get.user.before', $product_id, $user_id);
 
         $user_ids = (array) $user_id;
-        $placeholders = rtrim(str_repeat('?, ', count($user_ids)), ', ');
+        $placeholders = rtrim(str_repeat('?,', count($user_ids)), ',');
 
         $sql = "SELECT * FROM rating_user WHERE user_id IN($placeholders) AND product_id=?";
 
@@ -75,7 +66,7 @@ class Rating extends Model
     }
 
     /**
-     * Sets an rating for the given user and product
+     * Sets a rating for the given user and product
      * @param array $data
      * @return boolean|integer
      */
@@ -83,7 +74,7 @@ class Rating extends Model
     {
         $this->hook->fire('rating.set.before', $data);
 
-        if (!isset($data['rating'])) {
+        if (empty($data)) {
             return false;
         }
 
@@ -94,7 +85,8 @@ class Rating extends Model
 
         $this->db->delete('rating_user', $conditions);
 
-        $this->addUser($data);
+        $this->addByUser($data);
+
         $result = $this->setBayesian($data['product_id']);
 
         $this->hook->fire('rating.set.after', $data, $result);
@@ -106,7 +98,7 @@ class Rating extends Model
      * @param array $data
      * @return boolean
      */
-    protected function addUser(array $data)
+    protected function addByUser(array $data)
     {
         $this->hook->fire('rating.add.user.before', $data);
 
@@ -133,13 +125,13 @@ class Rating extends Model
                 . ' SET rating=:rating, votes=:votes, product_id=:product_id'
                 . ' ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes';
 
-        $vars = array(
+        $params = array(
             'product_id' => $product_id,
             'votes' => $rating['this_num_votes'],
             'rating' => $rating['bayesian_rating']
         );
 
-        $this->db->run($sql, $vars);
+        $this->db->run($sql, $params);
         return $rating;
     }
 

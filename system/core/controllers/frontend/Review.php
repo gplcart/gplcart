@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Review as ReviewModel;
-use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\Review as ReviewModel,
+    gplcart\core\models\Rating as RatingModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -63,28 +63,58 @@ class Review extends FrontendController
      */
     public function editReview($product_id, $review_id = null)
     {
-        $this->controlAccessEditReview();
-
         $this->setProductReview($product_id);
         $this->setReview($review_id);
 
         $this->setTitleEditReview();
+        $this->setBreadcrumbEditReview();
 
-        $this->submitReview();
+        $this->controlAccessEditReview();
 
         $this->setData('review', $this->data_review);
         $this->setData('product', $this->data_product);
-        $this->setData('can_delete', $this->canDeleteReview());
+
         $this->setData('honeypot', $this->renderHoneyPot());
+        $this->setData('can_delete', $this->canDeleteReview());
 
-        $this->setDataImageReview();
+        $this->submitReview();
+
         $this->setDataRatingReview();
-
         $this->outputEditReview();
     }
 
     /**
-     * Renders and outputs review edit page
+     * Controls access to the review
+     */
+    protected function controlAccessEditReview()
+    {
+        if (!$this->config('review_enabled', 1) || empty($this->uid)) {
+            $this->outputHttpStatus(403);
+        }
+
+        if (isset($this->data_review['review_id']) && !$this->config('review_editable', 1)) {
+            $this->outputHttpStatus(403);
+        }
+    }
+
+    /**
+     * Loads a product from the database
+     * @param integer $product_id
+     * @return array
+     */
+    protected function setProductReview($product_id)
+    {
+        $product = $this->product->get($product_id);
+
+        if (empty($product['status']) || $product['store_id'] != $this->store_id) {
+            $this->outputHttpStatus(404);
+        }
+
+        return $this->data_product = $product;
+    }
+
+    /**
+     * Renders and outputs the review edit page
      */
     protected function outputEditReview()
     {
@@ -98,23 +128,20 @@ class Review extends FrontendController
     {
         $vars = array('%name' => $this->data_product['title']);
         $text = $this->text('Review of %name', $vars);
-        $this->setTitle($text, false);
+        $this->setTitle($text);
     }
 
     /**
-     * Sets product image
+     * Sets breadcrumbs on the add/edit review page
      */
-    protected function setDataImageReview()
+    protected function setBreadcrumbEditReview()
     {
-        $options = array(
-            'imagestyle' => $this->settings('image_style_product', 5));
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Shop')
+        );
 
-        $this->attachItemThumb($this->data_product, $options);
-
-        if (!empty($this->data_product['images'])) {
-            $image = reset($this->data_product['images']);
-            $this->setData('image', $image);
-        }
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -172,7 +199,7 @@ class Review extends FrontendController
 
         $this->validate('review');
 
-        return !$this->hasErrors('review');
+        return !$this->hasErrors('review', false);
     }
 
     /**
@@ -197,7 +224,7 @@ class Review extends FrontendController
     }
 
     /**
-     * Sets a rating to the product
+     * Sets a rating for the product
      */
     protected function setRatingReview()
     {
@@ -309,32 +336,6 @@ class Review extends FrontendController
         $rating = $this->rating->getByUser($this->data_product['product_id'], $this->uid);
         $review['rating'] = isset($rating['rating']) ? $rating['rating'] : 0;
         return $review;
-    }
-
-    /**
-     * Loads a product from the database
-     * @param integer $product_id
-     * @return array
-     */
-    protected function setProductReview($product_id)
-    {
-        $product = $this->product->get($product_id);
-
-        if (empty($product['status']) || $product['store_id'] != $this->store_id) {
-            $this->outputHttpStatus(404);
-        }
-        $this->attachItemPriceCalculated($product);
-        return $this->data_product = $product;
-    }
-
-    /**
-     * Controls access to the review
-     */
-    protected function controlAccessEditReview()
-    {
-        if (!$this->config('review_editable', 1) || empty($this->uid)) {
-            $this->outputHttpStatus(403);
-        }
     }
 
 }

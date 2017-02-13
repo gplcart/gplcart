@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Review as ReviewModel;
-use gplcart\core\models\Rating as RatingModel;
-use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\Review as ReviewModel,
+    gplcart\core\models\Rating as RatingModel,
+    gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -81,12 +81,12 @@ class Product extends FrontendController
         $this->setTitleIndexProduct();
         $this->setBreadcrumbIndexProduct();
 
-        $this->setImagesProduct();
-        $this->setRecentProduct();
-        $this->setReviewsProduct();
-        $this->setRelatedProduct();
-        $this->setCartFormProduct();
-        $this->setRatingWidgetProduct();
+        $this->setDataImagesProduct();
+        $this->setDataRecentProduct();
+        $this->setDataReviewsProduct();
+        $this->setDataRelatedProduct();
+        $this->setDataCartFormProduct();
+        $this->setDataRatingWidgetProduct();
 
         $this->setHtmlFilter($this->data_product);
 
@@ -109,32 +109,27 @@ class Product extends FrontendController
      * Sets list of reviews related to the product
      * @return null
      */
-    protected function setReviewsProduct()
+    protected function setDataReviewsProduct()
     {
         if (!$this->config('review_enabled', 1)) {
             return null;
         }
 
-        $total = $this->getTotalReviewsProduct();
-
-        if (empty($total)) {
+        if (empty($this->data_product['total_reviews'])) {
             return null;
         }
 
-        $query = $this->getFilterQuery();
-        $per_page = (int) $this->config('review_limit', 5);
-        $limit = $this->setPager($total, $query, $per_page);
+        $max = (int) $this->config('review_limit', 5);
+        $limit = $this->setPager($this->data_product['total_reviews'], null, $max);
 
         $options = array(
-            'query' => $this->query,
             'pager' => $this->getPager(),
             'product' => $this->data_product,
-            'reviews' => $this->getReviewsProduct($limit),
-            'editable' => (bool) $this->config('review_editable', 1)
+            'reviews' => $this->getReviewsProduct($limit)
         );
 
-        $html = $this->render('review/list', $options);
-        $this->setData('reviews', $html);
+        $html = $this->render('product/panes/reviews', $options);
+        $this->setData('pane_reviews', $html);
     }
 
     /**
@@ -158,14 +153,11 @@ class Product extends FrontendController
         }
 
         foreach ($reviews as &$review) {
-
-            $rating = 0;
+            $rating = array('rating' => 0);
             if (isset($ratings[$review['user_id']]['rating'])) {
-                $rating = $ratings[$review['user_id']]['rating'];
+                $rating['rating'] = $ratings[$review['user_id']]['rating'];
             }
-
-            $html = $this->render('common/rating/static', array('rating' => $rating));
-            $review['rating_widget'] = $html;
+            $review['rating_formatted'] = $this->render('common/rating/static', array('rating' => $rating));
         }
 
         return $reviews;
@@ -194,16 +186,11 @@ class Product extends FrontendController
     /**
      * Sets rendered rating widget
      */
-    protected function setRatingWidgetProduct()
+    protected function setDataRatingWidgetProduct()
     {
-        $rating = $this->rating->getByProduct($this->data_product['product_id'], true);
+        $rating = $this->rating->getByProduct($this->data_product['product_id']);
 
-        $options = array(
-            'product' => $this->data_product,
-            'votes' => isset($rating['votes']) ? $rating['votes'] : 0,
-            'rating' => isset($rating['rating']) ? $rating['rating'] : 0
-        );
-
+        $options = array('rating' => $rating, 'product' => $this->data_product);
         $html = $this->render('common/rating/static', $options);
         $this->setData('rating', $html);
     }
@@ -211,7 +198,7 @@ class Product extends FrontendController
     /**
      * Sets rendered "Add to cart form"
      */
-    protected function setCartFormProduct()
+    protected function setDataCartFormProduct()
     {
         $cart = array(
             'product' => $this->data_product,
@@ -258,25 +245,27 @@ class Product extends FrontendController
      * Builds an array of breadcrumb items containing all parent categories
      * @param integer $category_id
      * @param array $breadcrumbs
+     * @return null
      */
     protected function buildCategoryBreadcrumbsIndexProduct($category_id,
             array &$breadcrumbs)
     {
-        if (!empty($this->data_categories[$category_id]['parents'])) {
-
-            $parent = reset($this->data_categories[$category_id]['parents']);
-            $category = $this->data_categories[$category_id];
-
-            $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
-
-            $breadcrumb = array(
-                'url' => $this->url($url),
-                'text' => $category['title']
-            );
-
-            array_unshift($breadcrumbs, $breadcrumb);
-            $this->buildCategoryBreadcrumbsIndexProduct($parent, $breadcrumbs);
+        if (empty($this->data_categories[$category_id]['parents'])) {
+            return null;
         }
+
+        $parent = reset($this->data_categories[$category_id]['parents']);
+        $category = $this->data_categories[$category_id];
+
+        $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
+
+        $breadcrumb = array(
+            'url' => $this->url($url),
+            'text' => $category['title']
+        );
+
+        array_unshift($breadcrumbs, $breadcrumb);
+        $this->buildCategoryBreadcrumbsIndexProduct($parent, $breadcrumbs);
     }
 
     /**
@@ -302,30 +291,30 @@ class Product extends FrontendController
     /**
      * Sets block with recent products on the product page
      */
-    protected function setRecentProduct()
+    protected function setDataRecentProduct()
     {
         $products = $this->getRecentProduct();
 
         $options = array('products' => $products);
-        $html = $this->render('product/blocks/recent', $options);
+        $html = $this->render('product/panes/recent', $options);
 
-        $this->setData('recent', $html);
+        $this->setData('pane_recent', $html);
     }
 
     /**
      * Sets block with related products on the product page
      */
-    protected function setRelatedProduct()
+    protected function setDataRelatedProduct()
     {
         $options = array('products' => $this->getRelatedProduct());
-        $html = $this->render('product/blocks/related', $options);
-        $this->setData('related', $html);
+        $html = $this->render('product/panes/related', $options);
+        $this->setData('pane_related', $html);
     }
 
     /**
      * Sets rendered product images
      */
-    protected function setImagesProduct()
+    protected function setDataImagesProduct()
     {
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5)
@@ -345,15 +334,16 @@ class Product extends FrontendController
 
     /**
      * Returns a total number of reviews for this product
+     * @param array $product
      * @return integer
      */
-    protected function getTotalReviewsProduct()
+    protected function getTotalReviewsProduct(array $product)
     {
         $options = array(
             'status' => 1,
             'count' => true,
             'user_status' => 1,
-            'product_id' => $this->data_product['product_id']
+            'product_id' => $product['product_id']
         );
 
         return (int) $this->review->getList($options);
@@ -410,6 +400,7 @@ class Product extends FrontendController
 
         $product['selected_combination'] = $selected;
         $product['fields'] = $this->getFieldsProduct($product);
+        $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
         return $product;
     }

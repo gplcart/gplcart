@@ -1,6 +1,4 @@
 {#
-    Displays the review edit form
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -11,42 +9,28 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-
 <div class="row">
-  {% if image is not empty %}
-      <div class="col-md-1">
-        <img class="img-responsive thumbnail" alt="{{ image['title'] }}" title="{{ image['description'] }}" src="{{ image['thumb'] }}">
-      </div>
-  {% endif %}
-  <div class="col-md-11">
-    <h4 class="title">{{ product['title'] }}</h4>
-    <div class="h4 price">{{ product['price_formatted'] }}</div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <form method="post" class="form-horizontal" id="edit-review">
-      {{ honeypot }}
+  <div class="col-md-6">
+    <form method="post" class="form-horizontal">
+      {{ honeypot|raw }}
       <input type="hidden" name="token" value="{{ prop('token') }}">
       <div class="form-group">
-        <label class="col-md-1">{{ text('Rating') }}</label>
-        <div class="col-md-6">{{ rating|raw }}</div>
+        <div class="col-md-12">{{ rating|raw }}</div>
       </div>
       <div class="form-group required{{ error('text', ' has-error') }}">
-        <label class="col-md-1">{{ text('Review') }}</label>
-        <div class="col-md-6">
-          <textarea class="form-control" rows="2" name="review[text]">{{ review['text']|default('') }}</textarea>
+        <div class="col-md-12">
+          <textarea class="form-control" rows="6" name="review[text]">{{ review['text'] ?? '' }}</textarea>
           <div class="help-block">{{ error('text') }}</div>
         </div>
       </div>
       <div class="form-group">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-2">
           {% if can_delete %}
-              <button class="btn btn-danger" name="delete" value="1">{{ text('Delete') }}</button>
+              <button class="btn btn-danger" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure?'));">{{ text('Delete') }}</button>
           {% endif %}
-          <a class="btn btn-default" href="{{ url('product/' ~ product['product_id']) }}">
-            <i class="fa fa-reply"></i> {{ text('Cancel') }}
-          </a>
+        </div>
+        <div class="col-md-10 text-right">
+          <a class="btn btn-default" href="{{ url('product/' ~ product['product_id']) }}">{{ text('Cancel') }}</a>
           <button class="btn btn-default" name="save" value="1">{{ text('Save') }}</button>
         </div>
       </div>

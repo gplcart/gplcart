@@ -1,6 +1,4 @@
 {#
-    Displays a rating widget
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -14,8 +12,8 @@
 <div id="star-rating-{{ product.product_id }}" class="star-rating dinamic">
   <div class="star-rating-wrap">
     {% if unvote is not empty %}
-    <input class="star-rating-input unvote" id="star-rating-0" name="review[rating]" type="radio" value="0">
-    <label class="star-rating-ico fa fa-times-circle unvote" for="star-rating-0" title="{{ text('Unvote') }}"></label>
+        <input class="star-rating-input unvote" id="star-rating-0" name="review[rating]" type="radio" value="0">
+        <label class="star-rating-ico fa fa-times-circle unvote" for="star-rating-0" title="{{ text('Unvote') }}"></label>
     {% endif %}
     <input class="star-rating-input" id="star-rating-5" type="radio" name="review[rating]" value="5"{{ (review.rating is defined and review.rating == 5) ? ' checked'}}>
     <label class="star-rating-ico fa fa-star-o" for="star-rating-5" title="{{ text('@num out of @total stars', {'@num': 5, '@total': 5}) }}"></label>
@@ -29,8 +27,3 @@
     <label class="star-rating-ico fa fa-star-o" for="star-rating-1" title="{{ text('@num out of @total stars', {'@num': 1, '@total': 5}) }}"></label>
   </div>
 </div>
-<script>
-$(function () {
-    $('.star-rating-ico').tooltip();
-});
-</script>

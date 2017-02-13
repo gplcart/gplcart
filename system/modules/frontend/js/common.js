@@ -339,14 +339,6 @@
     };
 
     /**
-     * Setup Bootstrap tooltips
-     * @returns {undefined}
-     */
-    GplCart.onload.tooltip = function () {
-        $('.star-rating.static').tooltip();
-    };
-
-    /**
      * Handles various submit events
      * @returns {undefined}
      */

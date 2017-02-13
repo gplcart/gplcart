@@ -137,7 +137,7 @@ a.disabled {
 }
 
 .panel-body .pagination {
-    margin-bottom: 0;
+    margin: 0;
 }
 
 .table-borderless tr,
@@ -171,7 +171,7 @@ table.compare tbody > tr > td  {
 
 .star-rating{
     font-size: 0;
-    display: table;
+    display: inline-table;
 }
 
 .star-rating-wrap{

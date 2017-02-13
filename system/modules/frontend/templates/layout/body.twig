@@ -125,11 +125,11 @@
       </nav>
     </div>
     {# Breadcrumbs #}
-    {% if breadcrumb is not empty %}
+    {% if breadcrumb %}
         <div class="breadcrumb">
           <ol class="breadcrumb">
             {% for item in breadcrumb %}
-                {% if item.url is empty %}
+                {% if item.url is not defined or not item.url %}
                     <li>{{ item.text|raw }}</li>
                     {% else %}
                     <li><a href="{{ item.url }}">{{ item.text|raw }}</a></li>

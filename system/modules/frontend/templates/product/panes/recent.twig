@@ -1,5 +1,5 @@
 {#
-    Displays block of related products
+    Displays block of recent products
 
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
@@ -12,8 +12,8 @@
     @link http://gplcart.com Support, modules, demo
 #}
 {% if products is not empty %}
-<div class="panel panel-default related-products">
-  <div class="panel-heading">{{ text('Related') }}</div>
+<div class="panel panel-default panel-borderless recent-products">
+  <div class="panel-heading">{{ text('Recently viewed') }}</div>
   <div class="panel-body">
     <div class="row products" data-slider="true" data-slider-settings='{
          "item": 4,

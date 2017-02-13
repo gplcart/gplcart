@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\helpers\Url as UrlHelper,
+    gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\exceptions\RouteException;
 
 /**
@@ -93,7 +93,7 @@ class Route
      */
     public function getList()
     {
-        $routes = &Cache::memory('routes');
+        $routes = &Cache::memory('route.list');
 
         if (isset($routes)) {
             return $routes;

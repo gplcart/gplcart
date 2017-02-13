@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Review as ReviewModel;
-use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Review as ReviewModel,
+    gplcart\core\models\Product as ProductModel;
 use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -61,6 +61,7 @@ class Review extends BaseValidator
         $this->validateCreatedReview();
         $this->validateProductReview();
         $this->validateEmailReview();
+        $this->validateUserId();
 
         return $this->getResult();
     }
@@ -193,7 +194,7 @@ class Review extends BaseValidator
     {
         $value = $this->getSubmitted('email');
 
-        if ($this->isUpdating() && !isset($value)) {
+        if (!isset($value)) {
             return null;
         }
 
