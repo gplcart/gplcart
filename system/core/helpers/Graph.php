@@ -11,7 +11,6 @@ namespace gplcart\core\helpers;
 
 /**
  * Contains methods to directed acyclic graph manipulation
- * Mostly borrowed from Drupal
  */
 class Graph
 {
@@ -46,6 +45,8 @@ class Graph
      */
     public function build(array $items)
     {
+        $this->graph = array(); // Reset all previous data
+
         foreach ($items as $id => $item) {
 
             $this->graph[$id]['edges'] = array();

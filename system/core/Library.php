@@ -10,8 +10,9 @@
 namespace gplcart\core;
 
 use RuntimeException;
-use gplcart\core\Cache;
-use gplcart\core\helpers\Graph as GraphHelper;
+use gplcart\core\Hook,
+    gplcart\core\Cache,
+    gplcart\core\helpers\Graph as GraphHelper;
 
 /**
  * Provides methods to work with 3-d party libraries
@@ -28,6 +29,12 @@ class Library
     protected $cache;
 
     /**
+     * Hook instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
      * Graph helper class instance
      * @var \gplcart\core\helpers\Graph $graph
      */
@@ -42,10 +49,12 @@ class Library
     /**
      * Constructor
      * @param Cache $cache
+     * @param Hook $hook
      * @param GraphHelper $graph
      */
-    public function __construct(Cache $cache, GraphHelper $graph)
+    public function __construct(Cache $cache, Hook $hook, GraphHelper $graph)
     {
+        $this->hook = $hook;
         $this->cache = $cache;
         $this->graph = $graph;
     }
@@ -87,6 +96,7 @@ class Library
 
         $libraries = $this->prepareList($this->getConfigs());
         $this->cache->set('libraries', $libraries);
+        $this->hook->fire('library.list', $libraries);
         return $libraries;
     }
 
@@ -101,7 +111,7 @@ class Library
         $directory = GC_VENDOR_DIR . '/' . GC_VENDOR_CONFIG;
 
         $configs = array();
-        
+
         foreach (gplcart_file_scan_recursive($directory) as $file) {
             $vendor = substr(dirname($file), strlen(GC_VENDOR_DIR . '/'));
             $configs[$vendor] = $this->getJsonData($file);
@@ -112,6 +122,7 @@ class Library
         }
 
         if ($has_required) {
+            $this->hook->fire('library.config', $configs);
             return $configs;
         }
 
@@ -144,17 +155,21 @@ class Library
                 $library['id'] = $library_id;
                 $library['vendor'] = $vendor;
 
-                if (empty($library['basepath'])) {
-                    $library['basepath'] = $this->getBasePath($library);
+                if (!empty($library['module']) && empty($library['basepath'])) {
+                    $library['basepath'] = GC_MODULE_DIR . "/{$library['module']}";
                 }
 
-                $version = $this->getVersion($library);
+                if (empty($library['basepath'])) {
+                    $library['basepath'] = $this->getDefaultBasePath($library);
+                }
 
-                if (!isset($version)) {
+                if (!isset($library['version'])) {
+                    $library['version'] = $this->getVersion($library);
+                }
+
+                if (!isset($library['version'])) {
                     $library['errors'][] = array('Unknown version', array());
                 }
-
-                $library['version'] = $version;
 
                 if (!$this->validateFiles($library)) {
                     $library['errors'][] = array('Missing files', array());
@@ -185,7 +200,7 @@ class Library
 
         $readable = 0;
         foreach ($library['files'] as $file) {
-            $readable += (int) is_readable(gplcart_absolute_path("{$library['basepath']}/$file"));
+            $readable += (int) is_readable($library['basepath'] . "/$file");
         }
 
         return count($library['files']) == $readable;
@@ -207,7 +222,7 @@ class Library
             return null;
         }
 
-        $file = gplcart_absolute_path("{$library['basepath']}/{$library['version_source']['file']}");
+        $file = "{$library['basepath']}/{$library['version_source']['file']}";
 
         if (!is_readable($file)) {
             return null;
@@ -226,19 +241,12 @@ class Library
     /**
      * Returns a base path to a library
      * @param array $library
-     * @param boolean $absolute
      * @return string
      */
-    protected function getBasePath(array $library, $absolute = false)
+    protected function getDefaultBasePath(array $library)
     {
-        $base = GC_VENDOR_DIR_NAME
-                . "/{$library['vendor']}/{$library['type']}/{$library['id']}";
-
-        if ($absolute) {
-            $base = gplcart_absolute_path($base);
-        }
-
-        return $base;
+        $base = GC_VENDOR_DIR_NAME . "/{$library['vendor']}/{$library['type']}/{$library['id']}";
+        return gplcart_absolute_path($base);
     }
 
     /**
@@ -364,7 +372,7 @@ class Library
         }
 
         foreach ($this->prepareFiles($sorted, $libraries) as $file) {
-            require_once gplcart_absolute_path($file);
+            require_once $file;
         }
 
         $this->loaded = array_merge($this->loaded, $sorted);

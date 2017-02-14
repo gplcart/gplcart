@@ -188,14 +188,12 @@ class Module extends BackendController
     protected function getListModule(array $query, array $limit = array())
     {
         $modules = $this->module->getList();
-
         $this->sortListModule($modules, $query);
         $this->filterListModule($modules, $query);
         $this->limitListModule($modules, $limit);
         $this->checkDependenciesListModule($modules);
-
         $this->prepareListModule($modules);
-        
+
         return $modules;
     }
 

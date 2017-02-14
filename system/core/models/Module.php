@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Container;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Container;
+use gplcart\core\models\Backup as BackupModel,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Zip as ZipHelper;
-use gplcart\core\models\Backup as BackupModel;
-use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\exceptions\ModuleException;
 
 /**
@@ -146,7 +146,9 @@ class Module extends Model
         $this->update($module_id, array('status' => 1));
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
-        return true;
+
+        $this->call('afterEnable', $module, $result);
+        return $result;
     }
 
     /**
@@ -164,7 +166,7 @@ class Module extends Model
 
         try {
             $module_class = Container::get($module['class']);
-            $result = $module_class->{$method}();
+            call_user_func_array(array($module_class, $method), array($module, &$result));
         } catch (ModuleException $e) {
             trigger_error($e->getMessage());
         }
@@ -396,7 +398,9 @@ class Module extends Model
 
         $this->update($module_id, array('status' => false));
         $this->setOverrideConfig();
-        return true;
+
+        $this->call('afterDisable', $module, $result);
+        return $result;
     }
 
     /**
@@ -526,7 +530,9 @@ class Module extends Model
         $this->add(array('module_id' => $module_id, 'status' => $status));
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
-        return true;
+
+        $this->call('afterInstall', $module, $result);
+        return $result;
     }
 
     /**
@@ -570,7 +576,9 @@ class Module extends Model
 
         $this->db->delete('module', array('module_id' => $module_id));
         $this->setOverrideConfig();
-        return true;
+
+        $this->call('afterUninstall', $module, $result);
+        return $result;
     }
 
     /**
