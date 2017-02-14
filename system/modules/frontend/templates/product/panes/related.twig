@@ -1,6 +1,4 @@
 {#
-    Displays block of related products
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -11,20 +9,15 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
     @link http://gplcart.com Support, modules, demo
 #}
-{% if products is not empty %}
-<div class="panel panel-default panel-borderless related-products">
-  <div class="panel-heading">{{ text('Related') }}</div>
-  <div class="panel-body">
-    <div class="row products" data-slider="true" data-slider-settings='{
-         "item": 4,
-         "pager": false,
-         "autoWidth": false,
-         "slideMargin": 0
-         }'>
-      {% for product in products %}
-          {{ product['rendered']|raw }}
-      {% endfor %}
+{% if products %}
+    <div class="panel panel-default panel-borderless related-products">
+      <div class="panel-heading">{{ text('Related') }}</div>
+      <div class="panel-body">
+        <div class="row products">
+          {% for product in products %}
+              {{ product['rendered']|raw }}
+          {% endfor %}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 {% endif %}

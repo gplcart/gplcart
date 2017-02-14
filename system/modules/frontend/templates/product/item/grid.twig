@@ -1,6 +1,4 @@
 {#
-    Displays a single product item in "grid" view
-
     To see available variables:
         - without enabling Twig debug mode: {{ d() }}
         - using native Twig debugger (Debug mode must be enabled): {{ dump() }}
@@ -13,7 +11,7 @@
 #}
 <div class="grid product item col-md-3 col-sm-4 col-xs-6">
   <div class="thumbnail">
-    {% if product['thumb'] is not empty %}
+    {% if product['thumb'] %}
         <a href="{{ product['url'] }}">
           <img class="img-responsive thumbnail" title="{{ product['title'] }}" alt="{{ product['title'] }}" src="{{ product['thumb'] }}">
         </a>
@@ -30,7 +28,7 @@
             {% endif %}
             {{ product['price_formatted'] }}
       </p>
-      {% if buttons is not empty %}
+      {% if buttons %}
           <form method="post" class="form-horizontal product-action">
             <input type="hidden" name="token" value="{{ prop('token') }}">
             <input type="hidden" name="product[product_id]" value="{{ product['product_id'] }}">

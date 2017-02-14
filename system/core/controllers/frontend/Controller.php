@@ -160,7 +160,7 @@ class Controller extends BaseController
      */
     public function viewed()
     {
-        $limit = $this->config('recent_limit', 12);
+        $limit = $this->config('recent_limit', 4);
         return $this->product->getViewed($limit);
     }
 
