@@ -147,6 +147,20 @@ function gplcart_absolute_path($file)
 }
 
 /**
+ * Converts file from absolute to relative
+ * @param string $absolute
+ * @return string
+ */
+function gplcart_relative_path($absolute)
+{
+    $prefix = GC_ROOT_DIR . '/';
+    if (substr($absolute, 0, strlen($prefix)) == $prefix) {
+        return trim(substr($absolute, strlen($prefix)), '/');
+    }
+    return $absolute;
+}
+
+/**
  * Returns PHP info as a string
  * @return string
  */

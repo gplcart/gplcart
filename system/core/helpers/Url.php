@@ -207,8 +207,7 @@ class Url
      */
     public function fromPath($server_path)
     {
-        $url = $this->request->base() . trim(str_replace(GC_ROOT_DIR, '', $server_path), '/');
-        return $url;
+        return $this->request->base() . gplcart_relative_path($server_path);
     }
 
 }

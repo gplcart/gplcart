@@ -331,7 +331,7 @@ class Job extends Model
                     '%updated' => $job['updated']));
             }
             $this->session->setMessage($message, 'success');
-            return;
+            return null;
         }
 
         if (!empty($job['redirect']['errors'])) {

@@ -84,7 +84,7 @@ class Validator extends Model
 
         $handlers = include GC_CONFIG_VALIDATOR;
 
-        $this->hook->fire('validator.list', $handlers);
+        $this->hook->fire('validator.handlers', $handlers);
         return $handlers;
     }
 

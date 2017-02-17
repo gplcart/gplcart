@@ -92,13 +92,12 @@ class Controller
      * @var integer
      */
     protected $uid;
-    
+
     /**
      * Current user cart ID
      * @var integer|string
      */
     protected $cart_uid;
-
 
     /**
      * A random string generated from the session
@@ -244,7 +243,7 @@ class Controller
      * @var \gplcart\core\models\Store $store
      */
     protected $store;
-    
+
     /**
      * Cart model instance
      * @var \gplcart\core\models\Cart $cart

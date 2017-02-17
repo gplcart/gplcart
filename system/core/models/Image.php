@@ -323,9 +323,8 @@ class Image extends Model
      */
     public function urlFromPath($path)
     {
-        $fullpath = GC_FILE_DIR . "/$path";
-        $path = 'files/' . trim(str_replace(GC_ROOT_DIR, '', $path), "/");
-        return $this->url->get($path, array('v' => filemtime($fullpath)));
+        return $this->url->get('files/' . gplcart_relative_path($path), array(
+                    'v' => filemtime(GC_FILE_DIR . "/$path")));
     }
 
     /**

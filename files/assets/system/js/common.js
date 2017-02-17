@@ -124,7 +124,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
             success: function (data) {
 
                 if (typeof data !== 'object' || $.isEmptyObject(data)) {
-                    console.log(arguments);
+                    console.warn(arguments);
                     return false;
                 }
 
@@ -150,7 +150,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
 
             },
             error: function () {
-                console.log(arguments);
+                console.warn(arguments);
             }
         });
     };

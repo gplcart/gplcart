@@ -278,8 +278,13 @@ class Config
      */
     public function getModuleData($name)
     {
-        $class = $this->getModuleClass($name);
-        $instance = Container::get($class);
+        $class = $this->getModuleClassNamespace($name);
+
+        try {
+            $instance = Container::get($class);
+        } catch (\ReflectionException $exc) {
+            return array();
+        }
 
         if (!is_callable(array($instance, 'info'))) {
             return array();
@@ -300,9 +305,20 @@ class Config
      * @param string $module_id
      * @return string
      */
-    public function getModuleClass($module_id)
+    public function getModuleClassNamespace($module_id)
     {
-        return "gplcart\\modules\\$module_id\\" . ucfirst(str_replace('_', '', $module_id));
+        $class_name = $this->getModuleClassName($module_id);
+        return "gplcart\\modules\\$module_id\\$class_name";
+    }
+
+    /**
+     * Creates a module class name from a module ID
+     * @param string $module_id
+     * @return string
+     */
+    public function getModuleClassName($module_id)
+    {
+        return ucfirst(str_replace('_', '', $module_id));
     }
 
     /**
@@ -411,7 +427,7 @@ class Config
      */
     public function validModuleId($id)
     {
-        return (bool) preg_match('/^[a-z_]+$/', $id);
+        return (bool) preg_match('/^[a-z][a-z0-9_]+$/', $id);
     }
 
 }

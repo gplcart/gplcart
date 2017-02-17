@@ -97,6 +97,15 @@ class Controller extends BaseController
         $job += array('widget' => 'common/job/widget');
         return $this->render($job['widget'], array('job' => $job));
     }
+    
+    /**
+     * Set the current job
+     */
+    protected function setJob()
+    {
+        $job = $this->getCurrentJob();
+        $this->setData('job', $this->renderJob($job));
+    }
 
     /**
      * Returns rendered admin menu

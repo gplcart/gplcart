@@ -39,8 +39,7 @@ class Import extends BackendController
      */
     public function listImport()
     {
-        $job = $this->getCurrentJob();
-        $this->setData('job', $this->renderJob($job));
+        $this->setJob();
 
         $this->downloadErrorsImport();
         $this->downloadTemplateImport();

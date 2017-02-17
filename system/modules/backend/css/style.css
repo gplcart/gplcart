@@ -506,10 +506,11 @@ body.admin .panel-heading .event-severity {
     display: block;
 }
 
-input[name$="[stock]"],
-input[name="stock"],
-input[name$="[price]"],
-input[name="price"] {
+
+.products [name$="[stock]"],
+.products [name="stock"],
+.products [name$="[price]"],
+.products [name="price"] {
     width: 60px;
 }
 

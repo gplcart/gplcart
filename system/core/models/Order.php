@@ -722,8 +722,6 @@ class Order extends Model
                 $components[$module] = array('price' => $price);
                 $total += $components[$module]['price'];
             }
-
-            $this->hook->fire("calculate.order.$module", $total, $data, $components);
         }
 
         $this->pricerule->calculate($total, $data, $components);
