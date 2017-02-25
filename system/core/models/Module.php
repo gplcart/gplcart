@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Cache,
-    gplcart\core\Container;
+    gplcart\core\Hook;
 use gplcart\core\models\Backup as BackupModel,
     gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Zip as ZipHelper;
@@ -44,16 +44,23 @@ class Module extends Model
     protected $backup;
 
     /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
      * Constructor
      * @param LanguageModel $language
      * @param BackupModel $backup
      * @param ZipHelper $zip
      */
-    public function __construct(LanguageModel $language, BackupModel $backup,
-            ZipHelper $zip)
+    public function __construct(Hook $hook, LanguageModel $language,
+            BackupModel $backup, ZipHelper $zip)
     {
         parent::__construct();
 
+        $this->hook = $hook;
         $this->zip = $zip;
         $this->backup = $backup;
         $this->language = $language;
@@ -137,7 +144,7 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canEnable($module_id);
 
-        $this->call('beforeEnable', $module, $result);
+        $this->hook->fire("$module_id|module.enable.before", $module, $result);
 
         if ($result !== true) {
             return $result;
@@ -147,30 +154,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->call('afterEnable', $module, $result);
-        return $result;
-    }
-
-    /**
-     * Calls a module method
-     * @param string $method
-     * @param array $module
-     * @param mixed $result
-     * @return mixed
-     */
-    protected function call($method, array $module, &$result)
-    {
-        if (!is_callable(array($module['class'], $method))) {
-            return null;
-        }
-
-        try {
-            $module_class = Container::get($module['class']);
-            call_user_func_array(array($module_class, $method), array($module, &$result));
-        } catch (ModuleException $e) {
-            trigger_error($e->getMessage());
-        }
-
+        $this->hook->fire("$module_id|module.enable.after", $module, $result);
         return $result;
     }
 
@@ -351,7 +335,7 @@ class Module extends Model
     }
 
     /**
-     * Adds / updates settings for a given module
+     * Adds/updates settings for a given module
      * @param string $module_id
      * @param array $settings
      * @return boolean
@@ -390,7 +374,7 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canDisable($module_id);
 
-        $this->call('beforeDisable', $module, $result);
+        $this->hook->fire("$module_id|module.disable.before", $module, $result);
 
         if ($result !== true) {
             return $result;
@@ -399,7 +383,7 @@ class Module extends Model
         $this->update($module_id, array('status' => false));
         $this->setOverrideConfig();
 
-        $this->call('afterDisable', $module, $result);
+        $this->hook->fire("$module_id|module.disable.after", $module, $result);
         return $result;
     }
 
@@ -519,7 +503,7 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
 
-        $this->call('beforeInstall', $module, $result);
+        $this->hook->fire("$module_id|module.install.before", $module, $result);
 
         if ($result !== true) {
             // Make sure the troubled module is uninstalled
@@ -531,7 +515,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->call('afterInstall', $module, $result);
+        $this->hook->fire("$module_id|module.install.after", $module, $result);
         return $result;
     }
 
@@ -568,7 +552,7 @@ class Module extends Model
         $result = $this->canUninstall($module_id);
         $module = $this->get($module_id);
 
-        $this->call('beforeUninstall', $module, $result);
+        $this->hook->fire("$module_id|module.uninstall.before", $module, $result);
 
         if ($result !== true) {
             return $result;
@@ -577,7 +561,7 @@ class Module extends Model
         $this->db->delete('module', array('module_id' => $module_id));
         $this->setOverrideConfig();
 
-        $this->call('afterUninstall', $module, $result);
+        $this->hook->fire("$module_id|module.uninstall.after", $module, $result);
         return $result;
     }
 

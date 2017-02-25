@@ -9,13 +9,14 @@
 
 namespace gplcart\core;
 
-use gplcart\core\exceptions\ModuleException;
+use gplcart\core\Config;
 
 /**
  * Provides methods to work with system hooks (event system)
  */
 class Hook
 {
+
     /**
      * Array of registered hooks
      * @var array
@@ -29,16 +30,29 @@ class Hook
     protected $called = array();
 
     /**
-     * Registers modules hooks
-     * @param array $modules
+     * Config class instance
+     * @var \gplcart\core\Config $config
      */
-    public function modules(array $modules)
+    protected $config;
+
+    /**
+     * Constructor
+     * @param Config $config
+     */
+    public function __construct(Config $config)
     {
-        foreach ($modules as $module) {
+        $this->config = $config;
+    }
+
+    /**
+     * Registers all hooks from all modules
+     */
+    public function registerAll()
+    {
+        foreach ($this->config->getEnabledModules() as $module) {
             if (empty($module['hooks'])) {
                 continue;
             }
-
             foreach ($module['hooks'] as $method) {
                 $this->register($method, $module['class']);
             }
@@ -110,7 +124,26 @@ class Hook
     public function fire($hook, &$a = null, &$b = null, &$c = null, &$d = null,
             &$e = null)
     {
+
+        // Check if the hook must be fired for a certain module ID
+        // which is provided in the hook name in format <module ID>|<hook name>
+        if (strpos($hook, '|') !== false) {
+            list($module_id, $hook) = explode('|', $hook, 2);
+        }
+
         $method = $this->getMethod($hook);
+
+        // If a module ID is set we must be sure that the hook
+        // is registered even if the module is disabled 
+        if (isset($module_id)) {
+
+            // Get all modules, including disabled ones
+            $modules = $this->config->getModules();
+            if (empty($modules[$module_id]['class'])) {
+                return false;
+            }
+            $this->register($method, $modules[$module_id]['class']);
+        }
 
         if (empty($this->hooks[$method])) {
             return false;
@@ -137,13 +170,12 @@ class Hook
     protected function call($namespace, $method, &$a = null, &$b = null,
             &$c = null, &$d = null, &$e = null)
     {
-        $instance = Container::get(array($namespace, $method));
-
         try {
+            $instance = Container::get(array($namespace, $method));
             $instance->{$method}($a, $b, $c, $d, $e);
             $this->setCalled($method, $namespace);
-        } catch (ModuleException $exc) {
-            echo $exc->getMessage();
+        } catch (\ReflectionException $exc) {
+            return false;
         }
 
         return true;

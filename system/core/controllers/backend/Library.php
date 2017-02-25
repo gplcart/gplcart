@@ -54,7 +54,7 @@ class Library extends BackendController
 
         return $libraries;
     }
-    
+
     /**
      * Clear library cache
      */

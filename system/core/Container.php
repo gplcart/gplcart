@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use ReflectionClass;
-use ReflectionException;
+use ReflectionClass,
+    ReflectionException;
 
 /**
  * Dependency injection container
@@ -38,8 +38,7 @@ class Container
      * @return object
      * @throws ReflectionException
      */
-    public static function get($class, array $arguments = array(),
-            $share = true)
+    public static function get($class, array $arguments = array(), $share = true)
     {
         if (is_array($class)) {
             if (!is_callable($class)) {
