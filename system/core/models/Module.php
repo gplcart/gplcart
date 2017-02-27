@@ -255,7 +255,7 @@ class Module extends Model
      */
     protected function checkDependenciesModule($module_id, array $modules)
     {
-        $validated = $this->validateDependenciesTrait($modules);
+        $validated = $this->validateDependenciesTrait($modules, true);
 
         if (empty($validated[$module_id]['errors'])) {
             return true;
@@ -447,7 +447,7 @@ class Module extends Model
         foreach ($stores as $store) {
             $data = unserialize($store['data']);
             foreach ($data as $key => $value) {
-                if (0 === strpos($key, 'theme')) {
+                if (strpos($key, 'theme') === 0) {
                     $themes[] = $value;
                 }
             }
@@ -467,22 +467,19 @@ class Module extends Model
         unset($modules[$module_id]);
 
         $required_by = array();
-
         foreach ($modules as $info) {
-
             if (empty($info['dependencies'])) {
                 continue;
             }
-
-            foreach ((array) $info['dependencies'] as $dependent) {
-                if ($dependent === $module_id && !empty($info['status'])) {
-                    $required_by['required_by'][] = $dependent;
+            foreach (array_keys($info['dependencies']) as $dependency) {
+                if ($dependency === $module_id && !empty($info['status'])) {
+                    $required_by[] = $info['name'];
                 }
             }
         }
 
         if (!empty($required_by)) {
-            return $required_by;
+            return $this->language->text('Required by') . ': ' . implode(', ', $required_by);
         }
 
         return true;

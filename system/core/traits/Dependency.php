@@ -18,14 +18,14 @@ trait Dependency
     /**
      * Validates dependency for an array of items
      * @param array $items
+     * @param bool $enabled
      * @return array
      */
-    protected function validateDependenciesTrait(array &$items)
+    protected function validateDependenciesTrait(array &$items, $enabled = false)
     {
         foreach ($items as &$item) {
-            $this->validateDependencyTrait($items, $item);
+            $this->validateDependencyTrait($items, $item, $enabled);
         }
-
         return $items;
     }
 
@@ -33,9 +33,10 @@ trait Dependency
      * Validates dependency for a single item
      * @param array $items
      * @param array $item
+     * @param bool $enabled
      * @return null
      */
-    protected function validateDependencyTrait(array $items, array &$item)
+    protected function validateDependencyTrait($items, &$item, $enabled = false)
     {
         if (empty($item['dependencies'])) {
             return null;
@@ -45,6 +46,11 @@ trait Dependency
 
             if (!isset($items[$id])) {
                 $item['errors'][] = array('Unknown dependency @id', array('@id' => $id));
+                continue;
+            }
+
+            if ($enabled && empty($items[$id]['status'])) {
+                $item['errors'][] = array('Requires @id to be enabled', array('@id' => $items[$id]['name']));
                 continue;
             }
 

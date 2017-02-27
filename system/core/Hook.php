@@ -141,7 +141,9 @@ class Hook
             if (empty($modules[$module_id]['class'])) {
                 return false;
             }
-            $this->register($method, $modules[$module_id]['class']);
+
+            $this->call($modules[$module_id]['class'], $method, $a, $b, $c, $d, $e);
+            return true;
         }
 
         if (empty($this->hooks[$method])) {
