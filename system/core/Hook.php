@@ -124,11 +124,10 @@ class Hook
     public function fire($hook, &$a = null, &$b = null, &$c = null, &$d = null,
             &$e = null)
     {
-
         // Check if the hook must be fired for a certain module ID
-        // which is provided in the hook name in format <module ID>|<hook name>
+        // which is provided in the hook name in format <hook name>|<module ID>
         if (strpos($hook, '|') !== false) {
-            list($module_id, $hook) = explode('|', $hook, 2);
+            list($hook, $module_id) = explode('|', $hook, 2);
         }
 
         $method = $this->getMethod($hook);
