@@ -60,8 +60,8 @@ class Module extends Model
     {
         parent::__construct();
 
-        $this->hook = $hook;
         $this->zip = $zip;
+        $this->hook = $hook;
         $this->backup = $backup;
         $this->language = $language;
     }
@@ -144,7 +144,7 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canEnable($module_id);
 
-        $this->hook->fire("$module_id|module.enable.before", $module, $result);
+        $this->hook->fire("module.enable.before|$module_id", $module, $result);
 
         if ($result !== true) {
             return $result;
@@ -154,7 +154,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->hook->fire("$module_id|module.enable.after", $module, $result);
+        $this->hook->fire("module.enable.after|$module_id", $module, $result);
         return $result;
     }
 
@@ -374,7 +374,7 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canDisable($module_id);
 
-        $this->hook->fire("$module_id|module.disable.before", $module, $result);
+        $this->hook->fire("module.disable.before|$module_id", $module, $result);
 
         if ($result !== true) {
             return $result;
@@ -383,7 +383,7 @@ class Module extends Model
         $this->update($module_id, array('status' => false));
         $this->setOverrideConfig();
 
-        $this->hook->fire("$module_id|module.disable.after", $module, $result);
+        $this->hook->fire("module.disable.after|$module_id", $module, $result);
         return $result;
     }
 
@@ -503,7 +503,7 @@ class Module extends Model
         $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
 
-        $this->hook->fire("$module_id|module.install.before", $module, $result);
+        $this->hook->fire("module.install.before|$module_id", $module, $result);
 
         if ($result !== true) {
             // Make sure the troubled module is uninstalled
@@ -515,7 +515,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->hook->fire("$module_id|module.install.after", $module, $result);
+        $this->hook->fire("module.install.after|$module_id", $module, $result);
         return $result;
     }
 
@@ -552,7 +552,7 @@ class Module extends Model
         $result = $this->canUninstall($module_id);
         $module = $this->get($module_id);
 
-        $this->hook->fire("$module_id|module.uninstall.before", $module, $result);
+        $this->hook->fire("module.uninstall.before|$module_id", $module, $result);
 
         if ($result !== true) {
             return $result;
@@ -561,7 +561,7 @@ class Module extends Model
         $this->db->delete('module', array('module_id' => $module_id));
         $this->setOverrideConfig();
 
-        $this->hook->fire("$module_id|module.uninstall.after", $module, $result);
+        $this->hook->fire("module.uninstall.after|$module_id", $module, $result);
         return $result;
     }
 
@@ -589,7 +589,6 @@ class Module extends Model
      */
     protected function getOverrideMap()
     {
-        // Clear all caches before getting enabled modules
         Cache::clearMemory('modules');
 
         $map = array();
@@ -604,7 +603,7 @@ class Module extends Model
             foreach ($this->scanOverrideFiles($directory) as $file) {
                 $original = str_replace('/', '\\', str_replace($directory . '/', '', preg_replace('/Override$/', '', $file)));
                 $override = str_replace('/', '\\', str_replace(GC_SYSTEM_DIR . '/', '', $file));
-                $map[$original][$module['id']] = $override;
+                $map["gplcart\\$original"][$module['id']] = "gplcart\\$override";
             }
         }
 

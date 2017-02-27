@@ -158,12 +158,12 @@
           <td colspan="7">
             <?php if ($info['author']) { ?>
             <div class="author">
-              <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->escape($info['author']); ?>
+              <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->escape($this->truncate($info['author'], 100)); ?>
             </div>
             <?php } ?>
             <?php if ($info['description']) { ?>
             <div class="description">
-              <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->xss($info['description']); ?>
+              <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->xss($this->truncate($info['description'], 100)); ?>
             </div>
             <?php } ?>
             <?php if (isset($info['weight'])) { ?>
@@ -173,7 +173,7 @@
             <?php } ?>
             <?php if (!empty($info['hooks'])) { ?>
             <div class="hooks">
-              <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->escape(implode(',', $info['hooks'])); ?>
+              <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->escape($this->truncate(implode(', ', $info['hooks']), 100)); ?>
             </div>
             <?php } ?>
             <?php if (!empty($info['requires'])) { ?>
