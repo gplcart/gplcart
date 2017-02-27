@@ -30,7 +30,7 @@ For developers:
 - PSR-0, PSR-4 standard compliance
 - Dependency injection
 - Minimum static methods
-- Modules are damn simple, theme = module
+- Modules are damn simple, theme = module. [See how you can generate your module](https://github.com/gplcart/skeleton)
 - Tons of hooks
 - Command line support (extensible)
 - Ability to rewrite almost any core method from a module (no monkey patching, "VQ mods")
