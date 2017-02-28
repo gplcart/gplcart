@@ -95,8 +95,7 @@ class Payment extends Model
             'template' => array('complete' => ''),
             'image' => '',
             'status' => true,
-            'weight' => 0,
-            'module' => 'core'
+            'weight' => 0
         );
 
         return $methods;

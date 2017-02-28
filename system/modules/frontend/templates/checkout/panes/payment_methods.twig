@@ -33,7 +33,7 @@
             <div class="radio">
               <label>
                 {% if method['image'] is defined and method['image'] is not empty %}
-                    <img class="img-responsive" src="{{ url(method['image'], {}, true) }}">
+                    <img class="img-responsive" src="{{ method['image'] }}">
                 {% endif %}
                 <input type="radio" name="order[payment]" value="{{ method_id }}"{{ (order['payment'] is defined and order['payment'] == method_id) ? ' checked' : '' }}> {{ method['title'] }}
                 {% if method['description'] is defined and method['description'] is not empty %}

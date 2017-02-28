@@ -200,14 +200,4 @@ class Url
         return false;
     }
 
-    /**
-     * Returns an internal URL from a server path
-     * @param string $server_path
-     * @return string
-     */
-    public function fromPath($server_path)
-    {
-        return $this->request->base() . gplcart_relative_path($server_path);
-    }
-
 }

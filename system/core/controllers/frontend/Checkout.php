@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\State as StateModel,
+    gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\Address as AddressModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -354,12 +354,47 @@ class Checkout extends FrontendController
         $this->data_form['user'] = $this->data_user;
 
         $this->data_form['statuses'] = $this->order->getStatuses();
-        $this->data_form['payment_methods'] = $this->payment->getList(array('status' => true));
-        $this->data_form['shipping_methods'] = $this->shipping->getList(true);
+        $this->data_form['payment_methods'] = $this->getPaymentMethodsCheckout();
+        $this->data_form['shipping_methods'] = $this->getShippingMethodsCheckout();
 
         // Price rule calculator requires this data
         $this->data_form['store_id'] = $this->order_store_id;
         $this->data_form['currency'] = $this->data_cart['currency'];
+    }
+
+    /**
+     * Returns an array of enabled payment methods
+     * @return array
+     */
+    protected function getPaymentMethodsCheckout()
+    {
+        $methods = $this->payment->getList(array('status' => true));
+        return $this->prepareMethodsCheckout($methods);
+    }
+
+    /**
+     * Returns an array of enabled shipping methods
+     * @return array
+     */
+    protected function getShippingMethodsCheckout()
+    {
+        $methods = $this->shipping->getList(array('status' => true));
+        return $this->prepareMethodsCheckout($methods);
+    }
+
+    /**
+     * Prepare payment and shipping methods
+     * @return array
+     */
+    protected function prepareMethodsCheckout(array $methods)
+    {
+        foreach ($methods as &$method) {
+            if (isset($method['module']) && isset($method['image'])) {
+                $path = GC_MODULE_DIR . "/{$method['module']}/{$method['image']}";
+                $method['image'] = $this->url(gplcart_relative_path($path));
+            }
+        }
+        return $methods;
     }
 
     /**

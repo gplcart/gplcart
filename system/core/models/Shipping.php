@@ -38,26 +38,32 @@ class Shipping extends Model
 
     /**
      * Returns an array of shipping methods
-     * @param boolean $enabled
+     * @param array $data
      * @return array
      */
-    public function getList($enabled = false)
+    public function getList(array $data = array())
     {
-        $methods = &Cache::memory('shipping.methods');
+        $methods = &Cache::memory(array('shipping.methods' => $data));
 
         if (isset($methods)) {
             return $methods;
         }
 
         $methods = $this->getDefault();
+        $this->hook->fire('shipping.methods', $methods);
 
-        if ($enabled) {
-            $methods = array_filter($methods, function ($method) {
-                return !empty($method['status']);
-            });
+        foreach ($methods as $id => $method) {
+            if (!empty($data['status']) && empty($method['status'])) {
+                unset($methods[$id]);
+            }
+            if (!empty($data['module']) && !in_array($method['module'], (array) $data['module'])) {
+                unset($methods[$id]);
+            }
         }
 
-        $this->hook->fire('shipping.methods', $methods);
+        if (empty($methods)) {
+            return array();
+        }
 
         gplcart_array_sort($methods);
         return $methods;
