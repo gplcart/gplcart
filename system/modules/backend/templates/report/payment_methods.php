@@ -25,7 +25,7 @@
           <td><?php echo $this->escape($method['title']); ?></td>
           <td><?php echo empty($method['description']) ? '' : $this->escape($method['description']); ?></td>
           <td><?php echo empty($method['module']) ? $this->text('Unknown') : $this->escape($method['module']); ?></td>
-          <td><?php echo empty($method['statue']) ? $this->text('Disabled') : $this->text('Enabled'); ?></td>
+          <td><?php echo empty($method['status']) ? $this->text('Disabled') : $this->text('Enabled'); ?></td>
         </tr>
         <?php } ?>
       </tbody>

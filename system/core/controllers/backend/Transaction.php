@@ -65,7 +65,7 @@ class Transaction extends BackendController
         $total = $this->getTotalTransaction($query);
         $limit = $this->setPager($total, $query);
 
-        $this->setData('payment_methods', $this->payment->getList(false));
+        $this->setData('payment_methods', $this->payment->getList());
         $this->setData('transactions', $this->getListTransaction($limit, $query));
 
         $this->outputListTransaction();

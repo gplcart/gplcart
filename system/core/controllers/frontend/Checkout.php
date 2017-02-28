@@ -354,7 +354,7 @@ class Checkout extends FrontendController
         $this->data_form['user'] = $this->data_user;
 
         $this->data_form['statuses'] = $this->order->getStatuses();
-        $this->data_form['payment_methods'] = $this->payment->getList(true);
+        $this->data_form['payment_methods'] = $this->payment->getList(array('status' => true));
         $this->data_form['shipping_methods'] = $this->shipping->getList(true);
 
         // Price rule calculator requires this data

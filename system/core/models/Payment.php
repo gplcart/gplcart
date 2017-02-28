@@ -38,12 +38,12 @@ class Payment extends Model
 
     /**
      * Returns an array of payment methods
-     * @param boolean $enabled
+     * @param array $data
      * @return array
      */
-    public function getList($enabled = false)
+    public function getList(array $data = array())
     {
-        $methods = &Cache::memory('payment.method');
+        $methods = &Cache::memory(array('payment.method' => $data));
 
         if (isset($methods)) {
             return $methods;
@@ -53,10 +53,17 @@ class Payment extends Model
 
         $this->hook->fire('payment.methods', $methods);
 
-        if ($enabled) {
-            $methods = array_filter($methods, function ($method) {
-                return !empty($method['status']);
-            });
+        foreach ($methods as $id => $method) {
+            if (!empty($data['status']) && empty($method['status'])) {
+                unset($methods[$id]);
+            }
+            if (!empty($data['module']) && !in_array($method['module'], (array) $data['module'])) {
+                unset($methods[$id]);
+            }
+        }
+
+        if (empty($methods)) {
+            return array();
         }
 
         gplcart_array_sort($methods);
@@ -88,7 +95,8 @@ class Payment extends Model
             'template' => array('complete' => ''),
             'image' => '',
             'status' => true,
-            'weight' => 0
+            'weight' => 0,
+            'module' => 'core'
         );
 
         return $methods;

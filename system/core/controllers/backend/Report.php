@@ -80,7 +80,7 @@ class Report extends BackendController
      */
     protected function setTitleListPaymentMethodsReport()
     {
-        $this->setTitle($this->text('Routes'));
+        $this->setTitle($this->text('Payment methods'));
     }
 
     /**

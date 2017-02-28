@@ -141,10 +141,9 @@ class Module extends Model
      */
     public function enable($module_id)
     {
-        $module = $this->get($module_id);
         $result = $this->canEnable($module_id);
 
-        $this->hook->fire("module.enable.before|$module_id", $module, $result);
+        $this->hook->fire("module.enable.before|$module_id", $result);
 
         if ($result !== true) {
             return $result;
@@ -154,7 +153,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->hook->fire("module.enable.after|$module_id", $module, $result);
+        $this->hook->fire("module.enable.after|$module_id", $result);
         return $result;
     }
 
@@ -371,10 +370,9 @@ class Module extends Model
      */
     public function disable($module_id)
     {
-        $module = $this->get($module_id);
         $result = $this->canDisable($module_id);
 
-        $this->hook->fire("module.disable.before|$module_id", $module, $result);
+        $this->hook->fire("module.disable.before|$module_id", $result);
 
         if ($result !== true) {
             return $result;
@@ -383,7 +381,7 @@ class Module extends Model
         $this->update($module_id, array('status' => false));
         $this->setOverrideConfig();
 
-        $this->hook->fire("module.disable.after|$module_id", $module, $result);
+        $this->hook->fire("module.disable.after|$module_id", $result);
         return $result;
     }
 
@@ -497,10 +495,9 @@ class Module extends Model
         // Important when uploading a module!
         Cache::clearMemory('modules');
 
-        $module = $this->get($module_id);
         $result = $this->canInstall($module_id);
 
-        $this->hook->fire("module.install.before|$module_id", $module, $result);
+        $this->hook->fire("module.install.before|$module_id", $result);
 
         if ($result !== true) {
             // Make sure the troubled module is uninstalled
@@ -512,7 +509,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->hook->fire("module.install.after|$module_id", $module, $result);
+        $this->hook->fire("module.install.after|$module_id", $result);
         return $result;
     }
 
@@ -547,9 +544,8 @@ class Module extends Model
     public function uninstall($module_id)
     {
         $result = $this->canUninstall($module_id);
-        $module = $this->get($module_id);
 
-        $this->hook->fire("module.uninstall.before|$module_id", $module, $result);
+        $this->hook->fire("module.uninstall.before|$module_id", $result);
 
         if ($result !== true) {
             return $result;
@@ -558,7 +554,7 @@ class Module extends Model
         $this->db->delete('module', array('module_id' => $module_id));
         $this->setOverrideConfig();
 
-        $this->hook->fire("module.uninstall.after|$module_id", $module, $result);
+        $this->hook->fire("module.uninstall.after|$module_id", $result);
         return $result;
     }
 
