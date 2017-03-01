@@ -43,7 +43,7 @@ AddEncoding gzip svgz
     RewriteRule "(^|/)\." - [F]
 
     # Block direct access to system files, except module asset folders
-    RewriteRule ^system/\w+/\w+/(js|css|images)/ - [L]
+    RewriteRule ^system/\w+/\w+/(js|css|image)/ - [L]
     RewriteRule ^system/ - [F]
 
     # Block direct access to vendor files, except asset folders

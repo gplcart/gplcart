@@ -253,6 +253,7 @@ class Checkout extends FrontendController
     /**
      * Loads an order from the database
      * @param integer $order_id
+     * @return array
      */
     protected function setOrderCheckout($order_id)
     {
@@ -262,13 +263,14 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $order['status'] = $this->order->getInitialStatus();
+        $this->attachItemTotalFormatted($order);
 
-        $this->data_order = $order;
         $this->order_id = $order_id;
         $this->order_user_id = $order['user_id'];
         $this->order_store_id = $order['store_id'];
         $this->data_user = $this->user->get($order['user_id']);
+
+        return $this->data_order = $order;
     }
 
     /**
@@ -343,7 +345,7 @@ class Checkout extends FrontendController
             'creator' => $this->admin_user_id,
             'store_id' => $this->order_store_id,
             'currency' => $this->data_cart['currency'],
-            'status' => $this->order->getInitialStatus()
+            'status' => $this->order->getStatusInitial()
         );
 
         $order = gplcart_array_merge($default_order, $this->data_order);
@@ -984,14 +986,16 @@ class Checkout extends FrontendController
      */
     public function completeCheckout($order_id)
     {
-        $this->setOrderCheckout($order_id);
+        $order = $this->setOrderCheckout($order_id);
         $this->controlAccessCompleteCheckout();
 
         $this->setTitleCompleteCheckout();
         $this->setBreadcrumbCompleteCheckout();
 
-        $this->setData('templates', $this->getCompleteTemplatesCheckout());
+        $this->setData('complete_templates', $this->getCompleteTemplatesCheckout());
         $this->setData('complete_message', $this->getCompleteMessageCheckout());
+
+        $this->hook->fire('order.complete.page', $order, $this);
 
         $this->outputCompleteCheckout();
     }
@@ -1047,7 +1051,7 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(403);
         }
 
-        if ($this->data_order['status'] !== $this->order->getInitialStatus()) {
+        if (!$this->order->isPending($this->data_order)) {
             $this->outputHttpStatus(403);
         }
     }

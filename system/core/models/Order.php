@@ -9,16 +9,16 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\Mail as MailModel,
+    gplcart\core\models\Cart as CartModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\models\Mail as MailModel;
-use gplcart\core\models\Cart as CartModel;
-use gplcart\core\models\User as UserModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -246,7 +246,7 @@ class Order extends Model
 
         $this->attachCart($order);
 
-        $this->hook->fire('order.get.after', $order_id, $order);
+        $this->hook->fire('order.get.after', $order);
         return $order;
     }
 
@@ -441,8 +441,7 @@ class Order extends Model
             $result['message'] = '';
             $result['redirect'] = "checkout/complete/$order_id";
         }
-
-        $this->hook->fire('order.submit.after', $order, $cart, $options, $result);
+        $this->hook->fire('order.submit.after', $order, $result, $cart, $options);
         return $result;
     }
 
@@ -546,19 +545,38 @@ class Order extends Model
      * Returns "canceled" status ID
      * @return string
      */
-    public function getCanceledStatus()
+    public function getStatusCanceled()
     {
         return $this->config->get('order_status_canceled', 'canceled');
     }
 
     /**
-     * Returns an initial order status
+     * Returns initial order status
      * @return string
      */
-    public function getInitialStatus()
+    public function getStatusInitial()
     {
         $default = $this->getDefaultStatus();
         return $this->config->get('order_status_initial', $default);
+    }
+
+    /**
+     * Returns awaiting payment order status
+     * @return string
+     */
+    public function getStatusAwaitingPayment()
+    {
+        return $this->config->get('order_status_awaiting_payment', 'pending_payment');
+    }
+
+    /**
+     * Wheter the order is pending, i.e before processing
+     * @param array $order
+     * @return bool
+     */
+    public function isPending(array $order)
+    {
+        return strpos($order['status'], 'pending') === 0;
     }
 
     /**
@@ -585,13 +603,12 @@ class Order extends Model
      */
     protected function getCompleteMessageLoggedIn(array $order)
     {
-        $default = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status';
+        $default = 'Thank you for your order! Order ID: @num, status: @status';
         $message = $this->config->get('order_complete_message', $default);
 
         $variables = array(
-            '!order_id' => $order['order_id'],
-            '!url' => $this->request->base() . "account/{$order['user_id']}/order/{$order['order_id']}",
-            '!status' => $this->getStatusName($order['status'])
+            '@num' => $order['order_id'],
+            '@status' => $this->getStatusName($order['status'])
         );
 
         return $this->language->text($message, $variables);
@@ -604,12 +621,12 @@ class Order extends Model
      */
     protected function getCompleteMessageAnonymous(array $order)
     {
-        $default = 'Thank you for your order! Order ID: !order_id, status: !status';
+        $default = 'Thank you for your order! Order ID: @num, status: @status';
         $message = $this->config->get('order_complete_message_anonymous', $default);
 
         $variables = array(
-            '!order_id' => $order['order_id'],
-            '!status' => $this->getStatusName($order['status'])
+            '@num' => $order['order_id'],
+            '@status' => $this->getStatusName($order['status'])
         );
 
         return $this->language->text($message, $variables);
@@ -753,6 +770,7 @@ class Order extends Model
     {
         $statuses = array(
             'pending' => $this->language->text('Pending'),
+            'pending_payment' => $this->language->text('Awaiting payment'),
             'canceled' => $this->language->text('Canceled'),
             'delivered' => $this->language->text('Delivered'),
             'completed' => $this->language->text('Completed'),

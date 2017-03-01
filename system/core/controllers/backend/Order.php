@@ -249,7 +249,7 @@ class Order extends BackendController
         $this->controlAccess('order_edit');
         $this->controlAccess('order_add');
 
-        $update = array('status' => $this->order->getCanceledStatus());
+        $update = array('status' => $this->order->getStatusCanceled());
         $this->order->update($this->data_order['order_id'], $update);
         $this->logOrder($update);
 
