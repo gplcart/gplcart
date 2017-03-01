@@ -181,10 +181,10 @@ class Asset
         $data += array(
             'type' => $type,
             'position' => 'top',
-            'aggregate' => true,
             'condition' => '',
             'version' => 'v',
-            'text' => false
+            'text' => false,
+            'aggregate' => ($type != 'external')
         );
 
         if (!in_array($data['type'], array('css', 'js'))) {
