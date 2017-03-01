@@ -172,17 +172,28 @@ class Asset
      */
     public function build(array $data)
     {
-        $type = pathinfo($data['asset'], PATHINFO_EXTENSION);
+        if (strpos($data['asset'], 'http') === 0) {
+            $type = 'external';
+        } else {
+            $type = pathinfo($data['asset'], PATHINFO_EXTENSION);
+        }
 
         $data += array(
             'type' => $type,
             'position' => 'top',
             'aggregate' => true,
             'condition' => '',
-            'version' => 'v'
+            'version' => 'v',
+            'text' => false
         );
 
-        $data['text'] = (!in_array($data['type'], array('css', 'js')) || $type != $data['type']);
+        if (!in_array($data['type'], array('css', 'js'))) {
+            $data['text'] = true;
+        }
+
+        if ($type != 'external' && $type != $data['type']) {
+            $data['text'] = true;
+        }
 
         if ($data['text']) {
             $data['key'] = 'text.' . md5($data['asset']);
@@ -192,17 +203,17 @@ class Asset
         if (strpos($data['asset'], GC_ROOT_DIR) === 0) {
             $data['file'] = $data['asset'];
             $data['asset'] = gplcart_relative_path($data['asset']);
-        } else {
+        } else if ($type != 'external') {
             $data['file'] = gplcart_absolute_path($data['asset']);
         }
 
-        if (!file_exists($data['file'])) {
+        if (isset($data['file']) && !file_exists($data['file'])) {
             return array();
         }
 
-        $data['key'] = $this->request->base(true) . $data['asset'];
+        $data['key'] = $type == 'external' ? $data['asset'] : $this->request->base(true) . $data['asset'];
 
-        if (!empty($data['version'])) {
+        if (!empty($data['version']) && isset($data['file'])) {
             $data['key'] .= "?{$data['version']}=" . filemtime($data['file']);
         }
 
